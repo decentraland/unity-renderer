@@ -68,7 +68,7 @@ public class DCLCharacterController : MonoBehaviour
     public static System.Action<DCLCharacterPosition> OnPositionSet;
 
 
-    // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake 
+    // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
     public DCL.Models.DecentralandEntity avatarReference { get; private set; }
     public DCL.Models.DecentralandEntity firstPersonCameraReference  { get; private set; }
     [SerializeField] private GameObject avatarGameObject;
@@ -338,6 +338,9 @@ public class DCLCharacterController : MonoBehaviour
 
     public void ResetGround()
     {
+        if(isOnMovingPlatform)
+            CommonScriptableObjects.playerIsOnMovingPlatform.Set(false);
+
         isOnMovingPlatform = false;
         groundTransform = null;
         movingPlatformSpeed = 0;
@@ -372,6 +375,7 @@ public class DCLCharacterController : MonoBehaviour
                     && groundHasMoved)
                 {
                     isOnMovingPlatform = true;
+                    CommonScriptableObjects.playerIsOnMovingPlatform.Set(true);
                     Physics.SyncTransforms();
                     lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
                 }
