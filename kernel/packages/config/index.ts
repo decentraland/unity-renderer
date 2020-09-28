@@ -124,7 +124,7 @@ export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !=
 export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
 export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
 export const DEBUG_PM = location.search.indexOf('DEBUG_PM') !== -1
-export const DEBUG_SCENE_LOG = location.search.indexOf('DEBUG_SCENE_LOG') !== -1
+export const DEBUG_SCENE_LOG = DEBUG || location.search.indexOf('DEBUG_SCENE_LOG') !== -1
 
 export const INIT_PRE_LOAD = location.search.indexOf('INIT_PRE_LOAD') !== -1
 
