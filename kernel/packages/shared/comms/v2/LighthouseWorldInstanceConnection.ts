@@ -43,7 +43,7 @@ const VoiceType: PeerMessageType = {
   name: 'voice',
   ttl: 5,
   optimistic: true,
-  discardOlderThan: 0,
+  discardOlderThan: 2000,
   expirationTime: 10000
 }
 

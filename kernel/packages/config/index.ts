@@ -180,7 +180,6 @@ export namespace commConfigurations {
     }
   ]
 
-  export const voiceChatSampleRate = 24000
   export const voiceChatUseHRTF = location.search.indexOf('VOICE_CHAT_USE_HRTF') !== -1
 }
 export const loginConfig = {

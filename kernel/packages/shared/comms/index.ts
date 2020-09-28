@@ -86,6 +86,7 @@ import { createLogger } from '../logger'
 import { VoiceCommunicator, VoiceSpatialParams } from 'voice-chat-codec/VoiceCommunicator'
 import { voicePlayingUpdate, voiceRecordingUpdate } from './actions'
 import { isVoiceChatRecording } from './selectors'
+import { VOICE_CHAT_SAMPLE_RATE } from 'voice-chat-codec/constants'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -216,7 +217,7 @@ function requestMediaDevice() {
       .getUserMedia({
         audio: {
           channelCount: 1,
-          sampleRate: commConfigurations.voiceChatSampleRate,
+          sampleRate: VOICE_CHAT_SAMPLE_RATE,
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
@@ -412,7 +413,8 @@ function processVoiceFragment(context: Context, fromAlias: string, message: Pack
       voiceCommunicator?.playEncodedAudio(
         peerTrackingInfo.identity,
         getSpatialParamsFor(peerTrackingInfo.position),
-        message.data.encoded
+        message.data.encoded,
+        message.time
       )
     }
   }
@@ -994,7 +996,6 @@ async function doStartCommunications(context: Context) {
         },
 
         {
-          sampleRate: commConfigurations.voiceChatSampleRate,
           initialListenerParams: context.currentPosition ? getSpatialParamsFor(context.currentPosition) : undefined,
           panningModel: commConfigurations.voiceChatUseHRTF ? 'HRTF' : 'equalpower'
         }

@@ -30,7 +30,8 @@ export const contracts = {
     'AdapterFeeCollector': '0x5DC888024cB599CfDdb9E6483ED6bAe1fA9e9D18',
     'AdapterConverter': '0x2782eb28Dcb1eF4E7632273cd4e347e130Ce4646',
     'POIAllowlist': '0x5DC4a5C214f2161F0D5595a6dDd9352409aE3Ab4',
-    'NAMEDenylist': '0x20c6f1e86eba703a14414a0cbc1b55c89dba7a0f'
+    'NAMEDenylist': '0x20c6f1e86eba703a14414a0cbc1b55c89dba7a0f',
+    'CollectionsV2Factory': '0x16d8bac5b67a6b782a9081377bec413bc5bb56a6'
   },
   'mainnet': {
     'MANAToken': '0x0f5d2fb29fb7d3cfee444a200298f468908cc942',
