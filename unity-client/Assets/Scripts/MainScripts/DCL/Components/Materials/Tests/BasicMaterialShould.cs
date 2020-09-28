@@ -4,8 +4,9 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
+using Assert = UnityEngine.Assertions.Assert;
 
 public class BasicMaterialShould : TestsBase
 {
@@ -259,5 +260,33 @@ public class BasicMaterialShould : TestsBase
 
         // 4. Check defaulted values
         Assert.AreEqual(0.5f, basicMaterialComponent.model.alphaTest);
+    }
+
+    [UnityTest]
+    public IEnumerator ProcessCastShadowProperty_True()
+    {
+        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        {
+            alphaTest = 1f,
+            castShadows = true
+        }, out DecentralandEntity entity);
+        yield return basicMaterialComponent.routine;
+
+        Assert.AreEqual(true, basicMaterialComponent.model.castShadows);
+        Assert.AreEqual(ShadowCastingMode.On, entity.meshRootGameObject.GetComponent<MeshRenderer>().shadowCastingMode);
+    }
+
+    [UnityTest]
+    public IEnumerator ProcessCastShadowProperty_False()
+    {
+        BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
+        {
+            alphaTest = 1f,
+            castShadows = false
+        }, out DecentralandEntity entity);
+        yield return basicMaterialComponent.routine;
+
+        Assert.AreEqual(false, basicMaterialComponent.model.castShadows);
+        Assert.AreEqual(ShadowCastingMode.Off, entity.meshRootGameObject.GetComponent<MeshRenderer>().shadowCastingMode);
     }
 }

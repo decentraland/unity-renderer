@@ -792,11 +792,10 @@ export class Material extends ObservableComponent {
   refractionTexture?: Texture
 
   /**
-   * If sets to true, disables all the lights affecting the material.
-   * Defaults to false.
+   * Allow the material to cast shadows over other objects
    */
   @ObservableComponent.field
-  disableLighting?: boolean
+  castShadows?: boolean = true
 
   /**
    * Sets the transparency mode of the material.
@@ -831,6 +830,12 @@ export class BasicMaterial extends ObservableComponent {
    */
   @ObservableComponent.field
   alphaTest: number = 0.5
+
+  /**
+   * Allow the material to cast shadows over other objects
+   */
+  @ObservableComponent.field
+  castShadows?: boolean = true
 }
 
 /**
