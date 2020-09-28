@@ -31,28 +31,8 @@ public class BodyShapeController : WearableController
         base.Load(parent, onSuccess, onFail);
     }
 
-    public void RemoveUnusedParts(HashSet<string> usedCategories)
+    public void SetActiveParts(bool lowerBodyActive, bool upperBodyActive, bool feetActive)
     {
-        bool lowerBodyActive = false;
-        bool upperBodyActive = false;
-        bool feetActive = false;
-
-        foreach (var category in usedCategories)
-        {
-            switch (category)
-            {
-                case WearableLiterals.Categories.LOWER_BODY:
-                    lowerBodyActive = true;
-                    break;
-                case WearableLiterals.Categories.UPPER_BODY:
-                    upperBodyActive = true;
-                    break;
-                case WearableLiterals.Categories.FEET:
-                    feetActive = true;
-                    break;
-            }
-        }
-
         lowerBodyRenderer.gameObject.SetActive(lowerBodyActive);
         lowerBodyRenderer.enabled = lowerBodyActive;
 
