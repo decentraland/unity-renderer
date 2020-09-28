@@ -545,7 +545,9 @@ namespace DCL.Controllers
                 MessageDecoder.DecodeTransform(data, ref DCLTransform.model);
 
                 if (!entity.components.ContainsKey(classId))
+                {
                     entity.components.Add(classId, null);
+                }
 
                 if (entity.OnTransformChange != null)
                 {
