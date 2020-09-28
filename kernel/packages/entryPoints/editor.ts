@@ -8,6 +8,7 @@ import { EventEmitter } from 'events'
 import future, { IFuture } from 'fp-future'
 
 import { loadedSceneWorkers } from '../shared/world/parcelSceneManager'
+import { Wearable } from '../shared/profiles/types'
 import { SceneJsonData, ILand, HUDElementID } from '../shared/types'
 import { normalizeContentMappings } from '../shared/selectors'
 import { SceneWorker } from '../shared/world/SceneWorker'
@@ -275,6 +276,14 @@ namespace editor {
     } else {
       return loadingEntities
     }
+  }
+
+  export function addWearablesToCatalog(wearables: Wearable[]) {
+    unityInterface.AddWearablesToCatalog(wearables)
+  }
+
+  export function removeWearablesFromCatalog(wearableIds: string[]) {
+    unityInterface.RemoveWearablesFromCatalog(wearableIds)
   }
 
   export function takeScreenshot(mime?: string): IFuture<string> {
