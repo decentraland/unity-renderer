@@ -1,5 +1,5 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER, NO_ASSET_BUNDLES, ENABLE_NEW_TASKBAR, HAS_INITIAL_POSITION_MARK } from 'config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER, NO_ASSET_BUNDLES, ENABLE_NEW_TASKBAR } from 'config'
 import { aborted } from 'shared/loading/ReportFatalError'
 import { loadingScenes, teleportTriggered } from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
@@ -22,7 +22,6 @@ import { UnityInterface, unityInterface } from './UnityInterface'
 import { BrowserInterface, browserInterface } from './BrowserInterface'
 import { UnityScene } from './UnityScene'
 import { ensureUiApis } from 'shared/world/uiSceneInitializer'
-import { getUserProfile } from 'shared/comms/peers'
 
 declare const globalThis: UnityInterfaceContainer &
   BrowserInterfaceContainer &
@@ -121,10 +120,6 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   if (ENGINE_DEBUG_PANEL) {
     unityInterface.SetEngineDebugPanel()
-  }
-
-  if (!DEBUG && ENABLE_NEW_TASKBAR) {
-    unityInterface.ConfigureTutorial(getUserProfile().profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
   }
 
   if (!EDITOR) {

@@ -67,10 +67,6 @@ export const INVENTORY_FAILURE = '[Failure] Inventory fetch'
 export const inventoryFailure = (userId: string, error: any) => action(INVENTORY_FAILURE, { userId, error })
 export type InventoryFailure = ReturnType<typeof inventoryFailure>
 
-export const NOTIFY_NEW_INVENTORY_ITEM = '[Inventory] New inventory item'
-export const notifyNewInventoryItem = () => action(NOTIFY_NEW_INVENTORY_ITEM)
-export type NotifyNewInventoryItem = ReturnType<typeof notifyNewInventoryItem>
-
 export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
 export const addedProfileToCatalog = (userId: string, profile: ProfileForRenderer) =>
   action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
