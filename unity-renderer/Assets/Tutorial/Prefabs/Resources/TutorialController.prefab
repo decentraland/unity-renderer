@@ -177,6 +177,7 @@ MonoBehaviour:
   - {fileID: 4712031868617782090, guid: 54219e5d1e0415f4ab74ddc2ee0adbfa, type: 3}
   - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
   - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
+  teacherCamera: {fileID: 604084521501385079}
   teacherRawImage: {fileID: 6732306866191114328}
   teacher: {fileID: 977289631841785178}
   teacherMovementSpeed: 0.8
