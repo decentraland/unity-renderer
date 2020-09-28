@@ -1,15 +1,14 @@
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import * as matchers from 'redux-saga-test-plan/matchers'
-import { notifyNewInventoryItem, profileRequest, profileSuccess } from 'shared/profiles/actions'
+import { profileRequest, profileSuccess } from 'shared/profiles/actions'
 import {
-  compareInventoriesAndTriggerNotification,
   handleFetchProfile,
   profileServerRequest,
   fetchInventoryItemsByAddress
 } from 'shared/profiles/sagas'
 import { getCurrentUserId } from 'shared/session/selectors'
-import { getProfile, getProfileDownloadServer } from 'shared/profiles/selectors'
+import { getProfileDownloadServer } from 'shared/profiles/selectors'
 import { profileSaga, delay } from '../../packages/shared/profiles/sagas'
 import { processServerProfile } from '../../packages/shared/profiles/transformations/processServerProfile'
 import { dynamic } from 'redux-saga-test-plan/providers'
@@ -205,37 +204,3 @@ describe('fetchProfile behavior', () => {
   })
 })
 
-describe('notifications behavior', () => {
-  const getReturnsNull = (_: any) => undefined
-  const getReturnsYes = (_: any) => 'notified'
-  const noopSave = (_: any, __: any) => undefined
-  const profile = {}
-  const userId = 'userId'
-  // TODO - fix tests - moliva - 2019-11-02
-  xit('triggers on new item', () => {
-    return expectSaga(compareInventoriesAndTriggerNotification, userId, [], ['newItem'], getReturnsNull, noopSave)
-      .provide([[select(getProfile, userId), profile]])
-      .put(notifyNewInventoryItem())
-      .run()
-  })
-  xit('does not trigger if already sent', () => {
-    return expectSaga(compareInventoriesAndTriggerNotification, userId, [], ['newItem'], getReturnsYes, noopSave)
-      .provide([[select(getProfile, userId), profile]])
-      .not.put(notifyNewInventoryItem())
-      .run()
-  })
-  xit('does not trigger multiple notifications if more than one item', () => {
-    return expectSaga(
-      compareInventoriesAndTriggerNotification,
-      userId,
-      [],
-      ['newItem', 'newItem2'],
-      getReturnsYes,
-      noopSave
-    )
-      .provide([[select(getProfile, userId), profile]])
-      .put(notifyNewInventoryItem())
-      .not.put(notifyNewInventoryItem())
-      .run()
-  })
-})

@@ -73,6 +73,11 @@ namespace UnityGLTF.Cache
             return ImageCacheByUri[GetCacheId(uri, idSuffix)];
         }
 
+        public static RefCountedTextureData GetImage(string fullId)
+        {
+            return ImageCacheByUri[fullId];
+        }
+
         /// <summary>
         /// Remove image from persistent cache
         /// </summary>
@@ -94,7 +99,8 @@ namespace UnityGLTF.Cache
         /// <param name="refCountedStream"></param>
         public static void AddBuffer(string uri, string idSuffix, RefCountedStreamData refCountedStream)
         {
-            StreamCacheByUri[GetCacheId(uri, idSuffix)] = refCountedStream;
+            var key = GetCacheId(uri, idSuffix);
+            StreamCacheByUri[key] = refCountedStream;
         }
 
         /// <summary>
@@ -105,7 +111,8 @@ namespace UnityGLTF.Cache
         /// <returns>True if its cached</returns>
         public static bool HasBuffer(string uri, string idSuffix)
         {
-            return HasBuffer(GetCacheId(uri, idSuffix));
+            string key = GetCacheId(uri, idSuffix);
+            return HasBuffer(key);
         }
 
         /// <summary>
@@ -128,6 +135,12 @@ namespace UnityGLTF.Cache
         {
             return StreamCacheByUri[GetCacheId(uri, idSuffix)];
         }
+
+        public static RefCountedStreamData GetBuffer(string fullId)
+        {
+            return StreamCacheByUri[fullId];
+        }
+
 
         /// <summary>
         /// Remove buffer from persistent cache

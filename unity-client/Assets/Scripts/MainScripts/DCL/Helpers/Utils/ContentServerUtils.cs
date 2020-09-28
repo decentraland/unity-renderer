@@ -43,7 +43,7 @@ namespace DCL
             public string hash;
         }
 
-        public enum ApiEnvironment
+        public enum ApiTLD
         {
             NONE,
             TODAY,
@@ -52,17 +52,17 @@ namespace DCL
         }
 
 
-        public static string GetEnvString(ApiEnvironment env)
+        public static string GetTldString(ApiTLD tld)
         {
-            switch (env)
+            switch (tld)
             {
-                case ApiEnvironment.NONE:
+                case ApiTLD.NONE:
                     break;
-                case ApiEnvironment.TODAY:
+                case ApiTLD.TODAY:
                     return "today";
-                case ApiEnvironment.ZONE:
+                case ApiTLD.ZONE:
                     return "zone";
-                case ApiEnvironment.ORG:
+                case ApiTLD.ORG:
                     return "org";
             }
 
@@ -71,15 +71,16 @@ namespace DCL
 
         public static string customBaseUrl = "";
 
-        public static string GetBaseUrl(ApiEnvironment env)
+        public static string GetBaseUrl(ApiTLD env)
         {
-            if (env != ApiEnvironment.NONE)
+            if (env != ApiTLD.NONE)
                 return "https://peer.decentraland.org/lambdas/contentv2";
 
             return customBaseUrl;
         }
 
-        public static string GetScenesAPIUrl(ApiEnvironment env, int x1, int y1, int width, int height)
+
+        public static string GetScenesAPIUrl(ApiTLD env, int x1, int y1, int width, int height)
         {
             width = Mathf.Max(0, width - 1);
             height = Mathf.Max(0, height - 1);
@@ -90,7 +91,7 @@ namespace DCL
             return result;
         }
 
-        public static string GetMappingsAPIUrl(ApiEnvironment env, string cid)
+        public static string GetMappingsAPIUrl(ApiTLD env, string cid)
         {
             string baseUrl = GetBaseUrl(env);
             string result = $"{baseUrl}/parcel_info?cids={cid}";
@@ -98,7 +99,7 @@ namespace DCL
             return result;
         }
 
-        public static string GetContentAPIUrlBase(ApiEnvironment env)
+        public static string GetContentAPIUrlBase(ApiTLD env)
         {
             string baseUrl = GetBaseUrl(env);
             return $"{baseUrl}/contents/";
