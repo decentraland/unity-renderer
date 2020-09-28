@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
+using static WearableLiterals;
 
 namespace DCL
 {
@@ -31,10 +31,6 @@ namespace DCL
         internal bool isLoading = false;
 
         private Coroutine loadCoroutine;
-        private HashSet<string> hiddenList = new HashSet<string>();
-
-        private List<WearableItem> resolvedWearables = new List<WearableItem>();
-        private WearableItem resolvedBody;
 
         private void Awake()
         {
@@ -52,22 +48,18 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
-            Action onSuccessWrapper = null;
-            Action onFailWrapper = null;
-
-            onSuccessWrapper = () =>
+            void onSuccessWrapper()
             {
                 onSuccess?.Invoke();
                 this.OnSuccessEvent -= onSuccessWrapper;
-            };
+            }
+            this.OnSuccessEvent += onSuccessWrapper;
 
-            onFailWrapper = () =>
+            void onFailWrapper()
             {
                 onFail?.Invoke();
                 this.OnFailEvent -= onFailWrapper;
-            };
-
-            this.OnSuccessEvent += onSuccessWrapper;
+            }
             this.OnFailEvent += onFailWrapper;
 
             isLoading = false;
@@ -115,7 +107,6 @@ namespace DCL
 
             wearableControllers.Clear();
             model = null;
-            hiddenList.Clear();
             isLoading = false;
             OnFailEvent = null;
             OnSuccessEvent = null;
@@ -159,22 +150,28 @@ namespace DCL
 
         private IEnumerator LoadAvatar()
         {
-            yield return new DCL.WaitUntil(() => gameObject.activeSelf);
+            yield return new WaitUntil(() => gameObject.activeSelf);
 
+            WearableItem resolvedBody = null;
+            if(!string.IsNullOrEmpty(model.bodyShape) && !CatalogController.wearableCatalog.TryGetValue(model.bodyShape, out resolvedBody))
+            {
+                Debug.LogError($"Bodyshape {model.bodyShape} not found in catalog");
+            }
+
+            List<WearableItem> resolvedWearables = new List<WearableItem>();
             if (model.wearables != null)
             {
                 for (int i = 0; i < model.wearables.Count; i++)
                 {
-                    WearableItem item = ResolveWearable(model.wearables[i]);
-
-                    if (item == null)
+                    if (!CatalogController.wearableCatalog.TryGetValue(model.wearables[i], out WearableItem item))
+                    {
+                        Debug.LogError($"Wearable {model.wearables[i]} not found in catalog");
                         continue;
+                    }
 
                     resolvedWearables.Add(item);
                 }
             }
-
-            resolvedBody = ResolveWearable(model.bodyShape);
 
             if (resolvedBody == null)
             {
@@ -183,20 +180,22 @@ namespace DCL
                 yield break;
             }
 
-            bool changedBody = false;
 
+            bool bodyIsDirty = false;
             if (bodyShapeController != null && bodyShapeController.id != model?.bodyShape)
             {
-                bodyShapeController?.CleanUp();
+                bodyShapeController.CleanUp();
                 bodyShapeController = null;
-                changedBody = true;
+                bodyIsDirty = true;
             }
 
             if (bodyShapeController == null)
             {
                 HideAll();
                 bodyShapeController = new BodyShapeController(resolvedBody);
-                SetupDefaultFacialFeatures(bodyShapeController.bodyShapeId);
+                eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
+                eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
+                mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
             }
             else
             {
@@ -205,84 +204,73 @@ namespace DCL
                     bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
             }
 
-            HashSet<string> usedCategories = new HashSet<string>(WearableLiterals.Categories.ALL);
+            HashSet<string> unusedCategories = new HashSet<string>(Categories.ALL);
             int wearableCount = resolvedWearables.Count;
-
             for (int index = 0; index < wearableCount; index++)
             {
-                var wearable = resolvedWearables[index];
-
+                WearableItem wearable = resolvedWearables[index];
                 if (wearable == null)
                     continue;
 
-                if (usedCategories.Contains(wearable.category))
-                {
-                    usedCategories.Remove(wearable.category);
-                }
-
-                if (!wearableControllers.ContainsKey(wearable))
-                {
-                    AddWearableController(wearable);
-                }
-                else
+                unusedCategories.Remove(wearable.category);
+                if (wearableControllers.ContainsKey(wearable))
                 {
                     UpdateWearableController(wearable);
                 }
+                else
+                {
+                    AddWearableController(wearable);
+                }
             }
 
-            foreach (var category in usedCategories)
+            foreach (var category in unusedCategories)
             {
                 switch (category)
                 {
-                    case WearableLiterals.Categories.EYES:
-                        SetDefaultEyes(bodyShapeController.bodyShapeId);
+                    case Categories.EYES:
+                        eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                         break;
-                    case WearableLiterals.Categories.MOUTH:
-                        SetDefaultMouth(bodyShapeController.bodyShapeId);
+                    case Categories.MOUTH:
+                        mouthController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.MOUTH, mouthMaterial);
                         break;
-                    case WearableLiterals.Categories.EYEBROWS:
-                        SetDefaultEyebrows(bodyShapeController.bodyShapeId);
+                    case Categories.EYEBROWS:
+                        eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
                         break;
                 }
             }
 
             CleanUpUnusedItems();
 
-            hiddenList = CreateHiddenList();
-
+            HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             bodyShapeController.SetHiddenList(hiddenList);
             if (!bodyShapeController.isReady)
             {
                 bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
             }
 
-            foreach (var kvp in wearableControllers)
+            foreach(WearableController wearable in wearableControllers.Values)
             {
-                WearableController wearable = kvp.Value;
-
-                if (changedBody)
+                if (bodyIsDirty)
                     wearable.boneRetargetingDirty = true;
 
                 wearable.SetHiddenList(hiddenList);
-
-                wearable.Load(transform, OnWearableLoadingSuccess, (x) => OnWearableLoadingFail(x));
+                wearable.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
+                yield return null;
             }
 
-            yield return new WaitUntil(AreWearablesReady);
+            yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
             eyesController.Load(bodyShapeController, model.eyeColor);
             eyebrowsController.Load(bodyShapeController, model.hairColor);
             mouthController.Load(bodyShapeController, model.skinColor);
 
-            yield return new WaitUntil(IsFaceReady);
+            yield return new WaitUntil(() => eyebrowsController.isReady && eyesController.isReady && mouthController.isReady);
 
-            bodyShapeController.RemoveUnusedParts(usedCategories);
-
+            bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.UpdateVisibility();
-
-            foreach (var kvp in wearableControllers)
+            foreach (WearableController wearableController in wearableControllers.Values)
             {
-                kvp.Value.UpdateVisibility();
+                wearableController.UpdateVisibility();
             }
 
             isLoading = false;
@@ -293,7 +281,6 @@ namespace DCL
             OnSuccessEvent?.Invoke();
         }
 
-
         void OnWearableLoadingSuccess(WearableController wearableController)
         {
             wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
@@ -302,7 +289,8 @@ namespace DCL
         void OnBodyShapeLoadingFail(WearableController wearableController)
         {
             Debug.LogError($"Avatar: {model.name}  -  Failed loading bodyshape: {wearableController.id}");
-            AbortLoading();
+            CleanupAvatar();
+            OnFailEvent?.Invoke();
         }
 
         void OnWearableLoadingFail(WearableController wearableController, int retriesCount = MAX_RETRIES)
@@ -310,41 +298,12 @@ namespace DCL
             if (retriesCount <= 0)
             {
                 Debug.LogError($"Avatar: {model.name}  -  Failed loading wearable: {wearableController.id}");
-                AbortLoading();
+                CleanupAvatar();
+                OnFailEvent?.Invoke();
                 return;
             }
 
-            wearableController.Load(transform, OnWearableLoadingSuccess, (x) => OnWearableLoadingFail(x, retriesCount - 1));
-        }
-
-        void AbortLoading()
-        {
-            CleanupAvatar();
-            isLoading = false;
-            OnFailEvent?.Invoke();
-        }
-
-        bool IsFaceReady()
-        {
-            return eyebrowsController.isReady && eyesController.isReady && mouthController.isReady;
-        }
-
-        bool AreWearablesReady()
-        {
-            if (!bodyShapeController.isReady)
-                return false;
-
-            using (var iterator = wearableControllers.GetEnumerator())
-            {
-                while (iterator.MoveNext())
-                {
-                    var wearable = iterator.Current.Value;
-                    if (!wearable.isReady)
-                        return false;
-                }
-            }
-
-            return true;
+            wearableController.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x, retriesCount - 1));
         }
 
         private void SetWearableBones()
@@ -369,51 +328,21 @@ namespace DCL
             animator.SetExpressionValues(id, timestamp);
         }
 
-
-        private HashSet<string> CreateHiddenList()
-        {
-            HashSet<string> result = new HashSet<string>();
-
-            if (resolvedWearables.Count == 0)
-                return result;
-
-            //Last wearable added has priority over the rest
-            for (int i = resolvedWearables.Count - 1; i >= 0; i--)
-            {
-                var wearableItem = resolvedWearables[i];
-
-                if (wearableItem == null || !wearableControllers.ContainsKey(wearableItem))
-                    continue;
-
-                if (result.Contains(wearableItem.category)) //Skip hidden elements to avoid two elements hiding each other
-                    continue;
-
-                var wearableHidesList = wearableItem.GetHidesList(bodyShapeController.bodyShapeId);
-
-                if (wearableHidesList != null)
-                {
-                    result.UnionWith(wearableHidesList);
-                }
-            }
-
-            return result;
-        }
-
         private void AddWearableController(WearableItem wearable)
         {
             if (wearable == null) return;
             switch (wearable.category)
             {
-                case WearableLiterals.Categories.EYES:
+                case Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, eyeMaterial);
                     break;
-                case WearableLiterals.Categories.EYEBROWS:
+                case Categories.EYEBROWS:
                     eyebrowsController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, eyebrowMaterial);
                     break;
-                case WearableLiterals.Categories.MOUTH:
+                case Categories.MOUTH:
                     mouthController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, mouthMaterial);
                     break;
-                case WearableLiterals.Categories.BODY_SHAPE:
+                case Categories.BODY_SHAPE:
                     break;
 
                 default:
@@ -428,10 +357,10 @@ namespace DCL
             var wearableController = wearableControllers[wearable];
             switch (wearableController.category)
             {
-                case WearableLiterals.Categories.EYES:
-                case WearableLiterals.Categories.EYEBROWS:
-                case WearableLiterals.Categories.MOUTH:
-                case WearableLiterals.Categories.BODY_SHAPE:
+                case Categories.EYES:
+                case Categories.EYEBROWS:
+                case Categories.MOUTH:
+                case Categories.BODY_SHAPE:
                     break;
                 default:
                     //If wearable is downloading will call OnWearableLoadingSuccess(and therefore SetupDefaultMaterial) once ready
@@ -441,57 +370,7 @@ namespace DCL
             }
         }
 
-        WearableItem ResolveWearable(string id)
-        {
-            if (string.IsNullOrEmpty(id)) return null;
-            if (!CatalogController.wearableCatalog.TryGetValue(id, out WearableItem wearable))
-            {
-                Debug.LogError($"Wearable {id} not found in catalog");
-            }
-
-            return wearable;
-        }
-
-        private void SetupDefaultFacialFeatures(string bodyShape)
-        {
-            SetDefaultEyes(bodyShape);
-            SetDefaultEyebrows(bodyShape);
-            SetDefaultMouth(bodyShape);
-        }
-
-        private void SetDefaultEyes(string bodyShape)
-        {
-            string eyesDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.EYES);
-            WearableItem eyesDefaultWearable = ResolveWearable(eyesDefaultId);
-
-            if (eyesDefaultWearable == null)
-                return;
-
-            eyesController = new FacialFeatureController(eyesDefaultWearable, bodyShapeController.bodyShapeId, eyeMaterial);
-        }
-
-        private void SetDefaultEyebrows(string bodyShape)
-        {
-            string eyebrowsDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.EYEBROWS);
-            WearableItem eyebrowsDefaultWearable = ResolveWearable(eyebrowsDefaultId);
-
-            if (eyebrowsDefaultWearable == null)
-                return;
-
-            eyebrowsController = new FacialFeatureController(eyebrowsDefaultWearable, bodyShapeController.bodyShapeId, eyebrowMaterial);
-        }
-
-        private void SetDefaultMouth(string bodyShape)
-        {
-            string mouthDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.MOUTH);
-            WearableItem mouthWearable = ResolveWearable(mouthDefaultId);
-
-            if (mouthWearable == null)
-                return;
-
-            mouthController = new FacialFeatureController(mouthWearable, bodyShapeController.bodyShapeId, mouthMaterial);
-        }
-
+        //TODO: Remove/replace once the class is easily mockable.
         protected void CopyFrom(AvatarRenderer original)
         {
             this.wearableControllers = original.wearableControllers;

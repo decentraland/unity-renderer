@@ -80,8 +80,8 @@ public class FacialFeatureController
 
         var representation = wearable.GetRepresentation(bodyShapeType);
 
-        string mainTextureName = representation.contents.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
-        string maskName = representation.contents.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
+        string mainTextureName = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
+        string maskName = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
         if (!string.IsNullOrEmpty(mainTextureName))
         {
@@ -118,5 +118,18 @@ public class FacialFeatureController
         Object.Destroy(baseMaterialCopy);
 
         isReady = false;
+    }
+
+    public static FacialFeatureController CreateDefaultFacialFeature(string bodyShape, string category, Material material)
+    {
+        string defaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, category);
+        WearableItem wearable = CatalogController.wearableCatalog.GetOrDefault(defaultId);
+        if (wearable == null)
+        {
+            Debug.LogError($"Couldn't resolve wearable {defaultId}");
+            return null;
+        }
+
+        return new FacialFeatureController(wearable, bodyShape, material);
     }
 }

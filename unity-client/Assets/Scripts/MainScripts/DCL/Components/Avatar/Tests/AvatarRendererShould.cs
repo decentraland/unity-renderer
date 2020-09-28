@@ -54,9 +54,9 @@ namespace AvatarShape_Tests
             avatarRenderer.ApplyModel(avatarModel, () => success = true, null);
             yield return new DCL.WaitUntil(() => success, 4);
 
+            LogAssert.Expect(LogType.Error, "Bodyshape Invalid_id not found in catalog");
             LogAssert.Expect(LogType.Error, "Wearable Scioli_right_arm not found in catalog");
             LogAssert.Expect(LogType.Error, "Wearable Peron_hands not found in catalog");
-            LogAssert.Expect(LogType.Error, "Wearable Invalid_id not found in catalog");
 
             UnityEngine.Assertions.Assert.IsTrue(success);
         }
