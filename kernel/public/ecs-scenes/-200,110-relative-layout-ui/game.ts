@@ -88,8 +88,8 @@ input.paddingRight = 20
 const inputEntity = new Entity()
 inputEntity.addComponentOrReplace(input)
 inputEntity.addComponentOrReplace(
-  new OnChanged((data: { value: string }) => {
-    inputTextState = data.value
+  new OnChanged((data: { value?: string }) => {
+    inputTextState = data.value!
   })
 )
 engine.addEntity(inputEntity)
@@ -148,8 +148,8 @@ sliderShape1.height = '100px'
 sliderShape1.positionY = '0px'
 sliderShape1.positionX = '-60px'
 slider1.addComponentOrReplace(
-  new OnChanged((data: { value: number }) => {
-    const value = Math.round(data.value)
+  new OnChanged((data: { value?: number }) => {
+    const value = Math.round(data.value!)
     valueFromSlider1.value = value.toString()
   })
 )
@@ -169,8 +169,8 @@ sliderShape2.height = '20px'
 sliderShape2.positionY = '-130px'
 sliderShape2.positionX = '-40px'
 slider2.addComponentOrReplace(
-  new OnChanged((data: { value: number }) => {
-    const value = Math.round(data.value)
+  new OnChanged((data: { value?: number }) => {
+    const value = Math.round(data.value!)
     valueFromSlider2.value = value.toString()
   })
 )

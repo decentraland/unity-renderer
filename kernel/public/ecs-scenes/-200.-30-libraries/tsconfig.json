@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outFile": "./game.js",
+    "paths": {
+      "*": [
+        "node_modules/eth-wrapper/eth-wrapper.d.ts"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "extends": "../../../packages/decentraland-ecs/types/tsconfig.json",
+  "compileOnSave": false
+}

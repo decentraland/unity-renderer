@@ -16,6 +16,8 @@ export function ensureFileExists(root: string, file: string) {
 }
 
 export function copyFile(from: string, to: string) {
+  console.log(`> copying ${from} to ${to}`)
+
   if (!fs.existsSync(from)) {
     throw new Error(`${from} does not exist`)
   }

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "alwaysStrict": true,
+    "useDefineForClassFields": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+  },
+  "extends": "tsconfig.json"
+}

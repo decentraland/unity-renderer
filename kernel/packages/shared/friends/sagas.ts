@@ -450,7 +450,7 @@ function* initializeStatusUpdateInterval(client: SocialAPI) {
     sendOwnStatusIfNecessary({ worldPosition: { x, y, z }, realm, timestamp: Date.now() })
   })
 
-  const handleSetCatalystRealm = (action: SetCatalystRealm & InitCatalystRealm) => {
+  const handleSetCatalystRealm = (action: SetCatalystRealm | InitCatalystRealm) => {
     const realm = action.payload
 
     sendOwnStatusIfNecessary({ worldPosition: lastPlayerPosition.clone(), realm, timestamp: Date.now() })

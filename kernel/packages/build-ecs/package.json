@@ -11,8 +11,8 @@
   "author": "Decentraland",
   "license": "Apache 2.0",
   "dependencies": {
-    "typescript": "latest",
-    "uglify-js": "latest"
+    "terser": "latest",
+    "typescript": "latest"
   },
   "files": [
     "index.js"
