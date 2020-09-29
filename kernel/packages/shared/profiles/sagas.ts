@@ -10,7 +10,8 @@ import {
   PIN_CATALYST,
   PREVIEW,
   ethereumConfigurations,
-  RESET_TUTORIAL
+  RESET_TUTORIAL,
+  WSS_ENABLED
 } from 'config'
 
 import defaultLogger from 'shared/logger'
@@ -264,8 +265,15 @@ export function* initialLoad() {
   } else {
     let baseCatalog = []
     try {
-      const response = yield fetch(getResourcesURL() + '/default-profile/basecatalog.json')
+      const catalogPath = '/default-profile/basecatalog.json'
+      const response = yield fetch(getResourcesURL() + catalogPath)
       baseCatalog = yield response.json()
+
+      if (WSS_ENABLED) {
+        for (let item of baseCatalog) {
+          item.baseUrl = `http://localhost:8000${item.baseUrl}`
+        }
+      }
     } catch (e) {
       defaultLogger.warn(`Could not load base catalog`)
     }
