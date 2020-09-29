@@ -19,7 +19,7 @@ Make sure you have the following dependencies:
 - Node v10 or compatible installed via `sudo apt install nodejs`
 - yarn installed globally via `sudo npm install yarn -g`
 
-IMPORTANT: If your path has spaces the build process will fail. Make sure to clone this repo in a properly named path. 
+IMPORTANT: If your path has spaces the build process will fail. Make sure to clone this repo in a properly named path.
 
 Build the project:
 
@@ -84,10 +84,10 @@ describe('My example test', function() {
 4. In a new browser tab go to http://localhost:8000/?UNITY_ENABLED=true&DEBUG_MODE&LOCAL_COMMS&position=0%2C-1&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl
 5. Go back to unity and the scene should start loading in there almost immediately
 
-### DCL scene in preview mode using a local explorer version
+### DCL scene in preview mode using a local Kernel version
 
-1. In the explorer repo directory, run a `make watch` or `make dev-watch` once
-2. Kill the server and run `make initialize-ecs-npm-link`
+1. In the explorer repo directory, run a `make watch` once
+2. Kill the server and run `make npm-link`
 3. In the scene directory run `npm link decentraland-ecs`
 4. In the scene directory run `dcl start` and it should already be using the local version of the client
 
