@@ -19,9 +19,6 @@ MonoBehaviour:
   cooldownSeconds: 1
   clips:
     array:
-    - {fileID: 8300000, guid: 62a7b3a182d610f4a8b1f80466a6137f, type: 3}
-    - {fileID: 8300000, guid: 950153eeb88950c4f86ca8433831744f, type: 3}
-    - {fileID: 8300000, guid: 6be9dc5cb66e6204d89355d1522b7269, type: 3}
-    - {fileID: 8300000, guid: 3578c08fe108d614396e3de972fe5daa, type: 3}
-    - {fileID: 8300000, guid: 440949082741fc44e8217cc99df3a133, type: 3}
+    - {fileID: 8300000, guid: 52b9ed0b2dced7a46a229828af4ede21, type: 3}
+    - {fileID: 8300000, guid: de2b65de73987974c89d41274e170018, type: 3}
   source: {fileID: 0}

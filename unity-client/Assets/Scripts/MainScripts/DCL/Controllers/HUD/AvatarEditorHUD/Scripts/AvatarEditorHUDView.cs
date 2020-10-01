@@ -63,6 +63,10 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [HideInInspector]
     public event System.Action<AvatarModel> OnAvatarAppear;
+    [HideInInspector]
+    public event System.Action<bool> OnSetVisibility;
+    [HideInInspector]
+    public event System.Action OnRandomize;
 
     private void Awake()
     {
@@ -288,6 +292,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void OnRandomizeButton()
     {
+        OnRandomize?.Invoke();
         controller.RandomizeWearables();
     }
 
@@ -312,14 +317,20 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void SetVisibility(bool visible)
     {
-        if (visible && !isOpen)
-            AudioScriptableObjects.dialogOpen.Play(true);
-        else if (isOpen)
-            AudioScriptableObjects.dialogClose.Play(true);
-
         characterPreviewController.camera.enabled = visible;
         avatarEditorCanvas.enabled = visible;
         avatarEditorCanvasGroup.blocksRaycasts = visible;
+
+        if (visible && !isOpen)
+        {
+            AudioScriptableObjects.dialogOpen.Play(true);
+            OnSetVisibility?.Invoke(visible);
+        }
+        else if (!visible && isOpen)
+        {
+            AudioScriptableObjects.dialogClose.Play(true);
+            OnSetVisibility?.Invoke(visible);
+        }
 
         isOpen = visible;
     }

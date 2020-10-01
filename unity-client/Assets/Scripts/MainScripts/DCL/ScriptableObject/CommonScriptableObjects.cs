@@ -41,8 +41,8 @@ public static class AudioScriptableObjects
     private static AudioEvent fadeOutEvent;
     public static AudioEvent fadeOut => CommonScriptableObjects.GetOrLoad(ref fadeOutEvent, "ScriptableObjects/AudioEvents/HUDCommon/FadeOut");
 
-    private static AudioEvent listItemAppearEvent;
-    public static AudioEvent listItemAppear => CommonScriptableObjects.GetOrLoad(ref listItemAppearEvent, "ScriptableObjects/AudioEvents/HUDCommon/ListItemAppear");
+    private static AudioEvent_WithPitchIncrement listItemAppearEvent;
+    public static AudioEvent_WithPitchIncrement listItemAppear => CommonScriptableObjects.GetOrLoad(ref listItemAppearEvent, "ScriptableObjects/AudioEvents/HUDCommon/ListItemAppear");
 
     private static AudioEvent chatReceiveGlobalEvent;
     public static AudioEvent chatReceiveGlobal => CommonScriptableObjects.GetOrLoad(ref chatReceiveGlobalEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceiveGlobal");
