@@ -71,7 +71,7 @@ public class ExploreHUDController : IHUD
         if (visible)
         {
             AudioScriptableObjects.dialogOpen.Play(true);
-            AudioScriptableObjects.listItemAppear.SetPitch(1f);
+            AudioScriptableObjects.listItemAppear.ResetPitch();
         }
         else
             AudioScriptableObjects.dialogClose.Play(true);

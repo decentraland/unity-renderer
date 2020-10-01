@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6723285814267428839}
   - component: {fileID: 6903690898286533778}
   - component: {fileID: 2322403187524271559}
+  - component: {fileID: 828260717747689252}
   m_Layer: 5
   m_Name: AvatarEditorAudioHandler
   m_TagString: Untagged
@@ -50,7 +51,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 0}
+  nftItemSelector: {fileID: 0}
   randomizeButton: {fileID: 0}
+  eventMusic: {fileID: 11400000, guid: 04d736dfcca0ffb40b80e13b0d0b3ac9, type: 2}
   eventRarity: {fileID: 11400000, guid: ab6dfe6063700a84da51263d91986e29, type: 2}
   eventAvatarAppear: {fileID: 11400000, guid: 9c4174c87fc665549bc204afa5ca6830, type: 2}
   eventReactionMale: {fileID: 11400000, guid: ac80627e713f2d344aba9dd6b6108961, type: 2}
@@ -101,3 +104,25 @@ MonoBehaviour:
     - {fileID: 11400000, guid: bc763dba289460d44bbd1b092660367f, type: 2}
     - {fileID: 11400000, guid: a28354201483d6e46839cac6cca0d088, type: 2}
     - {fileID: 11400000, guid: ab6dfe6063700a84da51263d91986e29, type: 2}
+--- !u!114 &828260717747689252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9023033888150710464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e7434f0c30cd34ab81edae8ab53843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixerGroup: {fileID: -1579567457705484468, guid: 97507d628c02bcf47859b9f108ab1823,
+    type: 2}
+  spatialBlend: 0
+  overrideDefaults: 0
+  dopplerLevel: 1
+  minDistance: 1
+  maxDistance: 500
+  audioEvents:
+    array:
+    - {fileID: 11400000, guid: 04d736dfcca0ffb40b80e13b0d0b3ac9, type: 2}
