@@ -4,9 +4,11 @@ using DCL.Components;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Components.Video.Plugin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Controllers;
+using Newtonsoft.Json;
 
 namespace Tests
 {
@@ -17,6 +19,12 @@ namespace Tests
         {
             yield return base.SetUp();
             DCLVideoTexture.isTest = true;
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            sceneController.enabled = true;
+            return base.TearDown();
         }
 
         [UnityTest]
@@ -113,11 +121,11 @@ namespace Tests
             yield return ent1Shape.routine;
 
             TestHelpers.SharedComponentAttach(ent1Shape, ent1);
-            yield return null; //a frame to wait DCLVideoTexture update    
+            yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
             yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
-            yield return null; //a frame to wait DCLVideoTexture update            
+            yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
         }
@@ -139,11 +147,11 @@ namespace Tests
             TestHelpers.SharedComponentAttach(ent1Shape, ent1);
 
             yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(ent1Mat, new BasicMaterial.Model() { texture = videoTexture.id });
-            yield return null; //a frame to wait DCLVideoTexture update    
+            yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
             yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
-            yield return null; //a frame to wait DCLVideoTexture update            
+            yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
         }
@@ -163,13 +171,138 @@ namespace Tests
             yield return ent1Shape.routine;
 
             TestHelpers.SharedComponentAttach(ent1Shape, ent1);
-            yield return null; //a frame to wait DCLVideoTexture update    
+            yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
             scene.RemoveEntity(ent1.entityId, true);
-            yield return null; //a frame to wait DCLVideoTexture update            
+            yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
+        }
+
+        [UnityTest]
+        public IEnumerator VolumeWhenVideoCreatedWithNoUserInScene()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+
+            // Set current scene as a different one
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
+            yield return videoTexture.routine;
+
+            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            TestHelpers.SharedComponentAttach(ent1Mat, ent1);
+            yield return ent1Mat.routine;
+
+            BoxShape ent1Shape = TestHelpers.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            yield return ent1Shape.routine;
+
+            TestHelpers.SharedComponentAttach(ent1Shape, ent1);
+            yield return new WaitForAllMessagesProcessed();
+
+            // Check the volume
+            Assert.AreEqual(0f, videoTexture.texturePlayer.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator VolumeWhenVideoCreatedWithUserInScene()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+
+            // Set current scene with this scene's id
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+
+            DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
+            yield return videoTexture.routine;
+
+            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            TestHelpers.SharedComponentAttach(ent1Mat, ent1);
+            yield return ent1Mat.routine;
+
+            BoxShape ent1Shape = TestHelpers.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            yield return ent1Shape.routine;
+
+            TestHelpers.SharedComponentAttach(ent1Shape, ent1);
+            yield return new WaitForAllMessagesProcessed();
+
+            // Check the volume
+            Assert.AreEqual(videoTexture.model.volume, videoTexture.texturePlayer.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator VolumeIsMutedWhenUserLeavesScene()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+
+            // Set current scene with this scene's id
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+            yield return null;
+
+            DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
+            yield return videoTexture.routine;
+
+            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            TestHelpers.SharedComponentAttach(ent1Mat, ent1);
+            yield return ent1Mat.routine;
+
+            BoxShape ent1Shape = TestHelpers.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            yield return ent1Shape.routine;
+
+            TestHelpers.SharedComponentAttach(ent1Shape, ent1);
+            yield return new WaitForAllMessagesProcessed();
+
+            // Set current scene as a different one
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            // to force the video player to update its volume
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666,666));
+
+            yield return null;
+
+            // Check the volume
+            Assert.AreEqual(0f, videoTexture.texturePlayer.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator VolumeIsUnmutedWhenUserEntersScene()
+        {
+            // We disable SceneController monobehaviour to avoid its current scene id update
+            sceneController.enabled = false;
+
+            // Set current scene as a different one
+            CommonScriptableObjects.sceneID.Set("unexistent-scene");
+
+            DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
+            yield return videoTexture.routine;
+
+            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            TestHelpers.SharedComponentAttach(ent1Mat, ent1);
+            yield return ent1Mat.routine;
+
+            BoxShape ent1Shape = TestHelpers.SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            yield return ent1Shape.routine;
+
+            TestHelpers.SharedComponentAttach(ent1Shape, ent1);
+            yield return new WaitForAllMessagesProcessed();
+
+            // Set current scene with this scene's id
+            CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
+
+            // to force the video player to update its volume
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666,666));
+
+            yield return null;
+
+            // Check the volume
+            Assert.AreEqual(videoTexture.model.volume, videoTexture.texturePlayer.volume);
         }
 
         static DCLVideoClip CreateDCLVideoClip(ParcelScene scn, string url)

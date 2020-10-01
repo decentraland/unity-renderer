@@ -29,9 +29,9 @@ namespace DCL.Components
             public FilterMode samplingMode = FilterMode.Bilinear;
         }
 
-        new protected Model model;
+        new protected internal Model model;
 
-        private WebVideoPlayer texturePlayer;
+        internal WebVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
         private float baseVolume;
         private float distanceVolumeModifier = 1f;
@@ -214,10 +214,22 @@ namespace DCL.Components
 
         private void UpdateVolume()
         {
-            if (texturePlayer != null)
-            {
-                texturePlayer.SetVolume(baseVolume * distanceVolumeModifier * Settings.i.generalSettings.sfxVolume);
-            }
+            if (texturePlayer == null) return;
+
+            float targetVolume = 0f;
+
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
+                targetVolume = baseVolume * distanceVolumeModifier * Settings.i.generalSettings.sfxVolume;
+
+            texturePlayer.SetVolume(targetVolume);
+        }
+
+        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
+        {
+            if (scene == null) return false;
+            if (string.IsNullOrEmpty(currentSceneId)) return false;
+
+            return scene.sceneData.id == currentSceneId;
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
