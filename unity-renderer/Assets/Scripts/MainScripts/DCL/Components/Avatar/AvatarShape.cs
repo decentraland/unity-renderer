@@ -4,6 +4,7 @@ using DCL.Interface;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL
@@ -11,6 +12,8 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+
+        public static event Action<DecentralandEntity, AvatarShape> OnAvatarShapeUpdated;
 
         public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
@@ -27,9 +30,9 @@ namespace DCL
         private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
         bool initializedPosition = false;
 
-        private void Start()
+        private void Awake()
         {
-            OnPoolGet();
+            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
         }
 
         private void PlayerClicked()
@@ -105,6 +108,7 @@ namespace DCL
             avatarName.SetTalking(model.talking);
 
             everythingIsLoaded = true;
+            OnAvatarShapeUpdated?.Invoke(entity, this);
 
             onPointerDown.collider.enabled = true;
         }
@@ -140,14 +144,11 @@ namespace DCL
         {
             base.OnPoolGet();
 
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-
             everythingIsLoaded = false;
             initializedPosition = false;
             currentSerialization = "";
             model = new AvatarModel();
             lastAvatarPosition = null;
-            avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
             avatarName.SetName(String.Empty);
         }
 
