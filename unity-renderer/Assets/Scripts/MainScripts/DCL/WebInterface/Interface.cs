@@ -914,6 +914,11 @@ namespace DCL.Interface
             SendMessage("SetVoiceChatRecording", setVoiceChatRecordingPayload);
         }
 
+        public static void ToggleVoiceChatRecording()
+        {
+            SendMessage("ToggleVoiceChatRecording");
+        }
+
         public static void ApplySettings(float sfxVolume)
         {
             applySettingsPayload.sfxVolume = sfxVolume;

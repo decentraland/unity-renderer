@@ -3,7 +3,7 @@ import { AnyAction } from 'redux'
 import { COMMS_ESTABLISHED } from 'shared/loading/types'
 
 import { CommsState } from './types'
-import { SET_VOICE_CHAT_RECORDING } from './actions'
+import { SET_VOICE_CHAT_RECORDING, TOGGLE_VOICE_CHAT_RECORDING } from './actions'
 
 const INITIAL_COMMS = {
   initialized: false,
@@ -22,6 +22,8 @@ export function commsReducer(state?: CommsState, action?: AnyAction): CommsState
       return { ...state, initialized: true }
     case SET_VOICE_CHAT_RECORDING:
       return { ...state, voiceChatRecording: action.payload.recording }
+    case TOGGLE_VOICE_CHAT_RECORDING:
+      return { ...state, voiceChatRecording: !state.voiceChatRecording }
     default:
       return state
   }

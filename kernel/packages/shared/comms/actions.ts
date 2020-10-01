@@ -13,6 +13,13 @@ export const setVoiceChatRecording = (recording: boolean) => action(SET_VOICE_CH
 export type SetVoiceChatRecording = ReturnType<typeof setVoiceChatRecording>
 
 /**
+ * Action to toggle voice chat recording
+ */
+export const TOGGLE_VOICE_CHAT_RECORDING = 'Toggle Voice Chat Recording'
+export const toggleVoiceChatRecording = () => action(TOGGLE_VOICE_CHAT_RECORDING)
+export type ToggleVoiceChatRecording = ReturnType<typeof toggleVoiceChatRecording>
+
+/**
  * Action triggered when recording starts or stops
  */
 export const VOICE_RECORDING_UPDATE = 'Voice Recording Update'

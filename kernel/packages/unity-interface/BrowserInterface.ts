@@ -37,7 +37,7 @@ import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
 import { GIFProcessor } from 'gif-processor/processor'
-import { setVoiceChatRecording, setVoiceVolume } from 'shared/comms/actions'
+import { setVoiceChatRecording, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
 
 declare const DCL: any
@@ -288,6 +288,10 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(setVoiceChatRecording(recordingMessage.recording))
   }
 
+  public ToggleVoiceChatRecording() {
+    globalThis.globalStore.dispatch(toggleVoiceChatRecording())
+  }
+
   public ApplySettings(settingsMessage: { sfxVolume: number }) {
     globalThis.globalStore.dispatch(setVoiceVolume(settingsMessage.sfxVolume))
   }
@@ -376,8 +380,9 @@ export class BrowserInterface {
   }
 
   async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
-    // tslint:disable-next-line
-    const isSupported = typeof OffscreenCanvas !== 'undefined' && typeof OffscreenCanvasRenderingContext2D === 'function'
+    const isSupported =
+      // tslint:disable-next-line
+      typeof OffscreenCanvas !== 'undefined' && typeof OffscreenCanvasRenderingContext2D === 'function'
 
     if (!isSupported) {
       unityInterface.RejectGIFProcessingRequest()
