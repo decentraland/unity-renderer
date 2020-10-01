@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using UnityEngine;
+
 // using System.Threading.Tasks;
 
 namespace UnityGLTF.Loader
@@ -22,7 +24,8 @@ namespace UnityGLTF.Loader
         {
             if (gltfFilePath == null)
             {
-                throw new ArgumentNullException("gltfFilePath");
+                Debug.LogError("gltfFilePath is null!");
+                yield break;
             }
 
             yield return LoadFileStream(_rootDirectoryPath, gltfFilePath);
@@ -31,21 +34,23 @@ namespace UnityGLTF.Loader
         private IEnumerator LoadFileStream(string rootPath, string fileToLoad)
         {
             string pathToLoad = Path.Combine(rootPath, fileToLoad);
+
             if (!File.Exists(pathToLoad))
             {
-                throw new FileNotFoundException($"Buffer file not found ({pathToLoad})", fileToLoad);
+                Debug.LogError($"Buffer file not found ({pathToLoad}) -- {fileToLoad}");
+                yield break;
             }
 
             yield return null;
             LoadedStream = File.OpenRead(pathToLoad);
-
         }
 
         public void LoadStreamSync(string gltfFilePath)
         {
             if (gltfFilePath == null)
             {
-                throw new ArgumentNullException("gltfFilePath");
+                Debug.LogError("gltfFilePath is null!");
+                return;
             }
 
             LoadFileStreamSync(_rootDirectoryPath, gltfFilePath);
@@ -54,9 +59,11 @@ namespace UnityGLTF.Loader
         private void LoadFileStreamSync(string rootPath, string fileToLoad)
         {
             string pathToLoad = Path.Combine(rootPath, fileToLoad);
+
             if (!File.Exists(pathToLoad))
             {
-                throw new FileNotFoundException("Buffer file not found", fileToLoad);
+                Debug.LogError("Buffer file not found -- " + fileToLoad);
+                return;
             }
 
             LoadedStream = File.OpenRead(pathToLoad);

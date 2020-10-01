@@ -123,6 +123,11 @@ namespace DCL
             {
                 return Path.ChangeExtension(path, ".meta");
             }
+
+            public AssetImporter GetImporterAtPath(string path)
+            {
+                return null;
+            }
         }
     }
 }

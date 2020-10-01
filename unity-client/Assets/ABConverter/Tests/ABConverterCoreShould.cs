@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using DCL.Helpers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.TestTools;
@@ -320,29 +322,37 @@ namespace ABConverterTests
         }
 
         [UnityTest]
-        public IEnumerator ConvertAssetsWithExternalDependenciesCorrectly()
+        public IEnumerator ConvertAssetsWithExternalTextures()
         {
-            ABConverter.Client.EnsureEnvironment();
+            ContentServerUtils.MappingPair[] input =
+            {
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
+                new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
+            };
 
-            var state = ABConverter.Client.DumpArea(
-                new Vector2Int(-110, -110),
-                new Vector2Int(1, 1),
-                core.settings);
+            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
 
-            yield return new WaitUntil(() => state.step == ABConverter.Core.State.Step.FINISHED);
+            env = ABConverter.Environment.CreateWithDefaultImplementations();
+            core = new ABConverter.Core(env, core.settings);
 
-            AssetBundle abDependency = AssetBundle.LoadFromFile(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT + "/QmWZaHM9CaVpCnsWh78LiNFuiXwjCzTQBTaJ6vZL7c9cbp");
+            core.Convert(input);
+
+            yield return new WaitUntil(() => core.state.step == ABConverter.Core.State.Step.FINISHED);
+
+            Assert.IsTrue(core.state.lastErrorCode == ABConverter.Core.ErrorCodes.SUCCESS);
+
+            AssetBundle abDependency = AssetBundle.LoadFromFile(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT + "/Test.png");
             abDependency.LoadAllAssets();
 
-            AssetBundle abMain = AssetBundle.LoadFromFile(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT + "/QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC");
+            AssetBundle abMain = AssetBundle.LoadFromFile(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT + "/SimpleCubeWithSharedNormal.gltf");
             Material[] mats = abMain.LoadAllAssets<Material>();
 
             bool hasMap = false;
 
             foreach (var mat in mats)
             {
-                if (mat.name.ToLowerInvariant().Contains("base grass"))
-                    hasMap = mat.GetTexture("_BaseMap") != null;
+                hasMap = mat.GetTexture("_BaseMap") != null;
             }
 
             abMain.Unload(true);
@@ -350,6 +360,61 @@ namespace ABConverterTests
 
             Assert.IsTrue(hasMap, "Dependency has NOT been generated correctly!");
         }
+
+        [UnityTest]
+        public IEnumerator NotGenerateColorMapsWithDXTnm()
+        {
+            ContentServerUtils.MappingPair[] input =
+            {
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
+                new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
+            };
+
+            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.verbose = true;
+            core.settings.dumpOnly = true;
+            core.settings.deleteDownloadPathAfterFinished = false;
+
+            env = ABConverter.Environment.CreateWithDefaultImplementations();
+            core = new ABConverter.Core(env, core.settings);
+
+            core.Convert(input);
+
+            yield return new WaitUntil(() => core.state.step == ABConverter.Core.State.Step.FINISHED);
+
+            Assert.IsTrue(core.state.lastErrorCode == ABConverter.Core.ErrorCodes.SUCCESS);
+
+            string importerPath = $"{core.finalDownloadedPath}Test.png{ABConverter.Config.DASH}Test.png.png";
+            TextureImporter importer = env.assetDatabase.GetImporterAtPath(importerPath) as TextureImporter;
+
+            Assert.IsTrue(importer != null, "Texture importer is null!");
+            Assert.IsTrue(TextureImporterType.NormalMap != importer.textureType, "Texture is used for color! It shouldn't be never importer as normal map!");
+        }
+
+        [UnityTest]
+        public IEnumerator NotFailIfExternalTexturesAreMissing()
+        {
+            ContentServerUtils.MappingPair[] input =
+            {
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
+                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
+            };
+
+            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+
+            env = ABConverter.Environment.CreateWithDefaultImplementations();
+            core = new ABConverter.Core(env, core.settings);
+
+            core.Convert(input);
+
+            yield return new WaitUntil(() => core.state.step == ABConverter.Core.State.Step.FINISHED);
+
+            Assert.IsTrue(core.state.lastErrorCode == ABConverter.Core.ErrorCodes.SUCCESS);
+            LogAssert.Expect(LogType.Error, new Regex(@"^.*?Buffer file not found"));
+            LogAssert.Expect(LogType.Error, new Regex(@"^.*?Buffer file not found"));
+        }
+
 
         void ResetCacheAndWorkingFolders()
         {

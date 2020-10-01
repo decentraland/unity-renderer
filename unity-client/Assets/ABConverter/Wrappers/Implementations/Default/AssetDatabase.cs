@@ -64,6 +64,13 @@ namespace DCL
                 string assetPath = ABConverter.PathUtils.FullPathToAssetPath(fullPath);
                 return ABConverter.PathUtils.AssetPathToFullPath(UnityEditor.AssetDatabase.GetTextMetaFilePathFromAssetPath(assetPath));
             }
+
+            public AssetImporter GetImporterAtPath(string fullPath)
+            {
+                string assetPath = ABConverter.PathUtils.FullPathToAssetPath(fullPath);
+                var importer = AssetImporter.GetAtPath(assetPath);
+                return importer;
+            }
         }
     }
 }

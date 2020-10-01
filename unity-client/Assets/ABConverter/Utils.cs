@@ -173,7 +173,6 @@ namespace DCL
             {
                 string assetPath = PathUtils.GetRelativePathTo(Application.dataPath, assetDb.GetAssetPath(asset));
                 var importer = AssetImporter.GetAtPath(assetPath);
-                Debug.Log("Path = " + assetPath);
                 importer.SetAssetBundleNameAndVariant(abName, "");
             }
 

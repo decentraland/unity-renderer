@@ -20,6 +20,11 @@ namespace DCL
                 public bool deleteDownloadPathAfterFinished = false;
 
                 /// <summary>
+                /// If set to true, Asset Bundles will not be built at all, and only the asset dump will be performed. 
+                /// </summary>
+                public bool dumpOnly = false;
+
+                /// <summary>
                 /// If set to true, Asset Bundle output folder will be checked, and existing bundles in that folder will be excluded from
                 /// the conversion process.
                 /// </summary>
@@ -74,6 +79,13 @@ namespace DCL
             /// </summary>
             public static void ExportSceneToAssetBundles()
             {
+                //NOTE(Brian): This should make the logs cleaner
+                Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+                Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
+                Application.SetStackTraceLogType(LogType.Error, StackTraceLogType.Full);
+                Application.SetStackTraceLogType(LogType.Exception, StackTraceLogType.Full);
+                Application.SetStackTraceLogType(LogType.Assert, StackTraceLogType.Full);
+
                 EnsureEnvironment();
                 ExportSceneToAssetBundles(System.Environment.GetCommandLineArgs());
             }
