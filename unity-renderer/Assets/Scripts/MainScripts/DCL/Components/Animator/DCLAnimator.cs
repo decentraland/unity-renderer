@@ -38,7 +38,7 @@ namespace DCL.Components
 
         [System.NonSerialized]
         public Animation animComponent = null;
-        
+
         Model.DCLAnimationState[] previousState;
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
@@ -71,33 +71,31 @@ namespace DCL.Components
 
         private void Initialize()
         {
-            if (entity == null) return;
+            if (entity == null || animComponent != null) return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
-            if (animComponent == null)
+            animComponent = transform.parent.GetComponentInChildren<Animation>(true);
+
+            if (animComponent == null) return;
+
+            clipNameToClip.Clear();
+            clipToState.Clear();
+            int layerIndex = 0;
+
+            animComponent.playAutomatically = true;
+            animComponent.enabled = true;
+            animComponent.Stop(); //NOTE(Brian): When the GLTF is created by GLTFSceneImporter a frame may be elapsed,
+            //putting the component in play state if playAutomatically was true at that point.
+            animComponent.clip?.SampleAnimation(animComponent.gameObject, 0);
+
+            foreach (AnimationState unityState in animComponent)
             {
-                animComponent = transform.parent.GetComponentInChildren<Animation>(true);
+                clipNameToClip[unityState.clip.name] = unityState.clip;
 
-                if (animComponent == null) return;
-
-                clipNameToClip.Clear();
-                clipToState.Clear();
-                int layerIndex = 0;
-
-                animComponent.playAutomatically = true;
-                animComponent.enabled = true;
-                animComponent.Stop(); //NOTE(Brian): When the GLTF is created by GLTFSceneImporter a frame may be elapsed, 
-                                      //putting the component in play state if playAutomatically was true at that point.
-
-                foreach (AnimationState unityState in animComponent)
-                {
-                    clipNameToClip[unityState.clip.name] = unityState.clip;
-
-                    unityState.clip.wrapMode = WrapMode.Loop;
-                    unityState.layer = layerIndex;
-                    unityState.blendMode = AnimationBlendMode.Blend;
-                    layerIndex++;
-                }
+                unityState.clip.wrapMode = WrapMode.Loop;
+                unityState.layer = layerIndex;
+                unityState.blendMode = AnimationBlendMode.Blend;
+                layerIndex++;
             }
         }
 
