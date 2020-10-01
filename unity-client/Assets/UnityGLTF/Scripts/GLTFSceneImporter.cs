@@ -676,7 +676,7 @@ namespace UnityGLTF
                     {
                         yield return _loader.LoadStream(buffer.Uri);
                         bufferDataStream = _loader.LoadedStream;
-                        PersistentAssetCache.AddBuffer(buffer.Uri, id, new RefCountedStreamData(buffer.Uri, bufferDataStream));
+                        PersistentAssetCache.AddBuffer(buffer.Uri, id, bufferDataStream);
                     }
                 }
 
@@ -2432,11 +2432,14 @@ namespace UnityGLTF
                 else
                 {
                     yield return ConstructImage(image, sourceId, markGpuOnly, isLinear);
-                    source = new RefCountedTextureData(image.Uri, _assetCache.ImageCache[sourceId]);
 
-                    if (image.Uri != null && addImagesToPersistentCaching)
+                    if (addImagesToPersistentCaching)
                     {
-                        PersistentAssetCache.AddImage(image.Uri, id, source);
+                        source = PersistentAssetCache.AddImage(image.Uri, id, _assetCache.ImageCache[sourceId]);
+                    }
+                    else
+                    {
+                        source = new RefCountedTextureData(PersistentAssetCache.GetCacheId(image.Uri, id), _assetCache.ImageCache[sourceId]);
                     }
                 }
 
@@ -2496,7 +2499,7 @@ namespace UnityGLTF
                         // NOTE(Brian): This breaks importing in edit mode, so only enable it for runtime.
                         unityTexture.Apply(false, true);
 #endif
-                        _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
+                        _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData( PersistentAssetCache.GetCacheId(image.Uri, id), unityTexture);
                     }
                     else
                     {
