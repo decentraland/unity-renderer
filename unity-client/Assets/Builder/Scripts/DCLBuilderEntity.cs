@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections;
+using DCL;
 using UnityEngine;
 
 namespace Builder
@@ -66,6 +67,9 @@ namespace Builder
 
             entity.OnRemoved -= OnEntityRemoved;
             entity.OnRemoved += OnEntityRemoved;
+
+            AvatarShape.OnAvatarShapeUpdated -= OnAvatarShapeUpdated;
+            AvatarShape.OnAvatarShapeUpdated += OnAvatarShapeUpdated;
 
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
@@ -164,6 +168,7 @@ namespace Builder
             rootEntity.OnShapeUpdated -= OnShapeUpdated;
             rootEntity.OnTransformChange -= OnTransformUpdated;
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
+            AvatarShape.OnAvatarShapeUpdated -= OnAvatarShapeUpdated;
             DestroyColliders();
         }
 
@@ -227,6 +232,16 @@ namespace Builder
             {
                 OnEntityTransformUpdated?.Invoke(this);
             }
+        }
+
+        private void OnAvatarShapeUpdated(DecentralandEntity entity, AvatarShape avatarShape)
+        {
+            if (rootEntity != entity)
+            {
+                return;
+            }
+
+            OnShapeUpdated(rootEntity);
         }
 
         private void OnPreviewModeChanged(bool isPreview)
