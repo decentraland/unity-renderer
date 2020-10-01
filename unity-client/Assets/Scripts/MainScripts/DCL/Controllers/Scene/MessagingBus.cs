@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using DCL.Interface;
+using DCL.Models;
 using UnityEngine.SceneManagement;
 
 namespace DCL
@@ -138,6 +139,28 @@ namespace DCL
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {
             bool enqueued = true;
+
+            // When removing an entity we have to ensure that the enqueued lossy messages after it are processed and not replaced
+            if (message is QueuedSceneMessage_Scene queuedSceneMessage && queuedSceneMessage.payload is Protocol.RemoveEntity removeEntityPayload)
+            {
+                List<string> unreliableMessagesToRemove = new List<string>();
+                foreach (string key in unreliableMessages.Keys)
+                {
+                    if (key.Contains(removeEntityPayload.entityId)) //Key of unreliableMessages is a mixture of entityId
+                    {
+                        unreliableMessagesToRemove.Add(key);
+                    }
+                }
+
+                for (int index = 0; index < unreliableMessagesToRemove.Count; index++)
+                {
+                    string key = unreliableMessagesToRemove[index];
+                    if (unreliableMessages.ContainsKey(key))
+                    {
+                        unreliableMessages.Remove(key);
+                    }
+                }
+            }
 
             if (queueMode == QueueMode.Reliable)
             {

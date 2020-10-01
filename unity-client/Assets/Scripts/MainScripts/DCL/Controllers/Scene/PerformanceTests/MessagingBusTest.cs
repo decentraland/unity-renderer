@@ -2,8 +2,10 @@ using DCL;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
+using DCL.Models;
 using Unity.PerformanceTesting;
 using UnityEngine;
+using QueueMode = DCL.QueueMode;
 
 namespace MessagingBusTest
 {
@@ -153,6 +155,59 @@ namespace MessagingBusTest
             }
 
             return SceneMessageUtilities.DecodeSceneMessage(sceneId, message, tag);
+        }
+
+        [Test]
+        public void LossyMessageIsReplaced()
+        {
+            string entityId = "entity";
+            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, new DummyMessageHandler(), null);
+
+            bus.Enqueue(new MessagingBus.QueuedSceneMessage_Scene
+            {
+                payload = new Protocol.CreateEntity { entityId = entityId },
+                message = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
+                tag = "entity_1"
+            }, QueueMode.Lossy);
+            bus.Enqueue(new MessagingBus.QueuedSceneMessage_Scene
+            {
+                payload = new Protocol.CreateEntity { entityId = entityId },
+                message = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
+                tag = "entity_1"
+            }, QueueMode.Lossy);
+
+            Assert.AreEqual(1,bus.unreliableMessagesReplaced);
+            Assert.AreEqual(1,bus.pendingMessagesCount);
+        }
+
+        [Test]
+        public void RemoveEntityShouldClearLossyMessages()
+        {
+            string entityId = "entity";
+            MessagingBus bus = new MessagingBus(MessagingBusType.SYSTEM, new DummyMessageHandler(), null);
+
+            bus.Enqueue(new MessagingBus.QueuedSceneMessage_Scene
+            {
+                payload = new Protocol.CreateEntity { entityId = entityId },
+                message = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
+                tag = "entity_1"
+            }, QueueMode.Lossy);
+            bus.Enqueue(new MessagingBus.QueuedSceneMessage_Scene
+            {
+                payload = new Protocol.RemoveEntity() { entityId = entityId },
+                type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE,
+                method = MessagingTypes.ENTITY_DESTROY,
+                message = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
+            });
+            bus.Enqueue(new MessagingBus.QueuedSceneMessage_Scene
+            {
+                payload = new Protocol.CreateEntity { entityId = entityId },
+                message = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
+                tag = "entity_1"
+            }, QueueMode.Lossy);
+
+            Assert.AreEqual(0,bus.unreliableMessagesReplaced);
+            Assert.AreEqual(3,bus.pendingMessagesCount);
         }
     }
 
