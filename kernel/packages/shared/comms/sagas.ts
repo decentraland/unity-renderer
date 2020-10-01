@@ -18,6 +18,7 @@ import {
   SetVoiceVolume,
   SET_VOICE_CHAT_RECORDING,
   SET_VOICE_VOLUME,
+  TOGGLE_VOICE_CHAT_RECORDING,
   VoicePlayingUpdate,
   VoiceRecordingUpdate,
   VOICE_PLAYING_UPDATE,
@@ -35,6 +36,7 @@ export function* commsSaga() {
   yield takeLatest(CATALYST_REALMS_SCAN_SUCCESS, changeRealm)
   if (VOICE_CHAT_ENABLED) {
     yield takeEvery(SET_VOICE_CHAT_RECORDING, updateVoiceChatRecordingStatus)
+    yield takeEvery(TOGGLE_VOICE_CHAT_RECORDING, updateVoiceChatRecordingStatus)
     yield takeEvery(VOICE_PLAYING_UPDATE, updateUserVoicePlaying)
     yield takeEvery(VOICE_RECORDING_UPDATE, updatePlayerVoiceRecording)
     yield takeEvery(SET_VOICE_VOLUME, updateVoiceChatVolume)

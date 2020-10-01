@@ -17,6 +17,7 @@ public enum DCLAction_Trigger
     ToggleControlsHud = 124,
     ToggleSettings = 125,
     ToggleExploreHud = 126,
+    ToggleVoiceChatRecording = 127,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -135,6 +136,9 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.Expression_SendKiss:
                     InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.ToggleVoiceChatRecording:
+                    InputProcessor.FromKey(action, KeyCode.T, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftAlt });
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -160,7 +164,8 @@ public class InputController : MonoBehaviour
                         InputProcessor.FromKey(action, KeyCode.Y, InputProcessor.Modifier.NeedsPointerLocked);
                     break;
                 case DCLAction_Hold.VoiceChatRecording:
-                    InputProcessor.FromKey(action, KeyCode.T, InputProcessor.Modifier.FocusNotInInput);
+                    // Push to talk functionality only triggers if no modifier key is pressed
+                    InputProcessor.FromKey(action, KeyCode.T, InputProcessor.Modifier.FocusNotInInput, null);
                     break;
                 case DCLAction_Hold.DefaultConfirmAction:
                     InputProcessor.FromKey(action, KeyCode.E, InputProcessor.Modifier.None);
@@ -213,6 +218,25 @@ public static class InputProcessor
         FocusNotInInput = 0b0000010,
     }
 
+    public static Boolean PassModifierKeys(KeyCode[] modifierKeys)
+    {
+        for (var i = 0; i < MODIFIER_KEYS.Length; i++)
+        {
+            var keyCode = MODIFIER_KEYS[i];
+            var pressed = Input.GetKey(keyCode);
+            if (modifierKeys == null)
+            {
+                if (pressed) return false;
+            }
+            else
+            {
+                if (modifierKeys.Contains(keyCode) != pressed) return false;
+            }
+        }
+
+        return true;
+    }
+
     public static bool PassModifiers(Modifier modifiers)
     {
         if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && !DCL.Helpers.Utils.isCursorLocked)
@@ -229,19 +253,7 @@ public static class InputProcessor
     {
         if (!PassModifiers(modifiers)) return;
 
-        for (var i = 0; i < MODIFIER_KEYS.Length; i++)
-        {
-            var keyCode = MODIFIER_KEYS[i];
-            var pressed = Input.GetKey(keyCode);
-            if (modifierKeys == null)
-            {
-                if (pressed) return;
-            }
-            else
-            {
-                if (modifierKeys.Contains(keyCode) != pressed) return;
-            }
-        }
+        if (!PassModifierKeys(modifierKeys)) return;
 
         if (Input.GetKeyDown(key)) action.RaiseOnTriggered();
     }
@@ -260,6 +272,13 @@ public static class InputProcessor
 
         if (Input.GetKeyDown(key)) action.RaiseOnStarted();
         if (Input.GetKeyUp(key)) action.RaiseOnFinished();
+    }
+
+    public static void FromKey(InputAction_Hold action, KeyCode key, Modifier modifiers, KeyCode[] modifierKeys)
+    {
+        if (!PassModifierKeys(modifierKeys)) return;
+
+        FromKey(action, key, modifiers);
     }
 
     public static void FromMouse(InputAction_Hold action, int mouseButtonIdx, Modifier modifiers = Modifier.None)

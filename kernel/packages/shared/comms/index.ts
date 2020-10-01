@@ -997,7 +997,8 @@ async function doStartCommunications(context: Context) {
 
         {
           initialListenerParams: context.currentPosition ? getSpatialParamsFor(context.currentPosition) : undefined,
-          panningModel: commConfigurations.voiceChatUseHRTF ? 'HRTF' : 'equalpower'
+          panningModel: commConfigurations.voiceChatUseHRTF ? 'HRTF' : 'equalpower',
+          loopbackAudioElement: document.getElementById('voice-chat-audio') as HTMLAudioElement | undefined
         }
       )
 
