@@ -14,5 +14,6 @@ namespace DCL
         string GetAssetPath(UnityEngine.Object asset);
         string AssetPathToGUID(string path);
         string GetTextMetaFilePathFromAssetPath(string path);
+        AssetImporter GetImporterAtPath(string path);
     }
 }
