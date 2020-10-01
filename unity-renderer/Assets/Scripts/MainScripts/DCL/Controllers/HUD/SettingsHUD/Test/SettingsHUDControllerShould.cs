@@ -44,6 +44,13 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
+            // Reset volume setting
+            testGeneralSettings = new GeneralSettings()
+            {
+                sfxVolume = 1
+            };
+            DCL.Settings.i.ApplyGeneralSettings(testGeneralSettings);
+
             controller.Dispose();
             yield return base.TearDown();
         }

@@ -487,6 +487,73 @@ namespace DCL.Helpers
             );
         }
 
+        public static IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing, bool loop = true)
+        {
+            var audioSourceModel = new DCLAudioSource.Model()
+            {
+                audioClipId = audioClipId,
+                playing = playing,
+                volume = 1.0f,
+                loop = loop,
+                pitch = 1.0f
+            };
+
+            DCLAudioSource audioSource =
+                TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId],
+                    audioSourceModel);
+
+            yield return audioSource.routine;
+        }
+
+        public static IEnumerator LoadAudioClip(ParcelScene scene, string audioClipId, string url, bool loop, bool loading,
+            float volume, bool waitForLoading = true)
+        {
+            DCLAudioClip.Model model = new DCLAudioClip.Model
+            {
+                url = url,
+                loop = loop,
+                shouldTryToLoad = loading,
+                volume = volume
+            };
+
+            DCLAudioClip audioClip = scene.SharedComponentCreate(
+                audioClipId,
+                (int) CLASS_ID.AUDIO_CLIP
+            ) as DCLAudioClip;
+
+            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
+
+            yield return audioClip.routine;
+
+            Assert.IsTrue(scene.disposableComponents.ContainsKey(audioClipId), "Shared component was not created correctly!");
+
+            if (waitForLoading)
+            {
+                yield return new WaitUntil(
+                    () =>
+                    {
+                        return audioClip.loadingState != DCLAudioClip.LoadState.LOADING_IN_PROGRESS &&
+                               audioClip.loadingState != DCLAudioClip.LoadState.IDLE;
+                    });
+            }
+        }
+
+        public static IEnumerator CreateAudioSourceWithClipForEntity(DecentralandEntity entity)
+        {
+            yield return LoadAudioClip(entity.scene,
+                audioClipId: "audioClipTest",
+                url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
+                loop: true,
+                loading: true,
+                volume: 1f,
+                waitForLoading: true);
+
+            yield return CreateAudioSource(entity.scene,
+                entityId: entity.entityId,
+                audioClipId: "audioClipTest",
+                playing: true);
+        }
+
         public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, string entityId)
         {
             string baseId = salt + "-" + (int) classId + "-" + entityId;
