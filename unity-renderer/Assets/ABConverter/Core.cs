@@ -438,7 +438,7 @@ namespace DCL
 
                 //NOTE(Brian): This cache will be used by the GLTF importer when seeking textures. This way the importer will
                 //             consume the asset bundle dependencies instead of trying to create new textures.
-                PersistentAssetCache.AddImage(relativePath, gltfPath.finalPath, new RefCountedTextureData(relativePath, t2d));
+                PersistentAssetCache.AddImage(relativePath, gltfPath.finalPath, t2d);
             }
 
             /// <summary>
@@ -459,7 +459,7 @@ namespace DCL
 
                 // NOTE(Brian): This cache will be used by the GLTF importer when seeking streams. This way the importer will
                 //              consume the asset bundle dependencies instead of trying to create new streams.
-                PersistentAssetCache.AddBuffer(relativePath, gltfPath.finalPath, new RefCountedStreamData(relativePath, stream));
+                PersistentAssetCache.AddBuffer(relativePath, gltfPath.finalPath, stream);
             }
 
             /// <summary>

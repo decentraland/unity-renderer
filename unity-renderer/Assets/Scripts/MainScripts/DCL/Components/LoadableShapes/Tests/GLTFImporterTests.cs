@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Generic;
+using DCL;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,7 +15,7 @@ using UnityGLTF.Cache;
 
 public class GLTFImporterTests : TestsBase
 {
-    public IEnumerator LoadModel(string path, System.Action<InstantiatedGLTFObject> OnFinishLoading)
+    public IEnumerator LoadModel(string path, System.Action<DecentralandEntity, InstantiatedGLTFObject> OnFinishLoading)
     {
         string src = Utils.GetTestsAssetsPath() + path;
 
@@ -29,7 +30,7 @@ public class GLTFImporterTests : TestsBase
 
         if (OnFinishLoading != null)
         {
-            OnFinishLoading.Invoke(entity.meshRootGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
+            OnFinishLoading.Invoke(entity, entity.meshRootGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
         }
     }
 
@@ -39,7 +40,7 @@ public class GLTFImporterTests : TestsBase
     public IEnumerator TrevorModelHasProperScaling()
     {
         InstantiatedGLTFObject trevorModel = null;
-        yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
+        yield return LoadModel("/GLB/Trevor/Trevor.glb", (entity, m) => trevorModel = m);
 
         Transform child = trevorModel.transform.GetChild(0).GetChild(0);
         Vector3 scale = child.lossyScale;
@@ -53,7 +54,7 @@ public class GLTFImporterTests : TestsBase
     public IEnumerator TrevorModelHasProperTopology()
     {
         InstantiatedGLTFObject trevorModel = null;
-        yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
+        yield return LoadModel("/GLB/Trevor/Trevor.glb", (entity, m) => trevorModel = m);
 
         Assert.IsTrue(trevorModel.transform.childCount == 1);
         Assert.IsTrue(trevorModel.transform.GetChild(0).childCount == 2);
@@ -68,7 +69,7 @@ public class GLTFImporterTests : TestsBase
     public IEnumerator GLTFWithoutSkeletonIdIsLoadingCorrectly()
     {
         InstantiatedGLTFObject trevorModel = null;
-        yield return LoadModel("/GLB/Avatar/Avatar_Idle.glb", (m) => trevorModel = m);
+        yield return LoadModel("/GLB/Avatar/Avatar_Idle.glb", (entity, m) => trevorModel = m);
     }
 
     [UnityTest]
@@ -79,8 +80,8 @@ public class GLTFImporterTests : TestsBase
 
         PersistentAssetCache.ImageCacheByUri.Clear();
 
-        yield return LoadModel("/GLTF/Trunk/Trunk.gltf", (m) => trunk1 = m);
-        yield return LoadModel("/GLTF/Trunk2/Trunk.gltf", (m) => trunk2 = m);
+        yield return LoadModel("/GLTF/Trunk/Trunk.gltf", (entity, m) => trunk1 = m);
+        yield return LoadModel("/GLTF/Trunk2/Trunk.gltf", (entity, m) => trunk2 = m);
         UnityEngine.Assertions.Assert.AreEqual(2, PersistentAssetCache.ImageCacheByUri.Count, "Image cache is colliding!");
         UnityEngine.Assertions.Assert.AreEqual(2, PersistentAssetCache.StreamCacheByUri.Count, "Buffer cache is colliding!");
     }
@@ -123,4 +124,19 @@ public class GLTFImporterTests : TestsBase
         yield break;
     }
 
+    [UnityTest]
+    public IEnumerator TexturesCacheWorksProperly()
+    {
+        DecentralandEntity entity = null;
+        PersistentAssetCache.ImageCacheByUri.Clear();
+        yield return LoadModel("/GLTF/Trunk/Trunk.gltf", (e, model) => entity = e);
+
+        UnityEngine.Assertions.Assert.AreEqual(1, PersistentAssetCache.ImageCacheByUri.Count);
+        scene.RemoveEntity(entity.entityId);
+        PoolManager.i.Cleanup();
+
+        yield return null;
+
+        UnityEngine.Assertions.Assert.AreEqual(0, PersistentAssetCache.ImageCacheByUri.Count);
+    }
 }

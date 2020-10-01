@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityGLTF.Cache;
 using Object = UnityEngine.Object;
 
 namespace DCL
@@ -32,6 +33,7 @@ namespace DCL
         public override void Cleanup()
         {
             OnCleanup?.Invoke();
+            PersistentAssetCache.RemoveImage(texture);
             Object.Destroy(texture);
         }
 
