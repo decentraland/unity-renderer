@@ -6,6 +6,7 @@ public class RenderingController : MonoBehaviour
 {
     public static float firstActivationTime { get; private set; }
     private bool firstActivationTimeHasBeenSet = false;
+    private bool VERBOSE = false;
 
     public CompositeLock renderingActivatedAckLock = new CompositeLock();
 
@@ -79,11 +80,19 @@ public class RenderingController : MonoBehaviour
 
     private void AddLock(object id)
     {
+        if (CommonScriptableObjects.rendererState.Get()) return;
+
+        if(VERBOSE)
+            Debug.Log("Add lock: " + id);
+
         renderingActivatedAckLock.AddLock(id);
     }
 
     private void RemoveLock(object id)
     {
+        if(VERBOSE)
+            Debug.Log("remove lock: " + id);
+
         renderingActivatedAckLock.RemoveLock(id);
     }
 }
