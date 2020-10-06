@@ -15,6 +15,7 @@
     "com.unity.timeline": "1.2.6",
     "com.unity.ugui": "1.0.0",
     "com.unity.xr.legacyinputhelpers": "2.1.4",
+    "net.tnrd.nsubstitute": "https://github.com/decentraland/Unity3D-NSubstitute.git",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -50,6 +51,10 @@
     "com.coffee.ui-particle": {
       "revision": "HEAD",
       "hash": "bda77ab0395282b9a2c417c6affa21c1d004321b"
+    },
+    "net.tnrd.nsubstitute": {
+      "revision": "HEAD",
+      "hash": "cdd11bb74398afae73e71b6fe01114f597a6ce08"
     }
   }
 }
