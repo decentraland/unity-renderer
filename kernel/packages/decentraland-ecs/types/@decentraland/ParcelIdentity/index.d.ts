@@ -43,7 +43,7 @@ declare module '@decentraland/ParcelIdentity' {
   }
 
   /**
-   * Returns the current connected realm
+   * Returns the current parcel data
    */
   export function getParcel(): Promise<{ land: ILand; cid: string }>
 }
