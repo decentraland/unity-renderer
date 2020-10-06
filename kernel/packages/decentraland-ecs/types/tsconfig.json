@@ -23,7 +23,8 @@
       "@decentraland/SocialController",
       "@decentraland/Identity",
       "@decentraland/web3-provider",
-      "@decentraland/EnvironmentAPI"
+      "@decentraland/EnvironmentAPI",
+      "@decentraland/ParcelIdentity"
     ],
     "typeRoots": [
       "."
