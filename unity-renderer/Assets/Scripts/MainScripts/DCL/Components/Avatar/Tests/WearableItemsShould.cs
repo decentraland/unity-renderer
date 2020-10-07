@@ -36,7 +36,7 @@ namespace AvatarShape_Tests
                     {
                     }
                 };
-                catalog = AvatarTestHelpers.CreateTestCatalog();
+                catalog = AvatarTestHelpers.CreateTestCatalogLocal();
                 avatarShape = AvatarTestHelpers.CreateAvatarShape(scene, avatarModel);
 
                 yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);

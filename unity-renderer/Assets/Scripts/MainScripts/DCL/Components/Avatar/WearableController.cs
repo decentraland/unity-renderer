@@ -28,17 +28,10 @@ public class WearableController
 
     public bool boneRetargetingDirty = false;
 
-    protected HashSet<string> hiddenList;
-
     public WearableController(WearableItem wearableItem, string bodyShapeId)
     {
         this.wearable = wearableItem;
         this.bodyShapeId = bodyShapeId;
-    }
-
-    public void SetHiddenList(HashSet<string> hiddenList)
-    {
-        this.hiddenList = hiddenList;
     }
 
     protected WearableController(WearableController original)
@@ -74,7 +67,7 @@ public class WearableController
             loader.OnSuccessEvent -= OnSuccessWrapper;
             assetRenderers = gameObject.GetComponentsInChildren<Renderer>();
             PrepareWearable(gameObject);
-            onSuccess.Invoke(this);
+            onSuccess?.Invoke(this);
         }
         loader.OnSuccessEvent += OnSuccessWrapper;
 
@@ -82,7 +75,7 @@ public class WearableController
         {
             loader.OnFailEvent -= OnFailEventWrapper;
             loader = null;
-            onFail.Invoke(this);
+            onFail?.Invoke(this);
         }
         loader.OnFailEvent += OnFailEventWrapper;
 
@@ -155,6 +148,7 @@ public class WearableController
         {
             loader.ClearEvents();
             loader.Unload();
+            loader = null;
         }
     }
 
@@ -182,7 +176,7 @@ public class WearableController
     {
     }
 
-    public virtual void UpdateVisibility()
+    public virtual void UpdateVisibility(HashSet<string> hiddenList)
     {
         SetAssetRenderersEnabled(!hiddenList.Contains(wearable.category));
     }

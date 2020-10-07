@@ -6,33 +6,29 @@ using DCL;
 
 public class FacialFeatureController
 {
-    public string id => wearable.id;
-    public string category => wearable.category;
-
     public bool isReady { get; private set; }
+    public string wearableId => wearableItem?.id;
 
-    private string bodyShapeType;
-    public WearableItem wearable;
+    private readonly WearableItem wearableItem;
+    private readonly Material baseMaterial;
 
-    Texture mainTexture = null;
-    Texture maskTexture = null;
-    AssetPromise_Texture mainTexturePromise = null;
-    AssetPromise_Texture maskTexturePromise = null;
+    internal Texture mainTexture = null;
+    internal Texture maskTexture = null;
+    internal AssetPromise_Texture mainTexturePromise = null;
+    internal AssetPromise_Texture maskTexturePromise = null;
 
     private Color color;
-    private BodyShapeController bodyShape;
-    private Material baseMaterial;
-    private Material baseMaterialCopy;
+    private IBodyShapeController bodyShape;
+    internal Material baseMaterialCopy;
 
-    public FacialFeatureController(WearableItem wearableItem, string bodyShapeType, Material baseMaterial)
+    public FacialFeatureController(WearableItem wearableItem, Material baseMaterial)
     {
         isReady = false;
         this.baseMaterial = baseMaterial;
-        this.wearable = wearableItem;
-        this.bodyShapeType = bodyShapeType;
+        this.wearableItem = wearableItem;
     }
 
-    public void Load(BodyShapeController loadedBody, Color color)
+    public void Load(IBodyShapeController loadedBody, Color color)
     {
         this.color = color;
 
@@ -43,15 +39,16 @@ public class FacialFeatureController
         }
 
         this.bodyShape = loadedBody;
-        CoroutineStarter.Start(FetchTextures(PrepareWearable));
+        CoroutineStarter.Start(FetchTextures());
     }
 
     void PrepareWearable()
     {
+
         if (baseMaterialCopy == null)
             baseMaterialCopy = new Material(baseMaterial);
 
-        switch (wearable.category)
+        switch (wearableItem.category)
         {
             case WearableLiterals.Categories.EYES:
                 bodyShape.SetupEyes(baseMaterialCopy, mainTexture, maskTexture, color);
@@ -67,7 +64,7 @@ public class FacialFeatureController
         isReady = true;
     }
 
-    public IEnumerator FetchTextures(System.Action OnComplete)
+    public IEnumerator FetchTextures()
     {
         if (mainTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
@@ -78,14 +75,14 @@ public class FacialFeatureController
         mainTexture = null;
         maskTexture = null;
 
-        var representation = wearable.GetRepresentation(bodyShapeType);
+        var representation = wearableItem.GetRepresentation(bodyShape.bodyShapeId);
 
         string mainTextureName = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
         string maskName = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
         if (!string.IsNullOrEmpty(mainTextureName))
         {
-            mainTexturePromise = new AssetPromise_Texture(wearable.baseUrl + mainTextureName);
+            mainTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + mainTextureName);
             mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
             mainTexturePromise.OnFailEvent += (x) => mainTexture = null;
 
@@ -94,7 +91,7 @@ public class FacialFeatureController
 
         if (!string.IsNullOrEmpty(maskName))
         {
-            maskTexturePromise = new AssetPromise_Texture(wearable.baseUrl + maskName);
+            maskTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + maskName);
             maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
             maskTexturePromise.OnFailEvent += (x) => maskTexture = null;
 
@@ -104,7 +101,7 @@ public class FacialFeatureController
         yield return mainTexturePromise;
         yield return maskTexturePromise;
 
-        OnComplete?.Invoke();
+        PrepareWearable();
     }
 
     public void CleanUp()
@@ -130,6 +127,6 @@ public class FacialFeatureController
             return null;
         }
 
-        return new FacialFeatureController(wearable, bodyShape, material);
+        return new FacialFeatureController(wearable, material);
     }
 }
