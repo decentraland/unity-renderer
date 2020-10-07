@@ -13,7 +13,7 @@
 This repo requires `git lfs` to track images and other binary files. https://git-lfs.github.com/ and the latest version of GNU make, install it using `brew install make`
 If you are using Windows 10 we recommend you to enable the Linux subsystem and install a Linux distro from Windows Store like Ubuntu. Then install all tools and dependecies like nodejs, npm, typescript, make...
 
-## Running the kernel
+## Running the Explorer
 
 Make sure you have the following dependencies:
 - Node v10 or compatible installed via `sudo apt install nodejs`
@@ -34,19 +34,21 @@ Optionally, you can build the test scenes which are used in `debug` mode:
 
     make test-scenes
 
-To run the Unity interface:
+Once the kernel is running, to run the Unity interface you will have to:
 
 1. Download and install Unity 2019.4.0f1
 2. Open the Initial Scene
 3. Run the Initial Scene in the Unity editor!
 
-To run the client in `debug` mode append the following query parameter to the URL:
+And that should be it!
+
+Optionally, if you want to run the client in `debug` mode, append the following query parameter to the URL:
 
     http://localhost:8080/?DEBUG_MODE
 
 To spawn in a specific set of coordinates append the following query paramter:
 
-    http://localhost:8080/?DEBUG_MODE&fps&position=10,10
+    http://localhost:8080/?DEBUG_MODE&position=10,10
     
 ### Troubleshooting
 
@@ -54,6 +56,8 @@ If while trying to compile the Unity project you get an error regarding some lib
 Json.NET or Google Protobuf), please execute the following command in the root folder:
 
     git lfs pull
+
+Then, on the Unity editor, click on `Assets > Reimport All`
 
 ## Running tests
 
