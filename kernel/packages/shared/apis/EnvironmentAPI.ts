@@ -4,6 +4,7 @@ import { EnvironmentData } from 'shared/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { getRealm } from 'shared/dao/selectors'
+import { PREVIEW } from 'config'
 
 type EnvironmentRealm = {
   domain: string
@@ -23,6 +24,14 @@ export class EnvironmentAPI extends ExposableAPI {
   @exposeMethod
   async getBootstrapData(): Promise<EnvironmentData<any>> {
     return this.data
+  }
+
+  /**
+   * Returns whether the scene is running in preview mode or not
+   */
+  @exposeMethod
+  isPreviewMode(): Promise<boolean> {
+    return Promise.resolve(PREVIEW)
   }
 
   /**
