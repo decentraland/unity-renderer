@@ -131,17 +131,17 @@ namespace DCL
                 }
             }
 
-            if (!model.wearables.Contains(eyebrowsController.wearable.id))
+            if (!model.wearables.Contains(eyebrowsController.wearableId))
             {
                 eyebrowsController.CleanUp();
             }
 
-            if (!model.wearables.Contains(eyesController.wearable.id))
+            if (!model.wearables.Contains(eyesController.wearableId))
             {
                 eyesController.CleanUp();
             }
 
-            if (!model.wearables.Contains(mouthController.wearable.id))
+            if (!model.wearables.Contains(mouthController.wearableId))
             {
                 mouthController.CleanUp();
             }
@@ -242,7 +242,6 @@ namespace DCL
             CleanUpUnusedItems();
 
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
-            bodyShapeController.SetHiddenList(hiddenList);
             if (!bodyShapeController.isReady)
             {
                 bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
@@ -253,7 +252,6 @@ namespace DCL
                 if (bodyIsDirty)
                     wearable.boneRetargetingDirty = true;
 
-                wearable.SetHiddenList(hiddenList);
                 wearable.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
                 yield return null;
             }
@@ -267,10 +265,10 @@ namespace DCL
             yield return new WaitUntil(() => eyebrowsController.isReady && eyesController.isReady && mouthController.isReady);
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
-            bodyShapeController.UpdateVisibility();
+            bodyShapeController.UpdateVisibility(hiddenList);
             foreach (WearableController wearableController in wearableControllers.Values)
             {
-                wearableController.UpdateVisibility();
+                wearableController.UpdateVisibility(hiddenList);
             }
 
             isLoading = false;
@@ -334,13 +332,13 @@ namespace DCL
             switch (wearable.category)
             {
                 case Categories.EYES:
-                    eyesController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, eyeMaterial);
+                    eyesController = new FacialFeatureController(wearable, eyeMaterial);
                     break;
                 case Categories.EYEBROWS:
-                    eyebrowsController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, eyebrowMaterial);
+                    eyebrowsController = new FacialFeatureController(wearable, eyebrowMaterial);
                     break;
                 case Categories.MOUTH:
-                    mouthController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeId, mouthMaterial);
+                    mouthController = new FacialFeatureController(wearable, mouthMaterial);
                     break;
                 case Categories.BODY_SHAPE:
                     break;
