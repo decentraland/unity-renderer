@@ -1,5 +1,5 @@
 export const OPUS_BITS_PER_SECOND = 24000
-export const OPUS_FRAME_SIZE_MS = 40
+export const OPUS_FRAME_SIZE_MS = 60
 
 export const VOICE_CHAT_SAMPLE_RATE = 24000
 

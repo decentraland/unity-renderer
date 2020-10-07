@@ -25,7 +25,7 @@ DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
 GIF_PROCESSOR := static/gif-processor/worker.js
 INTERNAL_SCENES := static/systems/decentraland-ui.scene.js
 BUILD_ECS := packages/build-ecs/index.js
-VOICE_CHAT_CODEC_WORKER := static/voice-chat-codec/worker.js
+VOICE_CHAT_CODEC_WORKER := static/voice-chat-codec/worker.js static/voice-chat-codec/audioWorkletProcessors.js
 
 config-contracts:
 	@echo 'Updating contracts...'

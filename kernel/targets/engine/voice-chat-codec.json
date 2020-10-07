@@ -4,5 +4,11 @@
     "kind": "Webpack",
     "file": "./packages/voice-chat-codec/worker.ts",
     "target": "webworker"
+  },
+  {
+    "name": "Compile Voice Chat Codec Worklet Modules",
+    "kind": "Webpack",
+    "file": "./packages/voice-chat-codec/audioWorkletProcessors.ts",
+    "target": "webworker"
   }
 ]
