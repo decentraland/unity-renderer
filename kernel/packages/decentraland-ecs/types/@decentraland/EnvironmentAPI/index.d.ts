@@ -15,4 +15,3 @@ declare module '@decentraland/EnvironmentAPI' {
    */
   export function isPreviewMode(): Promise<boolean>
 }
-m
