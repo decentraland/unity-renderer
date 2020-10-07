@@ -13,9 +13,17 @@ copyFile(original, root + '/types/dcl/index.d.ts')
 
 const dtsFile = ensureFileExists(root, '/types/dcl/index.d.ts')
 {
-  const content = readFileSync(dtsFile).toString()
+  let content = readFileSync(dtsFile).toString()
 
-  writeFileSync(dtsFile, content.replace(/^export /gm, ''))
+  content = content.replace(/^export declare/gm, 'declare')
+
+  content = content.replace(/^export \{([\s\n\r]*)\}/gm, '')
+
+  writeFileSync(dtsFile, content)
+
+  if (content.match(/\bexport\b/)) {
+    throw new Error(`The file ${dtsFile} contains exports:\n${content}`)
+  }
 
   if (content.match(/\bimport\b/)) {
     throw new Error(`The file ${dtsFile} contains imports:\n${content}`)
