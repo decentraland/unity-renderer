@@ -31,7 +31,7 @@ export class EnvironmentAPI extends ExposableAPI {
    */
   @exposeMethod
   isPreviewMode(): Promise<boolean> {
-    return Promise.resolve(PREVIEW);
+    return Promise.resolve(PREVIEW)
   }
 
   /**
