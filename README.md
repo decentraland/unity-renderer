@@ -47,6 +47,13 @@ To run the client in `debug` mode append the following query parameter to the UR
 To spawn in a specific set of coordinates append the following query paramter:
 
     http://localhost:8080/?DEBUG_MODE&fps&position=10,10
+    
+### Troubleshooting
+
+If while trying to compile the Unity project you get an error regarding some libraries that can not be added (for instance Newtonsoft
+Json.NET or Google Protobuf), please execute the following command in the root folder:
+
+    git lfs pull
 
 ## Running tests
 
