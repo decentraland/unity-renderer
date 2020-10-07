@@ -55,6 +55,7 @@ To spawn in a specific set of coordinates append the following query paramter:
 If while trying to compile the Unity project you get an error regarding some libraries that can not be added (for instance Newtonsoft
 Json.NET or Google Protobuf), please execute the following command in the root folder:
 
+    git lfs install
     git lfs pull
 
 Then, on the Unity editor, click on `Assets > Reimport All`
