@@ -2188,6 +2188,13 @@ namespace UnityGLTF
                     _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
 
                     mrMapper.BaseColorTexCoord = pbr.BaseColorTexture.TexCoord;
+                    ExtTextureTransformExtension ext = GetTextureTransform(pbr.BaseColorTexture);
+                    if (ext != null)
+                    {
+                        mrMapper.BaseColorXOffset = ext.Offset;
+                        mrMapper.BaseColorXScale = ext.Scale;
+                        //TODO: Implement UVs multichannel for ext.TexCoord;
+                    }
                 }
 
                 mrMapper.MetallicFactor = pbr.MetallicFactor;
@@ -2221,6 +2228,13 @@ namespace UnityGLTF
                     sgMapper.DiffuseTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
+                    ExtTextureTransformExtension ext = GetTextureTransform(specGloss.DiffuseTexture);
+                    if (ext != null)
+                    {
+                        sgMapper.DiffuseXOffset = ext.Offset;
+                        sgMapper.DiffuseXScale = ext.Scale;
+                        //TODO: Implement UVs multichannel for ext.TexCoord;
+                    }
                 }
 
                 sgMapper.SpecularFactor = specGloss.SpecularFactor;
@@ -2539,7 +2553,7 @@ namespace UnityGLTF
             };
         }
 
-        protected virtual void ApplyTextureTransform(TextureInfo def, Material mat, string texName)
+        protected virtual ExtTextureTransformExtension GetTextureTransform(TextureInfo def)
         {
             IExtension extension;
             if (_gltfRoot.ExtensionsUsed != null &&
@@ -2547,15 +2561,10 @@ namespace UnityGLTF
                 def.Extensions != null &&
                 def.Extensions.TryGetValue(ExtTextureTransformExtensionFactory.EXTENSION_NAME, out extension))
             {
-                ExtTextureTransformExtension ext = (ExtTextureTransformExtension) extension;
-
-                Vector2 temp = ext.Offset;
-                temp = new Vector2(temp.x, -temp.y);
-                mat.SetTextureOffset(texName, temp);
-                mat.SetTextureScale(texName, ext.Scale);
+                return (ExtTextureTransformExtension)extension;
             }
+            return null;
         }
-
 
         /// <summary>
         ///  Get the absolute path to a gltf uri reference.
@@ -2580,6 +2589,11 @@ namespace UnityGLTF
             var lastIndex = gltfPath.IndexOf(fileName, StringComparison.Ordinal);
             var partialPath = gltfPath.Substring(0, lastIndex);
             return partialPath;
+        }
+
+        public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale)
+        {
+            return new Vector2(offset.x, 1 - textureYScale - offset.y);
         }
     }
 }

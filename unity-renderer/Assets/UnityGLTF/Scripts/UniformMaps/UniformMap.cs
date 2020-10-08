@@ -33,7 +33,10 @@ namespace UnityGLTF
     {
         Texture BaseColorTexture { get; set; }
         int BaseColorTexCoord { get; set; }
+        Vector2 BaseColorXOffset { get; set; }
+        Vector2 BaseColorXScale { get; set; }
         Color BaseColorFactor { get; set; }
+
         Texture MetallicRoughnessTexture { get; set; }
         int MetallicRoughnessTexCoord { get; set; }
         double MetallicFactor { get; set; }
@@ -44,6 +47,8 @@ namespace UnityGLTF
     {
         Texture DiffuseTexture { get; set; }
         int DiffuseTexCoord { get; set; }
+        Vector2 DiffuseXOffset { get; set; }
+        Vector2 DiffuseXScale { get; set; }
         Color DiffuseFactor { get; set; }
         Texture SpecularGlossinessTexture { get; set; }
         int SpecularGlossinessTexCoord { get; set; }

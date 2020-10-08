@@ -139,4 +139,18 @@ public class GLTFImporterTests : TestsBase
 
         UnityEngine.Assertions.Assert.AreEqual(0, PersistentAssetCache.ImageCacheByUri.Count);
     }
+
+    [UnityTest]
+    public IEnumerator TexturesOffsetAndScaleWorkProperly()
+    {
+        DecentralandEntity entity = null;
+        PersistentAssetCache.ImageCacheByUri.Clear();
+        yield return LoadModel("/GLB/PlaneUVsOffset/planeUVsOffset.glb", (e, model) => entity = e);
+
+        MeshRenderer meshRenderer = entity.gameObject.GetComponentInChildren<MeshRenderer>();
+
+        var unityOffset = GLTFSceneImporter.GLTFOffsetToUnitySpace(new Vector2(0.35f, 0.35f), 2.5f);
+        Assert.AreEqual( unityOffset, meshRenderer.material.GetTextureOffset("_BaseMap"));
+        Assert.AreEqual( Vector2.one * 2.5f, meshRenderer.material.GetTextureScale("_BaseMap"));
+    }
 }
