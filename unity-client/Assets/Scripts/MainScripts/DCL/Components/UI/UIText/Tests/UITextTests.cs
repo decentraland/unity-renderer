@@ -83,7 +83,7 @@ namespace Tests
             Assert.AreEqual(50f, uiTextShape.childHookRectTransform.rect.height);
             Assert.AreEqual("hello world", uiTextShape.referencesContainer.text.text);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
-            Assert.AreEqual(new Color(0f, 1f, 0f, 1f), uiTextShape.referencesContainer.text.color);
+            Assert.AreEqual(new Color(0f, 1f, 0f, 0.5f), uiTextShape.referencesContainer.text.color);
             Assert.AreEqual(35f, uiTextShape.referencesContainer.text.fontSize);
             Assert.AreEqual(3, uiTextShape.referencesContainer.text.maxVisibleLines);
             Assert.AreEqual(0.1f, uiTextShape.referencesContainer.text.lineSpacing);
