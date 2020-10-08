@@ -21,6 +21,30 @@ namespace UnityGLTF
             set { return; }
         }
 
+        Vector2 diffuseOffset = Vector2.zero;
+        public virtual Vector2 DiffuseXOffset
+        {
+            get
+            {
+                return diffuseOffset;
+            }
+            set
+            {
+                diffuseOffset = value;
+                _material.SetTextureOffset(_BaseMap, GLTFSceneImporter.GLTFOffsetToUnitySpace(diffuseOffset, DiffuseXScale.y));
+            }
+        }
+
+        public virtual Vector2 DiffuseXScale
+        {
+            get { return _material.GetTextureScale(_BaseMap); }
+            set
+            {
+                _material.SetTextureScale(_BaseMap, value);
+                DiffuseXOffset = diffuseOffset;
+            }
+        }
+
         public virtual Color DiffuseFactor
         {
             get { return _material.GetColor(_BaseColor); }
