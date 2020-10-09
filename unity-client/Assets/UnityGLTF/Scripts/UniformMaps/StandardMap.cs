@@ -22,6 +22,12 @@ namespace UnityGLTF
 
         protected static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
         protected static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
+
+        protected static readonly int _BaseMapUVs = Shader.PropertyToID("_BaseMapUVs");
+        protected static readonly int _NormalMapUVs = Shader.PropertyToID("_NormalMapUVs");
+        protected static readonly int _MetallicMapUVs = Shader.PropertyToID("_MetallicMapUVs");
+        protected static readonly int _EmissiveMapUVs = Shader.PropertyToID("_EmissiveMapUVs");
+
         protected static readonly int _Metallic = Shader.PropertyToID("_Metallic");
         protected static readonly int _Smoothness = Shader.PropertyToID("_Smoothness");
 
@@ -105,8 +111,8 @@ namespace UnityGLTF
         // not implemented by the Standard shader
         public virtual int NormalTexCoord
         {
-            get { return 0; }
-            set { return; }
+            get { return _material.GetInt(_NormalMapUVs); }
+            set { _material.SetInt(_NormalMapUVs, value); }
         }
 
         public virtual double NormalTexScale
@@ -184,8 +190,8 @@ namespace UnityGLTF
         // not implemented by the Standard shader
         public virtual int EmissiveTexCoord
         {
-            get { return 0; }
-            set { return; }
+            get { return _material.GetInt(_EmissiveMapUVs); }
+            set { _material.SetInt(_EmissiveMapUVs, value); }
         }
 
         public virtual Color EmissiveFactor

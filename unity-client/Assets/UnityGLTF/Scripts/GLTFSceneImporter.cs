@@ -772,6 +772,15 @@ namespace UnityGLTF
                     yield return ConstructUnityTexture(memoryStream.ToArray(), false, linear, image, imageCacheIndex);
                 }
             }
+
+            if (stream is FileStream fileStream)
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    fileStream.CopyTo(memoryStream);
+                    yield return ConstructUnityTexture(memoryStream.ToArray(), false, linear, image, imageCacheIndex);
+                }
+            }
         }
 
         // Note that if the texture is reduced in size, the source one is destroyed

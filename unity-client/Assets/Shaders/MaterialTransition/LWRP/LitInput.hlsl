@@ -18,6 +18,10 @@ half _OcclusionStrength;
 float _CullYPlane;
 half _FadeThickness;
 half _FadeDirection;
+int _BaseMapUVs;
+int _NormalMapUVs;
+int _MetallicMapUVs;
+int _EmissiveMapUVs;
 
 TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
@@ -79,13 +83,13 @@ half SampleOcclusion(float2 uv)
 #endif
 }
 
-inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfaceData)
+inline void InitializeStandardLitSurfaceData(float2 uvAlbedo, float2 uvNormal, float2 uvMetallic, float2 uvEmissive, out SurfaceData outSurfaceData)
 {
-    half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    half4 alphaTexture = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
+    half4 albedoAlpha = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
+    half4 alphaTexture = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
     outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff) * alphaTexture.r;
 
-    half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
+    half4 specGloss = SampleMetallicSpecGloss(uvMetallic, albedoAlpha.a);
     outSurfaceData.albedo = albedoAlpha.rgb * _BaseColor.rgb;
 
 #if _SPECULAR_SETUP
@@ -97,7 +101,7 @@ inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfa
 #endif
 
     outSurfaceData.smoothness = specGloss.a;
-    outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+    outSurfaceData.normalTS = SampleNormal(uvNormal, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
 
     if (outSurfaceData.normalTS.x > -.004 && outSurfaceData.normalTS.x < .004)
         outSurfaceData.normalTS.x = 0;
@@ -105,8 +109,13 @@ inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfa
     if (outSurfaceData.normalTS.y > -.004 && outSurfaceData.normalTS.y < .004)
         outSurfaceData.normalTS.y = 0;
 
-    outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.occlusion = SampleOcclusion(uvAlbedo); //Uses Albedo UVs due to TEXCOORDS amount limit
+    outSurfaceData.emission = SampleEmission(uvEmissive, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+}
+
+inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfaceData)
+{
+    InitializeStandardLitSurfaceData(uv, uv, uv, uv, outSurfaceData);
 }
 
 #endif // LIGHTWEIGHT_INPUT_SURFACE_PBR_INCLUDED

@@ -153,4 +153,19 @@ public class GLTFImporterTests : TestsBase
         Assert.AreEqual( unityOffset, meshRenderer.material.GetTextureOffset("_BaseMap"));
         Assert.AreEqual( Vector2.one * 2.5f, meshRenderer.material.GetTextureScale("_BaseMap"));
     }
+
+    [UnityTest]
+    public IEnumerator TexturesProcessTexCoords()
+    {
+        DecentralandEntity entity = null;
+        PersistentAssetCache.ImageCacheByUri.Clear();
+        yield return LoadModel("/GLB/PlaneUVsMultichannel/PlaneUVsMultichannel.glb", (e, model) => entity = e);
+
+        MeshRenderer meshRenderer = entity.gameObject.GetComponentInChildren<MeshRenderer>();
+
+        Assert.AreEqual( 1, meshRenderer.material.GetInt("_BaseMapUVs"));
+        Assert.AreEqual( 1, meshRenderer.material.GetInt("_NormalMapUVs"));
+        Assert.AreEqual( 1, meshRenderer.material.GetInt("_MetallicMapUVs"));
+        Assert.AreEqual( 1, meshRenderer.material.GetInt("_EmissiveMapUVs"));
+    }
 }
