@@ -59,3 +59,4 @@ packages/decentraland-ecs/package-lock.json
 **/*.js.lib
 public/build-ecs-libraries/**/*.d.ts
 public/build-ecs-libraries/**/*.js
+static/package-lock.json

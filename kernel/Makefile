@@ -126,7 +126,7 @@ static/dist/%.js: build-essentials packages/entryPoints/%.ts
 # Release
 
 DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview.js
-DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/images static/models static/unity static/default-profile/contents
+DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/images static/unity static/default-profile/contents
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNAL_SCENES) ## Build all the entrypoints needed for a deployment
@@ -135,9 +135,13 @@ build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNA
 build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) ## Build all the entrypoints and run the `scripts/prepareDist` script
 	@node ./scripts/prepareDist.js
 
-publish: build-release ## Release a new version, using the `scripts/npmPublish` script
+publish: | build-release update-bundled-dependency ## Release a new version, using the `scripts/npmPublish` script
 	@cd $(PWD)/packages/decentraland-ecs; node $(PWD)/scripts/npmPublish.js
 	@cd $(PWD)/packages/build-ecs; node $(PWD)/scripts/npmPublish.js
+	@cd $(PWD)/static; node $(PWD)/scripts/npmPublish.js
+
+update-bundled-dependency: # updates static/package.json devDependencies to match the bundled decentraland-renderer version
+	@cd $(PWD)/static; npm install --save-dev --save-bundle $(shell npm list --depth 0 | grep -Po --color=never "decentraland-renderer.*")
 
 # Testing
 
@@ -213,7 +217,6 @@ npm-link: build-essentials static/dist/preview.js static/dist/editor.js dcl-amd 
 	ln -sf $(CWD)/static/preview.html packages/decentraland-ecs/artifacts/preview.html
 	ln -sf $(CWD)/static/fonts packages/decentraland-ecs/artifacts/fonts
 	ln -sf $(CWD)/static/images packages/decentraland-ecs/artifacts/images
-	ln -sf $(CWD)/static/models packages/decentraland-ecs/artifacts/models
 	ln -sf $(CWD)/static/unity packages/decentraland-ecs/artifacts/unity
 	ln -sf $(CWD)/static/default-profile packages/decentraland-ecs/artifacts/default-profile
 	ln -sf $(CWD)/static/unity-preview.html packages/decentraland-ecs/artifacts/unity-preview.html

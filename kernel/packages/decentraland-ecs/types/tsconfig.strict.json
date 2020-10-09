@@ -9,5 +9,5 @@
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
   },
-  "extends": "tsconfig.json"
+  "extends": "./tsconfig.json"
 }
