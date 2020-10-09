@@ -101,12 +101,6 @@ namespace DCL
             }
 
             componentFactory.PrewarmPools();
-
-            if (!debugScenes)
-            {
-                CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChange;
-                OnRenderingStateChange(CommonScriptableObjects.rendererState.Get(), false);
-            }
         }
 
         public void Restart()
@@ -119,7 +113,6 @@ namespace DCL
         void OnDestroy()
         {
             PoolManager.i.OnGet -= physicsSyncController.MarkDirty;
-            CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChange;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             ParcelScene.parcelScenesCleaner.Stop();
         }
@@ -662,14 +655,6 @@ namespace DCL
             }
         }
 
-        private void OnSceneReady(ParcelScene scene)
-        {
-            if (scene.sceneData.id == currentSceneId)
-            {
-                CommonScriptableObjects.rendererState.RemoveLock(this);
-            }
-        }
-
         public void LoadParcelScenesExecute(string decentralandSceneJSON)
         {
             LoadParcelScenesMessage.UnityParcelScene scene;
@@ -713,8 +698,6 @@ namespace DCL
                 OnNewSceneAdded?.Invoke(newScene);
 
                 Environment.i.messagingControllersManager.AddControllerIfNotExists(this, newScene.sceneData.id);
-
-                newScene.OnSceneReady += OnSceneReady;
 
                 if (VERBOSE)
                     Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
@@ -879,14 +862,6 @@ namespace DCL
         public bool IsCharacterInsideScene(ParcelScene scene)
         {
             return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
-        }
-
-        private void OnRenderingStateChange(bool enabled, bool prevState)
-        {
-            if (!enabled && !string.IsNullOrEmpty(currentSceneId))
-            {
-                CommonScriptableObjects.rendererState.AddLock(this);
-            }
         }
 
         public HashSet<Vector2Int> GetAllLoadedScenesCoords()
