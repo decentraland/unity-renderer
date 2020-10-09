@@ -17,8 +17,8 @@ namespace UnityGLTF
         // not implemented by the Standard shader
         public virtual int DiffuseTexCoord
         {
-            get { return 0; }
-            set { return; }
+            get { return _material.GetInt(_BaseMapUVs); }
+            set { _material.SetInt(_BaseMapUVs, value); }
         }
 
         Vector2 diffuseOffset = Vector2.zero;
