@@ -221,6 +221,7 @@ npm-link: build-essentials static/dist/preview.js static/dist/editor.js dcl-amd 
 	ln -sf $(CWD)/static/default-profile packages/decentraland-ecs/artifacts/default-profile
 	ln -sf $(CWD)/static/unity-preview.html packages/decentraland-ecs/artifacts/unity-preview.html
 	cd packages/decentraland-ecs; npm link
+	cd static; npm link
 
 watch-builder: build-essentials static/dist/editor.js ## Watch the files required for hacking with the builder
 	@node_modules/.bin/concurrently \
