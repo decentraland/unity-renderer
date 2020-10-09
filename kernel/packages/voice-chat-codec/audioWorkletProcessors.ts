@@ -54,14 +54,17 @@ class InputProcessor extends AudioWorkletProcessor {
         Math.floor(data.length / OPUS_SAMPLES_PER_FRAME) * OPUS_SAMPLES_PER_FRAME +
         OPUS_SAMPLES_PER_FRAME -
         (this.inputSamplesCount % OPUS_SAMPLES_PER_FRAME)
-      data = data.slice(0, samplesToUse)
 
-      this.status = InputProcessorStatus.PAUSED
-      this.notify(InputWorkletRequestTopic.ON_PAUSED)
+      // If we still don't have enough samples to complete a frame, we cannot pause recording yet.
+      if (samplesToUse <= data.length) {
+        data = data.slice(0, samplesToUse)
+        this.status = InputProcessorStatus.PAUSED
+        this.notify(InputWorkletRequestTopic.ON_PAUSED)
+      }
     }
 
-    this.sendDataToEncode(data)
     this.inputSamplesCount += data.length
+    this.sendDataToEncode(data)
 
     return true
   }
