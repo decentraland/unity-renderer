@@ -15,14 +15,7 @@ import { ChatMessageType, ChatMessage } from 'shared/types'
 import { EXPERIENCE_STARTED } from 'shared/loading/types'
 import { queueTrackingEvent } from 'shared/analytics'
 import { sendPublicChatMessage } from 'shared/comms'
-import {
-  getCurrentUser,
-  peerMap,
-  findPeerByName,
-  removeFromMutedUsers,
-  avatarMessageObservable,
-  addToMutedUsers
-} from 'shared/comms/peers'
+import { getCurrentUser, peerMap, findPeerByName, avatarMessageObservable } from 'shared/comms/peers'
 import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { TeleportController } from 'shared/world/TeleportController'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
@@ -36,6 +29,7 @@ import { sampleDropData } from 'shared/airdrops/sampleDrop'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { isFriend } from 'shared/friends/selectors'
 import { fetchHotScenes } from 'shared/social/hotScenes'
+import { blockPlayer, mutePlayer, unblockPlayer, unmutePlayer } from 'shared/social/actions'
 
 declare const globalThis: UnityInterfaceContainer & StoreContainer
 
@@ -320,44 +314,6 @@ function initChatCommands() {
     }
   })
 
-  addChatCommand('mute', 'Mute [username]', (message) => {
-    const username = message
-    const currentUser = getCurrentUser()
-    if (!currentUser) throw new Error('cannotGetCurrentUser')
-
-    const user = findPeerByName(username)
-    if (user && user.userId) {
-      // Cannot mute yourself
-      if (username === currentUser.userId) {
-        return {
-          messageId: uuid(),
-          messageType: ChatMessageType.SYSTEM,
-          sender: 'Decentraland',
-          timestamp: Date.now(),
-          body: `You cannot mute yourself.`
-        }
-      }
-
-      addToMutedUsers(user.userId)
-
-      return {
-        messageId: uuid(),
-        messageType: ChatMessageType.SYSTEM,
-        sender: 'Decentraland',
-        timestamp: Date.now(),
-        body: `You muted user ${username}.`
-      }
-    } else {
-      return {
-        messageId: uuid(),
-        messageType: ChatMessageType.SYSTEM,
-        sender: 'Decentraland',
-        timestamp: Date.now(),
-        body: `User not found ${JSON.stringify(username)}.`
-      }
-    }
-  })
-
   addChatCommand(
     'emote',
     'Trigger avatar animation named [expression] ("robot", "wave", or "fistpump")',
@@ -445,33 +401,36 @@ function initChatCommands() {
     }
   })
 
-  addChatCommand('unmute', 'Unmute [username]', (message) => {
-    const username = message
+  function performSocialActionOnPlayer(
+    username: string,
+    actionBuilder: (userId: string) => { type: string; payload: { playerId: string } },
+    actionName: 'mute' | 'block' | 'unmute' | 'unblock'
+  ) {
+    let pastTense: string = actionName === 'mute' || actionName === 'unmute' ? actionName + 'd' : actionName + 'ed'
     const currentUser = getCurrentUser()
     if (!currentUser) throw new Error('cannotGetCurrentUser')
 
     const user = findPeerByName(username)
-
     if (user && user.userId) {
-      // Cannot unmute or mute yourself
+      // Cannot mute yourself
       if (username === currentUser.userId) {
         return {
           messageId: uuid(),
           messageType: ChatMessageType.SYSTEM,
           sender: 'Decentraland',
           timestamp: Date.now(),
-          body: `You cannot mute or unmute yourself.`
+          body: `You cannot ${actionName} yourself.`
         }
       }
 
-      removeFromMutedUsers(user.userId)
+      globalThis.globalStore.dispatch(actionBuilder(user.userId))
 
       return {
         messageId: uuid(),
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: `You unmuted user ${username}.`
+        body: `You ${pastTense} user ${username}.`
       }
     } else {
       return {
@@ -482,6 +441,22 @@ function initChatCommands() {
         body: `User not found ${JSON.stringify(username)}.`
       }
     }
+  }
+
+  addChatCommand('mute', 'Mute [username]', (message) => {
+    return performSocialActionOnPlayer(message, mutePlayer, 'mute')
+  })
+
+  addChatCommand('unmute', 'Unmute [username]', (message) => {
+    return performSocialActionOnPlayer(message, unmutePlayer, 'unmute')
+  })
+
+  addChatCommand('block', 'Block [username]', (message) => {
+    return performSocialActionOnPlayer(message, blockPlayer, 'block')
+  })
+
+  addChatCommand('unblock', 'Unblock [username]', (message) => {
+    return performSocialActionOnPlayer(message, unblockPlayer, 'unblock')
   })
 
   addChatCommand('help', 'Show a list of commands', (message) => {

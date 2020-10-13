@@ -57,6 +57,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     },
     inventory: receivedProfile.inventory || [],
     blocked: receivedProfile.blocked,
+    muted: receivedProfile.muted,
     tutorialStep: receivedProfile.tutorialStep || 0,
     interests: receivedProfile.interests || []
   }

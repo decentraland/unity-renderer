@@ -1,12 +1,9 @@
 import { Observable } from 'decentraland-ecs/src'
 import { UUID, PeerInformation, AvatarMessage, UserInformation, AvatarMessageType, Pose } from './interface/types'
-import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from 'atomicHelpers/localStorage'
+import { getFromLocalStorage, removeFromLocalStorage } from 'atomicHelpers/localStorage'
 
 export const getUserProfile = () => getFromLocalStorage('dcl-profile') || {}
 export const removeUserProfile = () => removeFromLocalStorage('dcl-profile')
-export const getBlockedUsers: () => Set<string> = () => new Set(getFromLocalStorage('dcl-blocked-users') || [])
-export const getMutedUsers: () => Set<string> = () => new Set(getFromLocalStorage('dcl-muted-users') || [])
-export const isMuted = (name: string) => getMutedUsers().has(name)
 
 export const peerMap = new Map<UUID, PeerInformation>()
 export const avatarMessageObservable = new Observable<AvatarMessage>()
@@ -169,66 +166,4 @@ export function receiveUserVisible(uuid: string, visible: boolean) {
     uuid,
     visible
   })
-}
-
-export function addToBlockedUsers(uuid: string): Set<string> {
-  const blockedUsers = getBlockedUsers()
-
-  if (!blockedUsers.has(uuid)) {
-    const updatedSet = blockedUsers.add(uuid)
-    saveToLocalStorage('dcl-blocked-users', Array.from(updatedSet))
-
-    avatarMessageObservable.notifyObservers({
-      type: AvatarMessageType.USER_BLOCKED,
-      uuid
-    })
-
-    return updatedSet
-  }
-
-  return blockedUsers
-}
-
-export function removeFromBlockedUsers(uuid: string): Set<string> {
-  const blockedUsers = getBlockedUsers()
-  blockedUsers.delete(uuid)
-  saveToLocalStorage('dcl-blocked-users', Array.from(blockedUsers))
-
-  avatarMessageObservable.notifyObservers({
-    type: AvatarMessageType.USER_UNBLOCKED,
-    uuid
-  })
-
-  return blockedUsers
-}
-
-export function addToMutedUsers(uuid: string): Set<string> {
-  const mutedUsers = getMutedUsers()
-
-  if (!mutedUsers.has(uuid)) {
-    const updatedSet = mutedUsers.add(uuid)
-    saveToLocalStorage('dcl-muted-users', Array.from(updatedSet))
-
-    avatarMessageObservable.notifyObservers({
-      type: AvatarMessageType.USER_MUTED,
-      uuid
-    })
-
-    return updatedSet
-  }
-
-  return mutedUsers
-}
-
-export function removeFromMutedUsers(uuid: string): Set<string> {
-  const mutedUsers = getMutedUsers()
-  mutedUsers.delete(uuid)
-  saveToLocalStorage('dcl-muted-users', Array.from(mutedUsers))
-
-  avatarMessageObservable.notifyObservers({
-    type: AvatarMessageType.USER_UNMUTED,
-    uuid
-  })
-
-  return mutedUsers
 }

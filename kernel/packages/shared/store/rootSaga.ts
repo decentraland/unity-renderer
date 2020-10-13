@@ -12,6 +12,7 @@ import { sessionSaga } from '../session/sagas'
 import { analyticsSaga } from '../analytics/sagas'
 import { friendsSaga } from '../friends/sagas'
 import { commsSaga } from '../comms/sagas'
+import { socialSaga } from '../social/sagas'
 
 export function createRootSaga() {
   return function* rootSaga() {
@@ -28,5 +29,6 @@ export function createRootSaga() {
     yield fork(rootProtocolSaga)
     yield fork(metricSaga)
     yield fork(loadingSaga)
+    yield fork(socialSaga)
   }
 }
