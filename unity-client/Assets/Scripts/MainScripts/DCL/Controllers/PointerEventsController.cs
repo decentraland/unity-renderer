@@ -66,7 +66,7 @@ namespace DCL
 
             clickHandler = null;
 
-            if (!EventObjectCanBeHovered(newHoveredEvent, info))
+            if (!EventObjectCanBeHovered(newHoveredEvent, info, hitInfo.distance))
             {
                 UnhoverLastHoveredObject(hoverController);
                 return;
@@ -105,9 +105,9 @@ namespace DCL
             newHoveredEvent = null;
         }
 
-        private bool EventObjectCanBeHovered(OnPointerEvent targetEvent, ColliderInfo colliderInfo)
+        private bool EventObjectCanBeHovered(OnPointerEvent targetEvent, ColliderInfo colliderInfo, float distance)
         {
-            return newHoveredEvent != null && newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform) && (IsAvatarPointerEvent(newHoveredEvent) || (newHoveredEvent.IsVisible() && AreSameEntity(newHoveredEvent, colliderInfo)));
+            return newHoveredEvent != null && newHoveredEvent.IsAtHoverDistance(distance) && (IsAvatarPointerEvent(newHoveredEvent) || (newHoveredEvent.IsVisible() && AreSameEntity(newHoveredEvent, colliderInfo)));
         }
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
