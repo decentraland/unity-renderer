@@ -341,6 +341,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   }
 
   const passport = yield call(processServerProfile, userId, profile)
+
   yield put(profileSuccess(userId, passport, hasConnectedWeb3))
 }
 
@@ -521,15 +522,15 @@ export function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {
 
   try {
     const savedProfile = yield select(getProfile, userId)
-    const currentVersion = savedProfile.version || 0
+    const currentVersion: number = savedProfile.version || 0
     const url: string = yield select(getUpdateProfileServer)
-    const profile = { ...savedProfile, ...saveAvatar.payload.profile }
+    const profile = { ...savedProfile, ...saveAvatar.payload.profile, ...{ version: currentVersion + 1 } }
 
     const identity = yield select(getCurrentIdentity)
 
     // only update profile if wallet is connected
     if (identity.hasConnectedWeb3) {
-      const result = yield call(modifyAvatar, {
+      yield call(modifyAvatar, {
         url,
         userId,
         currentVersion,
@@ -537,10 +538,13 @@ export function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {
         profile
       })
 
-      const { creationTimestamp: version } = result
-
-      yield put(saveProfileSuccess(userId, version, profile))
+      yield put(saveProfileSuccess(userId, profile.version, profile))
       yield put(profileRequest(userId))
+
+      persistCurrentUser({
+        version: profile.version,
+        profile: profileToRendererFormat(profile, userId)
+      })
     }
   } catch (error) {
     yield put(saveProfileFailure(userId, 'unknown reason'))
