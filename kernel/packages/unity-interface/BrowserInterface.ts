@@ -1,5 +1,5 @@
 import { uuid } from 'decentraland-ecs/src'
-import { persistCurrentUser, sendPublicChatMessage } from 'shared/comms'
+import { sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
 import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { hasConnectedWeb3 } from 'shared/profiles/selectors'
@@ -19,7 +19,6 @@ import { ChatMessage, FriendshipUpdateStatusMessage, FriendshipAction, WorldPosi
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
 import { positionObservable } from 'shared/world/positionThings'
 import { worldRunningObservable } from 'shared/world/worldState'
-import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { sendMessage } from 'shared/chat/actions'
 import { updateUserData, updateFriendship } from 'shared/friends/actions'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
@@ -180,11 +179,6 @@ export class BrowserInterface {
     const profile: Profile = getUserProfile().profile as Profile
     profile.tutorialStep = data.tutorialStep
     globalThis.globalStore.dispatch(saveProfileRequest(profile))
-
-    persistCurrentUser({
-      version: profile.version,
-      profile: profileToRendererFormat(profile, getIdentity())
-    })
   }
 
   public ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
