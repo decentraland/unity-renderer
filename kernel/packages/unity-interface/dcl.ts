@@ -22,6 +22,8 @@ import { UnityInterface, unityInterface } from './UnityInterface'
 import { BrowserInterface, browserInterface } from './BrowserInterface'
 import { UnityScene } from './UnityScene'
 import { ensureUiApis } from 'shared/world/uiSceneInitializer'
+import { WebSocketTransport } from 'decentraland-rpc'
+import type { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 
 declare const globalThis: UnityInterfaceContainer &
   BrowserInterfaceContainer &
@@ -200,7 +202,7 @@ export async function startUnitySceneWorkers() {
 // Builder functions
 let currentLoadedScene: SceneWorker | null
 
-export async function loadPreviewScene() {
+export async function loadPreviewScene(ws?: string) {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
   let lastId: string | null = null
@@ -227,7 +229,14 @@ export async function loadPreviewScene() {
     }
 
     const parcelScene = new UnityParcelScene(ILandToLoadableParcelScene(defaultScene))
-    currentLoadedScene = loadParcelScene(parcelScene)
+
+    let transport: undefined | ScriptingTransport = undefined
+
+    if (ws) {
+      transport = WebSocketTransport(new WebSocket(ws, ['dcl-scene']))
+    }
+
+    currentLoadedScene = loadParcelScene(parcelScene, transport)
 
     const target: LoadableParcelScene = { ...ILandToLoadableParcelScene(defaultScene).data }
     delete target.land
