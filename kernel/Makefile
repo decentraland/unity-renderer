@@ -20,6 +20,7 @@ DECENTRALAND_ECS_COMPILED_FILES := packages/decentraland-ecs/dist/src/index.js
 
 DECENTRALAND_ECS_TYPEDEF_FILE := packages/decentraland-ecs/types/dcl/index.d.ts
 
+SCENE_SYSTEM_SOURCES := $(wildcard static/systems/**/*.ts)
 SCENE_SYSTEM := static/systems/scene.system.js
 DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
 GIF_PROCESSOR := static/gif-processor/worker.js
@@ -51,7 +52,7 @@ static/voice-chat-codec/worker.js: packages/voice-chat-codec/*.ts
 static/default-profile/contents:
 	@node ./static/default-profile/download_all.js
 
-static/systems/scene.system.js: $(DECENTRALAND_ECS_TYPEDEF_FILE) packages/scene-system/scene.system.ts
+static/systems/scene.system.js: $(DECENTRALAND_ECS_TYPEDEF_FILE) $(SCENE_SYSTEM_SOURCES) packages/scene-system/scene.system.ts
 	@$(COMPILER) targets/engine/scene-system.json
 
 static/systems/decentraland-ui.scene.js: $(SCENE_SYSTEM) packages/ui/tsconfig.json packages/ui/decentraland-ui.scene.ts

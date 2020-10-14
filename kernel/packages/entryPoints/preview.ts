@@ -25,12 +25,19 @@ if (!container) throw new Error('cannot find element #gameContainer')
 
 const defaultScene: IFuture<ILand> = future()
 
+let wsScene: string | undefined = undefined
+
+if (location.search.indexOf("WS_SCENE") !== -1) {
+  wsScene = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}/?scene`
+}
+
 function startPreviewWatcher() {
   // this is set to avoid double loading scenes due queued messages
   let isSceneLoading: boolean = true
 
   const loadScene = () => {
-    loadPreviewScene()
+    isSceneLoading = true
+    loadPreviewScene(wsScene)
       .then((scene) => {
         isSceneLoading = false
         defaultScene.resolve(scene)
@@ -57,7 +64,6 @@ function startPreviewWatcher() {
         return
       }
 
-      isSceneLoading = true
       loadScene()
     }
   }

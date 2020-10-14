@@ -1,6 +1,5 @@
 import { contracts as contractInfo } from './contracts'
 const queryString = require('query-string')
-declare var window: any
 
 export const performanceConfigurations = [
   { antialiasing: true, downsampling: 0, shadows: true },
@@ -212,11 +211,9 @@ let network: ETHEREUM_NETWORK | null = null
 
 export function getTLD() {
   if (ENV_OVERRIDE) {
-    return window.location.search.match(/ENV=(\w+)/)[1]
+    return location.search.match(/ENV=(\w+)/)![1]
   }
-  if (window) {
-    return window.location.hostname.match(/(\w+)$/)[0]
-  }
+  return location.hostname.match(/(\w+)$/)![0]
 }
 
 export const knownTLDs = ['zone', 'org', 'today']
@@ -240,7 +237,7 @@ export function getDefaultTLD() {
 }
 
 export function getExclusiveServer() {
-  const url = new URL(window.location)
+  const url = new URL(location.toString())
   if (url.searchParams.has('TEST_WEARABLES')) {
     const value = url.searchParams.get('TEST_WEARABLES')
     if (value) {
