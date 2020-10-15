@@ -496,3 +496,13 @@ export type UpdateUserStatusMessage = {
   position: Vector2Component | undefined
   presence: PresenceStatus
 }
+
+export type BuilderConfiguration = {
+  camera: {
+    zoomMin: number
+    zoomMax: number
+  }
+  environment: {
+    disableFloor: boolean
+  }
+}

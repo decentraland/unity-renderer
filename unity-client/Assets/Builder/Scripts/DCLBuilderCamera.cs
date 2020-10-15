@@ -29,8 +29,6 @@ namespace Builder
         public float panSpeed = 5f;
         public float panAmount = 0.2f;
         [Header("Zoom")]
-        public float zoomMin = 1f;
-        public float zoomMax = 60f;
         public float zoomSpeed = 15f;
         public float zoomAmount = 5f;
 
@@ -44,6 +42,8 @@ namespace Builder
         private float zoomTarget = 0;
 
         private float zoomDefault = 0;
+        private float zoomMin = DCLBuilderConfig.config.camera.zoomMin;
+        private float zoomMax = DCLBuilderConfig.config.camera.zoomMax;
 
         private bool isObjectBeingDrag = false;
 
@@ -114,6 +114,7 @@ namespace Builder
                 DCLBuilderObjectDragger.OnDraggingObjectEnd += OnDragObjectEnd;
                 DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
                 DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
+                DCLBuilderConfig.OnConfigChanged += OnConfigChanged;
             }
             isGameObjectActive = true;
         }
@@ -132,6 +133,7 @@ namespace Builder
             DCLBuilderObjectDragger.OnDraggingObjectEnd -= OnDragObjectEnd;
             DCLBuilderGizmoManager.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
             DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnd;
+            DCLBuilderConfig.OnConfigChanged -= OnConfigChanged;
         }
 
         private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -273,6 +275,13 @@ namespace Builder
         private void OnPreviewModeChanged(bool isPreview)
         {
             gameObject.SetActive(!isPreview);
+        }
+
+        private void OnConfigChanged(BuilderConfig config)
+        {
+            zoomMin = DCLBuilderConfig.config.camera.zoomMin;
+            zoomMax = DCLBuilderConfig.config.camera.zoomMax;
+            zoomDefault = zoomCurrent = zoomTarget = Mathf.Clamp(builderCamera.transform.localPosition.z, -zoomMax, -zoomMin);
         }
     }
 }

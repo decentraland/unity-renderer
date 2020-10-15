@@ -295,6 +295,24 @@ namespace Builder
             }
         }
 
+        public void SetBuilderConfiguration(string payloadJson)
+        {
+            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetBuilderConfiguration {payloadJson}");
+            DCLBuilderConfig.SetConfig(payloadJson);
+
+            if (!currentScene)
+                return;
+
+            if (DCLBuilderConfig.config.environment.disableFloor)
+            {
+                currentScene.RemoveDebugPlane();
+            }
+            else
+            {
+                currentScene.InitializeDebugPlane();
+            }
+        }
+
         #endregion
 
         private static ParcelScene GetLoadedScene()
@@ -556,6 +574,16 @@ namespace Builder
                 currentScene.OnEntityAdded += OnEntityIsAdded;
                 currentScene.OnEntityRemoved += OnEntityIsRemoved;
                 currentScene.metricsController = new DCLBuilderSceneMetricsController(currentScene);
+
+                if (DCLBuilderConfig.config.environment.disableFloor)
+                {
+                    currentScene.RemoveDebugPlane();
+                }
+                else
+                {
+                    currentScene.InitializeDebugPlane();
+                }
+
                 OnSceneChanged?.Invoke(currentScene);
             }
         }

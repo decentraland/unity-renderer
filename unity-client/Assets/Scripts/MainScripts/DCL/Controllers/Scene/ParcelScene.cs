@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Controllers.ParcelSceneDebug;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -51,6 +52,8 @@ namespace DCL.Controllers
 
         readonly List<string> disposableNotReady = new List<string>();
         bool isReleased = false;
+
+        SceneDebugPlane sceneDebugPlane = null;
 
         State stateValue = State.NOT_READY;
 
@@ -163,46 +166,18 @@ namespace DCL.Controllers
 
         public void InitializeDebugPlane()
         {
-            if (EnvironmentSettings.DEBUG && sceneData.parcels != null)
+            if (EnvironmentSettings.DEBUG && sceneData.parcels != null && sceneDebugPlane == null)
             {
-                int sceneDataParcelsLength = sceneData.parcels.Length;
-                for (int j = 0; j < sceneDataParcelsLength; j++)
-                {
-                    GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                sceneDebugPlane = new SceneDebugPlane(sceneData, gameObject.transform);
+            }
+        }
 
-                    Object.Destroy(plane.GetComponent<MeshCollider>());
-
-                    plane.name = $"parcel:{sceneData.parcels[j].x},{sceneData.parcels[j].y}";
-
-                    plane.transform.SetParent(gameObject.transform);
-
-                    // the plane mesh with scale 1 occupies a 10 units space
-                    plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f,
-                        ParcelSettings.PARCEL_SIZE * 0.1f);
-
-                    Vector3 position = Utils.GridToWorldPosition(sceneData.parcels[j].x, sceneData.parcels[j].y);
-                    // SET TO A POSITION RELATIVE TO basePosition
-
-                    position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT,
-                        position.z + ParcelSettings.PARCEL_SIZE / 2);
-
-                    plane.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(position);
-
-                    if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
-                    {
-                        Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
-                        var matTransition = plane.AddComponent<MaterialTransitionController>();
-                        matTransition.delay = 0;
-                        matTransition.useHologram = false;
-                        matTransition.fadeThickness = 20;
-                        matTransition.OnDidFinishLoading(finalMaterial);
-                    }
-                    else
-                    {
-                        plane.GetComponent<MeshRenderer>().sharedMaterial =
-                            Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
-                    }
-                }
+        public void RemoveDebugPlane()
+        {
+            if (sceneDebugPlane != null)
+            {
+                sceneDebugPlane.Dispose();
+                sceneDebugPlane = null;
             }
         }
 
@@ -210,6 +185,12 @@ namespace DCL.Controllers
         {
             if (isReleased)
                 return;
+
+            if (sceneDebugPlane != null)
+            {
+                sceneDebugPlane.Dispose();
+                sceneDebugPlane = null;
+            }
 
             DisposeAllSceneComponents();
 
