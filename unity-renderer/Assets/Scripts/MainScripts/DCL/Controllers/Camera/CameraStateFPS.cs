@@ -15,6 +15,7 @@ public class CameraStateFPS : CameraStateBase
         var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));
         characterForward.Set(xzPlaneForward);
     }
+
     public override Vector3 OnGetRotation()
     {
         if (defaultVirtualCamera is CinemachineVirtualCamera vcamera)
