@@ -1,8 +1,9 @@
 using System.Collections;
+using DCL.Controllers;
 
 namespace DCL.Components
 {
-    public class DCLAudioStream : BaseComponent
+    public class DCLAudioStream : BaseComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]
         public class Model
@@ -116,6 +117,22 @@ namespace DCL.Components
         {
             isPlaying = true;
             Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * settingsVolume);
+        }
+
+        public void UpdateOutOfBoundariesState(bool enable)
+        {
+            if (!isPlaying)
+                return;
+
+            if (enable)
+            {
+                StartStreaming();
+            }
+            else
+            {
+                //Set volume to 0 (temporary solution until the refactor in #1421)
+                Interface.WebInterface.SendAudioStreamEvent(model.url, true, 0);
+            }
         }
     }
 }
