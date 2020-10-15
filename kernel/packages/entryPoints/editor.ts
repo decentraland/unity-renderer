@@ -9,15 +9,11 @@ import future, { IFuture } from 'fp-future'
 
 import { loadedSceneWorkers } from '../shared/world/parcelSceneManager'
 import { Wearable } from '../shared/profiles/types'
-import { SceneJsonData, ILand, HUDElementID } from '../shared/types'
+import { SceneJsonData, ILand, HUDElementID, BuilderConfiguration } from '../shared/types'
 import { normalizeContentMappings } from '../shared/selectors'
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { initializeUnity } from '../unity-interface/initializer'
-import {
-  loadBuilderScene,
-  updateBuilderScene,
-  unloadCurrentBuilderScene
-} from '../unity-interface/dcl'
+import { loadBuilderScene, updateBuilderScene, unloadCurrentBuilderScene } from '../unity-interface/dcl'
 import defaultLogger from '../shared/logger'
 import { uuid } from '../decentraland-ecs/src/ecs/helpers'
 import { Vector3 } from '../decentraland-ecs/src/decentraland/math'
@@ -44,7 +40,7 @@ async function createBuilderScene(scene: SceneJsonData, baseUrl: string, mapping
   bindSceneEvents()
 
   const engineReady = future()
-  sceneLifeCycleObservable.addOnce(obj => {
+  sceneLifeCycleObservable.addOnce((obj) => {
     if (sceneData.sceneId === obj.sceneId && obj.status === 'ready') {
       engineReady.resolve(true)
     }
@@ -99,7 +95,7 @@ async function getSceneData(scene: SceneJsonData, baseUrl: string, mappings: any
  */
 function getBaseCoords(scene: SceneJsonData): string {
   if (scene && scene.scene && scene.scene.base) {
-    const [x, y] = scene.scene.base.split(',').map($ => parseInt($, 10))
+    const [x, y] = scene.scene.base.split(',').map(($) => parseInt($, 10))
     return `${x},${y}`
   }
 
@@ -109,7 +105,7 @@ function getBaseCoords(scene: SceneJsonData): string {
 function bindSceneEvents() {
   if (!unityScene) return
 
-  unityScene.on('uuidEvent' as any, event => {
+  unityScene.on('uuidEvent' as any, (event) => {
     const { type } = event.payload
 
     if (type === 'onEntityLoading') {
@@ -122,33 +118,33 @@ function bindSceneEvents() {
     }
   })
 
-  unityScene.on('metricsUpdate', e => {
+  unityScene.on('metricsUpdate', (e) => {
     evtEmitter.emit('metrics', {
       metrics: e.given,
       limits: e.limit
     })
   })
 
-  unityScene.on('entitiesOutOfBoundaries', e => {
+  unityScene.on('entitiesOutOfBoundaries', (e) => {
     evtEmitter.emit('entitiesOutOfBoundaries', e)
   })
 
-  unityScene.on('entityOutOfScene', e => {
+  unityScene.on('entityOutOfScene', (e) => {
     evtEmitter.emit('entityOutOfScene', e)
   })
 
-  unityScene.on('entityBackInScene', e => {
+  unityScene.on('entityBackInScene', (e) => {
     evtEmitter.emit('entityBackInScene', e)
   })
 
-  unityScene.on('builderSceneStart', e => {
+  unityScene.on('builderSceneStart', (e) => {
     builderSceneLoaded.resolve(true)
   })
 
-  unityScene.on('builderSceneUnloaded', e => {
+  unityScene.on('builderSceneUnloaded', (e) => {
     loadingEntities = []
   })
-  unityScene.on('gizmoEvent', e => {
+  unityScene.on('gizmoEvent', (e) => {
     if (e.type === 'gizmoSelected') {
       evtEmitter.emit('gizmoSelected', {
         gizmoType: e.gizmoType,
@@ -299,6 +295,10 @@ namespace editor {
 
   export function onKeyDown(key: string) {
     unityInterface.OnBuilderKeyDown(key)
+  }
+
+  export function setBuilderConfiguration(config: BuilderConfiguration) {
+    unityInterface.SetBuilderConfiguration(config)
   }
 }
 
