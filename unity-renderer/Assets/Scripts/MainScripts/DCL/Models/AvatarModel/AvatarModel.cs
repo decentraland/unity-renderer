@@ -26,6 +26,8 @@ public class AvatarModel
                skinColor == other.skinColor &&
                hairColor == other.hairColor &&
                eyeColor == other.eyeColor &&
+               expressionTriggerId == other.expressionTriggerId &&
+               expressionTriggerTimestamp == other.expressionTriggerTimestamp &&
                wearablesAreEqual;
     }
 
