@@ -1265,7 +1265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c658e5e34c1f31448d8ba1ce4a0fd12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTransform: {fileID: 1526003882666009685}
+  camera: {fileID: 3202392186591585866}
   cameraModes:
   - {fileID: 5141921647443392041}
   - {fileID: 8626957695305342742}
