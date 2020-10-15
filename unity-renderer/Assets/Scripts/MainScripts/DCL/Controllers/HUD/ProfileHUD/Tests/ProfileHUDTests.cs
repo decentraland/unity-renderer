@@ -1,5 +1,5 @@
-using System.Collections;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine.TestTools;
 
 public class ProfileHUDTests : TestsBase
@@ -31,7 +31,7 @@ public class ProfileHUDTests : TestsBase
     public void VisibilityDefaulted()
     {
         Assert.AreEqual(true, controller.view.gameObject.activeInHierarchy);
-        Assert.AreEqual(false, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(false, controller.view.menuShowHideAnimator.isVisible);
     }
 
     [Test]
@@ -39,25 +39,24 @@ public class ProfileHUDTests : TestsBase
     {
         controller.SetVisibility(true);
         Assert.AreEqual(true, controller.view.gameObject.activeInHierarchy);
-        Assert.AreEqual(false, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(false, controller.view.menuShowHideAnimator.isVisible);
     }
 
     [Test]
     public void VisibilityOverridenFalse()
     {
         controller.SetVisibility(false);
-        Assert.AreEqual(false, controller.view.gameObject.activeInHierarchy);
-        Assert.AreEqual(false, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(false, controller.view.menuShowHideAnimator.isVisible);
     }
 
     [Test]
     public void ContentVisibilityOnToggle()
     {
-        Assert.AreEqual(false, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(false, controller.view.menuShowHideAnimator.isVisible);
         controller.view.ToggleMenu();
-        Assert.AreEqual(true, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(true, controller.view.menuShowHideAnimator.isVisible);
         controller.view.ToggleMenu();
-        Assert.AreEqual(false, controller.view.showHideAnimator.isVisible);
+        Assert.AreEqual(false, controller.view.menuShowHideAnimator.isVisible);
     }
 
     [Test]

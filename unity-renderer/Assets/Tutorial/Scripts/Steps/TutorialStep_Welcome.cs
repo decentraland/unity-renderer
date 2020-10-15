@@ -21,7 +21,7 @@ namespace DCL.Tutorial
 
         public override IEnumerator OnStepExecute()
         {
-            yield return new WaitUntil(() => confirmInputAction.isOn);
+            yield return new WaitUntil(() => mainSection.activeSelf && confirmInputAction.isOn);
         }
     }
 }

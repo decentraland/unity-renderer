@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 namespace DCL.Tutorial
 {
@@ -18,8 +19,16 @@ namespace DCL.Tutorial
         {
             None = 0,
             OldTutorialValue = 99, // NOTE: old tutorial set tutorialStep to 99 when finished
-            EmailRequested = 128, // NOTE: old email prompt set tutorialStep to 1289 when finished
+            EmailRequested = 128, // NOTE: old email prompt set tutorialStep to 128 when finished
             NewTutorialFinished = 256
+        }
+
+        internal enum TutorialPath
+        {
+            FromGenesisPlaza,
+            FromDeepLink,
+            FromGenesisPlazaAfterDeepLink,
+            FromResetTutorial
         }
 
         public static TutorialController i { get; private set; }
@@ -27,7 +36,9 @@ namespace DCL.Tutorial
         public HUDController hudController { get => HUDController.i; }
 
         [Header("General Configuration")]
+        [SerializeField] internal int tutorialVersion = 1;
         [SerializeField] internal float timeBetweenSteps = 0.5f;
+        [SerializeField] internal bool sendStats = true;
 
         [Header("Tutorial Steps on Genesis Plaza")]
         [SerializeField] internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
@@ -38,12 +49,23 @@ namespace DCL.Tutorial
         [Header("Tutorial Steps on Genesis Plaza (after Deep Link)")]
         [SerializeField] internal List<TutorialStep> stepsOnGenesisPlazaAfterDeepLink = new List<TutorialStep>();
 
+        [Header("Tutorial Steps from Reset Tutorial")]
+        [SerializeField] internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
+
         [Header("3D Model Teacher")]
         [SerializeField] internal Camera teacherCamera;
         [SerializeField] internal RawImage teacherRawImage;
         [SerializeField] internal TutorialTeacher teacher;
         [SerializeField] internal float teacherMovementSpeed = 4f;
         [SerializeField] internal AnimationCurve teacherMovementCurve;
+        [SerializeField] internal Canvas teacherCanvas;
+
+        [Header("Eagle Eye Camera")]
+        [SerializeField] internal CinemachineVirtualCamera eagleEyeCamera;
+        [SerializeField] internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
+        [SerializeField] internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
+        [SerializeField] internal bool eagleCamRotationActived = true;
+        [SerializeField] internal float eagleCamRotationSpeed = 1f;
 
         [Header("Debugging")]
         [SerializeField] internal bool debugRunTutorial = false;
@@ -56,10 +78,12 @@ namespace DCL.Tutorial
         internal bool playerIsInGenesisPlaza = false;
         internal bool markTutorialAsCompleted = false;
         internal TutorialStep runningStep = null;
+        internal bool tutorialReset = false;
 
         private int currentStepIndex;
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
+        private Coroutine eagleEyeRotationCoroutine;
 
         private void Awake()
         {
@@ -69,6 +93,11 @@ namespace DCL.Tutorial
 
         private void Start()
         {
+            if (CommonScriptableObjects.isTaskbarHUDInitialized.Get())
+                IsTaskbarHUDInitialized_OnChange(true, false);
+            else
+                CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
+
             if (debugRunTutorial)
                 SetTutorialEnabled(debugOpenedFromDeepLink.ToString());
         }
@@ -77,11 +106,23 @@ namespace DCL.Tutorial
         {
             SetTutorialDisabled();
 
-            if (hudController != null && hudController.goToGenesisPlazaHud != null)
+            CommonScriptableObjects.isTaskbarHUDInitialized.OnChange -= IsTaskbarHUDInitialized_OnChange;
+
+            if (hudController != null)
             {
-                hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza -= GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
-                hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza -= GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
+                if (hudController.goToGenesisPlazaHud != null)
+                {
+                    hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza -= GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
+                    hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza -= GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
+                }
+
+                if (hudController.taskbarHud != null)
+                {
+                    hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
+                }
             }
+
+            NotificationsController.disableWelcomeNotification = false;
         }
 
         /// <summary>
@@ -93,15 +134,27 @@ namespace DCL.Tutorial
                 return;
 
             isRunning = true;
+            CommonScriptableObjects.allUIHidden.Set(false);
+            CommonScriptableObjects.tutorialActive.Set(true);
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
 
-            if (hudController != null && hudController.goToGenesisPlazaHud != null)
+            if (hudController != null)
             {
-                hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza -= GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
-                hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza += GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
-                hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza -= GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
-                hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza += GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
+                if (hudController.goToGenesisPlazaHud != null)
+                {
+                    hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza -= GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
+                    hudController.goToGenesisPlazaHud.OnBeforeGoToGenesisPlaza += GoToGenesisPlazaHud_OnBeforeGoToGenesisPlaza;
+                    hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza -= GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
+                    hudController.goToGenesisPlazaHud.OnAfterGoToGenesisPlaza += GoToGenesisPlazaHud_OnAfterGoToGenesisPlaza;
+                }
+
+                if (hudController.taskbarHud != null)
+                    hudController.taskbarHud.ShowTutorialOption(false);
             }
+
+            NotificationsController.disableWelcomeNotification = true;
+
+            WebInterface.SetDelightedSurveyEnabled(false);
 
             if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
@@ -126,8 +179,25 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
+            tutorialReset = false;
             isRunning = false;
             ShowTeacher3DModel(false);
+            WebInterface.SetDelightedSurveyEnabled(true);
+
+            if (!alreadyOpenedFromDeepLink && SceneController.i != null)
+            {
+                WebInterface.SendSceneExternalActionEvent(SceneController.i.currentSceneId,"tutorial","end");
+            }
+
+            NotificationsController.disableWelcomeNotification = false;
+
+            if (hudController != null)
+            {
+                if (hudController.taskbarHud != null)
+                    hudController.taskbarHud.ShowTutorialOption(true);
+            }
+
+            CommonScriptableObjects.tutorialActive.Set(false);
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         }
@@ -143,28 +213,30 @@ namespace DCL.Tutorial
 
             if (runningStep != null)
             {
-                yield return runningStep.OnStepPlayAnimationForHidding();
-
                 runningStep.OnStepFinished();
                 Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
-            if (playerIsInGenesisPlaza)
+            if (playerIsInGenesisPlaza || tutorialReset)
             {
                 markTutorialAsCompleted = true;
 
-                if (alreadyOpenedFromDeepLink)
-                    yield return ExecuteSteps(stepsOnGenesisPlazaAfterDeepLink, stepIndex);
+                if (tutorialReset)
+                {
+                    yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
+                }
+                else if (alreadyOpenedFromDeepLink)
+                    yield return ExecuteSteps(TutorialPath.FromGenesisPlazaAfterDeepLink, stepIndex);
                 else
-                    yield return ExecuteSteps(stepsOnGenesisPlaza, stepIndex);
-                
+                    yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
+
             }
             else if (openedFromDeepLink)
             {
                 markTutorialAsCompleted = false;
                 alreadyOpenedFromDeepLink = true;
-                yield return ExecuteSteps(stepsFromDeepLink, stepIndex);
+                yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
             }
             else
             {
@@ -179,7 +251,7 @@ namespace DCL.Tutorial
         /// <param name="active">True for show the teacher.</param>
         public void ShowTeacher3DModel(bool active)
         {
-            teacherCamera.gameObject.SetActive(active);
+            teacherCamera.enabled = active;
             teacherRawImage.gameObject.SetActive(active);
         }
 
@@ -208,9 +280,58 @@ namespace DCL.Tutorial
             teacher.PlayAnimation(animation);
         }
 
-        private int GetTutorialStepFromProfile()
+        /// <summary>
+        /// Set sort order for canvas containing teacher RawImage
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        public void SetTeacherCanvasSortingOrder(int sortOrder)
         {
-            return UserProfile.GetOwnUserProfile().tutorialStep;
+            teacherCanvas.sortingOrder = sortOrder;
+        }
+
+        /// <summary>
+        /// Finishes the current running step, skips all the next ones and completes the tutorial.
+        /// </summary>
+        public void SkipTutorial()
+        {
+            if (!debugRunTutorial && sendStats)
+            {
+                SendSkipTutorialSegmentStats(
+                    tutorialVersion,
+                    runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
+            }
+
+            int skipIndex = stepsOnGenesisPlaza.Count +
+                stepsFromDeepLink.Count +
+                stepsOnGenesisPlazaAfterDeepLink.Count +
+                stepsFromReset.Count;
+
+            StartCoroutine(StartTutorialFromStep(skipIndex));
+
+            hudController?.taskbarHud?.SetVisibility(true);
+        }
+
+        /// <summary>
+        /// Activate/deactivate the eagle eye camera.
+        /// </summary>
+        /// <param name="isActive">True for activate the eagle eye camera.</param>
+        public void SetEagleEyeCameraActive(bool isActive)
+        {
+            eagleEyeCamera.gameObject.SetActive(isActive);
+            StartCoroutine(BlockPlayerCameraUntilBlendingIsFinished(isActive));
+
+            if (isActive)
+            {
+                eagleEyeCamera.transform.position = eagleCamInitPosition;
+                eagleEyeCamera.transform.LookAt(CommonScriptableObjects.playerUnityPosition.Get());
+
+                if (eagleCamRotationActived)
+                    eagleEyeRotationCoroutine = StartCoroutine(EagleEyeCameraRotation(eagleCamRotationSpeed));
+            }
+            else if (eagleEyeRotationCoroutine != null)
+            {
+                StopCoroutine(eagleEyeRotationCoroutine);
+            }
         }
 
         private void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
@@ -231,8 +352,27 @@ namespace DCL.Tutorial
             executeStepsCoroutine = StartCoroutine(StartTutorialFromStep(currentStepIndex));
         }
 
-        private IEnumerator ExecuteSteps(List<TutorialStep> steps, int startingStepIndex)
+        private IEnumerator ExecuteSteps(TutorialPath tutorialPath, int startingStepIndex)
         {
+            List<TutorialStep> steps = new List<TutorialStep>();
+
+            switch (tutorialPath)
+            {
+                case TutorialPath.FromGenesisPlaza:
+                    steps = stepsOnGenesisPlaza;
+                    break;
+                case TutorialPath.FromDeepLink:
+                    steps = stepsFromDeepLink;
+                    break;
+                case TutorialPath.FromGenesisPlazaAfterDeepLink:
+                    steps = stepsOnGenesisPlazaAfterDeepLink;
+                    break;
+                case TutorialPath.FromResetTutorial:
+                    steps = stepsFromReset;
+                    break;
+            }
+
+            float elapsedTime = 0f;
             for (int i = startingStepIndex; i < steps.Count; i++)
             {
                 var stepPrefab = steps[i];
@@ -244,6 +384,7 @@ namespace DCL.Tutorial
 
                 currentStepIndex = i;
 
+                elapsedTime = Time.realtimeSinceStartup;
                 runningStep.OnStepStart();
                 yield return runningStep.OnStepExecute();
                 if (i < steps.Count - 1)
@@ -251,8 +392,18 @@ namespace DCL.Tutorial
                 else
                     PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
 
-                yield return runningStep.OnStepPlayAnimationForHidding();
+                yield return runningStep.OnStepPlayHideAnimation();
                 runningStep.OnStepFinished();
+                elapsedTime = Time.realtimeSinceStartup - elapsedTime;
+                if (!debugRunTutorial && sendStats)
+                {
+                    SendStepCompletedSegmentStats(
+                        tutorialVersion,
+                        tutorialPath,
+                        i + 1,
+                        runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""),
+                        elapsedTime);
+                }
                 Destroy(runningStep.gameObject);
 
                 if (i < steps.Count - 1 && timeBetweenSteps > 0)
@@ -260,11 +411,22 @@ namespace DCL.Tutorial
             }
 
             if (!debugRunTutorial && markTutorialAsCompleted)
-                WebInterface.SaveUserTutorialStep(GetTutorialStepFromProfile() | (int)TutorialFinishStep.NewTutorialFinished);
+                SetUserTutorialStepAsCompleted(TutorialFinishStep.NewTutorialFinished);
 
             runningStep = null;
 
             SetTutorialDisabled();
+
+            if (tutorialPath == TutorialPath.FromDeepLink)
+            {
+                hudController?.taskbarHud?.ShowTutorialOption(false);
+            }
+
+        }
+
+        private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)
+        {
+            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int)finishStepType);
         }
 
         private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
@@ -293,7 +455,23 @@ namespace DCL.Tutorial
             SetTutorialEnabled(false.ToString());
 
             if (hudController != null)
-                hudController.taskbarHud.HideGoToGenesisPlazaButton();
+                hudController.taskbarHud?.HideGoToGenesisPlazaButton();
+        }
+
+        private void IsTaskbarHUDInitialized_OnChange(bool current, bool previous)
+        {
+            if (current && hudController != null && hudController.taskbarHud != null)
+            {
+                hudController.taskbarHud.moreMenu.OnRestartTutorial -= MoreMenu_OnRestartTutorial;
+                hudController.taskbarHud.moreMenu.OnRestartTutorial += MoreMenu_OnRestartTutorial;
+            }
+        }
+
+        private void MoreMenu_OnRestartTutorial()
+        {
+            SetTutorialDisabled();
+            tutorialReset = true;
+            SetTutorialEnabled(false.ToString());
         }
 
         private bool IsPlayerInsideGenesisPlaza()
@@ -308,6 +486,63 @@ namespace DCL.Tutorial
                 return true;
 
             return false;
+        }
+
+        private void SendStepCompletedSegmentStats(int version, TutorialPath tutorialPath, int stepNumber, string stepName, float elapsedTime)
+        {
+            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            {
+                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
+                new WebInterface.AnalyticsPayload.Property("path", tutorialPath.ToString()),
+                new WebInterface.AnalyticsPayload.Property("step number", stepNumber.ToString()),
+                new WebInterface.AnalyticsPayload.Property("step name", stepName),
+                new WebInterface.AnalyticsPayload.Property("elapsed time", elapsedTime.ToString("0.00"))
+            };
+            WebInterface.ReportAnalyticsEvent("tutorial step completed", properties);
+        }
+
+        private void SendSkipTutorialSegmentStats(int version, string stepName)
+        {
+            WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+            {
+                new WebInterface.AnalyticsPayload.Property("version", version.ToString()),
+                new WebInterface.AnalyticsPayload.Property("step name", stepName),
+                new WebInterface.AnalyticsPayload.Property("elapsed time", Time.realtimeSinceStartup.ToString("0.00"))
+            };
+            WebInterface.ReportAnalyticsEvent("tutorial skipped", properties);
+        }
+
+        private IEnumerator EagleEyeCameraRotation(float rotationSpeed)
+        {
+            while (true)
+            {
+                eagleEyeCamera.transform.Rotate(Vector3.up * Time.deltaTime * rotationSpeed, Space.World);
+                yield return null;
+            }
+        }
+
+        private IEnumerator BlockPlayerCameraUntilBlendingIsFinished(bool hideUIs)
+        {
+            if (hideUIs)
+            {
+                hudController?.minimapHud?.SetVisibility(false);
+                hudController?.manaHud?.SetVisibility(false);
+                hudController?.profileHud?.SetVisibility(false);
+            }
+
+            CommonScriptableObjects.cameraBlocked.Set(true);
+
+            yield return null;
+            yield return new WaitUntil(() => !CommonScriptableObjects.cameraIsBlending.Get());
+
+            CommonScriptableObjects.cameraBlocked.Set(false);
+
+            if (!hideUIs)
+            {
+                hudController?.minimapHud?.SetVisibility(true);
+                hudController?.manaHud?.SetVisibility(true);
+                hudController?.profileHud?.SetVisibility(true);
+            }
         }
     }
 }

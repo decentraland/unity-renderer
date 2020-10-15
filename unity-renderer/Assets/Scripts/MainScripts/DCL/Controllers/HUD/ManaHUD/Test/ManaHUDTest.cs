@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -32,7 +32,7 @@ public class ManaHUDTest : TestsBase
     {
         CanvasGroup canvasGroup = controller.view.GetComponent<CanvasGroup>();
         Assert.NotNull(canvasGroup, "CanvasGroup is null");
-        Assert.IsTrue(canvasGroup.alpha == 1, "CanvasGroup alpha != 1, should started visible");
+        Assert.IsTrue(canvasGroup.alpha != 1, "CanvasGroup alpha == 1, should started not visible");
 
         CommonScriptableObjects.allUIHidden.Set(true);
         Assert.IsTrue(canvasGroup.alpha == 0, "CanvasGroup alpha != 0, should be hidden");

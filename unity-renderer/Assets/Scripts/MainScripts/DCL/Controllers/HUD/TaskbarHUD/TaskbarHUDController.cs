@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.GoToGenesisPlazaHUD;
 using DCL.HelpAndSupportHUD;
@@ -10,6 +11,12 @@ using UnityEngine.EventSystems;
 
 public class TaskbarHUDController : IHUD
 {
+    [Serializable]
+    public struct Configuration
+    {
+        public bool enableVoiceChat;
+    }
+
     public TaskbarHUDView view;
     public WorldChatWindowHUDController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
@@ -29,19 +36,18 @@ public class TaskbarHUDController : IHUD
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
-    public bool isNewTaskbar { get; private set; }
     public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
     public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
+    public RectTransform backpackTooltipReference { get => view.backpackTooltipReference; }
     public RectTransform goToGenesisTooltipReference { get => view.goToGenesisTooltipReference; }
+    public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
-    public void Initialize(IMouseCatcher mouseCatcher, IChatController chatController,
-        IFriendsController friendsController, bool newTaskbarIsEnabled)
+    public void Initialize(IMouseCatcher mouseCatcher, IChatController chatController, IFriendsController friendsController)
     {
         this.mouseCatcher = mouseCatcher;
         this.chatController = chatController;
 
-        isNewTaskbar = newTaskbarIsEnabled;
-        view = TaskbarHUDView.Create(this, chatController, friendsController, newTaskbarIsEnabled);
+        view = TaskbarHUDView.Create(this, chatController, friendsController);
 
         if (mouseCatcher != null)
         {
@@ -86,6 +92,8 @@ public class TaskbarHUDController : IHUD
         }
 
         view.leftWindowContainerAnimator.Show();
+
+        CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj)
@@ -195,7 +203,7 @@ public class TaskbarHUDController : IHUD
     private void MouseCatcher_OnMouseLock()
     {
         view.leftWindowContainerAnimator.Hide();
-        view.moreMenu.ShowMoreMenu(false);
+        ShowMoreMenu(false);
 
         foreach (var btn in view.GetButtonList())
         {
@@ -392,6 +400,11 @@ public class TaskbarHUDController : IHUD
         };
     }
 
+    public void OnAddVoiceChat()
+    {
+        view.OnAddVoiceChat();
+    }
+
     public void ShowGoToGenesisPlazaButton()
     {
         view.OnAddGoToGenesisWindow(true);
@@ -502,6 +515,11 @@ public class TaskbarHUDController : IHUD
         worldChatWindowHud.view.ActivatePreview();
     }
 
+    public void SetVoiceChatRecording(bool recording)
+    {
+        view?.voiceChatButton.SetOnRecording(recording);
+    }
+
     private void OnFriendsToggleInputPress()
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
@@ -533,5 +551,15 @@ public class TaskbarHUDController : IHUD
     {
         if (!AnyWindowsDifferentThanChatIsOpen())
             worldChatWindowHud.MarkWorldChatMessagesAsRead();
+    }
+
+    public void ShowMoreMenu(bool isActive)
+    {
+        view.moreMenu.ShowMoreMenu(isActive);
+    }
+
+    public void ShowTutorialOption(bool isActive)
+    {
+        view.moreMenu.ShowTutorialButton(isActive);
     }
 }

@@ -27,7 +27,7 @@ namespace DCL.Tutorial_Tests
             yield return customOnStepExecute;
         }
 
-        public override IEnumerator OnStepPlayAnimationForHidding()
+        public override IEnumerator OnStepPlayHideAnimation()
         {
             yield return customOnStepPlayAnimationForHidding;
         }

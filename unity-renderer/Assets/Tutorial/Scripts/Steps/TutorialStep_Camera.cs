@@ -17,6 +17,13 @@ namespace DCL.Tutorial
             CommonScriptableObjects.cameraMode.OnChange += CameraMode_OnChange;
         }
 
+        public override void OnStepFinished()
+        {
+            base.OnStepFinished();
+
+            CommonScriptableObjects.cameraMode.OnChange -= CameraMode_OnChange;
+        }
+
         public override IEnumerator OnStepExecute()
         {
             yield return new WaitUntil(() => stepIsFinished);
@@ -25,7 +32,7 @@ namespace DCL.Tutorial
 
         private void CameraMode_OnChange(CameraMode.ModeId current, CameraMode.ModeId previous)
         {
-            if (current != previous)
+            if (current != previous && mainSection.activeSelf)
                 stepIsFinished = true;
         }
     }

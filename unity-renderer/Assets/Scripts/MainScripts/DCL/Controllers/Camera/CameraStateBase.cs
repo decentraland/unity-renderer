@@ -38,4 +38,8 @@ public class CameraStateBase : MonoBehaviour
     {
         return Vector3.zero;
     }
+
+    public virtual void OnBlock(bool blocked)
+    {
+    }
 }

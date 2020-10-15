@@ -10,12 +10,13 @@ namespace DCL.Tutorial
     public class TutorialStep_Tooltip : TutorialStep, IPointerDownHandler
     {
         [SerializeField] protected RectTransform tooltipTransform;
-        [SerializeField] bool setMaxTimeToHide = true;
+        [SerializeField] bool setMaxTimeToHide = false;
         [SerializeField] float maxTimeToHide = 5f;
 
         private bool tooltipStarted = false;
         private float timeSinceWasOpened = 0f;
         protected bool stepIsFinished = false;
+        protected bool isRelatedFeatureActived = false;
 
         protected virtual void Update()
         {
@@ -48,6 +49,12 @@ namespace DCL.Tutorial
         public override IEnumerator OnStepExecute()
         {
             yield return new WaitUntil(() => stepIsFinished);
+        }
+
+        public override IEnumerator OnStepPlayHideAnimation()
+        {
+            yield return base.OnStepPlayHideAnimation();
+            yield return new WaitUntil(() => !isRelatedFeatureActived);
         }
 
         protected virtual void SetTooltipPosition()

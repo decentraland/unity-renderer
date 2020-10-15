@@ -1,5 +1,3 @@
-import { future, IFuture } from 'fp-future'
-
 import { setLoadingScreenVisible } from 'unity-interface/dcl'
 
 import { disconnect, sendToMordor } from 'shared/comms'
@@ -14,7 +12,7 @@ import { Store } from 'redux'
 declare const globalThis: StoreContainer
 
 export class Session {
-  private static _instance: IFuture<Session> = future()
+  private static _instance: Session = new Session()
 
   static get current() {
     return Session._instance

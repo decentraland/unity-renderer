@@ -12,8 +12,9 @@ public class CameraController : MonoBehaviour
 
     private Transform cameraTransform;
 
-    [Header("Virtual Cameras")] [SerializeField]
-    internal CameraStateBase[] cameraModes;
+    [Header("Virtual Cameras")]
+    [SerializeField] internal CinemachineBrain cameraBrain;
+    [SerializeField] internal CameraStateBase[] cameraModes;
 
     [Header("InputActions")] [SerializeField]
     internal InputAction_Trigger cameraChangeAction;
@@ -24,6 +25,7 @@ public class CameraController : MonoBehaviour
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
     private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
     private Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
+    private BooleanVariable cameraIsBlending => CommonScriptableObjects.cameraIsBlending;
 
     public CameraStateBase currentCameraState => cachedModeToVirtualCamera[CommonScriptableObjects.cameraMode];
 
@@ -35,6 +37,8 @@ public class CameraController : MonoBehaviour
 
         CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
         OnRenderingStateChanged(CommonScriptableObjects.rendererState.Get(), false);
+
+        CommonScriptableObjects.cameraBlocked.OnChange += CameraBlocked_OnChange;
 
         cachedModeToVirtualCamera = cameraModes.ToDictionary(x => x.cameraModeId, x => x);
 
@@ -55,6 +59,14 @@ public class CameraController : MonoBehaviour
     private void OnRenderingStateChanged(bool enabled, bool prevState)
     {
         camera.enabled = enabled;
+    }
+
+    private void CameraBlocked_OnChange(bool current, bool previous)
+    {
+        foreach (CameraStateBase cam in cameraModes)
+        {
+            cam.OnBlock(current);
+        }
     }
 
     private void OnCameraChangeAction(DCLAction_Trigger action)
@@ -88,6 +100,7 @@ public class CameraController : MonoBehaviour
         cameraForward.Set(cameraTransform.forward);
         cameraRight.Set(cameraTransform.right);
         cameraPosition.Set(cameraTransform.position);
+        cameraIsBlending.Set(cameraBrain.IsBlending);
 
         currentCameraState?.OnUpdate();
     }
@@ -122,6 +135,7 @@ public class CameraController : MonoBehaviour
         CommonScriptableObjects.playerUnityToWorldOffset.OnChange -= PrecisionChanged;
         cameraChangeAction.OnTriggered -= OnCameraChangeAction;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
+        CommonScriptableObjects.cameraBlocked.OnChange -= CameraBlocked_OnChange;
     }
 
     [System.Serializable]

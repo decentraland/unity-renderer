@@ -14,13 +14,13 @@ public class InputAction_Hold : ScriptableObject
 
     public bool isOn { get; private set; }
 
-    internal void RaiseOnStarted()
+    public void RaiseOnStarted()
     {
         isOn = true;
         OnStarted?.Invoke(dclAction);
     }
 
-    internal void RaiseOnFinished()
+    public void RaiseOnFinished()
     {
         isOn = false;
         OnFinished?.Invoke(dclAction);

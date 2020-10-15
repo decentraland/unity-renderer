@@ -1,6 +1,3 @@
-using System.Collections;
-using UnityEngine;
-
 namespace DCL.Tutorial
 {
     /// <summary>
@@ -8,6 +5,18 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Tooltip_GoToGenesisButton : TutorialStep_Tooltip
     {
+        public override void OnStepStart()
+        {
+            base.OnStepStart();
+
+            if (tutorialController != null &&
+                tutorialController.hudController != null &&
+                tutorialController.hudController.goToGenesisPlazaHud != null)
+            {
+                tutorialController.hudController.goToGenesisPlazaHud.OnOpen += GoToGenesisPlazaHud_OnOpen;
+            }
+        }
+
         protected override void SetTooltipPosition()
         {
             base.SetTooltipPosition();
@@ -18,6 +27,20 @@ namespace DCL.Tutorial
             {
                 tutorialController.hudController.taskbarHud.ShowGoToGenesisPlazaButton();
                 tooltipTransform.position = tutorialController.hudController.taskbarHud.goToGenesisTooltipReference.position;
+            }
+        }
+
+        private void GoToGenesisPlazaHud_OnOpen(bool isVisible)
+        {
+            if (isVisible)
+            {
+                isRelatedFeatureActived = true;
+                stepIsFinished = true;
+                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
+            }
+            else if (isRelatedFeatureActived)
+            {
+                isRelatedFeatureActived = false;
             }
         }
     }

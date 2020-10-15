@@ -20,18 +20,25 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
     [SerializeField] internal Button settingsButton;
     [SerializeField] internal Button helpAndSupportButton;
+    [SerializeField] internal Button tutorialButton;
 
     private TaskbarHUDView view;
+
+    public event System.Action<bool> OnMoreMenuOpened;
+    public event System.Action OnRestartTutorial;
 
     public void Initialize(TaskbarHUDView view)
     {
         this.view = view;
+
+        CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
 
         collapseBarButton.gameObject.SetActive(true);
         hideUIButton.gameObject.SetActive(true);
         controlsButton.gameObject.SetActive(false);
         settingsButton.gameObject.SetActive(false);
         helpAndSupportButton.gameObject.SetActive(false);
+        tutorialButton.gameObject.SetActive(true);
 
         collapseBarButton.onClick.AddListener(() =>
         {
@@ -42,6 +49,22 @@ public class TaskbarMoreMenu : MonoBehaviour
         {
             ToggleHideUI();
         });
+
+        tutorialButton.onClick.AddListener(() =>
+        {
+            OnRestartTutorial?.Invoke();
+        });
+    }
+
+    private void OnDestroy()
+    {
+        CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
+    }
+
+    private void TutorialActive_OnChange(bool current, bool previous)
+    {
+        collapseBarButton.gameObject.SetActive(!current);
+        hideUIButton.gameObject.SetActive(!current);
     }
 
     internal void ActivateControlsButton()
@@ -80,13 +103,38 @@ public class TaskbarMoreMenu : MonoBehaviour
     internal void ShowMoreMenu(bool visible, bool instant = false)
     {
         if (visible)
+        {
+            if (!moreMenuAnimator.gameObject.activeInHierarchy)
+            {
+                moreMenuAnimator.gameObject.SetActive(true);
+            }
             moreMenuAnimator.Show(instant);
+        }
         else
-            moreMenuAnimator.Hide(instant);
+        {
+            if (!moreMenuAnimator.gameObject.activeInHierarchy)
+            {
+                moreMenuAnimator.gameObject.SetActive(false);
+            }
+            else
+            {
+                moreMenuAnimator.Hide(instant);
+            }
+        }
+
+        OnMoreMenuOpened?.Invoke(visible);
+    }
+
+    internal void ShowTutorialButton(bool visible)
+    {
+        tutorialButton.gameObject.SetActive(visible);
     }
 
     private void ToggleCollapseBar()
     {
+        if (CommonScriptableObjects.tutorialActive)
+            return;
+
         view.ShowBar(!view.isBarVisible);
         ShowMoreMenu(false);
 
@@ -100,6 +148,9 @@ public class TaskbarMoreMenu : MonoBehaviour
 
     private void ToggleHideUI()
     {
+        if (CommonScriptableObjects.tutorialActive)
+            return;
+
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
         view.moreButton.SetToggleState(false);
     }

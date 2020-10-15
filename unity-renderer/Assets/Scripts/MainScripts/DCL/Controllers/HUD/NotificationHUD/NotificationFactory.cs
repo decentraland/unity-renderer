@@ -10,7 +10,8 @@ public class NotificationFactory : ScriptableObject
         COMMS_ERROR,
         AIRDROPPING,
         GENERIC_WITHOUT_BUTTON,
-        CUSTOM
+        CUSTOM,
+        UI_HIDDEN
     }
 
     [System.Serializable]

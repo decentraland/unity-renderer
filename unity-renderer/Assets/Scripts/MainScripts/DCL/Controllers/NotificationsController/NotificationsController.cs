@@ -5,6 +5,7 @@ public class NotificationsController : MonoBehaviour
     const int NOTIFICATION_DURATION = 5;
 
     public static NotificationsController i { get; private set; }
+    public static bool disableWelcomeNotification = false;
 
     void Awake()
     {
@@ -46,6 +47,9 @@ public class NotificationsController : MonoBehaviour
 
     public void ShowWelcomeNotification()
     {
+        if (disableWelcomeNotification)
+            return;
+
         //TODO(Brian): This should be triggered entirely by kernel
         string notificationText = $"Welcome, {UserProfile.GetOwnUserProfile().userName}!";
         Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();

@@ -40,13 +40,15 @@ namespace DCL.Tutorial
 
         private void ControlsHud_OnControlsOpened()
         {
-            if (!controlsHasBeenOpened)
+            if (!controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenOpened = true;
+
+            tutorialController?.hudController?.taskbarHud?.SetVisibility(true);
         }
 
         private void ControlsHud_OnControlsClosed()
         {
-            if (controlsHasBeenOpened)
+            if (controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenClosed = true;
         }
     }

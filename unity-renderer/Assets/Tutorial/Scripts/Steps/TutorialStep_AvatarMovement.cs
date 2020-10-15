@@ -16,7 +16,8 @@ namespace DCL.Tutorial
 
         private void Update()
         {
-            if (playerXAxisInpuAction.GetValue() != 0f || playerYAxisInputAction.GetValue() != 0f)
+            if ((playerXAxisInpuAction.GetValue() != 0f || playerYAxisInputAction.GetValue() != 0f) &&
+                mainSection.activeSelf)
                 timeRunning += Time.deltaTime;
         }
 

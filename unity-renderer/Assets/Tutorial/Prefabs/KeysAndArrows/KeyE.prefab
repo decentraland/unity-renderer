@@ -113,7 +113,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278715908
+    rgba: 4282725152
   m_fontColor: {r: 0.1254902, g: 0.2, b: 0.2705882, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -653,6 +653,7 @@ GameObject:
   - component: {fileID: 6297117190444731830}
   - component: {fileID: 2586728241545021355}
   - component: {fileID: 5668443159444914402}
+  - component: {fileID: 1088250175779521712}
   m_Layer: 5
   m_Name: KeyE
   m_TagString: Untagged
@@ -722,3 +723,16 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1088250175779521712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8238634256670708159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 663e6244e806a7a488065f08f250ca02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  step: {fileID: 0}

@@ -834,7 +834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_VerticalAxis:
-    Value: 2.7949135
+    Value: 0
     m_MaxSpeed: 200
     m_AccelTime: 0.2
     m_DecelTime: 0.03
@@ -857,7 +857,7 @@ MonoBehaviour:
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_HorizontalAxis:
-    Value: 89.49799
+    Value: 0
     m_MaxSpeed: 200
     m_AccelTime: 0.2
     m_DecelTime: 0.03
@@ -1105,7 +1105,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6406064072910471882}
-  m_LocalRotation: {x: 0.32326585, y: -0, z: -0, w: 0.9463082}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.80036104, y: 1.369813, z: 1.8401191}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1266,6 +1266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 3202392186591585866}
+  cameraBrain: {fileID: 682333195972692980}
   cameraModes:
   - {fileID: 5141921647443392041}
   - {fileID: 8626957695305342742}

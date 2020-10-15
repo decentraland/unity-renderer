@@ -12,7 +12,7 @@ namespace DCL.Tutorial
 
         public override IEnumerator OnStepExecute()
         {
-            yield return new WaitUntil(() => jumpingInputAction.isOn);
+            yield return new WaitUntil(() => mainSection.activeSelf && jumpingInputAction.isOn);
         }
     }
 }

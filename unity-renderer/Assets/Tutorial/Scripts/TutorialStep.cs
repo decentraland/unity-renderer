@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -10,13 +11,23 @@ namespace DCL.Tutorial
     {
         protected static int STEP_FINISHED_ANIMATOR_TRIGGER = Animator.StringToHash("StepFinished");
 
+        internal event Action OnShowAnimationFinished;
+        internal event Action OnJustAfterStepExecuted;
+
         [SerializeField] internal bool unlockCursorAtStart = false;
         [SerializeField] internal bool show3DTeacherAtStart = false;
         [SerializeField] internal protected RectTransform teacherPositionRef;
+        [SerializeField] internal GameObject mainSection;
+        [SerializeField] internal GameObject skipTutorialSection;
+        [SerializeField] internal InputAction_Hold yesSkipInputAction;
+        [SerializeField] internal InputAction_Hold noSkipInputAction;
 
         protected TutorialController tutorialController;
         protected Animator stepAnimator;
         protected MouseCatcher mouseCatcher;
+        protected bool hideAnimationFinished = false;
+        protected bool blockSkipActions = false;
+
         internal bool letInstantiation = true;
 
         /// <summary>
@@ -37,8 +48,15 @@ namespace DCL.Tutorial
                 tutorialController.ShowTeacher3DModel(show3DTeacherAtStart);
 
                 if (show3DTeacherAtStart && teacherPositionRef != null)
+                {
                     tutorialController.SetTeacherPosition(teacherPositionRef.position);
+
+                    if (tutorialController.teacher.isHiddenByAnAnimation)
+                        tutorialController.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+                }
             }
+
+            ConfigureSkipOptions();
         }
 
         /// <summary>
@@ -51,12 +69,17 @@ namespace DCL.Tutorial
         }
 
         /// <summary>
-        /// Executes the final animation and waits for its finalization.
+        /// Executes the final animation and waits for its finalization and for any camera blending.
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerator OnStepPlayAnimationForHidding()
+        public virtual IEnumerator OnStepPlayHideAnimation()
         {
-            yield return WaitForAnimation(STEP_FINISHED_ANIMATOR_TRIGGER);
+            blockSkipActions = true;
+            OnJustAfterStepExecuted?.Invoke();
+            yield return PlayAndWaitForHideAnimation();
+
+            yield return null;
+            yield return new WaitUntil(() => !CommonScriptableObjects.cameraIsBlending.Get());
         }
 
         /// <summary>
@@ -64,16 +87,73 @@ namespace DCL.Tutorial
         /// </summary>
         public virtual void OnStepFinished()
         {
+            if (mainSection != null &&
+                skipTutorialSection != null &&
+                yesSkipInputAction != null &&
+                noSkipInputAction)
+            {
+                yesSkipInputAction.OnFinished -= YesSkipInputAction_OnFinished;
+                noSkipInputAction.OnFinished -= NoSkipInputAction_OnFinished;
+            }
         }
 
-        private IEnumerator WaitForAnimation(int animationTrigger)
+        private void OnShowAnimationFinish()
+        {
+            OnShowAnimationFinished?.Invoke();
+        }
+
+        /// <summary>
+        /// Warn about the finalization of the hide animation of the step
+        /// </summary>
+        private void OnHideAnimationFinish()
+        {
+            hideAnimationFinished = true;
+        }
+
+        private IEnumerator PlayAndWaitForHideAnimation()
         {
             if (stepAnimator == null)
                 yield break;
 
-            stepAnimator.SetTrigger(animationTrigger);
-            yield return null; // NOTE(Santi): It is needed to wait a frame for get the reference to the next animation clip correctly.
-            yield return new WaitForSeconds(stepAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length);
+            stepAnimator.SetTrigger(STEP_FINISHED_ANIMATOR_TRIGGER);
+            yield return new WaitUntil(() => hideAnimationFinished);
+        }
+
+        private void ConfigureSkipOptions()
+        {
+            if (mainSection != null &&
+                skipTutorialSection != null &&
+                yesSkipInputAction != null &&
+                noSkipInputAction)
+            {
+                yesSkipInputAction.OnFinished += YesSkipInputAction_OnFinished;
+                noSkipInputAction.OnFinished += NoSkipInputAction_OnFinished;
+            }
+        }
+
+        private void YesSkipInputAction_OnFinished(DCLAction_Hold action)
+        {
+            if (skipTutorialSection.activeSelf)
+            {
+                tutorialController.SkipTutorial();
+            }
+        }
+
+        private void NoSkipInputAction_OnFinished(DCLAction_Hold action)
+        {
+            if (blockSkipActions)
+                return;
+
+            if (mainSection.activeSelf)
+            {
+                mainSection.SetActive(false);
+                skipTutorialSection.SetActive(true);
+            }
+            else if (skipTutorialSection.activeSelf)
+            {
+                mainSection.SetActive(true);
+                skipTutorialSection.SetActive(false);
+            }
         }
     }
 }
