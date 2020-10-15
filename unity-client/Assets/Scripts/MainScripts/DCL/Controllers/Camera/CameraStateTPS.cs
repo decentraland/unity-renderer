@@ -1,4 +1,3 @@
-using System;
 using Cinemachine;
 using UnityEngine;
 
@@ -14,6 +13,8 @@ public class CameraStateTPS : CameraStateBase
     private Vector3 freeLookTopRigOriginalBodyDamping;
     private Vector3 freeLookMidRigOriginalBodyDamping;
     private Vector3 freeLookBotRigOriginalBodyDamping;
+    private float originalXAxisMaxSpeed;
+    private float originalYAxisMaxSpeed;
 
     protected Vector3Variable characterPosition => CommonScriptableObjects.playerUnityPosition;
     protected Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
@@ -32,6 +33,9 @@ public class CameraStateTPS : CameraStateBase
         freeLookMidRigOriginalBodyDamping = new Vector3(freeLookMidRig.m_XDamping, freeLookMidRig.m_YDamping, freeLookMidRig.m_ZDamping);
         freeLookBotRig = defaultVirtualCameraAsFreeLook.GetRig(2).GetCinemachineComponent<CinemachineTransposer>();
         freeLookBotRigOriginalBodyDamping = new Vector3(freeLookBotRig.m_XDamping, freeLookBotRig.m_YDamping, freeLookBotRig.m_ZDamping);
+
+        originalXAxisMaxSpeed = defaultVirtualCameraAsFreeLook.m_XAxis.m_MaxSpeed;
+        originalYAxisMaxSpeed = defaultVirtualCameraAsFreeLook.m_YAxis.m_MaxSpeed;
 
         base.Init(camera);
     }
@@ -145,5 +149,12 @@ public class CameraStateTPS : CameraStateBase
 
         defaultVirtualCameraAsFreeLook.m_XAxis.Value = eulerDir.y;
         defaultVirtualCameraAsFreeLook.m_YAxis.Value = eulerDir.x;
+    }
+
+    public override void OnBlock(bool blocked)
+    {
+        base.OnBlock(blocked);
+
+        defaultVirtualCameraAsFreeLook.enabled = !blocked;
     }
 }

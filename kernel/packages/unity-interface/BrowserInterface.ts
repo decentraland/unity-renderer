@@ -33,6 +33,7 @@ import { logout } from 'shared/session/actions'
 import { getIdentity, hasWallet } from 'shared/session'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { unityInterface } from './UnityInterface'
+import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
@@ -177,8 +178,8 @@ export class BrowserInterface {
 
   public SaveUserTutorialStep(data: { tutorialStep: number }) {
     const profile: Profile = getUserProfile().profile as Profile
-    profile.tutorialStep = data.tutorialStep
-    globalThis.globalStore.dispatch(saveProfileRequest(profile))
+    const updated = { ...profile, tutorialStep: data.tutorialStep }
+    globalThis.globalStore.dispatch(saveProfileRequest(updated))
   }
 
   public ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
@@ -214,8 +215,8 @@ export class BrowserInterface {
     // It's disabled because of security reasons.
   }
 
-  public EditAvatarClicked() {
-    // We used to call delightedSurvey() here
+  public SetDelightedSurveyEnabled(data: { enabled: boolean }) {
+    setDelightedSurveyEnabled(data.enabled)
   }
 
   public ReportScene(sceneId: string) {

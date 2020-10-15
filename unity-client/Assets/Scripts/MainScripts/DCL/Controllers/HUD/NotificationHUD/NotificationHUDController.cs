@@ -54,7 +54,7 @@ public class NotificationHUDController : IHUD
                 if (!string.IsNullOrEmpty(groupID) && groupID != notiList[i].model.groupID)
                     continue;
 
-                notiList[i].Dismiss();
+                notiList[i].Dismiss(instant: true);
             }
         }
     }

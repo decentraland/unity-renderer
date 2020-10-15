@@ -7,15 +7,13 @@ using System;
 public class EmailPromptHUDController : IHUD
 {
     const float POPUP_DELAY = 60;
+    const int EMAIL_PROMPT_PROFILE_FLAG = 128;
 
     EmailPromptHUDView view;
 
+    bool alreadyDisplayed = false;
     bool isPopupRoutineRunning = false;
     Coroutine showPopupDelayedRoutine;
-
-    public event Action OnSetEmailFlag;
-
-    public bool waitForEndOfTutorial { get; set; } = false;
 
     public EmailPromptHUDController()
     {
@@ -24,6 +22,7 @@ public class EmailPromptHUDController : IHUD
 
         view.OnDismiss += OnDismiss;
         view.OnSendEmail += OnSendEmail;
+        CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
 
         view.gameObject.SetActive(false);
     }
@@ -33,6 +32,7 @@ public class EmailPromptHUDController : IHUD
         if (visible)
         {
             Utils.UnlockCursor();
+            alreadyDisplayed = true;
             view.gameObject.SetActive(true);
             view.showHideAnimator.Show();
             WebInterface.ReportAnalyticsEvent("open email popup");
@@ -51,23 +51,37 @@ public class EmailPromptHUDController : IHUD
     {
         if (view != null)
         {
+            view.OnDismiss -= OnDismiss;
+            view.OnSendEmail -= OnSendEmail;
+
             GameObject.Destroy(view.gameObject);
         }
         if (showPopupDelayedRoutine != null)
         {
             StopPopupRoutine();
         }
+
+        CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
     }
 
     public void SetEnable(bool enable)
     {
-        if (enable && !isPopupRoutineRunning)
+        if (enable && !isPopupRoutineRunning && !alreadyDisplayed)
         {
             StartPopupRoutine();
         }
         else if (!enable && isPopupRoutineRunning)
         {
             StopPopupRoutine();
+        }
+    }
+
+    void ResetPopupDelayed()
+    {
+        if (isPopupRoutineRunning)
+        {
+            StopPopupRoutine();
+            StartPopupRoutine();
         }
     }
 
@@ -90,9 +104,9 @@ public class EmailPromptHUDController : IHUD
     {
         isPopupRoutineRunning = true;
         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+        yield return new WaitUntil(() => !CommonScriptableObjects.tutorialActive.Get());
         yield return WaitForSecondsCache.Get(seconds);
         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
-        yield return new WaitUntil(() => !waitForEndOfTutorial);
         SetVisibility(true);
         isPopupRoutineRunning = false;
     }
@@ -120,6 +134,12 @@ public class EmailPromptHUDController : IHUD
 
     void SetEmailFlag()
     {
-        OnSetEmailFlag?.Invoke();
+        WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | EMAIL_PROMPT_PROFILE_FLAG);
+    }
+
+    private void TutorialActive_OnChange(bool current, bool previous)
+    {
+        if (current)
+            ResetPopupDelayed();
     }
 }

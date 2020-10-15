@@ -13,6 +13,8 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal RectTransform leftWindowContainer;
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
+    [SerializeField] internal GameObject voiceChatButtonContainer;
+    [SerializeField] internal VoiceChatButton voiceChatButton;
     [SerializeField] internal TaskbarButton chatButton;
     [SerializeField] internal TaskbarButton friendsButton;
     [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
@@ -29,6 +31,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Tutorial Config")]
     [SerializeField] internal RectTransform exploreTooltipReference;
+    [SerializeField] internal RectTransform backpackTooltipReference;
     [SerializeField] internal RectTransform moreTooltipReference;
     [SerializeField] internal RectTransform goToGenesisTooltipReference;
 
@@ -67,15 +70,15 @@ public class TaskbarHUDView : MonoBehaviour
     }
 
     internal static TaskbarHUDView Create(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController, bool newTaskbarIsEnabled)
+        IFriendsController friendsController)
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<TaskbarHUDView>();
-        view.Initialize(controller, chatController, friendsController, newTaskbarIsEnabled);
+        view.Initialize(controller, chatController, friendsController);
         return view;
     }
 
     public void Initialize(TaskbarHUDController controller, IChatController chatController,
-        IFriendsController friendsController, bool newTaskbarIsEnabled)
+        IFriendsController friendsController)
     {
         this.controller = controller;
 
@@ -85,6 +88,7 @@ public class TaskbarHUDView : MonoBehaviour
         backpackButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
         goToGenesisButton.transform.parent.gameObject.SetActive(false);
+        voiceChatButtonContainer.SetActive(false);
 
         moreButton.gameObject.SetActive(true);
         moreMenu.Initialize(this);
@@ -118,9 +122,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         moreButton.OnToggleOn += OnWindowToggleOn;
         moreButton.OnToggleOff += OnWindowToggleOff;
-
-        if (!newTaskbarIsEnabled)
-            ActivateOldTaskbar();
     }
 
     private void OnWindowToggleOff(TaskbarButton obj)
@@ -236,6 +237,11 @@ public class TaskbarHUDView : MonoBehaviour
         moreMenu.ActivateControlsButton();
     }
 
+    internal void OnAddVoiceChat()
+    {
+        voiceChatButtonContainer.SetActive(true);
+    }
+
     internal void ShowBar(bool visible, bool instant = false)
     {
         if (visible)
@@ -307,14 +313,5 @@ public class TaskbarHUDView : MonoBehaviour
             moreButton.OnToggleOn -= OnWindowToggleOn;
             moreButton.OnToggleOff -= OnWindowToggleOff;
         }
-    }
-
-    // NOTE(Santi): This is temporal, until we remove the old taskbar
-    private void ActivateOldTaskbar()
-    {
-        taskbarPanelTransf.offsetMax = new Vector2(-200, taskbarPanelTransf.offsetMax.y);
-        taskbarPanelImage.color = new Color(taskbarPanelImage.color.r, taskbarPanelImage.color.g, taskbarPanelImage.color.b, 0f);
-        moreButton.gameObject.SetActive(false);
-        rightButtonsContainer.SetActive(false);
     }
 }

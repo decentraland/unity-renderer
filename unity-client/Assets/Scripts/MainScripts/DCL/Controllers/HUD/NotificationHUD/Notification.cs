@@ -131,9 +131,14 @@ public class Notification : MonoBehaviour
 
     public void Dismiss()
     {
+        Dismiss(false);
+    }
+
+    public void Dismiss(bool instant)
+    {
         StopTimer();
 
-        if (showHideAnimator != null)
+        if (!instant && showHideAnimator != null)
         {
             showHideAnimator.OnWillFinishHide -= DismissInternal;
             showHideAnimator.OnWillFinishHide += DismissInternal;

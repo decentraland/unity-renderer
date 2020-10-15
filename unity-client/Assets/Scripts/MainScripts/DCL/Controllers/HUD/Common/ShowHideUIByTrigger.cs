@@ -7,10 +7,14 @@ using UnityEngine;
 public class ShowHideUIByTrigger : MonoBehaviour
 {
     private CanvasGroup canvasGroup;
+    private ShowHideAnimator showHideAnimator;
+    private Animator animator;
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
+        showHideAnimator = GetComponent<ShowHideAnimator>();
+        animator = GetComponent<Animator>();
         CommonScriptableObjects.allUIHidden.OnChange += AllUIVisible_OnChange;
         SetUIVisibility(!CommonScriptableObjects.allUIHidden.Get());
     }
@@ -27,6 +31,12 @@ public class ShowHideUIByTrigger : MonoBehaviour
 
     private void SetUIVisibility(bool isVisible)
     {
+        if (showHideAnimator != null)
+            showHideAnimator.enabled = isVisible;
+
+        if (animator != null)
+            animator.enabled = isVisible;
+
         canvasGroup.alpha = isVisible ? 1f : 0f;
         canvasGroup.interactable = isVisible;
         canvasGroup.blocksRaycasts = isVisible;

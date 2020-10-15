@@ -1,4 +1,4 @@
-﻿using DCL.Interface;
+using DCL.Interface;
 using UnityEngine;
 using System.Collections;
 
@@ -16,15 +16,16 @@ public class ManaHUDController : IHUD
     {
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ManaHUD")).GetComponent<ManaHUDview>();
         view.name = "_ManaHUD";
-        view.gameObject.SetActive(false);
+        view.SetVisibility(false);
 
         view.buttonManaInfo.onPointerDown += OnManaInfoPressed;
         view.buttonManaPurchase.onPointerDown += OnManaPurchasePressed;
+        CommonScriptableObjects.isProfileHUDOpen.OnChange += IsProfileHUDOpen_OnChange;
     }
 
     public void SetVisibility(bool visible)
     {
-        view.gameObject.SetActive(visible);
+        view.SetVisibility(visible);
 
         if (visible && fetchIntervalRoutine == null)
         {
@@ -48,7 +49,7 @@ public class ManaHUDController : IHUD
 
     public void Dispose()
     {
-        if (view?.gameObject)
+        if (view != null)
         {
             Object.Destroy(view.gameObject);
         }
@@ -61,6 +62,7 @@ public class ManaHUDController : IHUD
 
         view.buttonManaInfo.onPointerDown -= OnManaInfoPressed;
         view.buttonManaPurchase.onPointerDown -= OnManaPurchasePressed;
+        CommonScriptableObjects.isProfileHUDOpen.OnChange -= IsProfileHUDOpen_OnChange;
     }
 
     void OnManaInfoPressed()
@@ -71,6 +73,11 @@ public class ManaHUDController : IHUD
     void OnManaPurchasePressed()
     {
         WebInterface.OpenURL(URL_MANA_PURCHASE);
+    }
+
+    void IsProfileHUDOpen_OnChange(bool current, bool previous)
+    {
+        view.uiHoverTriggerShowHideAnimator.enabled = !current;
     }
 
     IEnumerator IntervalRoutine()

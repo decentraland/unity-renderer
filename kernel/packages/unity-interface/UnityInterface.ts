@@ -19,6 +19,7 @@ import {
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
 import { defaultLogger } from 'shared/logger'
+import { setDelightedSurveyEnabled } from './delightedSurvey'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -189,11 +190,6 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'ShowFPSPanel')
   }
 
-  /* NOTE(Santi): This is temporal, until we remove the old taskbar */
-  public EnableNewTaskbar() {
-    this.gameInstance.SendMessage('HUDController', 'EnableNewTaskbar')
-  }
-
   public HideFPSPanel() {
     this.gameInstance.SendMessage('SceneController', 'HideFPSPanel')
   }
@@ -242,10 +238,6 @@ export class UnityInterface {
 
   public ClearWearableCatalog() {
     this.gameInstance.SendMessage('SceneController', 'ClearWearableCatalog')
-  }
-
-  public ShowNewWearablesNotification(wearableNumber: number) {
-    // disabled
   }
 
   public ShowNotification(notification: Notification) {
@@ -340,6 +332,14 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'RejectGIFProcessingRequest')
   }
 
+  public ConfigureEmailPrompt(tutorialStep: number) {
+    const emailCompletedFlag = 128
+    this.ConfigureHUDElement(HUDElementID.EMAIL_PROMPT, {
+      active: (tutorialStep & emailCompletedFlag) === 0,
+      visible: false
+    })
+  }
+
   public ConfigureTutorial(tutorialStep: number, fromDeepLink: boolean) {
     const tutorialCompletedFlag = 256
 
@@ -348,8 +348,12 @@ export class UnityInterface {
       visible: false
     })
 
-    if (WORLD_EXPLORER && (RESET_TUTORIAL || (tutorialStep & tutorialCompletedFlag) === 0)) {
-      this.SetTutorialEnabled(fromDeepLink)
+    if (WORLD_EXPLORER) {
+      if (RESET_TUTORIAL || (tutorialStep & tutorialCompletedFlag) === 0) {
+        this.SetTutorialEnabled(fromDeepLink)
+      } else {
+        setDelightedSurveyEnabled(true)
+      }
     }
   }
 

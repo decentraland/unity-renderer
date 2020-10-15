@@ -379,9 +379,6 @@ namespace DCL
                             case "ClearWearableCatalog":
                                 CatalogController.i?.ClearWearableCatalog();
                                 break;
-                            case "ShowNewWearablesNotification":
-                                HUDController.i?.ShowNewWearablesNotification(msg.payload);
-                                break;
                             case "ConfigureHUDElement":
                                 HUDController.i?.ConfigureHUDElement(msg.payload);
                                 break;
@@ -432,9 +429,6 @@ namespace DCL
                                 break;
                             case "SetPlayerTalking":
                                 HUDController.i.SetPlayerTalking(msg.payload);
-                                break;
-                            case "EnableNewTaskbar":
-                                HUDController.i.EnableNewTaskbar(); // NOTE(Santi): This is temporal, until we remove the old taskbar
                                 break;
                             default:
                                 Debug.Log(

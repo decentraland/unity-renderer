@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -10,7 +10,8 @@ internal class ProfileHUDView : MonoBehaviour
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField] internal ShowHideAnimator showHideAnimator;
+    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
+    [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
     [SerializeField] internal GameObject loadingSpinner;
 
     [SerializeField] internal ShowHideAnimator copyToast;
@@ -34,23 +35,13 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField] internal Button buttonCopyAddress;
     [SerializeField] internal Button buttonLogOut;
 
-
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
 
     private void Awake()
     {
         buttonToggleMenu.onClick.AddListener(ToggleMenu);
-        buttonCopyAddress.onClick.AddListener(() =>
-        {
-            copyTooltip.gameObject.SetActive(false);
-            if (copyToastRoutine != null)
-            {
-                StopCoroutine(copyToastRoutine);
-            }
-
-            copyToastRoutine = StartCoroutine(ShowCopyToast());
-        });
+        buttonCopyAddress.onClick.AddListener(CopyAddress);
         copyToast.gameObject.SetActive(false);
     }
 
@@ -72,14 +63,33 @@ internal class ProfileHUDView : MonoBehaviour
 
     public void ToggleMenu()
     {
-        if (showHideAnimator.isVisible)
+        if (menuShowHideAnimator.isVisible)
         {
-            showHideAnimator.Hide();
+            menuShowHideAnimator.Hide();
+            CommonScriptableObjects.isProfileHUDOpen.Set(false);
         }
         else
         {
-            showHideAnimator.Show();
+            menuShowHideAnimator.Show();
+            CommonScriptableObjects.isProfileHUDOpen.Set(true);
         }
+    }
+
+    public void HideMenu()
+    {
+        if (menuShowHideAnimator.isVisible)
+        {
+            menuShowHideAnimator.Hide();
+            CommonScriptableObjects.isProfileHUDOpen.Set(false);
+        }
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (visible && !mainShowHideAnimator.isVisible)
+            mainShowHideAnimator.Show();
+        else if (!visible && mainShowHideAnimator.isVisible)
+            mainShowHideAnimator.Hide();
     }
 
     private void HandleProfileSnapshot(UserProfile userProfile)
@@ -142,6 +152,24 @@ internal class ProfileHUDView : MonoBehaviour
         {
             profile.OnFaceSnapshotReadyEvent -= SetProfileImage;
         }
+    }
+
+    private void CopyAddress()
+    {
+        if (!profile)
+        {
+            return;
+        }
+
+        DCL.Environment.i.clipboard.WriteText(profile.userId);
+
+        copyTooltip.gameObject.SetActive(false);
+        if (copyToastRoutine != null)
+        {
+            StopCoroutine(copyToastRoutine);
+        }
+
+        copyToastRoutine = StartCoroutine(ShowCopyToast());
     }
 
     private IEnumerator ShowCopyToast()

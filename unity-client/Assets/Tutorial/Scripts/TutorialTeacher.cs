@@ -16,6 +16,8 @@ namespace DCL.Tutorial
 
         [SerializeField] internal Animator teacherAnimator;
 
+        [HideInInspector] public bool isHiddenByAnAnimation = false;
+
         /// <summary>
         /// Play an animation.
         /// </summary>
@@ -32,9 +34,11 @@ namespace DCL.Tutorial
                     break;
                 case TeacherAnimation.QuickGoodbye:
                     teacherAnimator.SetTrigger("QuickGoodbye");
+                    isHiddenByAnAnimation = true;
                     break;
                 case TeacherAnimation.Reset:
                     teacherAnimator.SetTrigger("Reset");
+                    isHiddenByAnAnimation = false;
                     break;
                 default:
                     break;

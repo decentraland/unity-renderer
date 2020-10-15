@@ -6,6 +6,7 @@ namespace DCL.GoToGenesisPlazaHUD
     {
         public GoToGenesisPlazaHUDView view { private set; get; }
 
+        public event System.Action<bool> OnOpen;
         public event System.Action OnBeforeGoToGenesisPlaza;
         public event System.Action OnAfterGoToGenesisPlaza;
 
@@ -19,6 +20,7 @@ namespace DCL.GoToGenesisPlazaHUD
 
         public void SetVisibility(bool visible)
         {
+            OnOpen?.Invoke(visible);
             view.SetVisibility(visible);
         }
 

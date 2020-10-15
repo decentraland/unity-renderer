@@ -35,6 +35,20 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsFromGenesisPlazaCorrectly()
+        {
+            ConfigureTutorialForGenesisPlaza();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
 
         [UnityTest]
@@ -48,6 +62,21 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsFromDeepLinkCorrectly()
+        {
+            ConfigureTutorialForDeepLink();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsFalse(tutorialController.markTutorialAsCompleted);
+            Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
 
         [UnityTest]
@@ -60,6 +89,48 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsFromGenesisPlazaAfterDeepLinkCorrectly()
+        {
+            ConfigureTutorialForGenesisPlazaAfterDeepLink();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTutorialStepsForResetTutorialCorrectly()
+        {
+            ConfigureTutorialForResetTutorial();
+
+            yield return tutorialController.StartTutorialFromStep(0);
+
+            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(tutorialController.tutorialReset);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsForResetTutorialCorrectly()
+        {
+            ConfigureTutorialForResetTutorial();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(tutorialController.tutorialReset);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
 
         [Test]
@@ -90,8 +161,11 @@ namespace DCL.Tutorial_Tests
             tutorialController.stepsOnGenesisPlaza.Clear();
             tutorialController.stepsFromDeepLink.Clear();
             tutorialController.stepsOnGenesisPlazaAfterDeepLink.Clear();
+            tutorialController.stepsFromReset.Clear();
             tutorialController.timeBetweenSteps = 0f;
+            tutorialController.sendStats = false;
             tutorialController.debugRunTutorial = false;
+            tutorialController.tutorialReset = false;
         }
 
         private void DestroyTutorial()
@@ -120,6 +194,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.alreadyOpenedFromDeepLink = false;
             tutorialController.isRunning = true;
             tutorialController.markTutorialAsCompleted = false;
+            CommonScriptableObjects.tutorialActive.Set(true);
         }
 
         private void ConfigureTutorialForDeepLink()
@@ -136,6 +211,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.openedFromDeepLink = true;
             tutorialController.isRunning = true;
             tutorialController.markTutorialAsCompleted = true;
+            CommonScriptableObjects.tutorialActive.Set(true);
         }
 
         private void ConfigureTutorialForGenesisPlazaAfterDeepLink()
@@ -152,6 +228,24 @@ namespace DCL.Tutorial_Tests
             tutorialController.alreadyOpenedFromDeepLink = true;
             tutorialController.isRunning = true;
             tutorialController.markTutorialAsCompleted = false;
+            CommonScriptableObjects.tutorialActive.Set(true);
+        }
+
+        private void ConfigureTutorialForResetTutorial()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                tutorialController.stepsFromReset.Add(CreateNewFakeStep());
+            }
+
+            currentStepIndex = 0;
+            currentSteps = tutorialController.stepsFromReset;
+
+            tutorialController.tutorialReset = true;
+            tutorialController.playerIsInGenesisPlaza = false;
+            tutorialController.isRunning = true;
+            tutorialController.markTutorialAsCompleted = false;
+            CommonScriptableObjects.tutorialActive.Set(true);
         }
 
         private TutorialStep_Mock CreateNewFakeStep()
@@ -194,6 +288,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(tutorialController.isRunning);
             Assert.IsNotNull(tutorialController.runningStep);
             Assert.IsTrue(currentSteps[currentStepIndex] == tutorialController.runningStep);
+            Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
         }
     }
 }

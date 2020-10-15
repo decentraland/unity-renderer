@@ -25,7 +25,7 @@ namespace Tests
 
             friendsController = new FriendsController_Mock();
             controller = new ExploreHUDController();
-            controller.Initialize(friendsController, false);
+            controller.Initialize(friendsController);
         }
 
         protected override IEnumerator TearDown()

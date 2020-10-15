@@ -98,6 +98,12 @@ public static class CommonScriptableObjects
     private static Vector3Variable cameraRightValue;
     public static Vector3Variable cameraRight => GetOrLoad(ref cameraRightValue, "ScriptableObjects/CameraRight");
 
+    private static BooleanVariable cameraIsBlendingValue;
+    public static BooleanVariable cameraIsBlending => GetOrLoad(ref cameraIsBlendingValue, "ScriptableObjects/CameraIsBlending");
+
+    private static BooleanVariable cameraBlockedValue;
+    public static BooleanVariable cameraBlocked => GetOrLoad(ref cameraBlockedValue, "ScriptableObjects/CameraBlocked");
+
     private static BooleanVariable playerInfoCardVisibleStateValue;
     public static BooleanVariable playerInfoCardVisibleState => GetOrLoad(ref playerInfoCardVisibleStateValue, "ScriptableObjects/PlayerInfoCardVisibleState");
 
@@ -118,6 +124,15 @@ public static class CommonScriptableObjects
 
     private static CameraMode cameraModeValue;
     public static CameraMode cameraMode => GetOrLoad(ref cameraModeValue, "ScriptableObjects/CameraMode");
+
+    private static BooleanVariable isProfileHUDOpenValue;
+    public static BooleanVariable isProfileHUDOpen => GetOrLoad(ref isProfileHUDOpenValue, "ScriptableObjects/IsProfileHUDOpen");
+
+    private static BooleanVariable isTaskbarHUDInitializedValue;
+    public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");
+
+    private static BooleanVariable tutorialActiveValue;
+    public static BooleanVariable tutorialActive => GetOrLoad(ref tutorialActiveValue, "ScriptableObjects/TutorialActive");
 
     internal static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {

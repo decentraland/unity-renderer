@@ -27,6 +27,7 @@ namespace DCL
         bool cursorLockedBeforeOpening = true;
 
         public static bool isOpen { private set; get; } = false;
+        public static event System.Action<bool> OnToggle;
 
         void Start()
         {
@@ -128,6 +129,8 @@ namespace DCL
 
                 AudioScriptableObjects.dialogClose.Play(true);
             }
+
+            OnToggle?.Invoke(isOpen);
         }
 
         void UpdateCurrentSceneData(Vector2Int current, Vector2Int previous)

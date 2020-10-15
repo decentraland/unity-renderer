@@ -1,5 +1,72 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2330043406564742291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3443137769323014640}
+  - component: {fileID: 770616498577745558}
+  m_Layer: 0
+  m_Name: TutorialEagleEyeVCam
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &3443137769323014640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2330043406564742291}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 7466069395739949181}
+  m_Father: {fileID: 7254021865256056288}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &770616498577745558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2330043406564742291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExcludedPropertiesInInspector:
+  - m_Script
+  m_LockStageInInspector: 
+  m_StreamingVersion: 20170927
+  m_Priority: 100
+  m_StandbyUpdate: 2
+  m_LookAt: {fileID: 0}
+  m_Follow: {fileID: 0}
+  m_Lens:
+    FieldOfView: 60
+    OrthographicSize: 10
+    NearClipPlane: 0.1
+    FarClipPlane: 300
+    Dutch: 0
+    LensShift: {x: 0, y: 0}
+  m_Transitions:
+    m_BlendHint: 0
+    m_InheritPosition: 0
+    m_OnCameraLive:
+      m_PersistentCalls:
+        m_Calls: []
+  m_LegacyBlendHint: 0
+  m_ComponentOwner: {fileID: 7466069395739949181}
 --- !u!1 &2479193676034961897
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,6 +179,49 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!1 &3688512843119161436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7466069395739949181}
+  - component: {fileID: 5452560157419830314}
+  m_Layer: 0
+  m_Name: cm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7466069395739949181
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688512843119161436}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -537, y: -302, z: -1.1408892}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3443137769323014640}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5452560157419830314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3688512843119161436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4142882636063433730
 GameObject:
   m_ObjectHideFlags: 0
@@ -141,6 +251,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9205389087709058025}
+  - {fileID: 3443137769323014640}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -156,26 +267,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6dbb06cb08104c1a9fc5ceaabd5115c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialVersion: 1
   timeBetweenSteps: 0.5
+  sendStats: 1
   stepsOnGenesisPlaza:
   - {fileID: 6639514825351315494, guid: e80a4e30b31058544ada1af4125c4b91, type: 3}
   - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
   - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
   - {fileID: 3513632204808866648, guid: cc71903c441610f40b884c6fe6ddedf5, type: 3}
   - {fileID: 3952690954592510233, guid: 5fe82923a0c0de34b93a9ebdce7c6cf3, type: 3}
   - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
-  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
   - {fileID: 5639665319216893634, guid: 259bf436d3fbfe847b44d46cf81f1201, type: 3}
   - {fileID: 4712031868617782090, guid: 54219e5d1e0415f4ab74ddc2ee0adbfa, type: 3}
   - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
   - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
   stepsFromDeepLink:
   - {fileID: 2279349500871665793, guid: 8c33a8a8dee303549b52b8aa6a60f6ae, type: 3}
   - {fileID: 7355157609001770265, guid: 3d256fc4674c9c348979fd3a0688eb7c, type: 3}
   stepsOnGenesisPlazaAfterDeepLink:
-  - {fileID: 6639514825351315494, guid: e80a4e30b31058544ada1af4125c4b91, type: 3}
+  - {fileID: 4861517172874704628, guid: d1f998c8bfc320a409c115b30d05a337, type: 3}
   - {fileID: 4712031868617782090, guid: 54219e5d1e0415f4ab74ddc2ee0adbfa, type: 3}
   - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
+  - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
+  stepsFromReset:
+  - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
+  - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 758471573230640681, guid: 53f98be530a835e4eae47ac30281cd4c, type: 3}
+  - {fileID: 3513632204808866648, guid: cc71903c441610f40b884c6fe6ddedf5, type: 3}
+  - {fileID: 3952690954592510233, guid: 5fe82923a0c0de34b93a9ebdce7c6cf3, type: 3}
+  - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
+  - {fileID: 5639665319216893634, guid: 259bf436d3fbfe847b44d46cf81f1201, type: 3}
+  - {fileID: 4712031868617782090, guid: 54219e5d1e0415f4ab74ddc2ee0adbfa, type: 3}
+  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
+  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
   - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
   teacherCamera: {fileID: 604084521501385079}
   teacherRawImage: {fileID: 6732306866191114328}
@@ -214,6 +341,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  teacherCanvas: {fileID: 6650911990874416982}
+  eagleEyeCamera: {fileID: 770616498577745558}
+  eagleCamInitPosition: {x: 30, y: 20, z: -60}
+  eagleCamInitLookAtPoint: {x: 0, y: 0, z: 0}
+  eagleCamRotationActived: 1
+  eagleCamRotationSpeed: 1
   debugRunTutorial: 0
   debugStartingStepIndex: 0
   debugOpenedFromDeepLink: 0
@@ -276,7 +409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

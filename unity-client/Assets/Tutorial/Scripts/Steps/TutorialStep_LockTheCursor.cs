@@ -8,6 +8,13 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_LockTheCursor : TutorialStep
     {
+        public override void OnStepStart()
+        {
+            base.OnStepStart();
+
+            tutorialController?.hudController?.taskbarHud?.SetVisibility(false);
+        }
+
         public override IEnumerator OnStepExecute()
         {
             yield return new WaitUntil(() => mouseCatcher.isLocked);
