@@ -1,10 +1,11 @@
 using DCL.Helpers;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public class DCLAudioSource : BaseComponent
+    public class DCLAudioSource : BaseComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]
         public class Model
@@ -21,6 +22,11 @@ namespace DCL.Components
         AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
+        private void Awake()
+        {
+            audioSource = gameObject.GetOrCreateComponent<AudioSource>();
+        }
+
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
         {
             if (lastDCLAudioClip != null)
@@ -35,12 +41,18 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
-            audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;
 
+            ApplyCurrentModel();
+
+            yield return null;
+        }
+
+        private void ApplyCurrentModel()
+        {
             audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
@@ -58,7 +70,9 @@ namespace DCL.Components
                     if (dclAudioClip.loadingState == DCLAudioClip.LoadState.LOADING_COMPLETED)
                     {
                         audioSource.clip = dclAudioClip.audioClip;
-                        audioSource.Play();
+
+                        if(audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+                            audioSource.Play();
                     }
                     else
                     {
@@ -78,8 +92,6 @@ namespace DCL.Components
                     audioSource.Stop();
                 }
             }
-
-            yield return null;
         }
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
@@ -93,6 +105,16 @@ namespace DCL.Components
 
             //NOTE(Brian): Unsuscribe events.
             InitDCLAudioClip(null);
+        }
+
+        public void UpdateOutOfBoundariesState(bool isEnabled)
+        {
+            bool isDirty = audioSource.enabled != isEnabled;
+            audioSource.enabled = isEnabled;
+            if (isDirty && isEnabled)
+            {
+                ApplyCurrentModel();
+            }
         }
 
         private void DclAudioClip_OnLoadingFinished(DCLAudioClip obj)
