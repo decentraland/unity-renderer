@@ -3,6 +3,8 @@ using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Components;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -41,6 +43,31 @@ namespace Tests
 
             bool destroyedOrPooled = goEntity == null || !goEntity.activeSelf;
             Assert.IsTrue(destroyedOrPooled);
+        }
+
+        [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
+        public IEnumerator InterpolatePosition()
+        {
+            AvatarTestHelpers.CreateTestCatalog();
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Abortitus", "TestAvatar.json");
+
+            // We must wait for the AvatarShape to finish or the OnTransformChanged event is not used
+            yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
+
+            Assert.AreEqual(0f, avatar.entity.gameObject.transform.position.x);
+            Assert.AreEqual(0f, avatar.entity.gameObject.transform.position.z);
+
+            // Update position to the other end of the parcel
+            var transformModel = new DCLTransform.Model { position = new Vector3(15, 2, 15) };
+
+            TestHelpers.SetEntityTransform(scene, avatar.entity, transformModel);
+
+            yield return null;
+
+            Assert.AreNotEqual(15f, avatar.entity.gameObject.transform.position.x);
+            Assert.AreNotEqual(15f, avatar.entity.gameObject.transform.position.z);
         }
 
         [UnityTest]

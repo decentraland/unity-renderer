@@ -309,7 +309,8 @@ function mapToPositionMessage(positionData: PositionData): Position {
     positionData.getRotationX(),
     positionData.getRotationY(),
     positionData.getRotationZ(),
-    positionData.getRotationW()
+    positionData.getRotationW(),
+    positionData.getImmediate()
   ]
 }
 
@@ -351,6 +352,7 @@ function createPositionData(p: Position) {
   positionData.setRotationY(p[4])
   positionData.setRotationZ(p[5])
   positionData.setRotationW(p[6])
+  positionData.setImmediate(p[7])
   return positionData
 }
 

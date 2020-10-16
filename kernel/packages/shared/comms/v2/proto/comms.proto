@@ -19,6 +19,7 @@ message PositionData {
     float rotation_y = 5;
     float rotation_z = 6;
     float rotation_w = 7;
+    bool immediate = 8;
 }
 
 message ProfileData {

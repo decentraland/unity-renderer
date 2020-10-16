@@ -38,6 +38,7 @@ public class DCLCharacterController : MonoBehaviour
     float lastJumpButtonPressedTime = 0f;
     float lastMovementReportTime;
     float originalGravity;
+    Vector3 lastLocalGroundPosition;
     Vector3 velocity = Vector3.zero;
 
     bool isSprinting = false;
@@ -345,8 +346,6 @@ public class DCLCharacterController : MonoBehaviour
         groundTransform = null;
         movingPlatformSpeed = 0;
     }
-
-    Vector3 lastLocalGroundPosition;
 
     void CheckGround()
     {
