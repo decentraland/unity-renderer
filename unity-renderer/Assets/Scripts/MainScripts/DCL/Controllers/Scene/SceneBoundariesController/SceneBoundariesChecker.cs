@@ -117,7 +117,7 @@ namespace DCL.Controllers
 
         public void EvaluateEntityPosition(DecentralandEntity entity)
         {
-            if (entity == null || entity.scene == null) return;
+            if (entity == null || entity.scene == null || entity.gameObject == null) return;
 
             // Recursively evaluate entity children as well, we need to check this up front because this entity may not have meshes of its own, but the children may.
             if (entity.children.Count > 0)
@@ -133,7 +133,7 @@ namespace DCL.Controllers
 
             if (entity.meshRootGameObject == null || entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
             {
-                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.playerUnityToWorldOffset));
+                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.playerUnityToWorldOffset.Get()));
                 return;
             }
 
@@ -213,6 +213,7 @@ namespace DCL.Controllers
         protected virtual void UpdateComponents(DecentralandEntity entity, bool isInsideBoundaries)
         {
             IOutOfSceneBoundariesHandler[] components = entity.gameObject.GetComponentsInChildren<IOutOfSceneBoundariesHandler>();
+
             for (int i = 0; i < components.Length; i++)
             {
                 components[i].UpdateOutOfBoundariesState(isInsideBoundaries);
