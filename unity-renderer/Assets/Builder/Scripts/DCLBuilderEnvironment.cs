@@ -5,18 +5,19 @@ namespace Builder
 {
     public class DCLBuilderEnvironment : MonoBehaviour
     {
-
-        const string groundGameObjectPath = "Environment/Ground/GroundVisual";
-
         public Material builderSkybox;
         public Material previewSkybox;
 
         private bool isGameObjectActive = false;
-        private GameObject groundGameObject = null;
+        private Renderer[] groundRenderers = null;
 
         private void Awake()
         {
-            groundGameObject = InitialSceneReferences.i?.groundVisual;
+            GameObject groundGameObject = InitialSceneReferences.i?.groundVisual;
+            if (groundGameObject)
+            {
+                groundRenderers = groundGameObject.GetComponentsInChildren<Renderer>();
+            }
             OnPreviewModeChanged(false);
         }
 
@@ -37,7 +38,13 @@ namespace Builder
 
         private void OnPreviewModeChanged(bool isPreview)
         {
-            groundGameObject?.SetActive(isPreview);
+            if (groundRenderers != null)
+            {
+                for (int i = 0; i < groundRenderers.Length; i++)
+                {
+                    groundRenderers[i].enabled = isPreview;
+                }
+            }
             RenderSettings.fog = isPreview;
             Material skybox = isPreview ? previewSkybox : builderSkybox;
             RenderSettings.skybox = skybox;
