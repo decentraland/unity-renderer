@@ -597,7 +597,8 @@ proto.PositionData.toObject = function(includeInstance, msg) {
     rotationX: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     rotationY: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     rotationZ: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    rotationW: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0)
+    rotationW: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+    immediate: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
   };
 
   if (includeInstance) {
@@ -661,6 +662,10 @@ proto.PositionData.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRotationW(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setImmediate(value);
       break;
     default:
       reader.skipField();
@@ -737,6 +742,13 @@ proto.PositionData.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeFloat(
       7,
+      f
+    );
+  }
+  f = message.getImmediate();
+  if (f) {
+    writer.writeBool(
+      8,
       f
     );
   }
@@ -866,6 +878,24 @@ proto.PositionData.prototype.getRotationW = function() {
  */
 proto.PositionData.prototype.setRotationW = function(value) {
   return jspb.Message.setProto3FloatField(this, 7, value);
+};
+
+
+/**
+ * optional bool immediate = 8;
+ * @return {boolean}
+ */
+proto.PositionData.prototype.getImmediate = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.PositionData} returns this
+ */
+proto.PositionData.prototype.setImmediate = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 

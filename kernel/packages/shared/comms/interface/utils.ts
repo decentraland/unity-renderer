@@ -1,6 +1,6 @@
 import { parcelLimits } from 'config'
 
-export type Position = [number, number, number, number, number, number, number]
+export type Position = [number, number, number, number, number, number, number, boolean]
 
 export type ParcelArray = [number, number]
 export class Parcel {

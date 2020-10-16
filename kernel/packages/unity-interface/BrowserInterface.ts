@@ -57,18 +57,27 @@ const positionEvent = {
   quaternion: Quaternion.Identity,
   rotation: Vector3.Zero(),
   playerHeight: playerConfigurations.height,
-  mousePosition: Vector3.Zero()
+  mousePosition: Vector3.Zero(),
+  immediate: false // By default the renderer lerps avatars position
 }
 
 export class BrowserInterface {
   private lastBalanceOfMana: number = -1
 
   /** Triggered when the camera moves */
-  public ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion; playerHeight?: number }) {
+  public ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion; playerHeight?: number; immediate?: boolean }) {
     positionEvent.position.set(data.position.x, data.position.y, data.position.z)
     positionEvent.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w)
     positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
     positionEvent.playerHeight = data.playerHeight || playerConfigurations.height
+
+    // By default the renderer lerps avatars position
+    positionEvent.immediate = false
+
+    if (data.immediate !== undefined) {
+      positionEvent.immediate = data.immediate
+    }
+
     positionObservable.notifyObservers(positionEvent)
   }
 

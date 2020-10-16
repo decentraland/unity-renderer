@@ -3,9 +3,10 @@ import { ExposableAPI } from './ExposableAPI'
 import defaultLogger from '../logger'
 import { unityInterface } from 'unity-interface/UnityInterface'
 import { ParcelIdentity } from './ParcelIdentity'
-import { Vector3 } from 'decentraland-ecs/src'
+import { Quaternion, Vector3 } from 'decentraland-ecs/src'
 import { gridToWorld, isInParcel, parseParcelPosition } from '../../atomicHelpers/parcelScenePositions'
 import { lastPlayerPosition } from '../world/positionThings'
+import { browserInterface } from "../../unity-interface/BrowserInterface"
 
 export enum Permission {
   ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE = 'ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE'
@@ -52,7 +53,9 @@ export class RestrictedActionModule extends ExposableAPI implements IRestrictedA
       defaultLogger.error(`Permission "${Permission.ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE}" is required`)
       return
     }
+
     const position = this.calculatePosition(newPosition)
+
     // validate new position is inside of some scene
     if (!this.isPositionValid(position)) {
       defaultLogger.error('Error: Position is out of scene', position)
@@ -62,6 +65,15 @@ export class RestrictedActionModule extends ExposableAPI implements IRestrictedA
       defaultLogger.error('Error: Player is not inside of scene', lastPlayerPosition)
       return
     }
+
     unityInterface.Teleport({ position, cameraTarget }, false)
+
+    // Get ahead of the position report that will be done automatically later and report
+    // position right now, also marked as an immediate update (last bool in Position structure)
+    browserInterface.ReportPosition({
+      position: newPosition,
+      rotation: Quaternion.Identity,
+      immediate: true
+    })
   }
 }

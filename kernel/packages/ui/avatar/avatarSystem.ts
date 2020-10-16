@@ -22,7 +22,7 @@ const avatarMap = new Map<string, AvatarEntity>()
 export class AvatarEntity extends Entity {
   visible = true
 
-  readonly transform: Transform
+  transform: Transform
   avatarShape!: AvatarShape
 
   constructor(uuid?: string, avatarShape = new AvatarShape()) {
@@ -83,10 +83,21 @@ export class AvatarEntity extends Entity {
   }
 
   setPose(pose: Pose): void {
-    const [x, y, z, Qx, Qy, Qz, Qw] = pose
+    const [x, y, z, Qx, Qy, Qz, Qw, immediate] = pose
+
+    // We re-add the entity to the engine when reposition is immediate to avoid lerping its position in the renderer (and avoid adding a property to the transform for that)
+    const shouldReAddEntity = immediate && this.visible
+
+    if (shouldReAddEntity) {
+      this.remove()
+    }
 
     this.transform.position.set(x, y, z)
     this.transform.rotation.set(Qx, Qy, Qz, Qw)
+
+    if (shouldReAddEntity) {
+      engine.addEntity(this)
+    }
   }
 
   public remove() {

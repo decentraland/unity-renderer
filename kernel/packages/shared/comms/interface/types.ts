@@ -111,8 +111,8 @@ export type AvatarExpression = {
   expressionTimestamp?: number
 }
 
-// The order is [X,Y,Z,Qx,Qy,Qz,Qw]
-export type Pose = [number, number, number, number, number, number, number]
+// The order is [X,Y,Z,Qx,Qy,Qz,Qw,immediate]
+export type Pose = [number, number, number, number, number, number, number, boolean]
 
 export type PoseInformation = {
   v: Pose

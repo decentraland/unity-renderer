@@ -126,6 +126,7 @@ export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
     d.setRotationY(newPosition[4])
     d.setRotationZ(newPosition[5])
     d.setRotationW(newPosition[6])
+    // TODO ADD d.setImmediately(newPosition[7])
 
     const r = this.sendTopicMessage(false, topic, d)
     if (this._stats) {
@@ -319,7 +320,8 @@ export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
                   positionData.getRotationX(),
                   positionData.getRotationY(),
                   positionData.getRotationZ(),
-                  positionData.getRotationW()
+                  positionData.getRotationW(),
+                  false
                 ]
               })
             break
