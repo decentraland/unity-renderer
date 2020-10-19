@@ -53,6 +53,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
     {
+        if (assetContainer?.transform == null)
+        {
+            Debug.LogWarning("Tried to setup eyes when the asset not ready");
+            return;
+        }
+
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
             (mat) =>
             {
@@ -66,6 +72,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyebrows(Material material, Texture texture, Color color)
     {
+        if (assetContainer?.transform == null)
+        {
+            Debug.LogWarning("Tried to setup eyebrows when the asset not ready");
+            return;
+        }
+
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
             (mat) =>
             {
@@ -88,6 +100,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupMouth(Material material, Texture texture, Texture mask, Color color)
     {
+        if (assetContainer?.transform == null)
+        {
+            Debug.LogWarning("Tried to setup mouth when the asset not ready");
+            return;
+        }
+
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
             (mat) =>
             {
