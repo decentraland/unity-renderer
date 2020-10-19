@@ -42,6 +42,12 @@ namespace DCL
                 return false;
             }
 
+            if (asset == null)
+            {
+                Debug.LogWarning($"Asset is null when trying to add it to the library: hash == {this.GetId()}");
+                return false;
+            }
+
             asset = library.Get(asset.id);
             return true;
         }

@@ -162,8 +162,14 @@ namespace DCL
                     ext = "glb";
                 }
 
-                if (!assetBundleInfo.asset.assetsByExtension.ContainsKey(ext))
-                    assetBundleInfo.asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
+                if (assetBundleInfo.asset?.assetsByExtension == null)
+                {
+                    Debug.LogWarning($"Found an unexpected Null Reference: {assetBundleInfo.asset} or {assetBundleInfo.asset?.assetsByExtension}");
+                }
+                else if (!assetBundleInfo.asset.assetsByExtension.ContainsKey(ext))
+                {
+                        assetBundleInfo.asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
+                }
 
                 assetBundleInfo.asset.assetsByExtension[ext].Add(loadedAsset);
             }

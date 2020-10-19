@@ -33,6 +33,12 @@ namespace DCL
             {
                 //NOTE(Zak): We have to wait one frame because if not the entity will be null. (I'm Brian, but Zak wrote the code so read this in his voice)
                 yield return null;
+
+                if (entity == null)
+                {
+                    Debug.LogWarning("It seems skipping a frame didnt work, entity is still null");
+                    yield break;
+                }
                 entityTransform = entity.gameObject.transform;
             }
         }
