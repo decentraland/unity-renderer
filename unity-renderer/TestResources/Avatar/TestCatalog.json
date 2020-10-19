@@ -18971,5 +18971,51 @@
     "hides": [],
     "description": "Even in virtual worlds there's no escape from the Xmas jumper.",
     "rarity": "mythic"
-  }
+  },
+  {
+    "id": "dcl://base-avatars/dracula_mouth",
+	"representations": [
+        {
+	        "bodyShapes": [
+		    "dcl://base-avatars/BaseFemale",
+			],
+			"mainFile": "dracula_mouth.png",
+			"overrideReplaces": [],
+			"overrideHides": [],
+			"contents": [
+			  {
+				"file": "dracula_mouth.png",
+				"hash": "QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
+			  },
+			  {
+				"file": "dracula_mouth_mask.png",
+				"hash": "QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2"
+			  }
+			]
+		}
+	],
+	"type": "wearable",
+	"category": "mouth",
+	"tags": [
+		"face",
+		"mouth",
+		"female",
+		"woman",
+		"base-wearable"
+	],
+	"baseUrl": "https://content.decentraland.org/contents/",
+	"i18n": [
+		{
+			"code": "en",
+			"text": "f_Mouth_00"
+		},
+		{
+			"code": "es",
+			"text": "f_Mouth_00"
+		}
+	],
+		"thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
+		"description": "",
+		"rarity": ""
+	}
 ]
