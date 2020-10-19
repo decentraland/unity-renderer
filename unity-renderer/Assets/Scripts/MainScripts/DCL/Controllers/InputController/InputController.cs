@@ -74,6 +74,10 @@ public class InputController : MonoBehaviour
         for (var i = 0; i < triggerTimeActions.Length; i++)
         {
             var action = triggerTimeActions[i];
+
+            if (action.isTriggerBlocked != null && action.isTriggerBlocked.Get())
+                continue;
+
             switch (action.GetDCLAction())
             {
                 case DCLAction_Trigger.CameraChange:

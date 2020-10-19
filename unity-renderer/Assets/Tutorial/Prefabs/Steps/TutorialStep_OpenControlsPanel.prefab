@@ -508,6 +508,7 @@ MonoBehaviour:
   skipTutorialSection: {fileID: 4642140077781627117}
   yesSkipInputAction: {fileID: 11400000, guid: 32762977b0149684282db4ff59068cbf, type: 2}
   noSkipInputAction: {fileID: 11400000, guid: 38725fc935762a246976158d704f3b64, type: 2}
+  toggleControlsHud: {fileID: 11400000, guid: 1d31dadea710e42ce80206a83c695e80, type: 2}
 --- !u!1 &1614720064813847963
 GameObject:
   m_ObjectHideFlags: 0

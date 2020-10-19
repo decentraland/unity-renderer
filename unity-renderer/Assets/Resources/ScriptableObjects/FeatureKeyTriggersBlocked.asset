@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8ba04a041474be2a7ac981e4fff73ef, type: 3}
-  m_Name: ToggleFriends
+  m_Script: {fileID: 11500000, guid: bdae4528345114a1fa069b0a59dc53c7, type: 3}
+  m_Name: FeatureKeyTriggersBlocked
   m_EditorClassIdentifier: 
-  dclAction: 120
-  blockTrigger: {fileID: 11400000, guid: 184d6891e429a8f4e978d2d25e50b36e, type: 2}
+  value: 0

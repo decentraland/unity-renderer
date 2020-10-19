@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -53,6 +53,15 @@ namespace InputController_Tests
             action.dclAction = DCLAction_Trigger.CameraChange;
 
             Assert.AreEqual(DCLAction_Trigger.CameraChange, action.GetDCLAction());
+        }
+
+        [Test]
+        public void ReturnIsTriggerBlockedProperly()
+        {
+            action.blockTrigger = new BooleanVariable();
+            action.blockTrigger.Set(true);
+
+            Assert.AreEqual(true, action.isTriggerBlocked.Get());
         }
     }
 

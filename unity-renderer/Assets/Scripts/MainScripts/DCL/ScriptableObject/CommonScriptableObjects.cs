@@ -134,6 +134,9 @@ public static class CommonScriptableObjects
     private static BooleanVariable tutorialActiveValue;
     public static BooleanVariable tutorialActive => GetOrLoad(ref tutorialActiveValue, "ScriptableObjects/TutorialActive");
 
+    private static BooleanVariable featureKeyTriggersBlockedValue;
+    public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
+
     internal static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)
