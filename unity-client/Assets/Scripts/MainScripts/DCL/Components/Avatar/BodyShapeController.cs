@@ -8,7 +8,7 @@ public interface IBodyShapeController
     string bodyShapeId { get; }
     void SetupEyes(Material material, Texture texture, Texture mask, Color color);
     void SetupEyebrows(Material material, Texture texture, Color color);
-    void SetupMouth(Material material, Texture texture, Color color);
+    void SetupMouth(Material material, Texture texture, Texture mask, Color color);
 }
 
 public class BodyShapeController : WearableController, IBodyShapeController
@@ -86,12 +86,13 @@ public class BodyShapeController : WearableController, IBodyShapeController
             skinnedMeshRenderer.enabled = true;
     }
 
-    public void SetupMouth(Material material, Texture texture, Color color)
+    public void SetupMouth(Material material, Texture texture, Texture mask, Color color)
     {
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
             (mat) =>
             {
                 material.SetTexture(AvatarUtils._BaseMap, texture);
+                material.SetTexture(AvatarUtils._TintMask, mask);
 
                 //NOTE(Brian): This isn't an error, we must also apply skin color to this mat
                 material.SetColor(AvatarUtils._BaseColor, color);

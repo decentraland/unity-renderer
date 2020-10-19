@@ -11,6 +11,7 @@ namespace AvatarShape_Tests
     public class FacialFeatureControllerShould : TestsBase
     {
         private const string EYES_ID = "dcl://base-avatars/f_eyes_01";
+        private const string DRACULA_MOUTH_ID = "dcl://base-avatars/dracula_mouth";
         private WearableDictionary catalog;
         private IBodyShapeController bodyShapeController;
 
@@ -93,6 +94,21 @@ namespace AvatarShape_Tests
             //Assert
             Assert.Null(controller.mainTexture);
             Assert.Null(controller.maskTexture);
+        }
+
+        [UnityTest]
+        public IEnumerator LoadMouthWithMaskProperly()
+        {
+            //Arrange
+            FacialFeatureController controller = new FacialFeatureController(catalog.GetOrDefault(DRACULA_MOUTH_ID), new Material(Shader.Find("DCL/Unlit Cutout Tinted")));
+
+            //Act
+            controller.Load(bodyShapeController, Color.red);
+            yield return new WaitUntil(() => controller.isReady);
+
+            //Assert
+            Assert.NotNull(controller.mainTexture);
+            Assert.NotNull(controller.maskTexture);
         }
     }
 }

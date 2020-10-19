@@ -11,6 +11,7 @@ public static class AvatarUtils
     public static int _EyesTexture = Shader.PropertyToID("_EyesTexture");
     public static int _EyeTint = Shader.PropertyToID("_EyeTint");
     public static int _IrisMask = Shader.PropertyToID("_IrisMask");
+    public static int _TintMask = Shader.PropertyToID("_TintMask");
 
     /// <summary>
     /// This will search all the transform hierachy for sharedMaterials filtered by name, and call a map function on them.

@@ -57,7 +57,7 @@ public class FacialFeatureController
                 bodyShape.SetupEyebrows(baseMaterialCopy, mainTexture, color);
                 break;
             case WearableLiterals.Categories.MOUTH:
-                bodyShape.SetupMouth(baseMaterialCopy, mainTexture, color);
+                bodyShape.SetupMouth(baseMaterialCopy, mainTexture, maskTexture, color);
                 break;
         }
 
