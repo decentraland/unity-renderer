@@ -68,7 +68,8 @@ initializeUnity(container)
       await userAuthentified()
       const identity = getCurrentIdentity(globalThis.globalStore.getState())!
       i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
-      i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: identity.hasConnectedWeb3, visible: true })
+      // NOTE (Santi): We have temporarily deactivated the MANA HUD until Product team designs a new place for it (probably inside the Profile HUD).
+      i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: identity.hasConnectedWeb3 && false, visible: true })
 
       EnsureProfile(identity.address)
           .then((profile) => {
