@@ -136,20 +136,27 @@ namespace DCL.Components
             {
                 canvas.sortingOrder = -1;
 
-                // "Constrained" panel mask (to avoid rendering parcels UI on the viewport's top 10%)
-                GameObject constrainedPanel = new GameObject("ConstrainedPanel");
-                constrainedPanel.AddComponent<RectMask2D>();
-                childHookRectTransform = constrainedPanel.GetComponent<RectTransform>();
+                GameObject resizedPanel = new GameObject("ResizeUIArea");
+
+                resizedPanel.AddComponent<CanvasRenderer>();
+                childHookRectTransform = resizedPanel.AddComponent<RectTransform>();
                 childHookRectTransform.SetParent(canvas.transform);
                 childHookRectTransform.ResetLocalTRS();
 
-                float canvasHeight = canvasScaler.referenceResolution.y;
-
                 childHookRectTransform.anchorMin = Vector2.zero;
                 childHookRectTransform.anchorMax = new Vector2(1, 0);
+
+                // We scale the panel downwards to subtract the viewport's top 10%
+                float canvasHeight = canvasScaler.referenceResolution.y;
                 childHookRectTransform.pivot = new Vector2(0.5f, 0f);
-                // We scale the panel downwards to release the viewport's top 10%
-                childHookRectTransform.sizeDelta = new Vector2(0, canvasHeight - (canvasHeight * UISettings.RESERVED_CANVAS_TOP_PERCENTAGE / 100));
+                float canvasSubtraction = canvasHeight * UISettings.RESERVED_CANVAS_TOP_PERCENTAGE / 100;
+                childHookRectTransform.sizeDelta = new Vector2(0, canvasHeight - canvasSubtraction);
+
+                // We scale the panel upwards to subtract the viewport's bottom 5% for Decentraland's taskbar
+                canvasHeight = childHookRectTransform.sizeDelta.y;
+                childHookRectTransform.pivot = new Vector2(0.5f, 1f);
+                childHookRectTransform.anchoredPosition = new Vector3(0, canvasHeight, 0f);
+                childHookRectTransform.sizeDelta = new Vector2(0, canvasHeight - canvasSubtraction / 2);
             }
 
             // Canvas group
