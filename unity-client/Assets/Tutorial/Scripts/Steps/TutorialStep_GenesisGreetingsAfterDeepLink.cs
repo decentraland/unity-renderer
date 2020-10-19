@@ -15,6 +15,7 @@ namespace DCL.Tutorial
         {
             base.OnStepFinished();
             tutorialController?.hudController?.taskbarHud?.SetVisibility(true);
+            CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
     }
 }

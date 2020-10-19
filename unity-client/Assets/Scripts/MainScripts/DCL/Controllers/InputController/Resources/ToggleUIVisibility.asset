@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: ToggleUIVisibility
   m_EditorClassIdentifier: 
   dclAction: 123
+  blockTrigger: {fileID: 11400000, guid: 184d6891e429a8f4e978d2d25e50b36e, type: 2}

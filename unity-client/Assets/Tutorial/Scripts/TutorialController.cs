@@ -167,6 +167,8 @@ namespace DCL.Tutorial
         /// </summary>
         public void SetTutorialDisabled()
         {
+            CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
+
             if (executeStepsCoroutine != null)
             {
                 StopCoroutine(executeStepsCoroutine);

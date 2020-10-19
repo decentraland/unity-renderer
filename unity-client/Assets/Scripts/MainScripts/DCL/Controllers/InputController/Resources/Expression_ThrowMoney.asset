@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Expression_ThrowMoney
   m_EditorClassIdentifier: 
   dclAction: 206
+  blockTrigger: {fileID: 11400000, guid: 184d6891e429a8f4e978d2d25e50b36e, type: 2}

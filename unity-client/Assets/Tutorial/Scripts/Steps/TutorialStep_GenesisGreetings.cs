@@ -23,6 +23,8 @@ namespace DCL.Tutorial
         {
             base.OnStepStart();
 
+            CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
+
             titleText.text = titleText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
 
             okButton.onClick.AddListener(OnOkButtonClick);
