@@ -10,7 +10,6 @@ import {
   ReceiveUserTalkingMessage,
   ReceiveUserVisibleMessage,
   UserInformation,
-  UserMessage,
   UserRemovedMessage,
   UUID
 } from 'shared/comms/interface/types'
@@ -195,10 +194,6 @@ function handleUserRemoved({ uuid }: UserRemovedMessage): void {
   }
 }
 
-function handleShowWindow({ uuid }: UserMessage): void {
-  // noop
-}
-
 avatarMessageObservable.add((evt) => {
   if (evt.type === AvatarMessageType.USER_DATA) {
     handleUserData(evt)
@@ -212,7 +207,5 @@ avatarMessageObservable.add((evt) => {
     handleUserRemoved(evt)
   } else if (evt.type === AvatarMessageType.USER_TALKING) {
     handleUserTalkingUpdate(evt as ReceiveUserTalkingMessage)
-  } else if (evt.type === AvatarMessageType.SHOW_WINDOW) {
-    handleShowWindow(evt)
   }
 })

@@ -104,9 +104,21 @@ function track({ name, data }: SegmentEvent) {
   })
 }
 
+const TRACEABLE_AVATAR_EVENTS = [
+  AvatarMessageType.ADD_FRIEND,
+  AvatarMessageType.USER_DATA,
+  AvatarMessageType.USER_EXPRESSION,
+  AvatarMessageType.USER_REMOVED,
+  AvatarMessageType.SET_LOCAL_UUID,
+  AvatarMessageType.USER_MUTED,
+  AvatarMessageType.USER_UNMUTED,
+  AvatarMessageType.USER_BLOCKED,
+  AvatarMessageType.USER_UNBLOCKED
+]
+
 function hookObservables() {
   avatarMessageObservable.add(({ type, ...data }) => {
-    if (type === AvatarMessageType.USER_VISIBLE || type === AvatarMessageType.USER_POSE) {
+    if (!TRACEABLE_AVATAR_EVENTS.includes(type)) {
       return
     }
 
