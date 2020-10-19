@@ -21,11 +21,10 @@ public class UISizeFitter : MonoBehaviour
     {
         if (canvasChildHookRT == null)
         {
-            RectMask2D constrainedPanelMask = GetComponentInParent<RectMask2D>();
-
-            if(constrainedPanelMask != null)
+            CanvasRenderer resizedCanvasPanel = GetComponentInParent<CanvasRenderer>();
+            if (resizedCanvasPanel != null)
             {
-                canvasChildHookRT = constrainedPanelMask.GetComponent<RectTransform>();
+                canvasChildHookRT = resizedCanvasPanel.GetComponent<RectTransform>();
                 return;
             }
 
@@ -36,9 +35,9 @@ public class UISizeFitter : MonoBehaviour
     public void FitSizeToChildren(bool adjustWidth = true, bool adjustHeight = true)
     {
         UIReferencesContainer[] containers = GetComponentsInChildren<UIReferencesContainer>();
-        
+
         EnsureCanvasChildHookRectTransform();
-        
+
         RectTransform rt = transform as RectTransform;
 
         if (rt == null || canvasChildHookRT == null || containers == null || containers.Length == 0)
