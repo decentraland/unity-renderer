@@ -560,6 +560,7 @@ public class TaskbarHUDController : IHUD
 
     public void ShowTutorialOption(bool isActive)
     {
-        view.moreMenu.ShowTutorialButton(isActive);
+        if (view != null && view.moreMenu != null)
+            view.moreMenu.ShowTutorialButton(isActive);
     }
 }
