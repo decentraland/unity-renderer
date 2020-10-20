@@ -35,7 +35,7 @@ namespace FPSDisplayTests
                 counter.AddDeltaTime(tenMillis);
             }
 
-            counter.AddDeltaTime(LinealBufferHiccupCounter.HICCUP_THRESHOLD_IN_SECONDS + 0.01f);
+            counter.AddDeltaTime(FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS + 0.01f);
 
             Assert.AreEqual(counter.HiccupsCountInBuffer, 1);
         }
@@ -52,7 +52,7 @@ namespace FPSDisplayTests
             {
                 float value = Random.Range(0.001f, 1f);
                 counter.AddDeltaTime(value);
-                if (value > LinealBufferHiccupCounter.HICCUP_THRESHOLD_IN_SECONDS)
+                if (value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS)
                 {
                     hiccups += value;
                     hiccupCount += 1;
@@ -83,7 +83,7 @@ namespace FPSDisplayTests
             {
                 float value = Random.Range(0.001f, 1f);
                 totalTime += value;
-                if (value > LinealBufferHiccupCounter.HICCUP_THRESHOLD_IN_SECONDS)
+                if (value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS)
                 {
                     hiccupCount += 1;
                     hiccups += value;

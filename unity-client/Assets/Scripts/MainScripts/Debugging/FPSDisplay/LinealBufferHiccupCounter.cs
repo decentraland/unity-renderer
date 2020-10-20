@@ -5,7 +5,6 @@ namespace DCL.FPSDisplay
     public class LinealBufferHiccupCounter
     {
         private readonly LinealBufferFPSCounter counter = new LinealBufferFPSCounter();
-        public const float HICCUP_THRESHOLD_IN_SECONDS = 1 / (float)FPSEvaluation.BAD;
         private int hiccupsCountInBuffer = 0;
         private float hiccupsSum = 0.0f;
         private float bufferCount = 0.0f;
@@ -48,7 +47,7 @@ namespace DCL.FPSDisplay
 
         private bool IsHiccup(float value)
         {
-            return value > HICCUP_THRESHOLD_IN_SECONDS;
+            return value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
         }
 
         public float GetHiccupSum()
