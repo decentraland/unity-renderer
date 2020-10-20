@@ -502,6 +502,7 @@ export type BuilderConfiguration = {
   camera: {
     zoomMin: number
     zoomMax: number
+    zoomDefault: number
   }
   environment: {
     disableFloor: boolean
