@@ -2451,6 +2451,7 @@ MonoBehaviour:
   loadingSpinner: {fileID: 3475705995837572437}
   copyToast: {fileID: 7150535707475580996}
   copyTooltip: {fileID: 8368628428006989261}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   hideOnNameClaimed:
   - {fileID: 7298648520246830518}
   - {fileID: 7575626182848155686}

@@ -19,6 +19,14 @@ namespace DCL.HelpAndSupportHUD
         [SerializeField] private Button joinDiscordButton;
         [SerializeField] private Button visitFAQButton;
         [SerializeField] private Button closeButton;
+        [SerializeField] internal InputAction_Trigger closeAction;
+
+        private InputAction_Trigger.Triggered closeActionDelegate;
+
+        private void Awake()
+        {
+            closeActionDelegate = (x) => SetVisibility(false);
+        }
 
         private void Initialize()
         {
@@ -49,8 +57,12 @@ namespace DCL.HelpAndSupportHUD
 
         public void SetVisibility(bool visible)
         {
+            closeAction.OnTriggered -= closeActionDelegate;
             if (visible)
+            {
                 helpAndSupportAnimator.Show();
+                closeAction.OnTriggered += closeActionDelegate;
+            }
             else
                 helpAndSupportAnimator.Hide();
 

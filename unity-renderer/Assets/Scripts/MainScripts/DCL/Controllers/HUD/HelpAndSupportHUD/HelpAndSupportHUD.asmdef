@@ -2,7 +2,8 @@
     "name": "HelpAndSupportHUD",
     "references": [
         "GUID:555c1f3c6d18648df910b7a1de75b424",
-        "GUID:4973650d2444c4561a15d50f24d91cd9"
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

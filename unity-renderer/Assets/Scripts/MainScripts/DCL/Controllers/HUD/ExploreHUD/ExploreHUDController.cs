@@ -26,7 +26,7 @@ public class ExploreHUDController : IHUD
         toggleExploreTrigger = Resources.Load<InputAction_Trigger>("ToggleExploreHud");
         toggleExploreTrigger.OnTriggered += OnToggleActionTriggered;
 
-        view.closeButton.onPointerDown += () =>
+        view.OnCloseButtonPressed += () =>
         {
             if (view.IsVisible())
             {

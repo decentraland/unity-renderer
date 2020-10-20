@@ -770,6 +770,7 @@ MonoBehaviour:
   dontAskAgain: {fileID: 1888323851016925300}
   showHideAnimator: {fileID: 2010703097762440681}
   invalidEmailIndicator: {fileID: 5283840960803929079}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
 --- !u!95 &744397392441356162
 Animator:
   serializedVersion: 3
