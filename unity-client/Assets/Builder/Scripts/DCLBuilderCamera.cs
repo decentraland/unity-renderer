@@ -41,7 +41,7 @@ namespace Builder
         private float zoomCurrent = 0;
         private float zoomTarget = 0;
 
-        private float zoomDefault = 0;
+        private float zoomDefault = DCLBuilderConfig.config.camera.zoomDefault;
         private float zoomMin = DCLBuilderConfig.config.camera.zoomMin;
         private float zoomMax = DCLBuilderConfig.config.camera.zoomMax;
 
@@ -54,7 +54,7 @@ namespace Builder
 
         private void Awake()
         {
-            zoomDefault = zoomCurrent = zoomTarget = Mathf.Clamp(builderCamera.transform.localPosition.z, -zoomMax, -zoomMin);
+            zoomCurrent = zoomTarget = -zoomDefault;
             pitchCurrent = pitchTarget = pitchPivot.localEulerAngles.x;
             yawCurrent = yawTarget = yawPivot.localEulerAngles.y;
 
@@ -233,7 +233,7 @@ namespace Builder
 
         private void OnResetCameraZoom()
         {
-            zoomCurrent = zoomTarget = zoomDefault;
+            zoomCurrent = zoomTarget = -zoomDefault;
             builderCamera.transform.position.Set(0, 0, zoomCurrent);
             OnCameraZoomChanged?.Invoke(builderCamera, zoomCurrent);
         }
@@ -279,9 +279,10 @@ namespace Builder
 
         private void OnConfigChanged(BuilderConfig config)
         {
-            zoomMin = DCLBuilderConfig.config.camera.zoomMin;
-            zoomMax = DCLBuilderConfig.config.camera.zoomMax;
-            zoomDefault = zoomCurrent = zoomTarget = Mathf.Clamp(builderCamera.transform.localPosition.z, -zoomMax, -zoomMin);
+            zoomMin = config.camera.zoomMin;
+            zoomMax = config.camera.zoomMax;
+            zoomDefault = config.camera.zoomDefault;
+            zoomCurrent = zoomTarget = -zoomDefault;
         }
     }
 }

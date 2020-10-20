@@ -36,6 +36,7 @@ namespace Builder
         {
             public float zoomMin;
             public float zoomMax;
+            public float zoomDefault;
         }
 
         [Serializable]
@@ -50,7 +51,7 @@ namespace Builder
             {
                 return new BuilderConfig()
                 {
-                    camera = new Camera() { zoomMin = 1f, zoomMax = 100f },
+                    camera = new Camera() { zoomMin = 1f, zoomMax = 100f, zoomDefault = 32 },
                     environment = new Environment() { disableFloor = false }
                 };
             }
