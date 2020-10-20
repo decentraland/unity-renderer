@@ -10,15 +10,8 @@ namespace DCL.SettingsHUD
         {
             view = SettingsHUDView.Create();
 
-            view.closeButton.onClick.AddListener(() =>
-            {
-                SetVisibility(false);
-            });
-
-            view.doneButton.onClick.AddListener(() =>
-            {
-                SetVisibility(false);
-            });
+            view.OnClose += () => SetVisibility(false);
+            view.OnDone += () => SetVisibility(false);
         }
 
         public void SetVisibility(bool visible)

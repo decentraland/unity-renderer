@@ -16,6 +16,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     [SerializeField] internal ShowHideAnimator copyToast;
     [SerializeField] internal GameObject copyTooltip;
+    [SerializeField] internal InputAction_Trigger closeAction;
 
     [Header("Hide GOs on claimed name")]
     [SerializeField] internal GameObject[] hideOnNameClaimed;
@@ -35,11 +36,15 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField] internal Button buttonCopyAddress;
     [SerializeField] internal Button buttonLogOut;
 
+    private InputAction_Trigger.Triggered closeActionDelegate;
+
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
 
     private void Awake()
     {
+        closeActionDelegate = (x) => HideMenu();
+
         buttonToggleMenu.onClick.AddListener(ToggleMenu);
         buttonCopyAddress.onClick.AddListener(CopyAddress);
         copyToast.gameObject.SetActive(false);
@@ -65,8 +70,7 @@ internal class ProfileHUDView : MonoBehaviour
     {
         if (menuShowHideAnimator.isVisible)
         {
-            menuShowHideAnimator.Hide();
-            CommonScriptableObjects.isProfileHUDOpen.Set(false);
+            HideMenu();
         }
         else
         {
@@ -181,5 +185,15 @@ internal class ProfileHUDView : MonoBehaviour
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();
+    }
+
+    private void OnEnable()
+    {
+        closeAction.OnTriggered += closeActionDelegate;
+    }
+
+    private void OnDisable()
+    {
+        closeAction.OnTriggered -= closeActionDelegate;
     }
 }

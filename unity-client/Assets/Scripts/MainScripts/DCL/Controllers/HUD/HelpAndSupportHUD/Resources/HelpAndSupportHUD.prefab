@@ -1856,6 +1856,7 @@ MonoBehaviour:
   joinDiscordButton: {fileID: 8829506031662869903}
   visitFAQButton: {fileID: 6320019778723382392}
   closeButton: {fileID: 1979095170091145507}
+  closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
 --- !u!1 &9101157973253599486
 GameObject:
   m_ObjectHideFlags: 0
