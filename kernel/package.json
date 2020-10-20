@@ -101,7 +101,7 @@
     "dcl-crypto": "^2.2.0",
     "dcl-social-client": "^1.3.10",
     "decentraland-katalyst-peer": "0.2.16",
-    "decentraland-renderer": "^1.8.40705",
+    "decentraland-renderer": "^1.8.42643",
     "decentraland-rpc": "^3.1.8",
     "devtools-protocol": "0.0.615714",
     "eth-connect": "^4.0.1",
