@@ -91,7 +91,22 @@ export const contracts = {
     'BaseList': '0x21b6EFf834d7cc8c12A5Ec924939aa521F0FE83F',
     'POIAllowListProxy': '0x0ef15a1c7a49429a36cb46d4da8c53119242b54e',
     'NameDenyListProxy': '0x0c4c90a4f29872a2e9ef4c4be3d419792bca9a36',
-    'BinanceUsCollection': '0xa8ee490e4c4da48cc1653502c1a77479d4d818de'
+    'BinanceUsCollection': '0xa8ee490e4c4da48cc1653502c1a77479d4d818de',
+    'PMDreamverseEminence': '0x09305998a531fade369ebe30adf868c96a34e813',
+    'CybermikeCyberSoldier': '0x24d538a6265b006d4b53c45ba91af5ef60dca6cb',
+    'DCMeta': '0xe7a64f6a239ed7f5bf18caa1ce2920d0c1278129',
+    'WZWonderbot': '0x5df4602e7f38a91ea7724fc167f0c67f61604b1e',
+    'DGFall2020': '0x7038e9d2c6f5f84469a84cf9bc5f4909bb6ac5e0',
+    'MFSammichgamer': '0x30d3387ff3de2a21bef7032f82d00ff7739e403c',
+    'SugarclubYumi': '0xb5d14052d1e2bce2a2d7459d0379256e632b855d',
+    'EtheremonWearables': '0x54266bcf2ffa841af934f003d144957d5934f3ab',
+    'MLPekingopera': '0x60d8271c501501c4b8cd9ed5343ac59d1b79d993',
+    'ChinaFlying': '0x90958d4531258ca11d18396d4174a007edbc2b42',
+    'TechTribalMarc0matic': '0x480a0f4e360e8964e68858dd231c2922f1df45ef',
+    'DigitalAlchemy': '0x5cf39e64392c615fd8086838883958752a11b486',
+    'CZMercenaryMTZ': '0xc3ca6c364b854fd0a653a43f8344f8c22ddfdd26',
+    'WonderzoneSteampunk': '0xb96697fa4a3361ba35b774a42c58daccaad1b8e1',
+    'DCNiftyblocksmith': '0x102daabd1e9d294d4436ec4c521dce7b1f15499e'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',

@@ -103,6 +103,11 @@ export class UnityInterface {
         canvas.height = canvas.parentElement.clientHeight
       } else {
         window.addEventListener('resize', this.resizeCanvasDelayed)
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') resizeCanvas(this.Module)
+        })
+
         this.resizeCanvasDelayed(null)
         this.waitForFillMouseEventData()
       }
