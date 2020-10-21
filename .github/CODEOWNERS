@@ -3,9 +3,15 @@
 # Lines starting with '#' are comments.
 # Each line is a file pattern followed by one or more owners.
 
-# These owners will be the default owners for everything in the repo.
-*                  @decentraland/world-team
+# These owners will be the default owners for everything in the repo. (disabled)
+#*                  @decentraland/world-team
 
 # Specific subteams
-unity-client/**/*  @decentraland/unity-team
-kernel/**/*        @decentraland/kernel-team
+
+# Unity Team (disabled)
+#unity-client/**/*                            @decentraland/unity-team 
+
+# ECS and SDK packages
+kernel/packages/build-ecs/**/*               @decentraland/kernel-team
+kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
+kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
