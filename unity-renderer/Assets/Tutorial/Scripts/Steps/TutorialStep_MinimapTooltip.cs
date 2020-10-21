@@ -17,6 +17,8 @@ namespace DCL.Tutorial
             base.OnStepFinished();
 
             NavmapView.OnToggle -= NavmapView_OnToggle;
+
+            tutorialController?.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
         protected override void SetTooltipPosition()
