@@ -8,6 +8,8 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Camera : TutorialStep
     {
+        [SerializeField] AudioEvent audioEventSuccess;
+
         private bool stepIsFinished = false;
 
         public override void OnStepStart()
@@ -28,6 +30,7 @@ namespace DCL.Tutorial
         {
             yield return new WaitUntil(() => stepIsFinished);
             yield return new WaitForSeconds(0.5f);
+            audioEventSuccess.Play(true);
         }
 
         private void CameraMode_OnChange(CameraMode.ModeId current, CameraMode.ModeId previous)

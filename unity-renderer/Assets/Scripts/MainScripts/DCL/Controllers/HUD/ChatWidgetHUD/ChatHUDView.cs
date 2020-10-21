@@ -45,6 +45,8 @@ public class ChatHUDView : MonoBehaviour
         this.controller = controller;
         this.OnSendMessage += OnSendMessage;
         inputField.onSubmit.AddListener(OnInputFieldSubmit);
+        inputField.onSelect.AddListener(OnInputFieldSelect);
+        inputField.onDeselect.AddListener(OnInputFieldDeselect);
     }
 
     private void OnInputFieldSubmit(string message)
@@ -71,6 +73,16 @@ public class ChatHUDView : MonoBehaviour
             currentMessage.body = string.Empty;
 
         OnSendMessage?.Invoke(currentMessage);
+    }
+
+    private void OnInputFieldSelect(string message)
+    {
+        AudioScriptableObjects.inputFieldFocus.Play(true);
+    }
+
+    private void OnInputFieldDeselect(string message)
+    {
+        AudioScriptableObjects.inputFieldUnfocus.Play(true);
     }
 
     public void ResetInputField()

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loop: 0
   volume: 1
-  pitch: 1
-  randomPitch: 0.05
-  cooldownSeconds: 0
+  initialPitch: 1
+  randomPitch: 0
+  cooldownSeconds: 0.1
   clips:
     array:
     - {fileID: 8300000, guid: 4804fe1b06df9eb46859950493280fa3, type: 3}

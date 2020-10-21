@@ -39,13 +39,6 @@ public class PlayerInfoCardHUDController : IHUD
 
     public void CloseCard()
     {
-        if (currentPlayerId != null)
-        {
-            if (currentPlayerId.Get() != null)
-            {
-                AudioScriptableObjects.dialogClose.Play(true);
-            }
-        }
         currentPlayerId.Set(null);
     }
 

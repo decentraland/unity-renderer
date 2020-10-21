@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loop: 0
   volume: 1
-  pitch: 1
-  randomPitch: 0.1
+  initialPitch: 1
+  randomPitch: 0
   cooldownSeconds: 0.005
   clips:
     array:

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loop: 0
   volume: 1
-  pitch: 1
+  initialPitch: 1
   randomPitch: 0
-  cooldownSeconds: 0
+  cooldownSeconds: 0.2
   clips:
     array:
-    - {fileID: 8300000, guid: e134d8c09228ed0448e0458ba8602c43, type: 3}
+    - {fileID: 8300000, guid: 1b53ab0ffeac92644b047f0127a7af1c, type: 3}
   source: {fileID: 0}

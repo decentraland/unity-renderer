@@ -58,6 +58,18 @@ public static class AudioScriptableObjects
 
     private static AudioEvent sliderValueChangeEvent;
     public static AudioEvent sliderValueChange => CommonScriptableObjects.GetOrLoad(ref sliderValueChangeEvent, "ScriptableObjects/AudioEvents/HUDCommon/SliderValueChange");
+
+    private static AudioEvent inputFieldFocusEvent;
+    public static AudioEvent inputFieldFocus => CommonScriptableObjects.GetOrLoad(ref inputFieldFocusEvent, "ScriptableObjects/AudioEvents/HUDCommon/InputFieldFocus");
+
+    private static AudioEvent inputFieldUnfocusEvent;
+    public static AudioEvent inputFieldUnfocus => CommonScriptableObjects.GetOrLoad(ref inputFieldUnfocusEvent, "ScriptableObjects/AudioEvents/HUDCommon/InputFieldUnfocus");
+
+    private static AudioEvent UIHideEvent;
+    public static AudioEvent UIHide => CommonScriptableObjects.GetOrLoad(ref UIHideEvent, "ScriptableObjects/AudioEvents/HUDCommon/UIHide");
+
+    private static AudioEvent UIShowEvent;
+    public static AudioEvent UIShow => CommonScriptableObjects.GetOrLoad(ref UIShowEvent, "ScriptableObjects/AudioEvents/HUDCommon/UIUnhide");
 }
 
 public static class CommonScriptableObjects

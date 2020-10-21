@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: ParcelCursorMove
   m_EditorClassIdentifier: 
   loop: 0
-  volume: 0.15
-  initialPitch: 1
+  initialVolume: 0.25
+  initialPitch: 2
   randomPitch: 0.05
   cooldownSeconds: 0.05
   clips:
     array:
-    - {fileID: 8300000, guid: e134d8c09228ed0448e0458ba8602c43, type: 3}
+    - {fileID: 8300000, guid: e8d0947f318cb954290d8a1111284e8c, type: 3}
   source: {fileID: 0}

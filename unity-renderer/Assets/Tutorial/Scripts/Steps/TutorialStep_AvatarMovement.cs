@@ -8,6 +8,7 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_AvatarMovement : TutorialStep
     {
+        [SerializeField] AudioEvent audioEventSuccess;
         [SerializeField] InputAction_Measurable playerXAxisInpuAction;
         [SerializeField] InputAction_Measurable playerYAxisInputAction;
         [SerializeField] float minRunningTime = 2f;
@@ -24,6 +25,7 @@ namespace DCL.Tutorial
         public override IEnumerator OnStepExecute()
         {
             yield return new WaitUntil(() => timeRunning >= minRunningTime);
+            audioEventSuccess.Play(true);
         }
     }
 }

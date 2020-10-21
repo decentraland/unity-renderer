@@ -566,6 +566,11 @@ MonoBehaviour:
   unlockCursorAtStart: 1
   show3DTeacherAtStart: 1
   teacherPositionRef: {fileID: 5515950248451678154}
+  mainSection: {fileID: 0}
+  skipTutorialSection: {fileID: 0}
+  yesSkipInputAction: {fileID: 0}
+  noSkipInputAction: {fileID: 0}
+  audioEventSuccess: {fileID: 11400000, guid: d12d1e2fb8da74441b7f2d62d7c1965a, type: 2}
   okButton: {fileID: 5031985112320876763}
 --- !u!1 &1211342315728853102
 GameObject:
@@ -2606,6 +2611,7 @@ GameObject:
   - component: {fileID: 7791268057431998478}
   - component: {fileID: 5031985112320876763}
   - component: {fileID: 3983825655707803974}
+  - component: {fileID: 3616455385184333437}
   m_Layer: 5
   m_Name: OkButton
   m_TagString: Untagged
@@ -2728,6 +2734,22 @@ MonoBehaviour:
   targetRectTransform: {fileID: 4889840328966578398}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &3616455385184333437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5699852383211709506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &5713264258040442327
 GameObject:
   m_ObjectHideFlags: 0

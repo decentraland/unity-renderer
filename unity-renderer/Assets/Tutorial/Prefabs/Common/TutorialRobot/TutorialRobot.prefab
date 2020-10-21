@@ -798,6 +798,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teacherAnimator: {fileID: 2796136058063505129}
+  audioEventNormal: {fileID: 11400000, guid: 8e09159fb51972c4e94cddacd80a5ef9, type: 2}
+  audioEventHappy: {fileID: 11400000, guid: 63b669c3dfd29d94883213d9bd488e99, type: 2}
+  isHiddenByAnAnimation: 0
 --- !u!1 &2646838697185959671
 GameObject:
   m_ObjectHideFlags: 0
