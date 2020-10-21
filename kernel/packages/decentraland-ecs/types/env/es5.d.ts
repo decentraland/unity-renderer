@@ -29,7 +29,7 @@ declare var Infinity: number
 declare function eval(x: string): any
 
 /**
- * Converts A string to an integer.
+ * Converts a string to an integer.
  * @param s A string to convert into a number.
  * @param radix A value between 2 and 36 that specifies the base of the number in numString.
  * If this argument is not supplied, strings with a prefix of '0x' are considered hexadecimal.
@@ -77,7 +77,7 @@ declare function encodeURI(uri: string): string
  * Encodes a text string as a valid component of a Uniform Resource Identifier (URI).
  * @param uriComponent A value representing an encoded URI component.
  */
-declare function encodeURIComponent(uriComponent: string): string
+declare function encodeURIComponent(uriComponent: string | number | boolean): string
 
 /**
  * Computes a new string in which certain characters have been replaced by a hexadecimal escape sequence.
@@ -213,7 +213,7 @@ interface ObjectConstructor {
    * Prevents the modification of existing property attributes and values, and prevents the addition of new properties.
    * @param o Object on which to lock the attributes.
    */
-  freeze<T>(a: T[]): ReadonlyArray<T>
+  freeze<T>(a: T[]): readonly T[]
 
   /**
    * Prevents the modification of existing property attributes and values, and prevents the addition of new properties.
@@ -252,10 +252,10 @@ interface ObjectConstructor {
   isExtensible(o: any): boolean
 
   /**
-   * Returns the names of the enumerable properties and methods of an object.
+   * Returns the names of the enumerable string properties and methods of an object.
    * @param o Object that contains the properties and methods. This can be an object that you created or an existing Document Object Model (DOM) object.
    */
-  keys(o: {}): string[]
+  keys(o: object): string[]
 }
 
 /**
@@ -315,11 +315,7 @@ declare var Function: FunctionConstructor
 /**
  * Extracts the type of the 'this' parameter of a function type, or 'unknown' if the function type has no 'this' parameter.
  */
-type ThisParameterType<T> = T extends (this: unknown, ...args: any[]) => any
-  ? unknown
-  : T extends (this: infer U, ...args: any[]) => any
-  ? U
-  : unknown
+type ThisParameterType<T> = T extends (this: infer U, ...args: any[]) => any ? U : unknown
 
 /**
  * Removes the 'this' parameter from a function type.
@@ -527,13 +523,13 @@ interface String {
   toLowerCase(): string
 
   /** Converts all alphabetic characters to lowercase, taking into account the host environment's current locale. */
-  toLocaleLowerCase(): string
+  toLocaleLowerCase(locales?: string | string[]): string
 
   /** Converts all the alphabetic characters in a string to uppercase. */
   toUpperCase(): string
 
   /** Returns a string where all alphabetic characters have been converted to uppercase, taking into account the host environment's current locale. */
-  toLocaleUpperCase(): string
+  toLocaleUpperCase(locales?: string | string[]): string
 
   /** Removes the leading and trailing white space and line terminator characters from a string. */
   trim(): string
@@ -574,7 +570,7 @@ interface Boolean {
 
 interface BooleanConstructor {
   new (value?: any): Boolean
-  (value?: any): boolean
+  <T>(value?: T): boolean
   readonly prototype: Boolean
 }
 
@@ -643,7 +639,7 @@ interface NumberConstructor {
 declare var Number: NumberConstructor
 
 interface TemplateStringsArray extends ReadonlyArray<string> {
-  readonly raw: ReadonlyArray<string>
+  readonly raw: readonly string[]
 }
 
 /**
@@ -742,8 +738,8 @@ interface Math {
   /** Returns a pseudorandom number between 0 and 1. */
   random(): number
   /**
-   * Returns a supplied numeric expression rounded to the nearest number.
-   * @param x The value to be rounded to the nearest number.
+   * Returns a supplied numeric expression rounded to the nearest integer.
+   * @param x The value to be rounded to the nearest integer.
    */
   round(x: number): number
   /**
@@ -941,12 +937,12 @@ interface DateConstructor {
   /**
    * Returns the number of milliseconds between midnight, January 1, 1970 Universal Coordinated Time (UTC) (or GMT) and the specified date.
    * @param year The full year designation is required for cross-century date accuracy. If year is between 0 and 99 is used, then year is assumed to be 1900 + year.
-   * @param month The month as an number between 0 and 11 (January to December).
-   * @param date The date as an number between 1 and 31.
-   * @param hours Must be supplied if minutes is supplied. An number from 0 to 23 (midnight to 11pm) that specifies the hour.
-   * @param minutes Must be supplied if seconds is supplied. An number from 0 to 59 that specifies the minutes.
-   * @param seconds Must be supplied if milliseconds is supplied. An number from 0 to 59 that specifies the seconds.
-   * @param ms An number from 0 to 999 that specifies the milliseconds.
+   * @param month The month as a number between 0 and 11 (January to December).
+   * @param date The date as a number between 1 and 31.
+   * @param hours Must be supplied if minutes is supplied. A number from 0 to 23 (midnight to 11pm) that specifies the hour.
+   * @param minutes Must be supplied if seconds is supplied. A number from 0 to 59 that specifies the minutes.
+   * @param seconds Must be supplied if milliseconds is supplied. A number from 0 to 59 that specifies the seconds.
+   * @param ms A number from 0 to 999 that specifies the milliseconds.
    */
   UTC(
     year: number,
@@ -1041,7 +1037,7 @@ declare var Error: ErrorConstructor
 
 interface EvalError extends Error {}
 
-interface EvalErrorConstructor {
+interface EvalErrorConstructor extends ErrorConstructor {
   new (message?: string): EvalError
   (message?: string): EvalError
   readonly prototype: EvalError
@@ -1051,7 +1047,7 @@ declare var EvalError: EvalErrorConstructor
 
 interface RangeError extends Error {}
 
-interface RangeErrorConstructor {
+interface RangeErrorConstructor extends ErrorConstructor {
   new (message?: string): RangeError
   (message?: string): RangeError
   readonly prototype: RangeError
@@ -1061,7 +1057,7 @@ declare var RangeError: RangeErrorConstructor
 
 interface ReferenceError extends Error {}
 
-interface ReferenceErrorConstructor {
+interface ReferenceErrorConstructor extends ErrorConstructor {
   new (message?: string): ReferenceError
   (message?: string): ReferenceError
   readonly prototype: ReferenceError
@@ -1071,7 +1067,7 @@ declare var ReferenceError: ReferenceErrorConstructor
 
 interface SyntaxError extends Error {}
 
-interface SyntaxErrorConstructor {
+interface SyntaxErrorConstructor extends ErrorConstructor {
   new (message?: string): SyntaxError
   (message?: string): SyntaxError
   readonly prototype: SyntaxError
@@ -1081,7 +1077,7 @@ declare var SyntaxError: SyntaxErrorConstructor
 
 interface TypeError extends Error {}
 
-interface TypeErrorConstructor {
+interface TypeErrorConstructor extends ErrorConstructor {
   new (message?: string): TypeError
   (message?: string): TypeError
   readonly prototype: TypeError
@@ -1091,7 +1087,7 @@ declare var TypeError: TypeErrorConstructor
 
 interface URIError extends Error {}
 
-interface URIErrorConstructor {
+interface URIErrorConstructor extends ErrorConstructor {
   new (message?: string): URIError
   (message?: string): URIError
   readonly prototype: URIError
@@ -1163,7 +1159,7 @@ interface ReadonlyArray<T> {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): T[]
   /**
@@ -1180,48 +1176,54 @@ interface ReadonlyArray<T> {
   lastIndexOf(searchElement: T, fromIndex?: number): number
   /**
    * Determines whether all the members of an array satisfy the specified test.
-   * @param callbackfn A function that accepts up to three arguments. The every method calls the callbackfn function for each element in array1 until the callbackfn returns false, or until the end of the array.
-   * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+   * @param callbackfn A function that accepts up to three arguments. The every method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
+   * @param thisArg An object to which the this keyword can refer in the callbackfn function.
+   * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => unknown, thisArg?: any): boolean
+  every(callbackfn: (value: T, index: number, array: readonly T[]) => unknown, thisArg?: any): boolean
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the callbackfn function for each element in array1 until the callbackfn returns true, or until the end of the array.
-   * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
+   * @param thisArg An object to which the this keyword can refer in the callbackfn function.
+   * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => unknown, thisArg?: any): boolean
+  some(callbackfn: (value: T, index: number, array: readonly T[]) => unknown, thisArg?: any): boolean
   /**
    * Performs the specified action for each element in an array.
    * @param callbackfn  A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.
    * @param thisArg  An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  forEach(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => void, thisArg?: any): void
+  forEach(callbackfn: (value: T, index: number, array: readonly T[]) => void, thisArg?: any): void
   /**
    * Calls a defined callback function on each element of an array, and returns an array that contains the results.
    * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  map<U>(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => U, thisArg?: any): U[]
+  map<U>(callbackfn: (value: T, index: number, array: readonly T[]) => U, thisArg?: any): U[]
   /**
    * Returns the elements of an array that meet the condition specified in a callback function.
    * @param callbackfn A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  filter<S extends T>(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => value is S, thisArg?: any): S[]
+  filter<S extends T>(callbackfn: (value: T, index: number, array: readonly T[]) => value is S, thisArg?: any): S[]
   /**
    * Returns the elements of an array that meet the condition specified in a callback function.
    * @param callbackfn A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  filter(callbackfn: (value: T, index: number, array: ReadonlyArray<T>) => unknown, thisArg?: any): T[]
+  filter(callbackfn: (value: T, index: number, array: readonly T[]) => unknown, thisArg?: any): T[]
   /**
    * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
    * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
-  reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => T): T
+  reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T): T
   reduce(
-    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => T,
+    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T,
     initialValue: T
   ): T
   /**
@@ -1230,7 +1232,7 @@ interface ReadonlyArray<T> {
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
   reduce<U>(
-    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => U,
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: readonly T[]) => U,
     initialValue: U
   ): U
   /**
@@ -1238,9 +1240,9 @@ interface ReadonlyArray<T> {
    * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
-  reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => T): T
+  reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T): T
   reduceRight(
-    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => T,
+    callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: readonly T[]) => T,
     initialValue: T
   ): T
   /**
@@ -1249,7 +1251,7 @@ interface ReadonlyArray<T> {
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
   reduceRight<U>(
-    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => U,
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: readonly T[]) => U,
     initialValue: U
   ): U
 
@@ -1311,12 +1313,17 @@ interface Array<T> {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): T[]
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: T, b: T) => number): this
   /**
@@ -1351,16 +1358,22 @@ interface Array<T> {
   lastIndexOf(searchElement: T, fromIndex?: number): number
   /**
    * Determines whether all the members of an array satisfy the specified test.
-   * @param callbackfn A function that accepts up to three arguments. The every method calls the callbackfn function for each element in array1 until the callbackfn returns false, or until the end of the array.
-   * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+   * @param callbackfn A function that accepts up to three arguments. The every method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
+   * @param thisArg An object to which the this keyword can refer in the callbackfn function.
+   * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the callbackfn function for each element in array1 until the callbackfn returns true, or until the end of the array.
-   * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
+   * @param thisArg An object to which the this keyword can refer in the callbackfn function.
+   * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean
   /**
    * Performs the specified action for each element in an array.
    * @param callbackfn  A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.
@@ -1384,7 +1397,7 @@ interface Array<T> {
    * @param callbackfn A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  filter(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[]
+  filter(callbackfn: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[]
   /**
    * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
    * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
@@ -1428,8 +1441,8 @@ interface ArrayConstructor {
   (arrayLength?: number): any[]
   <T>(arrayLength: number): T[]
   <T>(...items: T[]): T[]
-  isArray(arg: any): arg is Array<any>
-  readonly prototype: Array<any>
+  isArray(arg: any): arg is any[]
+  readonly prototype: any[]
 }
 
 declare var Array: ArrayConstructor
@@ -1502,27 +1515,37 @@ interface ArrayLike<T> {
 /**
  * Make all properties in T optional
  */
-type Partial<T> = { [P in keyof T]?: T[P] }
+type Partial<T> = {
+  [P in keyof T]?: T[P]
+}
 
 /**
  * Make all properties in T required
  */
-type Required<T> = { [P in keyof T]-?: T[P] }
+type Required<T> = {
+  [P in keyof T]-?: T[P]
+}
 
 /**
  * Make all properties in T readonly
  */
-type Readonly<T> = { readonly [P in keyof T]: T[P] }
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P]
+}
 
 /**
  * From T, pick a set of properties whose keys are in the union K
  */
-type Pick<T, K extends keyof T> = { [P in K]: T[P] }
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P]
+}
 
 /**
  * Construct a type with a set of properties K of type T
  */
-type Record<K extends keyof any, T> = { [P in K]: T }
+type Record<K extends keyof any, T> = {
+  [P in K]: T
+}
 
 /**
  * Exclude from T those types that are assignable to U
@@ -1533,6 +1556,11 @@ type Exclude<T, U> = T extends U ? never : T
  * Extract from T those types that are assignable to U
  */
 type Extract<T, U> = T extends U ? T : never
+
+/**
+ * Construct a type with the properties of T except for those in type K.
+ */
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>
 
 /**
  * Exclude null and undefined from T
@@ -1786,12 +1814,12 @@ interface Int8Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Int8Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Int8Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -1962,24 +1990,28 @@ interface Int8Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Int8Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Int8Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Int8Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -1989,7 +2021,7 @@ interface Int8Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Int8Array
+  subarray(begin?: number, end?: number): Int8Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -2075,12 +2107,12 @@ interface Uint8Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Uint8Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Uint8Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -2251,24 +2283,28 @@ interface Uint8Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Uint8Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Uint8Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Uint8Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -2278,7 +2314,7 @@ interface Uint8Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Uint8Array
+  subarray(begin?: number, end?: number): Uint8Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -2365,12 +2401,12 @@ interface Uint8ClampedArray {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Uint8ClampedArray) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Uint8ClampedArray) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -2541,24 +2577,28 @@ interface Uint8ClampedArray {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Uint8ClampedArray
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Uint8ClampedArray) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Uint8ClampedArray) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -2568,7 +2608,7 @@ interface Uint8ClampedArray {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Uint8ClampedArray
+  subarray(begin?: number, end?: number): Uint8ClampedArray
 
   /**
    * Converts a number to a string by using the current locale.
@@ -2655,12 +2695,12 @@ interface Int16Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Int16Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Int16Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -2830,24 +2870,28 @@ interface Int16Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Int16Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Int16Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Int16Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -2857,7 +2901,7 @@ interface Int16Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Int16Array
+  subarray(begin?: number, end?: number): Int16Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -2944,12 +2988,12 @@ interface Uint16Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Uint16Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Uint16Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -3120,24 +3164,28 @@ interface Uint16Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Uint16Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Uint16Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Uint16Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -3147,7 +3195,7 @@ interface Uint16Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Uint16Array
+  subarray(begin?: number, end?: number): Uint16Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -3233,12 +3281,12 @@ interface Int32Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Int32Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Int32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -3409,24 +3457,28 @@ interface Int32Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Int32Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Int32Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Int32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -3436,7 +3488,7 @@ interface Int32Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Int32Array
+  subarray(begin?: number, end?: number): Int32Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -3523,12 +3575,12 @@ interface Uint32Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Uint32Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Uint32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -3698,24 +3750,28 @@ interface Uint32Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Uint32Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Uint32Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Uint32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -3725,7 +3781,7 @@ interface Uint32Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Uint32Array
+  subarray(begin?: number, end?: number): Uint32Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -3812,12 +3868,12 @@ interface Float32Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Float32Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Float32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -3988,24 +4044,28 @@ interface Float32Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Float32Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Float32Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Float32Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
@@ -4015,7 +4075,7 @@ interface Float32Array {
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Float32Array
+  subarray(begin?: number, end?: number): Float32Array
 
   /**
    * Converts a number to a string by using the current locale.
@@ -4102,12 +4162,12 @@ interface Float64Array {
   /**
    * Determines whether all the members of an array satisfy the specified test.
    * @param callbackfn A function that accepts up to three arguments. The every method calls
-   * the callbackfn function for each element in array1 until the callbackfn returns false,
-   * or until the end of the array.
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value false, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  every(callbackfn: (value: number, index: number, array: Float64Array) => boolean, thisArg?: any): boolean
+  every(callbackfn: (value: number, index: number, array: Float64Array) => unknown, thisArg?: any): boolean
 
   /**
    * Returns the this object after filling the section identified by start and end with value
@@ -4278,43 +4338,38 @@ interface Float64Array {
   /**
    * Returns a section of an array.
    * @param start The beginning of the specified portion of the array.
-   * @param end The end of the specified portion of the array.
+   * @param end The end of the specified portion of the array. This is exclusive of the element at the index 'end'.
    */
   slice(start?: number, end?: number): Float64Array
 
   /**
    * Determines whether the specified callback function returns true for any element of an array.
-   * @param callbackfn A function that accepts up to three arguments. The some method calls the
-   * callbackfn function for each element in array1 until the callbackfn returns true, or until
-   * the end of the array.
+   * @param callbackfn A function that accepts up to three arguments. The some method calls
+   * the callbackfn function for each element in the array until the callbackfn returns a value
+   * which is coercible to the Boolean value true, or until the end of the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(callbackfn: (value: number, index: number, array: Float64Array) => boolean, thisArg?: any): boolean
+  some(callbackfn: (value: number, index: number, array: Float64Array) => unknown, thisArg?: any): boolean
 
   /**
    * Sorts an array.
-   * @param compareFn The name of the function used to determine the order of the elements. If
-   * omitted, the elements are sorted in ascending, ASCII character order.
+   * @param compareFn Function used to determine the order of the elements. It is expected to return
+   * a negative value if first argument is less than second argument, zero if they're equal and a positive
+   * value otherwise. If omitted, the elements are sorted in ascending, ASCII character order.
+   * ```ts
+   * [11,2,22,1].sort((a, b) => a - b)
+   * ```
    */
   sort(compareFn?: (a: number, b: number) => number): this
 
   /**
-   * Gets a new Float64Array view of the ArrayBuffer store for this array, referencing the elements
    * at begin, inclusive, up to end, exclusive.
    * @param begin The index of the beginning of the array.
    * @param end The index of the end of the array.
    */
-  subarray(begin: number, end?: number): Float64Array
+  subarray(begin?: number, end?: number): Float64Array
 
-  /**
-   * Converts a number to a string by using the current locale.
-   */
-  toLocaleString(): string
-
-  /**
-   * Returns a string representation of an array.
-   */
   toString(): string
 
   [index: number]: number
