@@ -174,7 +174,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You will find Controls, Settings and Help panels in the taskbar menu.
+  m_text: 'You''ll find controls, settings and helpful tips in the taskbar menu. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -247,7 +247,7 @@ MonoBehaviour:
     characterCount: 69
     spriteCount: 0
     spaceCount: 11
-    wordCount: 12
+    wordCount: 11
     linkCount: 0
     lineCount: 2
     pageCount: 1
