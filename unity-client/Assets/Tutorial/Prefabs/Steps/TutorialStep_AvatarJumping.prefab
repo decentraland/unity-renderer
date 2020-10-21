@@ -5993,6 +5993,7 @@ MonoBehaviour:
   skipTutorialSection: {fileID: 2475492007736868905}
   yesSkipInputAction: {fileID: 11400000, guid: 32762977b0149684282db4ff59068cbf, type: 2}
   noSkipInputAction: {fileID: 11400000, guid: 38725fc935762a246976158d704f3b64, type: 2}
+  audioEventSuccess: {fileID: 11400000, guid: d12d1e2fb8da74441b7f2d62d7c1965a, type: 2}
   jumpingInputAction: {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
 --- !u!1 &5342789113459269664
 GameObject:

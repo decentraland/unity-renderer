@@ -36,6 +36,8 @@ public class ExternalUrlPromptHUDController : IHUD
         else
         {
             view.showHideAnimator.Hide();
+
+            AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 

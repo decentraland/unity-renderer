@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using DCL;
@@ -237,6 +237,12 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
     public void SetVisibility(bool visible)
     {
+        if (gameObject.activeSelf && !visible)
+            AudioScriptableObjects.dialogClose.Play(true);
+
+        if (!gameObject.activeSelf && visible)
+            AudioScriptableObjects.dialogOpen.Play(true);
+
         gameObject.SetActive(visible);
     }
 

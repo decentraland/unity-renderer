@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba51c89dee121ec40ada8e86c01b058e, type: 3}
+  m_Name: RobotVoiceNormal
+  m_EditorClassIdentifier: 
+  loop: 0
+  initialVolume: 1
+  initialPitch: 1
+  randomPitch: 0
+  cooldownSeconds: 1
+  clips:
+    array:
+    - {fileID: 8300000, guid: 11cfa5d8b64f6104ba417b50430dc78e, type: 3}
+    - {fileID: 8300000, guid: e65b3c29b75754b409550235f1321a8b, type: 3}
+    - {fileID: 8300000, guid: 6c22b626b1dbe9e409f2e21b4e08b633, type: 3}
+    - {fileID: 8300000, guid: 275a40e5c3a63a349a8e026f0d6a5777, type: 3}
+    - {fileID: 8300000, guid: 30f106c71799ed94996f6bd5d22cc30e, type: 3}
+  source: {fileID: 0}
+  blockingEvent: {fileID: 11400000, guid: 63b669c3dfd29d94883213d9bd488e99, type: 2}

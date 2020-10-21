@@ -9809,6 +9809,7 @@ MonoBehaviour:
   skipTutorialSection: {fileID: 1109644572356773693}
   yesSkipInputAction: {fileID: 11400000, guid: 32762977b0149684282db4ff59068cbf, type: 2}
   noSkipInputAction: {fileID: 11400000, guid: 38725fc935762a246976158d704f3b64, type: 2}
+  audioEventSuccess: {fileID: 11400000, guid: d12d1e2fb8da74441b7f2d62d7c1965a, type: 2}
   playerXAxisInpuAction: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869,
     type: 2}
   playerYAxisInputAction: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f,

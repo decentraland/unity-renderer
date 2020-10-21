@@ -44,6 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2aa437544359c41a883ffdba98307a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}
+  snapshotInWorld: {fileID: 24500006, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}
+  snapshotOutOfWorld: {fileID: 4358285346763417749, guid: 97507d628c02bcf47859b9f108ab1823,
+    type: 2}
   chatLastCheckedTimestamp: 0
 --- !u!114 &2155020464021034917
 MonoBehaviour:
@@ -84,3 +88,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7112d44e0eb6ba348aa181889a0e667d, type: 2}
     - {fileID: 11400000, guid: 0a5289a5d639e444fb5649f8dff2ef1d, type: 2}
     - {fileID: 11400000, guid: 25e39181b3d937c4996ac8e6e63a7965, type: 2}
+    - {fileID: 11400000, guid: f268d97c1db42cf48b36d2a1163b1bf8, type: 2}
+    - {fileID: 11400000, guid: 92bde48d875863a43a97d5f16550733d, type: 2}
+    - {fileID: 11400000, guid: d308bbe1912d4dd47b07cc7ab83a6c02, type: 2}
+    - {fileID: 11400000, guid: db27311c40b38e84da3c7f3ce06b7681, type: 2}

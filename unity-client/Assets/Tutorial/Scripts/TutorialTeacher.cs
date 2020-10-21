@@ -16,6 +16,9 @@ namespace DCL.Tutorial
 
         [SerializeField] internal Animator teacherAnimator;
 
+        [SerializeField]
+        AudioEvent audioEventHappy, audioEventNormal;
+
         [HideInInspector] public bool isHiddenByAnAnimation = false;
 
         /// <summary>
@@ -31,6 +34,7 @@ namespace DCL.Tutorial
             {
                 case TeacherAnimation.StepCompleted:
                     teacherAnimator.SetTrigger("StepCompleted");
+                    PlayHappySound(0.3f);
                     break;
                 case TeacherAnimation.QuickGoodbye:
                     teacherAnimator.SetTrigger("QuickGoodbye");
@@ -43,6 +47,16 @@ namespace DCL.Tutorial
                 default:
                     break;
             }
+        }
+
+        public void PlaySpeakSound()
+        {
+            audioEventNormal.PlayScheduled(0.4f);
+        }
+
+        public void PlayHappySound(float delay)
+        {
+            audioEventHappy.PlayScheduled(delay);
         }
     }
 }

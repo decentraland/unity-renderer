@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ToggleAudioHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class ToggleAudioHandler : MonoBehaviour, IPointerDownHandler
 {
     Toggle toggle;
 
     void Awake()
     {
         toggle = GetComponent<Toggle>();
+        toggle.onValueChanged.AddListener(OnValueChanged);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -22,13 +23,13 @@ public class ToggleAudioHandler : MonoBehaviour, IPointerDownHandler, IPointerUp
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public void OnValueChanged(bool isOn)
     {
         if (toggle != null)
         {
             if (toggle.interactable)
             {
-                if (toggle.isOn)
+                if (isOn)
                 {
                     AudioScriptableObjects.enable.Play(true);
                 }

@@ -35,6 +35,8 @@ namespace DCL.Tutorial
 
         public HUDController hudController { get => HUDController.i; }
 
+        public int currentStepIndex { get; private set; }
+
         [Header("General Configuration")]
         [SerializeField] internal int tutorialVersion = 1;
         [SerializeField] internal float timeBetweenSteps = 0.5f;
@@ -80,7 +82,6 @@ namespace DCL.Tutorial
         internal TutorialStep runningStep = null;
         internal bool tutorialReset = false;
 
-        private int currentStepIndex;
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
         private Coroutine eagleEyeRotationCoroutine;

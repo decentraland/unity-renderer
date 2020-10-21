@@ -11,6 +11,7 @@ namespace DCL.Tutorial
     {
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
 
+        [SerializeField] AudioEvent audioEventSuccess;
         [SerializeField] Button okButton;
 
         private bool stepIsFinished = false;
@@ -33,6 +34,7 @@ namespace DCL.Tutorial
         public override IEnumerator OnStepExecute()
         {
             yield return new WaitUntil(() => stepIsFinished);
+            audioEventSuccess.Play(true);
         }
 
         public override void OnStepFinished()

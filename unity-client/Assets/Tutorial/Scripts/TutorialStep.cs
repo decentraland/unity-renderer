@@ -47,6 +47,14 @@ namespace DCL.Tutorial
             {
                 tutorialController.ShowTeacher3DModel(show3DTeacherAtStart);
 
+                if (tutorialController.teacher != null)
+                {
+                    if (tutorialController.currentStepIndex > 0)
+                        tutorialController.teacher.PlaySpeakSound();
+                    else
+                        tutorialController.teacher.PlayHappySound(1f);
+                }
+
                 if (show3DTeacherAtStart && teacherPositionRef != null)
                 {
                     tutorialController.SetTeacherPosition(teacherPositionRef.position);
@@ -77,7 +85,6 @@ namespace DCL.Tutorial
             blockSkipActions = true;
             OnJustAfterStepExecuted?.Invoke();
             yield return PlayAndWaitForHideAnimation();
-
             yield return null;
             yield return new WaitUntil(() => !CommonScriptableObjects.cameraIsBlending.Get());
         }

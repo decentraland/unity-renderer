@@ -145,6 +145,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TutorialController
       objectReference: {fileID: 0}
+    - target: {fileID: 4465973064103375006, guid: 565584806d4534293a4045912564288e,
+        type: 3}
+      propertyPath: debugRunTutorial
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7254021865256056288, guid: 565584806d4534293a4045912564288e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -726,6 +731,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6473396510046919356, guid: e399265a17d26494da5c9fe6063ea2d2,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6646560786880561982, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -915,10 +925,10 @@ MonoBehaviour:
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
   baseUrlCustom: http://localhost:8080/?ENABLE_EXPLORE_HUD&
-  environment: 2
+  environment: 0
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
-  allWearables: 1
+  allWearables: 0
   testWearables: 0
   enableTutorial: 0
   soloScene: 0

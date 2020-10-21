@@ -30,8 +30,6 @@ public class ExternalUrlPromptView : MonoBehaviour
         domainText.text = uri.Host;
         urlText.text = uri.OriginalString;
         trustToggle.isOn = false;
-
-        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     private void Dismiss()
