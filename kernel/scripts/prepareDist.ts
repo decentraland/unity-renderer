@@ -8,9 +8,7 @@ import { execSync } from 'child_process'
 import { copyFile } from './_utils'
 
 const root = path.resolve(__dirname, '..')
-const commitHash = execSync('git rev-parse HEAD')
-  .toString()
-  .trim()
+const commitHash = execSync('git rev-parse HEAD').toString().trim()
 const md5File = require('md5-file/promise')
 
 async function copyIndex(filename: string) {
@@ -74,7 +72,7 @@ async function injectDependencies(folder: string, dependencies: string[], devDep
 
     packageJson[target] = packageJson[target] || {}
 
-    deps.forEach(dep => {
+    deps.forEach((dep) => {
       if (localPackageJson.dependencies[dep]) {
         packageJson[target][dep] = localPackageJson.dependencies[dep]
         deps.delete(dep)
@@ -82,7 +80,7 @@ async function injectDependencies(folder: string, dependencies: string[], devDep
       }
     })
 
-    deps.forEach(dep => {
+    deps.forEach((dep) => {
       if (localPackageJson.devDependencies[dep]) {
         packageJson[target][dep] = localPackageJson.devDependencies[dep]
         deps.delete(dep)
@@ -99,13 +97,31 @@ async function injectDependencies(folder: string, dependencies: string[], devDep
 }
 
 async function prepareDecentralandECS(folder: string) {
-  copyFile(path.resolve(root, `packages/decentraland-amd/dist/amd.js`), path.resolve(root, `${folder}/artifacts/amd.js`))
-  copyFile(path.resolve(root, `packages/decentraland-amd/dist/amd.min.js`), path.resolve(root, `${folder}/artifacts/amd.min.js`))
-  copyFile(path.resolve(root, `packages/decentraland-amd/dist/amd.min.js.map`), path.resolve(root, `${folder}/artifacts/amd.min.js.map`))
-  copyFile(path.resolve(root, `packages/build-ecs/index.js`), path.resolve(root, `${folder}/artifacts/build-ecs.js`))
+  copyFile(
+    path.resolve(root, `packages/decentraland-amd/dist/amd.js`),
+    path.resolve(root, `${folder}/artifacts/amd.js`)
+  )
+  copyFile(
+    path.resolve(root, `packages/decentraland-amd/dist/amd.min.js`),
+    path.resolve(root, `${folder}/artifacts/amd.min.js`)
+  )
+  copyFile(
+    path.resolve(root, `packages/decentraland-amd/dist/amd.min.js.map`),
+    path.resolve(root, `${folder}/artifacts/amd.min.js.map`)
+  )
 
-  copyFile(path.resolve(root, `static/dist/editor.js`), path.resolve(root, `packages/decentraland-ecs/artifacts/editor.js`))
+  // release the editor entry point
+  copyFile(path.resolve(root, `static/dist/editor.js`), path.resolve(root, `${folder}/artifacts/editor.js`))
 
+  // add scene systems needed to run the scenes with the preview
+  copyFile(
+    path.resolve(root, `static/systems/cli.scene.system.js`),
+    path.resolve(root, `${folder}/artifacts/cli.scene.system.js`)
+  )
+  copyFile(
+    path.resolve(root, `static/systems/scene.system.js`),
+    path.resolve(root, `${folder}/artifacts/scene.system.js`)
+  )
   copyFile(path.resolve(root, `static/dist/preview.js`), path.resolve(root, `${folder}/artifacts/preview.js`))
   copyFile(path.resolve(root, `static/preview.html`), path.resolve(root, `${folder}/artifacts/preview.html`))
 
@@ -122,6 +138,7 @@ async function prepareDecentralandECS(folder: string) {
   await validatePackage(folder)
 
   // build-ecs is embeded inside decentraland-ecs, therefore, it needs the same dependencies
+  copyFile(path.resolve(root, `packages/build-ecs/index.js`), path.resolve(root, `${folder}/artifacts/build-ecs.js`))
   await injectDependencies(folder, ['typescript', 'terser'], false)
 }
 
@@ -167,11 +184,11 @@ async function validatePackage(folder: string) {
 }
 
 // tslint:disable-next-line:semicolon
-;(async function() {
+;(async function () {
   await copyIndex('unity')
   await prepareDecentralandECS('packages/decentraland-ecs')
   await injectDependencies('packages/build-ecs', ['typescript', 'terser'], false)
-})().catch(e => {
+})().catch((e) => {
   // tslint:disable-next-line:no-console
   console.error(e)
   process.exit(1)
