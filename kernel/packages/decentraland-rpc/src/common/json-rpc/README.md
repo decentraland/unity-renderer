@@ -1,1 +1,0 @@
-Taken from https://github.com/nojvek/noice-json-rpc (MIT)
