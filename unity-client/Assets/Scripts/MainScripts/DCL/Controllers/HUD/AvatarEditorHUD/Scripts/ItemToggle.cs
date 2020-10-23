@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DCL;
+using DCL.Configuration;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -51,7 +52,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         thumbnail.sprite = null;
         warningPanel.SetActive(false);
 
-        view = GetComponentInParent<AvatarEditorHUDView>();
+        if (!EnvironmentSettings.RUNNING_TESTS)
+            view = GetComponentInParent<AvatarEditorHUDView>();
     }
 
     protected override void OnClick()
