@@ -38,9 +38,6 @@ namespace Tests
             VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
 
             yield return new WaitUntil(() => avatar.everythingIsLoaded, 20);
-            yield return new WaitForSeconds(3f);
-
-            Debug.Break(); yield return  null;
 
             yield return VisualTestHelpers.TakeSnapshot();
         }
