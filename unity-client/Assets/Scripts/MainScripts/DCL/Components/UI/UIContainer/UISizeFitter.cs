@@ -21,14 +21,11 @@ public class UISizeFitter : MonoBehaviour
     {
         if (canvasChildHookRT == null)
         {
-            CanvasRenderer resizedCanvasPanel = GetComponentInParent<CanvasRenderer>();
-            if (resizedCanvasPanel != null)
-            {
-                canvasChildHookRT = resizedCanvasPanel.GetComponent<RectTransform>();
-                return;
-            }
-
-            canvasChildHookRT = GetComponentInParent<Canvas>()?.GetComponent<RectTransform>();
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas)
+                canvasChildHookRT = canvas.GetComponent<RectTransform>();
+            else
+                canvasChildHookRT = GetComponentInParent<RectTransform>();
         }
     }
 
