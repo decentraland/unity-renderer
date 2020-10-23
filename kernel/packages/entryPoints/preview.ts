@@ -7,9 +7,9 @@ global.enableWeb3 = window.enableWeb3
 
 import { initializeUnity } from 'unity-interface/initializer'
 import { loadPreviewScene } from 'unity-interface/dcl'
-import { DEBUG_WS_MESSAGES } from 'config'
+import { DEBUG_WS_MESSAGES, HALLOWEEN } from 'config'
 import defaultLogger from 'shared/logger'
-import { ILand, HUDElementID } from 'shared/types'
+import { ILand, HUDElementID, RenderProfile } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { signalRendererInitialized } from 'shared/renderer/actions'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -94,6 +94,12 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
 
     global.globalStore.dispatch(signalRendererInitialized())
+
+    if (HALLOWEEN) {
+      i.SetRenderProfile(RenderProfile.HALLOWEEN)
+    } else {
+      i.SetRenderProfile(RenderProfile.DEFAULT)
+    }
 
     const renderable = sceneRenderable()
 
