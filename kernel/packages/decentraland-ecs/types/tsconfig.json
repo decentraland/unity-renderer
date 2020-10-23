@@ -24,7 +24,8 @@
       "@decentraland/Identity",
       "@decentraland/web3-provider",
       "@decentraland/EnvironmentAPI",
-      "@decentraland/ParcelIdentity"
+      "@decentraland/ParcelIdentity",
+      "@decentraland/RestrictedActions"
     ],
     "typeRoots": [
       "."

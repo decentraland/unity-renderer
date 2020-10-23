@@ -10,7 +10,6 @@ export * from './ecs/Observable'
 export * from './ecs/UIValue'
 export * from './ecs/EventManager'
 export * from './ecs/UserActions'
-export * from './ecs/RestrictedActions'
 
 import { DecentralandSynchronizationSystem } from './decentraland/Implementation'
 

@@ -1,4 +1,4 @@
-import { BoxShape, engine, Entity, log, movePlayerTo, OnPointerDown, Transform, Vector3 } from 'decentraland-ecs/src'
+import { movePlayerTo } from '@decentraland/RestrictedActions'
 
 const e = new Entity()
 e.addComponent(new BoxShape())
