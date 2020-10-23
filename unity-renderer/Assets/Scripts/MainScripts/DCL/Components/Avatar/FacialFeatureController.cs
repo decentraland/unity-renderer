@@ -77,21 +77,23 @@ public class FacialFeatureController
 
         var representation = wearableItem.GetRepresentation(bodyShape.bodyShapeId);
 
-        string mainTextureName = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
-        string maskName = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
+        string mainTextureHash = representation?.contents?.FirstOrDefault(x => x.file == representation?.mainFile)?.hash;
+        if(mainTextureHash == null)
+            mainTextureHash = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
+        string maskhash = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
-        if (!string.IsNullOrEmpty(mainTextureName))
+        if (!string.IsNullOrEmpty(mainTextureHash))
         {
-            mainTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + mainTextureName);
+            mainTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + mainTextureHash);
             mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
             mainTexturePromise.OnFailEvent += (x) => mainTexture = null;
 
             AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
         }
 
-        if (!string.IsNullOrEmpty(maskName))
+        if (!string.IsNullOrEmpty(maskhash))
         {
-            maskTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + maskName);
+            maskTexturePromise = new AssetPromise_Texture(wearableItem.baseUrl + maskhash);
             maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
             maskTexturePromise.OnFailEvent += (x) => maskTexture = null;
 
