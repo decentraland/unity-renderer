@@ -1,0 +1,15 @@
+{
+    "name": "RenderProfiles",
+    "references": [
+        "GUID:f070f44586498a44c9e6d2ea3e166379"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

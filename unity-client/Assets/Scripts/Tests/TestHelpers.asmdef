@@ -17,7 +17,8 @@
         "GUID:82873c2d9c9cbe94391e6b33e5153865",
         "GUID:1dd0780aa6be12b428c8005d0bee46b8",
         "GUID:a881b57670b1d2747a6d7f9e32b63230",
-        "GUID:8e14059e964ca49aeb55d0e7b2b14c3c"
+        "GUID:8e14059e964ca49aeb55d0e7b2b14c3c",
+        "GUID:3f13bd1a926f03a4cab988f06a80c1fd"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -26,7 +27,9 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Newtonsoft.Json.dll",
-        "Google.Protobuf.dll"
+        "Google.Protobuf.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

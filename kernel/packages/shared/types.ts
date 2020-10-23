@@ -380,6 +380,11 @@ export type Notification = {
   externalCallbackID?: string
 }
 
+export enum RenderProfile {
+  DEFAULT = 0,
+  HALLOWEEN = 1
+}
+
 export enum HUDElementID {
   NONE = 0,
   MINIMAP = 1,

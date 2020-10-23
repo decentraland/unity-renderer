@@ -7,33 +7,6 @@ using UnityEngine.Profiling;
 
 namespace DCL
 {
-    public class CleanableYieldInstruction : CustomYieldInstruction, ICleanable
-    {
-        public virtual void Cleanup()
-        {
-        }
-
-        public override bool keepWaiting
-        {
-            get { return false; }
-        }
-    }
-
-    public interface IMessageQueueHandler
-    {
-        void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message);
-        Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; }
-    }
-
-    public interface IMessageProcessHandler
-    {
-        bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction);
-        void LoadParcelScenesExecute(string decentralandSceneJSON);
-        void UnloadParcelSceneExecute(string sceneKey);
-        void UnloadAllScenes();
-        void UpdateParcelScenesExecute(string sceneKey);
-    }
-
     public class MessagingController : IDisposable
     {
         const char SEPARATOR = '_';

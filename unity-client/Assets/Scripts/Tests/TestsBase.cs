@@ -14,6 +14,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 using DCL.Tutorial;
+using NSubstitute;
 
 public class TestsBase
 {
@@ -49,6 +50,7 @@ public class TestsBase
         {
             yield return SetUp_SceneIntegrityChecker();
             SetUp_Renderer();
+            Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
             yield break;
         }
 
@@ -60,10 +62,8 @@ public class TestsBase
         yield return SetUp_SceneIntegrityChecker();
 
         SetUp_Renderer();
-
         runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
-
-        Environment.i.Initialize(new DummyMessageHandler(), isTesting: true);
+        Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
     }
 
 
@@ -72,7 +72,7 @@ public class TestsBase
     {
         yield return null;
 
-        if(runtimeGameObjectsRoot != null)
+        if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
         TestHelpers.ForceUnloadAllScenes(SceneController.i);
@@ -216,9 +216,6 @@ public class TestsBase
         {
             SetUp_UIScene();
         }
-
-
-        Environment.i.Initialize(new DummyMessageHandler(), isTesting: true);
     }
 
 

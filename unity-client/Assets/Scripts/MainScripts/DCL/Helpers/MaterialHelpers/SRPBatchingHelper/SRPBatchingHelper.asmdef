@@ -1,6 +1,8 @@
 {
     "name": "SRPBatchingHelper",
-    "references": [],
+    "references": [
+        "GUID:f070f44586498a44c9e6d2ea3e166379"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

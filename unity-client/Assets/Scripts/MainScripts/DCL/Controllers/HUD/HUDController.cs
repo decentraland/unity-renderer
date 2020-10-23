@@ -306,7 +306,7 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.MESSAGE_OF_THE_DAY:
                 CreateHudElement<WelcomeHUDController>(configuration, hudElementId);
-                messageOfTheDayHud?.Initialize(ownUserProfile.hasConnectedWeb3);
+                messageOfTheDayHud?.Initialize(JsonUtility.FromJson<MessageOfTheDayConfig>(extraPayload));
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 CreateHudElement<ExternalUrlPromptHUDController>(configuration, hudElementId);

@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2566884
+    totalSpriteSurfaceArea: 2539194
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -132,8 +132,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 7404b1b7d6b0f40929ae536f5b39be50, type: 3}
   - {fileID: 21300000, guid: 9af081c7b27544b809eda744a31a2889, type: 3}
   - {fileID: 21300000, guid: 0f4ebac7e595c4582aa0491ec5e6466a, type: 3}
+  - {fileID: 21300000, guid: b0b580e7bcb4e4d1fb4fc635fd057a89, type: 3}
   - {fileID: 21300000, guid: e0fcedf7c3fa64d24b85a27aa8bb93a9, type: 3}
   - {fileID: 21300000, guid: 08d52e28c31ca4d049008be051e8b8a1, type: 3}
+  - {fileID: 21300000, guid: 8cb10138a6a0d47bf9e2eef30242fc29, type: 3}
   - {fileID: 21300000, guid: d6af1b4802f064d6fadd765950b0b2b8, type: 3}
   - {fileID: 21300000, guid: be6cfe489bf6c49f8b192e4043cca7eb, type: 3}
   - {fileID: 21300000, guid: 88d20368893eb44b4ae7754f29a476c1, type: 3}
@@ -142,6 +144,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: fd507e98e14c344e3aec24b937e8af75, type: 3}
   - {fileID: 21300000, guid: 6dca2ab88567048dea54964cd8fee779, type: 3}
   - {fileID: 21300000, guid: cd958ac803911481ea50edce80f46f1c, type: 3}
+  - {fileID: 21300000, guid: 194fcbd882d15453b90e80d668ab4bad, type: 3}
   - {fileID: 21300000, guid: 874182f8d364145bd9836b8e817019eb, type: 3}
   - {fileID: 21300000, guid: 9ed344f88537e43a6b35556d00b77b39, type: 3}
   - {fileID: 21300000, guid: dcdf9cf86d2644e82b7712af42584c7c, type: 3}
@@ -188,7 +191,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6d5f6edc2bfb441e1969ee1e10c3c572, type: 3}
   - {fileID: 21300000, guid: 017eca2d81e3343959735e87d3b06c02, type: 3}
   - {fileID: 21300000, guid: ccff713df52bf45b5b10c8fcfb44fee7, type: 3}
-  - {fileID: 21300000, guid: 42ecadcdf0d674029b255fccf03f5965, type: 3}
   - {fileID: 21300000, guid: 3c2f4bed18ef84d5baeb2774df7d08df, type: 3}
   - {fileID: 21300000, guid: d91ddf0ee209e48899e1610c6636eb8a, type: 3}
   - {fileID: 21300000, guid: 24dc203e4e3c4422c92496e4ea5fb524, type: 3}
@@ -279,8 +281,10 @@ SpriteAtlas:
   - MouseLocked
   - FriendsListImage
   - MagicWand
+  - DayModeIcon
   - MapIcon
   - NFTFrame
+  - NightModeIcon
   - NFTStarUniqueContainer
   - ContainerRadius20@2x
   - UIicon
@@ -289,6 +293,7 @@ SpriteAtlas:
   - Arrow
   - RejectButton
   - ContainerRadius10
+  - TutorialIcon
   - BackButton
   - ContainerShadow
   - EmailHeader
@@ -335,7 +340,6 @@ SpriteAtlas:
   - ArrowGradient
   - ContainerStroke10
   - LeftClickWhite
-  - RobotPopUp
   - ToggleCheckOn
   - Button12
   - ContainerRectBottom
