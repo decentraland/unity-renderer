@@ -17,6 +17,10 @@ public class VisualTestsBase : TestsBase
         yield return InitScene();
         yield return null;
 
+        //TODO(Brian): This is to wait for SceneController.Awake(). We should remove this
+        //             When the entry point is refactored.
+        RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
+
         SceneController.i.useBoundariesChecker = false;
 
         base.SetUp_Renderer();

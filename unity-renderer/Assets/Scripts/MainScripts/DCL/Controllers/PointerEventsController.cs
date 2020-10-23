@@ -8,11 +8,10 @@ namespace DCL
 {
     public class PointerEventsController
     {
-        private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
+        private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
         public System.Action OnPointerHoverStarts;
         public System.Action OnPointerHoverEnds;
 
-        bool isTesting = false;
         InteractionHoverCanvasController hoverController;
         RaycastHitInfo lastPointerDownEventHitInfo;
         OnPointerUp pointerUpEvent;
@@ -24,10 +23,8 @@ namespace DCL
         OnPointerEvent[] lastHoveredEventList = null;
         RaycastHit hitInfo;
 
-        public void Initialize(bool isTesting = false)
+        public void Initialize()
         {
-            this.isTesting = isTesting;
-
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
@@ -189,12 +186,13 @@ namespace DCL
 
         void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast)
         {
-            if (!this.isTesting)
+            //TODO(Brian): We should remove this when we get a proper initialization layer
+            if (!EnvironmentSettings.RUNNING_TESTS)
             {
                 if (Utils.LockedThisFrame())
                     return;
 
-                if (!Utils.isCursorLocked || renderingIsDisabled)
+                if (!Utils.isCursorLocked || !renderingEnabled)
                     return;
             }
 

@@ -1,8 +1,9 @@
-import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { future, IFuture } from 'fp-future'
-import { ILand, ContentMapping } from 'shared/types'
+import { ILand } from 'shared/types'
 import { CatalystClient } from 'dcl-catalyst-client'
 import { EntityType } from 'dcl-catalyst-commons'
+import { EmptyParcelController } from './EmptyParcelController'
+import { WorldConfig } from 'shared/meta/types'
 
 export type DeployedScene = {
   parcel_id: string
@@ -18,16 +19,13 @@ function getSceneIdFromSceneMappingResponse(scene: DeployedScene) {
   return scene.root_cid
 }
 
-export type TileIdPair = [ string, string | null ]
+export type TileIdPair = [string, string | null]
 
 export class SceneDataDownloadManager {
   positionToSceneId: Map<string, IFuture<string | null>> = new Map()
   sceneIdToLandData: Map<string, IFuture<ILand | null>> = new Map()
   rootIdToLandData: Map<string, IFuture<ILand | null>> = new Map()
-  emptyScenes!: Record<string, ContentMapping[]>
-  emptyScenesPromise?: Promise<Record<string, ContentMapping[]>>
-  emptySceneNames: string[] = []
-
+  emptyParcelController: EmptyParcelController
   catalyst: CatalystClient
 
   constructor(
@@ -36,21 +34,16 @@ export class SceneDataDownloadManager {
       metaContentServer: string
       metaContentService: string
       contentServerBundles: string
+      worldConfig: WorldConfig
+      rootUrl: string
     }
   ) {
+    this.emptyParcelController = new EmptyParcelController(options)
     this.catalyst = new CatalystClient(options.metaContentServer, 'EXPLORER')
   }
 
   async resolveSceneSceneIds(tiles: string[]): Promise<TileIdPair[]> {
-    if (!this.emptyScenesPromise) {
-      this.emptyScenesPromise = jsonFetch(globalThis.location.origin + '/loader/empty-scenes/index.json').then(
-        scenes => {
-          this.emptySceneNames = Object.keys(scenes)
-          this.emptyScenes = scenes
-          return this.emptyScenes
-        }
-      )
-    }
+    this.emptyParcelController.resolveEmptyParcels()
 
     const futures: Promise<TileIdPair>[] = []
 
@@ -67,7 +60,7 @@ export class SceneDataDownloadManager {
         missingTiles.push(tile)
       }
 
-      futures.push(promise.then(id => ([tile, id])))
+      futures.push(promise.then((id) => [tile, id]))
     }
 
     if (missingTiles.length > 0) {
@@ -125,7 +118,7 @@ export class SceneDataDownloadManager {
   }
 
   async resolveSceneSceneId(pos: string): Promise<string | null> {
-    return this.resolveSceneSceneIds([pos]).then(pairs => pairs.length > 0 ? pairs[0][1] : null)
+    return this.resolveSceneSceneIds([pos]).then((pairs) => (pairs.length > 0 ? pairs[0][1] : null))
   }
 
   setSceneRoots(contents: SceneMappingResponse) {
@@ -141,31 +134,6 @@ export class SceneDataDownloadManager {
     }
   }
 
-  createFakeILand(sceneId: string, coordinates: string): ILand {
-    const sceneName = this.emptySceneNames[Math.floor(Math.random() * this.emptySceneNames.length)]
-
-    return {
-      sceneId: sceneId,
-      baseUrl: globalThis.location.origin + '/loader/empty-scenes/contents/',
-      baseUrlBundles: this.options.contentServerBundles,
-      sceneJsonData: {
-        display: { title: 'Empty parcel' },
-        contact: { name: 'Decentraland' },
-        owner: '',
-        main: `bin/game.js`,
-        tags: [],
-        scene: { parcels: [coordinates], base: coordinates },
-        policy: {},
-        communications: { commServerUrl: '' }
-      },
-      mappingsResponse: {
-        parcel_id: coordinates,
-        root_cid: sceneId,
-        contents: this.emptyScenes[sceneName]
-      }
-    }
-  }
-
   async resolveLandData(sceneId: string): Promise<ILand | null> {
     if (this.sceneIdToLandData.has(sceneId)) {
       return this.sceneIdToLandData.get(sceneId)!
@@ -174,13 +142,13 @@ export class SceneDataDownloadManager {
     const promised = future<ILand | null>()
     this.sceneIdToLandData.set(sceneId, promised)
 
-    if (sceneId.endsWith('00000000000000000000')) {
+    if (this.emptyParcelController.isEmptyParcel(sceneId)) {
       const promisedPos = future<string | null>()
       const pos = sceneId.replace('Qm', '').replace(/m0+/, '')
       promisedPos.resolve(sceneId)
       this.positionToSceneId.set(pos, promisedPos)
-      await this.emptyScenesPromise
-      const scene = this.createFakeILand(sceneId, pos)
+      await this.emptyParcelController.emptyScenesPromise
+      const scene = this.emptyParcelController.createFakeILand(sceneId, pos)
       promised.resolve(scene)
       return promised
     }

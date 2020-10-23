@@ -96,14 +96,21 @@ export async function initParcelSceneWorker() {
   const state = globalThis.globalStore.getState()
   const localServer = resolveUrl(document.location.origin, '/local-ipfs')
 
+  // NOTE(Brian): In branch urls we can't just use location.source - the value returned doesn't include
+  //              the branch full path! With this, we ensure the /branch/<branch-name> is included in the root url.
+  //              This is used for empty parcels and should be used for fetching any other local resource.
+  const fullRootUrl = `${location.protocol}//${location.host}${location.pathname}`.replace('index.html', '')
+
   server.notify('Lifecycle.initialize', {
     contentServer: DEBUG ? localServer : getFetchContentServer(state),
     metaContentServer: DEBUG ? localServer : getFetchMetaContentServer(state),
     metaContentService: DEBUG ? localServer : getFetchMetaContentService(state),
     contentServerBundles: DEBUG || PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/',
+    rootUrl: fullRootUrl,
     lineOfSightRadius: LOS ? Number.parseInt(LOS, 10) : parcelLimits.visibleRadius,
     secureRadius: parcelLimits.secureRadius,
-    emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
+    emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests'],
+    worldConfig: globalThis.globalStore.getState().meta.config.world
   })
 
   return server

@@ -1,26 +1,31 @@
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
-    [Header("Menu Animation")]
-    [SerializeField] internal ShowHideAnimator moreMenuAnimator;
+    [Header("Menu Animation")] [SerializeField]
+    internal ShowHideAnimator moreMenuAnimator;
 
-    [Header("Collapse Button Config")]
-    [SerializeField] internal Button collapseBarButton;
+    [Header("Collapse Button Config")] [SerializeField]
+    internal Button collapseBarButton;
+
     [SerializeField] internal GameObject collapseIcon;
     [SerializeField] internal GameObject collapseText;
     [SerializeField] internal GameObject expandIcon;
     [SerializeField] internal GameObject expandText;
 
-    [Header("Other Buttons Config")]
-    [SerializeField] internal Button hideUIButton;
+    [Header("Other Buttons Config")] [SerializeField]
+    internal Button hideUIButton;
+
     [SerializeField] internal Button controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
     [SerializeField] internal Button settingsButton;
     [SerializeField] internal Button helpAndSupportButton;
     [SerializeField] internal Button tutorialButton;
+    [SerializeField] internal Button dayModeButton;
+    [SerializeField] internal Button nightModeButton;
 
     private TaskbarHUDView view;
 
@@ -40,25 +45,46 @@ public class TaskbarMoreMenu : MonoBehaviour
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
 
-        collapseBarButton.onClick.AddListener(() =>
+        RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
+        OnChangeProfile(RenderProfileManifest.i.currentProfile);
+
+        dayModeButton.onClick.AddListener(() =>
         {
-            ToggleCollapseBar();
+            RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.defaultProfile;
+            RenderProfileManifest.i.currentProfile.Apply();
         });
 
-        hideUIButton.onClick.AddListener(() =>
+        nightModeButton.onClick.AddListener(() =>
         {
-            ToggleHideUI();
+            RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.halloweenProfile;
+            RenderProfileManifest.i.currentProfile.Apply();
         });
 
-        tutorialButton.onClick.AddListener(() =>
+        collapseBarButton.onClick.AddListener(() => { ToggleCollapseBar(); });
+
+        hideUIButton.onClick.AddListener(() => { ToggleHideUI(); });
+
+        tutorialButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
+    }
+
+    private void OnChangeProfile(RenderProfileWorld profile)
+    {
+        if (profile == RenderProfileManifest.i.defaultProfile)
         {
-            OnRestartTutorial?.Invoke();
-        });
+            dayModeButton.gameObject.SetActive(false);
+            nightModeButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            dayModeButton.gameObject.SetActive(true);
+            nightModeButton.gameObject.SetActive(false);
+        }
     }
 
     private void OnDestroy()
     {
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
+        RenderProfileManifest.i.OnChangeProfile -= OnChangeProfile;
     }
 
     private void TutorialActive_OnChange(bool current, bool previous)
@@ -108,6 +134,7 @@ public class TaskbarMoreMenu : MonoBehaviour
             {
                 moreMenuAnimator.gameObject.SetActive(true);
             }
+
             moreMenuAnimator.Show(instant);
         }
         else

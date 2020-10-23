@@ -1,22 +1,20 @@
-﻿namespace DCL
+﻿using DCL.Configuration;
+using DCL.Controllers;
+
+namespace DCL
 {
     public class Environment
     {
         public static readonly Environment i = new Environment();
 
+        public WorldBlockersController worldBlockersController { get; private set; }
         public readonly MessagingControllersManager messagingControllersManager;
         public readonly PointerEventsController pointerEventsController;
         public readonly MemoryManager memoryManager;
         public InteractionHoverCanvasController interactionHoverCanvasController { get; private set; }
         public Clipboard clipboard { get; }
 
-        /*
-         * TODO: Continue moving static instances to this class. Each static instance should be converted to a local instance inside this class.
-         *
-        ParcelScenesCleaner parcelScenesCleaner; // This is a static member of ParcelScene
-        PoolManager poolManager; // This should be created through a Factory, and that factopry should execute the code in the method EnsureEntityPool
-
-        */
+        private bool initialized;
 
         private Environment()
         {
@@ -26,11 +24,17 @@
             clipboard = Clipboard.Create();
         }
 
-        public void Initialize(IMessageProcessHandler messageHandler, bool isTesting = false)
+        public void Initialize(IMessageProcessHandler messageHandler, ISceneHandler sceneHandler)
         {
+            if (initialized)
+                return;
+
             messagingControllersManager.Initialize(messageHandler);
-            pointerEventsController.Initialize(isTesting);
+            pointerEventsController.Initialize();
             memoryManager.Initialize();
+            worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(sceneHandler, DCLCharacterController.i.characterPosition);
+
+            initialized = true;
         }
 
         public void SetInteractionHoverCanvasController(InteractionHoverCanvasController controller)
@@ -40,16 +44,21 @@
 
         public void Cleanup()
         {
+            if (!initialized)
+                return;
+
+            initialized = false;
+
             messagingControllersManager.Cleanup();
             memoryManager.CleanupPoolsIfNeeded(true);
             pointerEventsController.Cleanup();
+            worldBlockersController.Dispose();
         }
 
-        public void Restart(IMessageProcessHandler messageHandler, bool isTesting = false)
+        public void Restart(IMessageProcessHandler messageHandler, ISceneHandler sceneHandler)
         {
             Cleanup();
-
-            Initialize(messageHandler, isTesting);
+            Initialize(messageHandler, sceneHandler);
         }
     }
 }

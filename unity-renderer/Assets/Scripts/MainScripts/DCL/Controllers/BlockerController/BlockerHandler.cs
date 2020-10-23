@@ -1,166 +1,153 @@
+using System;
 using DCL.Configuration;
 using DCL.Helpers;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Controllers
 {
-    public interface IBlockerHandler
+    public interface IBlockerInstanceHandler
     {
-        void SetupGlobalBlockers(HashSet<Vector2Int> allLoadedParcelCoords, float height, Transform parent);
-        void CleanBlockers();
+        void DestroyAllBlockers();
         Dictionary<Vector2Int, PoolableObject> GetBlockers();
+        void HideBlocker(Vector2Int coords, bool instant = false);
+        void ShowBlocker(Vector2Int pos, bool instant = false);
+        void SetParent(Transform parent);
     }
 
-    public class BlockerHandler : IBlockerHandler
+    /// <summary>
+    /// This class is the loading blockers composite and instancing handler.
+    /// <br/>
+    /// Responsibilities include:<br/>
+    /// - Handling hide/show of blockers through its IBlockerAnimationHandler<br/>
+    /// - Keeping track of all blockers<br/>
+    /// </summary>
+    public class BlockerInstanceHandler : IBlockerInstanceHandler
     {
         static GameObject blockerPrefab;
+        private bool blockerPrefabDirty;
 
         const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
-        const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
 
         Vector3 auxPosVec = new Vector3();
         Vector3 auxScaleVec = new Vector3();
+
         Dictionary<Vector2Int, PoolableObject> blockers = new Dictionary<Vector2Int, PoolableObject>();
-        HashSet<Vector2Int> blockersToRemove = new HashSet<Vector2Int>();
-        HashSet<Vector2Int> blockersToAdd = new HashSet<Vector2Int>();
-        DCLCharacterPosition characterPosition;
 
-        static Vector2Int[] aroundOffsets =
-        {
-            new Vector2Int(1, 0),
-            new Vector2Int(-1, 0),
-            new Vector2Int(0, 1),
-            new Vector2Int(0, -1),
-            new Vector2Int(1, 1),
-            new Vector2Int(-1, -1),
-            new Vector2Int(1, -1),
-            new Vector2Int(-1, 1)
-        };
+        private DCLCharacterPosition characterPosition;
+        private IBlockerAnimationHandler animationHandler;
+        private Transform parent;
 
-        public BlockerHandler(DCLCharacterPosition characterPosition)
+
+        public BlockerInstanceHandler(DCLCharacterPosition characterPosition, IBlockerAnimationHandler animationHandler)
         {
             this.characterPosition = characterPosition;
+            this.animationHandler = animationHandler;
 
-            if (blockerPrefab == null)
-                blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
-
-            // We need to manually create the Pool for empty game objects if it doesn't exist
-            if (!PoolManager.i.ContainsPool(PARCEL_BLOCKER_POOL_NAME))
-            {
-                GameObject go = Object.Instantiate(blockerPrefab);
-                Pool pool = PoolManager.i.AddPool(PARCEL_BLOCKER_POOL_NAME, go);
-                pool.persistent = true;
-                pool.ForcePrewarm();
-            }
+            RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
+            OnChangeProfile(RenderProfileManifest.i.currentProfile);
         }
 
-        protected void InstantiateBlocker(Vector2Int pos, Transform parent)
+        private void OnChangeProfile(RenderProfileWorld profile)
         {
+            blockerPrefabDirty = true;
+            blockerPrefab = profile.loadingBlockerPrefab;
+        }
+
+        public void ShowBlocker(Vector2Int pos, bool instant = false)
+        {
+            if (blockerPrefabDirty)
+            {
+                blockerPrefabDirty = false;
+                EnsureBlockerPool();
+            }
+
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
             PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
-            Transform blockerTransform = blockerPoolable.gameObject.transform;
+            GameObject blockerGo = blockerPoolable.gameObject;
+            BoxCollider blockerCollider = blockerGo.GetComponent<BoxCollider>();
 
+            Vector3 blockerPos = this.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
+
+            auxPosVec.x = blockerPos.x + centerOffset;
+            auxPosVec.z = blockerPos.z + centerOffset;
+            auxPosVec.y = 8;
+
+            Transform blockerTransform = blockerGo.transform;
             blockerTransform.SetParent(parent, false);
-            blockerTransform.position = this.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
-
-            auxPosVec.x = blockerTransform.position.x + centerOffset;
-            auxPosVec.z = blockerTransform.position.z + centerOffset;
-
             blockerTransform.position = auxPosVec;
-            blockerTransform.localScale = auxScaleVec;
+            blockerTransform.localScale = Vector3.one * 16;
+
+            blockerCollider.size = Vector3.one + (Vector3.up * auxScaleVec.y);
+            blockerCollider.center = Vector3.up * ((auxScaleVec.y / 2) - 0.5f);
 
 #if UNITY_EDITOR
-            blockerPoolable.gameObject.name = "BLOCKER " + pos;
+            blockerGo.name = "BLOCKER " + pos;
 #endif
 
             blockers.Add(pos, blockerPoolable);
+
+            if (!instant)
+                animationHandler.FadeIn(blockerGo);
         }
 
-        public void SetupGlobalBlockers(HashSet<Vector2Int> allLoadedParcelCoords, float height, Transform parent)
+        private void EnsureBlockerPool()
         {
-            if (allLoadedParcelCoords.Count == 0) return;
-
-            blockersToRemove.Clear();
-            blockersToAdd.Clear();
-
-            auxScaleVec.x = ParcelSettings.PARCEL_SIZE;
-            auxScaleVec.y = height;
-            auxScaleVec.z = ParcelSettings.PARCEL_SIZE;
-
-            auxPosVec.y = (height - 1) / 2;
-
-            // Detect blockers to be removed
-            foreach (var item in blockers)
+            // We need to manually create the Pool for empty game objects if it doesn't exist
+            if (PoolManager.i.ContainsPool(PARCEL_BLOCKER_POOL_NAME))
             {
-                if (allLoadedParcelCoords.Contains(item.Key))
-                {
-                    blockersToRemove.Add(item.Key);
-                }
-                else
-                {
-                    bool foundAroundLoadedScenes = false;
-                    for (int i = 0; i < aroundOffsets.Length; i++)
-                    {
-                        Vector2Int offset = aroundOffsets[i];
-                        Vector2Int checkedPosition = new Vector2Int(item.Key.x + offset.x, item.Key.y + offset.y);
-
-                        if (allLoadedParcelCoords.Contains(checkedPosition))
-                        {
-                            foundAroundLoadedScenes = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundAroundLoadedScenes)
-                        blockersToRemove.Add(item.Key);
-                }
+                PoolManager.i.RemovePool(PARCEL_BLOCKER_POOL_NAME);
             }
 
-            // Detect missing blockers to be added
-            using (var it = allLoadedParcelCoords.GetEnumerator())
-            {
-                while (it.MoveNext())
-                {
-                    Vector2Int pos = it.Current;
-
-                    for (int i = 0; i < aroundOffsets.Length; i++)
-                    {
-                        Vector2Int offset = aroundOffsets[i];
-                        Vector2Int checkedPosition = new Vector2Int(pos.x + offset.x, pos.y + offset.y);
-
-                        if (!allLoadedParcelCoords.Contains(checkedPosition) && !blockers.ContainsKey(checkedPosition))
-                        {
-                            blockersToAdd.Add(checkedPosition);
-                        }
-                    }
-                }
-            }
-
-            // Remove extra blockers
-            foreach (var coords in blockersToRemove)
-            {
-                blockers[coords].Release();
-                blockers.Remove(coords);
-            }
-
-            // Add missing blockers
-            foreach (var coords in blockersToAdd)
-            {
-                InstantiateBlocker(coords, parent);
-            }
+            GameObject go = Object.Instantiate(blockerPrefab);
+            Pool pool = PoolManager.i.AddPool(PARCEL_BLOCKER_POOL_NAME, go);
+            pool.persistent = true;
+            pool.ForcePrewarm();
         }
+
+        public void SetParent(Transform parent)
+        {
+            this.parent = parent;
+        }
+
+        public void HideBlocker(Vector2Int coords, bool instant = false)
+        {
+            if (instant)
+            {
+                ReleaseBlocker(coords);
+                return;
+            }
+
+            animationHandler.FadeOut(
+                blockers[coords].gameObject,
+                () => ReleaseBlocker(coords)
+            );
+        }
+
+        private void ReleaseBlocker(Vector2Int coords)
+        {
+            if (!blockers.ContainsKey(coords))
+                return;
+
+            blockers[coords].Release();
+            blockers.Remove(coords);
+        }
+
 
         public Dictionary<Vector2Int, PoolableObject> GetBlockers()
         {
             return new Dictionary<Vector2Int, PoolableObject>(blockers);
         }
 
-        public void CleanBlockers()
+        public void DestroyAllBlockers()
         {
-            foreach (var blocker in blockers)
+            var keys = blockers.Keys.ToArray();
+
+            for (var i = 0; i < keys.Length; i++)
             {
-                blocker.Value.Release();
+                ReleaseBlocker(keys[i]);
             }
 
             blockers.Clear();

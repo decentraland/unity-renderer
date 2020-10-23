@@ -430,6 +430,9 @@ namespace DCL
                             case "SetPlayerTalking":
                                 HUDController.i.SetPlayerTalking(msg.payload);
                                 break;
+                            case "SetRenderProfile":
+                                RenderProfileBridge.i.SetRenderProfile(msg.payload);
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +

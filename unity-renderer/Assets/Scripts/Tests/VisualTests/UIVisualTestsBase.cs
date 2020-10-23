@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using DCL;
 using UnityEngine;
 
 public class UIVisualTestsBase : VisualTestsBase
@@ -17,6 +18,8 @@ public class UIVisualTestsBase : VisualTestsBase
 
         //NOTE(Brian): If we don't wait a frame, RenderingController.Awake sets the rendering state back to false.
         yield return null;
+
+        RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
         base.SetUp_Renderer();
 
@@ -48,7 +51,7 @@ public class UIVisualTestsBase : VisualTestsBase
         // Creation
         var component = scene.SharedComponentCreate(
             componentId,
-            (int)classId
+            (int) classId
         ) as SharedComponentType;
         yield return component.routine;
 

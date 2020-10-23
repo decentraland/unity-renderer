@@ -1,10 +1,11 @@
 import { call, put, select, take } from 'redux-saga/effects'
-import { getServerConfigurations } from 'config'
+import { getServerConfigurations, HALLOWEEN } from 'config'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
-import { MetaConfiguration, USE_UNITY_INDEXED_DB_CACHE } from './types'
+import { MetaConfiguration, WorldConfig, USE_UNITY_INDEXED_DB_CACHE } from './types'
 import { isMetaConfigurationInitiazed } from './selectors'
+import { RenderProfile } from 'shared/types'
 
 const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   explorer: {
@@ -27,6 +28,14 @@ const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
 
 export function* metaSaga(): any {
   const config: Partial<MetaConfiguration> = yield call(fetchMetaConfiguration)
+
+  if (HALLOWEEN) {
+    if (!config.world) {
+      config.world = {} as WorldConfig
+    }
+
+    config.world.renderProfile = HALLOWEEN ? RenderProfile.HALLOWEEN : RenderProfile.DEFAULT
+  }
 
   yield put(metaConfigurationInitialized(config))
   yield call(checkExplorerVersion, config)

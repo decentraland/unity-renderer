@@ -39,7 +39,7 @@ namespace DCL.Configuration
     public static class TestSettings
     {
         public static int VISUAL_TESTS_APPROVED_AFFINITY = 95;
-        public static float VISUAL_TESTS_PIXELS_CHECK_THRESHOLD = 2.5f;
+        public static float VISUAL_TESTS_PIXELS_CHECK_THRESHOLD = 5.0f;
         public static int VISUAL_TESTS_SNAPSHOT_WIDTH = 1280;
         public static int VISUAL_TESTS_SNAPSHOT_HEIGHT = 720;
     }

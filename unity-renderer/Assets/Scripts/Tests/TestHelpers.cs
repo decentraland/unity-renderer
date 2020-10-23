@@ -1177,54 +1177,64 @@ namespace DCL.Helpers
             WebInterface.OnMessageFromEngine -= msgFromEngineCallback;
         }
 
-        public static IEnumerator WaitForEventFromEngine<T>(string targetMessageType, T evt,
-            System.Action OnIterationStart, Func<T, bool> OnSuccess)
+        /// <summary>
+        /// This method intercepts a message being sent to kernel and calls OnSuccess
+        /// When the message matches the targetMessageType
+        /// </summary>
+        /// <param name="targetMessageType">
+        /// The target message type to be intercepted.
+        /// </param>
+        /// <param name="evt">
+        /// Reference event useful for template inference.
+        /// </param>
+        /// <param name="OnIterationStart">
+        /// This callback will kept being called until the message is intercepted or
+        /// a timeout occurs. Useful for raising events.
+        /// </param>
+        /// <param name="OnMessageReceived">
+        /// This func will be invoked with any matching message as raw json.
+        /// If the func returns true, the execution will end.
+        /// </param>
+        /// <returns>IEnumerator to be yielded</returns>
+        public static IEnumerator ExpectMessageToKernel<T>(
+            string targetMessageType,
+            T evt,
+            Action OnIterationStart,
+            Func<T, bool> OnMessageReceived = null)
         {
-            string lastMessageFromEngineType = "";
-            string lastMessageFromEnginePayload = "";
+            bool messageWasReceived = false;
 
-            bool messageReceived = false;
-
-            Action<string, string> msgFromEngineCallback = (eventType, eventPayload) =>
+            void MsgFromEngineCallback(string eventType, string eventPayload)
             {
-                lastMessageFromEngineType = eventType;
-                lastMessageFromEnginePayload = eventPayload;
+                string lastMessageFromEngineType = eventType;
+                string lastMessageFromEnginePayload = eventPayload;
 
-                if (!string.IsNullOrEmpty(lastMessageFromEnginePayload) && lastMessageFromEngineType == targetMessageType)
+                if (string.IsNullOrEmpty(lastMessageFromEnginePayload))
+                    return;
+
+                if (lastMessageFromEngineType != targetMessageType)
+                    return;
+
+                if (OnMessageReceived == null)
                 {
-                    var messageObject = JsonUtility.FromJson<T>(lastMessageFromEnginePayload);
-
-                    if (OnSuccess != null)
-                        messageReceived = OnSuccess.Invoke(messageObject);
+                    messageWasReceived = true;
+                    return;
                 }
-            };
+
+                messageWasReceived = OnMessageReceived.Invoke(JsonUtility.FromJson<T>(lastMessageFromEnginePayload));
+            }
 
             // Hook up to web interface engine message reporting
-            DCL.Interface.WebInterface.OnMessageFromEngine += msgFromEngineCallback;
+            WebInterface.OnMessageFromEngine += MsgFromEngineCallback;
 
             yield return new DCL.WaitUntil(() =>
             {
                 OnIterationStart?.Invoke();
-                return messageReceived;
+                return messageWasReceived;
             }, 2f);
 
-            DCL.Interface.WebInterface.OnMessageFromEngine -= msgFromEngineCallback;
+            WebInterface.OnMessageFromEngine -= MsgFromEngineCallback;
         }
-
-        // Used in WaitForPointerDownEventFromEngine() to capture the first triggered event message from engine
-        // static void OnFirstMessageFromEngine(string eventType, string eventPayload)
-        // {
-        //     DCL.Interface.WebInterface.OnMessageFromEngine -= OnFirstMessageFromEngine;
-        //     lastMessageFromEngineType = eventType;
-        //     lastMessageFromEnginePayload = eventPayload;
-        // }
-        //
-        // // Used in WaitForMessageFromEngine() to capture the triggered event messages from engine
-        // static void OnMessageFromEngine(string eventType, string eventPayload)
-        // {
-        //     lastMessageFromEngineType = eventType;
-        //     lastMessageFromEnginePayload = eventPayload;
-        // }
 
         public static void TestRectTransformMaxStretched(RectTransform rt)
         {

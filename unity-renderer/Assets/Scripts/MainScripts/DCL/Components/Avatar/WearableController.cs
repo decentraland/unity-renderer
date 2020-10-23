@@ -72,6 +72,7 @@ public class WearableController
             PrepareWearable(gameObject);
             onSuccess?.Invoke(this);
         }
+
         loader.OnSuccessEvent += OnSuccessWrapper;
 
         void OnFailEventWrapper()
@@ -84,6 +85,7 @@ public class WearableController
             }
             onFail?.Invoke(this);
         }
+
         loader.OnFailEvent += OnFailEventWrapper;
 
         loader.Load(representation.mainFile);

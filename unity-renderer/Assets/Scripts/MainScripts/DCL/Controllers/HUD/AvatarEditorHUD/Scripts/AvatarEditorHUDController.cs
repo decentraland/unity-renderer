@@ -417,8 +417,12 @@ public class AvatarEditorHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        var currentRenderProfile = DCL.RenderProfileManifest.i.currentProfile;
+
         if (!visible && view.isOpen)
         {
+            currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
+            currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState)
             {
                 Utils.LockCursor();
@@ -428,11 +432,15 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
+            currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
+            currentRenderProfile.avatarProfile.Apply();
+
             prevMouseLockState = Utils.isCursorLocked;
             Utils.UnlockCursor();
             OnOpen?.Invoke();
         }
 
+        currentRenderProfile.avatarProfile.Apply();
         view.SetVisibility(visible);
     }
 
