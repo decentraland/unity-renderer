@@ -20,7 +20,7 @@ public class MessageOfTheDayConfig
         public Color tint;
     }
 
-    public string imageUrl;
+    public string background_banner;
     public int endUnixTimestamp;
     public string title;
     public string body;

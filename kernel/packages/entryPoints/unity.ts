@@ -6,7 +6,7 @@ global.enableWeb3 = true
 
 import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
-import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
+import { AUTH_ERROR_LOGGED_OUT, experienceStarted, FAILED_FETCHING_UNITY, NOT_INVITED } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
 import {
   NO_MOTD,
@@ -26,7 +26,7 @@ import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
 import { EnsureProfile } from 'shared/profiles/ProfileAsPromise'
-import { ensureMetaConfigurationInitialized } from 'shared/meta'
+import { ensureMetaConfigurationInitialized, waitForMessageOfTheDay } from 'shared/meta'
 import { WorldConfig } from 'shared/meta/types'
 
 const container = document.getElementById('gameContainer')
@@ -63,7 +63,11 @@ initializeUnity(container)
     })
     i.ConfigureHUDElement(HUDElementID.AIRDROPPING, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.TERMS_OF_SERVICE, { active: true, visible: true })
-    i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: true, visible: true }, { enableVoiceChat: VOICE_CHAT_ENABLED })
+    i.ConfigureHUDElement(
+      HUDElementID.TASKBAR,
+      { active: true, visible: true },
+      { enableVoiceChat: VOICE_CHAT_ENABLED }
+    )
     i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
@@ -83,11 +87,11 @@ initializeUnity(container)
       i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: identity.hasConnectedWeb3 && false, visible: true })
 
       EnsureProfile(identity.address)
-          .then((profile) => {
-            i.ConfigureEmailPrompt(profile.tutorialStep)
-            i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
-          })
-          .catch((e) => logger.error(`error getting profile ${e}`))
+        .then((profile) => {
+          i.ConfigureEmailPrompt(profile.tutorialStep)
+          i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
+        })
+        .catch((e) => logger.error(`error getting profile ${e}`))
     } catch (e) {
       logger.error('error on configuring friends hud / tutorial')
     }
@@ -105,7 +109,7 @@ initializeUnity(container)
     await startUnitySceneWorkers()
 
     globalThis.globalStore.dispatch(signalParcelLoadingStarted())
-    
+
     await ensureMetaConfigurationInitialized()
 
     let worldConfig: WorldConfig = globalThis.globalStore.getState().meta.config.world!
@@ -117,7 +121,12 @@ initializeUnity(container)
     }
 
     if (!NO_MOTD) {
-      i.ConfigureHUDElement(HUDElementID.MESSAGE_OF_THE_DAY, { active: false, visible: true }, worldConfig.messageOfTheDay)
+      const messageOfTheDay = await waitForMessageOfTheDay()
+      i.ConfigureHUDElement(
+        HUDElementID.MESSAGE_OF_THE_DAY,
+        { active: !!messageOfTheDay, visible: true },
+        messageOfTheDay
+      )
     }
 
     teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))

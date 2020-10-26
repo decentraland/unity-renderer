@@ -34,6 +34,8 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
     private Coroutine updateTimeCoroutine;
     private UnityAction OnCloseButtonPressed;
 
+    private bool disposed = false;
+
     public static WelcomeHUDView CreateView() => Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<WelcomeHUDView>();
 
     public void Initialize(UnityAction<int> OnConfirm, UnityAction OnClose, MessageOfTheDayConfig config)
@@ -50,15 +52,14 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
 
         SetupButtons(config.buttons, OnConfirm);
         closeButton.onPointerDown -= OnCloseButtonPressed;
-        OnCloseButtonPressed = OnClose;
+        OnCloseButtonPressed = () => OnClose?.Invoke();
         closeButton.onPointerDown += OnCloseButtonPressed;
 
         CleanUpPromise();
-        if (!String.IsNullOrEmpty(config.imageUrl))
+        if (!String.IsNullOrEmpty(config.background_banner))
         {
-            texturePromise = new AssetPromise_Texture(config.imageUrl);
+            texturePromise = new AssetPromise_Texture(config.background_banner);
             texturePromise.OnSuccessEvent += OnTextureRetrieved;
-            texturePromise.OnFailEvent += OnTextureFailed;
         }
 
         AssetPromiseKeeper_Texture.i.Keep(texturePromise);
@@ -83,11 +84,6 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
 
         if(useImageNativeSize)
             backgroundImage.SetNativeSize();
-    }
-
-    private void OnTextureFailed(Asset_Texture assetTexture)
-    {
-        OnCloseButtonPressed();
     }
 
     private IEnumerator UpdateTimer(DateTime localEndDate)
@@ -151,7 +147,11 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
 
     public void DisposeSelf()
     {
-        Destroy(gameObject);
+        if (!disposed)
+        {
+            disposed = true;
+            Destroy(gameObject);
+        }
     }
 
     public void SetVisible(bool visible)
@@ -161,6 +161,7 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
 
     private void OnDestroy()
     {
+        disposed = true;
         CleanUp();
     }
 }

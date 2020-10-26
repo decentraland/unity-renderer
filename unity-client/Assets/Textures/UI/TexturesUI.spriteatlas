@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2539194
+    totalSpriteSurfaceArea: 2850274
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -207,6 +207,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8fc782bf29b80d446a6d58b11d54e48b, type: 3}
   - {fileID: 21300000, guid: 54cbe9bf5928342d490167f954f07710, type: 3}
   - {fileID: 21300000, guid: 851b72df6e5bd4b91a42eb20ae6323f0, type: 3}
+  - {fileID: 21300000, guid: a05be3ffa5d9545aaaad00f3a425b338, type: 3}
   m_PackedSpriteNamesToIndex:
   - ContainerRadius16Shadow
   - SearchFriendsImage
@@ -356,5 +357,6 @@ SpriteAtlas:
   - CameraIcon
   - ContainerRadius24
   - CloseButton
+  - MOTDHeader
   m_Tag: TexturesUI
   m_IsVariant: 0
