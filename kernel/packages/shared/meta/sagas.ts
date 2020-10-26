@@ -1,11 +1,12 @@
-import { call, put, select, take } from 'redux-saga/effects'
+import { call, put, select, take, takeLatest } from 'redux-saga/effects'
 import { getServerConfigurations, HALLOWEEN } from 'config'
-import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
+import { META_CONFIGURATION_INITIALIZED, metaConfigurationInitialized, metaUpdateMessageOfTheDay } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
-import { MetaConfiguration, WorldConfig, USE_UNITY_INDEXED_DB_CACHE } from './types'
+import { MetaConfiguration, USE_UNITY_INDEXED_DB_CACHE, WorldConfig } from './types'
 import { isMetaConfigurationInitiazed } from './selectors'
 import { RenderProfile } from 'shared/types'
+import { USER_AUTHENTIFIED } from '../session/actions'
 
 const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   explorer: {
@@ -40,6 +41,18 @@ export function* metaSaga(): any {
   yield put(metaConfigurationInitialized(config))
   yield call(checkExplorerVersion, config)
   yield call(checkIndexedDB, config)
+  yield takeLatest(USER_AUTHENTIFIED, fetchMessageOfTheDay)
+}
+
+function* fetchMessageOfTheDay() {
+  const userId = yield select((state) => state.session.userId)
+  const url = `https://dclcms.club/api/notifications?address=${userId}`
+  const result = yield call(() =>
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => (data.length ? data[0] : null))
+  )
+  yield put(metaUpdateMessageOfTheDay(result))
 }
 
 function checkIndexedDB(config: Partial<MetaConfiguration>) {
