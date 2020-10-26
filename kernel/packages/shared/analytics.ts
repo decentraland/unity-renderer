@@ -66,7 +66,9 @@ export async function initialize(segmentKey: string): Promise<void> {
 
 export function identifyUser(id: string) {
   if (window.analytics) {
-    window.analytics.identify(id)
+    window.analytics.identify(id, {
+      explorer_commit_hash: (window as any)['VERSION']
+    })
   }
 }
 
