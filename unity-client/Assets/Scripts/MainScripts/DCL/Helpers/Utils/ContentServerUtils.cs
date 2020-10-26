@@ -71,10 +71,10 @@ namespace DCL
 
         public static string customBaseUrl = "";
 
-        public static string GetBaseUrl(ApiTLD env)
+        public static string GetBaseUrl(ApiTLD tld)
         {
-            if (env != ApiTLD.NONE)
-                return "https://peer.decentraland.org/lambdas/contentv2";
+            if (tld != ApiTLD.NONE)
+                return $"https://peer.decentraland.{GetTldString(tld)}/lambdas/contentv2";
 
             return customBaseUrl;
         }
