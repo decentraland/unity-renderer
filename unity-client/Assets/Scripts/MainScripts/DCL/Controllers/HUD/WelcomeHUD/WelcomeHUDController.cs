@@ -56,7 +56,8 @@ public class WelcomeHUDController : IHUD
 
         if (config?.buttons != null && buttonIndex >= 0 && buttonIndex < config?.buttons.Length)
         {
-            SendAction(config.buttons[buttonIndex].action);
+            string action = config.buttons[buttonIndex].action;
+            SendAction(action);
         }
     }
 
@@ -87,6 +88,9 @@ public class WelcomeHUDController : IHUD
 
     internal virtual void SendAction(string action)
     {
+        if (string.IsNullOrEmpty(action))
+            return;
+
         WebInterface.SendChatMessage(new ChatMessage
         {
             messageType = ChatMessage.Type.NONE,
