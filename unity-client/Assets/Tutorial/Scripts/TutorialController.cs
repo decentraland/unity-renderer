@@ -78,7 +78,6 @@ namespace DCL.Tutorial
         internal bool openedFromDeepLink = false;
         internal bool alreadyOpenedFromDeepLink = false;
         internal bool playerIsInGenesisPlaza = false;
-        internal bool markTutorialAsCompleted = false;
         internal TutorialStep runningStep = null;
         internal bool tutorialReset = false;
         internal float elapsedTimeInCurrentStep = 0f;
@@ -226,8 +225,6 @@ namespace DCL.Tutorial
 
             if (playerIsInGenesisPlaza || tutorialReset)
             {
-                markTutorialAsCompleted = true;
-
                 if (tutorialReset)
                 {
                     yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
@@ -240,7 +237,6 @@ namespace DCL.Tutorial
             }
             else if (openedFromDeepLink)
             {
-                markTutorialAsCompleted = false;
                 alreadyOpenedFromDeepLink = true;
                 yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
             }
@@ -431,18 +427,12 @@ namespace DCL.Tutorial
                     yield return new WaitForSeconds(timeBetweenSteps);
             }
 
-            if (!debugRunTutorial && markTutorialAsCompleted)
+            if (!debugRunTutorial)
                 SetUserTutorialStepAsCompleted(TutorialFinishStep.NewTutorialFinished);
 
             runningStep = null;
 
             SetTutorialDisabled();
-
-            if (tutorialPath == TutorialPath.FromDeepLink)
-            {
-                hudController?.taskbarHud?.ShowTutorialOption(false);
-            }
-
         }
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)

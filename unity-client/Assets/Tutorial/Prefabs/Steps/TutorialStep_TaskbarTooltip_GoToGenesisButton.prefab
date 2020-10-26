@@ -108,7 +108,7 @@ MonoBehaviour:
   yesSkipInputAction: {fileID: 0}
   noSkipInputAction: {fileID: 0}
   tooltipTransform: {fileID: 770479781646097019}
-  setMaxTimeToHide: 0
+  setMaxTimeToHide: 1
   maxTimeToHide: 5
 --- !u!1 &2355559710696278039
 GameObject:
