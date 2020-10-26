@@ -17,6 +17,18 @@ namespace DCL.Tutorial
             }
         }
 
+        public override void OnStepFinished()
+        {
+            base.OnStepFinished();
+
+            if (tutorialController != null &&
+                tutorialController.hudController != null &&
+                tutorialController.hudController.goToGenesisPlazaHud != null)
+            {
+                tutorialController.hudController.goToGenesisPlazaHud.OnOpen -= GoToGenesisPlazaHud_OnOpen;
+            }
+        }
+
         protected override void SetTooltipPosition()
         {
             base.SetTooltipPosition();
@@ -32,16 +44,9 @@ namespace DCL.Tutorial
 
         private void GoToGenesisPlazaHud_OnOpen(bool isVisible)
         {
-            if (isVisible)
-            {
-                isRelatedFeatureActived = true;
-                stepIsFinished = true;
-                tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
-            }
-            else if (isRelatedFeatureActived)
-            {
-                isRelatedFeatureActived = false;
-            }
+            stepIsFinished = true;
+            isRelatedFeatureActived = false;
+            tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
     }
 }

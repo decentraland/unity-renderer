@@ -32,7 +32,6 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -45,7 +44,6 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -58,7 +56,6 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsFalse(tutorialController.markTutorialAsCompleted);
             Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
@@ -72,7 +69,6 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsFalse(tutorialController.markTutorialAsCompleted);
             Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
@@ -86,7 +82,6 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -99,7 +94,6 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -112,7 +106,6 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
@@ -126,7 +119,6 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.SkipTutorial();
 
-            Assert.IsTrue(tutorialController.markTutorialAsCompleted);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
@@ -193,7 +185,6 @@ namespace DCL.Tutorial_Tests
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.alreadyOpenedFromDeepLink = false;
             tutorialController.isRunning = true;
-            tutorialController.markTutorialAsCompleted = false;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -210,7 +201,6 @@ namespace DCL.Tutorial_Tests
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.openedFromDeepLink = true;
             tutorialController.isRunning = true;
-            tutorialController.markTutorialAsCompleted = true;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -227,7 +217,6 @@ namespace DCL.Tutorial_Tests
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.alreadyOpenedFromDeepLink = true;
             tutorialController.isRunning = true;
-            tutorialController.markTutorialAsCompleted = false;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -244,7 +233,6 @@ namespace DCL.Tutorial_Tests
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.isRunning = true;
-            tutorialController.markTutorialAsCompleted = false;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 

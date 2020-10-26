@@ -52,12 +52,14 @@ public class TaskbarMoreMenu : MonoBehaviour
         {
             RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.defaultProfile;
             RenderProfileManifest.i.currentProfile.Apply();
+            view.moreButton.SetToggleState(false);
         });
 
         nightModeButton.onClick.AddListener(() =>
         {
             RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.halloweenProfile;
             RenderProfileManifest.i.currentProfile.Apply();
+            view.moreButton.SetToggleState(false);
         });
 
         collapseBarButton.onClick.AddListener(() => { ToggleCollapseBar(); });
