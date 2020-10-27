@@ -2,7 +2,6 @@ using UnityEngine;
 using DCL.Interface;
 using DCL.Helpers;
 using System.Collections;
-using System;
 
 public class EmailPromptHUDController : IHUD
 {
@@ -23,6 +22,7 @@ public class EmailPromptHUDController : IHUD
         view.OnDismiss += OnDismiss;
         view.OnSendEmail += OnSendEmail;
         CommonScriptableObjects.tutorialActive.OnChange += TutorialActive_OnChange;
+        CommonScriptableObjects.motdActive.OnChange += MotdActive_OnChange;
 
         view.gameObject.SetActive(false);
     }
@@ -45,6 +45,8 @@ public class EmailPromptHUDController : IHUD
 
             AudioScriptableObjects.fadeOut.Play(true);
         }
+
+        CommonScriptableObjects.emailPromptActive.Set(visible);
     }
 
     public void Dispose()
@@ -62,6 +64,7 @@ public class EmailPromptHUDController : IHUD
         }
 
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActive_OnChange;
+        CommonScriptableObjects.motdActive.OnChange -= MotdActive_OnChange;
     }
 
     public void SetEnable(bool enable)
@@ -105,6 +108,7 @@ public class EmailPromptHUDController : IHUD
         isPopupRoutineRunning = true;
         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
         yield return new WaitUntil(() => !CommonScriptableObjects.tutorialActive.Get());
+        yield return new WaitUntil(() => !CommonScriptableObjects.motdActive.Get());
         yield return WaitForSecondsCache.Get(seconds);
         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
         SetVisibility(true);
@@ -138,6 +142,12 @@ public class EmailPromptHUDController : IHUD
     }
 
     private void TutorialActive_OnChange(bool current, bool previous)
+    {
+        if (current)
+            ResetPopupDelayed();
+    }
+
+    private void MotdActive_OnChange(bool current, bool previous)
     {
         if (current)
             ResetPopupDelayed();

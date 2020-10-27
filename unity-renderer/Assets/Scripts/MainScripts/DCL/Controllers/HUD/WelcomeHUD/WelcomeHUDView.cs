@@ -124,7 +124,7 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
     {
         for(int i = buttonsParent.childCount -1; i >= 0; i--)
         {
-            Destroy(buttonsParent.GetChild(i));
+            Destroy(buttonsParent.GetChild(i).gameObject);
         }
     }
 

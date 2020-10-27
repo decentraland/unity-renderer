@@ -118,7 +118,7 @@ initializeUnity(container)
       waitForMessageOfTheDay().then((messageOfTheDay) => {
         i.ConfigureHUDElement(
           HUDElementID.MESSAGE_OF_THE_DAY,
-          { active: !!messageOfTheDay, visible: true },
+          { active: !!messageOfTheDay, visible: false },
           messageOfTheDay
         )
       })
