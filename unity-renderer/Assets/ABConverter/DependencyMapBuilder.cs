@@ -7,7 +7,7 @@ using UnityEngine;
 
 [assembly: InternalsVisibleTo("AssetBundleBuilderEditorTests")]
 
-namespace DCL
+namespace DCL.ABConverter
 {
     public static class DependencyMapBuilder
     {

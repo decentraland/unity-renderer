@@ -11,10 +11,8 @@ using UnityEngine.Networking;
 using UnityGLTF;
 using UnityGLTF.Cache;
 
-namespace DCL
+namespace DCL.ABConverter
 {
-    public abstract partial class ABConverter
-    {
         public class Core
         {
             public enum ErrorCodes
@@ -646,4 +644,3 @@ namespace DCL
             }
         }
     }
-}
