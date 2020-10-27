@@ -1,4 +1,4 @@
-import { RootMetaState, CommsConfig } from './types'
+import { CommsConfig, MessageOfTheDayConfig, RootMetaState } from './types'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
@@ -26,3 +26,8 @@ export const isMetaConfigurationInitiazed = (store: RootMetaState): boolean => s
 export const getPois = (store: RootMetaState): Vector2Component[] => store.meta.config.world?.pois || []
 
 export const getCommsConfig = (store: RootMetaState): CommsConfig => store.meta.config.comms ?? {}
+
+export const isMOTDInitialized = (store: RootMetaState): boolean =>
+  store.meta.config.world ? store.meta.config.world?.messageOfTheDayInit || false : false
+export const getMessageOfTheDay = (store: RootMetaState): MessageOfTheDayConfig | null =>
+  store.meta.config.world ? store.meta.config.world.messageOfTheDay || null : null

@@ -7,6 +7,7 @@ import { MetaConfiguration, USE_UNITY_INDEXED_DB_CACHE, WorldConfig } from './ty
 import { isMetaConfigurationInitiazed } from './selectors'
 import { RenderProfile } from 'shared/types'
 import { USER_AUTHENTIFIED } from '../session/actions'
+import { getUserId } from '../session/selectors'
 
 const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   explorer: {
@@ -41,7 +42,12 @@ export function* metaSaga(): any {
   yield put(metaConfigurationInitialized(config))
   yield call(checkExplorerVersion, config)
   yield call(checkIndexedDB, config)
-  yield takeLatest(USER_AUTHENTIFIED, fetchMessageOfTheDay)
+  const userId = yield select(getUserId)
+  if (userId) {
+    yield call(fetchMessageOfTheDay)
+  } else {
+    yield takeLatest(USER_AUTHENTIFIED, fetchMessageOfTheDay)
+  }
 }
 
 function* fetchMessageOfTheDay() {
@@ -49,7 +55,9 @@ function* fetchMessageOfTheDay() {
   const url = `https://dclcms.club/api/notifications?address=${userId}`
   const result = yield call(() =>
     fetch(url)
-      .then((response) => response.json())
+      .then((response) => {
+        return response.json()
+      })
       .then((data) => (data.length ? data[0] : null))
   )
   yield put(metaUpdateMessageOfTheDay(result))
