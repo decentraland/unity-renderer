@@ -8,13 +8,7 @@ import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { AUTH_ERROR_LOGGED_OUT, experienceStarted, FAILED_FETCHING_UNITY, NOT_INVITED } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import {
-  NO_MOTD,
-  DEBUG_PM,
-  OPEN_AVATAR_EDITOR,
-  HAS_INITIAL_POSITION_MARK,
-  VOICE_CHAT_ENABLED
-} from '../config/index'
+import { NO_MOTD, DEBUG_PM, OPEN_AVATAR_EDITOR, HAS_INITIAL_POSITION_MARK, VOICE_CHAT_ENABLED } from '../config/index'
 import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -121,12 +115,13 @@ initializeUnity(container)
     }
 
     if (!NO_MOTD) {
-      const messageOfTheDay = await waitForMessageOfTheDay()
-      i.ConfigureHUDElement(
-        HUDElementID.MESSAGE_OF_THE_DAY,
-        { active: !!messageOfTheDay, visible: true },
-        messageOfTheDay
-      )
+      waitForMessageOfTheDay().then((messageOfTheDay) => {
+        i.ConfigureHUDElement(
+          HUDElementID.MESSAGE_OF_THE_DAY,
+          { active: !!messageOfTheDay, visible: true },
+          messageOfTheDay
+        )
+      })
     }
 
     teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))

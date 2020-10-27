@@ -1,6 +1,6 @@
 import { RootState, StoreContainer } from 'shared/store/rootTypes'
 import { Store } from 'redux'
-import { isMetaConfigurationInitiazed } from './selectors'
+import { getMessageOfTheDay, isMetaConfigurationInitiazed, isMOTDInitialized } from './selectors'
 import { MessageOfTheDayConfig } from './types'
 
 declare const globalThis: StoreContainer
@@ -26,16 +26,14 @@ export async function ensureMetaConfigurationInitialized(): Promise<void> {
 
 export async function waitForMessageOfTheDay(): Promise<MessageOfTheDayConfig | null> {
   const store: Store<RootState> = globalThis.globalStore
-  const worldConfig = store.getState().meta.config.world
-  if (worldConfig && worldConfig.messageOfTheDayInit) {
-    return Promise.resolve(worldConfig.messageOfTheDay || null)
+  if (isMOTDInitialized(store.getState())) {
+    return Promise.resolve(getMessageOfTheDay(store.getState()))
   }
   return new Promise<MessageOfTheDayConfig | null>((resolve) => {
     const unsubscribe = globalThis.globalStore.subscribe(() => {
-      const worldConfig = globalThis.globalStore.getState().meta.config.world
-      if (worldConfig && worldConfig.messageOfTheDayInit) {
+      if (isMOTDInitialized(globalThis.globalStore.getState())) {
         unsubscribe()
-        return resolve(worldConfig.messageOfTheDay || null)
+        return resolve(getMessageOfTheDay(store.getState()))
       }
     })
   })
