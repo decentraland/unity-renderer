@@ -13,7 +13,7 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 using UnityGLTF.Cache;
 
-namespace ABConverterTests
+namespace DCL.ABConverter.Tests
 {
     public class ABConverterShould
     {
@@ -331,7 +331,7 @@ namespace ABConverterTests
                 new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
             };
 
-            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, core.settings);
@@ -371,7 +371,7 @@ namespace ABConverterTests
                 new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
             };
 
-            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
             core.settings.verbose = true;
             core.settings.dumpOnly = true;
             core.settings.deleteDownloadPathAfterFinished = false;
@@ -401,7 +401,7 @@ namespace ABConverterTests
                 new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
             };
 
-            core.settings.baseUrl = Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, core.settings);

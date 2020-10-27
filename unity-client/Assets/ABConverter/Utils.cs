@@ -14,9 +14,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using static DCL.ContentServerUtils;
 
-namespace DCL
-{
-    public abstract partial class ABConverter
+namespace DCL.ABConverter
     {
         public static class PathUtils
         {
@@ -379,4 +377,3 @@ namespace DCL
             }
         }
     }
-}

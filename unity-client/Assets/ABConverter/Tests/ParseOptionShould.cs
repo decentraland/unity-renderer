@@ -1,5 +1,6 @@
 using NUnit.Framework;
 
+namespace DCL.ABConverter {
 public class ParseOptionShould
 {
     readonly static string[] args = new string[] {"-unityRandomOption", "-testOption", "arg1", "arg2", "-garbage", "-garbage2"};
@@ -56,4 +57,5 @@ public class ParseOptionShould
             Assert.IsTrue(test2[1] == "arg2");
         }
     }
+}
 }

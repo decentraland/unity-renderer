@@ -1,10 +1,8 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace DCL
+namespace DCL.ABConverter
 {
-    public abstract partial class ABConverter
-    {
         public static class Config
         {
             internal const string CLI_VERBOSE = "verbose";
@@ -28,5 +26,4 @@ namespace DCL
             internal static string[] gltfExtensions = {".glb", ".gltf"};
             internal static string[] textureExtensions = {".jpg", ".png", ".jpeg", ".tga", ".gif", ".bmp", ".psd", ".tiff", ".iff"};
         }
-    }
 }

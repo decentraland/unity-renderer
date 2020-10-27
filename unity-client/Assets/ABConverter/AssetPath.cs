@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 using MappingPair = DCL.ContentServerUtils.MappingPair;
 
 
-namespace DCL
+namespace DCL.ABConverter
 {
     public class AssetPath
     {
