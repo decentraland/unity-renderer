@@ -15,7 +15,7 @@ namespace DCL.Helpers
 
             material.enableInstancing = false;
 
-            int zWrite = (int) material.GetFloat(ShaderUtils._ZWrite);
+            int zWrite = (int) material.GetFloat(ShaderUtils.ZWrite);
 
             //NOTE(Brian): for transparent meshes skip further variant optimization.
             //             Transparency needs clip space z sorting to be displayed correctly.
@@ -25,7 +25,7 @@ namespace DCL.Helpers
                 return;
             }
 
-            int cullMode = (int) material.GetFloat(ShaderUtils._Cull);
+            int cullMode = (int) material.GetFloat(ShaderUtils.Cull);
 
             int baseQueue;
 
@@ -36,8 +36,8 @@ namespace DCL.Helpers
 
             material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
             material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
-            material.SetFloat(ShaderUtils._SpecularHighlights, 1);
-            material.SetFloat(ShaderUtils._EnvironmentReflections, 1);
+            material.SetFloat(ShaderUtils.SpecularHighlights, 1);
+            material.SetFloat(ShaderUtils.EnvironmentReflections, 1);
 
             //NOTE(Brian): This guarantees grouping calls by same shader keywords. Needed to take advantage of SRP batching.
             string appendedKeywords = string.Join("", material.shaderKeywords);

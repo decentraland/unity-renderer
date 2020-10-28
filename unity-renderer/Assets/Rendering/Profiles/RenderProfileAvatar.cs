@@ -41,15 +41,15 @@ namespace DCL
 
             if (targetMaterial != null)
             {
-                targetMaterial.SetVector(ShaderUtils._LightDir, currentProfile.lightDirection);
-                targetMaterial.SetColor(ShaderUtils._LightColor, currentProfile.lightColor);
-                targetMaterial.SetColor(ShaderUtils._TintColor, currentProfile.tintColor);
+                targetMaterial.SetVector(ShaderUtils.LightDir, currentProfile.lightDirection);
+                targetMaterial.SetColor(ShaderUtils.LightColor, currentProfile.lightColor);
+                targetMaterial.SetColor(ShaderUtils.TintColor, currentProfile.tintColor);
                 return;
             }
 
-            Shader.SetGlobalVector(ShaderUtils._LightDir, currentProfile.lightDirection);
-            Shader.SetGlobalColor(ShaderUtils._LightColor, currentProfile.lightColor);
-            Shader.SetGlobalColor(ShaderUtils._TintColor, currentProfile.tintColor);
+            Shader.SetGlobalVector(ShaderUtils.LightDir, currentProfile.lightDirection);
+            Shader.SetGlobalColor(ShaderUtils.LightColor, currentProfile.lightColor);
+            Shader.SetGlobalColor(ShaderUtils.TintColor, currentProfile.tintColor);
         }
     }
 }

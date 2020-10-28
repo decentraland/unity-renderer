@@ -30,12 +30,12 @@ namespace DCL.Controllers
         {
             Renderer rend = go.GetComponent<Renderer>();
 
-            Color color = rend.material.GetColor(ShaderUtils._BaseColor);
+            Color color = rend.material.GetColor(ShaderUtils.BaseColor);
 
             while (color.a < 0.5f)
             {
                 color.a += Time.deltaTime;
-                rend.material.SetColor(ShaderUtils._BaseColor, color);
+                rend.material.SetColor(ShaderUtils.BaseColor, color);
                 yield return null;
             }
         }
@@ -44,7 +44,7 @@ namespace DCL.Controllers
         {
             Renderer rend = go.GetComponent<Renderer>();
 
-            Color color = rend.material.GetColor(ShaderUtils._BaseColor);
+            Color color = rend.material.GetColor(ShaderUtils.BaseColor);
 
             while (color.a > 0)
             {
@@ -52,7 +52,7 @@ namespace DCL.Controllers
                     break;
 
                 color.a -= Time.deltaTime;
-                rend.material.SetColor(ShaderUtils._BaseColor, color);
+                rend.material.SetColor(ShaderUtils.BaseColor, color);
                 yield return null;
             }
 
