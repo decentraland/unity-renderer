@@ -4,7 +4,7 @@ using TMPro;
 
 internal class ExploreFriendsView : MonoBehaviour
 {
-    [SerializeField] Image friendPortrait;
+    [SerializeField] RawImage friendPortrait;
     [SerializeField] Image friendBackground;
     [SerializeField] ShowHideAnimator showHideAnimator;
     [SerializeField] TextMeshProUGUI friendName;
@@ -15,7 +15,7 @@ internal class ExploreFriendsView : MonoBehaviour
     public void SetUserProfile(UserProfile profile, Color backgroundColor)
     {
         userProfile = profile;
-        friendPortrait.sprite = profile.faceSnapshot;
+        friendPortrait.texture = profile.faceSnapshot;
         friendName.text = profile.userName;
         friendBackground.color = backgroundColor;
 
@@ -26,10 +26,10 @@ internal class ExploreFriendsView : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    void OnFaceSnapshotReadyEvent(Sprite sprite)
+    void OnFaceSnapshotReadyEvent(Texture2D texture)
     {
         userProfile.OnFaceSnapshotReadyEvent -= OnFaceSnapshotReadyEvent;
-        friendPortrait.sprite = userProfile.faceSnapshot;
+        friendPortrait.texture = userProfile.faceSnapshot;
     }
 
     void OnHeadHoverEnter()

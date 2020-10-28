@@ -805,15 +805,15 @@ namespace DCL.Interface
             public AvatarModel avatar;
         }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Sprite faceSnapshot, Sprite face128Snapshot, Sprite face256Snapshot, Sprite bodySnapshot)
+        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
-                face = System.Convert.ToBase64String(faceSnapshot.texture.EncodeToPNG()),
-                face128 = System.Convert.ToBase64String(face128Snapshot.texture.EncodeToPNG()),
-                face256 = System.Convert.ToBase64String(face256Snapshot.texture.EncodeToPNG()),
-                body = System.Convert.ToBase64String(bodySnapshot.texture.EncodeToPNG())
+                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
+                face128 = System.Convert.ToBase64String(face128Snapshot.EncodeToPNG()),
+                face256 = System.Convert.ToBase64String(face256Snapshot.EncodeToPNG()),
+                body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG())
             };
             SendMessage("SaveUserAvatar", payload);
         }

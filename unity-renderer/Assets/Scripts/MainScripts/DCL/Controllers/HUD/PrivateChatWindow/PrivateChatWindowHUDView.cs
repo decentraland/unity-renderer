@@ -15,7 +15,7 @@ public class PrivateChatWindowHUDView : MonoBehaviour
     public ChatHUDView chatHudView;
     public PrivateChatWindowHUDController controller;
     public TMP_Text windowTitleText;
-    public Image profilePictureImage;
+    public RawImage profilePictureImage;
 
     public event System.Action OnPressBack;
     public event System.Action OnMinimize;
@@ -76,9 +76,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour
         windowTitleText.text = targetUserName;
     }
 
-    public void ConfigureProfilePicture(Sprite sprite)
+    public void ConfigureProfilePicture(Texture2D texture)
     {
-        profilePictureImage.sprite = sprite;
+        profilePictureImage.texture = texture;
     }
 
     public void ConfigureUserId(string userId)

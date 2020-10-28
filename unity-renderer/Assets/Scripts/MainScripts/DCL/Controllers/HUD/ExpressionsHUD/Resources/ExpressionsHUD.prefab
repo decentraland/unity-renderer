@@ -1393,8 +1393,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &2513147558662610264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1681,7 +1683,7 @@ MonoBehaviour:
   content: {fileID: 3368308072246989936}
   openExpressionsAction: {fileID: 11400000, guid: a9a8e6cad9d1cc54db4c26cfb7e91f4c,
     type: 2}
-  avatarPic: {fileID: 8506282310728033477}
+  avatarPic: {fileID: 1026993927641938499}
 --- !u!222 &5211374839953244563
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1839,8 +1841,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &3439737265274002378
 GameObject:
   m_ObjectHideFlags: 0
@@ -2485,8 +2489,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4305308132892508061
 GameObject:
   m_ObjectHideFlags: 0
@@ -2612,8 +2618,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4450369698054836543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,8 +2821,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4517195494760827405
 GameObject:
   m_ObjectHideFlags: 0
@@ -3943,8 +3953,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &6444154813287309588
 GameObject:
   m_ObjectHideFlags: 0
@@ -4660,8 +4672,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &7275356608294338032
 GameObject:
   m_ObjectHideFlags: 0
@@ -4828,7 +4842,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8600354861481294617}
   - component: {fileID: 1017138830526259340}
-  - component: {fileID: 8506282310728033477}
+  - component: {fileID: 1026993927641938499}
   m_Layer: 5
   m_Name: AvatarPicture
   m_TagString: Untagged
@@ -4863,7 +4877,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7921236905796779737}
   m_CullTransparentMesh: 0
---- !u!114 &8506282310728033477
+--- !u!114 &1026993927641938499
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4872,7 +4886,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7921236905796779737}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -4882,16 +4896,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &8173705416063924011
 GameObject:
   m_ObjectHideFlags: 0
@@ -5123,8 +5134,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &8195206557192345169
 GameObject:
   m_ObjectHideFlags: 0

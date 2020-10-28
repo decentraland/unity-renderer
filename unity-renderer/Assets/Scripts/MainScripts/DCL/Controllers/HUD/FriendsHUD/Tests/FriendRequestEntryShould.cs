@@ -26,17 +26,15 @@ public class FriendRequestEntryShould : TestsBase
     [Test]
     public void BePopulatedCorrectly()
     {
-        Sprite testSprite1 = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.zero);
-        Sprite testSprite2 = Sprite.Create(Texture2D.blackTexture, Rect.zero, Vector2.zero);
-        var model1 = new FriendEntry.Model() { userName = "test1", avatarImage = testSprite1 };
-        var model2 = new FriendEntry.Model() { userName = "test2", avatarImage = testSprite2 };
+        var model1 = new FriendEntry.Model() { userName = "test1", avatarImage = Texture2D.whiteTexture };
+        var model2 = new FriendEntry.Model() { userName = "test2", avatarImage = Texture2D.blackTexture };
 
         entry.userId = "userId1";
         entry.Populate(model1);
         entry.SetReceived(true);
 
         Assert.AreEqual(model1.userName, entry.playerNameText.text);
-        Assert.AreEqual(model1.avatarImage, entry.playerImage.sprite);
+        Assert.AreEqual(model1.avatarImage, entry.playerImage.texture);
 
         Assert.IsFalse(entry.cancelButton.gameObject.activeSelf);
         Assert.IsTrue(entry.acceptButton.gameObject.activeSelf);
@@ -47,14 +45,11 @@ public class FriendRequestEntryShould : TestsBase
         entry.SetReceived(false);
 
         Assert.AreEqual(model2.userName, entry.playerNameText.text);
-        Assert.AreEqual(model2.avatarImage, entry.playerImage.sprite);
+        Assert.AreEqual(model2.avatarImage, entry.playerImage.texture);
 
         Assert.IsTrue(entry.cancelButton.gameObject.activeSelf);
         Assert.IsFalse(entry.acceptButton.gameObject.activeSelf);
         Assert.IsFalse(entry.rejectButton.gameObject.activeSelf);
-
-        Object.Destroy(testSprite1);
-        Object.Destroy(testSprite2);
     }
 
 

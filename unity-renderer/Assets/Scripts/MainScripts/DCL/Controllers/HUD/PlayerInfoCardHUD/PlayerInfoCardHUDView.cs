@@ -34,7 +34,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [SerializeField] internal TabsMapping[] tabsMapping;
     [SerializeField] internal Button hideCardButton;
 
-    [Space] [SerializeField] internal Image avatarPicture;
+    [Space] [SerializeField] internal RawImage avatarPicture;
     [SerializeField] internal Image blockedAvatarOverlay;
     [SerializeField] internal TextMeshProUGUI name;
 
@@ -164,7 +164,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         currentUserProfile = userProfile;
         name.text = currentUserProfile.userName;
         description.text = currentUserProfile.description;
-        avatarPicture.sprite = currentUserProfile.faceSnapshot;
+        avatarPicture.texture = currentUserProfile.faceSnapshot;
 
         ClearCollectibles();
         var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
