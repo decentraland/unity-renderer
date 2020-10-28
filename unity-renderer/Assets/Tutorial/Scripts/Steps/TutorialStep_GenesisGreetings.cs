@@ -38,7 +38,7 @@ namespace DCL.Tutorial
 
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
 
-                if (!tutorialController.alreadyOpenedFromDeepLink && SceneController.i != null)
+                if (SceneController.i != null)
                 {
                     WebInterface.SendSceneExternalActionEvent(SceneController.i.currentSceneId,"tutorial","begin");
                 }

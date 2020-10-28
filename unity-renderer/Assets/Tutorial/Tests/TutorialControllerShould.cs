@@ -56,7 +56,6 @@ namespace DCL.Tutorial_Tests
 
             yield return tutorialController.StartTutorialFromStep(0);
 
-            Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -66,31 +65,6 @@ namespace DCL.Tutorial_Tests
         public void SkipTutorialStepsFromDeepLinkCorrectly()
         {
             ConfigureTutorialForDeepLink();
-
-            tutorialController.SkipTutorial();
-
-            Assert.IsTrue(tutorialController.alreadyOpenedFromDeepLink);
-            Assert.IsFalse(tutorialController.isRunning);
-            Assert.IsNull(tutorialController.runningStep);
-            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
-        }
-
-        [UnityTest]
-        public IEnumerator ExecuteTutorialStepsFromGenesisPlazaAfterDeepLinkCorrectly()
-        {
-            ConfigureTutorialForGenesisPlazaAfterDeepLink();
-
-            yield return tutorialController.StartTutorialFromStep(0);
-
-            Assert.IsFalse(tutorialController.isRunning);
-            Assert.IsNull(tutorialController.runningStep);
-            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
-        }
-
-        [Test]
-        public void SkipTutorialStepsFromGenesisPlazaAfterDeepLinkCorrectly()
-        {
-            ConfigureTutorialForGenesisPlazaAfterDeepLink();
 
             tutorialController.SkipTutorial();
 
@@ -152,7 +126,6 @@ namespace DCL.Tutorial_Tests
             tutorialController = GameObject.Instantiate(Resources.Load<GameObject>("TutorialController")).GetComponent<TutorialController>();
             tutorialController.stepsOnGenesisPlaza.Clear();
             tutorialController.stepsFromDeepLink.Clear();
-            tutorialController.stepsOnGenesisPlazaAfterDeepLink.Clear();
             tutorialController.stepsFromReset.Clear();
             tutorialController.timeBetweenSteps = 0f;
             tutorialController.sendStats = false;
@@ -183,7 +156,6 @@ namespace DCL.Tutorial_Tests
             currentSteps = tutorialController.stepsOnGenesisPlaza;
 
             tutorialController.playerIsInGenesisPlaza = true;
-            tutorialController.alreadyOpenedFromDeepLink = false;
             tutorialController.isRunning = true;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
@@ -200,22 +172,6 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.openedFromDeepLink = true;
-            tutorialController.isRunning = true;
-            CommonScriptableObjects.tutorialActive.Set(true);
-        }
-
-        private void ConfigureTutorialForGenesisPlazaAfterDeepLink()
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                tutorialController.stepsOnGenesisPlazaAfterDeepLink.Add(CreateNewFakeStep());
-            }
-
-            currentStepIndex = 0;
-            currentSteps = tutorialController.stepsOnGenesisPlazaAfterDeepLink;
-
-            tutorialController.playerIsInGenesisPlaza = true;
-            tutorialController.alreadyOpenedFromDeepLink = true;
             tutorialController.isRunning = true;
             CommonScriptableObjects.tutorialActive.Set(true);
         }

@@ -1,5 +1,4 @@
 using DCL.HelpAndSupportHUD;
-using DCL.GoToGenesisPlazaHUD;
 using DCL.SettingsHUD;
 using System.Collections.Generic;
 using UnityEngine;
@@ -79,8 +78,6 @@ public class HUDController : MonoBehaviour
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
-    public GoToGenesisPlazaHUDController goToGenesisPlazaHud => GetHUDElement(HUDElementID.GO_TO_GENESIS_PLAZA_HUD) as GoToGenesisPlazaHUDController;
-
     public ManaHUDController manaHud => GetHUDElement(HUDElementID.MANA_HUD) as ManaHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -148,9 +145,8 @@ public class HUDController : MonoBehaviour
         EXPLORE_HUD = 19,
         MANA_HUD = 20,
         HELP_AND_SUPPORT_HUD = 21,
-        GO_TO_GENESIS_PLAZA_HUD = 22,
-        EMAIL_PROMPT = 23,
-        COUNT = 24
+        EMAIL_PROMPT = 22,
+        COUNT = 23
     }
 
     [System.Serializable]
@@ -342,10 +338,6 @@ public class HUDController : MonoBehaviour
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 CreateHudElement<HelpAndSupportHUDController>(configuration, hudElementId);
                 taskbarHud?.AddHelpAndSupportWindow(helpAndSupportHud);
-                break;
-            case HUDElementID.GO_TO_GENESIS_PLAZA_HUD:
-                CreateHudElement<GoToGenesisPlazaHUDController>(configuration, hudElementId);
-                taskbarHud?.AddGoToGenesisWindow(goToGenesisPlazaHud);
                 break;
         }
 
