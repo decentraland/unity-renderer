@@ -353,11 +353,6 @@ export class UnityInterface {
   public ConfigureTutorial(tutorialStep: number, fromDeepLink: boolean) {
     const tutorialCompletedFlag = 256
 
-    this.ConfigureHUDElement(HUDElementID.GO_TO_GENESIS_PLAZA_HUD, {
-      active: true,
-      visible: false
-    })
-
     if (WORLD_EXPLORER) {
       if (RESET_TUTORIAL || (tutorialStep & tutorialCompletedFlag) === 0) {
         this.SetTutorialEnabled(fromDeepLink)

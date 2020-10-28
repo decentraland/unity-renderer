@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6dbb06cb08104c1a9fc5ceaabd5115c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialVersion: 2
+  tutorialVersion: 3
   timeBetweenSteps: 0.5
   sendStats: 1
   stepsOnGenesisPlaza:

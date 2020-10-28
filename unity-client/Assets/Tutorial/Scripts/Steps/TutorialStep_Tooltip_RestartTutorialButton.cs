@@ -1,9 +1,9 @@
 namespace DCL.Tutorial
 {
     /// <summary>
-    /// Class that represents the onboarding tutorial step related to how to Jump In the Genesis Plaza and become a DCL Citizen.
+    /// Class that represents the onboarding tutorial step related to how to restart the tutorial from the taskbar more menu.
     /// </summary>
-    public class TutorialStep_Tooltip_GoToGenesisButton : TutorialStep_Tooltip
+    public class TutorialStep_Tooltip_RestartTutorialButton : TutorialStep_Tooltip
     {
         public override void OnStepStart()
         {
@@ -11,9 +11,9 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.goToGenesisPlazaHud != null)
+                tutorialController.hudController.taskbarHud != null)
             {
-                tutorialController.hudController.goToGenesisPlazaHud.OnOpen += GoToGenesisPlazaHud_OnOpen;
+                tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened += MoreMenu_OnMoreMenuOpened;
             }
         }
 
@@ -23,9 +23,9 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.goToGenesisPlazaHud != null)
+                tutorialController.hudController.taskbarHud != null)
             {
-                tutorialController.hudController.goToGenesisPlazaHud.OnOpen -= GoToGenesisPlazaHud_OnOpen;
+                tutorialController.hudController.taskbarHud.moreMenu.OnMoreMenuOpened -= MoreMenu_OnMoreMenuOpened;
             }
         }
 
@@ -35,14 +35,13 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud.goToGenesisTooltipReference)
+                tutorialController.hudController.taskbarHud.tutorialTooltipReference)
             {
-                tutorialController.hudController.taskbarHud.ShowGoToGenesisPlazaButton();
-                tooltipTransform.position = tutorialController.hudController.taskbarHud.goToGenesisTooltipReference.position;
+                tooltipTransform.position = tutorialController.hudController.taskbarHud.tutorialTooltipReference.position;
             }
         }
 
-        private void GoToGenesisPlazaHud_OnOpen(bool isVisible)
+        private void MoreMenu_OnMoreMenuOpened(bool isVisible)
         {
             stepIsFinished = true;
             isRelatedFeatureActived = false;
