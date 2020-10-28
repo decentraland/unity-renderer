@@ -26,12 +26,11 @@ public class FriendEntryShould : TestsBase
     [Test]
     public void BePopulatedCorrectly()
     {
-        Sprite testSprite = Sprite.Create(Texture2D.whiteTexture, Rect.zero, Vector2.zero);
 
         FriendEntry.Model model = new FriendEntry.Model()
         {
             coords = Vector2.one,
-            avatarImage = testSprite,
+            avatarImage = Texture2D.whiteTexture,
             realm = "realm-test",
             realmServerName = "realm-test",
             realmLayerName = "realm-layer-test",
@@ -43,9 +42,7 @@ public class FriendEntryShould : TestsBase
         entry.Populate(model);
 
         Assert.AreEqual(model.userName, entry.playerNameText.text);
-        Assert.AreEqual(entry.playerImage.sprite, testSprite);
-
-        Object.Destroy(testSprite);
+        Assert.AreEqual(entry.playerImage.texture, Texture2D.whiteTexture);
     }
 
     [Test]

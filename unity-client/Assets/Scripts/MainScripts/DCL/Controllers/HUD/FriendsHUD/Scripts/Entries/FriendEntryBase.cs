@@ -13,13 +13,13 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         public string realm;
         public string realmServerName;
         public string realmLayerName;
-        public Sprite avatarImage;
+        public Texture2D avatarImage;
         public bool blocked;
 
-        public event System.Action<Sprite> OnSpriteUpdateEvent;
-        public void OnSpriteUpdate(Sprite sprite)
+        public event System.Action<Texture2D> OnTextureUpdateEvent;
+        public void OnSpriteUpdate(Texture2D texture)
         {
-            OnSpriteUpdateEvent?.Invoke(sprite);
+            OnTextureUpdateEvent?.Invoke(texture);
         }
     }
 
@@ -30,7 +30,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Transform menuPositionReference;
 
     [SerializeField] protected internal TextMeshProUGUI playerNameText;
-    [SerializeField] protected internal Image playerImage;
+    [SerializeField] protected internal RawImage playerImage;
     [SerializeField] protected internal Button menuButton;
     [SerializeField] protected internal Image backgroundImage;
     [SerializeField] protected internal Sprite hoveredBackgroundSprite;
@@ -65,7 +65,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         OnPointerExit(null);
 
-        model.OnSpriteUpdateEvent -= OnAvatarImageChange;
+        model.OnTextureUpdateEvent -= OnAvatarImageChange;
     }
 
     public virtual void Populate(Model model)
@@ -77,19 +77,19 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 
         if (model.avatarImage == null)
         {
-            model.OnSpriteUpdateEvent -= OnAvatarImageChange;
-            model.OnSpriteUpdateEvent += OnAvatarImageChange;
+            model.OnTextureUpdateEvent -= OnAvatarImageChange;
+            model.OnTextureUpdateEvent += OnAvatarImageChange;
         }
 
-        if (model.avatarImage != playerImage.sprite)
-            playerImage.sprite = model.avatarImage;
+        if (model.avatarImage != playerImage.texture)
+            playerImage.texture = model.avatarImage;
 
         playerBlockedImage.enabled = model.blocked;
     }
 
-    private void OnAvatarImageChange(Sprite sprite)
+    private void OnAvatarImageChange(Texture2D texture)
     {
-        playerImage.sprite = sprite;
-        model.avatarImage = sprite;
+        playerImage.texture = texture;
+        model.avatarImage = texture;
     }
 }

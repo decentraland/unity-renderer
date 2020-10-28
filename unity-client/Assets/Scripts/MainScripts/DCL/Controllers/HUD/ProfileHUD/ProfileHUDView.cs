@@ -22,7 +22,7 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField] internal GameObject[] hideOnNameClaimed;
 
     [Header("Thumbnail")]
-    [SerializeField] internal Image imageAvatarThumbnail;
+    [SerializeField] internal RawImage imageAvatarThumbnail;
     [SerializeField] internal Button buttonToggleMenu;
 
     [Header("Texts")]
@@ -143,10 +143,10 @@ internal class ProfileHUDView : MonoBehaviour
         textAddress.text = $"{start}...{end}";
     }
 
-    private void SetProfileImage(Sprite snapshot)
+    private void SetProfileImage(Texture2D texture)
     {
         profile.OnFaceSnapshotReadyEvent -= SetProfileImage;
-        imageAvatarThumbnail.sprite = snapshot;
+        imageAvatarThumbnail.texture = texture;
         loadingSpinner.SetActive(false);
     }
 

@@ -6,7 +6,7 @@ public class ChatHeadButton : TaskbarButton, IPointerEnterHandler, IPointerExitH
 {
     [SerializeField] internal ShowHideAnimator labelContainer;
     [SerializeField] internal TMPro.TextMeshProUGUI label;
-    [SerializeField] internal Image portrait;
+    [SerializeField] internal RawImage portrait;
     [SerializeField] internal UnreadNotificationBadge unreadNotificationBadge;
     [SerializeField] internal Image onlineStatusIndicator;
     [SerializeField] internal Color onlineColor = Color.green;
@@ -27,19 +27,19 @@ public class ChatHeadButton : TaskbarButton, IPointerEnterHandler, IPointerExitH
             label.text = profile.userName;
 
         if (profile.faceSnapshot != null)
-            portrait.sprite = profile.faceSnapshot;
+            portrait.texture = profile.faceSnapshot;
         else
             profile.OnFaceSnapshotReadyEvent += Profile_OnFaceSnapshotReadyEvent;
 
         SetOnlineStatus(false);
     }
 
-    private void Profile_OnFaceSnapshotReadyEvent(Sprite portraitSprite)
+    private void Profile_OnFaceSnapshotReadyEvent(Texture2D portraitTexture)
     {
         profile.OnFaceSnapshotReadyEvent -= Profile_OnFaceSnapshotReadyEvent;
 
-        if (portraitSprite != null && this.portrait.sprite != portraitSprite)
-            this.portrait.sprite = portraitSprite;
+        if (portraitTexture != null && this.portrait.texture != portraitTexture)
+            this.portrait.texture = portraitTexture;
     }
 
     private void OnDestroy()

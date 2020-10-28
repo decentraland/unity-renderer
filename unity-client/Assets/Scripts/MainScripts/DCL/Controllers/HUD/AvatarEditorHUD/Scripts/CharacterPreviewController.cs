@@ -22,7 +22,7 @@ public class CharacterPreviewController : MonoBehaviour
     private static int CHARACTER_PREVIEW_LAYER => LayerMask.NameToLayer("CharacterPreview");
     private static int CHARACTER_DEFAULT_LAYER => LayerMask.NameToLayer("Default");
 
-    public delegate void OnSnapshotsReady(Sprite face, Sprite face128, Sprite face256, Sprite body);
+    public delegate void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body);
 
     public enum CameraFocus
     {
@@ -113,14 +113,14 @@ public class CharacterPreviewController : MonoBehaviour
         SetFocus(CameraFocus.FaceSnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Sprite face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
-        Sprite face128 = Snapshot(SNAPSHOT_FACE_128_WIDTH_RES, SNAPSHOT_FACE_128_HEIGHT_RES);
-        Sprite face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
+        Texture2D face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
+        Texture2D face128 = Snapshot(SNAPSHOT_FACE_128_WIDTH_RES, SNAPSHOT_FACE_128_HEIGHT_RES);
+        Texture2D face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
         SetFocus(CameraFocus.BodySnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Sprite body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
+        Texture2D body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
 
         SetFocus(CameraFocus.DefaultEditing, false);
 
@@ -128,7 +128,7 @@ public class CharacterPreviewController : MonoBehaviour
         callback?.Invoke(face, face128, face256, body);
     }
 
-    private Sprite Snapshot(int width, int height)
+    private Texture2D Snapshot(int width, int height)
     {
         RenderTexture rt = new RenderTexture(width * SUPERSAMPLING, height * SUPERSAMPLING, 32);
         camera.targetTexture = rt;
@@ -138,7 +138,7 @@ public class CharacterPreviewController : MonoBehaviour
         screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
         screenShot.Apply();
 
-        return Sprite.Create(screenShot, new Rect(0, 0, screenShot.width, screenShot.height), Vector2.zero);
+        return screenShot;
     }
 
     private Coroutine cameraTransitionCoroutine;

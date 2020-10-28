@@ -279,8 +279,7 @@ namespace AvatarEditorHUD_Tests
             controller.WearableClicked("dcl://base-avatars/blue_bandana");
             controller.WearableClicked("dcl://base-avatars/black_jacket");
 
-            Sprite whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), Vector2.zero);
-            controller.SaveAvatar(whiteSprite, whiteSprite, whiteSprite, whiteSprite);
+            controller.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture);
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
         }

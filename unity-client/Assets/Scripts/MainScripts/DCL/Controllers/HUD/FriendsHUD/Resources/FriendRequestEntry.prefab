@@ -451,7 +451,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3361234363818194385}
   - component: {fileID: 5526326532968950548}
-  - component: {fileID: 3805504581241070516}
+  - component: {fileID: 3438028264569775926}
   m_Layer: 5
   m_Name: Pic
   m_TagString: Untagged
@@ -486,7 +486,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2815231675343004482}
   m_CullTransparentMesh: 0
---- !u!114 &3805504581241070516
+--- !u!114 &3438028264569775926
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -495,26 +495,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 2815231675343004482}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 207af87588aa2421385119eee73c020d, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &3159585121060257330
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,7 +790,7 @@ MonoBehaviour:
   playerBlockedImage: {fileID: 7231910938041917282}
   menuPositionReference: {fileID: 4882786013316759375}
   playerNameText: {fileID: 9059110502284925088}
-  playerImage: {fileID: 3805504581241070516}
+  playerImage: {fileID: 3438028264569775926}
   menuButton: {fileID: 1278527795422366261}
   backgroundImage: {fileID: 8006369808805477131}
   hoveredBackgroundSprite: {fileID: 21300000, guid: f48850fa5be164fc68819a7c8586432c,
