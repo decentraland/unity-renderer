@@ -97,14 +97,14 @@ public static class AvatarUtils
                 Texture _FMatCap = null;
                 Color? _TintColor = null;
 
-                if (replaceThemWith.HasProperty(ShaderUtils._MatCap))
-                    _MatCap = replaceThemWith.GetTexture(ShaderUtils._MatCap);
+                if (replaceThemWith.HasProperty(ShaderUtils.MatCap))
+                    _MatCap = replaceThemWith.GetTexture(ShaderUtils.MatCap);
 
-                if (replaceThemWith.HasProperty(ShaderUtils._GlossMatCap))
-                    _GMatCap = replaceThemWith.GetTexture(ShaderUtils._GlossMatCap);
+                if (replaceThemWith.HasProperty(ShaderUtils.GlossMatCap))
+                    _GMatCap = replaceThemWith.GetTexture(ShaderUtils.GlossMatCap);
 
-                if (replaceThemWith.HasProperty(ShaderUtils._FresnelMatCap))
-                    _FMatCap = replaceThemWith.GetTexture(ShaderUtils._FresnelMatCap);
+                if (replaceThemWith.HasProperty(ShaderUtils.FresnelMatCap))
+                    _FMatCap = replaceThemWith.GetTexture(ShaderUtils.FresnelMatCap);
 
                 //NOTE(Brian): This method has a bug, if the material being copied lacks a property of the source material,
                 //             the source material property will get erased. It can't be added back and even the material inspector crashes.
@@ -112,17 +112,17 @@ public static class AvatarUtils
                 copy.CopyPropertiesFromMaterial(mat);
 
                 if (_GMatCap != null)
-                    copy.SetTexture(ShaderUtils._GlossMatCap, _GMatCap);
+                    copy.SetTexture(ShaderUtils.GlossMatCap, _GMatCap);
 
                 if (_FMatCap != null)
-                    copy.SetTexture(ShaderUtils._FresnelMatCap, _FMatCap);
+                    copy.SetTexture(ShaderUtils.FresnelMatCap, _FMatCap);
 
                 if (_MatCap != null)
-                    copy.SetTexture(ShaderUtils._MatCap, _MatCap);
+                    copy.SetTexture(ShaderUtils.MatCap, _MatCap);
 
-                if (copy.HasProperty(ShaderUtils._ZWrite))
+                if (copy.HasProperty(ShaderUtils.ZWrite))
                 {
-                    int zWrite = (int) copy.GetFloat(ShaderUtils._ZWrite);
+                    int zWrite = (int) copy.GetFloat(ShaderUtils.ZWrite);
 
                     if (zWrite == 0)
                         copy.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
