@@ -4,6 +4,7 @@ import { defaultLogger } from 'shared/logger'
 import { SceneRuntime } from './sdk/SceneRuntime'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { customEval, getES5Context } from './sdk/sandbox'
+import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 
 /**
  * This file starts the scene in a WebWorker context.
@@ -14,6 +15,19 @@ class WebWorkerScene extends SceneRuntime {
   devTools: any
 
   devToolsAdapter?: DevToolsAdapter
+
+  updateEnabled: boolean = true
+
+  constructor(transport: ScriptingTransport) {
+    super(transport)
+
+    addEventListener('error', (e) => {
+      console.warn('🚨🚨🚨 Unhandled error in scene code. Disabling worker update loop 🚨🚨🚨')
+      console.error(e)
+      this.updateEnabled = false
+      debugger
+    })
+  }
 
   async runCode(source: string, env: any): Promise<void> {
     await customEval(source, getES5Context(env))
@@ -44,6 +58,8 @@ class WebWorkerScene extends SceneRuntime {
     let start = performance.now()
 
     const update = () => {
+      if (!this.updateEnabled) return
+
       const now = performance.now()
       const dt = now - start
       start = now

@@ -126,6 +126,12 @@ initializeUnity(container)
 
     document.body.classList.remove('dcl-loading')
     globalThis.UnityLoader.Error.handler = (error: any) => {
+      if (error.isSceneError) {
+        // @see packages/shared/world/SceneWorker.ts#loadSystem
+        debugger
+        return
+      }
+
       console['error'](error)
       ReportFatalError(error.message)
     }
