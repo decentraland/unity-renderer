@@ -2,7 +2,6 @@ using System;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
-using System;
 using Ray = UnityEngine.Ray;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -476,6 +475,14 @@ namespace DCL.Interface
             public string payload;
         }
 
+        [System.Serializable]
+        public class MuteUserPayload
+        {
+            public string[] usersId;
+            public bool mute;
+        }
+
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -547,6 +554,7 @@ namespace DCL.Interface
         private static AnalyticsPayload analyticsEvent = new AnalyticsPayload();
         private static DelightedSurveyEnabledPayload delightedSurveyEnabled = new DelightedSurveyEnabledPayload();
         private static ExternalActionSceneEventPayload sceneExternalActionEvent = new ExternalActionSceneEventPayload();
+        private static MuteUserPayload muteUserEvent = new MuteUserPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1027,6 +1035,13 @@ namespace DCL.Interface
             sceneExternalActionEvent.type = type;
             sceneExternalActionEvent.payload = payload;
             SendSceneEvent(sceneId, "externalAction", sceneExternalActionEvent);
+        }
+
+        public static void SetMuteUsers(string[] usersId, bool mute)
+        {
+            muteUserEvent.usersId = usersId;
+            muteUserEvent.mute = mute;
+            SendMessage("SetMuteUsers", muteUserEvent);
         }
     }
 }

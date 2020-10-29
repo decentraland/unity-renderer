@@ -3,65 +3,70 @@ import { getCurrentUserId } from 'shared/session/selectors'
 import { getProfile } from 'shared/profiles/selectors'
 import { saveProfileRequest } from 'shared/profiles/actions'
 import {
-  BlockPlayer,
-  BLOCK_PLAYER,
-  MutePlayer,
-  MUTE_PLAYER,
-  UnblockPlayer,
-  UNBLOCK_PLAYER,
-  UnmutePlayer,
-  UNMUTE_PLAYER
+  BlockPlayers,
+  BLOCK_PLAYERS,
+  MutePlayers,
+  MUTE_PLAYERS,
+  UnblockPlayers,
+  UNBLOCK_PLAYERS,
+  UnmutePlayers,
+  UNMUTE_PLAYERS
 } from './actions'
 import { Profile } from 'shared/profiles/types'
+import { unityInterface } from 'unity-interface/UnityInterface'
 
 type ProfileSetKey = 'muted' | 'blocked'
 
 export function* socialSaga(): any {
-  yield takeEvery(MUTE_PLAYER, saveMutedPlayer)
-  yield takeEvery(BLOCK_PLAYER, saveBlockedPlayer)
-  yield takeEvery(UNMUTE_PLAYER, saveUnmutedPlayer)
-  yield takeEvery(UNBLOCK_PLAYER, saveUnblockedPlayer)
+  yield takeEvery(MUTE_PLAYERS, saveMutedPlayer)
+  yield takeEvery(BLOCK_PLAYERS, saveBlockedPlayer)
+  yield takeEvery(UNMUTE_PLAYERS, saveUnmutedPlayer)
+  yield takeEvery(UNBLOCK_PLAYERS, saveUnblockedPlayer)
 }
 
-function* saveMutedPlayer(action: MutePlayer) {
-  yield* addPlayerToProfileSet(action.payload.playerId, 'muted')
+function* saveMutedPlayer(action: MutePlayers) {
+  yield* addPlayerToProfileSet(action.payload.playersId, 'muted')
 }
 
-function* saveBlockedPlayer(action: BlockPlayer) {
-  yield* addPlayerToProfileSet(action.payload.playerId, 'blocked')
+function* saveBlockedPlayer(action: BlockPlayers) {
+  yield* addPlayerToProfileSet(action.payload.playersId, 'blocked')
 }
 
-function* saveUnmutedPlayer(action: UnmutePlayer) {
-  yield* removePlayerFromProfileSet(action.payload.playerId, 'muted')
+function* saveUnmutedPlayer(action: UnmutePlayers) {
+  yield* removePlayerFromProfileSet(action.payload.playersId, 'muted')
 }
 
-function* saveUnblockedPlayer(action: UnblockPlayer) {
-  yield* removePlayerFromProfileSet(action.payload.playerId, 'blocked')
+function* saveUnblockedPlayer(action: UnblockPlayers) {
+  yield* removePlayerFromProfileSet(action.payload.playersId, 'blocked')
 }
 
-function* addPlayerToProfileSet(playerId: string, setKey: ProfileSetKey) {
+function* addPlayerToProfileSet(playersId: string[], setKey: ProfileSetKey) {
   const profile = yield getCurrentProfile()
 
   if (profile) {
-    let set: string[] = [playerId]
+    let idsToAdd = playersId
+    let set: string[] = playersId
     if (profile[setKey]) {
-      if (profile[setKey].indexOf(playerId) >= 0) {
-        return
-      }
-
-      set = [...profile[setKey], playerId]
+      idsToAdd = playersId.filter((id) => !(profile[setKey].indexOf(id) >= 0))
+      set = profile[setKey].concat(idsToAdd)
     }
 
     yield put(saveProfileRequest({ [setKey]: set }))
+    if (setKey === 'muted') {
+      unityInterface.SetUsersMuted(idsToAdd, true)
+    }
   }
 }
 
-function* removePlayerFromProfileSet(playerId: string, setKey: ProfileSetKey) {
+function* removePlayerFromProfileSet(playersId: string[], setKey: ProfileSetKey) {
   const profile = yield* getCurrentProfile()
 
   if (profile) {
-    const set = profile[setKey] ? profile[setKey]!.filter((id) => id !== playerId) : []
+    const set = profile[setKey] ? profile[setKey]!.filter((id) => !playersId.includes(id)) : []
     yield put(saveProfileRequest({ ...profile, [setKey]: set }))
+    if (setKey === 'muted') {
+      unityInterface.SetUsersMuted(playersId, false)
+    }
   }
 }
 

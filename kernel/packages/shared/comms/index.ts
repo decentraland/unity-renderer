@@ -87,6 +87,7 @@ import { VoiceCommunicator, VoiceSpatialParams } from 'voice-chat-codec/VoiceCom
 import { voicePlayingUpdate, voiceRecordingUpdate } from './actions'
 import { isVoiceChatRecording } from './selectors'
 import { VOICE_CHAT_SAMPLE_RATE } from 'voice-chat-codec/constants'
+import { unityInterface } from 'unity-interface/UnityInterface'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -270,11 +271,18 @@ export function updatePeerVoicePlaying(userId: string, playing: boolean) {
       }
     }
   }
+  unityInterface.SetUserTalking(userId, playing)
 }
 
 export function updateVoiceCommunicatorVolume(volume: number) {
   if (voiceCommunicator) {
     voiceCommunicator.setVolume(volume)
+  }
+}
+
+export function updateVoiceCommunicatorMute(mute: boolean) {
+  if (voiceCommunicator) {
+    voiceCommunicator.setMute(mute)
   }
 }
 
@@ -554,7 +562,8 @@ export function onPositionUpdate(context: Context, p: Position) {
     }
   }
 
-  if (!immediateReposition) { // Otherwise the topics get lost on an immediate reposition...
+  if (!immediateReposition) {
+    // Otherwise the topics get lost on an immediate reposition...
     const parcelSceneSubscriptions = getParcelSceneSubscriptions()
     const parcelSceneCommsTopics = parcelSceneSubscriptions.join(' ')
 
@@ -1176,7 +1185,8 @@ globalThis.bots = {
     }
     return false
   },
-  reposition: (id: string) => { // to test immediate repositioning
+  reposition: (id: string) => {
+    // to test immediate repositioning
     let bot = bots.find((bot) => bot.id === id)
     if (bot) {
       const position = { ...lastPlayerPosition }

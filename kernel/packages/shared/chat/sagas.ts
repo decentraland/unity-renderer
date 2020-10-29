@@ -29,7 +29,7 @@ import { sampleDropData } from 'shared/airdrops/sampleDrop'
 import { findProfileByName } from 'shared/profiles/selectors'
 import { isFriend } from 'shared/friends/selectors'
 import { fetchHotScenes } from 'shared/social/hotScenes'
-import { blockPlayer, mutePlayer, unblockPlayer, unmutePlayer } from 'shared/social/actions'
+import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 
 declare const globalThis: UnityInterfaceContainer & StoreContainer
 
@@ -403,7 +403,7 @@ function initChatCommands() {
 
   function performSocialActionOnPlayer(
     username: string,
-    actionBuilder: (userId: string) => { type: string; payload: { playerId: string } },
+    actionBuilder: (usersId: string[]) => { type: string; payload: { playersId: string[] } },
     actionName: 'mute' | 'block' | 'unmute' | 'unblock'
   ) {
     let pastTense: string = actionName === 'mute' || actionName === 'unmute' ? actionName + 'd' : actionName + 'ed'
@@ -423,7 +423,7 @@ function initChatCommands() {
         }
       }
 
-      globalThis.globalStore.dispatch(actionBuilder(user.userId))
+      globalThis.globalStore.dispatch(actionBuilder([user.userId]))
 
       return {
         messageId: uuid(),
@@ -444,19 +444,19 @@ function initChatCommands() {
   }
 
   addChatCommand('mute', 'Mute [username]', (message) => {
-    return performSocialActionOnPlayer(message, mutePlayer, 'mute')
+    return performSocialActionOnPlayer(message, mutePlayers, 'mute')
   })
 
   addChatCommand('unmute', 'Unmute [username]', (message) => {
-    return performSocialActionOnPlayer(message, unmutePlayer, 'unmute')
+    return performSocialActionOnPlayer(message, unmutePlayers, 'unmute')
   })
 
   addChatCommand('block', 'Block [username]', (message) => {
-    return performSocialActionOnPlayer(message, blockPlayer, 'block')
+    return performSocialActionOnPlayer(message, blockPlayers, 'block')
   })
 
   addChatCommand('unblock', 'Unblock [username]', (message) => {
-    return performSocialActionOnPlayer(message, unblockPlayer, 'unblock')
+    return performSocialActionOnPlayer(message, unblockPlayers, 'unblock')
   })
 
   addChatCommand('help', 'Show a list of commands', (message) => {
