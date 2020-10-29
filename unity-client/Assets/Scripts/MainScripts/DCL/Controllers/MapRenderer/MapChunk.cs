@@ -91,7 +91,7 @@ namespace DCL
 
             targetImage.enabled = visible;
 
-            if (!isLoadingOrLoaded && visible)
+            if (!isLoadingOrLoaded)
                 loadCoroutine = CoroutineStarter.Start(LoadChunkImage());
         }
 
