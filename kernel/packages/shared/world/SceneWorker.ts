@@ -1,9 +1,9 @@
 import { future } from 'fp-future'
 import { ScriptingHost } from 'decentraland-rpc/lib/host'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
-import { WebWorkerTransport } from 'decentraland-rpc'
+import { CustomWebWorkerTransport } from './CustomWebWorkerTransport'
 
-import { playerConfigurations } from 'config'
+import { playerConfigurations, PREVIEW } from 'config'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { defaultLogger } from 'shared/logger'
 import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
@@ -63,8 +63,8 @@ export class SceneWorker {
     this.subscribeToWorldRunningEvents()
 
     this.loadSystem(transport)
-      .then($ => this.system.resolve($))
-      .catch($ => this.system.reject($))
+      .then(($) => this.system.resolve($))
+      .catch(($) => this.system.reject($))
   }
 
   dispose() {
@@ -86,7 +86,7 @@ export class SceneWorker {
 
       // Unmount the system
       if (this.system) {
-        this.system.then(unmountSystem).catch(e => defaultLogger.error('Unable to unmount system', e))
+        this.system.then(unmountSystem).catch((e) => defaultLogger.error('Unable to unmount system', e))
       }
 
       this.parcelScene.dispose()
@@ -125,7 +125,7 @@ export class SceneWorker {
   private subscribeToPositionEvents() {
     const position = Vector2.Zero()
 
-    this.positionObserver = positionObservable.add(obj => {
+    this.positionObserver = positionObservable.add((obj) => {
       worldToGrid(obj.position, position)
 
       this.sendUserViewMatrix(obj)
@@ -133,13 +133,13 @@ export class SceneWorker {
   }
 
   private subscribeToWorldRunningEvents() {
-    this.worldRunningObserver = worldRunningObservable.add(isRunning => {
+    this.worldRunningObserver = worldRunningObservable.add((isRunning) => {
       this.sendSceneReadyIfNecessary()
     })
   }
 
   private subscribeToSceneLifeCycleEvents() {
-    this.sceneLifeCycleObserver = sceneLifeCycleObservable.add(obj => {
+    this.sceneLifeCycleObserver = sceneLifeCycleObservable.add((obj) => {
       if (this.parcelScene.data.sceneId === obj.sceneId && obj.status === 'ready') {
         this.sceneReady = true
         sceneLifeCycleObservable.remove(this.sceneLifeCycleObserver)
@@ -164,6 +164,22 @@ export class SceneWorker {
 
     system.getAPIInstance(EnvironmentAPI).data = this.parcelScene.data
 
+    // TODO: track this errors using rollbar because this kind of event are usually triggered due to setInterval() or unreliable code in scenes, that is not sandboxed
+    system.on('error', (e) => {
+      // @ts-ignore
+      console['log']('Unloading scene because of unhandled exception in the scene worker: ')
+
+      // @ts-ignore
+      console['error'](e)
+
+      // These errors should be handled in development time
+      if (PREVIEW) {
+        debugger
+      }
+
+      transport.close()
+    })
+
     system.enable()
 
     this.subscribeToPositionEvents()
@@ -178,7 +194,17 @@ export class SceneWorker {
       const worker = new (Worker as any)(gamekitWorkerUrl, {
         name: `ParcelSceneWorker(${this.parcelScene.data.sceneId})`
       })
-      return this.startSystem(WebWorkerTransport(worker))
+
+      // the first error handler will flag the error as a scene worker error enabling error
+      // filtering in DCLUnityLoader.js, unhandled errors (like WebSocket messages failing)
+      // are not handled by the update loop and therefore those break the whole worker
+      const transportOverride = CustomWebWorkerTransport(worker)
+
+      transportOverride.onError!((e: any) => {
+        e['isSceneError'] = true
+      })
+
+      return this.startSystem(transportOverride)
     }
   }
 }
