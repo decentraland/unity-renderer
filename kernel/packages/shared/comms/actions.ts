@@ -29,3 +29,7 @@ export type VoiceRecordingUpdate = ReturnType<typeof voiceRecordingUpdate>
 export const SET_VOICE_VOLUME = 'Set Voice Volume'
 export const setVoiceVolume = (volume: number) => action(SET_VOICE_VOLUME, { volume })
 export type SetVoiceVolume = ReturnType<typeof setVoiceVolume>
+
+export const SET_VOICE_MUTE = 'Set Voice Mute'
+export const setVoiceMute = (mute: boolean) => action(SET_VOICE_MUTE, { mute })
+export type SetVoiceMute = ReturnType<typeof setVoiceMute>

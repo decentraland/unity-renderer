@@ -17,6 +17,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
+    [SerializeField] internal UsersAroundListHUDButtonView usersAroundListHudButton;
 
     [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
@@ -47,6 +48,7 @@ public class MinimapHUDView : MonoBehaviour
             renderer.transform.SetParent(mapRenderContainer);
             renderer.transform.SetAsFirstSibling();
         }
+        usersAroundListHudButton.gameObject.SetActive(false);
     }
 
     internal static MinimapHUDView Create(MinimapHUDController controller)

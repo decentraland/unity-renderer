@@ -80,6 +80,8 @@ public class HUDController : MonoBehaviour
 
     public ManaHUDController manaHud => GetHUDElement(HUDElementID.MANA_HUD) as ManaHUDController;
 
+    public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
+
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -146,7 +148,8 @@ public class HUDController : MonoBehaviour
         MANA_HUD = 20,
         HELP_AND_SUPPORT_HUD = 21,
         EMAIL_PROMPT = 22,
-        COUNT = 23
+        USERS_AROUND_LIST_HUD = 23,
+        COUNT = 24
     }
 
     [System.Serializable]
@@ -339,6 +342,13 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<HelpAndSupportHUDController>(configuration, hudElementId);
                 taskbarHud?.AddHelpAndSupportWindow(helpAndSupportHud);
                 break;
+            case HUDElementID.USERS_AROUND_LIST_HUD:
+                CreateHudElement<UsersAroundListHUDController>(configuration, hudElementId);
+                if (usersAroundListHud != null)
+                {
+                    minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
+                }
+                break;
         }
 
         var hudElement = GetHUDElement(hudElementId);
@@ -412,6 +422,18 @@ public class HUDController : MonoBehaviour
     public void SetPlayerTalking(string talking)
     {
         taskbarHud?.SetVoiceChatRecording("true".Equals(talking));
+    }
+
+    public void SetUserTalking(string payload)
+    {
+        var model = JsonUtility.FromJson<UserTalkingModel>(payload);
+        usersAroundListHud?.SetUserRecording(model.userId, model.talking);
+    }
+
+    public void SetUsersMuted(string payload)
+    {
+        var model = JsonUtility.FromJson<UserMutedModel>(payload);
+        usersAroundListHud?.SetUsersMuted(model.usersId, model.muted);
     }
 
     public void RequestTeleport(string teleportDataJson)

@@ -26,7 +26,7 @@ import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/d
 import { notifyStatusThroughChat } from 'shared/comms/chat'
 import { getAppNetwork, fetchOwner } from 'shared/web3'
 import { updateStatusMessage } from 'shared/loading/actions'
-import { blockPlayer, mutePlayer, unblockPlayer, unmutePlayer } from 'shared/social/actions'
+import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 import { UnityParcelScene } from './UnityParcelScene'
 import { setAudioStream } from './audioStream'
 import { logout } from 'shared/session/actions'
@@ -65,7 +65,12 @@ export class BrowserInterface {
   private lastBalanceOfMana: number = -1
 
   /** Triggered when the camera moves */
-  public ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion; playerHeight?: number; immediate?: boolean }) {
+  public ReportPosition(data: {
+    position: ReadOnlyVector3
+    rotation: ReadOnlyQuaternion
+    playerHeight?: number
+    immediate?: boolean
+  }) {
     positionEvent.position.set(data.position.x, data.position.y, data.position.z)
     positionEvent.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w)
     positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
@@ -237,19 +242,11 @@ export class BrowserInterface {
   }
 
   public BlockPlayer(data: { userId: string }) {
-    globalThis.globalStore.dispatch(blockPlayer(data.userId))
+    globalThis.globalStore.dispatch(blockPlayers([data.userId]))
   }
 
   public UnblockPlayer(data: { userId: string }) {
-    globalThis.globalStore.dispatch(unblockPlayer(data.userId))
-  }
-
-  public MutePlayer(data: { userId: string }) {
-    globalThis.globalStore.dispatch(mutePlayer(data.userId))
-  }
-
-  public UnmutePlayer(data: { userId: string }) {
-    globalThis.globalStore.dispatch(unmutePlayer(data.userId))
+    globalThis.globalStore.dispatch(unblockPlayers([data.userId]))
   }
 
   public ReportUserEmail(data: { userEmail: string }) {
@@ -398,6 +395,14 @@ export class BrowserInterface {
     if (this.lastBalanceOfMana !== balance) {
       this.lastBalanceOfMana = balance
       unityInterface.UpdateBalanceOfMANA(`${balance}`)
+    }
+  }
+
+  public SetMuteUsers(data: { usersId: string[]; mute: boolean }) {
+    if (data.mute) {
+      globalThis.globalStore.dispatch(mutePlayers(data.usersId))
+    } else {
+      globalThis.globalStore.dispatch(unmutePlayers(data.usersId))
     }
   }
 }

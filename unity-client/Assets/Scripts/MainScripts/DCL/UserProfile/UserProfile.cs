@@ -18,6 +18,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string description => model.description;
     public string email => model.email;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
+    public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
     public AvatarModel avatar => model.avatar;
@@ -54,6 +55,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
         model.inventory = newModel.inventory;
         model.blocked = newModel.blocked;
+        model.muted = newModel.muted;
 
         if (model.inventory != null)
         {
