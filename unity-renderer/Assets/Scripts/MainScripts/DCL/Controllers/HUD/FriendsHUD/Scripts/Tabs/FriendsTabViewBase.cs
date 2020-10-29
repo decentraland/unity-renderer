@@ -118,7 +118,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
     protected FriendsHUDView owner;
 
     public UserContextMenu contextMenuPanel;
-    public FriendsHUD_DialogBox confirmationDialog;
+    public UserContextConfirmationDialog confirmationDialog;
 
     protected Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
     protected Dictionary<string, PoolableObject> instantiatedFriendEntries = new Dictionary<string, PoolableObject>();
@@ -175,25 +175,13 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         rectTransform = transform as RectTransform;
 
         contextMenuPanel.OnBlock += OnPressBlockButton;
-        contextMenuPanel.OnDelete += OnPressDeleteButton;
-        contextMenuPanel.OnPassport += OnPressPassportButton;
-        contextMenuPanel.OnReport += OnPressReportButton;
+        contextMenuPanel.OnUnfriend += OnPressDeleteButton;
     }
 
     public virtual void OnDestroy()
     {
         contextMenuPanel.OnBlock -= OnPressBlockButton;
-        contextMenuPanel.OnDelete -= OnPressDeleteButton;
-        contextMenuPanel.OnPassport -= OnPressPassportButton;
-        contextMenuPanel.OnReport -= OnPressReportButton;
-    }
-
-    protected virtual void OnPressReportButton(string userId)
-    {
-    }
-
-    protected virtual void OnPressPassportButton(string userId)
-    {
+        contextMenuPanel.OnUnfriend -= OnPressDeleteButton;
     }
 
     protected virtual void OnPressDeleteButton(string userId)
@@ -227,11 +215,8 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
         entry.OnMenuToggle += (x) =>
         {
-            var ownUserProfiler = UserProfile.GetOwnUserProfile();
-            bool isBlocked = ownUserProfiler.blocked != null ? ownUserProfiler.blocked.Contains(userId) : false;
-            contextMenuPanel.Initialize(userId, string.Empty, isBlocked);
             contextMenuPanel.transform.position = entry.menuPositionReference.position;
-            contextMenuPanel.Show();
+            contextMenuPanel.Show(userId);
         };
 
         UpdateEmptyListObjects();

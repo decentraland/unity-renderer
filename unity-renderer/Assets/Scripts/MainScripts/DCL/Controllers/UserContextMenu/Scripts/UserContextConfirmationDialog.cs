@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FriendsHUD_DialogBox : MonoBehaviour
+public class UserContextConfirmationDialog : MonoBehaviour, IConfirmationDialog
 {
     public TextMeshProUGUI dialogText;
     public Button cancelButton;
@@ -13,12 +13,12 @@ public class FriendsHUD_DialogBox : MonoBehaviour
 
     }
 
-    internal void SetText(string text)
+    public void SetText(string text)
     {
         dialogText.text = text;
     }
 
-    internal void Show(System.Action onConfirm = null, System.Action onCancel = null)
+    public void Show(System.Action onConfirm = null, System.Action onCancel = null)
     {
         confirmButton.onClick.RemoveAllListeners();
         confirmButton.onClick.AddListener(() => { onConfirm?.Invoke(); Hide(); });
@@ -29,7 +29,7 @@ public class FriendsHUD_DialogBox : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    internal void Hide()
+    public void Hide()
     {
         gameObject.SetActive(false);
     }

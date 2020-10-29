@@ -85,7 +85,7 @@ public class FriendsHUDControllerShould : TestsBase
         var id = "test-id-1";
         var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
-        var currentPlayerId = Resources.Load<StringVariable>(FriendsHUDController.CURRENT_PLAYER_ID);
+        var currentPlayerId = Resources.Load<StringVariable>(UserContextMenu.CURRENT_PLAYER_ID);
 
         entry.menuButton.onClick.Invoke();
         Assert.AreNotEqual(id, currentPlayerId.Get());
