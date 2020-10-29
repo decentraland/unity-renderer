@@ -57,6 +57,8 @@ namespace DCL
             if (currentSerialization == newJson)
                 yield break;
 
+            DisablePassport();
+
             model = SceneController.i.SafeFromJson<AvatarModel>(newJson);
 
             everythingIsLoaded = false;
@@ -110,7 +112,7 @@ namespace DCL
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
-            onPointerDown.collider.enabled = true;
+            EnablePassport();
         }
 
         public void DisablePassport()
