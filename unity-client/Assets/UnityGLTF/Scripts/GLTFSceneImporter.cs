@@ -1039,7 +1039,10 @@ namespace UnityGLTF
                                 var quaternion = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w).ToUnityQuaternionConvert();
 
                                 return new float[] {quaternion.x, quaternion.y, quaternion.z, quaternion.w};
-                            });
+                            },
+                            // NOTE(Brian): Unity makes some conversion to eulers on AnimationClip.SetCurve
+                            // that breaks the keyframe optimization.
+                            optimizeKeyframes: false);
 
                         break;
 
@@ -1077,7 +1080,8 @@ namespace UnityGLTF
             NumericArray output,
             InterpolationType mode,
             Type curveType,
-            ValuesConvertion getConvertedValues)
+            ValuesConvertion getConvertedValues,
+            bool optimizeKeyframes = true)
         {
             var channelCount = propertyNames.Length;
             var frameCount = input.AsFloats.Length;
@@ -1137,7 +1141,7 @@ namespace UnityGLTF
                         SetTangentMode(keyframes[ci], i, mode);
                 }
 
-                var optimizedKeyframes = OptimizeKeyFrames(keyframes[ci]);
+                var optimizedKeyframes = optimizeKeyframes ? OptimizeKeyFrames(keyframes[ci]) : keyframes[ci];
 
                 // copy all key frames data to animation curve and add it to the clip
                 AnimationCurve curve = new AnimationCurve(optimizedKeyframes);
