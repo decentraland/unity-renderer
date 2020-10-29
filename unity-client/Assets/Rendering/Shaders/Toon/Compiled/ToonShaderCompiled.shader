@@ -9,16 +9,22 @@
         [NoScaleOffset]_MatCap("Diffuse MatCap", 2D) = "white" {}
         [NoScaleOffset]_GlossMatCap("Gloss MatCap", 2D) = "white" {}
         [NoScaleOffset]_FresnelMatCap("Fresnel MatCap", 2D) = "white" {}
+        _SSSIntensity("SSS Intensity", Float) = 0
+        _SSSParams("SSSParams", Vector) = (0, 0, 0, 0)
+        _TintColor("TintColor", Color) = (0.6415094, 0.5737489, 0.5416518, 1)
+        _Cutoff("AlphaClipThreshold", Float) = 0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
         [HideInInspector] _DstBlend("__dst", Float) = 0.0
         [HideInInspector] _ZWrite("__zw", Float) = 1.0
         [HideInInspector] _Cull("__cull", Float) = 2.0
+
+
+
     }
     SubShader
     {
         Tags
         {
-            "RenderPipeline"="UniversalPipeline"
         }
         
         Pass
@@ -82,6 +88,9 @@
             
             // Defines
         
+        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+        #define _AlphaClip 1
+        #endif
         
         
         
@@ -146,6 +155,8 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
+            float4 _TintColor;
+            float _Cutoff;
             CBUFFER_END
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
             TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
@@ -154,7 +165,6 @@
             TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
             float3 _LightDir;
             float4 _LightColor;
-            float4 _TintColor;
             SAMPLER(_SampleTexture2D_F1EE66C6_Sampler_3_Linear_Repeat);
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
             SAMPLER(_SampleTexture2D_ED76F6F0_Sampler_3_Linear_Repeat);
@@ -513,9 +523,12 @@
                 float4 _FinalCombine_D0158F10_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_66E414AD_Out_2, _TextureSample_7368FD5F_Color_1, _Add_EB51409C_Out_2, _Property_8AD7C09E_Out_0, _FinalCombine_D0158F10, _FinalCombine_D0158F10_FinalColor_1);
                 #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Property_5330B560_Out_0 = _Cutoff;
+                #endif
                 surface.Color = (_FinalCombine_D0158F10_FinalColor_1.xyz);
                 surface.Alpha = _TextureSample_7368FD5F_Alpha_2;
-                surface.AlphaClipThreshold = 0;
+                surface.AlphaClipThreshold = _Property_5330B560_Out_0;
                 return surface;
             }
         
@@ -806,6 +819,9 @@
             
             // Defines
         
+        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+        #define _AlphaClip 1
+        #endif
         
         
         
@@ -861,6 +877,8 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
+            float4 _TintColor;
+            float _Cutoff;
             CBUFFER_END
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
             TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
@@ -869,7 +887,6 @@
             TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
             float3 _LightDir;
             float4 _LightColor;
-            float4 _TintColor;
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
         
             // Graph Functions
@@ -942,8 +959,11 @@
                 float _TextureSample_7368FD5F_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_DC445BEF_Out_0, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap), _BaseMap_TexelSize, _TextureSample_7368FD5F, _TextureSample_7368FD5F_Color_1, _TextureSample_7368FD5F_Alpha_2);
                 #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Property_5330B560_Out_0 = _Cutoff;
+                #endif
                 surface.Alpha = _TextureSample_7368FD5F_Alpha_2;
-                surface.AlphaClipThreshold = 0;
+                surface.AlphaClipThreshold = _Property_5330B560_Out_0;
                 return surface;
             }
         
@@ -1198,6 +1218,9 @@
             
             // Defines
         
+        #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+        #define _AlphaClip 1
+        #endif
         
         
         
@@ -1253,6 +1276,8 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
+            float4 _TintColor;
+            float _Cutoff;
             CBUFFER_END
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
             TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
@@ -1261,7 +1286,6 @@
             TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
             float3 _LightDir;
             float4 _LightColor;
-            float4 _TintColor;
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
         
             // Graph Functions
@@ -1334,8 +1358,11 @@
                 float _TextureSample_7368FD5F_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_DC445BEF_Out_0, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap), _BaseMap_TexelSize, _TextureSample_7368FD5F, _TextureSample_7368FD5F_Color_1, _TextureSample_7368FD5F_Alpha_2);
                 #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Property_5330B560_Out_0 = _Cutoff;
+                #endif
                 surface.Alpha = _TextureSample_7368FD5F_Alpha_2;
-                surface.AlphaClipThreshold = 0;
+                surface.AlphaClipThreshold = _Property_5330B560_Out_0;
                 return surface;
             }
         
