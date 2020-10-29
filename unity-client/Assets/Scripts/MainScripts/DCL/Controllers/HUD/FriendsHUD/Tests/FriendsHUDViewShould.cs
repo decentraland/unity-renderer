@@ -147,10 +147,8 @@ public class FriendsHUDViewShould : TestsBase
         var entry = CreateFriendEntry(id1, "Ted Bundy");
 
         entry.menuButton.onClick.Invoke();
-        Assert.IsTrue(view.friendsList.contextMenuPanel.deleteButton.gameObject.activeSelf);
-        Assert.IsTrue(view.friendsList.contextMenuPanel.deleteButton.isActiveAndEnabled);
 
-        view.friendsList.contextMenuPanel.deleteButton.onClick.Invoke();
+        view.friendsList.contextMenuPanel.deleteFriendButton.onClick.Invoke();
         view.friendsList.confirmationDialog.confirmButton.onClick.Invoke();
 
         Assert.IsNull(view.friendsList.GetEntry(id1));

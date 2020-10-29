@@ -6,7 +6,6 @@ using UnityEngine.Events;
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 100;
-    internal const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
 
     public ChatHUDView view;
 
@@ -27,15 +26,6 @@ public class ChatHUDController : IDisposable
         {
             this.view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
             this.view.contextMenu.OnShowMenu += ContextMenu_OnShowMenu;
-
-            this.view.contextMenu.OnPassport -= ContextMenu_OnPassport;
-            this.view.contextMenu.OnPassport += ContextMenu_OnPassport;
-
-            this.view.contextMenu.OnBlock -= ContextMenu_OnBlock;
-            this.view.contextMenu.OnBlock += ContextMenu_OnBlock;
-
-            this.view.contextMenu.OnReport -= ContextMenu_OnReport;
-            this.view.contextMenu.OnReport += ContextMenu_OnReport;
         }
 
         closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
@@ -53,30 +43,12 @@ public class ChatHUDController : IDisposable
         view.OnMessageCancelHover();
     }
 
-    private void ContextMenu_OnPassport(string userId)
-    {
-        var currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-        currentPlayerId.Set(userId);
-    }
-
-    private void ContextMenu_OnBlock(string userId, bool blockUser)
-    {
-        if (blockUser)
-            WebInterface.SendBlockPlayer(userId);
-        else
-            WebInterface.SendUnblockPlayer(userId);
-    }
-
-    private void ContextMenu_OnReport(string userId)
-    {
-        WebInterface.SendReportPlayer(userId);
-    }
-
     private void OnCloseButtonPressed(DCLAction_Trigger action)
     {
         if (view.contextMenu != null)
         {
             view.contextMenu.Hide();
+            view.confirmationDialog.Hide();
         }
     }
 
@@ -97,9 +69,6 @@ public class ChatHUDController : IDisposable
         if (view.contextMenu != null)
         {
             view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
-            view.contextMenu.OnPassport -= ContextMenu_OnPassport;
-            view.contextMenu.OnBlock -= ContextMenu_OnBlock;
-            view.contextMenu.OnReport -= ContextMenu_OnReport;
         }
         closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
         UnityEngine.Object.Destroy(view.gameObject);
