@@ -15,6 +15,8 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
     [SerializeField] internal Transform contentFriends;
     [SerializeField] internal Transform contentPlayers;
     [SerializeField] internal Toggle muteAllToggle;
+    [SerializeField] internal UserContextMenu contextMenu;
+    [SerializeField] internal UserContextConfirmationDialog confirmationDialog;
 
     internal Queue<UsersAroundListHUDListElementView> availableElements;
     internal Dictionary<string, UsersAroundListHUDListElementView> userElementDictionary;
@@ -37,6 +39,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         muteAllToggle.onValueChanged.AddListener(OnMuteGlobal);
 
         listElementView.OnMuteUser += OnMuteUser;
+        listElementView.OnShowUserContexMenu += OnUserContextMenu;
         listElementView.OnPoolRelease();
         availableElements.Enqueue(listElementView);
 
@@ -56,7 +59,12 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         if (profile == null)
             return;
 
-        bool isFriend = FriendsController.i?.friends.ContainsKey(userInfo.userId) ?? false;
+        bool isFriend = false;
+
+        if (FriendsController.i && FriendsController.i.friends.TryGetValue(userInfo.userId, out FriendsController.UserStatus status))
+        {
+            isFriend = status.friendshipStatus == FriendshipStatus.FRIEND;
+        }
 
         UsersAroundListHUDListElementView view = null;
         if (availableElements.Count > 0)
@@ -68,6 +76,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         {
             view = Instantiate(listElementView, isFriend ? contentFriends : contentPlayers);
             view.OnMuteUser += OnMuteUser;
+            view.OnShowUserContexMenu += OnUserContextMenu;
         }
 
         view.OnPoolGet();
@@ -124,6 +133,8 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         else
         {
             showHideAnimator.Hide();
+            contextMenu.Hide();
+            confirmationDialog.Hide();
         }
     }
 
@@ -145,6 +156,12 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
     void OnMuteGlobal(bool mute)
     {
         OnRequestMuteGlobal?.Invoke(mute);
+    }
+
+    void OnUserContextMenu(Vector3 position, string userId)
+    {
+        contextMenu.transform.position = position;
+        contextMenu.Show(userId);
     }
 
     void PoolElementView(UsersAroundListHUDListElementView element)
@@ -179,18 +196,25 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
             return;
         }
 
+        bool isFriend = IsFriend(status);
         bool isInFriendsList = IsInFriendsList(elementView);
-        if (status == FriendshipAction.APPROVED && !isInFriendsList)
+
+        if (isFriend && !isInFriendsList)
         {
             ModifyListCount(friendList: false, -1);
             ModifyListCount(friendList: true, 1);
             elementView.transform.SetParent(contentFriends);
         }
-        else if (status == FriendshipAction.DELETED && isInFriendsList)
+        else if (!isFriend && isInFriendsList)
         {
             ModifyListCount(friendList: true, -1);
             ModifyListCount(friendList: false, 1);
             elementView.transform.SetParent(contentPlayers);
         }
+    }
+
+    bool IsFriend(FriendshipAction status)
+    {
+        return status == FriendshipAction.APPROVED;
     }
 }
