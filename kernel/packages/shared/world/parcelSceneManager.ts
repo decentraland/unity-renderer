@@ -10,11 +10,12 @@ import { EnvironmentData, ILand, InstancedSpawnPoint, LoadableParcelScene } from
 import { ParcelSceneAPI } from './ParcelSceneAPI'
 import { positionObservable, teleportObservable } from './positionThings'
 import { SceneWorker } from './SceneWorker'
+import { SceneSystemWorker } from './SceneSystemWorker'
 import { worldRunningObservable } from './worldState'
 import { ILandToLoadableParcelScene } from 'shared/selectors'
 
 export type EnableParcelSceneLoadingOptions = {
-  parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
+  parcelSceneClass: { new(x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
   preloadScene: (parcelToLoad: ILand) => Promise<any>
   onPositionSettled?: (spawnPoint: InstancedSpawnPoint) => void
   onLoadParcelScenes?(x: ILand[]): void
@@ -42,31 +43,33 @@ export function getParcelSceneID(parcelScene: ParcelSceneAPI) {
 
 /** Stops non-persistent scenes (i.e UI scene) */
 export function stopParcelSceneWorker(worker: SceneWorker) {
-  if (worker && !worker.persistent) {
+  if (worker && !worker.isPersistent()) {
     forceStopParcelSceneWorker(worker)
   }
 }
 
 export function forceStopParcelSceneWorker(worker: SceneWorker) {
+  const sceneId = worker.getSceneId()
   worker.dispose()
+  loadedSceneWorkers.delete(sceneId)
 }
 
-export function loadParcelScene(parcelScene: ParcelSceneAPI, transport?: ScriptingTransport) {
+export function loadParcelScene(parcelScene: ParcelSceneAPI, transport?: ScriptingTransport, persistent: boolean = false) {
   const sceneId = getParcelSceneID(parcelScene)
 
   let parcelSceneWorker = loadedSceneWorkers.get(sceneId)
 
   if (!parcelSceneWorker) {
-    parcelSceneWorker = new SceneWorker(parcelScene, transport)
+    parcelSceneWorker = new SceneSystemWorker(parcelScene, transport, persistent)
 
-    loadedSceneWorkers.set(sceneId, parcelSceneWorker)
-
-    parcelSceneWorker.onDisposeObservable.addOnce(() => {
-      loadedSceneWorkers.delete(sceneId)
-    })
+    setNewParcelScene(sceneId, parcelSceneWorker)
   }
 
   return parcelSceneWorker
+}
+
+export function setNewParcelScene(sceneId: string, worker: SceneWorker) {
+  loadedSceneWorkers.set(sceneId, worker)
 }
 
 export async function enableParcelSceneLoading(options: EnableParcelSceneLoadingOptions) {
@@ -112,7 +115,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
 
     timer = setForegroundTimeout(() => {
       const worker = getSceneWorkerBySceneID(sceneId)
-      if (worker && !worker.sceneStarted) {
+      if (worker && !worker.hasSceneStarted()) {
         sceneLifeCycleObservable.remove(observer)
         globalSignalSceneFail(sceneId)
         ret.notify('Scene.status', { sceneId, status: 'failed' })
