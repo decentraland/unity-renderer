@@ -1,4 +1,4 @@
-import { engine, Entity, Observable, Transform, EventManager } from 'decentraland-ecs/src'
+import { engine, Entity, Observable, Transform, EventManager, ProfileForRenderer } from 'decentraland-ecs/src'
 import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
 import {
   AvatarMessage,
@@ -36,8 +36,7 @@ export class AvatarEntity extends Entity {
     this.transform = this.getComponentOrCreate(Transform)
   }
 
-  loadProfile(user: Partial<UserInformation>) {
-    const { profile } = user
+  loadProfile(profile: ProfileForRenderer) {
     if (profile) {
       const { avatar } = profile
 
@@ -50,8 +49,10 @@ export class AvatarEntity extends Entity {
       shape.skinColor = avatar.skinColor
       shape.hairColor = avatar.hairColor
       shape.eyeColor = avatar.eyeColor
-      shape.expressionTriggerId = user.expression ? user.expression.expressionType || 'Idle' : 'Idle'
-      shape.expressionTriggerTimestamp = user.expression ? user.expression.expressionTimestamp || 0 : 0
+      if (!shape.expressionTriggerId) {
+        shape.expressionTriggerId = 'Idle'
+        shape.expressionTriggerTimestamp = 0
+      }
     }
     this.setVisible(true)
   }
@@ -70,8 +71,8 @@ export class AvatarEntity extends Entity {
       this.setPose(userData.pose)
     }
 
-    if (userData.profile) {
-      this.loadProfile(userData)
+    if (userData.expression) {
+      this.setExpression(userData.expression.expressionType, userData.expression.expressionTimestamp)
     }
   }
 
@@ -136,35 +137,22 @@ function ensureAvatar(uuid: UUID): AvatarEntity {
 function handleUserData(message: ReceiveUserDataMessage): void {
   const avatar = ensureAvatar(message.uuid)
 
-  if (avatar) {
-    const userData = message.data
+  const userData = message.data
 
-    avatar.setUserData(userData)
-  }
+  avatar.loadProfile(message.profile)
+  avatar.setUserData(userData)
 }
 
-function handleUserPose({ uuid, pose }: ReceiveUserPoseMessage): boolean {
+function handleUserPose({ uuid, pose }: ReceiveUserPoseMessage): void {
   const avatar = ensureAvatar(uuid)
-
-  if (!avatar) {
-    return false
-  }
 
   avatar.setPose(pose)
-
-  return true
 }
 
-function handleUserExpression({ uuid, expressionId, timestamp }: ReceiveUserExpressionMessage): boolean {
+function handleUserExpression({ uuid, expressionId, timestamp }: ReceiveUserExpressionMessage): void {
   const avatar = ensureAvatar(uuid)
 
-  if (!avatar) {
-    return false
-  }
-
   avatar.setExpression(expressionId, timestamp)
-
-  return true
 }
 
 /**
@@ -174,17 +162,13 @@ function handleUserExpression({ uuid, expressionId, timestamp }: ReceiveUserExpr
 function handleUserVisible({ uuid, visible }: ReceiveUserVisibleMessage): void {
   const avatar = ensureAvatar(uuid)
 
-  if (avatar) {
-    avatar.setVisible(visible)
-  }
+  avatar.setVisible(visible)
 }
 
 function handleUserTalkingUpdate({ uuid, talking }: ReceiveUserTalkingMessage): void {
   const avatar = ensureAvatar(uuid)
 
-  if (avatar) {
-    avatar.setTalking(talking)
-  }
+  avatar.setTalking(talking)
 }
 
 function handleUserRemoved({ uuid }: UserRemovedMessage): void {

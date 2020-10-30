@@ -17,3 +17,8 @@ export type SessionState = {
   identity: ExplorerIdentity | undefined
   network: ETHEREUM_NETWORK | undefined
 }
+
+export type StoredSession = {
+  userId: string
+  identity: ExplorerIdentity
+}

@@ -38,6 +38,11 @@ message ProfileData {
     Category category = 1;
     double time = 2;
     string profile_version = 3;
+    enum ProfileType {
+        DEPLOYED = 0;
+        LOCAL = 1;
+    }
+    ProfileType profile_type = 4;
 }
 
 message ChatData {

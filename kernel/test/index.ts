@@ -15,7 +15,6 @@ import './atomicHelpers/SortedLimitedQueue.test'
 /* UNIT */
 import './unit/ethereum.test'
 import './unit/objectComparison.test'
-import './unit/comms.test'
 import './unit/jsonFetch.test'
 import './unit/profiles.saga.test'
 import './unit/BrowserInterface.test'

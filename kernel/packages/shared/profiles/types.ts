@@ -1,8 +1,5 @@
 import { ReadOnlyColor4 } from 'decentraland-ecs/src'
-import { AuthLink } from 'dcl-crypto'
-import { RarityEnum } from '../airdrops/interface'
-
-export type Catalog = Wearable[]
+import { WearableId } from 'shared/catalogs/types'
 
 export interface Profile {
   userId: string
@@ -15,12 +12,7 @@ export interface Profile {
   inventory: WearableId[]
   blocked?: string[]
   muted?: string[]
-  snapshots?: {
-    face: string
-    face256: string
-    face128: string
-    body: string
-  }
+  snapshots?: Snapshots
   version: number
   tutorialStep: number
   interests?: string[]
@@ -32,12 +24,14 @@ export interface Avatar {
   hairColor: ColorString
   eyeColor: ColorString
   wearables: WearableId[]
-  snapshots: {
-    face: string
-    face256: string
-    face128: string
-    body: string
-  }
+  snapshots: Snapshots
+}
+
+export type Snapshots = {
+  face: string
+  face256: string
+  face128: string
+  body: string
 }
 
 export interface ProfileForRenderer {
@@ -63,49 +57,25 @@ export interface AvatarForRenderer {
   wearables: WearableId[]
 }
 
-export type Collection = { id: string; wearables: Wearable }
-
-export type Wearable = {
-  id: WearableId
-  type: 'wearable'
-  category: string
-  baseUrl: string
-  baseUrlBundles: string
-  tags: string[]
-  hides?: string[]
-  replaces?: string[]
-  rarity: RarityEnum
-  representations: BodyShapeRespresentation[]
-}
-
-export type BodyShapeRespresentation = {
-  bodyShapes: string[]
-  mainFile: string
-  overrideHides?: string[]
-  overrideReplaces?: string[]
-  contents: FileAndHash[]
-}
-
 export type FileAndHash = {
   file: string
   hash: string
 }
 
-export type WearableId = string
-
 export type ColorString = string
+
+export type ProfileStatus = 'ok' | 'error' | 'loading'
+
+export type ProfileUserInfo =
+  | { status: 'loading' | 'error'; data: any; hasConnectedWeb3: boolean; addedToCatalog?: boolean }
+  | { status: 'ok'; data: Profile; hasConnectedWeb3: boolean; addedToCatalog?: boolean }
 
 export type ProfileState = {
   userInfo: {
-    [key: string]:
-      | { status: 'loading' | 'error'; data: any; hasConnectedWeb3: boolean; addedToCatalog?: boolean }
-      | { status: 'ok'; data: Profile; hasConnectedWeb3: boolean; addedToCatalog?: boolean }
+    [key: string]: ProfileUserInfo
   }
   userInventory: {
     [key: string]: { status: 'loading' } | { status: 'error'; data: any } | { status: 'ok'; data: WearableId[] }
-  }
-  catalogs: {
-    [key: string]: { id: string; status: 'loading' | 'error' | 'ok'; data?: Wearable[]; error?: any }
   }
 }
 
@@ -113,57 +83,12 @@ export type RootProfileState = {
   profiles: ProfileState
 }
 
-export const INITIAL_PROFILES: ProfileState = {
-  userInfo: {},
-  userInventory: {},
-  catalogs: {}
-}
-
-export type Timestamp = number
-export type Pointer = string
-export type ContentFileHash = string
 export type ContentFile = {
   name: string
   content: Buffer
 }
-export type DeployData = {
-  entityId: string
-  ethAddress?: string
-  signature?: string
-  authChain: AuthLink[]
-  files: ContentFile[]
-}
-export type ControllerEntity = {
-  id: string
-  type: string
-  pointers: string[]
-  timestamp: number
-  content?: ControllerEntityContent[]
-  metadata?: any
-}
-export type ControllerEntityContent = {
-  file: string
-  hash: string
-}
-export enum EntityType {
-  SCENE = 'scene',
-  WEARABLE = 'wearable',
-  PROFILE = 'profile'
-}
-export type EntityId = ContentFileHash
-export enum EntityField {
-  CONTENT = 'content',
-  POINTERS = 'pointers',
-  METADATA = 'metadata'
-}
-export const ENTITY_FILE_NAME = 'entity.json'
-export class Entity {
-  constructor(
-    public readonly id: EntityId,
-    public readonly type: EntityType,
-    public readonly pointers: Pointer[],
-    public readonly timestamp: Timestamp,
-    public readonly content?: Map<string, ContentFileHash>,
-    public readonly metadata?: any
-  ) {}
+
+export enum ProfileType {
+  LOCAL,
+  DEPLOYED
 }

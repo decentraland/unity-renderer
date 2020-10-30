@@ -8,6 +8,8 @@ message CommsMessage {
         ChatData chat_data = 4;
         SceneData scene_data = 5;
         VoiceData voice_data = 6;
+        ProfileRequestData profile_request_data = 7;
+        ProfileResponseData profile_response_data = 8;
     }
 }
 
@@ -25,6 +27,20 @@ message PositionData {
 message ProfileData {
     string profile_version = 1;
     string user_id = 2;
+    enum ProfileType {
+        DEPLOYED = 0;
+        LOCAL = 1;
+    }
+    ProfileType profile_type = 3;
+}
+
+message ProfileRequestData {
+    string profile_version = 1;
+    string user_id = 2;
+}
+
+message ProfileResponseData {
+    string serialized_profile = 1;
 }
 
 message ChatData {

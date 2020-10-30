@@ -9,8 +9,14 @@ import { ENABLE_WEB3, WORLD_EXPLORER, PREVIEW, ETHEREUM_NETWORK, getTLD, setNetw
 
 import { createLogger } from 'shared/logger'
 import { referUser, initializeReferral } from 'shared/referral'
-import { awaitWeb3Approval, isSessionExpired, providerFuture, loginCompleted } from 'shared/ethereum/provider'
-import { getUserProfile, setLocalProfile } from 'shared/comms/peers'
+import {
+  awaitWeb3Approval,
+  isSessionExpired,
+  providerFuture,
+  loginCompleted,
+  getUserEthAccountIfAvailable
+} from 'shared/ethereum/provider'
+import { setLocalInformationForComms } from 'shared/comms/peers'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import {
   AUTH_ERROR_LOGGED_OUT,
@@ -24,9 +30,9 @@ import { getNetwork } from 'shared/ethereum/EthereumService'
 
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 
-import { Session } from '.'
 import { ExplorerIdentity } from './types'
 import { userAuthentified, LOGOUT, LOGIN, loginCompleted as loginCompletedAction } from './actions'
+import { getLastSessionWithoutWallet, getStoredSession, Session, setStoredSession } from './index'
 
 const logger = createLogger('session: ')
 
@@ -86,7 +92,8 @@ function* login() {
     }
 
     try {
-      const userData = getUserProfile()
+      const address = yield getUserEthAccountIfAvailable()
+      const userData = address ? getStoredSession(address) : getLastSessionWithoutWallet()
 
       // check that user data is stored & key is not expired
       if (isSessionExpired(userData)) {
@@ -95,18 +102,12 @@ function* login() {
         showAwaitingSignaturePrompt(false)
         userId = identity.address
 
-        setLocalProfile(userId, {
-          userId,
-          identity
-        })
+        saveSession(userId, identity)
       } else {
-        identity = userData.identity
-        userId = userData.identity.address
+        identity = userData!.identity
+        userId = userData!.identity.address
 
-        setLocalProfile(userId, {
-          userId,
-          identity
-        })
+        saveSession(userId, identity)
       }
     } catch (e) {
       logger.error(e)
@@ -123,10 +124,7 @@ function* login() {
     identity = yield createAuthIdentity()
     userId = identity.address
 
-    setLocalProfile(userId, {
-      userId,
-      identity
-    })
+    saveSession(userId, identity)
 
     loginCompleted.resolve()
   }
@@ -145,6 +143,18 @@ function* login() {
 
   yield loginCompleted
   yield put(loginCompletedAction())
+}
+
+function saveSession(userId: string, identity: ExplorerIdentity) {
+  setStoredSession({
+    userId,
+    identity
+  })
+
+  setLocalInformationForComms(userId, {
+    userId,
+    identity
+  })
 }
 
 async function checkTldVsNetwork() {
@@ -186,7 +196,7 @@ function showNetworkWarning() {
 async function createAuthIdentity() {
   const ephemeral = createIdentity()
 
-  const ephemeralLifespanMinutes = 7 * 24 * 60 // 1 week
+  let ephemeralLifespanMinutes = 7 * 24 * 60 // 1 week
 
   let address
   let signer
@@ -219,6 +229,10 @@ async function createAuthIdentity() {
 
       address = account.address.toJSON()
       signer = async (message: string) => account.sign(message).signature
+
+      // If we are using a local profile, we don't want the identity to expire.
+      // Eventually, if a wallet gets created, we can migrate the profile to the wallet.
+      ephemeralLifespanMinutes = 365 * 24 * 60 * 99
     }
   } else {
     const account = Account.create()

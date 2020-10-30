@@ -9,6 +9,7 @@ import { RootCommsState } from 'shared/comms/types'
 import { RootSessionState } from 'shared/session/types'
 import { RootFriendsState } from 'shared/friends/types'
 import { RootRendererState } from 'shared/renderer/types'
+import { RootCatalogState } from 'shared/catalogs/types'
 
 export type RootState = RootAtlasState &
   RootProfileState &
@@ -18,6 +19,7 @@ export type RootState = RootAtlasState &
   RootCommsState &
   RootSessionState &
   RootFriendsState &
-  RootRendererState
+  RootRendererState &
+  RootCatalogState
 
 export type StoreContainer = { globalStore: Store<RootState> }

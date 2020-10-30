@@ -1,4 +1,4 @@
-import { call, put, take, takeEvery } from 'redux-saga/effects'
+import { call, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import { DEBUG_MESSAGES } from 'config'
 import { initializeEngine } from 'unity-interface/dcl'
@@ -8,7 +8,7 @@ import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { StoreContainer } from 'shared/store/rootTypes'
 
-import { UnityLoaderType, UnityGame } from './types'
+import { UnityLoaderType, UnityGame, RENDERER_INITIALIZED } from './types'
 import {
   INITIALIZE_RENDERER,
   InitializeRenderer,
@@ -19,6 +19,7 @@ import {
   MESSAGE_FROM_ENGINE,
   rendererEnabled
 } from './actions'
+import { isInitialized } from './selectors'
 
 const queryString = require('query-string')
 
@@ -42,6 +43,12 @@ export function* rendererSaga() {
 
   yield take(ENGINE_STARTED)
   _instancedJS = yield call(wrapEngineInstance, _gameInstance)
+}
+
+export function* ensureRenderer() {
+  while (!(yield select(isInitialized))) {
+    yield take(RENDERER_INITIALIZED)
+  }
 }
 
 function* initializeRenderer(action: InitializeRenderer) {
