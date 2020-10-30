@@ -2,26 +2,23 @@ import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
 import * as matchers from 'redux-saga-test-plan/matchers'
 import { profileRequest, profileSuccess } from 'shared/profiles/actions'
-import {
-  handleFetchProfile,
-  profileServerRequest,
-  fetchInventoryItemsByAddress
-} from 'shared/profiles/sagas'
+import { handleFetchProfile, profileServerRequest, fetchInventoryItemsByAddress } from 'shared/profiles/sagas'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { getProfileDownloadServer } from 'shared/profiles/selectors'
-import { profileSaga, delay } from '../../packages/shared/profiles/sagas'
+import { profileSaga } from '../../packages/shared/profiles/sagas'
 import { processServerProfile } from '../../packages/shared/profiles/transformations/processServerProfile'
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
 import { inventorySuccess, PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
 import { isRealmInitialized, getResizeService } from '../../packages/shared/dao/selectors'
 import { getServerConfigurations } from 'config'
+import { sleep } from 'atomicHelpers/sleep'
 
 const profile = { data: 'profile' }
 
 const delayed = (result: any) =>
   dynamic(async () => {
-    await delay(1)
+    await sleep(1)
     return result
   })
 
@@ -203,4 +200,3 @@ describe('fetchProfile behavior', () => {
       })
   })
 })
-

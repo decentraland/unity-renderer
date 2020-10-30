@@ -1,7 +1,7 @@
 import { uuid } from 'decentraland-ecs/src'
 import { sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
-import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
+import { avatarMessageObservable } from 'shared/comms/peers'
 import { hasConnectedWeb3 } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { reportScenesAroundParcel } from 'shared/atlas/actions'
@@ -13,7 +13,7 @@ import { queueTrackingEvent } from 'shared/analytics'
 import { aborted } from 'shared/loading/ReportFatalError'
 import { defaultLogger } from 'shared/logger'
 import { saveProfileRequest } from 'shared/profiles/actions'
-import { Avatar, Profile } from 'shared/profiles/types'
+import { Avatar } from 'shared/profiles/types'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { ChatMessage, FriendshipUpdateStatusMessage, FriendshipAction, WorldPosition } from 'shared/types'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
@@ -21,7 +21,6 @@ import { positionObservable } from 'shared/world/positionThings'
 import { worldRunningObservable } from 'shared/world/worldState'
 import { sendMessage } from 'shared/chat/actions'
 import { updateUserData, updateFriendship } from 'shared/friends/actions'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/dao'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
 import { getAppNetwork, fetchOwner } from 'shared/web3'
@@ -40,6 +39,8 @@ import { reportHotScenes } from 'shared/social/hotScenes'
 import { GIFProcessor } from 'gif-processor/processor'
 import { setVoiceChatRecording, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
+import { getCurrentUserId } from 'shared/session/selectors'
+import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
 
 declare const DCL: any
 
@@ -179,21 +180,19 @@ export class BrowserInterface {
       return
     }
     const unique = new Set<string>(interests)
-    const profile: Profile = getUserProfile().profile as Profile
-    globalThis.globalStore.dispatch(saveProfileRequest({ ...profile, interests: Array.from(unique) }))
+
+    globalThis.globalStore.dispatch(saveProfileRequest({ interests: Array.from(unique) }))
   }
 
   public SaveUserAvatar(changes: { face: string; face128: string; face256: string; body: string; avatar: Avatar }) {
     const { face, face128, face256, body, avatar } = changes
-    const profile: Profile = getUserProfile().profile as Profile
-    const updated = { ...profile, avatar: { ...avatar, snapshots: { face, face128, face256, body } } }
-    globalThis.globalStore.dispatch(saveProfileRequest(updated))
+    const update = { avatar: { ...avatar, snapshots: { face, face128, face256, body } } }
+    globalThis.globalStore.dispatch(saveProfileRequest(update))
   }
 
   public SaveUserTutorialStep(data: { tutorialStep: number }) {
-    const profile: Profile = getUserProfile().profile as Profile
-    const updated = { ...profile, tutorialStep: data.tutorialStep }
-    globalThis.globalStore.dispatch(saveProfileRequest(updated))
+    const update = { tutorialStep: data.tutorialStep }
+    globalThis.globalStore.dispatch(saveProfileRequest(update))
   }
 
   public ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
@@ -250,10 +249,10 @@ export class BrowserInterface {
   }
 
   public ReportUserEmail(data: { userEmail: string }) {
-    const profile = getUserProfile().profile
-    if (profile) {
+    const userId = getCurrentUserId(globalThis.globalStore.getState())
+    if (userId) {
       if (hasWallet()) {
-        window.analytics.identify(profile.userId, { email: data.userEmail })
+        window.analytics.identify(userId, { email: data.userEmail })
       } else {
         window.analytics.identify({ email: data.userEmail })
       }
@@ -290,7 +289,7 @@ export class BrowserInterface {
     // TODO - fix this hack: search should come from another message and method should only exec correct updates (userId, action) - moliva - 01/05/2020
     let found = false
     if (action === FriendshipAction.REQUESTED_TO) {
-      await ProfileAsPromise(userId) // ensure profile
+      await ensureFriendProfile(userId)
       found = hasConnectedWeb3(globalThis.globalStore.getState(), userId)
     }
 
@@ -387,7 +386,7 @@ export class BrowserInterface {
   public async FetchBalanceOfMANA() {
     const identity = getIdentity()
 
-    if (!identity.hasConnectedWeb3) {
+    if (!identity?.hasConnectedWeb3) {
       return
     }
 

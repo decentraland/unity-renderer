@@ -1,6 +1,7 @@
 import { action } from 'typesafe-actions'
-import { Profile, Wearable, Catalog, WearableId } from './types'
+import { Profile, ProfileType } from './types'
 import { ProfileForRenderer } from '../../decentraland-ecs/src/decentraland/Types'
+import { WearableId } from 'shared/catalogs/types'
 
 // Profile fetching
 
@@ -9,7 +10,8 @@ export const PROFILE_SUCCESS = '[Success] Profile fetch'
 export const PROFILE_FAILURE = '[Failure] Profile fetch'
 export const PROFILE_RANDOM = '[?] Profile randomized'
 
-export const profileRequest = (userId: string) => action(PROFILE_REQUEST, { userId })
+export const profileRequest = (userId: string, profileType?: ProfileType) =>
+  action(PROFILE_REQUEST, { userId, profileType })
 export const profileSuccess = (userId: string, profile: Profile, hasConnectedWeb3: boolean = false) =>
   action(PROFILE_SUCCESS, { userId, profile, hasConnectedWeb3 })
 export const profileFailure = (userId: string, error: any) => action(PROFILE_FAILURE, { userId, error })
@@ -36,20 +38,22 @@ export type SaveProfileRequest = ReturnType<typeof saveProfileRequest>
 export type SaveProfileSuccess = ReturnType<typeof saveProfileSuccess>
 export type SaveProfileFailure = ReturnType<typeof saveProfileFailure>
 
-// Wearables catalog
+export const DEPLOY_PROFILE_SUCCESS = '[Success] Deploy Profile'
+export const DEPLOY_PROFILE_REQUEST = '[Request] Deploy Profile'
+export const DEPLOY_PROFILE_FAILURE = '[Failure] Deploy Profile'
+export const deployProfile = (profile: Profile) => action(DEPLOY_PROFILE_REQUEST, { profile })
+export const deployProfileSuccess = (userId: string, version: number, profile: Profile) =>
+  action(DEPLOY_PROFILE_SUCCESS, { userId, version, profile })
+export const deployProfileFailure = (userId: string, profile: Profile, error: any) =>
+  action(DEPLOY_PROFILE_FAILURE, { userId, profile, error })
 
-export const SET_BASE_WEARABLES_CATALOG = 'Set base wearables catalog'
-export const setBaseWearablesCatalog = (wearables: Wearable[]) => action(SET_BASE_WEARABLES_CATALOG, wearables)
+export type DeployProfileSuccess = ReturnType<typeof deployProfileSuccess>
+export type DeployProfile = ReturnType<typeof deployProfile>
 
-export const SET_BASE_EXCLUSIVES_CATALOG = 'Set base exclusives catalog'
-export const setBaseExclusivesCatalog = (wearables: Wearable[]) => action(SET_BASE_EXCLUSIVES_CATALOG, wearables)
-
-export const ADD_CATALOG = 'Add Catalog'
-export const addCatalog = (name: string, catalog: Catalog) => action(ADD_CATALOG, { name, catalog })
-export type AddCatalogAction = ReturnType<typeof addCatalog>
-export const CATALOG_LOADED = 'Catalog Loaded'
-export const catalogLoaded = (name: string) => action(CATALOG_LOADED, { name })
-export type CatalogLoadedAction = ReturnType<typeof catalogLoaded>
+export const PROFILE_SAVED_NOT_DEPLOYED = 'Profile not deployed'
+export const profileSavedNotDeployed = (userId: string, version: number, profile: Profile) =>
+  action(PROFILE_SAVED_NOT_DEPLOYED, { userId, version, profile })
+export type ProfileSavedNotDeployed = ReturnType<typeof profileSavedNotDeployed>
 
 // Inventory
 
@@ -71,3 +75,9 @@ export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
 export const addedProfileToCatalog = (userId: string, profile: ProfileForRenderer) =>
   action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
 export type AddedProfileToCatalog = ReturnType<typeof addedProfileToCatalog>
+
+// Profiles over comms
+export const LOCAL_PROFILE_RECEIVED = 'Local Profile Received'
+export const localProfileReceived = (userId: string, profile: Profile) =>
+  action(LOCAL_PROFILE_RECEIVED, { userId, profile })
+export type LocalProfileReceived = ReturnType<typeof localProfileReceived>

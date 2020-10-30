@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import { profileReducer } from '../profiles/reducer'
+import { catalogsReducer } from '../catalogs/reducer'
 import { rendererReducer } from '../renderer/reducer'
 import { protocolReducer } from '../protocol/reducer'
 import { loadingReducer } from '../loading/reducer'
@@ -19,6 +20,7 @@ export const reducers = combineReducers({
   session: sessionReducer,
   loading: loadingReducer,
   profiles: profileReducer,
+  catalogs: catalogsReducer,
   renderer: rendererReducer,
   protocol: protocolReducer,
   dao: daoReducer,

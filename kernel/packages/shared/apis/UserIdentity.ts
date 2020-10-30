@@ -1,11 +1,14 @@
 import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
 
 import { UserData } from 'shared/types'
-import { getCurrentUser } from 'shared/comms/peers'
 import { getIdentity } from 'shared/session'
-import { calculateDisplayName } from '../profiles/transformations/processServerProfile'
+import { StoreContainer } from 'shared/store/rootTypes'
+import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
 
 import { ExposableAPI } from './ExposableAPI'
+
+declare const globalThis: StoreContainer
 
 export interface IUserIdentity {
   /**
@@ -24,24 +27,22 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
   @exposeMethod
   async getUserPublicKey(): Promise<string | null> {
     const identity = getIdentity()
-    const user = getCurrentUser()
-    if (!user || !user.userId) return null
 
-    return identity.hasConnectedWeb3 ? user.userId : null
+    return identity && identity.hasConnectedWeb3 ? identity.address : null
   }
 
   @exposeMethod
   async getUserData(): Promise<UserData | null> {
     const identity = getIdentity()
-    const user = getCurrentUser()
+    const profile = getCurrentUserProfile(globalThis.globalStore.getState())
 
-    if (!user || !user.profile || !user.userId) return null
+    if (!identity || !profile || !identity.address) return null
 
     return {
-      displayName: calculateDisplayName(user.userId, user.profile),
-      publicKey: identity.hasConnectedWeb3 ? user.userId : null,
+      displayName: calculateDisplayName(identity.address, profile),
+      publicKey: identity.hasConnectedWeb3 ? identity.address : null,
       hasConnectedWeb3: !!identity.hasConnectedWeb3,
-      userId: user.userId
+      userId: identity.address
     }
   }
 }

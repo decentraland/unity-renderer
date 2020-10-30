@@ -106,7 +106,8 @@ export const contracts = {
     'DigitalAlchemy': '0x5cf39e64392c615fd8086838883958752a11b486',
     'CZMercenaryMTZ': '0xc3ca6c364b854fd0a653a43f8344f8c22ddfdd26',
     'WonderzoneSteampunk': '0xb96697fa4a3361ba35b774a42c58daccaad1b8e1',
-    'DCNiftyblocksmith': '0x102daabd1e9d294d4436ec4c521dce7b1f15499e'
+    'DCNiftyblocksmith': '0x102daabd1e9d294d4436ec4c521dce7b1f15499e',
+    'Halloween2020Collection': '0xfeb52cbf71b9adac957c6f948a6cf9980ac8c907'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',

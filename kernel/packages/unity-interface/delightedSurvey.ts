@@ -1,11 +1,11 @@
-import { getUserProfile } from 'shared/comms/peers'
 import { defaultLogger } from 'shared/logger'
-import { Profile } from 'shared/profiles/types'
+import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { StoreContainer } from 'shared/store/rootTypes'
 import { ensureWorldRunning } from 'shared/world/worldState'
 
 const TIMEOUT_MS = 10 * 60 * 1000
 
-declare const globalThis: any
+declare const globalThis: StoreContainer & { analytics: any; delighted: any }
 
 let timer: NodeJS.Timeout | null = null
 
@@ -29,7 +29,7 @@ function delightedSurvey() {
       if (!analytics || !delighted) {
         return
       }
-      const profile = getUserProfile().profile as Profile | null
+      const profile = getCurrentUserProfile(globalThis.globalStore.getState())
       if (profile) {
         const payload = {
           email: profile.ethAddress + '@dcl.gg',

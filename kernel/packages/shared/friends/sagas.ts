@@ -20,7 +20,6 @@ import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { deepEqual } from 'atomicHelpers/deepEqual'
 
 import { createLogger } from 'shared/logger'
-import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import {
   ChatMessage,
   NotificationType,
@@ -33,7 +32,7 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { getRealm } from 'shared/dao/selectors'
 import { Realm } from 'shared/dao/types'
 import { lastPlayerPosition, positionObservable } from 'shared/world/positionThings'
-import { ensureRenderer } from 'shared/profiles/sagas'
+import { ensureRenderer } from 'shared/renderer/sagas'
 import { ADDED_PROFILE_TO_CATALOG } from 'shared/profiles/actions'
 import { isAddedToCatalog, getProfile } from 'shared/profiles/selectors'
 import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalystRealm } from 'shared/dao/actions'
@@ -54,6 +53,7 @@ import {
 import { ensureWorldRunning } from 'shared/world/worldState'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
 import { unityInterface } from 'unity-interface/UnityInterface'
+import { ensureFriendProfile } from './ensureFriendProfile'
 
 declare const globalThis: StoreContainer
 
@@ -219,7 +219,7 @@ function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdent
     globalThis.globalStore.dispatch(updateUserData(userId, socialId))
 
     // ensure user profile is initialized and send to renderer
-    await ProfileAsPromise(userId)
+    await ensureFriendProfile(userId)
 
     // add to friendRequests & update renderer
     globalThis.globalStore.dispatch(updateFriendship(action, userId, true))
@@ -308,7 +308,7 @@ function* initializeFriends(client: SocialAPI) {
 
   const profileIds = Object.values(socialInfo).map((socialData) => socialData.userId)
 
-  const profiles = yield Promise.all(profileIds.map((userId) => ProfileAsPromise(userId)))
+  const profiles = yield Promise.all(profileIds.map((userId) => ensureFriendProfile(userId)))
   DEBUG && logger.info(`profiles`, profiles)
 
   for (const userId of profileIds) {
@@ -627,7 +627,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
     }
   } catch (e) {
     if (e instanceof UnknownUsersError) {
-      const profile = yield ProfileAsPromise(userId)
+      const profile = yield ensureFriendProfile(userId)
       const id = profile?.name ? profile.name : `with address '${userId}'`
       showErrorNotification(`User ${id} must log in at least once before befriending them`)
     }

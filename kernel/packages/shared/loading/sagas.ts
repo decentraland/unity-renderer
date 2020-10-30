@@ -6,7 +6,6 @@ import { RENDERER_INITIALIZED } from 'shared/renderer/types'
 import { LOGIN_COMPLETED, USER_AUTHENTIFIED } from 'shared/session/actions'
 import { web3initialized } from 'shared/dao/actions'
 import { queueTrackingEvent } from '../analytics'
-import { getCurrentUser } from '../comms/peers'
 import { lastPlayerPosition } from '../world/positionThings'
 
 import { SceneLoad, SCENE_FAIL, SCENE_LOAD, SCENE_START } from './actions'
@@ -19,6 +18,7 @@ import {
   unityClientLoaded,
   authSuccessful
 } from './types'
+import { getCurrentUserId } from 'shared/session/selectors'
 
 const SECONDS = 1000
 
@@ -58,14 +58,14 @@ export function* trackLoadTime(action: SceneLoad): any {
     start: take((action: AnyAction) => action.type === SCENE_START && action.payload === sceneId),
     fail: take((action: AnyAction) => action.type === SCENE_FAIL && action.payload === sceneId)
   })
-  const user = yield select(getCurrentUser)
+  const userId = yield select(getCurrentUserId)
   const position = lastPlayerPosition
   queueTrackingEvent('SceneLoadTimes', {
     position: { ...position },
     elapsed: new Date().getTime() - start,
     success: !!result.start,
     sceneId,
-    userId: user.userId
+    userId: userId
   })
 }
 

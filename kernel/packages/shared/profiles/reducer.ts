@@ -1,11 +1,7 @@
 import { AnyAction } from 'redux'
-import { ProfileState, INITIAL_PROFILES } from './types'
+import { ProfileState } from './types'
 import {
   ADDED_PROFILE_TO_CATALOG,
-  ADD_CATALOG,
-  AddCatalogAction,
-  CATALOG_LOADED,
-  CatalogLoadedAction,
   INVENTORY_SUCCESS,
   InventorySuccess,
   INVENTORY_FAILURE,
@@ -17,6 +13,11 @@ import {
   PROFILE_REQUEST
 } from './actions'
 
+const INITIAL_PROFILES: ProfileState = {
+  userInfo: {},
+  userInventory: {}
+}
+
 export function profileReducer(state?: ProfileState, action?: AnyAction): ProfileState {
   if (!state) {
     return INITIAL_PROFILES
@@ -25,31 +26,6 @@ export function profileReducer(state?: ProfileState, action?: AnyAction): Profil
     return state
   }
   switch (action.type) {
-    case ADD_CATALOG:
-      let catalogAction = action as AddCatalogAction
-      return {
-        ...state,
-        catalogs: {
-          ...state.catalogs,
-          [catalogAction.payload.name]: {
-            status: 'loading',
-            id: catalogAction.payload.name,
-            data: catalogAction.payload.catalog
-          }
-        }
-      }
-    case CATALOG_LOADED:
-      let loadCatalog = action as CatalogLoadedAction
-      return {
-        ...state,
-        catalogs: {
-          ...state.catalogs,
-          [loadCatalog.payload.name]: {
-            ...state.catalogs[loadCatalog.payload.name],
-            status: 'ok'
-          }
-        }
-      }
     case INVENTORY_REQUEST:
       const actionAsInventoryReq = action as InventoryRequest
       return {
@@ -88,7 +64,10 @@ export function profileReducer(state?: ProfileState, action?: AnyAction): Profil
     case PROFILE_REQUEST:
       return {
         ...state,
-        userInfo: { ...state.userInfo, [action.payload.userId]: { status: 'loading' } }
+        userInfo: {
+          ...state.userInfo,
+          [action.payload.userId]: { ...state.userInfo[action.payload.userId], status: 'loading' }
+        }
       }
     case PROFILE_SUCCESS:
       return {

@@ -1,7 +1,8 @@
 import type { Vector3Component, Vector2Component } from '../atomicHelpers/landHelpers'
 import type { QueryType } from 'decentraland-ecs/src/decentraland/PhysicsCast'
 
-export { Avatar, Profile, ColorString, WearableId, Wearable } from './profiles/types'
+export { Avatar, Profile, ColorString } from './profiles/types'
+export { WearableId, Wearable } from './catalogs/types'
 
 export type MappingsResponse = {
   parcel_id: string

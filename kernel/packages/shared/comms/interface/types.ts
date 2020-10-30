@@ -1,5 +1,6 @@
 import { ProfileForRenderer } from 'decentraland-ecs/src'
-import { AuthIdentity } from 'dcl-crypto'
+import { Profile, ProfileType } from 'shared/profiles/types'
+import { ExplorerIdentity } from 'shared/session/types'
 
 export enum AvatarMessageType {
   // Networking related messages
@@ -31,6 +32,7 @@ export type ReceiveUserDataMessage = {
   type: AvatarMessageType.USER_DATA
   uuid: string
   data: Partial<UserInformation>
+  profile: ProfileForRenderer
 }
 
 export type ReceiveUserVisibleMessage = {
@@ -87,26 +89,20 @@ export type PeerInformation = {
    */
   uuid: UUID
 
-  flags: {
-    muted?: boolean
-  }
-
   user?: UserInformation
 }
 
 export type UserInformation = {
   userId?: string
   version?: number
-  status?: string
   pose?: Pose
   expression?: AvatarExpression
-  profile?: ProfileForRenderer
-  identity?: AuthIdentity
+  identity?: ExplorerIdentity
 }
 
 export type AvatarExpression = {
-  expressionType?: string
-  expressionTimestamp?: number
+  expressionType: string
+  expressionTimestamp: number
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw,immediate]
@@ -116,7 +112,7 @@ export type PoseInformation = {
   v: Pose
 }
 
-export type PackageType = 'profile' | 'chat' | 'position' | 'voice'
+export type PackageType = 'profile' | 'chat' | 'position' | 'voice' | 'profileRequest' | 'profileResponse'
 
 export type Package<T> = {
   type: PackageType
@@ -127,6 +123,7 @@ export type Package<T> = {
 export type ProfileVersion = {
   version: string
   user: string // TODO - to remove with new login flow - moliva - 22/12/2019
+  type: ProfileType
 }
 
 export type ChatMessage = {
@@ -136,6 +133,15 @@ export type ChatMessage = {
 
 export type VoiceFragment = {
   encoded: Uint8Array
+}
+
+export type ProfileRequest = {
+  userId: string
+  version?: string
+}
+
+export type ProfileResponse = {
+  profile: Profile
 }
 
 export type BusMessage = ChatMessage
