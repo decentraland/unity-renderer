@@ -328,6 +328,12 @@ export interface IEvents {
     type: string
     [key: string]: any
   }
+
+  // @internal
+  stateEvent: {
+    type: string,
+    payload: any
+  }
 }
 
 /** @public */

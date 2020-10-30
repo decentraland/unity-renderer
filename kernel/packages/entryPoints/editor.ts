@@ -211,7 +211,7 @@ namespace editor {
         const scene = { ...action.payload.scene }
         await renewBuilderScene(scene, action.payload.mappings)
       }
-      worker.engineAPI!.sendSubscriptionEvent('externalAction', action)
+      worker.sendSubscriptionEvent('externalAction', action)
     }
   }
 

@@ -11,7 +11,8 @@ import {
   getParcelSceneID
 } from 'shared/world/parcelSceneManager'
 import { teleportObservable } from 'shared/world/positionThings'
-import { SceneWorker, hudWorkerUrl } from 'shared/world/SceneWorker'
+import { SceneWorker } from 'shared/world/SceneWorker'
+import { hudWorkerUrl } from 'shared/world/SceneSystemWorker'
 import { worldRunningObservable } from 'shared/world/worldState'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
@@ -150,8 +151,7 @@ export async function startGlobalScene(unityInterface: UnityInterface) {
     mappings: []
   })
 
-  const worker = loadParcelScene(scene)
-  worker.persistent = true
+  const worker = loadParcelScene(scene, undefined, true)
 
   await ensureUiApis(worker)
 
@@ -204,7 +204,7 @@ export async function loadPreviewScene(ws?: string) {
   let lastId: string | null = null
 
   if (currentLoadedScene) {
-    lastId = currentLoadedScene.parcelScene.data.sceneId
+    lastId = currentLoadedScene.getSceneId()
     stopParcelSceneWorker(currentLoadedScene)
   }
 
@@ -269,11 +269,10 @@ export function loadBuilderScene(sceneData: ILand) {
 export function unloadCurrentBuilderScene() {
   if (currentLoadedScene) {
     unityInterface.DeactivateRendering()
-    const parcelScene = currentLoadedScene.parcelScene as UnityParcelScene
-    parcelScene.emit('builderSceneUnloaded', {})
+    currentLoadedScene.emit('builderSceneUnloaded', {})
 
     stopParcelSceneWorker(currentLoadedScene)
-    unityInterface.SendBuilderMessage('UnloadBuilderScene', parcelScene.data.sceneId)
+    unityInterface.SendBuilderMessage('UnloadBuilderScene', currentLoadedScene.getSceneId())
     currentLoadedScene = null
   }
 }
