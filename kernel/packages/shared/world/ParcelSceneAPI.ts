@@ -6,5 +6,4 @@ export type ParcelSceneAPI = {
   registerWorker(event: any): void
   dispose(): void
   on(event: string, cb: (event: any) => void): void
-  emit(event: string, data: any): void
 }
