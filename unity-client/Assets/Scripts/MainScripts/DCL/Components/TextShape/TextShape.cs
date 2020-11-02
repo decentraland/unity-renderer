@@ -67,6 +67,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            if (rectTransform == null) yield break;
+
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
             rectTransform.sizeDelta = new Vector2(model.width, model.height);
