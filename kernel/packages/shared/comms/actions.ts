@@ -1,4 +1,5 @@
 import { action } from 'typesafe-actions'
+import { VoicePolicy } from './types'
 
 export const VOICE_PLAYING_UPDATE = 'Voice Playing Update'
 export const voicePlayingUpdate = (userId: string, playing: boolean) =>
@@ -33,3 +34,7 @@ export type SetVoiceVolume = ReturnType<typeof setVoiceVolume>
 export const SET_VOICE_MUTE = 'Set Voice Mute'
 export const setVoiceMute = (mute: boolean) => action(SET_VOICE_MUTE, { mute })
 export type SetVoiceMute = ReturnType<typeof setVoiceMute>
+
+export const SET_VOICE_POLICY = 'Set Voice Policy'
+export const setVoicePolicy = (voicePolicy: VoicePolicy) => action(SET_VOICE_POLICY, { voicePolicy })
+export type SetVoicePolicy = ReturnType<typeof setVoicePolicy>
