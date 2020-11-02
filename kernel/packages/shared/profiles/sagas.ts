@@ -192,6 +192,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
         const peerProfile: Profile = yield requestLocalProfileToPeers(action.payload.userId)
         if (peerProfile) {
           profile = ensureServerFormat(peerProfile)
+          profile.hasClaimedName = false // for now, comms profiles can't have claimed names
         }
       } else {
         const serverUrl = yield select(getProfileDownloadServer)
