@@ -240,6 +240,33 @@ namespace AvatarShape_Tests
             Assert.AreEqual(animator.blackboard.expressionTriggerTimestamp, timestamp);
         }
 
+        [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
+        public IEnumerator ChangeWearablesRepresentationWhenBodyShapeChanges()
+        {
+            string wearableId = "dcl://base-avatars/MultipleRepresentations";
+            avatarModel.wearables = new List<string> { wearableId };
+            avatarModel.bodyShape = WearableLiterals.BodyShapes.MALE;
+
+            bool ready = false;
+            avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
+            yield return new DCL.WaitUntil(() => ready);
+
+            var wearableController = avatarRenderer.wearableControllers.Values.FirstOrDefault(x => x.id == wearableId);
+            Assert.NotNull(wearableController);
+            Assert.AreEqual("M_Feet_Espadrilles.glb" ,wearableController.lastMainFileLoaded);
+
+            avatarModel.bodyShape = WearableLiterals.BodyShapes.FEMALE;
+            ready = false;
+            avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
+            yield return new DCL.WaitUntil(() => ready);
+
+            wearableController = avatarRenderer.wearableControllers.Values.FirstOrDefault(x => x.id == wearableId);
+            Assert.NotNull(wearableController);
+            Assert.AreEqual("Feet_XmasSockets.glb" ,wearableController.lastMainFileLoaded);
+        }
+
         private void CleanWearableHidesAndReplaces(string id)
         {
             catalog.Get(id).hides = new string[] { };

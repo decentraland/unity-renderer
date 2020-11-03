@@ -215,7 +215,10 @@ namespace DCL
                 unusedCategories.Remove(wearable.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
-                    UpdateWearableController(wearable);
+                    if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
+                        UpdateWearableController(wearable);
+                    else
+                        wearableControllers[wearable].CleanUp();
                 }
                 else
                 {
@@ -244,7 +247,7 @@ namespace DCL
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
             {
-                bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
+                bodyShapeController.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
             }
 
             foreach(WearableController wearable in wearableControllers.Values)
@@ -252,7 +255,7 @@ namespace DCL
                 if (bodyIsDirty)
                     wearable.boneRetargetingDirty = true;
 
-                wearable.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
+                wearable.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
                 yield return null;
             }
 
@@ -301,7 +304,7 @@ namespace DCL
                 return;
             }
 
-            wearableController.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x, retriesCount - 1));
+            wearableController.Load(bodyShapeController.id, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x, retriesCount - 1));
         }
 
         private void SetWearableBones()
@@ -344,7 +347,7 @@ namespace DCL
                     break;
 
                 default:
-                    var wearableController = new WearableController(wearable, bodyShapeController.id);
+                    var wearableController = new WearableController(wearable);
                     wearableControllers.Add(wearable, wearableController);
                     break;
             }

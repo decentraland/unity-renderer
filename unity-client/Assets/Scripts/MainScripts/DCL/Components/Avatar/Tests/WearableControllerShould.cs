@@ -30,13 +30,13 @@ namespace AvatarShape_Tests
         public IEnumerator LoadSuccessfully()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID), WearableLiterals.BodyShapes.FEMALE);
+            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
             toCleanUp.Add(wearable);
 
             //Act
             bool succeeded = false;
             bool failed = false;
-            wearable.Load(wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
 
             //Assert
@@ -57,13 +57,13 @@ namespace AvatarShape_Tests
                     bodyShapes = new [] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE}
                 }}
             };
-            WearableController wearable = new WearableController(unexistentWearableItem, WearableLiterals.BodyShapes.FEMALE);
+            WearableController wearable = new WearableController(unexistentWearableItem);
             toCleanUp.Add(wearable);
 
             //Act
             bool succeeded = false;
             bool failed = false;
-            wearable.Load(wearableHolder, x => succeeded = true, x => failed = true);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, x => succeeded = true, x => failed = true);
             yield return new WaitUntil(() => succeeded || failed);
 
             //Assert
@@ -82,9 +82,9 @@ namespace AvatarShape_Tests
             {
                 skinnedMeshRenderer.bones[i] = CreateTestGameObject($"_rootBone_{i}").transform;
             }
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID), WearableLiterals.BodyShapes.FEMALE);
+            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
             toCleanUp.Add(wearable);
-            wearable.Load(wearableHolder, null, null);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
 
             //Act
@@ -103,9 +103,9 @@ namespace AvatarShape_Tests
         public IEnumerator UpdateVisibilityProperly_True()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID), WearableLiterals.BodyShapes.FEMALE);
+            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
             toCleanUp.Add(wearable);
-            wearable.Load(wearableHolder, null, null);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
             SkinnedMeshRenderer skinnedMeshRenderer = wearable.assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.enabled = false;
@@ -121,9 +121,9 @@ namespace AvatarShape_Tests
         public IEnumerator UpdateVisibilityProperly_False()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID), WearableLiterals.BodyShapes.FEMALE);
+            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
             toCleanUp.Add(wearable);
-            wearable.Load(wearableHolder, null, null);
+            wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
             SkinnedMeshRenderer skinnedMeshRenderer = wearable.assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
             skinnedMeshRenderer.enabled = true;

@@ -16,7 +16,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
     public string bodyShapeId => wearable.id;
     private Transform animationTarget;
 
-    public BodyShapeController(WearableItem wearableItem) : base(wearableItem, wearableItem?.id)
+    public BodyShapeController(WearableItem wearableItem) : base(wearableItem)
     {
     }
 
@@ -33,10 +33,10 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public SkinnedMeshRenderer skinnedMeshRenderer { get; private set; }
 
-    public override void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public override void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
         animationTarget = parent;
-        base.Load(parent, onSuccess, onFail);
+        base.Load(bodyShapeId, parent, onSuccess, onFail);
     }
 
     public void SetActiveParts(bool lowerBodyActive, bool upperBodyActive, bool feetActive)
