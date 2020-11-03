@@ -37,7 +37,7 @@ import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
 import { GIFProcessor } from 'gif-processor/processor'
-import { setVoiceChatRecording, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
+import { setVoiceChatRecording, setVoicePolicy, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
@@ -279,8 +279,9 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(toggleVoiceChatRecording())
   }
 
-  public ApplySettings(settingsMessage: { sfxVolume: number }) {
-    globalThis.globalStore.dispatch(setVoiceVolume(settingsMessage.sfxVolume))
+  public ApplySettings(settingsMessage: { voiceChatVolume: number, voiceChatAllowCategory: number }) {
+    globalThis.globalStore.dispatch(setVoiceVolume(settingsMessage.voiceChatVolume))
+    globalThis.globalStore.dispatch(setVoicePolicy(settingsMessage.voiceChatAllowCategory))
   }
 
   public async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {

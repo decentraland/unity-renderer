@@ -53,26 +53,26 @@ namespace DCL
 
         private void LoadGeneralSettings()
         {
-            bool isGeneralSettingsSet = false;
+            currentGeneralSettings = new SettingsData.GeneralSettings()
+            {
+                sfxVolume = 1,
+                mouseSensitivity = 0.2f,
+                voiceChatVolume = 1,
+                voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS
+            };
+
             if (PlayerPrefs.HasKey(GENERAL_SETTINGS_KEY))
             {
                 try
                 {
-                    currentGeneralSettings = JsonUtility.FromJson<SettingsData.GeneralSettings>(PlayerPrefs.GetString(GENERAL_SETTINGS_KEY));
-                    isGeneralSettingsSet = true;
+                    object currentSetting = currentGeneralSettings;
+                    JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString(GENERAL_SETTINGS_KEY), currentSetting);
+                    currentGeneralSettings = (SettingsData.GeneralSettings)currentSetting;
                 }
                 catch (Exception e)
                 {
                     Debug.Log(e.Message);
                 }
-            }
-            if (!isGeneralSettingsSet)
-            {
-                currentGeneralSettings = new SettingsData.GeneralSettings()
-                {
-                    sfxVolume = 1,
-                    mouseSensitivity = 0.2f
-                };
             }
         }
 
@@ -110,13 +110,19 @@ namespace DCL.SettingsData
     [Serializable]
     public struct GeneralSettings
     {
+        public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
+
         public float sfxVolume;
         public float mouseSensitivity;
+        public float voiceChatVolume;
+        public VoiceChatAllow voiceChatAllow;
 
         public bool Equals(GeneralSettings settings)
         {
             return sfxVolume == settings.sfxVolume
-                && mouseSensitivity == settings.mouseSensitivity;
+                && mouseSensitivity == settings.mouseSensitivity
+                && voiceChatVolume == settings.voiceChatVolume
+                && voiceChatAllow == settings.voiceChatAllow;
         }
     }
 }
