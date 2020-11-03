@@ -425,7 +425,8 @@ namespace DCL.Interface
         [System.Serializable]
         public class ApplySettingsPayload
         {
-            public float sfxVolume;
+            public float voiceChatVolume;
+            public int voiceChatAllowCategory;
         }
 
         [System.Serializable]
@@ -943,9 +944,10 @@ namespace DCL.Interface
             SendMessage("ToggleVoiceChatRecording");
         }
 
-        public static void ApplySettings(float sfxVolume)
+        public static void ApplySettings(float voiceChatVolume, int voiceChatAllowCategory)
         {
-            applySettingsPayload.sfxVolume = sfxVolume;
+            applySettingsPayload.voiceChatVolume = voiceChatVolume;
+            applySettingsPayload.voiceChatAllowCategory = voiceChatAllowCategory;
             SendMessage("ApplySettings", applySettingsPayload);
         }
 

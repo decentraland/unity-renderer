@@ -10,7 +10,9 @@ namespace DCL.SettingsHUD
         public event UnityAction OnDone;
 
         [SerializeField] private ShowHideAnimator settingsAnimator;
+        [SerializeField] private GameObject generalSettingsTab;
         [SerializeField] internal InputAction_Trigger closeAction;
+
         private InputAction_Trigger.Triggered closeActionDelegate;
 
         public bool isOpen { get; private set; }
@@ -26,7 +28,17 @@ namespace DCL.SettingsHUD
             closeButton.onClick.AddListener(RaiseOnClose);
             doneButton.onClick.AddListener(RaiseOnDone);
 
+            settingsAnimator.OnWillFinishHide += OnFinishHide;
+
             isOpen = false;
+        }
+
+        private void OnDestroy()
+        {
+            if (settingsAnimator)
+            {
+                settingsAnimator.OnWillFinishHide -= OnFinishHide;
+            }
         }
 
         public static SettingsHUDView Create()
@@ -48,6 +60,7 @@ namespace DCL.SettingsHUD
             {
                 closeAction.OnTriggered += closeActionDelegate;
                 settingsAnimator.Show();
+                generalSettingsTab.SetActive(true);
             }
             else
             {
@@ -65,6 +78,11 @@ namespace DCL.SettingsHUD
         private void RaiseOnDone()
         {
             OnDone?.Invoke();
+        }
+
+        private void OnFinishHide(ShowHideAnimator animator)
+        {
+            generalSettingsTab.SetActive(false);
         }
     }
 }
