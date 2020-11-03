@@ -50,7 +50,7 @@ import {
   updatePrivateMessagingState,
   updateUserData
 } from 'shared/friends/actions'
-import { ensureWorldRunning } from 'shared/world/worldState'
+import { ensureRendererEnabled } from 'shared/world/worldState'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
 import { unityInterface } from 'unity-interface/UnityInterface'
 import { ensureFriendProfile } from './ensureFriendProfile'
@@ -84,7 +84,7 @@ function* initializeSaga() {
 
     if (!INIT_PRE_LOAD) {
       // wait until initial load finishes and world is running
-      yield ensureWorldRunning()
+      yield ensureRendererEnabled()
     }
 
     const identity = yield select(getCurrentIdentity)
@@ -97,7 +97,7 @@ function* initializeSaga() {
 
       unityInterface.ConfigureHUDElement(HUDElementID.FRIENDS, { active: false, visible: false })
 
-      yield ensureWorldRunning()
+      yield ensureRendererEnabled()
 
       unityInterface.ShowNotification({
         type: NotificationType.GENERIC,

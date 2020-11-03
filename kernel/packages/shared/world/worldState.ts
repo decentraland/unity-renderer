@@ -1,35 +1,50 @@
 import { Observable } from '../../decentraland-ecs/src/ecs/Observable'
 import future, { IFuture } from 'fp-future'
 
-let worldRunning: boolean = false
+let hidden: 'hidden' | 'msHidden' | 'webkitHidden' = 'hidden'
 
-export const worldRunningObservable = new Observable<Readonly<boolean>>()
-
-worldRunningObservable.add((state) => {
-  worldRunning = state
-})
-
-export function isWorldRunning(): boolean {
-  return worldRunning
+if (typeof (document as any).hidden !== 'undefined') {
+  // Opera 12.10 and Firefox 18 and later support
+  hidden = 'hidden'
+} else if (typeof (document as any).msHidden !== 'undefined') {
+  hidden = 'msHidden'
+} else if (typeof (document as any).webkitHidden !== 'undefined') {
+  hidden = 'webkitHidden'
 }
 
-export async function ensureWorldRunning() {
+let rendererEnabled: boolean = false
+
+export const renderStateObservable = new Observable<Readonly<boolean>>()
+
+renderStateObservable.add((state) => {
+  rendererEnabled = state
+})
+
+export function isRendererEnabled(): boolean {
+  return rendererEnabled
+}
+
+export function isForeground(): boolean {
+  return !(document as any)[hidden]
+}
+
+export async function ensureRendererEnabled() {
   const result: IFuture<void> = future()
 
-  if (isWorldRunning()) {
+  if (isRendererEnabled()) {
     result.resolve()
     return result
   }
 
-  onNextWorldRunning(() => result.resolve())
+  onNextRendererEnabled(() => result.resolve())
 
   return result
 }
 
-export function onNextWorldRunning(callback: Function) {
-  const observer = worldRunningObservable.add((isRunning) => {
+export function onNextRendererEnabled(callback: Function) {
+  const observer = renderStateObservable.add((isRunning) => {
     if (isRunning) {
-      worldRunningObservable.remove(observer)
+      renderStateObservable.remove(observer)
       callback()
     }
   })

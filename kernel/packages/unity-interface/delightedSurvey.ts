@@ -1,7 +1,7 @@
 import { defaultLogger } from 'shared/logger'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { StoreContainer } from 'shared/store/rootTypes'
-import { ensureWorldRunning } from 'shared/world/worldState'
+import { ensureRendererEnabled } from 'shared/world/worldState'
 
 const TIMEOUT_MS = 10 * 60 * 1000
 
@@ -19,7 +19,7 @@ export function setDelightedSurveyEnabled(enabled: boolean) {
 }
 
 function delightedSurvey() {
-  ensureWorldRunning()
+  ensureRendererEnabled()
     .then(() => {
       // tslint:disable-next-line:strict-type-predicates
       if (typeof globalThis === 'undefined' || typeof globalThis !== 'object') {
