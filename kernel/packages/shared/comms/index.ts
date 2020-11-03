@@ -1,4 +1,4 @@
-import { commConfigurations, parcelLimits, COMMS, AUTO_CHANGE_REALM, genericAvatarSnapshots } from 'config'
+import { commConfigurations, parcelLimits, COMMS, AUTO_CHANGE_REALM, genericAvatarSnapshots, COMMS_PROFILE_TIMEOUT } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
@@ -352,7 +352,7 @@ export async function requestLocalProfileToPeers(userId: string, version?: numbe
           pendingRequests.splice(pendingRequests.indexOf(thisFuture), 1)
         }
       }
-    }, 10000)
+    }, COMMS_PROFILE_TIMEOUT)
 
     return thisFuture
   } else {

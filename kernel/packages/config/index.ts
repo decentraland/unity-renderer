@@ -99,6 +99,7 @@ const qs = queryString.parse(location.search)
 // Comms
 export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
 export const COMMS = USE_LOCAL_COMMS ? 'v1-local' : qs.COMMS ? qs.COMMS : 'v2-p2p' // by default
+export const COMMS_PROFILE_TIMEOUT = 10000
 
 export const FETCH_PROFILE_SERVICE = qs.FETCH_PROFILE_SERVICE
 export const UPDATE_CONTENT_SERVICE = qs.UPDATE_CONTENT_SERVICE
