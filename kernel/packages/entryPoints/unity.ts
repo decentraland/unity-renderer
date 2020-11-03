@@ -15,7 +15,7 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
-import { worldRunningObservable, onNextWorldRunning } from 'shared/world/worldState'
+import { renderStateObservable, onNextRendererEnabled } from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
@@ -32,9 +32,9 @@ const logger = createLogger('unity.ts: ')
 
 const start = Date.now()
 
-const observer = worldRunningObservable.add((isRunning) => {
+const observer = renderStateObservable.add((isRunning) => {
   if (isRunning) {
-    worldRunningObservable.remove(observer)
+    renderStateObservable.remove(observer)
     DEBUG_PM && logger.info(`initial load: `, Date.now() - start)
   }
 })
@@ -94,7 +94,7 @@ initializeUnity(container)
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 
-    onNextWorldRunning(() => globalThis.globalStore.dispatch(experienceStarted()))
+    onNextRendererEnabled(() => globalThis.globalStore.dispatch(experienceStarted()))
 
     await realmInitialized()
 

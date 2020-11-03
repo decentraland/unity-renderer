@@ -24,6 +24,7 @@ namespace DCL
 
         //======================================================================
         private EntryPoint_World worldEntryPoint;
+        private PerformanceMetricsController performanceMetricsController;
         public PhysicsSyncController physicsSyncController;
 
         [FormerlySerializedAs("factoryManifest")]
@@ -75,6 +76,7 @@ namespace DCL
 
 #if !UNITY_EDITOR
             worldEntryPoint = new EntryPoint_World(this); // independent subsystem => put at entrypoint but not at environment
+            performanceMetricsController = new PerformanceMetricsController();
 #endif
         }
 
@@ -123,6 +125,8 @@ namespace DCL
                 sceneSortDirty = false;
                 SortScenesByDistance();
             }
+
+            performanceMetricsController?.Update();
         }
 
         private void LateUpdate()

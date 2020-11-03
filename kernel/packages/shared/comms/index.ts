@@ -47,7 +47,7 @@ import {
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { ProfileForRenderer, uuid } from 'decentraland-ecs/src'
-import { worldRunningObservable, isWorldRunning, onNextWorldRunning } from '../world/worldState'
+import { renderStateObservable, isRendererEnabled, onNextRendererEnabled } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
 
 import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
@@ -977,10 +977,10 @@ export async function connect(userId: string) {
     context = new Context(userInfo)
     context.worldInstanceConnection = connection
 
-    if (isWorldRunning()) {
+    if (isRendererEnabled()) {
       await startCommunications(context)
     } else {
-      onNextWorldRunning(async () => {
+      onNextRendererEnabled(async () => {
         try {
           await startCommunications(context!)
         } catch (e) {
@@ -1106,7 +1106,7 @@ async function doStartCommunications(context: Context) {
       }, 30000)
     }
 
-    context.worldRunningObserver = worldRunningObservable.add((isRunning) => {
+    context.worldRunningObserver = renderStateObservable.add((isRunning) => {
       onWorldRunning(isRunning)
     })
 
@@ -1122,7 +1122,7 @@ async function doStartCommunications(context: Context) {
         obj.immediate
       ] as Position
 
-      if (context && isWorldRunning) {
+      if (context && isRendererEnabled) {
         onPositionUpdate(context, p)
       }
     })
@@ -1242,7 +1242,7 @@ export function disconnect() {
       positionObservable.remove(context.positionObserver)
     }
     if (context.worldRunningObserver) {
-      worldRunningObservable.remove(context.worldRunningObserver)
+      renderStateObservable.remove(context.worldRunningObserver)
     }
     if (context.worldInstanceConnection) {
       context.worldInstanceConnection.close()
