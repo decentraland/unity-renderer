@@ -69,9 +69,9 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         this.isRecording = isRecording;
         if (setUserRecordingRoutine != null)
         {
-            StopCoroutine(setUserRecordingRoutine);
+            CoroutineStarter.Stop(setUserRecordingRoutine);
         }
-        setUserRecordingRoutine = StartCoroutine(SetRecordingRoutine(isRecording));
+        setUserRecordingRoutine = CoroutineStarter.Start(SetRecordingRoutine(isRecording));
     }
 
     public void OnPoolRelease()
@@ -87,7 +87,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         }
         if (setUserRecordingRoutine != null)
         {
-            StopCoroutine(setUserRecordingRoutine);
+            CoroutineStarter.Stop(setUserRecordingRoutine);
             setUserRecordingRoutine = null;
         }
         gameObject.SetActive(false);
