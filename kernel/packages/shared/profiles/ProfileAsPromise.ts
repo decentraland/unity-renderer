@@ -3,8 +3,15 @@ import { Store } from 'redux'
 import { getProfile, getProfileStatusAndData } from './selectors'
 import { profileRequest } from './actions'
 import { Profile, ProfileType } from './types'
+import { COMMS_PROFILE_TIMEOUT } from 'config'
 
 declare const globalThis: StoreContainer
+
+// We resolve a profile with an older version after this time, if there is that info
+const PROFILE_SOFT_TIMEOUT_MS = 5000
+
+// We reject the profile promise if more time than this has passed
+const PROFILE_HARD_TIMEOUT_MS = COMMS_PROFILE_TIMEOUT + 2000
 
 export function ProfileAsPromise(userId: string, version?: number, profileType?: ProfileType): Promise<Profile> {
   function isExpectedVersion(aProfile: Profile) {
@@ -19,21 +26,44 @@ export function ProfileAsPromise(userId: string, version?: number, profileType?:
     return Promise.resolve(existingProfile)
   }
   return new Promise((resolve, reject) => {
+    let pending = true
     const unsubscribe = store.subscribe(() => {
       const [status, data] = getProfileStatusAndData(store.getState(), userId)
 
       if (status === 'error') {
         unsubscribe()
+        pending = false
         return reject(data)
       }
 
       const profile = getProfile(store.getState(), userId)
       if (profile && isExpectedVersion(profile) && status === 'ok') {
         unsubscribe()
+        pending = false
         return resolve(profile)
       }
     })
     store.dispatch(profileRequest(userId, profileType))
+
+    setTimeout(() => {
+      if (pending) {
+        const profile = getProfile(store.getState(), userId)
+
+        if (profile) {
+          unsubscribe()
+          pending = false
+          resolve(profile)
+        } else {
+          setTimeout(() => {
+            if (pending) {
+              unsubscribe()
+              pending = false
+              reject(new Error(`Timed out trying to resolve profile ${userId} (version: ${version})`))
+            }
+          }, PROFILE_HARD_TIMEOUT_MS - PROFILE_SOFT_TIMEOUT_MS)
+        }
+      }
+    }, PROFILE_SOFT_TIMEOUT_MS)
   })
 }
 
