@@ -32,11 +32,11 @@ RectTransform:
   m_Father: {fileID: 4825005206613495849}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.0494025, y: 0.07679911}
-  m_AnchorMax: {x: 0.245, y: 0.9346277}
-  m_AnchoredPosition: {x: -0.10000229, y: 0.14999962}
-  m_SizeDelta: {x: 0.63238907, y: 0.12255669}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 0.000019073486, y: 0.00000047683716}
+  m_SizeDelta: {x: 28, y: 33}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5597833335424187184
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 85b517b3cc5e34f0ba7f61e81232b591, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f2ec09fb4873a47c88fb58023134399a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -107,11 +107,11 @@ RectTransform:
   m_Father: {fileID: 4825005206613495849}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.680502, y: 0}
-  m_AnchorMax: {x: 0.98369694, y: 1}
-  m_AnchoredPosition: {x: -0.16999817, y: -0.000005722046}
-  m_SizeDelta: {x: -0.032045364, y: 0.4114952}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -0.00006484985, y: 0}
+  m_SizeDelta: {x: 41, y: 43}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3140944442144018582
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -139,8 +139,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 400fa122300374d5c9492754b211336f, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: b3a558a257e4f4f988f0f1b57a559485, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 16.9
+  m_fontSize: 28.15
   m_fontSizeBase: 18.83
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 6745497623932580052}
   - component: {fileID: 8937092154923819910}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,10 +337,10 @@ RectTransform:
   m_Father: {fileID: 1579023822081943936}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00004196167, y: -0.0000019073486}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 25, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6745497623932580052
 CanvasRenderer:
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 39177232480c9442b9c785ef3c94a093, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 61971e3b2b11044eca7dcd6f96952405, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
