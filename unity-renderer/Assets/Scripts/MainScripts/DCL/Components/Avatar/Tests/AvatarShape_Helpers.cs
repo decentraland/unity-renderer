@@ -146,7 +146,7 @@ namespace AvatarShape_Tests
 
     class WearableController_Mock : WearableController
     {
-        public WearableController_Mock(WearableItem wearableItem, string bodyShapeId) : base(wearableItem, bodyShapeId)
+        public WearableController_Mock(WearableItem wearableItem) : base(wearableItem)
         {
         }
 

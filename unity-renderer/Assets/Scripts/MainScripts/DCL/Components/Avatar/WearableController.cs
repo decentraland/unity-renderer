@@ -14,7 +14,6 @@ public class WearableController
 
     public readonly WearableItem wearable;
     protected RendereableAssetLoadHelper loader;
-    private readonly string bodyShapeId;
 
     public string id => wearable.id;
     public string category => wearable.category;
@@ -28,21 +27,21 @@ public class WearableController
 
     public bool boneRetargetingDirty = false;
 
-    public WearableController(WearableItem wearableItem, string bodyShapeId)
+    internal string lastMainFileLoaded = null;
+
+    public WearableController(WearableItem wearableItem)
     {
         this.wearable = wearableItem;
-        this.bodyShapeId = bodyShapeId;
     }
 
     protected WearableController(WearableController original)
     {
         wearable = original.wearable;
         loader = original.loader;
-        bodyShapeId = original.bodyShapeId;
         assetRenderers = original.assetRenderers;
     }
 
-    public virtual void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public virtual void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
         if (isReady)
             return;
@@ -81,6 +80,7 @@ public class WearableController
             {
                 loader.OnFailEvent -= OnFailEventWrapper;
                 loader.ClearEvents();
+                lastMainFileLoaded = null;
                 loader = null;
             }
             onFail?.Invoke(this);
@@ -88,6 +88,7 @@ public class WearableController
 
         loader.OnFailEvent += OnFailEventWrapper;
 
+        lastMainFileLoaded = representation.mainFile;
         loader.Load(representation.mainFile);
     }
 
@@ -158,6 +159,7 @@ public class WearableController
             loader.ClearEvents();
             loader.Unload();
             loader = null;
+            lastMainFileLoaded = null;
         }
     }
 
@@ -188,5 +190,13 @@ public class WearableController
     public virtual void UpdateVisibility(HashSet<string> hiddenList)
     {
         SetAssetRenderersEnabled(!hiddenList.Contains(wearable.category));
+    }
+
+    public bool IsLoadedForBodyShape(string bodyShapeId)
+    {
+        if (loader == null || !isReady || lastMainFileLoaded == null)
+            return false;
+
+        return wearable.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
     }
 }

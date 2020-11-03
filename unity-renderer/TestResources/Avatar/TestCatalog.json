@@ -19017,5 +19017,82 @@
 		"thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
 		"description": "",
 		"rarity": ""
-	}
+	},
+  {
+    "id": "dcl://base-avatars/MultipleRepresentations",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_Espadrilles.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_Feet_Espadrilles.glb",
+            "hash": "QmbWPX7HkaJJPLh6f4GjTPenPvMVkKedEAjYP51G8fxjjH"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Feet_XmasSockets.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Feet_XmasSockets.glb",
+            "hash": "QmS3611PUsVcL9E3iNKiGCaNMxvR8Co19NMkgPFXCfypgp"
+          },
+          {
+            "file": "Xmas_Emissive_TX.png",
+            "hash": "QmZevCdvnXgeUTjewP5H77Pmv3wWb3KDVoE3sL4pChtJ4h"
+          },
+          {
+            "file": "Xmas_TX.png",
+            "hash": "QmbQt5kjT5u8Y6TzGXiHwyqMn1FxF7UMEXoxt8opTsciby"
+          },
+          {
+            "file": "xmas_pullover.png",
+            "hash": "Qmbz3QZjWmRS8L6JeGugre2Zm6Fb4x78pVYrvnwS2xziEF"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "shoes",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "base-wearable"
+    ],
+    "baseUrl": "https://content.decentraland.org/contents/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Espadrilles"
+      },
+      {
+        "code": "es",
+        "text": "Alpargatas"
+      }
+    ],
+    "thumbnail": "QmNVoydQ5Q7zHMF51sJKciz2EVQSCqm6rwp2g9Yj3R6URi",
+    "description": "",
+    "rarity": ""
+  }
 ]
