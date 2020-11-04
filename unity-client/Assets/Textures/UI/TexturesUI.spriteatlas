@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2835153
+    totalSpriteSurfaceArea: 2837463
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -165,6 +165,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: df21406aac3b94b18b9edcf3e6ae36c4, type: 3}
   - {fileID: 21300000, guid: 593f8d6a3ab9548768fe19dc0eaaad16, type: 3}
   - {fileID: 21300000, guid: cda51e8a359aa4105bbb5f2b2e27dd10, type: 3}
+  - {fileID: 21300000, guid: ad45379ab95744ed290d6c7808b89084, type: 3}
   - {fileID: 21300000, guid: 96af52ba6c86845beb91f068f1cabe94, type: 3}
   - {fileID: 21300000, guid: 6c9da2cade77947d3bc10b1ad5c4f532, type: 3}
   - {fileID: 21300000, guid: 0b8573ead118a4e798b4fa5d8c93fe8c, type: 3}
@@ -322,6 +323,7 @@ SpriteAtlas:
   - CardCollectiblesIcon
   - NowTag
   - RectRadius16
+  - CardPassportIcon
   - MarketplaceEditorIcon
   - PassportIcon
   - ContainerRadius6Shadow
