@@ -36,7 +36,8 @@ import {
 import { isVoiceChatRecording } from './selectors'
 import { unityInterface } from 'unity-interface/UnityInterface'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
-import { isVoiceChatEnabled } from 'shared/meta/selectors'
+import { isVoiceChatEnabledFor } from 'shared/meta/selectors'
+import { userAuthentified } from 'shared/session'
 
 const DEBUG = false
 const logger = createLogger('comms: ')
@@ -45,7 +46,11 @@ export function* commsSaga() {
   yield takeEvery(USER_AUTHENTIFIED, establishCommunications)
   yield takeLatest(CATALYST_REALMS_SCAN_SUCCESS, changeRealm)
   yield ensureMetaConfigurationInitialized()
-  if (yield select(isVoiceChatEnabled)) {
+  yield userAuthentified()
+
+  const identity = yield select(getCurrentIdentity)
+
+  if (yield select(isVoiceChatEnabledFor, identity.address)) {
     yield takeEvery(SET_VOICE_CHAT_RECORDING, updateVoiceChatRecordingStatus)
     yield takeEvery(TOGGLE_VOICE_CHAT_RECORDING, updateVoiceChatRecordingStatus)
     yield takeEvery(VOICE_PLAYING_UPDATE, updateUserVoicePlaying)
