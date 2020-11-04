@@ -55,4 +55,5 @@ message SceneData {
 
 message VoiceData {
     bytes encoded_samples = 1;
+    uint32 index = 2;
 }

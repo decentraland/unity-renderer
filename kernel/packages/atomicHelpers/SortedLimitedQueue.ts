@@ -9,8 +9,9 @@ export class SortedLimitedQueue<T> {
     this.internalArray = []
   }
 
-  queue(item: T) {
+  queue(item: T): T | undefined {
     let insertIndex = 0
+    let discardedItem: T | undefined = undefined
 
     // Since the most likely scenario for our use case is that we insert the item at the end,
     // we start by the end. This may be parameterized in the future
@@ -30,10 +31,12 @@ export class SortedLimitedQueue<T> {
     }
 
     if (this.internalArray.length > this.maxLength) {
-      this.internalArray.shift()
+      discardedItem = this.internalArray.shift()
     }
 
     this.resolveBlockedDequeues()
+
+    return discardedItem
   }
 
   queuedCount() {

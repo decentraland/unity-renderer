@@ -3,19 +3,14 @@ import { SortedLimitedQueue } from 'atomicHelpers/SortedLimitedQueue'
 import defaultLogger from 'shared/logger'
 import { VOICE_CHAT_SAMPLE_RATE, OPUS_FRAME_SIZE_MS } from './constants'
 import { parse, write } from 'sdp-transform'
-import { InputWorkletRequestTopic, OutputWorkletRequestTopic } from './types'
+import { EncodedFrame, InputWorkletRequestTopic, OutputWorkletRequestTopic } from './types'
 
 export type AudioCommunicatorChannel = {
-  send(data: Uint8Array): any
+  send(data: EncodedFrame): any
 }
 
 export type StreamPlayingListener = (streamId: string, playing: boolean) => any
 export type StreamRecordingListener = (recording: boolean) => any
-
-type EncodedFrame = {
-  order: number
-  frame: Uint8Array
-}
 
 type VoiceOutput = {
   encodedFramesQueue: SortedLimitedQueue<EncodedFrame>
@@ -25,6 +20,12 @@ type VoiceOutput = {
   lastUpdateTime: number
   playing: boolean
   lastDecodedFrameOrder?: number
+}
+
+type OutputStats = {
+  lostFrames: number
+  skippedFramesNotQueued: number
+  skippedFramesQueued: number
 }
 
 type VoiceInput = {
@@ -65,12 +66,16 @@ export class VoiceCommunicator {
   private voiceChatWorkerMain: VoiceChatCodecWorkerMain
   private outputs: Record<string, VoiceOutput> = {}
 
+  private outputStats: Record<string, OutputStats> = {}
+
   private streamPlayingListeners: StreamPlayingListener[] = []
   private streamRecordingListeners: StreamRecordingListener[] = []
 
   private readonly sampleRate: number
   private readonly outputBufferLength: number
   private readonly outputExpireTime = 60 * 1000
+
+  private inputFramesIndex = 0
 
   private get context(): AudioContext {
     return this.contextWithInitPromise[0]
@@ -126,7 +131,19 @@ export class VoiceCommunicator {
     return !!this.input
   }
 
-  playEncodedAudio(src: string, relativePosition: VoiceSpatialParams, encoded: Uint8Array, time: number) {
+  public statsFor(outputId: string) {
+    if (!this.outputStats[outputId]) {
+      this.outputStats[outputId] = {
+        lostFrames: 0,
+        skippedFramesNotQueued: 0,
+        skippedFramesQueued: 0
+      }
+    }
+
+    return this.outputStats[outputId]
+  }
+
+  playEncodedAudio(src: string, relativePosition: VoiceSpatialParams, encoded: EncodedFrame) {
     if (!this.outputs[src]) {
       this.createOutput(src, relativePosition).catch((e) => defaultLogger.error('Error creating output!', e))
     } else {
@@ -136,12 +153,15 @@ export class VoiceCommunicator {
 
     const output = this.outputs[src]
 
-    if (output.lastDecodedFrameOrder && output.lastDecodedFrameOrder > time) {
-      // If we have already decoded a frame that comes after this one, we discard it
+    if (output.lastDecodedFrameOrder && output.lastDecodedFrameOrder > encoded.index) {
+      this.statsFor(src).skippedFramesNotQueued += 1
       return
     }
 
-    output.encodedFramesQueue.queue({ frame: encoded, order: time })
+    const discarded = output.encodedFramesQueue.queue(encoded)
+    if (discarded) {
+      this.statsFor(src).skippedFramesQueued += 1
+    }
   }
 
   setListenerSpatialParams(spatialParams: VoiceSpatialParams) {
@@ -331,7 +351,7 @@ export class VoiceCommunicator {
     this.outputs[src] = {
       encodedFramesQueue: new SortedLimitedQueue(
         Math.ceil((this.outputBufferLength * 1000) / OPUS_FRAME_SIZE_MS),
-        (frameA, frameB) => frameA.order - frameB.order
+        (frameA, frameB) => frameA.index - frameB.index
       ),
       spatialParams: relativePosition,
       lastUpdateTime: Date.now(),
@@ -351,6 +371,7 @@ export class VoiceCommunicator {
         const frames = await this.outputs[src].encodedFramesQueue.dequeueItemsWhenAvailable(framesToRead, 2000)
 
         if (frames.length > 0) {
+          this.countLostFrames(src, frames)
           let stream = this.voiceChatWorkerMain.decodeStreams[src]
 
           if (!stream) {
@@ -365,8 +386,8 @@ export class VoiceCommunicator {
             })
           }
 
-          frames.forEach((it) => stream.decode(it.frame))
-          this.outputs[src].lastDecodedFrameOrder = frames[frames.length - 1].order
+          frames.forEach((it) => stream.decode(it.encoded))
+          this.outputs[src].lastDecodedFrameOrder = frames[frames.length - 1].index
         }
 
         await readEncodedBufferLoop()
@@ -374,6 +395,22 @@ export class VoiceCommunicator {
     }
 
     readEncodedBufferLoop().catch((e) => defaultLogger.log('Error while reading encoded buffer of ' + src, e))
+  }
+
+  private countLostFrames(src: string, frames: EncodedFrame[]) {
+    // We can know a frame is lost if we have a missing frame index
+    let lostFrames = 0
+    if (this.outputs[src].lastDecodedFrameOrder && this.outputs[src].lastDecodedFrameOrder! < frames[0].index) {
+      // We count the missing frame indexes from the last decoded frame. If there are no missin frames, 0 is added
+      lostFrames += frames[0].index - this.outputs[src].lastDecodedFrameOrder! - 1
+    }
+
+    for (let i = 0; i < frames.length - 1; i++) {
+      // We count the missing frame indexes in the current frames to decode. If there are no missin frames, 0 is added
+      lostFrames += frames[i + 1].index - frames[i].index - 1
+    }
+
+    this.statsFor(src).lostFrames += lostFrames
   }
 
   private async createInputFor(stream: MediaStream, context: AudioContextWithInitPromise) {
@@ -399,7 +436,10 @@ export class VoiceCommunicator {
       recordingContext.sampleRate
     )
 
-    encodeStream.addAudioEncodedListener((data) => this.channel.send(data))
+    encodeStream.addAudioEncodedListener((data) => {
+      this.inputFramesIndex += 1
+      this.channel.send({ encoded: data, index: this.inputFramesIndex })
+    })
 
     workletNode.port.onmessage = (e) => {
       if (e.data.topic === InputWorkletRequestTopic.ENCODE) {

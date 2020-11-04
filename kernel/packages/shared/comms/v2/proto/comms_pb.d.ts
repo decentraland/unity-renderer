@@ -258,6 +258,9 @@ export class VoiceData extends jspb.Message {
   getEncodedSamples_asB64(): string;
   setEncodedSamples(value: Uint8Array | string): void;
 
+  getIndex(): number;
+  setIndex(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): VoiceData.AsObject;
   static toObject(includeInstance: boolean, msg: VoiceData): VoiceData.AsObject;
@@ -271,6 +274,7 @@ export class VoiceData extends jspb.Message {
 export namespace VoiceData {
   export type AsObject = {
     encodedSamples: Uint8Array | string,
+    index: number,
   }
 }
 

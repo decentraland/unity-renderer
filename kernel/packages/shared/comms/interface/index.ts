@@ -12,6 +12,7 @@ import {
 import { Stats } from '../debug'
 import { Realm } from 'shared/dao/types'
 import { Profile } from 'shared/types'
+import { EncodedFrame } from 'voice-chat-codec/types'
 
 export interface WorldInstanceConnection {
   stats: Stats | null
@@ -42,7 +43,7 @@ export interface WorldInstanceConnection {
   sendParcelUpdateMessage(currentPosition: Position, p: Position): Promise<void>
   sendParcelSceneCommsMessage(cid: string, message: string): Promise<void>
   sendChatMessage(currentPosition: Position, messageId: string, text: string): Promise<void>
-  sendVoiceMessage(currentPosition: Position, data: Uint8Array): Promise<void>
+  sendVoiceMessage(currentPosition: Position, frame: EncodedFrame): Promise<void>
 
   updateSubscriptions(topics: string[]): Promise<void>
 

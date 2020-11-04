@@ -132,6 +132,7 @@ export type ChatMessage = {
 }
 
 export type VoiceFragment = {
+  index: number
   encoded: Uint8Array
 }
 
