@@ -1888,7 +1888,8 @@ proto.VoiceData.prototype.toObject = function(opt_includeInstance) {
  */
 proto.VoiceData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    encodedSamples: msg.getEncodedSamples_asB64()
+    encodedSamples: msg.getEncodedSamples_asB64(),
+    index: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -1929,6 +1930,10 @@ proto.VoiceData.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setEncodedSamples(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setIndex(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1962,6 +1967,13 @@ proto.VoiceData.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeBytes(
       1,
+      f
+    );
+  }
+  f = message.getIndex();
+  if (f !== 0) {
+    writer.writeUint32(
+      2,
       f
     );
   }
@@ -2007,6 +2019,24 @@ proto.VoiceData.prototype.getEncodedSamples_asU8 = function() {
  */
 proto.VoiceData.prototype.setEncodedSamples = function(value) {
   return jspb.Message.setProto3BytesField(this, 1, value);
+};
+
+
+/**
+ * optional uint32 index = 2;
+ * @return {number}
+ */
+proto.VoiceData.prototype.getIndex = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.VoiceData} returns this
+ */
+proto.VoiceData.prototype.setIndex = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 

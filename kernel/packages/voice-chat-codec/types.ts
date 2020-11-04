@@ -23,5 +23,10 @@ export enum ResponseTopic {
   DECODE = 'DECODE_OUTPUT'
 }
 
+export type EncodedFrame = {
+  index: number
+  encoded: Uint8Array
+}
+
 export type VoiceChatWorkerRequest = { topic: RequestTopic } & any
 export type VoiceChatWorkerResponse = { topic: ResponseTopic } & any

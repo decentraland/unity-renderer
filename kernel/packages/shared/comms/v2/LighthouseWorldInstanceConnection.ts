@@ -33,6 +33,7 @@ import * as Long from 'long'
 import { getProfileType } from 'shared/profiles/sagas'
 import { Profile } from 'shared/types'
 import { ProfileType } from 'shared/profiles/types'
+import { EncodedFrame } from 'voice-chat-codec/types'
 declare const window: any
 window.Long = Long
 
@@ -206,11 +207,12 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     await this.sendData(topic, sceneData, commsMessageType)
   }
 
-  async sendVoiceMessage(currentPosition: Position, data: Uint8Array): Promise<void> {
+  async sendVoiceMessage(currentPosition: Position, frame: EncodedFrame): Promise<void> {
     const topic = positionHash(currentPosition)
 
     const voiceData = new VoiceData()
-    voiceData.setEncodedSamples(data)
+    voiceData.setEncodedSamples(frame.encoded)
+    voiceData.setIndex(frame.index)
 
     await this.sendData(topic, voiceData, VoiceType)
   }
@@ -294,7 +296,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     return this.peer.dispose()
   }
 
-  private peerCallback: PacketCallback = (sender, room, payload) => {
+  private peerCallback: PacketCallback = (sender, room, payload, packet) => {
     try {
       const commsMessage = CommsMessage.deserializeBinary(payload)
       switch (commsMessage.getDataCase()) {
@@ -325,7 +327,11 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
             createPackage(
               commsMessage,
               'voice',
-              mapToPackageVoice(commsMessage.getVoiceData()!.getEncodedSamples_asU8())
+              mapToPackageVoice(
+                commsMessage.getVoiceData()!.getEncodedSamples_asU8(),
+                commsMessage.getVoiceData()!.getIndex(),
+                packet.sequenceId
+              )
             )
           )
           break
@@ -421,8 +427,9 @@ function mapToPackageProfileResponse(profileResponseData: ProfileResponseData) {
   }
 }
 
-function mapToPackageVoice(data: Uint8Array) {
-  return { encoded: data }
+function mapToPackageVoice(encoded: Uint8Array, index: number, fallbackIndex: number) {
+  // If we receive a packet from an old implementation of voice chat, we use the fallbackIndex
+  return { encoded, index: index === 0 ? fallbackIndex : index }
 }
 
 function createProfileData(userInfo: UserInformation) {

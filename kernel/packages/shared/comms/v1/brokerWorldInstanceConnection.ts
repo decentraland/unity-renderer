@@ -33,6 +33,7 @@ import { Realm } from 'shared/dao/types'
 import { getProfileType } from 'shared/profiles/sagas'
 import { Profile } from 'shared/types'
 import { ProfileType } from 'shared/profiles/types'
+import { EncodedFrame } from 'voice-chat-codec/types'
 
 class SendResult {
   constructor(public bytesSize: number) {}
@@ -258,7 +259,7 @@ export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
     return {}
   }
 
-  sendVoiceMessage(currentPosition: Position, data: Uint8Array): Promise<void> {
+  sendVoiceMessage(currentPosition: Position, frame: EncodedFrame): Promise<void> {
     // Not implemented
     return Promise.resolve()
   }
