@@ -111,6 +111,8 @@ export const REALM = qs.realm
 
 export const VOICE_CHAT_DISABLED_FLAG = location.search.indexOf('VOICE_CHAT_DISABLED') !== -1
 
+export const VOICE_CHAT_ENABLED_FLAG = location.search.indexOf('VOICE_CHAT_ENABLED') !== -1
+
 export const AUTO_CHANGE_REALM = location.search.indexOf('AUTO_CHANGE_REALM') !== -1
 
 export const LOS = qs.LOS

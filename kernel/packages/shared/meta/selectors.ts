@@ -1,6 +1,6 @@
 import { CommsConfig, MessageOfTheDayConfig, RootMetaState } from './types'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
-import { VOICE_CHAT_DISABLED_FLAG } from 'config'
+import { VOICE_CHAT_DISABLED_FLAG, VOICE_CHAT_ENABLED_FLAG } from 'config'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
   const { config } = store.meta
@@ -34,4 +34,9 @@ export const getMessageOfTheDay = (store: RootMetaState): MessageOfTheDayConfig 
   store.meta.config.world ? store.meta.config.world.messageOfTheDay || null : null
 
 export const isVoiceChatEnabled = (store: RootMetaState): boolean =>
-  !getCommsConfig(store).voiceChatDisabled && !VOICE_CHAT_DISABLED_FLAG
+  (!!getCommsConfig(store).voiceChatEnabled && !VOICE_CHAT_DISABLED_FLAG) || VOICE_CHAT_ENABLED_FLAG
+
+export const getVoiceChatAllowlist = (store: RootMetaState): string[] => getCommsConfig(store).voiceChatAllowlist ?? []
+
+export const isVoiceChatEnabledFor = (store: RootMetaState, userId: string): boolean =>
+  isVoiceChatEnabled(store) || (getVoiceChatAllowlist(store).includes(userId) && !VOICE_CHAT_DISABLED_FLAG)

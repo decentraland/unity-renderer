@@ -55,5 +55,6 @@ export type CommsConfig = {
   relaySuspensionDisabled?: boolean
   relaySuspensionInterval?: number
   relaySuspensionDuration?: number
-  voiceChatDisabled?: boolean
+  voiceChatEnabled?: boolean
+  voiceChatAllowlist?: string[]
 }

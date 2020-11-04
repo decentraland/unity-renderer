@@ -22,7 +22,8 @@ import { realmInitialized } from 'shared/dao'
 import { EnsureProfile } from 'shared/profiles/ProfileAsPromise'
 import { ensureMetaConfigurationInitialized, waitForMessageOfTheDay } from 'shared/meta'
 import { WorldConfig } from 'shared/meta/types'
-import { isVoiceChatEnabled } from 'shared/meta/selectors'
+import { isVoiceChatEnabledFor } from 'shared/meta/selectors'
+import { UnityInterface } from 'unity-interface/UnityInterface'
 
 const container = document.getElementById('gameContainer')
 
@@ -38,6 +39,15 @@ const observer = renderStateObservable.add((isRunning) => {
     DEBUG_PM && logger.info(`initial load: `, Date.now() - start)
   }
 })
+
+function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean) {
+  i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: true, visible: true }, { enableVoiceChat: voiceChatEnabled })
+  i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
+
+  i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
+  i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: true, visible: false })
+  i.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
+}
 
 initializeUnity(container)
   .then(async ({ instancedJS }) => {
@@ -58,26 +68,25 @@ initializeUnity(container)
     })
     i.ConfigureHUDElement(HUDElementID.AIRDROPPING, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.TERMS_OF_SERVICE, { active: true, visible: true })
+
+    i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
+
     //NOTE(Brian): Scene download manager uses meta config to determine which empty parcels we want
     //             so ensuring meta configuration is initialized in this stage is a must
     //NOTE(Pablo): We also need meta configuration to know if we need to enable voice chat
     await ensureMetaConfigurationInitialized()
 
-    const voiceChatEnabled = isVoiceChatEnabled(globalThis.globalStore.getState())
-
-    i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: true, visible: true }, { enableVoiceChat: voiceChatEnabled })
-    i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
-    i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
-
     try {
       await userAuthentified()
       const identity = getCurrentIdentity(globalThis.globalStore.getState())!
+
+      const voiceChatEnabled = isVoiceChatEnabledFor(globalThis.globalStore.getState(), identity.address)
+      configureTaskbarDependentHUD(i, voiceChatEnabled)
+      
+      i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
+
       i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
       // NOTE (Santi): We have temporarily deactivated the MANA HUD until Product team designs a new place for it (probably inside the Profile HUD).
       i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: identity.hasConnectedWeb3 && false, visible: true })
@@ -89,7 +98,8 @@ initializeUnity(container)
         })
         .catch((e) => logger.error(`error getting profile ${e}`))
     } catch (e) {
-      logger.error('error on configuring friends hud / tutorial')
+      logger.error('error on configuring taskbar & friends hud / tutorial. Trying to default to simple taskbar', e)
+      configureTaskbarDependentHUD(i, false)
     }
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
