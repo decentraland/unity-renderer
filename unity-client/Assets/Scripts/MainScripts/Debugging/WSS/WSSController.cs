@@ -102,6 +102,7 @@ namespace DCL
         public DCLCharacterController characterController;
         private Builder.DCLBuilderBridge builderBridge = null;
         public CameraController cameraController;
+        public GameObject bridgesGameObject;
 
         [System.NonSerialized] public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
 
@@ -438,6 +439,9 @@ namespace DCL
                                 break;
                             case "SetUsersMuted":
                                 HUDController.i.SetUsersMuted(msg.payload);
+                                break;
+                            case "SetKernelConfiguration":
+                                bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             default:
                                 Debug.Log(
