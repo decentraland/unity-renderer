@@ -15,7 +15,8 @@ import {
   UpdateUserStatusMessage,
   RenderProfile,
   BuilderConfiguration,
-  Wearable
+  Wearable,
+  KernelConfigForRenderer
 } from 'shared/types'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
@@ -380,6 +381,10 @@ export class UnityInterface {
 
   public SetUsersMuted(usersId: string[], muted: boolean) {
     this.gameInstance.SendMessage('HUDController', 'SetUsersMuted', JSON.stringify({ usersId: usersId, muted: muted }))
+  }
+
+  public SetKernelConfiguration(config: KernelConfigForRenderer) {
+    this.gameInstance.SendMessage('Bridges', 'SetKernelConfiguration', JSON.stringify(config))
   }
 
   // *********************************************************************************
