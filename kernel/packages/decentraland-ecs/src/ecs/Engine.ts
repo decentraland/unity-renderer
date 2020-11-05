@@ -264,8 +264,42 @@ export class Engine implements IEngine {
   }
 
   getComponentGroup(...requires: ComponentConstructor<any>[]) {
-    // TODO: memoize?
-    const componentGroup = new ComponentGroup(...requires)
+    let componentGroup = undefined
+
+    // Return an already created component-group if it already exists
+    if (requires.length > 0) {
+      // 1. get component groups for first require
+      let componentGroups = this._componentGroups[getComponentName(requires[0])]
+
+      if (componentGroups) {
+        const components = requires.slice()
+
+        // 2. search for a component group that has all the same requirements
+        for (let i = 0; i < componentGroups.length; i++) {
+          const traversedComponentGroup = componentGroups[i]
+
+          if (components.length === traversedComponentGroup.requires.length) {
+            for (let j = 0; j < components.length; j++) {
+              if (traversedComponentGroup.requires.indexOf(components[j]) === -1) break
+
+              if (j === (components.length - 1)) {
+                componentGroup = traversedComponentGroup
+              }
+            }
+
+            if (componentGroup) break
+          }
+        }
+      }
+    }
+
+    if (componentGroup) {
+      // 3. Found an existent component group with the exact same requirements
+      return componentGroup
+    }
+
+    // Otherwise create and store it
+    componentGroup = new ComponentGroup(...requires)
 
     componentGroup.active = true
 
