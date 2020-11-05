@@ -20,6 +20,7 @@ import './unit/profiles.saga.test'
 import './unit/BrowserInterface.test'
 import './unit/positionThings.test'
 import './unit/RestrictedActions.test'
+import './unit/engine.test'
 import './unityIntegration/ecs/math/quaternion.test'
 import './unityIntegration/ecs/math/vector3.test'
 
