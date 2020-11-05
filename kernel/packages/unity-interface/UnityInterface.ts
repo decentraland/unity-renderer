@@ -221,6 +221,14 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'DeactivateRendering')
   }
 
+  public ReportFocusOn() {
+    this.gameInstance.SendMessage('Bridges', 'ReportFocusOn')
+  }
+
+  public ReportFocusOff() {
+    this.gameInstance.SendMessage('Bridges', 'ReportFocusOff')
+  }
+
   public UnlockCursor() {
     this.SetCursorState(false)
   }

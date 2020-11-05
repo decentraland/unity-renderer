@@ -122,6 +122,10 @@ public static class CommonScriptableObjects
     public static RendererState rendererState => GetOrLoad(ref rendererStateValue, "ScriptableObjects/RendererState");
     private static RendererState rendererStateValue;
 
+    public static BooleanVariable focusState => GetOrLoad(ref focusStateValue, "ScriptableObjects/FocusState");
+    private static BooleanVariable focusStateValue;
+
+
     private static ReadMessagesDictionary lastReadChatMessagesDictionary;
     public static ReadMessagesDictionary lastReadChatMessages => GetOrLoad(ref lastReadChatMessagesDictionary, "ScriptableObjects/LastReadChatMessages");
 
