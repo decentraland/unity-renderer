@@ -30,12 +30,18 @@ namespace DCL
             {
                 currentIndex = 0;
                 Report(new string(encodedSamples));
+                GenerateHiccupReport();
             }
         }
 
         private void Report(string encodedSamples)
         {
             WebInterface.SendPerformanceReport(encodedSamples);
+        }
+
+        private void GenerateHiccupReport()
+        {
+            WebInterface.SendPerformanceHiccupReport(tracker.CurrentHiccupCount(), tracker.GetHiccupSum(), tracker.GetTotalSeconds());
         }
     }
 }
