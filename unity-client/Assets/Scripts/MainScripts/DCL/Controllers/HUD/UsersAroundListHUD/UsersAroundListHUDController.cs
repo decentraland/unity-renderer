@@ -47,7 +47,16 @@ public class UsersAroundListHUDController : IHUD
         MinimapMetadata.GetMetadata().OnUserInfoUpdated -= MapRenderer_OnUserInfoUpdated;
         MinimapMetadata.GetMetadata().OnUserInfoRemoved -= MapRenderer_OnUserInfoRemoved;
 
-        usersListView?.Dispose();
+        CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+
+        if (usersListView != null)
+        {
+            usersListView.OnRequestMuteUser -= OnMuteUser;
+            usersListView.OnRequestMuteGlobal -= OnMuteAll;
+            usersListView.OnGoToCrowdPressed -= OnGoToCrowd;
+
+            usersListView.Dispose();
+        }
 
         if (usersButtonView != null)
         {
@@ -104,9 +113,12 @@ public class UsersAroundListHUDController : IHUD
 
         usersListView.OnRequestMuteUser += OnMuteUser;
         usersListView.OnRequestMuteGlobal += OnMuteAll;
+        usersListView.OnGoToCrowdPressed += OnGoToCrowd;
 
         MinimapMetadata.GetMetadata().OnUserInfoUpdated += MapRenderer_OnUserInfoUpdated;
         MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
+
+        CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
     }
 
     void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
@@ -136,21 +148,11 @@ public class UsersAroundListHUDController : IHUD
             usersButtonView?.SetUsersCount(trackedUsersHashSet.Count);
         }
         usersListView.RemoveUser(userId);
-
-        if (isVisible && trackedUsersHashSet.Count == 0)
-        {
-            ToggleVisibility();
-        }
     }
 
     void ToggleVisibility()
     {
         bool setVisible = !isVisible;
-        if (trackedUsersHashSet.Count == 0 && setVisible)
-        {
-            return;
-        }
-
         SetVisibility(setVisible);
     }
 
@@ -189,6 +191,19 @@ public class UsersAroundListHUDController : IHUD
             usersToMute.Clear();
         }
         OnMuteUsers(trackedUsersHashSet, mute);
+    }
+
+    void OnGoToCrowd()
+    {
+        WebInterface.GoToCrowd();
+    }
+
+    private void OnRendererStateChanged(bool isEnable, bool prevState)
+    {
+        if (isEnable || !isVisible)
+            return;
+
+        SetVisibility(false);
     }
 
     void ReportMuteStatuses()
