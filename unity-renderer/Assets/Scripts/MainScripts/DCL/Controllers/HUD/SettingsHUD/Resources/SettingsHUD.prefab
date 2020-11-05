@@ -11581,6 +11581,8 @@ GameObject:
   - component: {fileID: 7155390794652104815}
   - component: {fileID: 2942128906181074129}
   - component: {fileID: 5334537515737833628}
+  - component: {fileID: 1475673958055577862}
+  - component: {fileID: 5671311135782388959}
   m_Layer: 5
   m_Name: SettingsHUD
   m_TagString: Untagged
@@ -11733,6 +11735,38 @@ MonoBehaviour:
   closeAction: {fileID: 11400000, guid: 54539b42d809e284090ff4087d5c733b, type: 2}
   closeButton: {fileID: 2753986069255063991}
   doneButton: {fileID: 9057019394916313536}
+--- !u!114 &1475673958055577862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498655820486328905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bbcf2910099b4c7dbccc822ac5e1197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameObjects:
+  - {fileID: 3799298678342658157}
+  - {fileID: 742911875851602211}
+  - {fileID: 3121924072825686664}
+  - {fileID: 5960823501657919919}
+  - {fileID: 7400535050358440985}
+--- !u!114 &5671311135782388959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6498655820486328905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c08a9a1d3d6ca4fcd897bd25d29fb99a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPositionY: -52.2
+  target: {fileID: 2002825672787295747}
 --- !u!1 &6549198355839403631
 GameObject:
   m_ObjectHideFlags: 0

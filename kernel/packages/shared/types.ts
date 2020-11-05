@@ -518,5 +518,6 @@ export type BuilderConfiguration = {
 export type KernelConfigForRenderer = {
   comms: {
     commRadius: number
+    voiceChatEnabled: boolean
   }
 }

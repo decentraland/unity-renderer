@@ -6,10 +6,12 @@ namespace KernelConfigurationTypes
     public class Comms
     {
         public float commRadius = 4;
+        public bool voiceChatEnabled = false;
 
         public bool Equals(Comms other)
         {
-            return commRadius == other?.commRadius;
+            return commRadius == other?.commRadius
+            && voiceChatEnabled == other?.voiceChatEnabled;
         }
 
         public Comms Clone()
