@@ -23,3 +23,15 @@ export function getPerformanceInfo(samples: string) {
     max: sorted[length - 1]
   }
 }
+
+export function getRawPerformanceInfo(samples: string) {
+  const entries: number[] = []
+
+  const length = samples.length
+
+  for (let i = 0; i < length; i++) {
+    entries[i] = samples.charCodeAt(i)
+  }
+
+  return JSON.stringify({ samples })
+}
