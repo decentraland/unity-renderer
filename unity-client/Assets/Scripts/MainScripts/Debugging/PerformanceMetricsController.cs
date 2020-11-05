@@ -14,6 +14,12 @@ namespace DCL
 
         public void Update()
         {
+            if (!CommonScriptableObjects.focusState.Get())
+                return;
+
+            if (!CommonScriptableObjects.rendererState.Get())
+                return;
+
             var deltaInMs = Time.deltaTime * 1000;
 
             tracker.AddDeltaTime(Time.deltaTime);

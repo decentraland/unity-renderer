@@ -15,7 +15,7 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
-import { renderStateObservable, onNextRendererEnabled } from 'shared/world/worldState'
+import { renderStateObservable, onNextRendererEnabled, foregroundObservable, isForeground } from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
@@ -84,7 +84,7 @@ initializeUnity(container)
 
       const voiceChatEnabled = isVoiceChatEnabledFor(globalThis.globalStore.getState(), identity.address)
       configureTaskbarDependentHUD(i, voiceChatEnabled)
-      
+
       i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
 
       i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
@@ -121,6 +121,20 @@ initializeUnity(container)
     } else {
       i.SetRenderProfile(RenderProfile.DEFAULT)
     }
+
+    if (isForeground()) {
+      i.ReportFocusOn()
+    } else {
+      i.ReportFocusOff()
+    } 
+
+    foregroundObservable.add((isForeground) => {
+      if (isForeground) {
+        i.ReportFocusOn()
+      } else {
+        i.ReportFocusOff()
+      }
+    })
 
     if (!NO_MOTD) {
       waitForMessageOfTheDay().then((messageOfTheDay) => {

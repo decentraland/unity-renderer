@@ -23,7 +23,7 @@ import {
 } from 'shared/types'
 import { getSceneWorkerBySceneID } from 'shared/world/parcelSceneManager'
 import { positionObservable } from 'shared/world/positionThings'
-import { isForeground, isRendererEnabled, renderStateObservable } from 'shared/world/worldState'
+import { renderStateObservable } from 'shared/world/worldState'
 import { sendMessage } from 'shared/chat/actions'
 import { updateUserData, updateFriendship } from 'shared/friends/actions'
 import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/dao'
@@ -116,10 +116,6 @@ export class BrowserInterface {
   }
 
   public PerformanceReport(samples: string) {
-    if (!isRendererEnabled() || !isForeground()) {
-      return
-    }
-
     const perfReport = getPerformanceInfo(samples)
     queueTrackingEvent('performance report', perfReport)
   }
