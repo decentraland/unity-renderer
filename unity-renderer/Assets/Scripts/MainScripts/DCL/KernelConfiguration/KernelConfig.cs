@@ -2,8 +2,7 @@
 using UnityEngine;
 using DCL.Helpers;
 
-[CreateAssetMenu(fileName = "KernelConfiguration", menuName = "KernelConfiguration")]
-public class KernelConfig : ScriptableObject
+public class KernelConfig
 {
     public delegate void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous);
 
@@ -13,18 +12,18 @@ public class KernelConfig : ScriptableObject
     {
         get
         {
-            if (!config)
+            if (config == null)
             {
-                config = Resources.Load<KernelConfig>("KernelConfiguration");
+                config = new KernelConfig();
             }
             return config;
         }
     }
     static KernelConfig config = null;
 
-    [SerializeField] KernelConfigModel value;
-
+    KernelConfigModel value = new KernelConfigModel();
     List<Promise<KernelConfigModel>> initializationPromises = new List<Promise<KernelConfigModel>>();
+
     internal bool initialized = false;
 
     /// <summary>
@@ -107,4 +106,6 @@ public class KernelConfig : ScriptableObject
             Debug.LogError($"Error setting KernelConfig {e.Message}");
         }
     }
+
+    private KernelConfig() { }
 }
