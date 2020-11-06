@@ -125,7 +125,7 @@ namespace DCL.Components
                     matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
                 }
 
-                SRPBatchingHelper.OptimizeMaterial(meshRenderer, material);
+                SRPBatchingHelper.OptimizeMaterial(material);
                 meshRenderer.sharedMaterial = material;
             }
         }

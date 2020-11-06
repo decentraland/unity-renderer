@@ -233,7 +233,7 @@ namespace DCL.Components
                 }
 
                 meshRenderer.sharedMaterial = material;
-                SRPBatchingHelper.OptimizeMaterial(meshRenderer, material);
+                SRPBatchingHelper.OptimizeMaterial(material);
             }
         }
 
