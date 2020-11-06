@@ -273,8 +273,11 @@ namespace DCL.Components
                     CoroutineStarter.Start(DCLTexture.FetchTextureComponent(scene, textureComponentId,
                         (fetchedDCLTexture) =>
                         {
-                            material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
-                            SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
+                            if(material != null)
+                            {
+                                material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
+                                SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
+                            }
                         }));
                 }
             }
