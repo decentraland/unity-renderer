@@ -9,6 +9,7 @@ public interface IUsersAroundListHUDListView
     void RemoveUser(string userId);
     void SetUserRecording(string userId, bool isRecording);
     void SetUserMuted(string userId, bool isMuted);
+    void SetUserBlocked(string userId, bool blocked);
     void SetVisibility(bool visible);
     void Dispose();
 }

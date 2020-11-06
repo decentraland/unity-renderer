@@ -15,6 +15,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
 
     [SerializeField] internal TextMeshProUGUI userName;
     [SerializeField] internal RawImage avatarPreview;
+    [SerializeField] internal GameObject blockedGO;
     [SerializeField] internal Button soundButton;
     [SerializeField] internal GameObject muteGO;
     [SerializeField] internal GameObject recordingGO;
@@ -74,6 +75,11 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         setUserRecordingRoutine = CoroutineStarter.Start(SetRecordingRoutine(isRecording));
     }
 
+    public void SetBlocked(bool blocked)
+    {
+        blockedGO.SetActive(blocked);
+    }
+
     public void OnPoolRelease()
     {
         avatarPreview.texture = null;
@@ -101,6 +107,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         userName.text = string.Empty;
         backgroundHover.SetActive(false);
         menuButton.gameObject.SetActive(false);
+        blockedGO.SetActive(false);
         gameObject.SetActive(true);
     }
 
