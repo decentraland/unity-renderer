@@ -119,7 +119,7 @@ export class BrowserInterface {
     queueTrackingEvent('performance report', perfReport)
 
     const rawPerfReport = getRawPerformanceInfo(samples)
-    queueTrackingEvent('raw performance report', rawPerfReport)
+    queueTrackingEvent('raw perf report', rawPerfReport)
   }
 
   public PreloadFinished(data: { sceneId: string }) {
