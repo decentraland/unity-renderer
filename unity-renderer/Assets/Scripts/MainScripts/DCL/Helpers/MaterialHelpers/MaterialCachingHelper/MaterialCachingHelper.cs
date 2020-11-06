@@ -62,9 +62,11 @@ namespace DCL.Helpers
 
                 matList.Clear();
 
-                for (int i1 = 0; i1 < r.sharedMaterials.Length; i1++)
+                var sharedMats = r.sharedMaterials;
+
+                for (int i1 = 0; i1 < sharedMats.Length; i1++)
                 {
-                    Material mat = r.sharedMaterials[i1];
+                    Material mat = sharedMats[i1];
 
                     float elapsedTime = Time.realtimeSinceStartup;
 
@@ -107,15 +109,16 @@ namespace DCL.Helpers
                                 materialCopy.SetFloat("_Surface", 1);
                             else
                                 materialCopy.SetFloat("_Surface", 0);
-#endif
-                            SRPBatchingHelper.OptimizeMaterial(r, materialCopy);
 
+                            materialCopy.name += $" (crc: {materialCopy.ComputeCRC()})";
+#endif
+
+                            SRPBatchingHelper.OptimizeMaterial(materialCopy);
                             PersistentAssetCache.MaterialCacheByCRC.Add(hash, new RefCountedMaterialData(hash, materialCopy));
                         }
 
                         refCountedMat = PersistentAssetCache.MaterialCacheByCRC[hash];
                         refCountedMat.IncreaseRefCount();
-
                         matList.Add(refCountedMat.material);
                     }
                     else

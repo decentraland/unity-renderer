@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace DCL.Helpers
 {
-    public static class SRPBatchingHelper
+public static class SRPBatchingHelper
     {
         static Dictionary<int, int> crcToQueue = new Dictionary<int, int>();
 
-        public static void OptimizeMaterial(Renderer renderer, Material material)
+        public static void OptimizeMaterial(Material material)
         {
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
             material.EnableKeyword("_EMISSION");
@@ -25,12 +25,12 @@ namespace DCL.Helpers
                 return;
             }
 
-            int cullMode = (int) material.GetFloat(ShaderUtils.Cull);
+            int cullMode = 2 - (int) material.GetFloat(ShaderUtils.Cull);
 
             int baseQueue;
 
             if (material.renderQueue == (int) UnityEngine.Rendering.RenderQueue.AlphaTest)
-                baseQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
+                baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry + 600;
             else
                 baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry;
 
@@ -46,19 +46,10 @@ namespace DCL.Helpers
             if (!crcToQueue.ContainsKey(crc))
                 crcToQueue.Add(crc, crcToQueue.Count + 1);
 
-            //NOTE(Brian): This is to move the rendering of animated stuff on top of the queue, so the SRP batcher
-            //             can group all the draw calls.
-            if (renderer is SkinnedMeshRenderer)
-            {
-                material.renderQueue = baseQueue;
-            }
-            else
-            {
-                //NOTE(Brian): we use 0, 100, 200 to group calls by culling mode (must group them or batches will break).
-                int queueOffset = (cullMode + 1) * 100;
+            //NOTE(Brian): we use 0, 100, 200 to group calls by culling mode (must group them or batches will break).
+            int queueOffset = (cullMode + 1) * 150;
 
-                material.renderQueue = baseQueue + crcToQueue[crc] + queueOffset;
-            }
+            material.renderQueue = baseQueue + crcToQueue[crc] + queueOffset;
         }
     }
 }
