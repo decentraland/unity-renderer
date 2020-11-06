@@ -133,6 +133,15 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         elementView.SetMuted(isMuted);
     }
 
+    void IUsersAroundListHUDListView.SetUserBlocked(string userId, bool blocked)
+    {
+        if (!userElementDictionary.TryGetValue(userId, out UsersAroundListHUDListElementView elementView))
+        {
+            return;
+        }
+        elementView.SetBlocked(blocked);
+    }
+
     void IUsersAroundListHUDListView.SetVisibility(bool visible)
     {
         if (visible)

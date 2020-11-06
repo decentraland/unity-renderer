@@ -48,6 +48,7 @@ public class UsersAroundListHUDController : IHUD
         MinimapMetadata.GetMetadata().OnUserInfoRemoved -= MapRenderer_OnUserInfoRemoved;
 
         CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+        profile.OnUpdate -= OnUserProfileUpdate;
 
         if (usersListView != null)
         {
@@ -119,6 +120,7 @@ public class UsersAroundListHUDController : IHUD
         MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
 
         CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+        profile.OnUpdate += OnUserProfileUpdate;
     }
 
     void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
@@ -128,8 +130,12 @@ public class UsersAroundListHUDController : IHUD
         if (!trackedUsersHashSet.Contains(userInfo.userId))
         {
             trackedUsersHashSet.Add(userInfo.userId);
+
             bool isMuted = profile.muted.Contains(userInfo.userId);
+            bool isBlocked = profile.blocked != null ? profile.blocked.Contains(userInfo.userId) : false;
+
             usersListView.SetUserMuted(userInfo.userId, isMuted);
+            usersListView.SetUserBlocked(userInfo.userId, isBlocked);
 
             if (isMuteAll && !isMuted)
             {
@@ -204,6 +210,17 @@ public class UsersAroundListHUDController : IHUD
             return;
 
         SetVisibility(false);
+    }
+
+    private void OnUserProfileUpdate(UserProfile profile)
+    {
+        using (var iterator = trackedUsersHashSet.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                usersListView.SetUserBlocked(iterator.Current, profile.blocked != null ? profile.blocked.Contains(iterator.Current) : false);
+            }
+        }
     }
 
     void ReportMuteStatuses()
