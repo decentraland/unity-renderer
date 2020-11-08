@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// An on/off action that triggers Start when the input is read and Finished when the input has gone
+/// </summary>
 [CreateAssetMenu(fileName = "InputAction_Hold", menuName = "InputActions/Hold")]
 public class InputAction_Hold : ScriptableObject
 {

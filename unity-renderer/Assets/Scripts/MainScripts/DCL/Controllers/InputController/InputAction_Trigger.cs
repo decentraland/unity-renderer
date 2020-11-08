@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// An instantaneous action which dispatches an event as soon as the input is read
+/// </summary>
 [CreateAssetMenu(fileName = "InputAction_Trigger", menuName = "InputActions/Trigger")]
 public class InputAction_Trigger : ScriptableObject
 {
