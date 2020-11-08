@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// An analogical action that raises events when the value is changed. The most common use-case is implementing axis
+/// </summary>
 [CreateAssetMenu(fileName = "InputAction_Measurable", menuName = "InputActions/Measurable")]
 public class InputAction_Measurable : ScriptableObject
 {
