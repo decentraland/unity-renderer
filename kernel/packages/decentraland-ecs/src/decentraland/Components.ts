@@ -203,13 +203,13 @@ export class Shape extends ObservableComponent {
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.BOX_SHAPE)
-export class BoxShape extends Shape {}
+export class BoxShape extends Shape { }
 
 /**
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.SPHERE_SHAPE)
-export class SphereShape extends Shape {}
+export class SphereShape extends Shape { }
 
 /**
  * @public
@@ -780,7 +780,7 @@ export class Material extends ObservableComponent {
    * Emissive texture.
    */
   @ObservableComponent.component
-  emissiveTexture?: Texture
+  emissiveTexture?: Texture | VideoTexture
 
   /**
    * Stores surface normal data used to displace a mesh in a texture.
@@ -864,8 +864,8 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
 
   static uuidEvent(target: ObservableComponent, propertyKey: string) {
     if (delete (target as any)[propertyKey]) {
-      const componentSymbol = propertyKey + '_' + Math.random()
-      ;(target as any)[componentSymbol] = undefined
+      const componentSymbol = propertyKey + '_' + Math.random();
+      (target as any)[componentSymbol] = undefined
 
       Object.defineProperty(target, componentSymbol, {
         ...Object.getOwnPropertyDescriptor(target, componentSymbol),
@@ -873,10 +873,10 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
       })
 
       Object.defineProperty(target, propertyKey.toString(), {
-        get: function() {
+        get: function () {
           return this[componentSymbol]
         },
-        set: function(value) {
+        set: function (value) {
           const oldValue = this[componentSymbol]
 
           if (value) {
@@ -959,7 +959,7 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
  * @internal
  */
 @Component('engine.smartItem', CLASS_ID.SMART_ITEM)
-export class SmartItem extends ObservableComponent {}
+export class SmartItem extends ObservableComponent { }
 
 /**
  * @public
