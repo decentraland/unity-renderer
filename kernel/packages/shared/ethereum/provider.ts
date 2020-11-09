@@ -5,8 +5,9 @@ import { ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 import { defaultLogger } from 'shared/logger'
 import { Account } from 'web3x/account'
 import { getTLD } from '../../config/index'
-import { Eth } from 'web3x/eth'
 import { getLastSessionWithoutWallet, getStoredSession } from 'shared/session'
+import { Eth } from 'web3x/eth'
+import { LegacyProviderAdapter } from 'web3x/providers'
 
 declare var window: Window & {
   ethereum: any
@@ -167,8 +168,8 @@ export function awaitWeb3Approval(): Promise<void> {
 function registerProviderChanges() {
   if (window.ethereum && typeof window.ethereum.on === 'function') {
     window.ethereum.on('accountsChanged', (accounts: string[]) => location.reload())
-    window.ethereum.on('networkChanged', (networkId: string) => location.reload())
-    window.ethereum.on('close', (code: number, reason: string) => location.reload())
+    window.ethereum.on('chainChanged', (networkId: string) => location.reload())
+    window.ethereum.on('disconnect', (code: number, reason: string) => location.reload())
   }
 }
 
@@ -190,7 +191,7 @@ export function isSessionExpired(userData: any) {
 
 export async function getUserAccount(): Promise<string | undefined> {
   try {
-    const eth = Eth.fromCurrentProvider()!
+    const eth = createEthUsingWalletProvider()!
     const accounts = await eth.getAccounts()
 
     if (!accounts || accounts.length === 0) {
@@ -204,7 +205,12 @@ export async function getUserAccount(): Promise<string | undefined> {
 }
 
 export async function getUserEthAccountIfAvailable(): Promise<string | undefined> {
-  if (Eth.fromCurrentProvider()) {
+  if (createEthUsingWalletProvider()) {
     return getUserAccount()
   }
+}
+
+export function createEthUsingWalletProvider(): Eth | undefined {
+  const ethereum = (window as any).ethereum
+  return ethereum ? new Eth(new LegacyProviderAdapter(ethereum)) : undefined
 }

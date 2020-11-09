@@ -1,6 +1,5 @@
 import { put, takeLatest, call, delay, select } from 'redux-saga/effects'
 import { createIdentity } from 'eth-crypto'
-import { Eth } from 'web3x/eth'
 import { Personal } from 'web3x/personal/personal'
 import { Account } from 'web3x/account'
 import { Authenticator } from 'dcl-crypto'
@@ -14,7 +13,8 @@ import {
   isSessionExpired,
   providerFuture,
   loginCompleted,
-  getUserEthAccountIfAvailable
+  getUserEthAccountIfAvailable,
+  createEthUsingWalletProvider
 } from 'shared/ethereum/provider'
 import { setLocalInformationForComms } from 'shared/comms/peers'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
@@ -205,7 +205,7 @@ async function createAuthIdentity() {
   if (ENABLE_WEB3) {
     const result = await providerFuture
     if (result.successful) {
-      const eth = Eth.fromCurrentProvider()!
+      const eth = createEthUsingWalletProvider()!
       const account = (await eth.getAccounts())[0]
 
       address = account.toJSON()
