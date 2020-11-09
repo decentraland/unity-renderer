@@ -452,7 +452,7 @@ function processChatMessage(context: Context, fromAlias: string, message: Packag
             messageId: msgId,
             sender: user.userId || 'unknown',
             body: text,
-            timestamp: message.time
+            timestamp: Date.now()
           }
           store.dispatch(messageReceived(messageEntry))
         }
