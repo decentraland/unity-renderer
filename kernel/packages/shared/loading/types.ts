@@ -14,7 +14,7 @@ export const loadingTips = [
     image: 'images/decentraland-connect/loadingtips/Land.png'
   },
   {
-    text: `Decentraland is made up of over 90,000 LANDs: virtual spaces backed by cryptographic tokens. Only LANDowners can determine the content that sits on their LAND.`,
+    text: `Decentraland is made up of over 90,000 LANDs: virtual spaces backed by cryptographic tokens. Only LAND owners can determine the content that sits on their LAND.`,
     image: 'images/decentraland-connect/loadingtips/LandImg.png'
   },
   {
