@@ -135,7 +135,7 @@ public class WearableController
 
     public void SetAnimatorBones(SkinnedMeshRenderer skinnedMeshRenderer)
     {
-        if (!boneRetargetingDirty) return;
+        if (!boneRetargetingDirty || assetContainer == null) return;
 
         SkinnedMeshRenderer[] skinnedRenderers = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>();
 
