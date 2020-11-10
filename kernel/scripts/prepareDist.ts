@@ -9,55 +9,6 @@ import { copyFile } from './_utils'
 
 const root = path.resolve(__dirname, '..')
 const commitHash = execSync('git rev-parse HEAD').toString().trim()
-const md5File = require('md5-file/promise')
-
-async function copyIndex(filename: string) {
-  let md5 = ''
-
-  let newFileName = `${filename}.js`
-
-  console.log(`> copy ${filename}.js to ${filename}.<hash>.js`)
-  {
-    const src = path.resolve(root, `static/dist/${filename}.js`)
-
-    if (!fs.existsSync(src)) {
-      throw new Error(`${src} does not exist`)
-    }
-
-    md5 = await md5File(src)
-
-    newFileName = `${filename}.${md5}.js`
-
-    const dst = path.resolve(root, `static/dist/${newFileName}`)
-
-    await fs.copy(src, dst)
-
-    if (!fs.existsSync(dst)) {
-      throw new Error(`${dst} does not exist`)
-    }
-  }
-
-  const targetIndexHtml = path.resolve(root, 'static/index.html')
-
-  if (!fs.existsSync(targetIndexHtml)) {
-    throw new Error(`${targetIndexHtml} does not exist`)
-  }
-
-  console.log(`> replace ${filename}.js -> ${newFileName} in html`)
-  {
-    let content = readFileSync(targetIndexHtml).toString()
-
-    if (!content.includes(`${filename}.js`)) {
-      throw new Error(`index.html is dirty and does\'t contain the text "${filename}.js"`)
-    }
-
-    content = content.replace(new RegExp(filename + '.(S+.)?js'), newFileName)
-    content = content.replace(/\s*<!--(.+)-->/, '')
-    content = content + `\n\n<!-- ${new Date().toISOString()} commit: ${commitHash} -->`
-
-    writeFileSync(targetIndexHtml, content)
-  }
-}
 
 async function injectDependencies(folder: string, dependencies: string[], devDependency = false) {
   console.log(`> update ${folder}/package.json (injecting dependencies)`)
@@ -185,7 +136,6 @@ async function validatePackage(folder: string) {
 
 // tslint:disable-next-line:semicolon
 ;(async function () {
-  await copyIndex('unity')
   await prepareDecentralandECS('packages/decentraland-ecs')
   await injectDependencies('packages/build-ecs', ['typescript', 'terser'], false)
 })().catch((e) => {
