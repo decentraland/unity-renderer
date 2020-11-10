@@ -294,14 +294,13 @@ jobs:
           name: "post install script"
           command: sh scripts/post-install.sh
       - run:
-          name: "creating .env (ignore master)"
-          command: echo "PUBLIC_URL=\"https://play.decentraland.zone/branch/${CIRCLE_BRANCH}\"" >> .env
-          filters:
-            branches:
-              ignore:
-                - master
-                - staging
-                - release
+          name: "add PUBLIC_URL to .env (ignore master, staging, release)"
+          command: |
+            if [[ "$CIRCLE_BRANCH" =~ ^(master|staging|release)$ ]]; then
+              echo "skipped";
+            else
+              echo "PUBLIC_URL=\"https://play.decentraland.zone/branch/${CIRCLE_BRANCH}\"" >> .env;
+            fi
       - run:
           name: "show .env"
           command: cat .env
