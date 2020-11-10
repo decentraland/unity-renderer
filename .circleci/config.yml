@@ -508,18 +508,21 @@ workflows:
       - deploy-dev:
           requires:
             - package
+            - "build-website"
           filters:
             branches:
               only: master
       - deploy-stg:
           requires:
             - package
+            - "build-website"
           filters:
             branches:
               only: staging
       - deploy-prd:
           requires:
             - package
+            - "build-website"
           filters:
             branches:
               only: release
