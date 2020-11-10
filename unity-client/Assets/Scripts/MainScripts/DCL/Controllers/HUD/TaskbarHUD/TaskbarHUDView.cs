@@ -21,7 +21,6 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Right Side Config")]
     [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
-    [SerializeField] internal TaskbarButton backpackButton;
     [SerializeField] internal TaskbarButton exploreButton;
 
     [Header("More Button Config")]
@@ -30,7 +29,6 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Tutorial Config")]
     [SerializeField] internal RectTransform exploreTooltipReference;
-    [SerializeField] internal RectTransform backpackTooltipReference;
     [SerializeField] internal RectTransform moreTooltipReference;
 
     [Header("Old TaskbarCompatibility (temporal)")]
@@ -45,8 +43,6 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnChatToggleOff;
     public event System.Action OnFriendsToggleOn;
     public event System.Action OnFriendsToggleOff;
-    public event System.Action OnBackpackToggleOn;
-    public event System.Action OnBackpackToggleOff;
     public event System.Action OnExploreToggleOn;
     public event System.Action OnExploreToggleOff;
     public event System.Action OnMoreToggleOn;
@@ -58,7 +54,6 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.Add(chatButton);
         taskbarButtonList.Add(friendsButton);
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
-        taskbarButtonList.Add(backpackButton);
         taskbarButtonList.Add(exploreButton);
         taskbarButtonList.Add(moreButton);
         return taskbarButtonList;
@@ -80,7 +75,6 @@ public class TaskbarHUDView : MonoBehaviour
         ShowBar(true, true);
         chatButton.transform.parent.gameObject.SetActive(false);
         friendsButton.transform.parent.gameObject.SetActive(false);
-        backpackButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
         voiceChatButtonPlaceholder.SetActive(false);
         voiceChatButton.gameObject.SetActive(false);
@@ -92,7 +86,6 @@ public class TaskbarHUDView : MonoBehaviour
         chatHeadsGroup.Initialize(chatController, friendsController);
         chatButton.Initialize();
         friendsButton.Initialize();
-        backpackButton.Initialize();
         exploreButton.Initialize();
         moreButton.Initialize();
 
@@ -104,9 +97,6 @@ public class TaskbarHUDView : MonoBehaviour
 
         friendsButton.OnToggleOn += OnWindowToggleOn;
         friendsButton.OnToggleOff += OnWindowToggleOff;
-
-        backpackButton.OnToggleOn += OnWindowToggleOn;
-        backpackButton.OnToggleOff += OnWindowToggleOff;
 
         exploreButton.OnToggleOn += OnWindowToggleOn;
         exploreButton.OnToggleOff += OnWindowToggleOff;
@@ -121,8 +111,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOff?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOff?.Invoke();
-        else if (obj == backpackButton)
-            OnBackpackToggleOff?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOff?.Invoke();
         else if (obj == moreButton)
@@ -156,8 +144,6 @@ public class TaskbarHUDView : MonoBehaviour
             OnFriendsToggleOn?.Invoke();
         else if (obj == chatButton)
             OnChatToggleOn?.Invoke();
-        else if (obj == backpackButton)
-            OnBackpackToggleOn?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOn?.Invoke();
         else if (obj == moreButton)
@@ -197,11 +183,6 @@ public class TaskbarHUDView : MonoBehaviour
     internal void OnAddSettingsWindow()
     {
         moreMenu.ActivateSettingsButton();
-    }
-
-    internal void OnAddBackpackWindow()
-    {
-        backpackButton.transform.parent.gameObject.SetActive(true);
     }
 
     internal void OnAddExploreWindow()
@@ -271,12 +252,6 @@ public class TaskbarHUDView : MonoBehaviour
         {
             friendsButton.OnToggleOn -= OnWindowToggleOn;
             friendsButton.OnToggleOff -= OnWindowToggleOff;
-        }
-
-        if (backpackButton != null)
-        {
-            backpackButton.OnToggleOn -= OnWindowToggleOn;
-            backpackButton.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (exploreButton != null)

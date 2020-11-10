@@ -1,0 +1,55 @@
+.eth-accordion {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  position: relative;
+}
+
+.eth-accordion .eth-accordion-title {
+  cursor: pointer;
+}
+
+.eth-accordion .eth-accordion-title,
+.eth-accordion .eth-accordion-description {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+.eth-accordion .eth-accordion-title::before,
+.eth-accordion .eth-accordion-title::after {
+  display: block;
+  position: absolute;
+  top: 25px;
+  left: 0;
+  width: 1em;
+  height: 1em;
+  transition: opacity 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.eth-accordion .eth-accordion-title::after {
+  content: "+";
+  opacity: 1;
+}
+
+.eth-accordion .eth-accordion-title::before {
+  content: "-";
+  opacity: 0;
+}
+
+.eth-accordion.eth-accordion-open .eth-accordion-title::after {
+  content: "+";
+  opacity: 0;
+}
+
+.eth-accordion.eth-accordion-open .eth-accordion-title::before {
+  content: "-";
+  opacity: 1;
+}
+
+.eth-accordion .eth-accordion-description {
+  overflow: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}

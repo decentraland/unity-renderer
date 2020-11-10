@@ -1,0 +1,1284 @@
+.error-image {
+  max-height: 330px;
+  width: auto;
+  height: auto;
+}
+
+.error-background {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background-color: black;
+  z-index: -1;
+  opacity: 1;
+}
+
+.error-container {
+  width: 800px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+}
+
+#error-comms.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-comms.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  padding-right: 30px;
+  flex: 1;
+}
+
+#error-comms.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-comms.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-comms.error-container .errormessage .error {
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 180px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 2px;
+  line-height: 92px;
+}
+
+#error-comms.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-comms.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+#error-comms.error-container .errormessage .givesomedetailof a {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+#error-comms.error-container .errormessage .givesomedetailof a:visited {
+  color: rgba(255, 255, 255, 1);
+}
+
+#error-comms.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-comms.error-container .errormessage {
+  width: 800px;
+  justify-content: flex-end;
+  display: flex;
+}
+
+#error-comms.error-container .errormessage .col {
+  justify-content: flex-end;
+}
+
+#error-comms.errormessage .errortext {
+  padding-right: 30px;
+}
+
+/**
+ * New login error
+ */
+
+#error-newlogin.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  width: 800px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-newlogin.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+#error-newlogin.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-newlogin.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-newlogin.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-newlogin.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-newlogin.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-newlogin.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+/**
+ * Network mismatch error
+ */
+
+#error-networkmismatch.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  width: 800px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-networkmismatch.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+#error-networkmismatch.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-networkmismatch.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-networkmismatch.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-networkmismatch.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-networkmismatch.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-networkmismatch.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+/**
+ * Fatal error
+ */
+
+#error-fatal.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  width: 800px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-fatal.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+#error-fatal.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-fatal.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-fatal.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-fatal.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-fatal.error-container .errormessage .error {
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 180px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 2px;
+  line-height: 92px;
+}
+
+#error-fatal.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-fatal.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+#error-fatal.error-container .errormessage .givesomedetailof a {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+#error-fatal.error-container .errormessage .givesomedetailof a:visited {
+  color: rgba(255, 255, 255, 1);
+}
+
+/**
+ * no invite
+ */
+
+#error-notinvited.error-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#error-notinvited.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  width: 800px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+#error-notinvited.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 0;
+}
+
+#error-notinvited.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-notinvited.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-notinvited.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-notinvited.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-notinvited.error-container .errormessage .error {
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 120px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 2px;
+  line-height: 46px;
+}
+
+#error-notinvited.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-notinvited.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+#error-notinvited.error-container .errormessage .givesomedetailof a {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+#error-notinvited.error-container .errormessage .givesomedetailof a:visited {
+  color: rgba(255, 255, 255, 1);
+}
+
+/**
+ * Not supported
+ */
+
+#error-notsupported.error-container {
+  width: 800px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#error-notsupported.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-notsupported.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+#error-notsupported.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-notsupported.error-container .errormessage div {
+  display: inline-block;
+}
+
+#error-notsupported.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-notsupported.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-notsupported.error-container .errormessage .error {
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 180px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 2px;
+  line-height: 92px;
+}
+
+#error-notsupported.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-notsupported.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+#error-notsupported.error-container .errormessage .givesomedetailof a {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+#error-notsupported.error-container .errormessage .givesomedetailof a:visited {
+  color: rgba(255, 255, 255, 1);
+}
+
+/**
+ * Mobile (WIP)
+ */
+
+#error-nomobile {
+  background-color: black;
+  opacity: 1;
+}
+
+#error-nomobile-mobile.error-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2);
+  padding-left: 115px;
+}
+
+#error-nomobile-mobile.error-container .errormessage {
+  background-color: rgba(255, 255, 255, 0);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#error-nomobile-mobile.error-container .errormessage .col {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+#error-nomobile-mobile.error-container .errormessage .errortext {
+  padding-right: 30px;
+}
+
+#error-nomobile-mobile.error-container .errormessage div {
+  width: 100%;
+}
+
+#error-nomobile-mobile.error-container .errormessage .cta {
+  text-align: right;
+  display: flex;
+  align-items: flex-end;
+  flex-flow: column;
+  margin-top: 20px;
+}
+
+#error-nomobile-mobile.error-container .errormessage .cta .retry {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 1em;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  width: 128px;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-nomobile-mobile.error-container .errormessage .error {
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 180px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 0.08em;
+  line-height: 0.4em;
+}
+
+#error-nomobile-mobile.error-container .errormessage .communicationslink {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "-apple-system", Helvetica, Arial, serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: right;
+  letter-spacing: 1.1px;
+  line-height: 25px;
+  margin-bottom: 25px;
+}
+
+#error-nomobile-mobile.error-container .errormessage .givesomedetailof {
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  padding-left: 30px;
+  padding-right: 30px;
+  letter-spacing: -0.16px;
+  line-height: 22px;
+}
+
+#error-nomobile-mobile.error-container .errormessage .givesomedetailof a {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+#error-nomobile-mobile.error-container
+  .errormessage
+  .givesomedetailof
+  a:visited {
+  color: rgba(255, 255, 255, 1);
+}
+
+#error-nomobile-mobile.error-container .errormessage .notavailable-mobile {
+  margin: auto;
+  justify-content: space-around;
+}
+
+#error-nomobile-mobile.error-container
+  .errormessage
+  .notavailable-mobile
+  .givesomedetailof {
+  margin-bottom: 32px;
+  line-height: 25px;
+}
+
+#error-nomobile-mobile.error-container
+  .errormessage
+  .notavailable-mobile
+  .cta
+  .submitemail {
+  width: 100%;
+  margin-top: 10px;
+}
+
+#error-nomobile-mobile.error-container
+  .errormessage
+  .notavailable-mobile
+  input.enteremail {
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(115, 110, 125);
+  border-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-style: none;
+  border-width: 0px;
+  color: #111;
+  cursor: pointer;
+  display: block;
+  font-size: 15px;
+  font-stretch: 100%;
+  font-style: normal;
+  text-align: center;
+  flex-grow: 1;
+  font-weight: 400;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 24px;
+  margin-bottom: 8px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  outline-color: rgb(115, 110, 125);
+  outline-style: none;
+  outline-width: 0px;
+  padding-bottom: 10px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top: 10px;
+  word-spacing: 0px;
+  width: 100%;
+  writing-mode: horizontal-tb;
+  -webkit-appearance: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-rtl-ordering: logical;
+  -webkit-border-image: none;
+}
+
+#error-nomobile.error-container .errormessage .cta .submitemail {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#error-nomobile-mobile.error-container .errormessage .cta .submitemail {
+  background-color: #ff2d55;
+  height: 29px;
+  width: 102px;
+  background-color: rgb(255, 45, 85);
+  background-size: auto;
+  border-bottom-color: rgb(255, 255, 255);
+  border-radius: 6px;
+  border-style: none;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 36, 38, 0.15) 0px 0px 0px 0px inset;
+  box-sizing: border-box;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  display: block;
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-stretch: 125%;
+  font-weight: 600;
+  height: 44px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 13px;
+  min-width: 128px;
+  outline-color: rgb(255, 255, 255);
+  outline-style: none;
+  outline-width: 0px;
+  overflow-x: visible;
+  overflow-y: visible;
+  text-transform: uppercase;
+  text-align: center;
+  text-rendering: auto;
+  text-size-adjust: 100%;
+  user-select: none;
+  visibility: visible;
+  will-change: auto;
+  word-spacing: 0px;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.iphone8916 {
+  width: 100%;
+  min-width: 375px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  margin: 0;
+  z-index: 7;
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(13, 12, 15, 1);
+}
+
+.iphone8916 .div1 {
+  -webkit-font-smoothing: antialiased;
+  width: 375px;
+  height: 100%;
+  position: relative;
+  font-family: "SFUIText-Heavy", "-apple-system", Helvetica, Arial, serif;
+  margin: auto;
+
+  padding-top: 51px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (min-height: 650px) {
+  .iphone8916 .div1 {
+    padding-top: 121px;
+  }
+}
+
+.iphone8916 .cta {
+  -webkit-font-smoothing: antialiased;
+
+  text-align: center;
+  width: 320px;
+
+  position: fixed;
+  bottom: 20px;
+}
+
+@media screen and (min-height: 550px) {
+  .iphone8916 .cta {
+    bottom: 70px;
+  }
+}
+
+.iphone8916 .cta img {
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(255, 255, 255, 0);
+  top: 0;
+  height: 39px;
+  width: 320px;
+  position: absolute;
+  margin: 0;
+  left: 0;
+}
+
+.iphone8916 .signup {
+  font-weight: 500;
+  height: 50px;
+  z-index: 1000;
+
+  padding-top: 17px;
+  padding-left: 5px;
+  width: 100%;
+
+  color: white;
+  cursor: pointer;
+
+  background-color: #ff2d55;
+  box-shadow: 0px 3.66316px 0px #cb2242;
+
+  line-height: 14.4px;
+
+  /* border: 1px solid white; */
+  border: 0;
+  border-radius: 8px;
+
+  text-transform: uppercase;
+  font-size: 13px;
+  font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
+}
+
+.iphone8916 .input button {
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(255, 255, 255, 0);
+  top: 0;
+  height: 39px;
+  width: 320px;
+  position: absolute;
+  margin: 0;
+  left: 0;
+  transform: rotate(0);
+}
+
+.iphone8916 .signuptoreceiveu {
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(255, 255, 255, 0);
+  top: 459px;
+  height: auto;
+  width: 320px;
+  position: absolute;
+  margin: 0;
+  left: 30px;
+  transform: rotate(0);
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: -0.16px;
+  line-height: 16px;
+}
+
+.iphone8916 .robotmobilebrowsererror {
+  -webkit-font-smoothing: antialiased;
+
+  width: 212px;
+  margin: 0;
+}
+
+.iphone8916 .error {
+  -webkit-font-smoothing: antialiased;
+  background-color: rgba(255, 255, 255, 0);
+  top: 22px;
+  height: auto;
+  width: auto;
+  position: absolute;
+  margin: 0;
+  left: 27px;
+  transform: rotate(0);
+  opacity: 0.1;
+  font-family: "SFUIText-Heavy", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 120px;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  letter-spacing: 2px;
+  line-height: 143px;
+}
+
+.iphone8916 .theclientisonlya {
+  -webkit-font-smoothing: antialiased;
+
+  height: auto;
+  width: 300px;
+  line-height: 19px;
+  margin: 0 0 50px;
+
+  color: rgba(255, 255, 255, 1);
+
+  font-family: "SFUIText-Regular", Helvetica, Arial, serif;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 16px;
+  text-align: right;
+  letter-spacing: 2px;
+}

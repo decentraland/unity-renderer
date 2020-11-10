@@ -15,6 +15,7 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
 
             tutorialController?.hudController?.taskbarHud?.SetVisibility(false);
+            tutorialController?.hudController?.profileHud?.SetBackpackButtonVisibility(false);
         }
 
         public override IEnumerator OnStepExecute()

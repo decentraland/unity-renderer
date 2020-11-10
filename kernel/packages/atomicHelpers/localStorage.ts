@@ -21,3 +21,7 @@ export function removeFromLocalStorage(key: string) {
   }
   window.localStorage.removeItem(key)
 }
+
+export function getKeysFromLocalStorage(): string[] {
+  return Object.keys(window.localStorage)
+}

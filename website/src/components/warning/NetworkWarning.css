@@ -1,0 +1,43 @@
+/* Preview only style */
+.network-warning-bar {
+  width: 100%;
+  height: 50px;
+  padding: 5px 0;
+  position: absolute;
+  top: 0;
+  z-index: 1001;
+  background-color: rgb(241, 163, 72);
+  box-shadow: 0 2px 5px 1px rgba(241, 163, 72, 0.9);
+}
+
+.network-warning-title {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.network-warning-description {
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.network-warning-button {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  background-color: transparent;
+}
+
+.network-warning-button:active,
+.network-warning-button:focus,
+.network-warning-button:focus:active {
+  background-image: none;
+  outline: 0;
+  box-shadow: none;
+}

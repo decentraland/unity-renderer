@@ -5,29 +5,35 @@ import { avatarMessageObservable } from 'shared/comms/peers'
 import { hasConnectedWeb3 } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { reportScenesAroundParcel } from 'shared/atlas/actions'
-import { playerConfigurations, ethereumConfigurations, decentralandConfigurations } from 'config'
-import { ReadOnlyQuaternion, ReadOnlyVector3, Vector3, Quaternion } from '../decentraland-ecs/src/decentraland/math'
+import { decentralandConfigurations, ethereumConfigurations, playerConfigurations } from 'config'
+import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
-import { queueTrackingEvent } from 'shared/analytics'
+import { identifyEmail, queueTrackingEvent } from 'shared/analytics'
 import { aborted } from 'shared/loading/ReportFatalError'
 import { defaultLogger } from 'shared/logger'
 import { saveProfileRequest } from 'shared/profiles/actions'
 import { Avatar } from 'shared/profiles/types'
-import { ChatMessage, FriendshipUpdateStatusMessage, FriendshipAction, WorldPosition, LoadableParcelScene } from 'shared/types'
+import {
+  ChatMessage,
+  FriendshipUpdateStatusMessage,
+  FriendshipAction,
+  WorldPosition,
+  LoadableParcelScene
+} from 'shared/types'
 import { getSceneWorkerBySceneID, setNewParcelScene, stopParcelSceneWorker } from 'shared/world/parcelSceneManager'
 import { getPerformanceInfo, getRawPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import { positionObservable } from 'shared/world/positionThings'
 import { renderStateObservable } from 'shared/world/worldState'
 import { sendMessage } from 'shared/chat/actions'
-import { updateUserData, updateFriendship } from 'shared/friends/actions'
-import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/dao'
+import { updateFriendship, updateUserData } from 'shared/friends/actions'
+import { candidatesFetched, catalystRealmConnected, changeRealm } from 'shared/dao'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
-import { getAppNetwork, fetchOwner } from 'shared/web3'
+import { fetchOwner, getAppNetwork } from 'shared/web3'
 import { updateStatusMessage } from 'shared/loading/actions'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 import { setAudioStream } from './audioStream'
-import { logout } from 'shared/session/actions'
+import { changeSignUpStage, logout, redirectToSignUp, signUpCancel, signUpSetProfile } from 'shared/session/actions'
 import { getIdentity, hasWallet } from 'shared/session'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { unityInterface } from './UnityInterface'
@@ -179,6 +185,10 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(logout())
   }
 
+  public RedirectToSignUp() {
+    globalThis.globalStore.dispatch(redirectToSignUp())
+  }
+
   public SaveUserInterests(interests: string[]) {
     if (!interests) {
       return
@@ -188,10 +198,35 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(saveProfileRequest({ interests: Array.from(unique) }))
   }
 
-  public SaveUserAvatar(changes: { face: string; face128: string; face256: string; body: string; avatar: Avatar }) {
+  public SaveUserAvatar(changes: {
+    face: string
+    face128: string
+    face256: string
+    body: string
+    avatar: Avatar
+    isSignUpFlow?: boolean
+  }) {
     const { face, face128, face256, body, avatar } = changes
     const update = { avatar: { ...avatar, snapshots: { face, face128, face256, body } } }
-    globalThis.globalStore.dispatch(saveProfileRequest(update))
+    if (!changes.isSignUpFlow) {
+      globalThis.globalStore.dispatch(saveProfileRequest(update))
+    } else {
+      globalThis.globalStore.dispatch(signUpSetProfile(update))
+      globalThis.globalStore.dispatch(changeSignUpStage('passport'))
+      unityInterface.DeactivateRendering()
+      document.getElementById('gameContainer')!.setAttribute('style', 'display: none')
+    }
+  }
+
+  public SaveUserUnverifiedName(changes: { newUnverifiedName: string }) {
+    globalThis.globalStore.dispatch(saveProfileRequest({ unclaimedName: changes.newUnverifiedName }))
+  }
+
+  public CloseUserAvatar(isSignUpFlow = false) {
+    if (isSignUpFlow) {
+      unityInterface.DeactivateRendering()
+      globalThis.globalStore.dispatch(signUpCancel())
+    }
   }
 
   public SaveUserTutorialStep(data: { tutorialStep: number }) {
@@ -267,11 +302,7 @@ export class BrowserInterface {
   public ReportUserEmail(data: { userEmail: string }) {
     const userId = getCurrentUserId(globalThis.globalStore.getState())
     if (userId) {
-      if (hasWallet()) {
-        window.analytics.identify(userId, { email: data.userEmail })
-      } else {
-        window.analytics.identify({ email: data.userEmail })
-      }
+      identifyEmail(data.userEmail, hasWallet() ? userId : undefined)
     }
   }
 
@@ -429,7 +460,7 @@ export class BrowserInterface {
     const parcelScene = worker.getParcelScene()
     stopParcelSceneWorker(worker)
     const data = parcelScene.data.data as LoadableParcelScene
-    unityInterface.LoadParcelScenes([data])  // Maybe unity should do it by itself?
+    unityInterface.LoadParcelScenes([data]) // Maybe unity should do it by itself?
     return parcelScene
   }
 }

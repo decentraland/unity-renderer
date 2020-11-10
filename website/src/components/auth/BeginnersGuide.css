@@ -1,0 +1,39 @@
+.eth-beginners-guide {
+  color: #333;
+}
+.eth-beginners-guide h2 {
+  font-size: 32px;
+}
+
+.eth-beginners-guide h3 {
+  font-size: 26px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.eth-beginners-guide p,
+.eth-beginners-guide ul,
+.eth-beginners-guide li {
+  font-weight: 300;
+}
+
+.eth-beginners-guide li {
+  margin: 1em 0;
+}
+
+.eth-beginners-guide li p {
+  margin: 0.5em 0;
+}
+
+.eth-beginners-guide a,
+.eth-beginners-guide a:hover,
+.eth-beginners-guide b {
+  color: #ff2d55;
+}
+
+.eth-beginners-guide .eth-accordion {
+  font-size: 20px;
+}
+.eth-beginners-guide .eth-accordion-description {
+  max-width: 980px;
+}

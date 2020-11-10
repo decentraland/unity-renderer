@@ -41,10 +41,51 @@ const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
 const CACHE_TLD_KEY = 'tld'
 
 export function* daoSaga(): any {
+  yield call(loadDefaultCatalystRealms)
   yield takeEvery(WEB3_INITIALIZED, loadCatalystRealms)
 
   yield takeEvery([INIT_CATALYST_REALM, SET_CATALYST_REALM], cacheCatalystRealm)
   yield takeEvery([SET_CATALYST_CANDIDATES, SET_ADDED_CATALYST_CANDIDATES], cacheCatalystCandidates)
+}
+
+function* loadDefaultCatalystRealms() {
+  yield call(waitForMetaConfigurationInitialization)
+  if (WORLD_EXPLORER) {
+    let cachedRealm: Realm | null = getFromLocalStorage(CACHE_KEY)
+    if (cachedRealm && !(yield checkValidRealm(cachedRealm))) {
+      cachedRealm = null
+    }
+    const tld = getDefaultTLD().toLowerCase() !== 'org' ? 'zone' : 'org'
+    const realm: Realm = cachedRealm || {
+      domain: `https://peer.decentraland.${tld}`,
+      catalystName: 'fenrir',
+      layer: 'blue',
+      lighthouseVersion: '0.2'
+    }
+    // set default realm domain as whiteList
+    yield put(
+      setContentWhitelist([
+        {
+          domain: realm.domain,
+          catalystName: realm.catalystName,
+          elapsed: 0,
+          status: 0,
+          layer: {
+            name: realm.layer,
+            usersCount: 0,
+            maxUsers: 100,
+            usersParcels: []
+          },
+          score: -50,
+          lighthouseVersion: realm.lighthouseVersion
+        }
+      ])
+    )
+    yield put(initCatalystRealm(realm))
+  } else {
+    yield initLocalCatalyst()
+  }
+  yield put(catalystRealmInitialized())
 }
 
 /**
@@ -101,22 +142,26 @@ function* loadCatalystRealms() {
 
     yield put(initCatalystRealm(realm!))
   } else {
-    yield put(setCatalystCandidates([]))
-    yield put(setAddedCatalystCandidates([]))
-    yield put(setContentWhitelist([]))
-    yield put(
-      initCatalystRealm({
-        domain: window.location.origin,
-        catalystName: 'localhost',
-        layer: 'stub',
-        lighthouseVersion: '0.1'
-      })
-    )
+    yield initLocalCatalyst()
   }
 
   yield put(catalystRealmInitialized())
 
   defaultLogger.info(`Using Catalyst configuration: `, yield select((state) => state.dao))
+}
+
+function* initLocalCatalyst() {
+  yield put(setCatalystCandidates([]))
+  yield put(setAddedCatalystCandidates([]))
+  yield put(setContentWhitelist([]))
+  yield put(
+    initCatalystRealm({
+      domain: window.location.origin,
+      catalystName: 'localhost',
+      layer: 'stub',
+      lighthouseVersion: '0.1'
+    })
+  )
 }
 
 export function* selectRealm() {
@@ -172,7 +217,7 @@ async function checkValidRealm(realm: Realm) {
 }
 
 function* cacheCatalystRealm(action: InitCatalystRealm | SetCatalystRealm) {
-  saveToLocalStorage(CACHE_KEY, action.payload)
+  return saveToLocalStorage(CACHE_KEY, action.payload)
 }
 
 function* cacheCatalystCandidates(action: SetCatalystCandidates | SetAddedCatalystCandidates) {

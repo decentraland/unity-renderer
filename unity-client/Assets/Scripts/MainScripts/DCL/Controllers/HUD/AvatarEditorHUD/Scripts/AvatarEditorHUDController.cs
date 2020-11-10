@@ -8,8 +8,8 @@ using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
-    protected static readonly string[] categoriesThatMustHaveSelection = {Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH};
-    protected static readonly string[] categoriesToRandomize = {Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET};
+    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
+    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
     [NonSerialized] public bool bypassUpdateAvatarPreview = false;
     private UserProfile userProfile;
@@ -24,6 +24,17 @@ public class AvatarEditorHUDController : IHUD
     private bool prevMouseLockState = false;
 
     public AvatarEditorHUDView view;
+
+    private bool isSignUpFlow = false;
+    public bool IsSignUpFlowValue
+    {
+        get => isSignUpFlow;
+        set
+        {
+            isSignUpFlow = value;
+            view.exitButton.gameObject.SetActive(!isSignUpFlow);
+        }
+    }
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -472,10 +483,11 @@ public class AvatarEditorHUDController : IHUD
     public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
-        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot);
+        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, IsSignUpFlowValue);
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
 
         SetVisibility(false);
+        IsSignUpFlowValue = false;
     }
 
     public void DiscardAndClose()

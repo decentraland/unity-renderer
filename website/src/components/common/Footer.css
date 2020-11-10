@@ -1,0 +1,41 @@
+.footer-bar {
+  background: #1c191f;
+  height: 33px;
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3;
+}
+
+.footer-bar-content {
+  position: absolute;
+  right: 50px;
+  height: 100%;
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.footer-bar-content a {
+  margin-left: 34px;
+}
+
+.footer-bar-content a img {
+  max-height: 18px;
+}
+
+@media screen and (min-width: 1200px) {
+  .footer-bar-content {
+    right: 285px;
+  }
+}
+
+.footer-text {
+  margin-left: 45px;
+  vertical-align: middle;
+  color: #736e7d;
+  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+}

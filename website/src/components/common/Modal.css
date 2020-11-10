@@ -1,0 +1,209 @@
+.popup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.popup-container.with-avatars {
+  width: 100%;
+  padding-bottom: 96px;
+  padding-left: 350px;
+}
+
+.popup-container.with-avatars .eth-avatars {
+  position: absolute;
+  top: 96px;
+  left: -100px;
+}
+
+.popup-container .popup {
+  color: black;
+  position: relative;
+  padding: 2em;
+  border: 2px solid white;
+  border-radius: 20px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  background: #f5f5f5 url("../../images/pattern.png") repeat center center;
+}
+
+.popup-container.with-avatars .popup {
+  width: 100%;
+}
+
+.popup-container .popup.big {
+  width: 856px;
+}
+
+.popup-container.error .popup {
+  background: #f5f5f5;
+  width: 460px;
+}
+
+.popup-container .popup .close {
+  width: 32px;
+  height: 32px;
+  display: block;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  background: url("../../images/popup-close.svg") no-repeat center center;
+  cursor: pointer;
+}
+
+.popup-container .popup h2 {
+  /*font-size: 25px;*/
+  /*line-height: 30px;*/
+  /*margin-bottom: 20px;*/
+}
+
+.popup-container .popup .center {
+  text-align: center;
+  justify-content: center;
+}
+
+.popup-container .popup .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.popup-container .popup .row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.popup-container.error .popup .row.actions {
+  width: 100%;
+  justify-content: space-around;
+  padding: 12px 0 48px;
+}
+
+.popup-container .popup .secondary {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+@media only screen and (max-width: 991px) {
+  .popup-container.with-avatars {
+    padding: 0;
+    margin: 0 auto;
+    width: 90%;
+    position: relative;
+  }
+
+  .popup-container.with-avatars .popup {
+    width: 90%;
+  }
+
+  .popup-container.with-avatars .eth-avatars {
+    display: none;
+  }
+}
+
+/*.popup-container .popup .button {*/
+/*  cursor: pointer;*/
+/*  border-radius: 10px;*/
+/*  background: #FFFFFF;*/
+/*  color: rgba(0, 0, 0, 1);*/
+/*  transition: transform .2s ease;*/
+/*  display: block;*/
+/*}*/
+
+/*.popup-container .popup .button.center {*/
+/*  margin-left: auto;*/
+/*  margin-right: auto;*/
+/*}*/
+
+/*.popup-container .popup .button.primary {*/
+/*  cursor: pointer;*/
+/*  border-radius: 10px;*/
+/*  background: #FFFFFF;*/
+/*  border: 0;*/
+/*  box-shadow: 0 .3rem 0 rgba(0, 0, 0, 0.5);*/
+/*  min-width: 210px;*/
+/*  font-weight: 600;*/
+/*  font-size: 18.2222px;*/
+/*  line-height: 22px;*/
+/*  text-align: center;*/
+/*  text-transform: uppercase;*/
+/*  padding: 11px;*/
+/*}*/
+
+/*.popup-container.error .popup .button.primary {*/
+/*  font-weight: 600;*/
+/*  font-size: 16px;*/
+/*  line-height: 19px;*/
+/*  min-width: 180px;*/
+/*}*/
+
+/*.popup-container .popup .button.secondary {*/
+/*  font-size: 14px;*/
+/*  line-height: 21px;*/
+/*  text-align: center;*/
+/*  text-transform: uppercase;*/
+/*  padding: 11px 34px;*/
+/*  width: auto;*/
+/*  background-color: rgba(255, 255, 255, 0.5);*/
+/*  border: 1px solid rgba(0, 0, 0, 0.05);*/
+/*}*/
+
+/*.popup-container .popup .button:focus {*/
+/*  outline: 0;*/
+/*}*/
+
+/*.popup-container .popup button:hover {*/
+/*  transform: translateY(-.2rem);*/
+/*}*/
+
+/*.popup-container .popup .button.secondary:active {*/
+/*  background-color: rgba(255, 255, 255, 0.8);*/
+/*  transform: translateY(0rem);*/
+/*}*/
+
+/*.popup-container .popup .button.full {*/
+/*  width: 100%;*/
+/*}*/
+
+/*.popup-container .popup .button img {*/
+/*  display: inline-block;*/
+/*  vertical-align: bottom;*/
+/*  margin-right: .5em;*/
+/*}*/
+
+/*.popup-container .popup label {*/
+/*  font-style: normal;*/
+/*  font-weight: 600;*/
+/*  font-size: 25px;*/
+/*  line-height: 30px;*/
+/*}*/
+
+/*.popup-container .popup input[type="text"],*/
+/*.popup-container .popup input[type="password"],*/
+/*.popup-container .popup input[type="email"],*/
+/*.popup-container .popup input[type="date"],*/
+/*.popup-container .popup input[type="number"] {*/
+/*  background: #FFFFFF;*/
+/*  border: 2.45745px solid rgba(0, 0, 0, 0.1);*/
+/*  border-radius: 12px;*/
+/*  width: 100%;*/
+/*  margin-top: 12px;*/
+/*  margin-bottom: 50px;*/
+/*  padding: 12px;*/
+/*  font-style: normal;*/
+/*  font-weight: normal;*/
+/*  font-size: 22.2773px;*/
+/*  line-height: 27px;*/
+/*}*/
+
+/*.popup-container .popup .text-box {*/
+/*  font-style: normal;*/
+/*  font-weight: normal;*/
+/*  font-size: 16px;*/
+/*  line-height: 19px;*/
+/*  letter-spacing: -0.280657px;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  overflow: auto;*/
+/*}*/

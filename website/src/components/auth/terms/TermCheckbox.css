@@ -1,0 +1,22 @@
+.eth-login-tos {
+  max-width: 310px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.eth-login-tos-label {
+  font-size: 13px;
+  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+  color: white;
+}
+
+.eth-login-tos-label > a:any-link {
+  color: white;
+  font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
+}
+
+.eth-login-tos-agree {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}

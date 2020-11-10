@@ -1,0 +1,66 @@
+.termsOfServices {
+  /* max-width: 600px; */
+  display: flex;
+  flex-flow: column;
+  min-height: 470px;
+}
+
+.termsOfServices h2 {
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 50px;
+  font-weight: 300;
+}
+
+.termsOfServices .content p {
+  line-height: 1.4em;
+}
+
+.termsOfServices .content {
+  margin: 1em 4em 2em;
+  height: 300px;
+  overflow: scroll;
+}
+
+.termsOfServices .actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.termsOfServices .actions button {
+  color: white;
+  cursor: pointer;
+  width: 196px;
+  height: 46px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 20px;
+}
+
+.termsOfServices .actions button.btnBack {
+  background: #404752;
+  box-shadow: 0 4px 0 #363c45;
+}
+
+.termsOfServices .actions button.btnAgree:disabled {
+  background: #b9818b;
+  box-shadow: 0 4px 0 #b37882;
+}
+
+.termsOfServices .actions button.btnAgree {
+  background: #ff2d55;
+  box-shadow: 0 4px 0 #cb2242;
+}
+
+.termsOfServices .actions .loadingContainer {
+  display: flex;
+  width: 196px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+}

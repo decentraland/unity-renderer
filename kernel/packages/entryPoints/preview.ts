@@ -1,5 +1,6 @@
 declare const global: any & StoreContainer
 declare const window: any
+;(window as any).reactVersion = false
 
 // IMPORTANT! This should be execd before loading 'config' module to ensure that init values are successfully loaded
 global.preview = window.preview = true

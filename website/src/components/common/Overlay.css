@@ -1,0 +1,28 @@
+#overlay {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+
+  /*background-size: 115%;*/
+  /*background: #74a4d5 url("../../images/background.png") no-repeat right -90px bottom 25px;*/
+
+  opacity: 0.15;
+
+  background-size: cover;
+  background-color: #74a4d5;
+  background-image: url("../../images/background.png");
+  background-repeat: no-repeat;
+  background-origin: border-box;
+  background-position: 0 0;
+  /*position: absolute;*/
+  /*z-index: 9;*/
+  /*top: 0;*/
+  /*left: 0;*/
+  /*width: 100%;*/
+  /*height: 100%;*/
+}

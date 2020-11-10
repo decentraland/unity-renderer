@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Explorer/auth/EthConnectAdvice Template 1`] = `
+Array [
+  <div
+    className="eth-login-description"
+  >
+    Please, follow the instructions provided by your Ethereum wallet provider to complete login.
+    <br />
+    To proceed, 
+    <strong>
+      login
+    </strong>
+     into your wallet and confirm with
+     
+    <strong>
+      connecting
+    </strong>
+     to your Ethereum wallet extension.
+  </div>,
+  <button
+    className="eth-login-confirm-button"
+  >
+    <img
+      alt=""
+      className="eth-login-wallet-icon"
+      src="images/decentraland-connect/walletIcon.png"
+    />
+    Connect wallet
+  </button>,
+]
+`;

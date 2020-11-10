@@ -1,0 +1,108 @@
+#eth-login-confirmation-wrapper {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eth-login {
+  width: 100%;
+  padding-left: 475px;
+  padding-top: 96px;
+  position: relative;
+}
+
+.eth-login .eth-avatars {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.eth-login-description {
+  color: white;
+  margin-bottom: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 27px;
+  text-shadow: 0 1px 0 #000000;
+  max-width: 463px;
+}
+
+.eth-login-welcome {
+  color: white;
+  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.eth-login-guest-button {
+  border: 0;
+  width: 280px;
+  height: 66px;
+  color: white;
+  cursor: pointer;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-style: normal;
+  font-weight: normal;
+  font-size: 25px;
+  line-height: 30px;
+  text-align: center;
+  mix-blend-mode: normal;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+#eth-login-confirmation-wrapper .eth-login-guest-button {
+  margin-top: 26px;
+}
+
+.eth-login-confirm-button {
+  color: #ffffff;
+  width: 280px;
+  height: 65px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 16px;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 30px;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5px 0 #cb2242;
+  background-color: #ff2d55;
+  mix-blend-mode: normal;
+}
+
+.eth-login-confirm-button:disabled {
+  color: #b6c6d7;
+  background-color: #a08db8;
+  box-shadow: 0 3px 0 #907ca8;
+}
+
+.eth-login-logo {
+  width: 262px;
+}
+
+.eth-login-wallet-icon {
+  margin-right: 10px;
+  width: 24px;
+  height: 23px;
+  vertical-align: middle;
+}
+
+@media only screen and (max-width: 991px) {
+  .eth-login {
+    width: 100%;
+    padding: 0;
+  }
+
+  .eth-login .eth-avatars {
+    display: none;
+  }
+}

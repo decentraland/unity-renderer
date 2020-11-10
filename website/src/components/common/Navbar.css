@@ -1,0 +1,51 @@
+.nav-bar {
+  display: flex;
+  /*height: 40px;*/
+  justify-content: space-between;
+  position: absolute;
+  width: 100%;
+}
+
+.nav-bar img.dcl-logo {
+  width: 46px;
+  height: auto;
+  padding: 0.5rem 1rem;
+  box-sizing: content-box;
+}
+
+.nav-bar-content {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.nav-text {
+  color: white;
+  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+}
+
+.nav-discord {
+  width: fit-content;
+  vertical-align: middle;
+  margin: 6px 0 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  padding: 4px 12px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.nav-discord-img {
+  width: 14px;
+  vertical-align: middle;
+}
+
+.nav-discord-text {
+  margin-left: 2px;
+  font-size: 9px;
+}
+
+.nav-need-support {
+  width: fit-content;
+  font-size: 11px;
+}

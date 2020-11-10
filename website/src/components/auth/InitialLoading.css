@@ -1,0 +1,7 @@
+.initialLoading {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+  margin: 0 auto;
+}

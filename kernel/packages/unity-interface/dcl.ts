@@ -1,14 +1,14 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER, NO_ASSET_BUNDLES } from 'config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, NO_ASSET_BUNDLES, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
 import { aborted } from 'shared/loading/ReportFatalError'
-import { loadingScenes, teleportTriggered } from 'shared/loading/types'
+import { loadingScenes, setLoadingScreen, teleportTriggered } from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
-import { ILand, SceneJsonData, LoadableParcelScene, MappingsResponse } from 'shared/types'
+import { ILand, LoadableParcelScene, MappingsResponse, SceneJsonData } from 'shared/types'
 import {
   enableParcelSceneLoading,
+  getParcelSceneID,
   loadParcelScene,
-  stopParcelSceneWorker,
-  getParcelSceneID
+  stopParcelSceneWorker
 } from 'shared/world/parcelSceneManager'
 import { teleportObservable } from 'shared/world/positionThings'
 import { SceneWorker } from 'shared/world/SceneWorker'
@@ -23,6 +23,7 @@ import { UnityInterface, unityInterface } from './UnityInterface'
 import { BrowserInterface, browserInterface } from './BrowserInterface'
 import { UnityScene } from './UnityScene'
 import { ensureUiApis } from 'shared/world/uiSceneInitializer'
+import Html from '../shared/Html'
 import { WebSocketTransport } from 'decentraland-rpc'
 import { kernelConfigForRenderer } from './kernelConfigForRenderer'
 import type { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
@@ -53,18 +54,8 @@ export let gameInstance!: GameInstance
 export let isTheFirstLoading = true
 
 export function setLoadingScreenVisible(shouldShow: boolean) {
-  document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
-  document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'flex' : 'none'
-  document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
-  const loadingAudio = document.getElementById('loading-audio') as HTMLMediaElement
-
-  if (shouldShow) {
-    loadingAudio?.play().catch((e) => {
-      /*Ignored. If this fails is not critical*/
-    })
-  } else {
-    loadingAudio?.pause()
-  }
+  globalThis.globalStore.dispatch(setLoadingScreen(shouldShow))
+  Html.setLoadingScreen(shouldShow)
 
   if (!shouldShow && !EDITOR) {
     isTheFirstLoading = false

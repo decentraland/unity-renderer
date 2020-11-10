@@ -2,7 +2,9 @@
   "name": "decentraland-kernel",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "bundleDependencies": ["decentraland-renderer"],
+  "bundleDependencies": [
+    "decentraland-renderer"
+  ],
   "devDependencies": {
     "decentraland-renderer": "1.0.0"
   }
