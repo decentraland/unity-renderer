@@ -37,9 +37,9 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.taskbarHud.backpackTooltipReference)
+                tutorialController.hudController.profileHud.backpackTooltipReference)
             {
-                tooltipTransform.position = tutorialController.hudController.taskbarHud.backpackTooltipReference.position;
+                tooltipTransform.position = tutorialController.hudController.profileHud.backpackTooltipReference.position;
             }
         }
 

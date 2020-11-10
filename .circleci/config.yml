@@ -4,6 +4,7 @@ references:
   .workspace_root: &workspace_root /tmp/explorer
   .workspace_kernel: &workspace_kernel /tmp/explorer/kernel
   .workspace_unity: &workspace_unity /tmp/explorer/unity-client
+  .workspace_website: &workspace_website /tmp/explorer/website
 
   .attach_root: &attach_root
     attach_workspace:
@@ -21,6 +22,11 @@ references:
     docker:
       - <<: *image_kernel
     working_directory: *workspace_kernel
+
+  .base_website_env: &base_website_env
+    docker:
+      - <<: *image_kernel
+    working_directory: *workspace_website
 
   .all_branches_and_tags: &all_branches_and_tags
     filters:
@@ -75,6 +81,7 @@ jobs:
             - .git
             - .circleci
             - kernel
+            - website
             - unity-client
 
   run-unity-tests:
@@ -270,6 +277,46 @@ jobs:
             - kernel/static
             - kernel/dist
 
+  build-website:
+    <<: *base_website_env
+    steps:
+      - <<: *attach_root
+      - run:
+          name: "installing"
+          command: npm ci
+      - run:
+          name: "remove decentraland-kernel"
+          command: rm -rf node_modules/decentraland-kernel || true
+      - run:
+          name: "copy fresh decentraland-kernel"
+          command: cp -r /tmp/explorer/kernel/static node_modules/decentraland-kernel
+      - run:
+          name: "post install script"
+          command: sh scripts/post-install.sh
+      - run:
+          name: "creating .env (ignore master)"
+          command: echo "PUBLIC_URL=\"https://play.decentraland.zone/branch/${CIRCLE_BRANCH}\"" >> .env
+          filters:
+            branches:
+              ignore:
+                - master
+                - staging
+                - release
+      - run:
+          name: "show .env"
+          command: cat .env
+      - run:
+          name: "testing"
+          command: npm test -- --watchAll=false
+      - run:
+          name: "building"
+          command: npm run build
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - website/build
+
   package:
     <<: *working_directory_root
     docker:
@@ -331,7 +378,7 @@ jobs:
             aws configure set aws_access_key_id ${AWS_DEV_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
           name: Deploy to S3 (.zone) under subfolder if tests pass and branch is not master
-          command: aws s3 sync static s3://explorer.decentraland.zone/branch/${CIRCLE_BRANCH} --acl public-read
+          command: aws s3 sync /tmp/explorer/website/build s3://explorer.decentraland.zone/branch/${CIRCLE_BRANCH} --acl public-read
       - run:
           name: Invalidate cloudfront cache .zone
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
@@ -350,7 +397,7 @@ jobs:
             aws configure set aws_access_key_id ${AWS_DEV_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
           name: Deploy to S3 (.zone) if tests pass and branch is master
-          command: aws s3 sync static s3://explorer.decentraland.zone/ --acl public-read
+          command: aws s3 sync /tmp/explorer/website/build s3://explorer.decentraland.zone/ --acl public-read
       - run:
           name: Invalidate cloudfront cache .zone
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
@@ -370,7 +417,7 @@ jobs:
       - run:
           name: Deploy to .today
           command: |
-            aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read
+            aws s3 sync /tmp/explorer/website/build s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read
       - run:
           name: Invalidate cloudfront cache .today
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E315GYHDRD7XX6 --paths "/*"
@@ -390,7 +437,7 @@ jobs:
       - run:
           name: Deploy to .org
           command: |
-            aws s3 sync static s3://explorer.decentraland.org/ --exclude "tags/*" --acl public-read
+            aws s3 sync /tmp/explorer/website/build s3://explorer.decentraland.org/ --exclude "tags/*" --acl public-read
       - run:
           name: Invalidate cloudfront cache .org
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E253JP8V3Y9YUI --paths "/*"
@@ -424,6 +471,11 @@ workflows:
           requires:
             - build-kernel
             - build-unity
+
+      - build-website:
+          <<: *all_branches_and_tags
+          requires:
+            - package
 
       - publish-renderer:
           requires:
@@ -474,6 +526,7 @@ workflows:
       - deploy-on-pr:
           requires:
             - package
+            - "build-website"
           filters:
             branches:
               ignore:

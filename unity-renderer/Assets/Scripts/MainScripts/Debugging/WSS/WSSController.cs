@@ -161,7 +161,7 @@ namespace DCL
                 if (baseUrlMode == BaseUrl.CUSTOM)
                     baseUrl = baseUrlCustom;
                 else
-                    baseUrl = "http://localhost:8080/?";
+                    baseUrl = "http://localhost:3000/?";
 
                 switch (environment)
                 {
@@ -314,6 +314,9 @@ namespace DCL
                             case "ReportFocusOff":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
+                            case "ForceActivateRendering":
+                                renderingController.ForceActivateRendering();
+                                break;
                             case "ShowNotificationFromJson":
                                 NotificationsController.i.ShowNotificationFromJson(msg.payload);
                                 break;
@@ -439,6 +442,9 @@ namespace DCL
                                 break;
                             case "SetRenderProfile":
                                 RenderProfileBridge.i.SetRenderProfile(msg.payload);
+                                break;
+                            case "ShowAvatarEditorInSignUp":
+                                HUDController.i.ShowAvatarEditorInSignUp();
                                 break;
                             case "SetUserTalking":
                                 HUDController.i.SetUserTalking(msg.payload);

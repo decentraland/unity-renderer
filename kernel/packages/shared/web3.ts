@@ -8,7 +8,7 @@ import { queueTrackingEvent } from './analytics'
 import { Catalyst } from './dao/contracts/Catalyst'
 import { ERC721 } from './dao/contracts/ERC721'
 import { getNetwork, getUserAccount } from './ethereum/EthereumService'
-import { awaitWeb3Approval, createEthUsingWalletProvider } from './ethereum/provider'
+import { awaitWeb3Approval, createEth } from './ethereum/provider'
 import { defaultLogger } from './logger'
 import { CatalystNode, GraphResponse } from './types'
 import { retry } from '../atomicHelpers/retry'
@@ -54,7 +54,7 @@ export async function initWeb3(): Promise<void> {
 
 export async function hasClaimedName(address: string) {
   const dclNameContract = Address.fromString(decentralandConfigurations.DCLRegistrar)
-  let eth = createEthUsingWalletProvider()
+  let eth = createEth()
 
   if (!eth) {
     const net = await getAppNetwork()
@@ -73,13 +73,13 @@ export async function hasClaimedName(address: string) {
 
 export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
   const contractAddress = Address.fromString(decentralandConfigurations.dao)
-  let eth = createEthUsingWalletProvider()
+  let eth = createEth()
 
   if (!eth) {
     const net = await getAppNetwork()
     const provider = new WebsocketProvider(ethereumConfigurations[net].wss)
 
-    eth = new Eth(provider)
+    eth = createEth(provider)
   }
 
   const contract = new Catalyst(eth, contractAddress)

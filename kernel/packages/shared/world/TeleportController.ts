@@ -12,6 +12,9 @@ import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 
 import { StoreContainer } from '../store/rootTypes'
 import { WORLD_EXPLORER } from '../../config/index'
+import { isInitialLoading } from '../loading/selectors'
+import Html from '../Html'
+import { isLoginStageCompleted } from '../session/selectors'
 
 declare const globalThis: StoreContainer
 
@@ -68,16 +71,12 @@ export const CAMPAIGN_PARCEL_SEQUENCE = [
 
 export class TeleportController {
   public static ensureTeleportAnimation() {
-    document
-      .getElementById('gameContainer')!
-      .setAttribute(
-        'style',
-        'background: #151419 url(images/teleport.gif) no-repeat center !important; background-size: 194px 257px !important;'
-      )
-    document.body.setAttribute(
-      'style',
-      'background: #151419 url(images/teleport.gif) no-repeat center !important; background-size: 194px 257px !important;'
-    )
+    if (
+      !isInitialLoading(globalThis.globalStore.getState()) &&
+      isLoginStageCompleted(globalThis.globalStore.getState())
+    ) {
+      Html.showTeleportAnimation()
+    }
   }
 
   public static stopTeleportAnimation() {

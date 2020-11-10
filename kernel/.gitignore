@@ -13,6 +13,7 @@ static/default-profile/contents
 static/lifecycle
 static/voice-chat-codec/audioWorkletProcessors.js
 static/voice-chat-codec/worker.js
+static/node_modules
 packages/config/contracts.ts
 .decentraland
 **/.decentraland

@@ -1,7 +1,7 @@
 import { DEBUG_ANALYTICS, getTLD } from 'config'
 
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
-import { Vector2, ReadOnlyVector3, Vector3 } from 'decentraland-ecs/src'
+import { ReadOnlyVector3, Vector2, Vector3 } from 'decentraland-ecs/src'
 import { defaultLogger } from 'shared/logger'
 
 import { avatarMessageObservable } from './comms/peers'
@@ -69,6 +69,14 @@ export function identifyUser(id: string) {
     window.analytics.identify(id, {
       explorer_commit_hash: (window as any)['VERSION']
     })
+  }
+}
+
+export function identifyEmail(email: string, userId?: string) {
+  if (userId) {
+    window.analytics.identify(userId, { email })
+  } else {
+    window.analytics.identify({ email })
   }
 }
 

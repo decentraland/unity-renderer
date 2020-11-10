@@ -1,0 +1,36 @@
+.PassportAvatar {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+.PassportAvatar img.avatar {
+  width: 180px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.PassportAvatar em {
+  font-size: 17px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 3em;
+  text-align: center;
+  color: rgba(51, 51, 51, 0.5);
+}
+
+.PassportAvatar button {
+  width: 150px;
+  height: 40px;
+  color: #333333;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 20px;
+  text-transform: uppercase;
+  padding: 0.5em;
+  margin-top: 2em;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.5);
+}

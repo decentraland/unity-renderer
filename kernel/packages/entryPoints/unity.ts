@@ -1,6 +1,8 @@
 declare const globalThis: { UnityLoader: any } & StoreContainer
 declare const global: any
 
+;(window as any).reactVersion = false
+
 // IMPORTANT! This should be execd before loading 'config' module to ensure that init values are successfully loaded
 global.enableWeb3 = true
 
@@ -82,7 +84,7 @@ initializeUnity(container)
     try {
       await userAuthentified()
       const identity = getCurrentIdentity(globalThis.globalStore.getState())!
-
+      
       const voiceChatEnabled = isVoiceChatEnabledFor(globalThis.globalStore.getState(), identity.address)
 
       const configForRenderer = kernelConfigForRenderer()
@@ -92,10 +94,7 @@ initializeUnity(container)
       configureTaskbarDependentHUD(i, voiceChatEnabled)
 
       i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
-
       i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
-      // NOTE (Santi): We have temporarily deactivated the MANA HUD until Product team designs a new place for it (probably inside the Profile HUD).
-      i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: identity.hasConnectedWeb3 && false, visible: true })
 
       EnsureProfile(identity.address)
         .then((profile) => {

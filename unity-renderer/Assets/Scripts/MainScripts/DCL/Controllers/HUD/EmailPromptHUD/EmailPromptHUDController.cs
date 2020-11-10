@@ -5,7 +5,7 @@ using System.Collections;
 
 public class EmailPromptHUDController : IHUD
 {
-    const float POPUP_DELAY = 60;
+    const float POPUP_DELAY = 300;
     const int EMAIL_PROMPT_PROFILE_FLAG = 128;
 
     EmailPromptHUDView view;

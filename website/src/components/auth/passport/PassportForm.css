@@ -1,0 +1,81 @@
+.passportForm {
+  color: #333333;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.passportForm form .inputGroup {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 1em;
+}
+
+.passportForm form .inputGroup em.error {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 15px;
+  line-height: 18px;
+  color: #ff2d55;
+}
+
+.passportForm form .inputGroup input.hasError {
+  border-color: #ff2d55;
+}
+
+.passportForm form .inputGroup em.warningLength {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: right;
+  color: #333333;
+  opacity: 0.5;
+}
+
+.passportForm form label {
+  font-size: 1.3em;
+  font-weight: bold;
+  font-style: normal;
+  line-height: 2em;
+}
+
+.passportForm form input {
+  width: 345px;
+  height: 45px;
+  border: 2px solid #c4c7d3;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-weight: bold;
+  margin: 0.2em 0;
+  padding: 0 0.5em;
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.passportForm form input::placeholder {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.passportForm form .actions {
+  display: flex;
+  justify-content: center;
+  padding: 2em 0 0;
+}
+
+.passportForm form button.btnSubmit {
+  cursor: pointer;
+  color: white;
+  background: #ff2d55;
+  width: 196px;
+  height: 46px;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #cb2242;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 20px;
+}

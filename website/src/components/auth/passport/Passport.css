@@ -1,0 +1,17 @@
+.passport {
+  min-height: 470px;
+}
+
+.passport h2.passportTitle {
+  text-align: left;
+  margin-top: 0;
+  margin-bottom: 70px;
+  font-weight: 300;
+}
+
+.passportContainer {
+  display: flex;
+  flex-flow: row nowrap;
+  /* min-width: 750px; */
+  justify-content: space-around;
+}

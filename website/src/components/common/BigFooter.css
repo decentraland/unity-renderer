@@ -1,0 +1,78 @@
+.big-footer {
+  background: #1c191f;
+  color: #736e7d;
+  width: 100%;
+}
+
+.big-footer h4 {
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 1.2;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.big-footer a,
+.big-footer a:hover,
+.big-footer p {
+  color: #736e7d;
+}
+
+.big-footer p.right {
+  text-align: right;
+  width: 100%;
+}
+
+.big-footer .eth-container {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 70px;
+}
+
+.big-footer:last-child {
+  padding-bottom: 70px;
+}
+
+.big-footer .big-footer-icon {
+  display: inline-flex;
+  width: 68px;
+  height: 68px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(115, 110, 125, 0.1);
+  border-radius: 68px;
+  margin-right: 26px;
+}
+
+.big-footer .big-footer-icon svg {
+  width: 48px;
+  height: auto;
+}
+
+.big-footer a.big-footer-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 15px;
+  border: 1px solid #736e7d;
+  padding: 2px 1.7em 2px 1em;
+  position: relative;
+  transform: translateY(7px);
+}
+
+.big-footer a.big-footer-button:hover {
+  text-decoration: none;
+  background-color: rgba(115, 110, 125, 0.1);
+}
+
+.big-footer a.big-footer-button svg {
+  width: 48px;
+  height: auto;
+}
+
+@media only screen and (max-width: 991px) {
+  .big-footer .eth-container {
+    width: 90%;
+  }
+}

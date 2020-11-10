@@ -1,9 +1,8 @@
-using DCL.SettingsHUD;
 using DCL.HelpAndSupportHUD;
+using DCL.SettingsHUD;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using AvatarShape_Tests;
 
 public class TaskbarHUDShould : TestsBase
 {
@@ -20,7 +19,6 @@ public class TaskbarHUDShould : TestsBase
     private WorldChatWindowHUDController worldChatWindowController;
     private SettingsHUDController settingsHudController;
     private HelpAndSupportHUDController helpAndSupportHUDController;
-    private AvatarEditorHUDController avatarEditorHUDController;
     private ExploreHUDController exploreHUDController;
 
     protected override bool justSceneSetUp => true;
@@ -58,7 +56,6 @@ public class TaskbarHUDShould : TestsBase
         friendsHudController?.Dispose();
         settingsHudController?.Dispose();
         helpAndSupportHUDController?.Dispose();
-        avatarEditorHUDController?.Dispose();
         exploreHUDController?.Dispose();
 
         controller.Dispose();
@@ -107,16 +104,6 @@ public class TaskbarHUDShould : TestsBase
         controller.AddHelpAndSupportWindow(helpAndSupportHUDController);
 
         Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
-    }
-
-    [Test]
-    public void AddBackpackWindowProperly()
-    {
-        avatarEditorHUDController = new AvatarEditorHUDController();
-        avatarEditorHUDController.Initialize(userProfile, AvatarTestHelpers.CreateTestCatalogLocal());
-        controller.AddBackpackWindow(avatarEditorHUDController);
-
-        Assert.IsTrue(avatarEditorHUDController.view.gameObject.activeSelf, "Backpack window is disabled!");
     }
 
     [Test]
@@ -173,7 +160,7 @@ public class TaskbarHUDShould : TestsBase
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(6, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(5, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);

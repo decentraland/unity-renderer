@@ -179,6 +179,22 @@ function scheduleProfileUpdate(profile: Profile) {
   }).catch((e) => defaultLogger.error(`error while updating profile`, e))
 }
 
+export function* getProfileByUserId(userId: string): any {
+  try {
+    const server = yield select(getProfileDownloadServer)
+    const profiles: { avatars: object[] } = yield profileServerRequest(server, userId)
+
+    if (profiles.avatars.length !== 0) {
+      return profiles.avatars[0]
+    }
+  } catch (error) {
+    if (error.message !== 'Profile not found') {
+      defaultLogger.log(`Error requesting profile for auth check ${userId}, `, error)
+    }
+  }
+  return null
+}
+
 export function* handleFetchProfile(action: ProfileRequestAction): any {
   const userId = action.payload.userId
   const email = ''
@@ -200,6 +216,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
 
         if (profiles.avatars.length !== 0) {
           profile = profiles.avatars[0]
+          profile.hasClaimedName = !!profile.name // lambdas profiles don't have claimed names if they don't have the "name" property
           hasConnectedWeb3 = true
         }
       }
@@ -303,6 +320,19 @@ export async function profileServerRequest(serverUrl: string, userId: string) {
   } catch (up) {
     throw up
   }
+}
+
+export function* createSignUpProfile(profile: Profile, identity: ExplorerIdentity) {
+  const url: string = yield select(getUpdateProfileServer)
+  const userId = profile.userId
+  // to prevent save a email on profile
+  profile.email = ''
+  return yield modifyAvatar({
+    url,
+    userId,
+    identity,
+    profile
+  })
 }
 
 function* handleRandomAsSuccess(action: ProfileRandomAction): any {
@@ -431,7 +461,7 @@ function* handleDeployProfile(deployProfileAction: DeployProfile) {
   }
 }
 
-function fetchProfileLocally(address: string) {
+export function fetchProfileLocally(address: string) {
   const profile: Profile | null = localProfilesRepo.get(address)
   if (profile?.userId === address) {
     return ensureServerFormat(profile)

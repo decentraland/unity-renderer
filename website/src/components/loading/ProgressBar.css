@@ -1,0 +1,45 @@
+#progress-bar-inner {
+  width: 0;
+  transition: width 0.2s;
+  animation: none;
+}
+
+.progress {
+  position: absolute;
+  height: 30px;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-style: solid;
+  border-width: thick;
+  border-left: none;
+  border-right: none;
+  border-top: 3px solid #090909;
+  border-bottom: 3px solid #090909;
+  text-align: center;
+  background: #090909;
+}
+
+.progress .full {
+  float: left;
+  width: 0;
+  height: 100%;
+  display: inline-flex;
+  background: linear-gradient(
+    270deg,
+    #fc9965 4.62%,
+    #ff2d55 58.77%,
+    #de3959 100%
+  );
+  transition: width 0.2s;
+  animation: none;
+}
+
+.progress.loaded {
+  z-index: 9;
+}
+
+.progress.ingame .full {
+  animation: none;
+}
