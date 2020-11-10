@@ -212,13 +212,13 @@ export class BrowserInterface {
         }
         break
       }
-      case 'StartStateMode': {
+      case 'StartStatefulMode': {
         const { sceneId } = payload
         const parcelScene = this.resetScene(sceneId)
         setNewParcelScene(sceneId, new StatefulWorker(parcelScene))
         break
       }
-      case 'StopStateMode': {
+      case 'StopStatefulMode': {
         const { sceneId } = payload
         const parcelScene = this.resetScene(sceneId)
         setNewParcelScene(sceneId, new SceneSystemWorker(parcelScene))

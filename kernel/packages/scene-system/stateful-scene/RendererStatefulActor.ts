@@ -5,7 +5,7 @@ import { Component, ComponentData, ComponentId, EntityId, StatefulActor } from "
 import { EventSubscriber } from "decentraland-rpc";
 import { generatePBObjectJSON } from "scene-system/sdk/Utils";
 
-export class RendererActor extends StatefulActor {
+export class RendererStatefulActor extends StatefulActor {
 
   private readonly eventSubscriber: EventSubscriber
   private disposableComponents: number = 0;

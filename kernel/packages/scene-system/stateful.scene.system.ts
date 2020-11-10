@@ -6,8 +6,9 @@ import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
 import { SceneStateStorageController } from 'shared/apis/SceneStateStorageController'
 import { defaultLogger } from 'shared/logger'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
-import { RendererActor } from './stateful-scene/RendererActor'
+import { RendererStatefulActor } from './stateful-scene/RendererStatefulActor'
 import { SceneStateDefinition } from './stateful-scene/SceneStateDefinition'
+import { SceneStateDefinitionSerializer } from './stateful-scene/SceneStateDefinitionSerializer'
 
 class StatefulWebWorkerScene extends Script {
   @inject('DevTools')
@@ -23,7 +24,7 @@ class StatefulWebWorkerScene extends Script {
   sceneStateStorage!: SceneStateStorageController
 
   private devToolsAdapter!: DevToolsAdapter
-  private renderer!: RendererActor
+  private renderer!: RendererStatefulActor
   private sceneState!: SceneStateDefinition
   private eventSubscriber!: EventSubscriber
 
@@ -34,11 +35,11 @@ class StatefulWebWorkerScene extends Script {
   async systemDidEnable(): Promise<void> {
     this.devToolsAdapter = new DevToolsAdapter(this.devTools)
     const { cid: sceneId } = await this.parcelIdentity.getParcel()
-    this.renderer = new RendererActor(this.engine, sceneId)
+    this.renderer = new RendererStatefulActor(this.engine, sceneId)
     this.eventSubscriber = new EventSubscriber(this.engine)
 
     // Fetch stored scene
-    this.sceneState = SceneStateDefinition.fromStorableFormat(await this.sceneStateStorage.getStoredState(sceneId))
+    this.sceneState = SceneStateDefinitionSerializer.fromStorableFormat(await this.sceneStateStorage.getStoredState(sceneId))
 
     // Listen to the renderer and update the local scene state
     this.renderer.forwardChangesTo(this.sceneState)
@@ -51,7 +52,7 @@ class StatefulWebWorkerScene extends Script {
     // Listen to storage requests
     this.eventSubscriber.on('stateEvent', ({ data }) => {
       if (data.type === 'StoreSceneState') {
-        this.sceneStateStorage.storeState(sceneId, this.sceneState.toStorableFormat())
+        this.sceneStateStorage.storeState(sceneId, SceneStateDefinitionSerializer.toStorableFormat(this.sceneState))
       }
     })
   }
