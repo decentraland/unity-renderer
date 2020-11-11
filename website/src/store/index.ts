@@ -7,17 +7,15 @@ export const getKernelStore = () => {
   const store = kernel.createStore();
   const container = document.getElementById("gameContainer") as HTMLElement;
   // initialize Unity
-  setTimeout(() => {
-    kernel
-      .initWeb(container)
-      .then((response) => {
-        console.log("website-initWeb completed at: ", Date.now() - start);
-        return kernel.loadUnity(response).then(() => {
-          console.log("website-loadUnity completed at: ", Date.now() - start);
-        });
-      })
-      .then(() => console.log("website-initUnity completed"));
-  }, 5000);
+  kernel
+    .initWeb(container)
+    .then((response) => {
+      console.log("website-initWeb completed at: ", Date.now() - start);
+      return kernel.loadUnity(response).then(() => {
+        console.log("website-loadUnity completed at: ", Date.now() - start);
+      });
+    })
+    .then(() => console.log("website-initUnity completed"));
 
   return store;
 };

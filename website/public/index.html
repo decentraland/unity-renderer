@@ -73,7 +73,6 @@
 
       canvas {
         position: relative;
-        z-index: 1000;
         width: 100%;
         height: 100%;
       }
@@ -96,7 +95,7 @@
     </style>
   </head>
   <body class="dcl-loading">
-    <div id="root"></div>
+    <div id="root" style="z-index: 1001;"></div>
     <div id="gameContainer"></div>
     <!-- span.progress is to avoid a error on DCLUnityLoader  -->
     <div class="progress" style="display: none;"></div>
