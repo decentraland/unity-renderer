@@ -14,6 +14,7 @@ export type MetaConfiguration = {
     added: string[]
     denied: string[]
     contentWhitelist: string[]
+    catalystsNodesEndpoint?: string
   }
   world: WorldConfig
   comms: CommsConfig
