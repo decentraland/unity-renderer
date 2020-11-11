@@ -1,14 +1,14 @@
-import { ethereumConfigurations } from 'config'
+import { ethereumConfigurations, getNetworkFromDefaultTLD, setNetwork } from 'config'
 import { Address } from 'web3x/address'
 import { Eth } from 'web3x/eth'
 import { WebsocketProvider } from 'web3x/providers'
-import { ETHEREUM_NETWORK, getTLD } from '../config'
+import { ETHEREUM_NETWORK } from '../config'
 import { decentralandConfigurations } from '../config/index'
 import { queueTrackingEvent } from './analytics'
 import { Catalyst } from './dao/contracts/Catalyst'
 import { ERC721 } from './dao/contracts/ERC721'
 import { getNetwork, getUserAccount } from './ethereum/EthereumService'
-import { awaitWeb3Approval, createEth } from './ethereum/provider'
+import { awaitWeb3Approval, createEth, createEthWhenNotConnectedToWeb3 } from './ethereum/provider'
 import { defaultLogger } from './logger'
 import { CatalystNode, GraphResponse } from './types'
 import { retry } from '../atomicHelpers/retry'
@@ -20,20 +20,6 @@ async function getAddress(): Promise<string | undefined> {
   } catch (e) {
     defaultLogger.info(e)
   }
-}
-
-export function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
-  const tld = getTLD()
-  if (tld === 'zone') {
-    return ETHEREUM_NETWORK.ROPSTEN
-  }
-
-  if (tld === 'today' || tld === 'org') {
-    return ETHEREUM_NETWORK.MAINNET
-  }
-
-  // if localhost
-  return null
 }
 
 export async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
@@ -71,16 +57,13 @@ export async function hasClaimedName(address: string) {
   }
 }
 
-export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
-  const contractAddress = Address.fromString(decentralandConfigurations.dao)
-  let eth = createEth()
-
-  if (!eth) {
-    const net = await getAppNetwork()
-    const provider = new WebsocketProvider(ethereumConfigurations[net].wss)
-
-    eth = createEth(provider)
+export async function fetchCatalystNodesFromDAO(): Promise<CatalystNode[]> {
+  if (!decentralandConfigurations.dao) {
+    await setNetwork(getNetworkFromDefaultTLD())
   }
+
+  const contractAddress = Address.fromString(decentralandConfigurations.dao)
+  const eth = createEthWhenNotConnectedToWeb3()
 
   const contract = new Catalyst(eth, contractAddress)
 

@@ -1,6 +1,6 @@
 import { CommsConfig, MessageOfTheDayConfig, RootMetaState } from './types'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
-import { VOICE_CHAT_DISABLED_FLAG, VOICE_CHAT_ENABLED_FLAG } from 'config'
+import { getCatalystNodesDefaultURL, VOICE_CHAT_DISABLED_FLAG, VOICE_CHAT_ENABLED_FLAG } from 'config'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
   const { config } = store.meta
@@ -40,3 +40,6 @@ export const getVoiceChatAllowlist = (store: RootMetaState): string[] => getComm
 
 export const isVoiceChatEnabledFor = (store: RootMetaState, userId: string): boolean =>
   isVoiceChatEnabled(store) || (getVoiceChatAllowlist(store).includes(userId) && !VOICE_CHAT_DISABLED_FLAG)
+
+export const getCatalystNodesEndpoint = (store: RootMetaState): string =>
+  store.meta.config.servers?.catalystsNodesEndpoint ?? getCatalystNodesDefaultURL()

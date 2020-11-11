@@ -262,6 +262,23 @@ export function getWearablesSafeURL() {
   return 'https://content.decentraland.org'
 }
 
+export function getNetworkFromTLD(tld: string = getTLD()): ETHEREUM_NETWORK | null {
+  if (tld === 'zone') {
+    return ETHEREUM_NETWORK.ROPSTEN
+  }
+
+  if (tld === 'today' || tld === 'org') {
+    return ETHEREUM_NETWORK.MAINNET
+  }
+
+  // if localhost
+  return null
+}
+
+export function getNetworkFromDefaultTLD(): ETHEREUM_NETWORK {
+  return getNetworkFromTLD(getDefaultTLD())!
+}
+
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   const notToday = TLDDefault === 'today' ? 'org' : TLDDefault
@@ -355,4 +372,8 @@ export const genericAvatarSnapshots: Record<string, string> = {
   body: '/images/image_not_found.png',
   face256: '/images/avatar_snapshot_default256.png',
   face128: '/images/avatar_snapshot_default128.png'
+}
+
+export function getCatalystNodesDefaultURL() {
+  return `https://peer.decentraland.${getDefaultTLD()}/lambdas/contracts/servers`
 }

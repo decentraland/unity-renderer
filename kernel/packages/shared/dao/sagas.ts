@@ -1,5 +1,4 @@
 import {
-  WEB3_INITIALIZED,
   catalystRealmInitialized,
   initCatalystRealm,
   setCatalystCandidates,
@@ -22,70 +21,30 @@ import { WORLD_EXPLORER, REALM, getDefaultTLD, PIN_CATALYST } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
 import {
-  fecthCatalystRealms,
+  fetchCatalystRealms,
   fetchCatalystStatuses,
   pickCatalystRealm,
   getRealmFromString,
   ping,
   commsStatusUrl
 } from '.'
-import { getAddedServers, getContentWhitelist } from 'shared/meta/selectors'
+import { getAddedServers, getCatalystNodesEndpoint, getContentWhitelist } from 'shared/meta/selectors'
 import { getAllCatalystCandidates, isRealmInitialized } from './selectors'
 import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/localStorage'
 import defaultLogger from '../logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { CATALYST_COULD_NOT_LOAD } from 'shared/loading/types'
+import { META_CONFIGURATION_INITIALIZED } from 'shared/meta/actions'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
 const CACHE_TLD_KEY = 'tld'
 
 export function* daoSaga(): any {
-  yield call(loadDefaultCatalystRealms)
-  yield takeEvery(WEB3_INITIALIZED, loadCatalystRealms)
+  yield takeEvery(META_CONFIGURATION_INITIALIZED, loadCatalystRealms)
 
   yield takeEvery([INIT_CATALYST_REALM, SET_CATALYST_REALM], cacheCatalystRealm)
   yield takeEvery([SET_CATALYST_CANDIDATES, SET_ADDED_CATALYST_CANDIDATES], cacheCatalystCandidates)
-}
-
-function* loadDefaultCatalystRealms() {
-  yield call(waitForMetaConfigurationInitialization)
-  if (WORLD_EXPLORER) {
-    let cachedRealm: Realm | null = getFromLocalStorage(CACHE_KEY)
-    if (cachedRealm && !(yield checkValidRealm(cachedRealm))) {
-      cachedRealm = null
-    }
-    const tld = getDefaultTLD().toLowerCase() !== 'org' ? 'zone' : 'org'
-    const realm: Realm = cachedRealm || {
-      domain: `https://peer.decentraland.${tld}`,
-      catalystName: 'fenrir',
-      layer: 'blue',
-      lighthouseVersion: '0.2'
-    }
-    // set default realm domain as whiteList
-    yield put(
-      setContentWhitelist([
-        {
-          domain: realm.domain,
-          catalystName: realm.catalystName,
-          elapsed: 0,
-          status: 0,
-          layer: {
-            name: realm.layer,
-            usersCount: 0,
-            maxUsers: 100,
-            usersParcels: []
-          },
-          score: -50,
-          lighthouseVersion: realm.lighthouseVersion
-        }
-      ])
-    )
-    yield put(initCatalystRealm(realm))
-  } else {
-    yield initLocalCatalyst()
-  }
-  yield put(catalystRealmInitialized())
 }
 
 /**
@@ -182,7 +141,8 @@ function getConfiguredRealm(candidates: Candidate[]) {
 
 function* initializeCatalystCandidates() {
   yield put(catalystRealmsScanRequested())
-  const candidates: Candidate[] = yield call(fecthCatalystRealms)
+  const catalystsNodesEndpointURL = yield select(getCatalystNodesEndpoint)
+  const candidates: Candidate[] = yield call(fetchCatalystRealms, catalystsNodesEndpointURL)
 
   yield put(setCatalystCandidates(candidates))
 

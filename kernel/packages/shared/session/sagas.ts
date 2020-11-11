@@ -4,7 +4,7 @@ import { Personal } from 'web3x/personal/personal'
 import { Account } from 'web3x/account'
 import { Authenticator } from 'dcl-crypto'
 
-import { ENABLE_WEB3, ETHEREUM_NETWORK, getTLD, PREVIEW, setNetwork, WORLD_EXPLORER } from 'config'
+import { ENABLE_WEB3, ETHEREUM_NETWORK, getNetworkFromTLD, getTLD, PREVIEW, setNetwork, WORLD_EXPLORER } from 'config'
 
 import { createLogger } from 'shared/logger'
 import { initializeReferral, referUser } from 'shared/referral'
@@ -28,7 +28,7 @@ import {
   setTLDError
 } from 'shared/loading/types'
 import { identifyEmail, identifyUser, queueTrackingEvent } from 'shared/analytics'
-import { getAppNetwork, getNetworkFromTLD } from 'shared/web3'
+import { getAppNetwork } from 'shared/web3'
 import { getNetwork } from 'shared/ethereum/EthereumService'
 
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'

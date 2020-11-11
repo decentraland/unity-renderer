@@ -10,7 +10,7 @@ import {
   getAllCatalystCandidates,
   areCandidatesFetched
 } from './selectors'
-import { fetchCatalystNodes } from 'shared/web3'
+import { fetchCatalystNodesFromDAO } from 'shared/web3'
 import { setCatalystRealm, setCatalystCandidates } from './actions'
 import { deepEqual } from 'atomicHelpers/deepEqual'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
@@ -88,8 +88,26 @@ export function ping(url: string, timeoutMs: number = 5000): Promise<PingResult>
   return result
 }
 
-export async function fecthCatalystRealms(): Promise<Candidate[]> {
-  const nodes: CatalystNode[] = PIN_CATALYST ? [{ domain: PIN_CATALYST }] : await fetchCatalystNodes()
+async function fetchCatalystNodes(endpoint: string | undefined) {
+  if (endpoint) {
+    try {
+      const response = await fetch(endpoint)
+      if (response.ok) {
+        const nodes = await response.json()
+        return nodes.map((node: any) => ({ ...node, domain: node.address }))
+      } else {
+        throw new Error('Response was not OK. Status was: ' + response.statusText)
+      }
+    } catch (e) {
+      defaultLogger.warn(`Tried to fetch catalysts from ${endpoint} but failed. Falling back to DAO contract`, e)
+    }
+  }
+
+  return fetchCatalystNodesFromDAO()
+}
+
+export async function fetchCatalystRealms(nodesEndpoint: string | undefined): Promise<Candidate[]> {
+  const nodes: CatalystNode[] = PIN_CATALYST ? [{ domain: PIN_CATALYST }] : await fetchCatalystNodes(nodesEndpoint)
   if (nodes.length === 0) {
     throw new Error('no nodes are available in the DAO for the current network')
   }

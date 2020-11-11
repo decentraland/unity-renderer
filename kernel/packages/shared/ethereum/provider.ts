@@ -5,6 +5,7 @@ import { Account } from 'web3x/account'
 import { Eth } from 'web3x/eth'
 import { Web3Connector } from './Web3Connector'
 import { ProviderType } from './ProviderType'
+import { LegacyProviderAdapter } from 'web3x/providers'
 
 let web3Connector: Web3Connector
 export const providerFuture = future()
@@ -15,6 +16,18 @@ export const loginCompleted = future<void>()
 
 export function createEth(provider: any = null): Eth {
   return web3Connector.createEth(provider)!
+}
+
+// This function creates a Web3x eth object without the need of having initiated sign in / sign up. Used when requesting the catalysts
+export function createEthWhenNotConnectedToWeb3(): Eth {
+  const ethereum = (window as any).ethereum
+  if (ethereum) {
+    // If we have a web3 enabled browser, we can use that
+    return new Eth(new LegacyProviderAdapter((window as any).ethereum))
+  } else {
+    // If not, we use infura
+    return new Eth(Web3Connector.createWeb3xWebsocketProvider())
+  }
 }
 
 export function createWeb3Connector(): Web3Connector {
