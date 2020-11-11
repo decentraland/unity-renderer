@@ -146,7 +146,7 @@ function* initializeCatalystCandidates() {
 
   yield put(setCatalystCandidates(candidates))
 
-  const added: string[] = yield select(getAddedServers)
+  const added: string[] = PIN_CATALYST ? [] : yield select(getAddedServers)
   const addedCandidates: Candidate[] = yield call(
     fetchCatalystStatuses,
     added.map((url) => ({ domain: url }))
@@ -156,7 +156,7 @@ function* initializeCatalystCandidates() {
 
   const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
 
-  const whitelist: string[] = yield select(getContentWhitelist)
+  const whitelist: string[] = PIN_CATALYST ? [] : yield select(getContentWhitelist)
   let whitelistedCandidates = allCandidates.filter((candidate) => whitelist.includes(candidate.domain))
   if (whitelistedCandidates.length === 0) {
     // if intersection is empty (no whitelisted or not in our candidate set) => whitelist all candidates
