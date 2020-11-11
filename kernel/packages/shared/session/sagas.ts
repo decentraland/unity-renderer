@@ -74,6 +74,7 @@ import { ensureRealmInitialized } from '../dao/sagas'
 import { ensureBaseCatalogs } from '../catalogs/sagas'
 import { saveProfileRequest } from '../profiles/actions'
 import { Profile } from '../profiles/types'
+import { ensureRenderer } from 'shared/renderer/sagas'
 
 const TOS_KEY = 'tos'
 const logger = createLogger('session: ')
@@ -115,6 +116,7 @@ function* scheduleAwaitingSignaturePrompt() {
 
 function* initSession() {
   yield ensureRealmInitialized()
+  yield ensureRenderer()
   yield createWeb3Connector()
   if (ENABLE_WEB3) {
     Html.showEthLogin()
