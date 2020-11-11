@@ -143,7 +143,7 @@ export const NO_ASSET_BUNDLES = location.search.indexOf('NO_ASSET_BUNDLES') !== 
 export const WSS_ENABLED = qs.ws !== undefined
 export const FORCE_SEND_MESSAGE = location.search.indexOf('FORCE_SEND_MESSAGE') !== -1
 
-export const PIN_CATALYST = qs.PIN_CATALYST
+export const PIN_CATALYST = qs.CATALYST ? addHttpsIfNoProtocolIsSet(qs.CATALYST) : undefined
 
 export const HALLOWEEN = location.search.indexOf('HALLOWEEN') !== -1
 
@@ -376,4 +376,11 @@ export const genericAvatarSnapshots: Record<string, string> = {
 
 export function getCatalystNodesDefaultURL() {
   return `https://peer.decentraland.${getDefaultTLD()}/lambdas/contracts/servers`
+}
+
+function addHttpsIfNoProtocolIsSet(domain: string): string {
+  if (!domain.startsWith('http')) {
+    return `https://${domain}`
+  }
+  return domain
 }
