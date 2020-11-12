@@ -28,6 +28,11 @@ namespace DCL.SettingsData
         {
             get { return defaultPresetIndex; }
         }
+
+        public void Set(QualitySettings[] newSettings)
+        {
+            settings = newSettings;
+        }
     }
 
     [Serializable]

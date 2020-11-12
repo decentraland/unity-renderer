@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "FloatVariable", menuName = "FloatVariable")]
+[CreateAssetMenu(fileName = "FloatVariable", menuName = "Variables/FloatVariable")]
 public class FloatVariable : BaseVariable<float>
 {
     public override bool Equals(float other)

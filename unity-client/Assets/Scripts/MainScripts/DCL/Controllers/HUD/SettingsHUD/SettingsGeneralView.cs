@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using QualitySettings = DCL.SettingsData.QualitySettings;
 
 namespace DCL.SettingsHUD
 {
@@ -31,6 +32,10 @@ namespace DCL.SettingsHUD
         public Slider voiceChatVolumeSlider = null;
         public TextMeshProUGUI voiceChatVolumeValueLabel = null;
         public SpinBoxPresetted voiceChatAllowSpinBox = null;
+
+        [SerializeField] private Toggle autosettingsToggle;
+        [SerializeField] private CanvasGroup advancedCanvasGroup;
+        [SerializeField] private GameObject advancedBlocker;
 
         private DCL.SettingsData.QualitySettings currentQualitySetting;
         private DCL.SettingsData.GeneralSettings currentGeneralSetting;
@@ -162,6 +167,24 @@ namespace DCL.SettingsHUD
                 tempGeneralSetting.voiceChatAllow = (DCL.SettingsData.GeneralSettings.VoiceChatAllow)value;
                 isDirty = true;
             });
+
+            autosettingsToggle.onValueChanged.AddListener(SetAutoQualityActive);
+            autosettingsToggle.isOn = false;
+        }
+
+        private void SetAutoQualityActive(bool active)
+        {
+
+            advancedCanvasGroup.interactable = !active;
+            tempGeneralSetting.autoqualityOn = active;
+            advancedBlocker.SetActive(active);
+            if (active)
+            {
+                QualitySettings.BaseResolution currentBaseResolution = tempQualitySetting.baseResolution;
+                tempQualitySetting = Settings.i.lastValidAutoqualitySet;
+                tempQualitySetting.baseResolution = currentBaseResolution;
+                isDirty = true;
+            }
         }
 
         void OnEnable()
@@ -242,6 +265,7 @@ namespace DCL.SettingsHUD
             mouseSensitivitySlider.value = tempGeneralSetting.mouseSensitivity;
             voiceChatVolumeSlider.value = tempGeneralSetting.voiceChatVolume * 100;
             voiceChatAllowSpinBox.value = (int)tempGeneralSetting.voiceChatAllow;
+            autosettingsToggle.isOn = tempGeneralSetting.autoqualityOn;
         }
 
         public void Apply()
