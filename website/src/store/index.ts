@@ -7,15 +7,17 @@ export const getKernelStore = () => {
   const store = kernel.createStore();
   const container = document.getElementById("gameContainer") as HTMLElement;
   // initialize Unity
-  kernel
-    .initWeb(container)
-    .then((response) => {
-      console.log("website-initWeb completed at: ", Date.now() - start);
-      return kernel.loadUnity(response).then(() => {
-        console.log("website-loadUnity completed at: ", Date.now() - start);
-      });
-    })
-    .then(() => console.log("website-initUnity completed"));
+  setTimeout(() => {
+    kernel
+      .initWeb(container)
+      .then((response) => {
+        console.log("website-initWeb completed at: ", Date.now() - start);
+        return kernel.loadUnity(response).then(() => {
+          console.log("website-loadUnity completed at: ", Date.now() - start);
+        });
+      })
+      .then(() => console.log("website-initUnity completed"));
+  }, 3000); // We delay Unity initialization to avoid hiccups in UI for the more anxious people. This has been shown to improve UX
 
   return store;
 };
