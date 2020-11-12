@@ -25,6 +25,7 @@ import {
   AWAITING_USER_SIGNATURE,
   NETWORK_MISMATCH,
   setLoadingScreen,
+  setLoadingWaitTutorial,
   setTLDError
 } from 'shared/loading/types'
 import { identifyEmail, identifyUser, queueTrackingEvent } from 'shared/analytics'
@@ -295,6 +296,7 @@ function* signUp() {
   }
   delete profile.email // We don't deploy the email because it is public
 
+  yield put(setLoadingWaitTutorial(true))
   yield signIn(session.userId, session.identity)
   yield put(saveProfileRequest(profile, session.userId))
   yield put(signUpClearData())

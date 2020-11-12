@@ -99,6 +99,9 @@ export const setTLDError = (values: any) => action(SET_ERROR_TLD, values)
 export const SET_LOADING_SCREEN = 'setting loading screen'
 export const setLoadingScreen = (show: boolean) => action(SET_LOADING_SCREEN, { show })
 
+export const SET_LOADING_WAIT_TUTORIAL = '[LOADING] waiting tutorial'
+export const setLoadingWaitTutorial = (waiting: boolean) => action(SET_LOADING_WAIT_TUTORIAL, { waiting })
+
 export const ExecutionLifecycleNotifications = {
   notStarted,
   loadingStarted,
