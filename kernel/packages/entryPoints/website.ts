@@ -121,6 +121,7 @@ namespace webApp {
         i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
         i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
         i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
+        i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
 
         EnsureProfile(identity.address)
           .then((profile) => {

@@ -147,7 +147,8 @@ public class HUDController : MonoBehaviour
         HELP_AND_SUPPORT_HUD = 20,
         EMAIL_PROMPT = 21,
         USERS_AROUND_LIST_HUD = 22,
-        COUNT = 23
+        GRAPHIC_CARD_WARNING = 23,
+        COUNT = 24
     }
 
     [System.Serializable]
@@ -346,6 +347,9 @@ public class HUDController : MonoBehaviour
                 {
                     minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
                 }
+                break;
+            case HUDElementID.GRAPHIC_CARD_WARNING:
+                CreateHudElement<GraphicCardWarningHUDController>(configuration, hudElementId);
                 break;
         }
 
