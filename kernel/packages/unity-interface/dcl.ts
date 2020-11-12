@@ -87,8 +87,6 @@ function debuggingDecorator(_gameInstance: GameInstance) {
 export async function initializeEngine(_gameInstance: GameInstance) {
   gameInstance = debuggingDecorator(_gameInstance)
 
-  setLoadingScreenVisible(true)
-
   unityInterface.Init(_gameInstance)
 
   unityInterface.DeactivateRendering()
