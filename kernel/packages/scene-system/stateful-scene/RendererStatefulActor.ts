@@ -23,7 +23,7 @@ export class RendererStatefulActor extends StatefulActor {
       payload: { id: entityId } as CreateEntityPayload
     }]
     if (components) {
-      components.map(({ id, data }) => this.mapComponentToActions(entityId, id, data))
+      components.map(({ componentId, data }) => this.mapComponentToActions(entityId, componentId, data))
         .forEach(actions => batch.push(...actions))
     }
     this.engine.sendBatch(batch)
@@ -83,7 +83,7 @@ export class RendererStatefulActor extends StatefulActor {
     this.eventSubscriber.on('stateEvent', ({ data }) => {
       const { type, payload } = data
       if (type === 'SetComponent') {
-        listener(payload.entityId, payload.componentId, payload.componentData)
+        listener(payload.entityId, payload.componentId, payload.data)
       }
     })
   }
@@ -98,10 +98,9 @@ export class RendererStatefulActor extends StatefulActor {
   }
 
   private mapComponentToActions(entityId: EntityId, componentId: ComponentId, data: ComponentData): EntityAction[] {
-    const { disposability, defaultValue } = this.getDataAboutComponent(componentId)
-    const finalData = Object.assign(defaultValue ?? {}, data)
+    const { disposability } = this.getDataAboutComponent(componentId)
     if (disposability === ComponentDisposability.DISPOSABLE) {
-      return this.buildDisposableComponentActions(entityId, componentId, finalData)
+      return this.buildDisposableComponentActions(entityId, componentId, data)
     } else {
       return [{
         type: 'UpdateEntityComponent',
@@ -109,7 +108,7 @@ export class RendererStatefulActor extends StatefulActor {
         payload: {
           entityId,
           classId: componentId,
-          json: generatePBObjectJSON(componentId, finalData)
+          json: generatePBObjectJSON(componentId, data)
         } as UpdateEntityComponentPayload
       }]
     }
@@ -145,16 +144,15 @@ export class RendererStatefulActor extends StatefulActor {
     ]
   }
 
-  // TODO: We need to figure out a better way to handle defaults, so we can try to re-use the logic that already exists
-  private getDataAboutComponent(componentId: ComponentId): { name: string, disposability: ComponentDisposability, defaultValue?: ComponentData } {
+  private getDataAboutComponent(componentId: ComponentId): { name: string, disposability: ComponentDisposability } {
     switch (componentId) {
       case CLASS_ID.TRANSFORM:
-        return {
-          name: 'transform',
-          disposability: ComponentDisposability.NON_DISPOSABLE,
-          defaultValue: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0.0, y: 0.0, z: 0.0, w: 1.0 }, scale: { x: 1, y: 1, z: 1 } }
-        }
+        return { name: 'transform', disposability: ComponentDisposability.NON_DISPOSABLE }
+      case CLASS_ID.NAME:
+        return { name: 'name', disposability: ComponentDisposability.NON_DISPOSABLE }
       case CLASS_ID.GLTF_SHAPE:
+        return { name: 'shape', disposability: ComponentDisposability.DISPOSABLE }
+      case CLASS_ID.NFT_SHAPE:
         return { name: 'shape', disposability: ComponentDisposability.DISPOSABLE }
     }
     throw new Error('Component not implemented yet')
