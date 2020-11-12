@@ -12,6 +12,13 @@ namespace DCL
         private char[] encodedSamples = new char[SAMPLES_SIZE];
         private int currentIndex = 0;
 
+        [SerializeField] private PerformanceMetricsDataVariable performanceMetricsDataVariable;
+
+        public PerformanceMetricsController()
+        {
+            performanceMetricsDataVariable = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData");
+        }
+
         public void Update()
         {
             if (!CommonScriptableObjects.focusState.Get())
@@ -23,6 +30,8 @@ namespace DCL
             var deltaInMs = Time.deltaTime * 1000;
 
             tracker.AddDeltaTime(Time.deltaTime);
+
+            performanceMetricsDataVariable?.Set(tracker.CurrentFPSCount(), tracker.CurrentHiccupCount(), tracker.HiccupsSum, tracker.GetTotalSeconds());
 
             encodedSamples[currentIndex++] = (char) deltaInMs;
 

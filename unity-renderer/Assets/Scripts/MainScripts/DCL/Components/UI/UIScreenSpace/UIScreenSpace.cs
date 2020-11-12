@@ -14,6 +14,7 @@ namespace DCL.Components
         static bool VERBOSE = false;
 
         public Canvas canvas;
+        public GraphicRaycaster graphicRaycaster;
 
         private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
@@ -123,7 +124,7 @@ namespace DCL.Components
             canvasScaler.matchWidthOrHeight = 1f; // Match height, recommended for landscape projects
 
             // Graphics Raycaster (for allowing touch/click input on the ui components)
-            canvasGameObject.AddComponent<GraphicRaycaster>();
+            graphicRaycaster = canvasGameObject.AddComponent<GraphicRaycaster>();
 
             canvas.sortingOrder = -1;
 
