@@ -8,20 +8,26 @@ global.enableWeb3 = true
 import { initShared } from 'shared'
 import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
-import { AUTH_ERROR_LOGGED_OUT, experienceStarted, FAILED_FETCHING_UNITY, NOT_INVITED } from 'shared/loading/types'
+import {
+  AUTH_ERROR_LOGGED_OUT,
+  experienceStarted,
+  FAILED_FETCHING_UNITY,
+  NOT_INVITED,
+  setLoadingWaitTutorial
+} from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { NO_MOTD, DEBUG_PM, OPEN_AVATAR_EDITOR, HAS_INITIAL_POSITION_MARK } from '../config/index'
-import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
+import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR } from '../config/index'
+import { signalParcelLoadingStarted, signalRendererInitialized } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { RootStore, StoreContainer } from 'shared/store/rootTypes'
 import { startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity, InitializeUnityResult } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
 import {
-  renderStateObservable,
-  onNextRendererEnabled,
   foregroundObservable,
-  isForeground
+  isForeground,
+  onNextRendererEnabled,
+  renderStateObservable
 } from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
@@ -32,6 +38,7 @@ import { WorldConfig } from 'shared/meta/types'
 import { isVoiceChatEnabledFor } from 'shared/meta/selectors'
 import { UnityInterface } from 'unity-interface/UnityInterface'
 import { kernelConfigForRenderer } from '../unity-interface/kernelConfigForRenderer'
+import Html from 'shared/Html'
 
 const logger = createLogger('website.ts: ')
 
@@ -103,7 +110,7 @@ namespace webApp {
     userAuthentified()
       .then(() => {
         const identity = getCurrentIdentity(globalThis.globalStore.getState())!
-        
+
         const voiceChatEnabled = isVoiceChatEnabledFor(globalThis.globalStore.getState(), identity.address)
 
         const configForRenderer = kernelConfigForRenderer()
@@ -119,6 +126,8 @@ namespace webApp {
           .then((profile) => {
             i.ConfigureEmailPrompt(profile.tutorialStep)
             i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
+            globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
+            Html.switchGameContainer(true)
           })
           .catch((e) => logger.error(`error getting profile ${e}`))
       })

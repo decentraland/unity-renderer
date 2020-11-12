@@ -31,6 +31,7 @@ namespace DCL.SettingsHUD
             settingsAnimator.OnWillFinishHide += OnFinishHide;
 
             isOpen = false;
+            settingsAnimator.Hide(true);
         }
 
         private void OnDestroy()

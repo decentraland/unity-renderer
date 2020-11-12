@@ -40,6 +40,7 @@ namespace Tests
             DCL.Settings.i.ApplyQualitySettings(testQualitySettings);
             DCL.Settings.i.ApplyGeneralSettings(testGeneralSettings);
             controller = new SettingsHUDController();
+            controller.SetVisibility(true);
         }
 
         protected override IEnumerator TearDown()

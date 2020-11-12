@@ -10,6 +10,7 @@ import {
   ROTATE_HELP_TEXT,
   SET_ERROR_TLD,
   SET_LOADING_SCREEN,
+  SET_LOADING_WAIT_TUTORIAL,
   SUBSYSTEMS_EVENTS,
   TELEPORT_TRIGGERED
 } from './types'
@@ -23,6 +24,7 @@ export type LoadingState = {
   loadPercentage: number
   initialLoad: boolean
   showLoadingScreen: boolean
+  waitingTutorial?: boolean
   error: string | null
   tldError: {
     tld: string
@@ -84,6 +86,9 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   }
   if (action.type === SET_LOADING_SCREEN) {
     return { ...state, showLoadingScreen: action.payload.show }
+  }
+  if (action.type === SET_LOADING_WAIT_TUTORIAL) {
+    return { ...state, waitingTutorial: action.payload.waiting }
   }
   if (action.type === ERROR_MESSAGE) {
     return { ...state, error: action.payload.type }

@@ -55,6 +55,7 @@ export type LoadingState = {
   subsystemsLoad: number;
   loadPercentage: number;
   initialLoad: boolean;
+  waitingTutorial: boolean;
   showLoadingScreen: boolean;
 };
 const mapStateToProps = (state: any) => {
@@ -95,10 +96,14 @@ export const LoadingContainer: React.FC<LoadingContainerProps> = (props) => {
       : state.loadPercentage,
     100
   );
-  const withImages = state.initialLoad || props.loginStage !== "completed";
+  const show = state.showLoadingScreen || state.waitingTutorial;
+  const withImages =
+    state.initialLoad ||
+    props.loginStage !== "completed" ||
+    state.waitingTutorial;
   return (
     <React.Fragment>
-      {state.showLoadingScreen && (
+      {show && (
         <LoadingMessage
           image={withImages ? tip.image : undefined}
           message={withImages ? tip.text : undefined}
@@ -106,7 +111,7 @@ export const LoadingContainer: React.FC<LoadingContainerProps> = (props) => {
           showWalletPrompt={showWalletPrompt}
         />
       )}
-      {state.showLoadingScreen && <ProgressBar percentage={percentage} />}
+      {show && <ProgressBar percentage={percentage} />}
     </React.Fragment>
   );
 };
