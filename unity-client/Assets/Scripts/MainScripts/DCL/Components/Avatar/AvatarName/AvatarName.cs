@@ -5,12 +5,13 @@ using UnityEngine;
 public class AvatarName : MonoBehaviour
 {
     const float NAME_VANISHING_POINT_DISTANCE = 20.0f;
+    readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
 
     public CanvasGroup uiContainer;
     public Transform sourceTransform;
     public TextMeshProUGUI nameText;
     public Vector3 offset;
-    public GameObject talkingIconContainer;
+    public Animator talkingAnimator;
     Canvas canvas;
     Camera mainCamera;
     RectTransform canvasRect;
@@ -19,6 +20,7 @@ public class AvatarName : MonoBehaviour
 
     public void SetName(string name)
     {
+        talkingAnimator?.gameObject.SetActive(false);
         if (string.IsNullOrEmpty(name))
         {
             uiContainer.alpha = 0;
@@ -33,20 +35,23 @@ public class AvatarName : MonoBehaviour
         }
     }
 
-    void OnDisable()
-    {
-        SetTalking(false);
-    }
-
     public void SetTalking(bool talking)
     {
-        talkingIconContainer?.SetActive(talking);
+        if (!talkingAnimator)
+            return;
+
+        if (talking && !talkingAnimator.gameObject.activeSelf)
+        {
+            talkingAnimator.gameObject.SetActive(talking);
+        }
+        talkingAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, talking);
     }
 
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         canvasRect = (RectTransform)canvas.transform;
+        talkingAnimator?.gameObject.SetActive(false);
     }
 
     void OnEnable()
