@@ -5,7 +5,7 @@ export class SceneStateDefinition implements StateContainer {
   private readonly entities: Map<EntityId, Map<ComponentId, ComponentData>> = new Map()
 
   addEntity(entityId: EntityId, components?: Component[]): void {
-    const componentMap: Map<ComponentId, ComponentData> = new Map((components ?? []).map(({ id, data }) => [id, data]))
+    const componentMap: Map<ComponentId, ComponentData> = new Map((components ?? []).map(({ componentId, data }) => [componentId, data]))
     this.entities.set(entityId, componentMap)
   }
 
@@ -24,7 +24,7 @@ export class SceneStateDefinition implements StateContainer {
   sendStateTo(container: StateContainer) {
     for (const [entityId, components] of this.entities.entries()) {
       const mappedComponents = Array.from(components.entries())
-        .map(([id, data]) => ({ id, data }))
+        .map(([componentId, data]) => ({ componentId, data }))
       container.addEntity(entityId, mappedComponents)
     }
   }

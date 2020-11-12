@@ -37,7 +37,12 @@ export class SceneStateDefinitionSerializer {
  * but until this feature is stable enough, it's better to store it in a way that it is easy to debug.
  */
 
-const HUMAN_READABLE_TO_ID: Map<string, ComponentId> = new Map([['Transform', CLASS_ID.TRANSFORM], ['GLTFShape', CLASS_ID.GLTF_SHAPE]])
+const HUMAN_READABLE_TO_ID: Map<string, ComponentId> = new Map([
+  ['Transform', CLASS_ID.TRANSFORM],
+  ['GLTFShape', CLASS_ID.GLTF_SHAPE],
+  ['NFTShape', CLASS_ID.NFT_SHAPE],
+  ['Name', CLASS_ID.NAME]
+])
 
 function idToHumanReadableType(id: ComponentId): string {
   const type = Array.from(HUMAN_READABLE_TO_ID.entries())

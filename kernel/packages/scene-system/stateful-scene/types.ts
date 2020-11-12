@@ -3,7 +3,7 @@ export type EntityId = string
 export type ComponentId = number
 export type ComponentData = any
 export type Component = {
-  id: ComponentId
+  componentId: ComponentId
   data: ComponentData
 }
 

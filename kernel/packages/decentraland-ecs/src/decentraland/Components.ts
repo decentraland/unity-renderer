@@ -64,7 +64,10 @@ export enum CLASS_ID {
   AUDIO_STREAM = 202,
   GIZMOS = 203,
   SMART_ITEM = 204,
-  AVATAR_MODIFIER_AREA = 205
+  AVATAR_MODIFIER_AREA = 205,
+
+  // For state sync only
+  NAME = 300
 }
 
 export enum AvatarModifiers {
