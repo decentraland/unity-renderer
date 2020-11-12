@@ -76,8 +76,8 @@ namespace DCL
 
 #if !UNITY_EDITOR
             worldEntryPoint = new EntryPoint_World(this); // independent subsystem => put at entrypoint but not at environment
-            performanceMetricsController = new PerformanceMetricsController();
 #endif
+            performanceMetricsController = new PerformanceMetricsController();
         }
 
         void Start()
