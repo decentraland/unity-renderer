@@ -1,7 +1,7 @@
 import { call, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import { DEBUG_MESSAGES } from 'config'
-import { initializeEngine } from 'unity-interface/dcl'
+import { initializeEngine, setLoadingScreenVisible } from 'unity-interface/dcl'
 
 import { waitingForRenderer, UNEXPECTED_ERROR } from 'shared/loading/types'
 import { createLogger } from 'shared/logger'
@@ -57,6 +57,8 @@ function* initializeRenderer(action: InitializeRenderer) {
   const qs = queryString.parse(document.location.search)
 
   preventUnityKeyboardLock()
+
+  setLoadingScreenVisible(true)
 
   if (qs.ws) {
     _gameInstance = initializeUnityEditor(qs.ws, container)
