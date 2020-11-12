@@ -11,7 +11,8 @@ public class NotificationFactory : ScriptableObject
         AIRDROPPING,
         GENERIC_WITHOUT_BUTTON,
         CUSTOM,
-        UI_HIDDEN
+        UI_HIDDEN,
+        GRAPHIC_CARD_WARNING
     }
 
     [System.Serializable]

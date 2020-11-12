@@ -1,0 +1,19 @@
+{
+    "name": "GraphicCardWarningHUD",
+    "references": [
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:70aa308435753374584c7061e4b89ef2",
+        "GUID:f1da3a87177414c899cd25121a9d74d9",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

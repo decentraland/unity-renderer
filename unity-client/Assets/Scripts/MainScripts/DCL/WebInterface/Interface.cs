@@ -491,6 +491,7 @@ namespace DCL.Interface
      */
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
+    [DllImport("__Internal")] public static extern string GetGraphicCard();
 #else
         public static void StartDecentraland()
         {
@@ -508,6 +509,8 @@ namespace DCL.Interface
                 Debug.Log("MessageFromEngine called with: " + type + ", " + message);
             }
         }
+
+        public static string GetGraphicCard() => "In Editor Graphic Card";
 #endif
 
         public static void SendMessage(string type)
