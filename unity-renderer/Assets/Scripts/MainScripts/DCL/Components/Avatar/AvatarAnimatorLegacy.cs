@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
 {
-    const float IDLE_TRANSITION_TIME = 0.15f;
+    const float IDLE_TRANSITION_TIME = 0.2f;
     const float STRAFE_TRANSITION_TIME = 0.25f;
-    const float RUN_TRANSITION_TIME = 0.01f;
-    const float WALK_TRANSITION_TIME = 0.01f;
+    const float RUN_TRANSITION_TIME = 0.15f;
+    const float WALK_TRANSITION_TIME = 0.15f;
     const float JUMP_TRANSITION_TIME = 0.01f;
     const float FALL_TRANSITION_TIME = 0.5f;
     const float EXPRESSION_TRANSITION_TIME = 0.2f;
@@ -43,6 +43,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
         public bool isGrounded;
         public string expressionTriggerId;
         public long expressionTriggerTimestamp;
+        public float deltaTime;
     }
 
     [SerializeField] internal AvatarAnimationsVariable maleAnimations;
@@ -53,9 +54,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
     public BlackBoard blackboard;
     public Transform target;
 
-    public AnimationCurve walkBlendtreeCurve;
-    public AnimationCurve runBlendtreeCurve;
-    public AnimationCurve idleBlendtreeCurve;
+    [SerializeField] float runMinSpeed = 6f;
+    [SerializeField] float walkMinSpeed = 0.1f;
 
     internal System.Action<BlackBoard> currentState;
 
@@ -71,20 +71,40 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
     public void OnPoolGet()
     {
         if (DCLCharacterController.i != null)
+        {
             isOwnPlayer = DCLCharacterController.i.transform == transform.parent;
+
+            // NOTE: disable MonoBehaviour's update to use DCLCharacterController event instead
+            this.enabled = !isOwnPlayer;
+
+            if (isOwnPlayer)
+            {
+                DCLCharacterController.i.OnUpdateFinish += Update;
+            }
+        }
 
         currentState = State_Init;
     }
 
     public void OnPoolRelease()
     {
+        if (isOwnPlayer && DCLCharacterController.i)
+        {
+            DCLCharacterController.i.OnUpdateFinish -= Update;
+        }
     }
 
     void Update()
     {
+        Update(Time.deltaTime);
+    }
+
+    void Update(float deltaTime)
+    {
         if (target == null || animation == null)
             return;
 
+        blackboard.deltaTime = deltaTime;
         UpdateInterface();
         currentState?.Invoke(blackboard);
     }
@@ -133,32 +153,34 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
 
     void State_Ground(BlackBoard bb)
     {
-        float dt = Time.deltaTime;
+        if (bb.deltaTime <= 0)
+        {
+            Debug.LogError("deltaTime should be > 0", gameObject);
+            return;
+        }
 
-        animation[baseClipsIds.run].normalizedSpeed = bb.movementSpeed / dt * bb.runSpeedFactor;
-        animation[baseClipsIds.walk].normalizedSpeed = bb.movementSpeed / dt * bb.walkSpeedFactor;
+        animation[baseClipsIds.run].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.runSpeedFactor;
+        animation[baseClipsIds.walk].normalizedSpeed = bb.movementSpeed / bb.deltaTime * bb.walkSpeedFactor;
 
-        float normalizedSpeed = bb.movementSpeed / dt / MAX_VELOCITY;
+        float movementSpeed = bb.movementSpeed / bb.deltaTime;
 
-        float idleWeight = idleBlendtreeCurve.Evaluate(normalizedSpeed);
-        float runWeight = runBlendtreeCurve.Evaluate(normalizedSpeed);
-        float walkWeight = walkBlendtreeCurve.Evaluate(normalizedSpeed);
-
-        //NOTE(Brian): Normalize weights
-        float weightSum = idleWeight + runWeight + walkWeight;
-
-        idleWeight /= weightSum;
-        runWeight /= weightSum;
-        walkWeight /= weightSum;
-
-        animation.Blend(baseClipsIds.idle, idleWeight, GROUND_BLENDTREE_TRANSITION_TIME);
-        animation.Blend(baseClipsIds.run, runWeight, GROUND_BLENDTREE_TRANSITION_TIME);
-        animation.Blend(baseClipsIds.walk, walkWeight, GROUND_BLENDTREE_TRANSITION_TIME);
+        if (movementSpeed > runMinSpeed)
+        {
+            animation.CrossFade(baseClipsIds.run, RUN_TRANSITION_TIME);
+        }
+        else if (movementSpeed > walkMinSpeed)
+        {
+            animation.CrossFade(baseClipsIds.walk, WALK_TRANSITION_TIME);
+        }
+        else
+        {
+            animation.CrossFade(baseClipsIds.idle, IDLE_TRANSITION_TIME);
+        }
 
         if (!bb.isGrounded)
         {
             currentState = State_Air;
-            Update();
+            Update(bb.deltaTime);
         }
     }
 
@@ -178,7 +200,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
             animation.Blend(baseClipsIds.jump, 0, AIR_EXIT_TRANSITION_TIME);
             animation.Blend(baseClipsIds.fall, 0, AIR_EXIT_TRANSITION_TIME);
             currentState = State_Ground;
-            Update();
+            Update(bb.deltaTime);
         }
     }
 
@@ -197,7 +219,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
             else
                 currentState = State_Ground;
 
-            Update();
+            Update(bb.deltaTime);
         }
     }
 
