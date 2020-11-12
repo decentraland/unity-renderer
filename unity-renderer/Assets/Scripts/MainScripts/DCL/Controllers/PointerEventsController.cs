@@ -3,6 +3,9 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace DCL
 {
@@ -22,6 +25,9 @@ namespace DCL
         OnPointerEvent newHoveredEvent = null;
         OnPointerEvent[] lastHoveredEventList = null;
         RaycastHit hitInfo;
+        PointerEventData uiGraphicRaycastPointerEventData = new PointerEventData(null);
+        List<RaycastResult> uiGraphicRaycastResults = new List<RaycastResult>();
+        GraphicRaycaster uiGraphicRaycaster;
 
         public void Initialize()
         {
@@ -41,7 +47,23 @@ namespace DCL
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null) return;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
-            if (!Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter))
+            bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
+            bool uiIsBlocking = false;
+
+            if (didHit && SceneController.i.loadedScenes.ContainsKey(SceneController.i.currentSceneId))
+            {
+                GraphicRaycaster raycaster = SceneController.i.loadedScenes[SceneController.i.currentSceneId].uiScreenSpace?.graphicRaycaster;
+                if (raycaster)
+                {
+                    uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width / 2, Screen.height / 2);
+                    uiGraphicRaycastResults.Clear();
+                    raycaster.Raycast(uiGraphicRaycastPointerEventData, uiGraphicRaycastResults);
+
+                    uiIsBlocking = uiGraphicRaycastResults.Count > 0;
+                }
+            }
+
+            if (!didHit || uiIsBlocking)
             {
                 clickHandler = null;
                 UnhoverLastHoveredObject(hoverController);

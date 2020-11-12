@@ -17,6 +17,11 @@ namespace DCL
 
         private static SettingsData.QualitySettingsData qualitySettingsPreset = null;
 
+        public SettingsData.QualitySettingsData autoqualitySettings = null;
+        public SettingsData.QualitySettings lastValidAutoqualitySet;
+
+        private readonly BooleanVariable autosettingsEnabled = null;
+
         private SettingsData.QualitySettings currentQualitySettings;
         private SettingsData.GeneralSettings currentGeneralSettings;
 
@@ -26,6 +31,16 @@ namespace DCL
             {
                 qualitySettingsPreset = Resources.Load<SettingsData.QualitySettingsData>("ScriptableObjects/QualitySettingsData");
             }
+
+            if (autoqualitySettings == null)
+            {
+                autoqualitySettings = Resources.Load<SettingsData.QualitySettingsData>("ScriptableObjects/AutoQualitySettingsData");
+                lastValidAutoqualitySet = autoqualitySettings[autoqualitySettings.Length / 2];
+            }
+
+            if (autosettingsEnabled == null)
+                autosettingsEnabled = Resources.Load<BooleanVariable>("ScriptableObjects/AutoQualityEnabled");
+
             LoadQualitySettings();
             LoadGeneralSettings();
         }
@@ -76,12 +91,22 @@ namespace DCL
             }
         }
 
-        public void ApplyQualitySettingsPreset(int index)
+        /// <summary>
+        /// Apply the auto quality setting by its index on the array
+        /// </summary>
+        /// <param name="index">Index within the autoQualitySettings array</param>
+        public void ApplyAutoQualitySettings(int index)
         {
-            if (index >= 0 && index < qualitySettingsPreset.Length)
-            {
-                ApplyQualitySettings(qualitySettingsPreset[index]);
-            }
+            if (index < 0 || index >= autoqualitySettings.Length)
+                return;
+
+            lastValidAutoqualitySet = autoqualitySettings[index];
+            lastValidAutoqualitySet.baseResolution = currentQualitySettings.baseResolution;
+
+            if (currentQualitySettings.Equals(lastValidAutoqualitySet))
+                return;
+
+            ApplyQualitySettings(lastValidAutoqualitySet);
         }
 
         public void ApplyQualitySettings(SettingsData.QualitySettings settings)
@@ -94,6 +119,7 @@ namespace DCL
         {
             currentGeneralSettings = settings;
             OnGeneralSettingsChanged?.Invoke(settings);
+            autosettingsEnabled.Set(settings.autoqualityOn);
         }
 
         public void SaveSettings()
@@ -116,13 +142,15 @@ namespace DCL.SettingsData
         public float mouseSensitivity;
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
+        public bool autoqualityOn;
 
         public bool Equals(GeneralSettings settings)
         {
             return sfxVolume == settings.sfxVolume
                 && mouseSensitivity == settings.mouseSensitivity
                 && voiceChatVolume == settings.voiceChatVolume
-                && voiceChatAllow == settings.voiceChatAllow;
+                && voiceChatAllow == settings.voiceChatAllow
+                && autoqualityOn == settings.autoqualityOn;
         }
     }
 }
