@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Vector3NullableVariable", menuName = "Vector3NullableVariable")]
+[CreateAssetMenu(fileName = "Vector3NullableVariable", menuName = "Variables/Vector3NullableVariable")]
 public class Vector3NullableVariable : BaseVariable<Vector3?>
 {
     public bool HasValue()

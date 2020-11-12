@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7150802491235533513}
   - component: {fileID: 7150802491235533518}
   - component: {fileID: 7150802491235533512}
+  - component: {fileID: 296781829}
   m_Layer: 0
   m_Name: SettingsController
   m_TagString: Untagged
@@ -62,3 +63,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thirdPersonCamera: {fileID: 0}
   firstPersonCamera: {fileID: 0}
+--- !u!114 &296781829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7150802491235533519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19afb52d7e4af0d4da15b0b1898141f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoQualityEnabled: {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
+  performanceMetricsData: {fileID: 11400000, guid: 38cb55938716a6c4c84605022422df76,
+    type: 2}
+  qualitySettings: {fileID: 11400000, guid: 4f354f4007280f54886a9ac09ca4655f, type: 2}
