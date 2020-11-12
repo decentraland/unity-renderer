@@ -15,7 +15,7 @@ MonoBehaviour:
   loadingBlockerPrefab: {fileID: 6457685576576672848, guid: 99d9fadbc076e884fa108a3480fb60ac,
     type: 3}
   skyboxMaterial: {fileID: 2100000, guid: 7e1a5fec7e194e246a9d32f2f1a1498a, type: 2}
-  reflectionCubemap: {fileID: 8900000, guid: ade92094798774df4a51b327374145b8, type: 3}
+  reflectionCubemap: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   skyColor: {r: 0.60784316, g: 0.92941177, b: 1, a: 1}
   equatorColor: {r: 0.98039216, g: 0.8352941, b: 0.74509805, a: 1}
   groundColor: {r: 1, g: 1, b: 1, a: 1}

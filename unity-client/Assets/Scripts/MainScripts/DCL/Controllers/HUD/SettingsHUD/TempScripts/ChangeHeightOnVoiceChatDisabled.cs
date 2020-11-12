@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
 using DCL.Configuration;
 
-internal class MoveVerticalOnVoiceChatDisabled : MonoBehaviour
+internal class ChangeHeightOnVoiceChatDisabled : MonoBehaviour
 {
-    [SerializeField] float targetPositionY;
+    [SerializeField] float targetHeight;
     [SerializeField] RectTransform target;
 
-    float defaultPositionY;
+    float defaultHeight;
 
     void Awake()
     {
         if (EnvironmentSettings.RUNNING_TESTS)
             return;
 
-        defaultPositionY = target.anchoredPosition.y;
+        defaultHeight = target.sizeDelta.y;
 
         KernelConfig.i.EnsureConfigInitialized().Then(config => DoChanges(config));
 
@@ -39,6 +39,6 @@ internal class MoveVerticalOnVoiceChatDisabled : MonoBehaviour
         if (!target)
             return;
 
-        target.anchoredPosition = new Vector3(target.anchoredPosition.x, config.comms.voiceChatEnabled ? defaultPositionY : targetPositionY);
+        target.sizeDelta = new Vector3(target.sizeDelta.x, config.comms.voiceChatEnabled ? defaultHeight : targetHeight);
     }
 }
