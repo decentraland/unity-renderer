@@ -14,7 +14,7 @@ export const TermsOfServices: React.FC<TermsOfServicesProps> = (props) => {
   const [read, setRead] = useState(false);
   const handleScroll = (e: any) => {
     const isBottom =
-      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+      e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight * 1.1;
     setRead(isBottom);
   };
   const handleClose = props.loading ? null : props.handleCancel;
