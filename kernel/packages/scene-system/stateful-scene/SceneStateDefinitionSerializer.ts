@@ -22,7 +22,7 @@ export class SceneStateDefinitionSerializer {
       const id: EntityId = entity.id
       const components: Component[] | undefined = entity.components
         ?.map((component: any) => ({
-          id: humanReadableTypeToId(component.type),
+          componentId: humanReadableTypeToId(component.type),
           data: component.value,
         }))
       sceneState.addEntity(id, components)
