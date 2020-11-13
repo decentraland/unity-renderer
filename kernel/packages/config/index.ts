@@ -275,10 +275,6 @@ export function getNetworkFromTLD(tld: string = getTLD()): ETHEREUM_NETWORK | nu
   return null
 }
 
-export function getNetworkFromDefaultTLD(): ETHEREUM_NETWORK {
-  return getNetworkFromTLD(getDefaultTLD())!
-}
-
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   const notToday = TLDDefault === 'today' ? 'org' : TLDDefault

@@ -35,6 +35,7 @@ import defaultLogger from '../logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { CATALYST_COULD_NOT_LOAD } from 'shared/loading/types'
 import { META_CONFIGURATION_INITIALIZED } from 'shared/meta/actions'
+import { checkTldVsWeb3Network, registerProviderChanges } from 'shared/web3'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
@@ -58,6 +59,11 @@ export function* daoSaga(): any {
  */
 function* loadCatalystRealms() {
   yield call(waitForMetaConfigurationInitialization)
+  if (WORLD_EXPLORER && (yield checkTldVsWeb3Network())) {
+    return
+  }
+
+  registerProviderChanges()
 
   if (WORLD_EXPLORER) {
     const cachedRealm: Realm | undefined = getFromLocalStorage(CACHE_KEY)

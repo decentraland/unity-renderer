@@ -9,7 +9,7 @@ import { LegacyProviderAdapter } from 'web3x/providers'
 
 let web3Connector: Web3Connector
 export const providerFuture = future()
-export const requestManager = new RequestManager(null)
+export const requestManager = new RequestManager((window as any).ethereum ?? null)
 
 export const loginCompleted = future<void>()
 ;(window as any).loginCompleted = loginCompleted
