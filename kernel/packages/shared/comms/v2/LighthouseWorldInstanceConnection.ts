@@ -30,7 +30,7 @@ import { Realm, CommsStatus } from 'shared/dao/types'
 import { compareVersions } from 'atomicHelpers/semverCompare'
 
 import * as Long from 'long'
-import { getProfileType } from 'shared/profiles/sagas'
+import { getProfileType } from 'shared/profiles/getProfileType'
 import { Profile } from 'shared/types'
 import { ProfileType } from 'shared/profiles/types'
 import { EncodedFrame } from 'voice-chat-codec/types'

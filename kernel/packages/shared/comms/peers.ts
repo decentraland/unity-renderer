@@ -3,7 +3,7 @@ import { UUID, PeerInformation, AvatarMessage, UserInformation, AvatarMessageTyp
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import defaultLogger from 'shared/logger'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
-import { getProfileType } from 'shared/profiles/sagas'
+import { getProfileType } from 'shared/profiles/getProfileType'
 
 export const peerMap = new Map<UUID, PeerInformation>()
 export const avatarMessageObservable = new Observable<AvatarMessage>()
