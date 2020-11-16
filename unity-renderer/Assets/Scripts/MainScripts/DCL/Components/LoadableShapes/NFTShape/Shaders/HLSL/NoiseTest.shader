@@ -13,7 +13,9 @@ Shader "NoiseTest/HLSL/NoiseTest"
 
     #include "UnityCG.cginc"
 
+    CBUFFER_START(UnityPerMaterial)
     uniform float4 _Color;
+    CBUFFER_END
 
     #if !defined(CNOISE)
         #if defined(THREED)

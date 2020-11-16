@@ -95,7 +95,6 @@ public static class AvatarUtils
                 Texture _MatCap = null;
                 Texture _GMatCap = null;
                 Texture _FMatCap = null;
-                Color? _TintColor = null;
 
                 if (replaceThemWith.HasProperty(ShaderUtils.MatCap))
                     _MatCap = replaceThemWith.GetTexture(ShaderUtils.MatCap);
@@ -120,15 +119,7 @@ public static class AvatarUtils
                 if (_MatCap != null)
                     copy.SetTexture(ShaderUtils.MatCap, _MatCap);
 
-                if (copy.HasProperty(ShaderUtils.ZWrite))
-                {
-                    int zWrite = (int) copy.GetFloat(ShaderUtils.ZWrite);
-
-                    if (zWrite == 0)
-                        copy.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
-                }
-
-                copy.enableInstancing = false;
+                SRPBatchingHelper.OptimizeMaterial(copy);
 
                 result.Add(copy);
                 return copy;

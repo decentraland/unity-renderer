@@ -123,7 +123,9 @@ namespace DCL.Helpers
                     }
                     else
                     {
-                        matList.Add(new Material(mat));
+                        var materialCopy = new Material(mat);
+                        SRPBatchingHelper.OptimizeMaterial(materialCopy);
+                        matList.Add(materialCopy);
                     }
 
                     if (timeBudgetEnabled)
