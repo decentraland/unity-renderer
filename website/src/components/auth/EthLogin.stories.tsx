@@ -8,6 +8,7 @@ export default {
   args: {
     loading: false,
     provider: null,
+    hasMetamask: true,
   },
   component: EthLogin,
   argTypes: {

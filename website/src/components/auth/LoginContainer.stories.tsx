@@ -13,6 +13,7 @@ export default {
   args: {
     stage: LoginStage.LOADING,
     subStage: "",
+    hasMetamask: true,
   } as LoginContainerProps,
   component: LoginContainer,
   argTypes: {

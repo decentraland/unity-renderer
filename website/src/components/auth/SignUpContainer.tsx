@@ -51,8 +51,8 @@ const mapStateToProps = (state: any, props: any) => {
 
   return {
     face: props?.face ?? (face256 && `data:image/jpg;base64,${face256}`),
-    name: props?.name ?? signup?.profile?.name,
-    email: props?.email ?? signup?.profile?.email,
+    name: signup?.profile?.unclaimedName || "",
+    email: signup?.profile?.email || "",
     stage: props?.stage ?? signup?.stage,
   };
 };

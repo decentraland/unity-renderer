@@ -10,12 +10,14 @@ import "./WalletSelector.css";
 export interface WalletSelectorProps {
   show: boolean;
   loading: boolean;
+  metamask: boolean;
   onClick: (provider: string) => void;
   onCancel: () => void;
 }
 
 export const WalletSelector: React.FC<WalletSelectorProps> = ({
   show,
+  metamask,
   loading,
   onClick,
   onCancel,
@@ -30,6 +32,7 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
             <WalletButton
               title="Metamask"
               logo={MetamaskLogo}
+              disabled={!metamask}
               description="Using a browser extension"
               onClick={() => onClick("Metamask")}
             />
