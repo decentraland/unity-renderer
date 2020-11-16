@@ -3,6 +3,7 @@ declare var global: any & { isEditor: boolean; editor: any }
 declare var window: Window & { isEditor: boolean }
 
 global.isEditor = window.isEditor = true
+;(window as any).reactVersion = true
 
 import { EventEmitter } from 'events'
 import future, { IFuture } from 'fp-future'
