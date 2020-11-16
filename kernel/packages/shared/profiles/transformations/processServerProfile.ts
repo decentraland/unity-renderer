@@ -2,6 +2,7 @@ import { Profile } from '../types'
 import { WearableId } from 'shared/catalogs/types'
 import { colorString } from './colorString'
 import { ALL_WEARABLES } from 'config'
+import { filterInvalidNameCharacters } from '../utils/names'
 import { createFakeName } from '../utils/fakeName'
 
 export function fixWearableIds(wearableId: string) {
@@ -34,7 +35,7 @@ export function calculateDisplayName(userId: string, profile: any): string {
   }
 
   if (profile.unclaimedName) {
-    return `${profile.unclaimedName}#${userId.slice(-4)}`
+    return `${filterInvalidNameCharacters(profile.unclaimedName)}#${userId.slice(-4)}`
   }
 
   return createFakeName(userId)

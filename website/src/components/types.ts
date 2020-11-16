@@ -9,6 +9,9 @@ type KernelWebApp = {
   createStore: () => Store<any>;
   initWeb: (container: HTMLElement) => Promise<InitializeUnityResult>;
   loadUnity: (r: InitializeUnityResult) => Promise<boolean>;
+  utils: {
+    filterInvalidNameCharacters: (name: string) => string;
+  };
 };
 
 export type Kernel = typeof window & {
