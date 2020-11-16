@@ -31,7 +31,7 @@ export const EthLogin: React.FC<EthLoginProps> = (props) => {
         {!showSignIn && <Spinner />}
         {showSignIn && (
           <button className="eth-login-confirm-button" onClick={onClick}>
-            Sign In - Up
+            Sign In
           </button>
         )}
         {showSignIn && (

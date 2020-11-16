@@ -23,7 +23,7 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
   return show ? (
     <Modal handleClose={onCancel}>
       <div className="walletSelector">
-        <h2 className="walletSelectorTitle">Sign In - Up</h2>
+        <h2 className="walletSelectorTitle">Sign In or Create an Account</h2>
         <div className="walletButtonContainer">
           {loading && <Spinner />}
           {!loading && (
