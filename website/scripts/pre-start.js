@@ -37,14 +37,4 @@ files
   });
 
 console.log("\nREPLACE KERNEL VERSION\n");
-let content = "";
-if (fs.existsSync(".env")) {
-  content = fs.readFileSync(".env").toString();
-  content = content.replace(/REACT_APP_EXPLORER_VERSION.*/, "");
-  content = content
-    .split("\n")
-    .filter((line) => line)
-    .join("\n");
-}
-content += "\nREACT_APP_EXPLORER_VERSION=" + Date.now().toString();
-fs.writeFileSync(".env", content);
+require("./hash_generator");

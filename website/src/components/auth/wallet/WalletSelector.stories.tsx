@@ -7,6 +7,7 @@ export default {
   args: {
     show: true,
     loading: false,
+    metamask: true,
   },
   component: WalletSelector,
   argTypes: {
@@ -22,6 +23,12 @@ const Template: Story<WalletSelectorProps> = (args) => (
 export const Default = Template.bind({});
 Default.args = {
   ...Template.args,
+};
+
+export const DisabledButton = Default.bind({});
+DisabledButton.args = {
+  ...Default.args,
+  metamask: false,
 };
 
 export const Loading = Template.bind({});

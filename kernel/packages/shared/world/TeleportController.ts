@@ -82,11 +82,11 @@ export class TeleportController {
   public static stopTeleportAnimation() {
     if (!isWaitingTutorial(globalThis.globalStore.getState())) {
       Html.hideTeleportAnimation()
-    }
-    if (WORLD_EXPLORER) {
-      ensureUnityInterface()
-        .then((unity) => unity.ShowWelcomeNotification())
-        .catch(defaultLogger.error)
+      if (WORLD_EXPLORER) {
+        ensureUnityInterface()
+          .then((unity) => unity.ShowWelcomeNotification())
+          .catch(defaultLogger.error)
+      }
     }
   }
 

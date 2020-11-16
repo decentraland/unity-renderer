@@ -9,6 +9,11 @@
   cursor: pointer;
 }
 
+.walletButton.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .walletButton p {
   margin: 0;
   font-size: 1em;

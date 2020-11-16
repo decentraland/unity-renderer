@@ -93,6 +93,10 @@
         src: url(images/decentraland-connect/SF-UI-Text-Semibold.otf);
       }
     </style>
+    <script>
+      console.log("Explorer version: %REACT_APP_EXPLORER_VERSION%");
+      window.VERSION = '%REACT_APP_EXPLORER_VERSION%';
+    </script>
   </head>
   <body class="dcl-loading">
     <div id="root"></div>
@@ -158,11 +162,8 @@
       }
       // End Rollbar Snippet
     </script>
-    <script>
-      console.log("Explorer version: %REACT_APP_EXPLORER_VERSION%");
-    </script>
-    <script src="%PUBLIC_URL%/unity/Build/hls.min.js?%REACT_APP_EXPLORER_VERSION%"></script>
-    <script src="%PUBLIC_URL%/unity/Build/DCLUnityLoader.js?%REACT_APP_EXPLORER_VERSION%"></script>
-    <script src="%PUBLIC_URL%/website.js?%REACT_APP_EXPLORER_VERSION%"></script>
+    <script src="%PUBLIC_URL%/unity/Build/hls.min.js?%REACT_APP_HLS_VERSION%"></script>
+    <script src="%PUBLIC_URL%/unity/Build/DCLUnityLoader.js?%REACT_APP_LOADER_VERSION%"></script>
+    <script src="%PUBLIC_URL%/website.js?%REACT_APP_WEBSITE_VERSION%"></script>
   </body>
 </html>

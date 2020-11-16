@@ -23,6 +23,8 @@ IMPORTANT: If your path has spaces the build process will fail. Make sure to clo
 
 Build the project:
 
+    cd website
+    npm install
     cd kernel
     npm install
 
@@ -44,11 +46,11 @@ And that should be it!
 
 Optionally, if you want to run the client in `debug` mode, append the following query parameter to the URL:
 
-    http://localhost:8080/?DEBUG_MODE
+    http://localhost:3000/?DEBUG_MODE
 
 To spawn in a specific set of coordinates append the following query paramter:
 
-    http://localhost:8080/?DEBUG_MODE&position=10,10
+    http://localhost:3000/?DEBUG_MODE&position=10,10
 
 ### Troubleshooting
 
@@ -71,7 +73,7 @@ To see test logs/errors directly in the browser, run:
 
     make watch
 
-Now, navigate to [http://localhost:8080/test](http://localhost:8080/test)
+Now, navigate to [http://localhost:3000/test](http://localhost:3000/test)
 
 ### Kernel Visual tests
 
@@ -243,15 +245,15 @@ git checkout -- kernel/static/unity/Build/unity.json
 
 5. Testing how your new build performs:
 
-- Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
-- Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
-- Open **[http://localhost:8080/?ENV=org&position=0,90](http://localhost:8080/?ENV=org&position=0,90)** to open the explorer near the Decentraland Museum
+- Open **[http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
+- Open **[http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
+- Open **[http://localhost:3000/?ENV=org&position=0,90](http://localhost:3000/?ENV=org&position=0,90)** to open the explorer near the Decentraland Museum
 
 ### Profiling a build with Unity Editor
 1. In Unity Editor open the profiler at window -> analysis -> profiler
 2. Open the build settings and toggle on "Development Build", "Autoconnect Profiler" and **make sure Deep Profiling is toggled off** before starting the build
 3. Follow the steps at this readme's "Making a manual build" section
-4. Open the new build (http://localhost:8080/?ENV=org) and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data
+4. Open the new build (http://localhost:3000/?ENV=org) and after starting the explorer your Profiler window at Unity Editor should start receiving and displaying the data
 
 #### Important notes and recommendations
 * The same Unity Editor instance that made the build **shouldn't be closed**, as that will make the new build useless for profiling, at least at the time of writting this, **it only sends the data to the same Unity Editor instance that built it**.

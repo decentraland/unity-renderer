@@ -6,6 +6,7 @@ export interface WalletButtonProps {
   logo: string;
   title: string;
   description: string;
+  disabled?: boolean;
   onClick: any;
 }
 
@@ -13,13 +14,18 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
   logo,
   title,
   description,
+  disabled = false,
   onClick,
-}) => (
-  <div className="walletButton" onClick={onClick}>
-    <div className="walletImage">
-      <img alt={title} src={logo} />
-      <span>{title}</span>
+}) => {
+  const handleClick = disabled ? null : onClick;
+  const walletClass = "walletButton" + (disabled ? " disabled" : "");
+  return (
+    <div className={walletClass} onClick={handleClick}>
+      <div className="walletImage">
+        <img alt={title} src={logo} />
+        <span>{title}</span>
+      </div>
+      <p>{description}</p>
     </div>
-    <p>{description}</p>
-  </div>
-);
+  );
+};
