@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,6 +57,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     private Coroutine copyToastRoutine = null;
     private UserProfile profile = null;
+    private Regex nameRegex = null;
 
     private void Awake()
     {
@@ -261,5 +263,18 @@ internal class ProfileHUDView : MonoBehaviour
     internal void SetProfileName(string newName)
     {
         textName.text = newName;
+    }
+
+    internal void SetNameRegex(string namePattern)
+    {
+        nameRegex = new Regex(namePattern);
+    }
+
+    internal bool IsValidAvatarName(string name)
+    {
+        if (nameRegex == null)
+            return true;
+
+        return nameRegex.IsMatch(name);
     }
 }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { filterInvalidNameCharacters } from "../../../utils";
 import "./PassportForm.css";
 
 // eslint-disable-next-line
@@ -31,9 +32,10 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
 
   const onChangeName = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     if (target.value.length <= 15) {
+      const value = filterInvalidNameCharacters(target.value);
       setNameError(false);
-      setName(target.value);
-      setChars(target.value.length);
+      setName(value);
+      setChars(value.length);
     }
   };
 
