@@ -157,14 +157,23 @@
             float4 _SSSParams;
             float4 _TintColor;
             float _Cutoff;
+
+            float4 _BaseMap_TexelSize;
+            float4 _EmissionMap_TexelSize;
+            float4 _MatCap_TexelSize;
+            float4 _GlossMatCap_TexelSize;
+            float4 _FresnelMatCap_TexelSize;
             CBUFFER_END
-            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
-            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
-            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); float4 _MatCap_TexelSize;
-            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); float4 _GlossMatCap_TexelSize;
-            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
+
             float3 _LightDir;
             float4 _LightColor;
+
+            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); 
+            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); 
+            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); 
+            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); 
+            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); 
+
             SAMPLER(_SampleTexture2D_F1EE66C6_Sampler_3_Linear_Repeat);
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
             SAMPLER(_SampleTexture2D_ED76F6F0_Sampler_3_Linear_Repeat);
@@ -772,7 +781,7 @@
             // Render State
             Blend [_SrcBlend][_DstBlend]
             ZWrite [_ZWrite]
-            Cull [_Cull]
+            Cull Off
             // ColorMask: <None>
             
         
@@ -879,14 +888,22 @@
             float4 _SSSParams;
             float4 _TintColor;
             float _Cutoff;
+
+            float4 _BaseMap_TexelSize;
+            float4 _EmissionMap_TexelSize;            
+            float4 _MatCap_TexelSize;
+            float4 _GlossMatCap_TexelSize;
+            float4 _FresnelMatCap_TexelSize;
             CBUFFER_END
-            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
-            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
-            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); float4 _MatCap_TexelSize;
-            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); float4 _GlossMatCap_TexelSize;
-            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
+
             float3 _LightDir;
             float4 _LightColor;
+            
+            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); 
+            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); 
+            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); 
+            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); 
+            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); 
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
         
             // Graph Functions
@@ -1278,14 +1295,21 @@
             float4 _SSSParams;
             float4 _TintColor;
             float _Cutoff;
+            float4 _BaseMap_TexelSize;            
+            float4 _EmissionMap_TexelSize;
+            float4 _MatCap_TexelSize;
+            float4 _GlossMatCap_TexelSize;            
+            float4 _FresnelMatCap_TexelSize;            
             CBUFFER_END
-            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); float4 _BaseMap_TexelSize;
-            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); float4 _EmissionMap_TexelSize;
-            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); float4 _MatCap_TexelSize;
-            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); float4 _GlossMatCap_TexelSize;
-            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); float4 _FresnelMatCap_TexelSize;
+
             float3 _LightDir;
             float4 _LightColor;
+            
+            TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap); 
+            TEXTURE2D(_EmissionMap); SAMPLER(sampler_EmissionMap); 
+            TEXTURE2D(_MatCap); SAMPLER(sampler_MatCap); 
+            TEXTURE2D(_GlossMatCap); SAMPLER(sampler_GlossMatCap); 
+            TEXTURE2D(_FresnelMatCap); SAMPLER(sampler_FresnelMatCap); 
             SAMPLER(_SampleTexture2D_592A5A2C_Sampler_3_Linear_Repeat);
         
             // Graph Functions

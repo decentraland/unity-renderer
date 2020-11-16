@@ -1,4 +1,4 @@
-Shader "DCL/Toon Shader"
+Shader "DCL/Toon Shader Legacy"
 {
 	Properties
 	{

@@ -23,7 +23,6 @@ SubShader {
             struct appdata_t {
                 float4 vertex : POSITION;
                 float2 texcoord : TEXCOORD0;
-                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
  
             struct v2f {
@@ -34,15 +33,17 @@ SubShader {
             };
  
             sampler2D _BaseMap;
-            float4 _BaseMap_ST;
             sampler2D _TintMask;
-            fixed _Cutoff;
-            fixed4 _BaseColor;
- 
+
+            CBUFFER_START(UnityPerMaterial)
+                float4 _BaseMap_ST;
+                fixed _Cutoff;
+                fixed4 _BaseColor;
+            CBUFFER_END
+            
             v2f vert (appdata_t v)
             {
                 v2f o;
-                UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.texcoord = TRANSFORM_TEX(v.texcoord, _BaseMap);

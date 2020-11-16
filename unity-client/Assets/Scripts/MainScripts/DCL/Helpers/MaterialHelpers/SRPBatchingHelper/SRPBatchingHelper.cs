@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Helpers
 {
-public static class SRPBatchingHelper
+    public static class SRPBatchingHelper
     {
         static Dictionary<int, int> crcToQueue = new Dictionary<int, int>();
 
@@ -12,20 +12,34 @@ public static class SRPBatchingHelper
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
             material.EnableKeyword("_EMISSION");
             material.EnableKeyword("_NORMALMAP");
+            material.EnableKeyword("_ALPHATEST_ON");
+            material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
+            material.DisableKeyword("VERTEX_COLOR_ON");
+            material.SetFloat(ShaderUtils.SpecularHighlights, 1);
+            material.SetFloat(ShaderUtils.EnvironmentReflections, 1);
 
             material.enableInstancing = false;
 
-            int zWrite = (int) material.GetFloat(ShaderUtils.ZWrite);
-
-            //NOTE(Brian): for transparent meshes skip further variant optimization.
-            //             Transparency needs clip space z sorting to be displayed correctly.
-            if (zWrite == 0)
+            if (material.HasProperty(ShaderUtils.ZWrite))
             {
-                material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
-                return;
+                int zWrite = (int) material.GetFloat(ShaderUtils.ZWrite);
+
+                //NOTE(Brian): for transparent meshes skip further variant optimization.
+                //             Transparency needs clip space z sorting to be displayed correctly.
+                if (zWrite == 0)
+                {
+                    material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                    return;
+                }
             }
 
-            int cullMode = 2 - (int) material.GetFloat(ShaderUtils.Cull);
+            int cullMode = (int) UnityEngine.Rendering.CullMode.Off;
+
+            if (material.HasProperty(ShaderUtils.Cull))
+            {
+                cullMode = 2 - (int) material.GetFloat(ShaderUtils.Cull);
+            }
 
             int baseQueue;
 
@@ -34,13 +48,8 @@ public static class SRPBatchingHelper
             else
                 baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry;
 
-            material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-            material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
-            material.SetFloat(ShaderUtils.SpecularHighlights, 1);
-            material.SetFloat(ShaderUtils.EnvironmentReflections, 1);
-
             //NOTE(Brian): This guarantees grouping calls by same shader keywords. Needed to take advantage of SRP batching.
-            string appendedKeywords = string.Join("", material.shaderKeywords);
+            string appendedKeywords = material.shader.name + string.Join("", material.shaderKeywords);
             int crc = Shader.PropertyToID(appendedKeywords);
 
             if (!crcToQueue.ContainsKey(crc))
@@ -48,7 +57,6 @@ public static class SRPBatchingHelper
 
             //NOTE(Brian): we use 0, 100, 200 to group calls by culling mode (must group them or batches will break).
             int queueOffset = (cullMode + 1) * 150;
-
             material.renderQueue = baseQueue + crcToQueue[crc] + queueOffset;
         }
     }
