@@ -1,6 +1,7 @@
 import { Profile } from './types'
 import { getFetchProfileServer, getFetchContentServer } from 'shared/dao/selectors'
 import { Store } from 'redux'
+import { createFakeName } from './utils/fakeName'
 
 declare const window: Window & { globalStore: Store }
 
@@ -30,7 +31,7 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
     profile = backupProfile(getFetchContentServer(window.globalStore.getState()), userId)
   }
 
-  profile.name = 'Guest-' + userId.substr(2, 6)
+  profile.name = createFakeName(userId)
   profile.hasClaimedName = false
   profile.tutorialStep = 0
   profile.version = -1 // We signal random user profiles with -1
