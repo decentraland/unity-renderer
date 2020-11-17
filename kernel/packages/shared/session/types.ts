@@ -45,6 +45,7 @@ export type SessionState = {
   tos: boolean
   showWalletPrompt: boolean
   currentProvider: ProviderType | null
+  isSignUp?: boolean
   signing: boolean
   signup: SignUpData
 }

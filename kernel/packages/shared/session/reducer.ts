@@ -9,6 +9,7 @@ import {
   SIGNUP_CLEAR_DATA,
   SIGNUP_FORM,
   SIGNUP_SET_IDENTITY,
+  SIGNUP_SET_IS_SIGNUP,
   SIGNUP_SET_PROFILE,
   SIGNUP_STAGE,
   SignUpFormAction,
@@ -37,6 +38,7 @@ const INITIAL_STATE: SessionState = {
   showWalletPrompt: false,
   signing: false,
   currentProvider: null,
+  isSignUp: false,
   signup: SIGNUP_INITIAL_STATE
 }
 
@@ -112,6 +114,12 @@ export function sessionReducer(state?: SessionState, action?: AnyAction) {
       return {
         ...state,
         signup: SIGNUP_INITIAL_STATE
+      }
+    }
+    case SIGNUP_SET_IS_SIGNUP: {
+      return {
+        ...state,
+        isSignUp: action.payload.isSignUp
       }
     }
     case SIGNIN_CURRENT_PROVIDER: {

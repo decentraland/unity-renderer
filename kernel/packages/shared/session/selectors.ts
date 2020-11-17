@@ -11,4 +11,5 @@ export const getSignUpIdentity = (store: RootSessionState) => ({
   userId: store.session.signup.userId,
   identity: store.session.signup.identity
 })
+export const isSignUp = (state: RootSessionState) => state.session.isSignUp
 export const isLoginStageCompleted = (state: RootSessionState) => state.session.loginStage === LoginStage.COMPLETED
