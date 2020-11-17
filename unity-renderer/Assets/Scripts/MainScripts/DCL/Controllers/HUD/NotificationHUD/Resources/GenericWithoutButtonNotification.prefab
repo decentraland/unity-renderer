@@ -113,8 +113,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
-        type: 2}
+      objectReference: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
     - target: {fileID: 1448454455420767778, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
       propertyPath: m_textAlignment

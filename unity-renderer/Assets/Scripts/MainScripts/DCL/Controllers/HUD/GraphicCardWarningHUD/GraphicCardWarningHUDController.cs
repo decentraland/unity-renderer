@@ -1,7 +1,7 @@
 
 public class GraphicCardWarningHUDController : IHUD
 {
-    private const string GRAPHIC_CARD_MESSAGE = "An integrated Graphic Card has been detected.\nYou might encounter performance issues";
+    private const string GRAPHIC_CARD_MESSAGE = "An integrated graphics card has been detected on your machine.\nYou may encounter performance issues as a result.";
 
     public GraphicCardWarningHUDController() { }
 
