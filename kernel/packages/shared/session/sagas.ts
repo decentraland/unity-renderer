@@ -56,6 +56,7 @@ import {
   SIGNUP_COME_BACK_TO_AVATAR_EDITOR,
   signUpClearData,
   signUpSetIdentity,
+  signUpSetIsSignUp,
   signUpSetProfile,
   toggleWalletPrompt,
   UPDATE_TOS,
@@ -163,6 +164,7 @@ function isGuestWithProfile(session: StoredSession) {
 }
 
 function* startSignUp(userId: string, identity: ExplorerIdentity) {
+  yield put(signUpSetIsSignUp(true))
   let prevGuest = fetchProfileLocally(userId)
   let profile: Profile = prevGuest ? prevGuest : yield generateRandomUserProfile(userId)
   profile.userId = identity.address.toString()
@@ -303,6 +305,7 @@ function* signUp() {
 function* cancelSignUp() {
   yield put(signUpClearData())
   yield put(signInSigning(false))
+  yield put(signUpSetIsSignUp(false))
   yield put(changeLoginStage(LoginStage.SIGN_IN))
 }
 

@@ -72,3 +72,6 @@ export const signUpComeBackToAvatarEditor = () => action(SIGNUP_COME_BACK_TO_AVA
 
 export const SIGNIN_SET_SIGNING = '[SIGN-IN] start authentication'
 export const signInSigning = (signing: boolean) => action(SIGNIN_SET_SIGNING, { signing })
+
+export const SIGNUP_SET_IS_SIGNUP = '[SIGN-UP] mark session as new user'
+export const signUpSetIsSignUp = (isSignUp: boolean) => action(SIGNUP_SET_IS_SIGNUP, { isSignUp })
