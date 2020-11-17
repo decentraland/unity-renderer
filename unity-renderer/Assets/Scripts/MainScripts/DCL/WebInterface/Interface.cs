@@ -483,6 +483,12 @@ namespace DCL.Interface
             public bool mute;
         }
 
+        [System.Serializable]
+        public class CloseUserAvatarPayload
+        {
+            public bool isSignUpFlow;
+        }
+
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
@@ -559,6 +565,7 @@ namespace DCL.Interface
         private static DelightedSurveyEnabledPayload delightedSurveyEnabled = new DelightedSurveyEnabledPayload();
         private static ExternalActionSceneEventPayload sceneExternalActionEvent = new ExternalActionSceneEventPayload();
         private static MuteUserPayload muteUserEvent = new MuteUserPayload();
+        private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1070,6 +1077,12 @@ namespace DCL.Interface
             muteUserEvent.usersId = usersId;
             muteUserEvent.mute = mute;
             SendMessage("SetMuteUsers", muteUserEvent);
+        }
+
+        public static void SendCloseUserAvatar(bool isSignUpFlow)
+        {
+            closeUserAvatarPayload.isSignUpFlow = isSignUpFlow;
+            SendMessage("CloseUserAvatar", closeUserAvatarPayload);
         }
     }
 }
