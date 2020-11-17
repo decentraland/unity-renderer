@@ -83,12 +83,14 @@ class OutputProcessor extends AudioWorkletProcessor {
   playing: boolean = false
   bufferLength: number
   sampleRate: number
+  readStartSamplesCount: number
 
   constructor(options?: AudioWorkletNodeOptions) {
     super(options)
     this.bufferLength = options?.processorOptions.channelBufferSize ?? 2.0
     this.sampleRate = options?.processorOptions.sampleRate ?? VOICE_CHAT_SAMPLE_RATE
     this.buffer = new RingBuffer(Math.floor(this.bufferLength * this.sampleRate), Float32Array)
+    this.readStartSamplesCount = (options?.processorOptions.readStartLength ?? 0.2) * this.sampleRate
 
     this.port.onmessage = (e) => {
       if (e.data.topic === OutputWorkletRequestTopic.WRITE_SAMPLES) {
@@ -102,7 +104,7 @@ class OutputProcessor extends AudioWorkletProcessor {
 
     data.fill(0)
     const wasPlaying = this.playing
-    const minReadCount = wasPlaying ? 0 : data.length - 1
+    const minReadCount = wasPlaying ? data.length - 1 : this.readStartSamplesCount
     if (this.buffer.readAvailableCount() > minReadCount) {
       data.set(this.buffer.read(data.length))
       if (!wasPlaying) {
