@@ -189,6 +189,10 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.PROFILE_HUD:
                 CreateHudElement<ProfileHUDController>(configuration, hudElementId);
+                if (profileHud != null)
+                {
+                    profileHud?.AddBackpackWindow(avatarEditorHud);
+                }
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement<NotificationHUDController>(configuration, hudElementId);
@@ -199,7 +203,6 @@ public class HUDController : MonoBehaviour
                 if (avatarEditorHud != null)
                 {
                     avatarEditorHud.Initialize(ownUserProfile, wearableCatalog);
-                    profileHud?.AddBackpackWindow(avatarEditorHud);
                 }
                 break;
             case HUDElementID.SETTINGS:
