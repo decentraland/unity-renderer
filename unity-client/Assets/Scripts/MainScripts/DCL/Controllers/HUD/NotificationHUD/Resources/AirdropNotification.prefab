@@ -41,17 +41,17 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+      objectReference: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61,
         type: 2}
     - target: {fileID: 723221196117829797, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
     - target: {fileID: 723221196117829797, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
       propertyPath: m_fontStyle
-      value: 17
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 723221196117829797, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
@@ -118,6 +118,17 @@ PrefabInstance:
       propertyPath: m_fontStyle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1448454455420767778, guid: 0282a050c09634ed299130b8e9c2c035,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61,
+        type: 2}
+    - target: {fileID: 1448454455420767778, guid: 0282a050c09634ed299130b8e9c2c035,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
     - target: {fileID: 1602872650370084770, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
       propertyPath: m_Color.g
@@ -132,7 +143,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0829529b4cd624727a16edcc165c4a97,
+      objectReference: {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f,
         type: 3}
     - target: {fileID: 1602872650370084770, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
@@ -200,11 +211,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3803351338888378958, guid: 0282a050c09634ed299130b8e9c2c035,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 28
+      objectReference: {fileID: 0}
     - target: {fileID: 4507316053449197995, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137,
+      objectReference: {fileID: 21300000, guid: 0b8573ead118a4e798b4fa5d8c93fe8c,
         type: 3}
     - target: {fileID: 4507316053449197995, guid: 0282a050c09634ed299130b8e9c2c035,
         type: 3}
