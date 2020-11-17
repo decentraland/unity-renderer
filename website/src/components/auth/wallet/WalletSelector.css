@@ -19,6 +19,11 @@ h2.walletSelectorTitle {
   min-height: 170px;
 }
 
+.walletButtonContainer .linkMetamask {
+  text-decoration: none;
+  color: black;
+}
+
 .walletButtonContainer .walletButton:first-child {
   margin-right: 2em;
 }

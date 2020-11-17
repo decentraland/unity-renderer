@@ -29,21 +29,37 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
         <div className="walletButtonContainer">
           {loading && <Spinner />}
           {!loading && (
-            <WalletButton
-              title="Metamask"
-              logo={MetamaskLogo}
-              disabled={!metamask}
-              description="Using a browser extension"
-              onClick={() => onClick("Metamask")}
-            />
-          )}
-          {!loading && (
-            <WalletButton
-              title="Fortmatic"
-              logo={FortmaticLogo}
-              description="Using your email account"
-              onClick={() => onClick("Fortmatic")}
-            />
+            <React.Fragment>
+              {metamask && (
+                <WalletButton
+                  title="Metamask"
+                  logo={MetamaskLogo}
+                  description="Using a browser extension"
+                  onClick={() => onClick("Metamask")}
+                />
+              )}
+              {!metamask && (
+                <a
+                  href="https://metamask.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="linkMetamask"
+                >
+                  <WalletButton
+                    title="Metamask"
+                    logo={MetamaskLogo}
+                    description="Using a browser extension"
+                    onClick={null}
+                  />
+                </a>
+              )}
+              <WalletButton
+                title="Fortmatic"
+                logo={FortmaticLogo}
+                description="Using your email account"
+                onClick={() => onClick("Fortmatic")}
+              />
+            </React.Fragment>
           )}
         </div>
       </div>

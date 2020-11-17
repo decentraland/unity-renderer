@@ -3,7 +3,7 @@ const path = require("path");
 const md5File = require("md5-file");
 const childProcess = require("child_process");
 
-let ENV_CONTENT = "";
+let ENV_CONTENT = [];
 if (fs.existsSync(".env")) {
   ENV_CONTENT = fs
     .readFileSync(".env")
