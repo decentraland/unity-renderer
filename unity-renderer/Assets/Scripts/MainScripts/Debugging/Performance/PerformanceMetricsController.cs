@@ -21,9 +21,10 @@ namespace DCL
 
         public void Update()
         {
+#if !UNITY_EDITOR
             if (!CommonScriptableObjects.focusState.Get())
                 return;
-
+#endif
             if (!CommonScriptableObjects.rendererState.Get())
                 return;
 
