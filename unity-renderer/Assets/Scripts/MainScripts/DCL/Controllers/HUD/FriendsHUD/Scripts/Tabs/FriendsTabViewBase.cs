@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL.Helpers;
 using DCL.Configuration;
 using System.Collections.Generic;
@@ -123,6 +124,15 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
     protected Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
     protected Dictionary<string, PoolableObject> instantiatedFriendEntries = new Dictionary<string, PoolableObject>();
     protected Pool friendEntriesPool;
+    protected bool layoutIsDirty = false;
+
+    private Coroutine updateRoutine = null;
+
+    private void Awake()
+    {
+        //Use a coroutine instead of an Update method to load the entries in the background while the gameobject is disabled
+        updateRoutine = CoroutineStarter.Start(UpdateCoroutine());
+    }
 
     internal List<FriendEntryBase> GetAllEntries()
     {
@@ -142,13 +152,31 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         if (rectTransform == null)
             rectTransform = transform as RectTransform;
 
-        rectTransform.ForceUpdateLayout();
+        layoutIsDirty = true;
     }
 
     protected virtual void OnDisable()
     {
         confirmationDialog.Hide();
         contextMenuPanel.Hide();
+    }
+
+    protected virtual void UpdateLayout()
+    {
+        if (layoutIsDirty)
+        {
+            layoutIsDirty = false;
+            rectTransform.ForceUpdateLayout();
+        }
+    }
+
+    private IEnumerator UpdateCoroutine()
+    {
+        while (true)
+        {
+            UpdateLayout();
+            yield return null;
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -182,6 +210,11 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
     {
         contextMenuPanel.OnBlock -= OnPressBlockButton;
         contextMenuPanel.OnUnfriend -= OnPressDeleteButton;
+        if (updateRoutine != null)
+        {
+            CoroutineStarter.Stop(updateRoutine);
+            updateRoutine = null;
+        }
     }
 
     protected virtual void OnPressDeleteButton(string userId)
@@ -198,13 +231,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    public virtual void CreateOrUpdateEntry(string userId, FriendEntryBase.Model model)
-    {
-        CreateEntry(userId);
-        UpdateEntry(userId, model);
-    }
-
-    public virtual bool CreateEntry(string userId)
+    protected virtual bool CreateEntry(string userId)
     {
         if (entries.ContainsKey(userId)) return false;
 
@@ -220,7 +247,6 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         };
 
         UpdateEmptyListObjects();
-
         return true;
     }
 
@@ -233,7 +259,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         entry.Populate(model);
         entry.userId = userId;
 
-        rectTransform.ForceUpdateLayout();
+        layoutIsDirty = true;
         return true;
     }
 
@@ -250,7 +276,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
         UpdateEmptyListObjects();
 
-        rectTransform.ForceUpdateLayout();
+        layoutIsDirty = true;
         return true;
     }
 

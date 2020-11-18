@@ -1,14 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
 using DCL.Interface;
-using JetBrains.Annotations;
 
 public class FriendsTabView : FriendsTabViewBase
 {
+    private const int CREATION_AMOUNT_PER_FRAME = 5;
+
     public EntryList onlineFriendsList = new EntryList();
     public EntryList offlineFriendsList = new EntryList();
     public event System.Action<FriendEntry> OnWhisper;
     public event System.Action<string> OnDeleteConfirmation;
 
     private string lastProcessedFriend;
+    internal readonly Dictionary<string, FriendEntryBase.Model> creationQueue = new Dictionary<string, FriendEntryBase.Model>();
 
     public override void Initialize(FriendsHUDView owner, int preinstantiatedEntries)
     {
@@ -32,7 +36,7 @@ public class FriendsTabView : FriendsTabViewBase
             ChatController.i.OnAddMessage -= ChatController_OnAddMessage;
     }
 
-    public override bool CreateEntry(string userId)
+    protected override bool CreateEntry(string userId)
     {
         if (!base.CreateEntry(userId)) return false;
 
@@ -59,7 +63,12 @@ public class FriendsTabView : FriendsTabViewBase
     public override bool UpdateEntry(string userId, FriendEntryBase.Model model)
     {
         if (!base.UpdateEntry(userId, model))
+        {
+            //Replace the queued model for creation for the updated one.
+            if (creationQueue.ContainsKey(userId))
+                creationQueue[userId] = model;
             return false;
+        }
 
         var entry = entries[userId];
 
@@ -136,5 +145,39 @@ public class FriendsTabView : FriendsTabViewBase
         }
 
         lastProcessedFriend = friend.userId;
+    }
+
+    public void CreateOrUpdateEntryDeferred(string userId, FriendEntryBase.Model model)
+    {
+        if(creationQueue.ContainsKey(userId))
+            creationQueue[userId] = model;
+        else
+            creationQueue.Add(userId, model);
+    }
+
+    /// <summary>
+    /// To avoid having hiccups when a player with dozens of friends load into the game
+    /// we deferred the entries instantiation to multiple frames
+    /// </summary>
+    protected override void UpdateLayout()
+    {
+        if (creationQueue.Count == 0)
+            return;
+
+        for (int i = 0; i < CREATION_AMOUNT_PER_FRAME && creationQueue.Count != 0; i++)
+        {
+            var pair = creationQueue.FirstOrDefault();
+            creationQueue.Remove(pair.Key);
+            CreateEntry(pair.Key);
+            UpdateEntry(pair.Key, pair.Value);
+        }
+
+        //If we have creations to process we avoid reconstructing the layout until we are done
+        if (creationQueue.Count != 0)
+        {
+            layoutIsDirty = false;
+        }
+
+        base.UpdateLayout();
     }
 }

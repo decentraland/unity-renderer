@@ -37,11 +37,13 @@ public class FriendsHUDControllerShould : TestsBase
         yield return base.TearDown();
     }
 
-    [Test]
-    public void ReactCorrectlyToWhisperClick()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToWhisperClick()
     {
         var id = "test-id-1";
-        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        var entry = TestHelpers_Friends.GetEntry(view, id);
+        Assert.IsNotNull(entry);
 
         bool pressedWhisper = false;
         controller.OnPressWhisper += (x) => { pressedWhisper = x == id; };
@@ -49,11 +51,13 @@ public class FriendsHUDControllerShould : TestsBase
         Assert.IsTrue(pressedWhisper);
     }
 
-    [Test]
-    public void ReactCorrectlyToReportClick()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToReportClick()
     {
         var id = "test-id-1";
-        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        var entry = TestHelpers_Friends.GetEntry(view, id);
+        Assert.IsNotNull(entry);
 
         bool reportPlayerSent = false;
 
@@ -79,11 +83,13 @@ public class FriendsHUDControllerShould : TestsBase
         WebInterface.OnMessageFromEngine -= callback;
     }
 
-    [Test]
-    public void ReactCorrectlyToPassportClick()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToPassportClick()
     {
         var id = "test-id-1";
-        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        var entry = TestHelpers_Friends.GetEntry(view, id);
+        Assert.IsNotNull(entry);
 
         var currentPlayerId = Resources.Load<StringVariable>(UserContextMenu.CURRENT_PLAYER_ID);
 
@@ -127,11 +133,12 @@ public class FriendsHUDControllerShould : TestsBase
     }
 
 
-    [Test]
-    public void ReactCorrectlyToFriendApproved()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToFriendApproved()
     {
         var id = "test-id-1";
-        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id, FriendshipAction.APPROVED);
+        var entry = TestHelpers_Friends.GetEntry(view, id);
         Assert.IsNotNull(entry);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.DELETED);
@@ -139,11 +146,12 @@ public class FriendsHUDControllerShould : TestsBase
         Assert.IsNull(entry);
     }
 
-    [Test]
-    public void ReactCorrectlyToFriendRejected()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToFriendRejected()
     {
         var id = "test-id-1";
-        var fentry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        var fentry = TestHelpers_Friends.GetEntry(view, id);
         Assert.IsNotNull(fentry);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
@@ -153,11 +161,11 @@ public class FriendsHUDControllerShould : TestsBase
         Assert.IsNull(entry);
     }
 
-    [Test]
-    public void ReactCorrectlyToFriendCancelled()
+    [UnityTest]
+    public IEnumerator ReactCorrectlyToFriendCancelled()
     {
         var id = "test-id-1";
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
         friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
         var entry = controller.view.friendRequestsList.GetEntry(id);
@@ -171,7 +179,7 @@ public class FriendsHUDControllerShould : TestsBase
     {
         GameObject prefab = Resources.Load(path) as GameObject;
         Assert.IsTrue(prefab != null);
-        GameObject go = UnityEngine.Object.Instantiate(prefab);
+        GameObject go = this.InstantiateTestGameObject(prefab);
         Assert.IsTrue(go != null);
 
         var noti = go.GetComponent<NotificationBadge>();
@@ -180,8 +188,8 @@ public class FriendsHUDControllerShould : TestsBase
         return noti;
     }
 
-    [Test]
-    public void TaskbarNotificationBadgeHasCorrectValue()
+    [UnityTest]
+    public IEnumerator TaskbarNotificationBadgeHasCorrectValue()
     {
         PlayerPrefs.SetInt(FriendsHUDController.PLAYER_PREFS_SEEN_FRIEND_COUNT, 0);
 
@@ -190,13 +198,13 @@ public class FriendsHUDControllerShould : TestsBase
 
         controller.SetVisibility(false);
 
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-1");
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-2");
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-3");
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-4");
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.REQUESTED_FROM);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-1");
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-2");
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-3");
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-4");
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.REQUESTED_FROM);
 
-        Assert.AreEqual(1, friendsRequestBadge.finalValue);
+         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(5, friendsTaskbarBadge.finalValue);
 
         controller.SetVisibility(true);
@@ -204,13 +212,10 @@ public class FriendsHUDControllerShould : TestsBase
         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
 
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.APPROVED);
-        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-6", FriendshipAction.REQUESTED_FROM);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.APPROVED);
+        yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-6", FriendshipAction.REQUESTED_FROM);
 
         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
-
-        UnityEngine.Object.Destroy(friendsRequestBadge.gameObject);
-        UnityEngine.Object.Destroy(friendsTaskbarBadge.gameObject);
     }
 }
