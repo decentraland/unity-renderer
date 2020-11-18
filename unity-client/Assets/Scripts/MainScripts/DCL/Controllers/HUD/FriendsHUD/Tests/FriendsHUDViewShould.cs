@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class FriendsHUDViewShould : TestsBase
@@ -42,14 +43,17 @@ public class FriendsHUDViewShould : TestsBase
         Assert.IsTrue(controller.view.friendRequestsList.gameObject.activeSelf);
     }
 
-    [Test]
-    public void PopulateFriendListCorrectly()
+    [UnityTest]
+    public IEnumerator PopulateFriendListCorrectly()
     {
         string id1 = "userId-1";
         string id2 = "userId-2";
 
-        var entry1 = CreateFriendEntry(id1, "Pravus", PresenceStatus.ONLINE);
-        var entry2 = CreateFriendEntry(id2, "Brian", PresenceStatus.OFFLINE);
+        RequestCreateFriendEntry(id1, "Pravus", PresenceStatus.ONLINE);
+        RequestCreateFriendEntry(id2, "Brian", PresenceStatus.OFFLINE);
+        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        var entry1 = GetFriendEntry( id1);
+        var entry2 = GetFriendEntry( id2);
 
         Assert.IsNotNull(entry1);
         Assert.AreEqual(entry1.model.userName, entry1.playerNameText.text);
@@ -61,7 +65,7 @@ public class FriendsHUDViewShould : TestsBase
 
         var model2 = entry2.model;
         model2.status = PresenceStatus.ONLINE;
-        controller.view.friendsList.CreateOrUpdateEntry(id2, model2);
+        controller.view.friendsList.CreateOrUpdateEntryDeferred(id2, model2);
 
         Assert.AreEqual(controller.view.friendsList.onlineFriendsList.container, entry2.transform.parent);
     }
@@ -102,14 +106,16 @@ public class FriendsHUDViewShould : TestsBase
         Assert.AreEqual(controller.view.friendRequestsList.receivedRequestsList.container, entry2.transform.parent);
     }
 
-    [Test]
-    public void CountProperlyStatus()
+    [UnityTest]
+    public IEnumerator CountProperlyStatus()
     {
-        CreateFriendEntry("user1", "Armando Barreda", PresenceStatus.ONLINE);
-        CreateFriendEntry("user2", "Guillermo Andino", PresenceStatus.ONLINE);
+        RequestCreateFriendEntry("user1", "Armando Barreda", PresenceStatus.ONLINE);
+        RequestCreateFriendEntry("user2", "Guillermo Andino", PresenceStatus.ONLINE);
 
-        CreateFriendEntry("user3", "Wanda Nara", PresenceStatus.OFFLINE);
-        CreateFriendEntry("user4", "Mirtha Legrand", PresenceStatus.OFFLINE);
+        RequestCreateFriendEntry("user3", "Wanda Nara", PresenceStatus.OFFLINE);
+        RequestCreateFriendEntry("user4", "Mirtha Legrand", PresenceStatus.OFFLINE);
+
+        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
 
         Assert.AreEqual(2, view.friendsList.onlineFriendsList.Count());
         Assert.AreEqual(2, view.friendsList.offlineFriendsList.Count());
@@ -122,10 +128,14 @@ public class FriendsHUDViewShould : TestsBase
     }
 
 
-    [Test]
-    public void OpenContextMenuProperly()
+    [UnityTest]
+    public IEnumerator OpenContextMenuProperly()
     {
-        var entry = CreateFriendEntry("userId-1", "Pravus");
+        string id1 = "userId-1";
+        RequestCreateFriendEntry(id1, "Pravus");
+        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        var entry = GetFriendEntry(id1);
+
         bool onMenuToggleCalled = false;
 
         System.Action<FriendEntryBase> callback = (x) => { onMenuToggleCalled = true; };
@@ -140,11 +150,13 @@ public class FriendsHUDViewShould : TestsBase
         Assert.IsTrue(view.friendsList.contextMenuPanel.gameObject.activeSelf);
     }
 
-    [Test]
-    public void DeleteFriendProperly()
+    [UnityTest]
+    public IEnumerator DeleteFriendProperly()
     {
         string id1 = "userId-1";
-        var entry = CreateFriendEntry(id1, "Ted Bundy");
+        RequestCreateFriendEntry(id1, "Ted Bundy");
+        yield return new WaitUntil(() => controller.view.friendsList.creationQueue.Count == 0);
+        var entry = GetFriendEntry(id1);
 
         entry.menuButton.onClick.Invoke();
 
@@ -210,7 +222,7 @@ public class FriendsHUDViewShould : TestsBase
         Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.userId));
     }
 
-    FriendEntry CreateFriendEntry(string id, string name, PresenceStatus status = PresenceStatus.ONLINE)
+    void RequestCreateFriendEntry(string id, string name, PresenceStatus status = PresenceStatus.ONLINE)
     {
         var model1 = new FriendEntry.Model()
         {
@@ -218,8 +230,11 @@ public class FriendsHUDViewShould : TestsBase
             userName = name,
         };
 
-        controller.view.friendsList.CreateOrUpdateEntry(id, model1);
+        controller.view.friendsList.CreateOrUpdateEntryDeferred(id, model1);
+    }
 
+    FriendEntry GetFriendEntry(string id)
+    {
         return controller.view.friendsList.GetEntry(id) as FriendEntry;
     }
 

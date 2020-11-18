@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,6 +20,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         public event System.Action<Texture2D> OnTextureUpdateEvent;
         public void OnSpriteUpdate(Texture2D texture)
         {
+            avatarImage = texture;
             OnTextureUpdateEvent?.Invoke(texture);
         }
     }
@@ -64,7 +66,10 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     protected virtual void OnDisable()
     {
         OnPointerExit(null);
+    }
 
+    protected void OnDestroy()
+    {
         model.OnTextureUpdateEvent -= OnAvatarImageChange;
     }
 
@@ -82,7 +87,7 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
 
         if (model.avatarImage != playerImage.texture)
-            playerImage.texture = model.avatarImage;
+            OnAvatarImageChange(model.avatarImage);
 
         playerBlockedImage.enabled = model.blocked;
     }
@@ -90,6 +95,5 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private void OnAvatarImageChange(Texture2D texture)
     {
         playerImage.texture = texture;
-        model.avatarImage = texture;
     }
 }

@@ -46,6 +46,7 @@ public class TestsBase
             sceneInitialized = true;
         }
 
+        runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
         if (justSceneSetUp)
         {
             yield return SetUp_SceneIntegrityChecker();
@@ -62,7 +63,6 @@ public class TestsBase
         yield return SetUp_SceneIntegrityChecker();
 
         SetUp_Renderer();
-        runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
         Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
     }
 
@@ -310,6 +310,12 @@ public class TestsBase
     {
         GameObject gameObject = new GameObject(name);
         gameObject.transform.SetParent(runtimeGameObjectsRoot.transform);
+        return gameObject;
+    }
+
+    protected GameObject InstantiateTestGameObject(GameObject reference)
+    {
+        GameObject gameObject = Object.Instantiate(reference, runtimeGameObjectsRoot.transform, true);
         return gameObject;
     }
 }

@@ -60,7 +60,7 @@ public class JumpInButton : MonoBehaviour
         if (userId != currentUserId)
             return;
 
-        UpdateInfo(userStatus.position, userStatus.realm.serverName, userStatus.realm.layer, userStatus.presence);
+        UpdateInfo(userStatus.position, userStatus.realm?.serverName, userStatus.realm?.layer, userStatus.presence);
     }
 
     private void SearchUserStatus(string userId)

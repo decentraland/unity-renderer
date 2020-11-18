@@ -53,13 +53,13 @@ public class FriendRequestsTabView : FriendsTabViewBase
         NotificationsController.i?.DismissAllNotifications(FriendsHUDView.NOTIFICATIONS_ID);
     }
 
-    public void CreateOrUpdateEntry(string userId, FriendEntry.Model model, bool isReceived)
+    public void CreateOrUpdateEntry(string userId, FriendEntryBase.Model model, bool isReceived)
     {
         CreateEntry(userId);
         UpdateEntry(userId, model, isReceived);
     }
 
-    public override bool CreateEntry(string userId)
+    protected override bool CreateEntry(string userId)
     {
         if (!base.CreateEntry(userId))
             return false;
@@ -86,7 +86,7 @@ public class FriendRequestsTabView : FriendsTabViewBase
         return true;
     }
 
-    public bool UpdateEntry(string userId, FriendEntryBase.Model model, bool? isReceived = null)
+    public bool UpdateEntry(string userId, FriendEntry.Model model, bool? isReceived = null)
     {
         if (!base.UpdateEntry(userId, model))
             return false;
