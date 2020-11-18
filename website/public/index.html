@@ -95,12 +95,13 @@
     </style>
     <script>
       console.log("Explorer version: %REACT_APP_EXPLORER_VERSION%");
-      window.VERSION = '%REACT_APP_EXPLORER_VERSION%';
+      window.VERSION = "%REACT_APP_EXPLORER_VERSION%";
     </script>
   </head>
   <body class="dcl-loading">
     <div id="root"></div>
     <div id="gameContainer"></div>
+    <audio autoplay id="voice-chat-audio"></audio>
     <!-- span.progress is to avoid a error on DCLUnityLoader  -->
     <div class="progress" style="display: none;"></div>
     <noscript>

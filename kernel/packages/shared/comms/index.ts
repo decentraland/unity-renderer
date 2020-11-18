@@ -103,6 +103,7 @@ import { isURL } from 'atomicHelpers/isURL'
 import { VoicePolicy } from './types'
 import { isFriend } from 'shared/friends/selectors'
 import { EncodedFrame } from 'voice-chat-codec/types'
+import Html from 'shared/Html'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -1159,7 +1160,7 @@ async function doStartCommunications(context: Context) {
         {
           initialListenerParams: context.currentPosition ? getSpatialParamsFor(context.currentPosition) : undefined,
           panningModel: commConfigurations.voiceChatUseHRTF ? 'HRTF' : 'equalpower',
-          loopbackAudioElement: document.getElementById('voice-chat-audio') as HTMLAudioElement | undefined
+          loopbackAudioElement: Html.loopbackAudioElement()
         }
       )
 
