@@ -200,10 +200,8 @@ async function queryGraph(url: string, query: string, variables: any, totalAttem
 /**
  * Register to any change in the configuration of the wallet to reload the app and avoid wallet changes in-game.
  */
-export function registerProviderChanges() {
+export function registerProviderNetChanges() {
   if (window.ethereum && typeof window.ethereum.on === 'function') {
-    window.ethereum.on('accountsChanged', (accounts: string[]) => location.reload())
     window.ethereum.on('chainChanged', (networkId: string) => location.reload())
-    window.ethereum.on('disconnect', (code: number, reason: string) => location.reload())
   }
 }
