@@ -12,7 +12,16 @@
   height: 112px;
   padding: 16px 16px 32px 16px;
   position: relative;
-  box-sizing: content-box;
+}
+
+.passportForm form .inputGroup.inputGroupName {
+  height: 111px;
+  padding: 16px 16px 28px 16px;
+}
+
+.passportForm form .inputGroup.inputGroupEmail {
+  height: 93px;
+  padding: 16px 16px 46px 16px;
 }
 
 .passportForm form .inputGroup em.hint,
@@ -31,11 +40,22 @@
   opacity: 0.5;
 }
 
+.passportForm form .inputGroup.inputGroupName em.hint {
+  bottom: 12px;
+}
+
+.passportForm form .inputGroup.inputGroupEmail em.hint {
+  bottom: 30px;
+}
+
+.passportForm form .inputGroup em.required {
+  color: #333;
+}
+
 .passportForm form .inputGroup input.hasError {
   border-color: #ff2d55;
 }
 
-.passportForm form .inputGroup em.required,
 .passportForm form .inputGroup em.hint.hasError {
   color: #ff2d55;
   opacity: 1;
@@ -49,13 +69,13 @@
 }
 
 .passportForm form input {
-  width: 345px;
+  width: 323px;
   height: 45px;
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   background-color: #ffffff;
   margin: 10px 0 8px;
-  padding: 0 0.5em;
+  padding: 0 10px;
   line-height: 25px;
   outline: 0;
   font-size: 20px;
@@ -95,5 +115,6 @@
   font-weight: 600;
   font-size: 17px;
   line-height: 20px;
+  padding: 0;
   outline: 0;
 }

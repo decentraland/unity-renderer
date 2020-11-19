@@ -120,6 +120,7 @@
 
   .eth-login-popup .eth-login {
     min-height: auto;
+    padding: 130px;
   }
 
   .eth-login .eth-avatars {

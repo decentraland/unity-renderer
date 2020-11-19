@@ -18,7 +18,7 @@
   color: #736e7d;
 }
 
-.big-footer p.right {
+.big-footer p.copyright {
   text-align: right;
   width: 100%;
 }
@@ -75,5 +75,18 @@
 @media only screen and (max-width: 991px) {
   .big-footer .eth-container {
     width: 90%;
+    flex-wrap: wrap;
+  }
+
+  .big-footer .eth-container > div {
+    padding-bottom: 50px;
+  }
+
+  .big-footer .eth-container > div:last-child {
+    padding-bottom: 0;
+  }
+
+  .big-footer p.copyright {
+    text-align: center;
   }
 }
