@@ -19,23 +19,37 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
   onClick,
   onCancel,
 }) => {
-
   function handleClick(_: React.MouseEvent, provider: WalletButtonLogo) {
+    if (provider === "Metamask" && !metamask) {
+      return;
+    }
     if (onClick) {
-      onClick(provider)
+      onClick(provider);
     }
   }
 
   return show ? (
-    <Modal className="walletSelectorPopup" onClose={onCancel} withFlatBackground withOverlay>
+    <Modal
+      className="walletSelectorPopup"
+      onClose={onCancel}
+      withFlatBackground
+      withOverlay
+    >
       <div className="walletSelector">
         <h2 className="walletSelectorTitle">Sign In or Create an Account</h2>
         <div className="walletButtonContainer">
           {loading && <Spinner />}
-          {!loading && <WalletButton logo="Metamask" active={!!metamask} href="https://metamask.io/" onClick={handleClick} />}
+          {!loading && (
+            <WalletButton
+              logo="Metamask"
+              active={!!metamask}
+              href="https://metamask.io/"
+              onClick={handleClick}
+            />
+          )}
           {!loading && <WalletButton logo="Fortmatic" onClick={handleClick} />}
         </div>
       </div>
-    </Modal >
+    </Modal>
   ) : null;
 };

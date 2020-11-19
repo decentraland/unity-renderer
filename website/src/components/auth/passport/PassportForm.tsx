@@ -47,6 +47,10 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
   const onChangeName = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     let name = (target.value || "").trim();
     if (name.length > MAX_NAME_LENGTH) {
+      setState((current) => ({
+        ...current,
+        hasNameError: true,
+      }));
       return;
     }
     try {
@@ -87,7 +91,7 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
             onChange={onChangeName}
           />
           <em className={"hint" + (state.hasNameError ? " hasError" : "")}>
-            {Math.max(MAX_NAME_LENGTH - state.name.length, 0)}/{MAX_NAME_LENGTH}
+            {Math.max(state.name.length, 0)}/{MAX_NAME_LENGTH}
           </em>
         </div>
         <div className="inputGroup">
