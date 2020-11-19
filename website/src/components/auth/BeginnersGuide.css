@@ -1,6 +1,7 @@
 .eth-beginners-guide {
   color: #333;
 }
+
 .eth-beginners-guide h2 {
   font-size: 32px;
 }
@@ -46,4 +47,10 @@
 
 .eth-beginners-guide .eth-accordion-description > div {
   padding-top: 25px;
+}
+
+@media only screen and (max-width: 991px) {
+  .eth-beginners-guide .eth-content {
+    padding: 25px 2em 50px;
+  }
 }

@@ -11,15 +11,6 @@
   background-color: white;
 }
 
-.PassportAvatar em {
-  font-size: 17px;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 3em;
-  text-align: center;
-  color: rgba(51, 51, 51, 0.5);
-}
-
 .PassportAvatar button {
   width: 150px;
   height: 40px;

@@ -21,13 +21,7 @@
 .termsOfServices .content {
   margin: 0.5em 30px 2em;
   height: 300px;
-  overflow: scroll;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none;
-}
-
-.termsOfServices .content::-webkit-scrollbar {
-  display: none;
+  overflow: auto;
 }
 
 .termsOfServices .actions {
@@ -43,13 +37,13 @@
   height: 46px;
   border: 0;
   border-radius: 12px;
-  padding: 10px;
   font-style: normal;
   font-weight: 600;
   font-size: 17px;
   line-height: 20px;
   outline: 0;
-  margin: 0 34px;
+  margin: 0 24px;
+  padding: 0;
 }
 
 .termsOfServices .actions button.btnBack {
