@@ -34,6 +34,8 @@ namespace DCL
             get { return mainCoroutine != null; }
         }
 
+        public bool paused { get; set; }
+
         private List<MessagingController> sortedControllers = new List<MessagingController>();
         private List<MessagingBus> busesToProcess = new List<MessagingBus>();
         private int busesToProcessCount = 0;
@@ -240,6 +242,12 @@ namespace DCL
         {
             while (true)
             {
+                if (paused)
+                {
+                    yield return null;
+                    continue;
+                }
+
                 if (populateBusesDirty)
                 {
                     PopulateBusesToBeProcessed();
