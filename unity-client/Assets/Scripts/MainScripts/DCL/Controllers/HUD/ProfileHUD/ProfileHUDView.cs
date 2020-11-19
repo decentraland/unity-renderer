@@ -264,7 +264,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     private void UpdateCharLimit(string newValue)
     {
-        textCharLimit.text = $"{inputName.characterLimit - newValue.Length}/{inputName.characterLimit}";
+        textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
     }
 
     internal void SetProfileName(string newName)
