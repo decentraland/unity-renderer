@@ -12,8 +12,8 @@ export const PassportAvatar: React.FC<PassportAvatarProps> = (props) => (
     <img
       alt=""
       className="avatar"
-      width="180"
-      height="180"
+      width="168"
+      height="168"
       src={props.face || defaultAvatar}
     />
     {/*<em>Active since Aug 2020</em>*/}

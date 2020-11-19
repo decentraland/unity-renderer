@@ -1,6 +1,5 @@
 import React from "react";
 import { Navbar } from "../common/Navbar";
-import { Footer } from "../common/Footer";
 import { EthLogin } from "./EthLogin";
 import { EthConnectAdvice } from "./EthConnectAdvice";
 import { EthSignAdvice } from "./EthSignAdvice";
@@ -25,14 +24,18 @@ export enum LoginStage {
   COMPLETED = "completed",
 }
 
-const mapStateToProps = (state: any) => ({
-  stage: state.session.loginStage,
-  signing: state.session.signing,
-  subStage: state.session.signup.stage,
-  provider: state.session.currentProvider,
-  showWallet: window.location.search.indexOf("show_wallet=1") !== -1,
-  hasMetamask: window.ethereum && window.ethereum.isMetaMask,
-});
+const mapStateToProps = (state: any) => {
+  const params = new URLSearchParams(window.location.search)
+  return {
+    stage: state.session.loginStage,
+    signing: state.session.signing,
+    subStage: state.session.signup.stage,
+    provider: state.session.currentProvider,
+    showWalletSelector: params.has('show_wallet'),
+    hasWallet: !!window.ethereum,
+    hasMetamask: !!(window.ethereum && window.ethereum.isMetaMask),
+  }
+};
 
 const mapDispatchToProps = (dispatch: any) => ({
   onLogin: (provider: string) =>
@@ -47,19 +50,21 @@ export interface LoginContainerProps {
   subStage: string;
   provider?: string | null;
   showWallet?: boolean;
-  hasMetamask: boolean;
+  hasWallet?: boolean;
+  hasMetamask?: boolean;
   onLogin: (provider: string) => void;
   onGuest: () => void;
 }
 
 export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
+  const fullPage = props.stage === LoginStage.SIGN_IN
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
   return (
     <React.Fragment>
       {shouldShow && (
-        <div className="LoginContainer">
-          <Navbar />
+        <div className={'LoginContainer' + (fullPage ? ' FullPage' : '')}>
+          <Navbar full={fullPage} />
 
           {/* Footer */}
           <main>
@@ -67,6 +72,7 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
               {props.stage === LoginStage.LOADING && <InitialLoading />}
               {props.stage === LoginStage.SIGN_IN && (
                 <EthLogin
+                  hasWallet={props.hasWallet}
                   hasMetamask={props.hasMetamask}
                   loading={props.signing}
                   onLogin={props.onLogin}
@@ -84,11 +90,10 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
           </main>
 
           {/* Beginner Guide */}
-          {props.stage === LoginStage.SIGN_IN && <BeginnersGuide />}
+          {fullPage && <BeginnersGuide />}
 
           {/* Footer */}
-          {props.stage !== LoginStage.SIGN_IN && <Footer />}
-          {props.stage === LoginStage.SIGN_IN && <BigFooter />}
+          {fullPage && <BigFooter />}
         </div>
       )}
     </React.Fragment>

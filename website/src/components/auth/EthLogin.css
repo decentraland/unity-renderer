@@ -1,6 +1,5 @@
 #eth-login-confirmation-wrapper {
   width: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,13 +8,13 @@
 .eth-login {
   width: 100%;
   padding-left: 475px;
-  padding-top: 96px;
+  padding-top: 168px;
   position: relative;
 }
 
 .eth-login .eth-avatars {
   position: absolute;
-  top: 0;
+  top: 72px;
   left: 0;
 }
 
@@ -25,12 +24,19 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   font-weight: 600;
-  font-size: 23px;
+  font-size: 22px;
   line-height: 27px;
   text-shadow: 0 1px 0 #000000;
   max-width: 463px;
+}
+
+.eth-login-description .dcl-isologotipo {
+  height: 56px;
+  width: auto;
 }
 
 .eth-login-welcome {
@@ -41,30 +47,28 @@
 }
 
 .eth-login-guest-button {
-  border: 0;
-  width: 280px;
-  height: 66px;
   color: white;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  border-radius: 16px;
-  background-color: rgba(255, 255, 255, 0.2);
   font-style: normal;
-  font-weight: normal;
-  font-size: 25px;
-  line-height: 30px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
   text-align: center;
-  mix-blend-mode: normal;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  text-decoration: underline;
+  outline: 0;
 }
 
 #eth-login-confirmation-wrapper .eth-login-guest-button {
-  margin-top: 26px;
+  margin-top: 21px;
 }
 
 .eth-login-confirm-button {
   color: #ffffff;
-  width: 280px;
-  height: 65px;
+  width: 216px;
+  height: 60px;
   cursor: pointer;
   border: 0;
   border-radius: 16px;
@@ -77,6 +81,18 @@
   box-shadow: 0 5px 0 #cb2242;
   background-color: #ff2d55;
   mix-blend-mode: normal;
+  outline: 0;
+  transition: transform 0.1s ease;
+}
+
+.eth-login-confirm-button:hover {
+  transform: translateY(-5px);
+}
+
+.eth-login-confirm-button:active {
+  background-color: #cb2242;
+  box-shadow: 0 0 0 #cb2242;
+  transform: translateY(0);
 }
 
 .eth-login-confirm-button:disabled {
@@ -100,6 +116,10 @@
   .eth-login {
     width: 100%;
     padding: 0;
+  }
+
+  .eth-login-popup .eth-login {
+    min-height: auto;
   }
 
   .eth-login .eth-avatars {
