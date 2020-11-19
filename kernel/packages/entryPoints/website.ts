@@ -127,7 +127,7 @@ namespace webApp {
           .then((profile) => {
             i.ConfigureEmailPrompt(profile.tutorialStep)
             i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
-            i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
+            i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: false, visible: false })
             globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
             Html.switchGameContainer(true)
           })
