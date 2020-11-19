@@ -44,15 +44,17 @@ public class ProfileHUDController : IHUD
         view.buttonLogOut.onClick.AddListener(WebInterface.LogOut);
         view.buttonSignUp.onClick.AddListener(WebInterface.RedirectToSignUp);
         view.buttonClaimName.onClick.AddListener(()=> WebInterface.OpenURL(URL_CLAIM_NAME));
-        view.buttonTermsOfService.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
-        view.buttonPrivacyPolicy.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
+        view.buttonTermsOfServiceForConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
+        view.buttonPrivacyPolicyForConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
+        view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
+        view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
 
         manaCounterView = view.GetComponentInChildren<ManaCounterView>(true);
         if (manaCounterView)
         {
             manaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
-            manaCounterView.buttonManaPurchase.onPointerDown += () => WebInterface.OpenURL(URL_MANA_PURCHASE);
+            manaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;

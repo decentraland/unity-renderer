@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2837463
+    totalSpriteSurfaceArea: 2838208
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -79,6 +79,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 511aa971d8654400498da53ce8f013b7, type: 3}
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
   - {fileID: 21300000, guid: db7198b10e7b549a68d088ccdf7377cf, type: 3}
+  - {fileID: 21300000, guid: a6b6c8b1877c9c7498c971402965bdc0, type: 3}
   - {fileID: 21300000, guid: 094ba0d1e5a654e69b2896b2e8b7393e, type: 3}
   - {fileID: 21300000, guid: e5f450e18a0554063b4f01e5da2e1885, type: 3}
   - {fileID: 21300000, guid: dc0c26e188c324c3eba16bff00bcebe0, type: 3}
@@ -237,6 +238,7 @@ SpriteAtlas:
   - SceneInfoContainer
   - BlockUser
   - ManaIcon
+  - RectangleGreen
   - NFTUniqueFrame
   - CancelButton
   - MessageSent
@@ -287,7 +289,7 @@ SpriteAtlas:
   - WarningIcon
   - BackgroundPattern
   - ContainerRadius20Shadow
-  - NameContainer
+  - ProfileHudTopContainer
   - EllipticalSwitchBackground
   - ContainerRadius11Shadow
   - MouseLocked
