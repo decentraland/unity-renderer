@@ -3,13 +3,16 @@ import MetamaskLogo from "../../../images/login/metamask.svg";
 import FortmaticLogo from "../../../images/login/fortmatic.svg";
 import "./WalletButton.css";
 
-export type WalletButtonLogo = 'Metamask' | 'Fortmatic'
+export type WalletButtonLogo = "Metamask" | "Fortmatic";
 
 export interface WalletButtonProps {
-  logo: WalletButtonLogo
+  logo: WalletButtonLogo;
   active?: boolean;
   href?: string;
-  onClick: (event: React.MouseEvent<HTMLAnchorElement>, logo: WalletButtonLogo) => void;
+  onClick: (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    logo: WalletButtonLogo
+  ) => void;
 }
 
 export const WalletButton: React.FC<WalletButtonProps> = ({
@@ -18,63 +21,61 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
   active,
   onClick,
 }) => {
-
   const src = useMemo(() => {
     switch (logo) {
-      case 'Fortmatic':
-        return <img alt={logo} src={FortmaticLogo} className="fortmatic" />
-      case 'Metamask':
+      case "Fortmatic":
+        return <img alt={logo} src={FortmaticLogo} className="fortmatic" />;
+      case "Metamask":
       default:
-        return <img alt={logo} src={MetamaskLogo} className="metamask" />
+        return <img alt={logo} src={MetamaskLogo} className="metamask" />;
     }
-  }, [logo])
+  }, [logo]);
 
   const title = useMemo(() => {
     switch (logo) {
-      case 'Fortmatic':
-        return 'Fortmatic'
-      case 'Metamask':
+      case "Fortmatic":
+        return "Fortmatic";
+      case "Metamask":
       default:
-        return 'Metamask'
+        return "Metamask";
     }
-  }, [logo])
+  }, [logo]);
 
   const description = useMemo(() => {
     switch (logo) {
-      case 'Fortmatic':
-        return 'Using your email account'
-      case 'Metamask':
+      case "Fortmatic":
+        return "Using your email account";
+      case "Metamask":
       default:
-        return 'Using a browser extension'
+        return "Using a browser extension";
     }
-  }, [logo])
+  }, [logo]);
 
   function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
     if (active !== false) {
-      event.preventDefault()
+      event.preventDefault();
     }
 
     if (onClick) {
-      onClick(event, logo)
+      onClick(event, logo);
     }
-  }
-
-  let className = 'walletButton'
-  if (active === false) {
-    className += ' disabled'
   }
 
   return (
     <a
-      className={className}
-      href={href || '/'}
+      className="walletButton"
+      href={href || "/"}
       onClick={handleClick}
-      target={href && '_blank'}
+      target={href && "_blank"}
       rel="noopener noreferrer"
     >
       <div className="walletImage">{src}</div>
-      <div className="walletTitle"><h3>{title}</h3></div>
-      <div className="walletDescription"><p>{description}</p></div>
+      <div className="walletTitle">
+        <h3>{title}</h3>
+      </div>
+      <div className="walletDescription">
+        <p>{description}</p>
+      </div>
     </a>
-  )
+  );
 };
