@@ -156,11 +156,11 @@ public class ProfileHUDTests : TestsBase
     {
         controller.view.inputName.characterLimit = 100;
         controller.view.inputName.text = "";
-        Assert.IsTrue(controller.view.textCharLimit.text == $"{controller.view.inputName.characterLimit - controller.view.inputName.text.Length}/{controller.view.inputName.characterLimit}");
+        Assert.IsTrue(controller.view.textCharLimit.text == $"{controller.view.inputName.text.Length}/{controller.view.inputName.characterLimit}");
 
         controller.view.inputName.characterLimit = 50;
         controller.view.inputName.text = "test name";
-        Assert.IsTrue(controller.view.textCharLimit.text == $"{controller.view.inputName.characterLimit - controller.view.inputName.text.Length}/{controller.view.inputName.characterLimit}");
+        Assert.IsTrue(controller.view.textCharLimit.text == $"{controller.view.inputName.text.Length}/{controller.view.inputName.characterLimit}");
     }
 
     [Test]
