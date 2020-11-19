@@ -41,12 +41,15 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField] internal Button buttonCopyAddress;
     [SerializeField] internal Button buttonLogOut;
     [SerializeField] internal Button buttonSignUp;
-    [SerializeField] internal Button_OnPointerDown buttonTermsOfService;
-    [SerializeField] internal Button_OnPointerDown buttonPrivacyPolicy;
+    [SerializeField] internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+    [SerializeField] internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+    [SerializeField] internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
+    [SerializeField] internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
     [SerializeField] internal GameObject editNameTooltipGO;
-    [SerializeField] internal Button_OnPointerDown buttonEditUnverifiedName;
+    [SerializeField] internal Button_OnPointerDown buttonEditName;
+    [SerializeField] internal Button_OnPointerDown buttonEditNamePrefix;
     [SerializeField] internal TMP_InputField inputName;
     [SerializeField] internal TextMeshProUGUI textCharLimit;
 
@@ -65,7 +68,8 @@ internal class ProfileHUDView : MonoBehaviour
 
         buttonToggleMenu.onClick.AddListener(ToggleMenu);
         buttonCopyAddress.onClick.AddListener(CopyAddress);
-        buttonEditUnverifiedName.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        buttonEditName.onPointerDown += () => ActivateProfileNameEditionMode(true);
+        buttonEditNamePrefix.onPointerDown += () => ActivateProfileNameEditionMode(true);
         inputName.onValueChanged.AddListener(UpdateCharLimit);
         inputName.onDeselect.AddListener((x) => ActivateProfileNameEditionMode(false));
         copyToast.gameObject.SetActive(false);
@@ -244,6 +248,9 @@ internal class ProfileHUDView : MonoBehaviour
 
     internal void ActivateProfileNameEditionMode(bool activate)
     {
+        if (profile != null && profile.hasClaimedName)
+            return;
+
         editNameTooltipGO.SetActive(!activate);
         textName.gameObject.SetActive(!activate);
         inputName.gameObject.SetActive(activate);
@@ -257,7 +264,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     private void UpdateCharLimit(string newValue)
     {
-        textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
+        textCharLimit.text = $"{inputName.characterLimit - newValue.Length}/{inputName.characterLimit}";
     }
 
     internal void SetProfileName(string newName)

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// ProfileHUD sub-view that shows the user MANA balance.
@@ -8,7 +9,7 @@ internal class ManaCounterView : MonoBehaviour
 {
     [SerializeField] internal TextMeshProUGUI balanceText;
     [SerializeField] internal Button_OnPointerDown buttonManaInfo;
-    [SerializeField] internal Button_OnPointerDown buttonManaPurchase;
+    [SerializeField] internal Button buttonManaPurchase;
 
     /// <summary>
     /// Set the amount of MANA in the HUD.
