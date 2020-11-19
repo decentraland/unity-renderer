@@ -39,7 +39,6 @@ Shader "DCL/LWRP/Lit"
         [HideInInspector] _MatCap("ToonShader MatCap Map", 2D) = "bump" {}
         [HideInInspector] _GlossMatCap("ToonShader MatCap Map 2", 2D) = "bump" {}
         [HideInInspector] _FresnelMatCap("ToonShader MatCap Map 3", 2D) = "bump" {}
-        [HideInInspector] _TintColor("ToonShader Tint Color", Color) = (0,0,0)
         [HideInInspector] _SSSParams("ToonShader SSSParams", Vector) = (0,0,0)
         [HideInInspector] _SSSIntensity("ToonShader SSSIntensity", Float) = (0,0,0)
         //NOTE(Brian): Hack end

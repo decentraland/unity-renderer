@@ -11,15 +11,11 @@
         [NoScaleOffset]_FresnelMatCap("Fresnel MatCap", 2D) = "white" {}
         _SSSIntensity("SSS Intensity", Float) = 0
         _SSSParams("SSSParams", Vector) = (0, 0, 0, 0)
-        _TintColor("TintColor", Color) = (0.6415094, 0.5737489, 0.5416518, 1)
         _Cutoff("AlphaClipThreshold", Float) = 0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
         [HideInInspector] _DstBlend("__dst", Float) = 0.0
         [HideInInspector] _ZWrite("__zw", Float) = 1.0
         [HideInInspector] _Cull("__cull", Float) = 2.0
-
-
-
     }
     SubShader
     {
@@ -155,7 +151,6 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
-            float4 _TintColor;
             float _Cutoff;
 
             float4 _BaseMap_TexelSize;
@@ -165,6 +160,7 @@
             float4 _FresnelMatCap_TexelSize;
             CBUFFER_END
 
+            float4 _TintColor;
             float3 _LightDir;
             float4 _LightColor;
 
@@ -886,7 +882,6 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
-            float4 _TintColor;
             float _Cutoff;
 
             float4 _BaseMap_TexelSize;
@@ -896,6 +891,7 @@
             float4 _FresnelMatCap_TexelSize;
             CBUFFER_END
 
+            float4 _TintColor;
             float3 _LightDir;
             float4 _LightColor;
             
@@ -1293,7 +1289,6 @@
             float4 _EmissionColor;
             float _SSSIntensity;
             float4 _SSSParams;
-            float4 _TintColor;
             float _Cutoff;
             float4 _BaseMap_TexelSize;            
             float4 _EmissionMap_TexelSize;
@@ -1302,6 +1297,7 @@
             float4 _FresnelMatCap_TexelSize;            
             CBUFFER_END
 
+            float4 _TintColor;
             float3 _LightDir;
             float4 _LightColor;
             
