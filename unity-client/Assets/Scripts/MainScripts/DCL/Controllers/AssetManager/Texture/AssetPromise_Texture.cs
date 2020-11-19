@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
 using DCL.Helpers;
+using UnityEngine.Networking;
 
 namespace DCL
 {
@@ -15,9 +15,10 @@ namespace DCL
         string idWithDefaultTexSettings;
         TextureWrapMode wrapMode;
         FilterMode filterMode;
-        Coroutine loadCoroutine;
         bool storeDefaultTextureInAdvance = false;
         bool storeTexAsNonReadable = false;
+
+        UnityWebRequest webRequest = null;
 
         public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true)
         {
@@ -45,41 +46,37 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            ClearLoadCoroutine();
+            if (webRequest != null)
+            {
+                webRequest.Abort();
+            }
         }
 
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
-            ClearLoadCoroutine();
-
             // Reuse the already-stored default texture, we duplicate it and set the needed config afterwards in AddToLibrary()
             if (library.Contains(idWithDefaultTexSettings) && !UsesDefaultWrapAndFilterMode())
+            {
                 OnSuccess?.Invoke();
-            else
-                loadCoroutine = CoroutineStarter.Start(DownloadAndStore(OnSuccess, OnFail));
-        }
+                return;
+            }
 
-        IEnumerator DownloadAndStore(Action OnSuccess, Action OnFail)
-        {
-            if (!string.IsNullOrEmpty(url))
+            webRequest = UnityWebRequestTexture.GetTexture(url);
+            webRequest.SendWebRequest().completed += (asyncOp) =>
             {
-                yield return Utils.FetchTexture(url, (tex) =>
+                bool success = webRequest != null && webRequest.WebRequestSucceded() && asset != null;
+                if (success)
                 {
-                    if (asset != null)
-                    {
-                        asset.texture = tex;
-                        OnSuccess?.Invoke();
-                    }
-                    else
-                    {
-                        OnFail?.Invoke();
-                    }
-                }, (errorMessage) => OnFail?.Invoke());
-            }
-            else
-            {
-                OnFail?.Invoke();
-            }
+                    asset.texture = DownloadHandlerTexture.GetContent(webRequest);
+                    OnSuccess?.Invoke();
+                }
+                else
+                {
+                    OnFail?.Invoke();
+                }
+                webRequest?.Dispose();
+                webRequest = null;
+            };
         }
 
         protected override bool AddToLibrary()
@@ -134,15 +131,6 @@ namespace DCL
         public bool UsesDefaultWrapAndFilterMode()
         {
             return wrapMode == DEFAULT_WRAP_MODE && filterMode == DEFAULT_FILTER_MODE;
-        }
-
-        void ClearLoadCoroutine()
-        {
-            if (loadCoroutine != null)
-            {
-                CoroutineStarter.Stop(loadCoroutine);
-                loadCoroutine = null;
-            }
         }
     }
 }
