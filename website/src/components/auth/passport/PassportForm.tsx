@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { filterInvalidNameCharacters } from "../../../utils";
+import { filterInvalidNameCharacters, isBadWord } from "../../../utils";
 import "./PassportForm.css";
 
 // eslint-disable-next-line
@@ -12,38 +12,45 @@ export interface PassportFormProps {
 }
 
 export interface PassportFormState {
-  name: string,
-  hasNameError: boolean,
-  email: string,
-  hasEmailError: boolean,
+  name: string;
+  hasNameError: boolean;
+  email: string;
+  hasEmailError: boolean;
 }
 
-const MAX_NAME_LENGTH = 15
+const MAX_NAME_LENGTH = 15;
 
 export const PassportForm: React.FC<PassportFormProps> = (props) => {
   const [state, setState] = useState<PassportFormState>({
-    name: props.name || '',
+    name: props.name || "",
     hasNameError: false,
-    email: props.email || '',
-    hasEmailError: false
-  })
+    email: props.email || "",
+    hasEmailError: false,
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const hasNameError = state.name.length > MAX_NAME_LENGTH
-    const hasEmailError = state.email.length > 0 && !emailPattern.test(state.email)
+    const hasNameError =
+      state.name.trim().length === 0 ||
+      state.name.length > MAX_NAME_LENGTH ||
+      isBadWord(state.name);
+    const hasEmailError =
+      state.email.length > 0 && !emailPattern.test(state.email);
 
     if (hasNameError || hasEmailError) {
-      setState((current) => ({ ...current, hasNameError, hasEmailError }))
+      setState((current) => ({ ...current, hasNameError, hasEmailError }));
     } else if (!!props.onSubmit) {
       props.onSubmit(state.name, state.email);
     }
   };
 
   const onChangeName = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    let name = (target.value || '').trim()
+    let name = (target.value || "").trim();
+    if (name.length > MAX_NAME_LENGTH) {
+      return;
+    }
     try {
-      name = filterInvalidNameCharacters(name)
+      name = filterInvalidNameCharacters(name);
     } catch (err) {
       // ignore
     }
@@ -51,12 +58,12 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
     setState((current) => ({
       ...current,
       name,
-      hasNameError: name.length > MAX_NAME_LENGTH
+      hasNameError: name.length > MAX_NAME_LENGTH || name.length === 0,
     }));
   };
 
   const onChangeEmail = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    const email = (target.value || '').trim()
+    const email = (target.value || "").trim();
     setState((current) => ({
       ...current,
       email,
@@ -79,7 +86,9 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
             value={state.name}
             onChange={onChangeName}
           />
-          <em className={'hint' + (state.hasNameError ? ' hasError' : '')}>{Math.max(MAX_NAME_LENGTH - state.name.length, 0)}/{MAX_NAME_LENGTH}</em>
+          <em className={"hint" + (state.hasNameError ? " hasError" : "")}>
+            {Math.max(MAX_NAME_LENGTH - state.name.length, 0)}/{MAX_NAME_LENGTH}
+          </em>
         </div>
         <div className="inputGroup">
           <label>Let's stay in touch</label>
@@ -91,7 +100,9 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
             value={state.email}
             onChange={onChangeEmail}
           />
-          <em className="hint hasError">{state.hasEmailError ? 'Enter a valid email' : ''}</em>
+          <em className="hint hasError">
+            {state.hasEmailError ? "Enter a valid email" : ""}
+          </em>
         </div>
         <div className="actions">
           <button type="submit" className="btnSubmit">

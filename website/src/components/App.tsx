@@ -10,16 +10,19 @@ import "./App.css";
 const mapStateToProps = (state: any) => {
   return {
     error: !!state.loading.error,
+    sound:
+      !state?.session?.loginStage || state?.session?.loginStage !== "completed",
   };
 };
 
 export interface AppProps {
   error: boolean;
+  sound: boolean;
 }
 
 const App: React.FC<AppProps> = (props) => (
   <div>
-    <Audio track="/tone4.mp3" play={true} />
+    {props.sound && <Audio track="/tone4.mp3" play={true} />}
     <Overlay />
     <WarningContainer />
     {!props.error && <LoadingContainer />}
