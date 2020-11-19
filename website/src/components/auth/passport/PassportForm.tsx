@@ -11,70 +11,87 @@ export interface PassportFormProps {
   onSubmit: (name: string, email: string) => void;
 }
 
+export interface PassportFormState {
+  name: string,
+  hasNameError: boolean,
+  email: string,
+  hasEmailError: boolean,
+}
+
+const MAX_NAME_LENGTH = 15
+
 export const PassportForm: React.FC<PassportFormProps> = (props) => {
-  const [chars, setChars] = useState(props.name ? props.name.length : null);
-  const [name, setName] = useState(props.name || "");
-  const [email, setEmail] = useState(props.email || "");
-  const [hasNameError, setNameError] = useState(false);
-  const [hasEmailError, setEmailError] = useState(false);
+  const [state, setState] = useState<PassportFormState>({
+    name: props.name || '',
+    hasNameError: false,
+    email: props.email || '',
+    hasEmailError: false
+  })
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name || name.trim().length > 10) {
-      setNameError(true);
-      return;
+    const hasNameError = state.name.length > MAX_NAME_LENGTH
+    const hasEmailError = state.email.length > 0 && !emailPattern.test(state.email)
+
+    if (hasNameError || hasEmailError) {
+      setState((current) => ({ ...current, hasNameError, hasEmailError }))
+    } else if (!!props.onSubmit) {
+      props.onSubmit(state.name, state.email);
     }
-    if (email.trim().length > 0 && !emailPattern.test(email)) {
-      setEmailError(true);
-      return;
-    }
-    props.onSubmit(name.trim(), email.trim());
   };
 
   const onChangeName = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    if (target.value.length <= 15) {
-      const value = filterInvalidNameCharacters(target.value);
-      setNameError(false);
-      setName(value);
-      setChars(value.length);
+    let name = (target.value || '').trim()
+    try {
+      name = filterInvalidNameCharacters(name)
+    } catch (err) {
+      // ignore
     }
+
+    setState((current) => ({
+      ...current,
+      name,
+      hasNameError: name.length > MAX_NAME_LENGTH
+    }));
   };
 
   const onChangeEmail = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailError(false);
-    setEmail(target.value);
+    const email = (target.value || '').trim()
+    setState((current) => ({
+      ...current,
+      email,
+      hasEmailError: false,
+    }));
   };
 
   return (
     <div className="passportForm">
       <form method="POST" onSubmit={handleSubmit}>
         <div className="inputGroup">
-          {hasNameError && (
-            <em className="error">*Required field (you can edit it later)</em>
-          )}
+          <em className="required">* required field (you can edit it later)</em>
           <label>Name your avatar</label>
           <input
             type="text"
             name="name"
-            className={hasNameError ? "hasError" : ""}
+            className={state.hasNameError ? "hasError" : ""}
             placeholder="Your avatar name"
-            value={name}
+            autoComplete="0"
+            value={state.name}
             onChange={onChangeName}
           />
-          <em className={"warningLength " + (chars === 0 ? "error" : "")}>
-            {chars || 0}/10
-          </em>
+          <em className={'hint' + (state.hasNameError ? ' hasError' : '')}>{Math.max(MAX_NAME_LENGTH - state.name.length, 0)}/{MAX_NAME_LENGTH}</em>
         </div>
         <div className="inputGroup">
           <label>Let's stay in touch</label>
           <input
             type="text"
             name="email"
-            className={hasEmailError ? "hasError" : ""}
+            className={state.hasEmailError ? "hasError" : ""}
             placeholder="Enter your email"
-            value={email}
+            value={state.email}
             onChange={onChangeEmail}
           />
-          {hasEmailError && <em className="hasError">Email not valid</em>}
+          <em className="hint hasError">{state.hasEmailError ? 'Enter a valid email' : ''}</em>
         </div>
         <div className="actions">
           <button type="submit" className="btnSubmit">

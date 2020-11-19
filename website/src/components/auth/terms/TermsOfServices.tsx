@@ -268,20 +268,20 @@ export const TermsOfServices: React.FC<TermsOfServicesProps> = (props) => {
               <Spinner />
             </div>
           ) : (
-            <React.Fragment>
-              <button className="btnBack" onClick={props.handleBack}>
-                BACK
+              <React.Fragment>
+                <button className="btnBack" onClick={props.handleBack}>
+                  BACK
               </button>
 
-              <button
-                className="btnAgree"
-                disabled={!read}
-                onClick={props.handleAgree}
-              >
-                I AGREE
+                <button
+                  className="btnAgree"
+                  disabled={!read}
+                  onClick={props.handleAgree}
+                >
+                  I AGREE
               </button>
-            </React.Fragment>
-          )}
+              </React.Fragment>
+            )}
         </div>
       </div>
     </Modal>

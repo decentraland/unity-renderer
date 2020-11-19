@@ -30,7 +30,7 @@
 }
 
 .big-footer:last-child {
-  padding-bottom: 70px;
+  padding-bottom: 30px;
 }
 
 .big-footer .big-footer-icon {
@@ -51,12 +51,13 @@
 
 .big-footer a.big-footer-button {
   display: inline-flex;
+  font-size: 18px;
   justify-content: center;
   align-items: center;
   text-decoration: none;
   border-radius: 15px;
   border: 1px solid #736e7d;
-  padding: 2px 1.7em 2px 1em;
+  padding: 2px 40px 2px 36px;
   position: relative;
   transform: translateY(7px);
 }

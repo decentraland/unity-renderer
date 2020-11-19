@@ -4,45 +4,47 @@
   justify-content: space-between;
   position: absolute;
   width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
 
-.nav-bar img.dcl-logo {
-  width: 46px;
-  height: auto;
+.nav-bar .dcl-logo,
+.nav-bar .dcl-isologotipo {
+  height: 31px;
+  width: auto;
   padding: 0.5rem 1rem;
   box-sizing: content-box;
+  cursor: pointer;
 }
 
 .nav-bar-content {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-}
-
-.nav-text {
   color: white;
-  font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
 }
 
 .nav-discord {
-  width: fit-content;
   vertical-align: middle;
   margin: 6px 0 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  padding: 4px 12px;
-  box-sizing: border-box;
-  border-radius: 6px;
+  padding: 0 12px 0 6px;
+  border-radius: 9px;
+  font-size: 14px;
+  margin-left: 1em;
+  color: white;
   text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.nav-discord-img {
-  width: 14px;
-  vertical-align: middle;
-}
-
-.nav-discord-text {
-  margin-left: 2px;
-  font-size: 9px;
+.nav-discord svg {
+  height: 28px;
+  width: auto;
+  /* margin-right: 5px; */
 }
 
 .nav-need-support {

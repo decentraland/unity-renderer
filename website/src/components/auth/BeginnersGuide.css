@@ -5,10 +5,18 @@
   font-size: 32px;
 }
 
-.eth-beginners-guide h3 {
+.eth-beginners-guide .eth-accordion-title::before,
+.eth-beginners-guide .eth-accordion-title::after,
+.eth-beginners-guide .eth-accordion-title h3 {
   font-size: 26px;
-  font-weight: 400;
+  font-weight: 600;
   margin: 0;
+}
+
+.eth-beginners-guide .eth-accordion-title h3 a,
+.eth-beginners-guide .eth-accordion-title h3 b {
+  font-weight: 800;
+  color: #ff2d55;
 }
 
 .eth-beginners-guide p,
@@ -31,9 +39,11 @@
   color: #ff2d55;
 }
 
-.eth-beginners-guide .eth-accordion {
-  font-size: 20px;
-}
+.eth-beginners-guide .eth-accordion,
 .eth-beginners-guide .eth-accordion-description {
-  max-width: 980px;
+  font-size: 26px;
+}
+
+.eth-beginners-guide .eth-accordion-description > div {
+  padding-top: 25px;
 }
