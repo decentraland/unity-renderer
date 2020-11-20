@@ -75,12 +75,14 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
     }));
   };
 
+  const disabled = state.name.length === 0 || state.name.length > MAX_NAME_LENGTH
+
   return (
     <div className="passportForm">
       <form method="POST" onSubmit={handleSubmit}>
         <div className="inputGroup inputGroupName">
-          <em className="required">* required field (you can edit it later)</em>
           <label>Name your avatar</label>
+          <em className="required">non-alphanumeric characters or spaces allowed</em>
           <input
             type="text"
             name="name"
@@ -96,6 +98,7 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
         </div>
         <div className="inputGroup inputGroupEmail">
           <label>Let's stay in touch</label>
+          <em className="required">susbscribe to our newsletter (optional)</em>
           <input
             type="text"
             name="email"
@@ -109,7 +112,7 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
           </em>
         </div>
         <div className="actions">
-          <button type="submit" className="btnSubmit">
+          <button type="submit" className="btnSubmit" disabled={disabled}>
             NEXT
           </button>
         </div>
