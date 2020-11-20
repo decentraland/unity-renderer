@@ -19,6 +19,7 @@ namespace DCL.SettingsHUD
         public Toggle shadowToggle = null;
         public Toggle softShadowToggle = null;
         public Toggle bloomToggle = null;
+        public Toggle fpsCapToggle = null;
         public Slider mouseSensitivitySlider = null;
         public Slider antiAliasingSlider = null;
         public Slider renderingScaleSlider = null;
@@ -104,6 +105,13 @@ namespace DCL.SettingsHUD
             bloomToggle.onValueChanged.AddListener(isOn =>
             {
                 tempQualitySetting.bloom = isOn;
+                shouldSetAsCustom = true;
+                isDirty = true;
+            });
+
+            fpsCapToggle.onValueChanged.AddListener(isOn =>
+            {
+                tempQualitySetting.fpsCap = isOn;
                 shouldSetAsCustom = true;
                 isDirty = true;
             });
@@ -253,6 +261,7 @@ namespace DCL.SettingsHUD
             softShadowToggle.isOn = tempQualitySetting.softShadows;
             shadowToggle.isOn = tempQualitySetting.shadows;
             bloomToggle.isOn = tempQualitySetting.bloom;
+            fpsCapToggle.isOn = tempQualitySetting.fpsCap;
             antiAliasingSlider.value = tempQualitySetting.antiAliasing == UnityEngine.Rendering.Universal.MsaaQuality.Disabled ? 0 : ((int)currentQualitySetting.antiAliasing >> 2) + 1;
             renderingScaleSlider.value = tempQualitySetting.renderScale;
             drawDistanceSlider.value = tempQualitySetting.cameraDrawDistance;

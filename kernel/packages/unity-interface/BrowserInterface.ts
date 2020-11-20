@@ -122,11 +122,11 @@ export class BrowserInterface {
     queueTrackingEvent('hiccup report', data)
   }
 
-  public PerformanceReport(samples: string) {
-    const perfReport = getPerformanceInfo(samples)
+  public PerformanceReport(data: { samples: string; fpsIsCapped: boolean }) {
+    const perfReport = getPerformanceInfo(data)
     queueTrackingEvent('performance report', perfReport)
 
-    const rawPerfReport = getRawPerformanceInfo(samples)
+    const rawPerfReport = getRawPerformanceInfo(data)
     queueTrackingEvent('raw perf report', rawPerfReport)
   }
 

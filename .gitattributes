@@ -69,3 +69,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 TestResources/Audio/Train.wav filter=lfs diff=lfs merge=lfs -text
+*.jspre linguist-language=JavaScript
