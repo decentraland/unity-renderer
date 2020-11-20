@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2838208
+    totalSpriteSurfaceArea: 5454544
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -126,6 +126,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b16568f5e2de64c8dbc491d9ac2830e9, type: 3}
   - {fileID: 21300000, guid: 91e559f524592ad4a94afd8829f86e75, type: 3}
   - {fileID: 21300000, guid: fb175f167b0cc447c8f2fd84c9671a68, type: 3}
+  - {fileID: 21300000, guid: 086c9b76b082a4013aab402d2ef544e5, type: 3}
   - {fileID: 21300000, guid: 518e3be6157b64d5a9fabd3e9c35622d, type: 3}
   - {fileID: 21300000, guid: 3a4ad9f62fe60453da372a1c74d0efc4, type: 3}
   - {fileID: 21300000, guid: 100172170ea424b1f94f8c64e2d48da1, type: 3}
@@ -154,6 +155,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: dcdf9cf86d2644e82b7712af42584c7c, type: 3}
   - {fileID: 21300000, guid: 87bf14092660947eb9909d5772886279, type: 3}
   - {fileID: 21300000, guid: 314ecf09e6e7447d9aa0421d996754cc, type: 3}
+  - {fileID: 21300000, guid: 1ee57229908754bd496bad4d4b6520e4, type: 3}
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
@@ -285,6 +287,7 @@ SpriteAtlas:
   - PoiIcon
   - ImageIcon
   - FAQsIcon
+  - BackpackOutlineIcon
   - BlockIcon
   - WarningIcon
   - BackgroundPattern
@@ -313,6 +316,7 @@ SpriteAtlas:
   - EmailHeader
   - DecentralandLogo
   - RejectButtonHover
+  - Commands005[ControlsPanel]
   - Ellipse128
   - MessageIcon
   - FriendsIcon
