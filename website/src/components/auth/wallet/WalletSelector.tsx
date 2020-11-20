@@ -40,14 +40,16 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
         <div className="walletButtonContainer">
           {loading && <Spinner />}
           {!loading && (
-            <WalletButton
-              logo="Metamask"
-              active={!!metamask}
-              href="https://metamask.io/"
-              onClick={handleClick}
-            />
+            <React.Fragment>
+              <WalletButton
+                logo="Metamask"
+                active={!!metamask}
+                href="https://metamask.io/"
+                onClick={handleClick}
+              />
+              <WalletButton logo="Fortmatic" onClick={handleClick} />
+            </React.Fragment>
           )}
-          {!loading && <WalletButton logo="Fortmatic" onClick={handleClick} />}
         </div>
       </div>
     </Modal>
