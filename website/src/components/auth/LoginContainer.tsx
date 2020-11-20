@@ -3,7 +3,6 @@ import { Navbar } from "../common/Navbar";
 import { EthLogin } from "./EthLogin";
 import { EthConnectAdvice } from "./EthConnectAdvice";
 import { EthSignAdvice } from "./EthSignAdvice";
-import { InitialLoading } from "./InitialLoading";
 import { connect } from "react-redux";
 import SignUpContainer from "./SignUpContainer";
 import { Container } from "../common/Container";
@@ -57,24 +56,25 @@ export interface LoginContainerProps {
 }
 
 export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
-  const fullPage = props.stage === LoginStage.SIGN_IN
+  const loading = props.stage === LoginStage.LOADING
+  const full = loading || props.stage === LoginStage.SIGN_IN
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
   return (
     <React.Fragment>
       {shouldShow && (
-        <div className={'LoginContainer' + (fullPage ? ' FullPage' : '')}>
-          <Navbar full={fullPage} />
+        <div className={'LoginContainer' + (full ? ' FullPage' : '')}>
+          {/* Nabvar */}
+          <Navbar full={full} />
 
-          {/* Footer */}
+          {/* Main */}
           <main>
             <Container className="eth-login-popup">
-              {props.stage === LoginStage.LOADING && <InitialLoading />}
-              {props.stage === LoginStage.SIGN_IN && (
+              {full && (
                 <EthLogin
                   hasWallet={props.hasWallet}
                   hasMetamask={props.hasMetamask}
-                  loading={props.signing}
+                  loading={loading || props.signing}
                   onLogin={props.onLogin}
                   onGuest={props.onGuest}
                   provider={props.provider}
@@ -90,10 +90,10 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
           </main>
 
           {/* Beginner Guide */}
-          {fullPage && <BeginnersGuide />}
+          {full && <BeginnersGuide />}
 
           {/* Footer */}
-          {fullPage && <BigFooter />}
+          {full && <BigFooter />}
         </div>
       )}
     </React.Fragment>
