@@ -27,16 +27,23 @@
   background-color: white;
   background-position: bottom center;
   background-image: url("../../images/login/background-secondary@1x.jpg");
+  background-image: url("../../images/login/background-secondary@1x.jpg"),
+    url("https://decentraland.org/images/background-secondary@blur.jpg"),
+    url("https://decentraland.org/images/background@blur.jpg");
   background-image: -webkit-image-set(
-    url("../../images/login/background-secondary@1x.jpg") 1x,
-    url("../../images/login/background-secondary@2x.jpg") 2x,
-    url("../../images/login/background-secondary@3x.jpg") 3x
-  );
+      url("../../images/login/background-secondary@1x.jpg") 1x,
+      url("../../images/login/background-secondary@2x.jpg") 2x,
+      url("../../images/login/background-secondary@3x.jpg") 3x
+    ),
+    url("https://decentraland.org/images/background-secondary@blur.jpg"),
+    url("https://decentraland.org/images/background@blur.jpg");
   background-image: image-set(
-    url("../../images/login/background-secondary@1x.jpg") 1x,
-    url("../../images/login/background-secondary@2x.jpg") 2x,
-    url("../../images/login/background-secondary@3x.jpg") 3x
-  );
+      url("../../images/login/background-secondary@1x.jpg") 1x,
+      url("../../images/login/background-secondary@2x.jpg") 2x,
+      url("../../images/login/background-secondary@3x.jpg") 3x
+    ),
+    url("https://decentraland.org/images/background-secondary@blur.jpg"),
+    url("https://decentraland.org/images/background@blur.jpg");
   background-repeat: no-repeat;
   background-origin: border-box;
   width: 100%;
@@ -53,16 +60,20 @@
   background-color: white;
   background-position: top center;
   background-image: url("../../images/login/background@1x.jpg");
+  background-image: url("../../images/login/background@1x.jpg"),
+    url("https://decentraland.org/images/background@blur.jpg");
   background-image: -webkit-image-set(
-    url("../../images/login/background@1x.jpg") 1x,
-    url("../../images/login/background@2x.jpg") 2x,
-    url("../../images/login/background@3x.jpg") 3x
-  );
+      url("../../images/login/background@1x.jpg") 1x,
+      url("../../images/login/background@2x.jpg") 2x,
+      url("../../images/login/background@3x.jpg") 3x
+    ),
+    url("https://decentraland.org/images/background@blur.jpg");
   background-image: image-set(
-    url("../../images/login/background@1x.jpg") 1x,
-    url("../../images/login/background@2x.jpg") 2x,
-    url("../../images/login/background@3x.jpg") 3x
-  );
+      url("../../images/login/background@1x.jpg") 1x,
+      url("../../images/login/background@2x.jpg") 2x,
+      url("../../images/login/background@3x.jpg") 3x
+    ),
+    url("https://decentraland.org/images/background@blur.jpg");
   overflow: visible;
   align-items: flex-start;
 }

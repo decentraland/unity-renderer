@@ -16,12 +16,12 @@
 
 .passportForm form .inputGroup.inputGroupName {
   height: 111px;
-  padding: 16px 16px 28px 16px;
+  padding: 16px 16px 24px 16px;
 }
 
 .passportForm form .inputGroup.inputGroupEmail {
   height: 93px;
-  padding: 16px 16px 46px 16px;
+  padding: 16px 16px 42px 16px;
 }
 
 .passportForm form .inputGroup em.hint,

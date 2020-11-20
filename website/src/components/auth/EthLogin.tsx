@@ -17,7 +17,7 @@ export interface EthLoginProps {
 
 export const EthLogin: React.FC<EthLoginProps> = (props) => {
   const [showWallet, setShowWallet] = useState(props.showWallet || false);
-  const walletLoading = props.loading && showWallet;
+  const walletLoading = !props.loading && showWallet;
   const isLoading = props.loading || showWallet
 
   function handlePlay(event: React.MouseEvent) {
