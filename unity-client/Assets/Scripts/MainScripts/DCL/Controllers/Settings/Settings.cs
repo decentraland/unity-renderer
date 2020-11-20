@@ -22,7 +22,7 @@ namespace DCL
 
         private readonly BooleanVariable autosettingsEnabled = null;
 
-        private SettingsData.QualitySettings currentQualitySettings;
+        public SettingsData.QualitySettings currentQualitySettings { private set; get; }
         private SettingsData.GeneralSettings currentGeneralSettings;
 
         public Settings()

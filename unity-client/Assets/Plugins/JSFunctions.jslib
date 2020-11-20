@@ -13,7 +13,7 @@ mergeInto(LibraryManager.library, {
   MessageFromEngine: function(type, message) {
     window.DCL.MessageFromEngine(Pointer_stringify(type), Pointer_stringify(message));
   },
-  GetGraphicCard: function(){
+  GetGraphicCard: function() {
     const glcontext = GL.currentContext.GLctx;
     const debugInfo = glcontext.getExtension('WEBGL_debug_renderer_info');
     const graphicCard = glcontext.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
@@ -23,6 +23,9 @@ mergeInto(LibraryManager.library, {
     var buffer = _malloc(bufferSize);
     stringToUTF8(graphicCard, buffer, bufferSize);
     return buffer;
+  },
+  ToggleFPSCap: function(useFPSCap) {
+    window.capFPS = useFPSCap;
   }
 });
 
