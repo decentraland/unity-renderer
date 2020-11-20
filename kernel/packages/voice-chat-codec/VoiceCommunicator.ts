@@ -143,9 +143,9 @@ export class VoiceCommunicator {
     return this.outputStats[outputId]
   }
 
-  playEncodedAudio(src: string, relativePosition: VoiceSpatialParams, encoded: EncodedFrame) {
+  async playEncodedAudio(src: string, relativePosition: VoiceSpatialParams, encoded: EncodedFrame) {
     if (!this.outputs[src]) {
-      this.createOutput(src, relativePosition).catch((e) => defaultLogger.error('Error creating output!', e))
+      await this.createOutput(src, relativePosition)
     } else {
       this.outputs[src].lastUpdateTime = Date.now()
       this.setVoiceRelativePosition(src, relativePosition)

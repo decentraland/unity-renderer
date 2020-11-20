@@ -474,11 +474,9 @@ function processVoiceFragment(context: Context, fromAlias: string, message: Pack
       peerTrackingInfo.position &&
       shouldPlayVoice(profile, peerTrackingInfo.identity)
     ) {
-      voiceCommunicator?.playEncodedAudio(
-        peerTrackingInfo.identity,
-        getSpatialParamsFor(peerTrackingInfo.position),
-        message.data
-      )
+      voiceCommunicator
+        ?.playEncodedAudio(peerTrackingInfo.identity, getSpatialParamsFor(peerTrackingInfo.position), message.data)
+        .catch((e) => defaultLogger.error('Error playing encoded audio!', e))
     }
   }
 }
