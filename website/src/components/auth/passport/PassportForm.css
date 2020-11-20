@@ -9,19 +9,17 @@
 .passportForm form .inputGroup {
   display: flex;
   flex-flow: column nowrap;
-  height: 112px;
-  padding: 16px 16px 32px 16px;
+  height: 111px;
+  padding: 0px 16px 44px 16px;
   position: relative;
 }
 
 .passportForm form .inputGroup.inputGroupName {
-  height: 111px;
-  padding: 16px 16px 24px 16px;
+  padding-bottom: 28px;
 }
 
 .passportForm form .inputGroup.inputGroupEmail {
-  height: 93px;
-  padding: 16px 16px 42px 16px;
+  padding-bottom: 58px;
 }
 
 .passportForm form .inputGroup em.hint,
@@ -34,18 +32,18 @@
 
 .passportForm form .inputGroup em.hint {
   position: absolute;
-  bottom: 16px;
+  bottom: 32px;
   right: 16px;
   color: #333333;
   opacity: 0.5;
 }
 
 .passportForm form .inputGroup.inputGroupName em.hint {
-  bottom: 12px;
+  bottom: 14px;
 }
 
 .passportForm form .inputGroup.inputGroupEmail em.hint {
-  bottom: 30px;
+  bottom: 46px;
 }
 
 .passportForm form .inputGroup em.required {
@@ -117,4 +115,10 @@
   line-height: 20px;
   padding: 0;
   outline: 0;
+}
+
+.passportForm form button.btnSubmit:disabled {
+  background: #b9818b;
+  box-shadow: 0 4px 0 #b37882;
+  cursor: not-allowed;
 }
