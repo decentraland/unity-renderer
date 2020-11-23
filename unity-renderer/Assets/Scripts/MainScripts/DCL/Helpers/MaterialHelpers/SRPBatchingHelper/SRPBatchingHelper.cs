@@ -12,6 +12,8 @@ namespace DCL.Helpers
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
             material.EnableKeyword("_EMISSION");
             material.EnableKeyword("_NORMALMAP");
+            if (!material.IsKeywordEnabled("_ALPHATEST_ON"))
+                material.SetFloat(ShaderUtils.Cutoff, 0);
             material.EnableKeyword("_ALPHATEST_ON");
             material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
             material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
