@@ -57,6 +57,34 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class StartStatefulMode : ControlEvent<StartStatefulMode.Payload>
+        {
+            [System.Serializable]
+            public class Payload
+            {
+                public string sceneId;
+            }
+
+            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() { sceneId = sceneId })
+            {
+            }
+        }
+
+        [System.Serializable]
+        public class StopStatefulMode : ControlEvent<StopStatefulMode.Payload>
+        {
+            [System.Serializable]
+            public class Payload
+            {
+                public string sceneId;
+            }
+
+            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() { sceneId = sceneId })
+            {
+            }
+        }
+
+        [System.Serializable]
         public class SceneReady : ControlEvent<SceneReady.Payload>
         {
             [System.Serializable]
@@ -165,6 +193,90 @@ namespace DCL.Interface
             public ChatMessage message;
         }
 
+        [System.Serializable]
+        public class AddEntityEvent
+        {
+            public string type = "AddEntity";
+            public AddEntityPayLoad payload;
+
+
+        };
+        [System.Serializable]
+        public class AddEntityPayLoad
+        {
+            public string entityId;
+            public EntityComponentModel[] components;
+
+
+        };
+
+        [System.Serializable]
+        public class EntityComponentModel
+        {
+            public int id;
+            public string data;
+        };
+
+        [System.Serializable]
+        public class EntityModifyComponentModel
+        {
+            public int componentId;
+            public string componentData;
+        };
+
+        [System.Serializable]
+        public class RemoveEntityEvent
+        {
+            public string type = "RemoveEntity";
+            public RemoveEntityPayLoad payload;
+
+
+        };
+
+        [System.Serializable]
+        public class RemoveEntityPayLoad
+        {
+            public string entityId;
+        };
+
+        [System.Serializable]
+        public class ModifyEntityComponentsEvent
+        {
+            public string type = "SetComponent";
+            public ModifyEntityComponentsPayLoad payload;
+
+
+        };
+
+        [System.Serializable]
+        public class ModifyEntityComponentsPayLoad
+        {
+            public string entityId;
+            public Component[] components;
+        };
+
+        [System.Serializable]
+        public class RemoveEntityComponentsEvent
+        {
+            public string type = "RemoveComponent";
+            public RemoveEntityComponentsPayLoad payload;
+
+
+        };
+
+        [System.Serializable]
+        public class RemoveEntityComponentsPayLoad
+        {
+            public string entityId;
+            public string componentId;
+        };
+
+        [System.Serializable]
+        public class StoreSceneStateEvent
+        {
+            public string type = "StoreSceneState";
+            public string payload = "";
+        };
 
         [System.Serializable]
         public class OnPointerEventPayload
@@ -572,6 +684,7 @@ namespace DCL.Interface
         private static DelightedSurveyEnabledPayload delightedSurveyEnabled = new DelightedSurveyEnabledPayload();
         private static ExternalActionSceneEventPayload sceneExternalActionEvent = new ExternalActionSceneEventPayload();
         private static MuteUserPayload muteUserEvent = new MuteUserPayload();
+        private static StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
         private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
@@ -598,6 +711,34 @@ namespace DCL.Interface
             SendMessage("ControlEvent", controlEvent);
         }
 
+        public static void AddEntity(string sceneId, string entityId, EntityComponentModel[] components)
+        {
+            AddEntityEvent addEntityEvent = new AddEntityEvent();
+            AddEntityPayLoad addEntityPayLoad = new AddEntityPayLoad();
+            addEntityPayLoad.entityId = entityId;
+            addEntityPayLoad.components = components;
+
+            addEntityEvent.payload = addEntityPayLoad;
+            VERBOSE = true;
+            SendSceneEvent(sceneId, "stateEvent", addEntityEvent);
+            VERBOSE = false;
+        }
+        public static void RemoveEntity(string sceneId, string entityId)
+        {
+            RemoveEntityEvent removeEntityEvent = new RemoveEntityEvent();
+            RemoveEntityPayLoad removeEntityPayLoad = new RemoveEntityPayLoad();
+            removeEntityPayLoad.entityId = entityId;
+            removeEntityEvent.payload = removeEntityPayLoad;
+
+            VERBOSE = true;
+            SendSceneEvent(sceneId, "stateEvent", removeEntityEvent);
+            VERBOSE = false;
+        }
+
+        public static void ReportStoreSceneState(string sceneId)
+        {
+            SendSceneEvent(sceneId, "stateEvent", storeSceneState);
+        }
         public static void ReportOnClickEvent(string sceneId, string uuid)
         {
             if (string.IsNullOrEmpty(uuid))

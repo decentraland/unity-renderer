@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -45,7 +45,6 @@ public class RenderProfileBridge : MonoBehaviour
     public void SetRenderProfile(ID id)
     {
         RenderProfileWorld newProfile;
-
         switch (id)
         {
             default:

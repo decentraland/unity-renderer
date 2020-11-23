@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Builder
 {
@@ -11,11 +11,13 @@ namespace Builder
 
         public delegate void MouseClickDelegate(int buttonId, Vector3 mousePosition);
         public delegate void MouseDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
+        public delegate void MouseRawDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
         public delegate void MouseWheelDelegate(float axisValue);
 
         public static event MouseClickDelegate OnMouseDown;
         public static event MouseClickDelegate OnMouseUp;
         public static event MouseDragDelegate OnMouseDrag;
+        public static event MouseRawDragDelegate OnMouseRawDrag;
         public static event MouseWheelDelegate OnMouseWheel;
 
         private float lastMouseWheelDelta = 0;
@@ -23,7 +25,8 @@ namespace Builder
 
         private void Update()
         {
-            for (int i = 0; i < 2; i++)
+            
+            for (int i = 0; i <= 2; i++)
             {
                 if (HasMouseButtonInput(i)) break;
             }
@@ -45,6 +48,7 @@ namespace Builder
             else if (Input.GetMouseButton(button))
             {
                 OnMouseDrag?.Invoke(button, Input.mousePosition, Input.GetAxis(MouseXAxis), Input.GetAxis(MouseYAxis));
+                OnMouseRawDrag?.Invoke(button, Input.mousePosition, Input.GetAxisRaw(MouseXAxis), Input.GetAxisRaw(MouseYAxis));
                 return true;
             }
             else if (Input.GetMouseButtonUp(button))

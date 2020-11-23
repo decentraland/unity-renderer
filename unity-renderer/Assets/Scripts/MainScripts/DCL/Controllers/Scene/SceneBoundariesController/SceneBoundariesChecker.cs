@@ -150,12 +150,12 @@ namespace DCL.Controllers
             EvaluateMeshBounds(entity);
         }
 
-        void EvaluateMeshBounds(DecentralandEntity entity)
+        public bool IsEntityInsideSceneBoundaries(DecentralandEntity entity)
         {
-            Bounds meshBounds = entity.meshesInfo.mergedBounds;
+            if (entity.meshesInfo == null || entity.meshesInfo.meshRootGameObject == null || entity.meshesInfo.mergedBounds == null) return false;
 
             // 1st check (full mesh AABB)
-            bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(meshBounds);
+            bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
 
             // 2nd check (submeshes AABB)
             if (!isInsideBoundaries)
@@ -163,10 +163,15 @@ namespace DCL.Controllers
                 isInsideBoundaries = AreSubmeshesInsideBoundaries(entity);
             }
 
-            UpdateEntityMeshesValidState(entity, isInsideBoundaries, meshBounds);
+            return isInsideBoundaries;
+        }
 
+        void EvaluateMeshBounds(DecentralandEntity entity)
+        {
+            bool isInsideBoundaries = IsEntityInsideSceneBoundaries(entity);
+
+            UpdateEntityMeshesValidState(entity, isInsideBoundaries);
             UpdateEntityCollidersValidState(entity, isInsideBoundaries);
-
             UpdateComponents(entity, isInsideBoundaries);
         }
 
@@ -183,7 +188,7 @@ namespace DCL.Controllers
             return true;
         }
 
-        protected virtual void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries, Bounds meshBounds)
+        protected virtual void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries)
         {
             if (entity.meshesInfo.renderers[0] == null) return;
 

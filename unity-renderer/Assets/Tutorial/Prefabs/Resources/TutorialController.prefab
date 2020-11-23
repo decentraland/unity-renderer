@@ -287,13 +287,6 @@ MonoBehaviour:
   stepsFromDeepLink:
   - {fileID: 2279349500871665793, guid: 8c33a8a8dee303549b52b8aa6a60f6ae, type: 3}
   - {fileID: 7355157609001770265, guid: 3d256fc4674c9c348979fd3a0688eb7c, type: 3}
-  stepsOnGenesisPlazaAfterDeepLink:
-  - {fileID: 4861517172874704628, guid: d1f998c8bfc320a409c115b30d05a337, type: 3}
-  - {fileID: 4712031868617782090, guid: 54219e5d1e0415f4ab74ddc2ee0adbfa, type: 3}
-  - {fileID: 3037048280107810980, guid: e5f5e18a835a34e45830f29570029838, type: 3}
-  - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
-  - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
-  - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
   stepsFromReset:
   - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
   - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
@@ -306,6 +299,10 @@ MonoBehaviour:
   - {fileID: 6847608553138329027, guid: 2a8c160e6d4992249b9645458e08f266, type: 3}
   - {fileID: 3680644473237013901, guid: 92afb818b93335f4c91c56034d82f56e, type: 3}
   - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
+  stepsFromBuilderInWorld:
+  - {fileID: 9222724868283703408, guid: d9b942b5387fa594cbbfcd9b8ce53ced, type: 3}
+  - {fileID: 1503008310291586882, guid: f334bf74ded32e946a7a737fb996b2eb, type: 3}
+  - {fileID: 689055756687240284, guid: 5ac7673c54af3ab4989dceacadc20b50, type: 3}
   teacherCamera: {fileID: 604084521501385079}
   teacherRawImage: {fileID: 6732306866191114328}
   teacher: {fileID: 977289631841785178}

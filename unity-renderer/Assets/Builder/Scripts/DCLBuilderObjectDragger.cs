@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ namespace Builder
         public static event Action OnDraggingObject;
         public static event Action OnDraggingObjectEnd;
 
-        private List<DCLBuilderEntity> selectedEntities;
+        private List<EditableEntity> selectedEntities;
         private Vector3 targetOffset;
         private Vector3 initialHitPoint;
         private Transform selectedEntitiesParent;
@@ -45,7 +45,7 @@ namespace Builder
             DCLBuilderBridge.OnSetGridResolution -= OnSetGridResolution;
         }
 
-        private void OnSelectedObjectListChanged(Transform selectionParent, List<DCLBuilderEntity> selectedEntities)
+        private void OnSelectedObjectListChanged(Transform selectionParent, List<EditableEntity> selectedEntities)
         {
             this.selectedEntitiesParent = selectionParent;
             this.selectedEntities = selectedEntities;

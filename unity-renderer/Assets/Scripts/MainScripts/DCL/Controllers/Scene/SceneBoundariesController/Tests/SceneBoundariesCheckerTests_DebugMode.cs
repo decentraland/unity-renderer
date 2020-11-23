@@ -31,7 +31,7 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator ResetMaterialCorrectlyWhenInvalidEntitiesAreRemoved()
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
@@ -45,7 +45,7 @@ namespace SceneBoundariesCheckerTests
 
             Assert.IsFalse(SBC_Asserts.MeshIsInvalid(entity.meshesInfo));
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
@@ -59,7 +59,7 @@ namespace SceneBoundariesCheckerTests
 
             var entity2 = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity2, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity2, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {

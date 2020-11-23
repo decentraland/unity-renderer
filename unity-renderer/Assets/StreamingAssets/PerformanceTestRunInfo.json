@@ -11,14 +11,14 @@
         "XrDevice": ""
     },
     "EditorVersion": {
-        "FullVersion": "2019.1.14f1 (148b5891095a)",
-        "DateSeconds": 1564659201,
-        "Branch": "2019.1/staging",
-        "RevisionValue": 1346392
+        "FullVersion": "2019.4.0f1 (0af376155913)",
+        "DateSeconds": 1591370652,
+        "Branch": "2019.4/release",
+        "RevisionValue": 717686
     },
     "BuildSettings": {
         "Platform": "",
-        "BuildTarget": "StandaloneOSX",
+        "BuildTarget": "StandaloneWindows64",
         "DevelopmentPlayer": false,
         "AndroidBuildSystem": "Gradle"
     },
@@ -41,17 +41,17 @@
         "MtRendering": true,
         "GraphicsJobs": false,
         "GpuSkinning": true,
-        "GraphicsApi": "Metal",
+        "GraphicsApi": "Direct3D11",
         "Batchmode": "False",
         "StereoRenderingPath": "MultiPass",
         "RenderThreadingMode": "MultiThreaded",
-        "AndroidMinimumSdkVersion": "AndroidApiLevel16",
+        "AndroidMinimumSdkVersion": "AndroidApiLevel19",
         "AndroidTargetSdkVersion": "AndroidApiLevelAuto",
         "EnabledXrTargets": [],
         "ScriptingRuntimeVersion": ""
     },
     "TestSuite": "",
-    "StartTime": 1581446799311.939,
+    "StartTime": 1605525670275.5386,
     "EndTime": 0.0,
     "Results": []
 }

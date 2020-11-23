@@ -10,7 +10,8 @@ public class CameraMode : BaseVariable<CameraMode.ModeId>
     [Serializable]
     public enum ModeId {
         FirstPerson,
-        ThirdPerson
+        ThirdPerson,
+        BuildingToolGodMode
     }
     
 }

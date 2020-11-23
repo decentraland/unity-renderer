@@ -8,13 +8,13 @@ using UnityEngine;
 
 namespace Builder
 {
-    public class DCLBuilderEntity : MonoBehaviour
+    public class DCLBuilderEntity : EditableEntity
     {
         public static Action<DCLBuilderEntity> OnEntityShapeUpdated;
         public static Action<DCLBuilderEntity> OnEntityTransformUpdated;
         public static Action<DCLBuilderEntity> OnEntityAddedWithTransform;
 
-        public DecentralandEntity rootEntity { protected set; get; }
+
         public bool hasGizmoComponent
         {
             get
@@ -102,7 +102,7 @@ namespace Builder
             return true;
         }
 
-        public void SetSelectLayer()
+        public override void SetSelectLayer()
         {
             if (rootEntity.meshesInfo == null || rootEntity.meshesInfo.renderers == null)
             {
@@ -121,7 +121,7 @@ namespace Builder
             }
         }
 
-        public void SetDefaultLayer()
+        public override void SetDefaultLayer()
         {
             if (rootEntity.meshesInfo == null || rootEntity.meshesInfo.renderers == null)
             {

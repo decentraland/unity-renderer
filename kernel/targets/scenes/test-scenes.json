@@ -28,5 +28,11 @@
     "kind": "Webpack",
     "file": "./public/test-scenes/6*/game.ts",
     "target": "web"
+  },
+  {
+    "name": "Compile test scenes around 0,0",
+    "kind": "Webpack",
+    "file": "./public/test-scenes/-100.40*/game.ts",
+    "target": "web"
   }
 ]

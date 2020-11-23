@@ -415,6 +415,7 @@ GameObject:
   - component: {fileID: 113901082}
   - component: {fileID: 8548425888172674288}
   - component: {fileID: 8920001334808305060}
+  - component: {fileID: 8266689621276731347}
   m_Layer: 15
   m_Name: CharacterController
   m_TagString: Player
@@ -517,6 +518,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameObjectsToToggle:
   - {fileID: 3711435650905816617}
+--- !u!114 &8266689621276731347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922703132412175462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c540112527eb28a429c09faffa1bd27f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundCheckExtraDistance: 0.25
+  movementSpeed: 11
+  runningSpeedMultiplier: 0.36
+  sprintAction: {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
+  characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
+  characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
 --- !u!1 &7570314869756664852
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using DCL.Interface;
 using DCL.Components;
@@ -103,7 +103,7 @@ namespace Builder
             WebInterface.SendMessage("ReportBuilderCameraTarget", onReportCameraTarget);
         }
 
-        public void SendEntitySelected(DCLBuilderEntity entity, string gizmoType, string sceneId)
+        public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoSelected";
             onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId } : null;
@@ -114,7 +114,7 @@ namespace Builder
             WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
         }
 
-        public void SendEntitiesTransform(List<DCLBuilderEntity> entities, string gizmoType, string sceneId)
+        public void SendEntitiesTransform(List<EditableEntity> entities, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoDragEnded";
             onGizmoEventPayload.entities = null;
