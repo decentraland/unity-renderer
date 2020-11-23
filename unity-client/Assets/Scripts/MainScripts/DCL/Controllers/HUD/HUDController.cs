@@ -415,7 +415,7 @@ public class HUDController : MonoBehaviour
 
     public void TriggerSelfUserExpression(string id)
     {
-        expressionsHud?.ExpressionCalled(id);
+        UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
     }
 
     public void AirdroppingRequest(string payload)
