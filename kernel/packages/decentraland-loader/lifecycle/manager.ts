@@ -94,7 +94,7 @@ export async function initParcelSceneWorker() {
   server.enable()
 
   const state = globalThis.globalStore.getState()
-  const localServer = resolveUrl(document.location.origin, '/local-ipfs')
+  const localServer = resolveUrl(`${document.location.protocol}//${document.location.hostname}:${8080}`, '/local-ipfs')
 
   // NOTE(Brian): In branch urls we can't just use location.source - the value returned doesn't include
   //              the branch full path! With this, we ensure the /branch/<branch-name> is included in the root url.
