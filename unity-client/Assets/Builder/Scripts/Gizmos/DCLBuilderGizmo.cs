@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Builder.Gizmos
 {
@@ -10,14 +10,14 @@ namespace Builder.Gizmos
         [SerializeField] protected DCLBuilderGizmoAxis axisZ;
 
         public bool initialized { get; private set; }
-
         protected float snapFactor = 0;
 
         protected bool worldOrientedGizmos = true;
         private Transform targetTransform = null;
 
         protected Camera builderCamera;
-
+        protected Transform cameraHolderTransform;
+        
         private Vector3 relativeScaleRatio;
         protected bool startDragging = false;
         protected float prevAxisValue;
@@ -27,14 +27,21 @@ namespace Builder.Gizmos
         public abstract void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo);
         public abstract void TransformEntity(Transform targetTransform, DCLBuilderGizmoAxis axis, float axisValue);
 
-        public virtual void Initialize(Camera camera)
+
+        public virtual void Initialize(Camera camera, Transform cameraHolderTransform)
         {
             initialized = true;
-            relativeScaleRatio = transform.localScale / GetCameraPlaneDistance(camera, transform.position);
+            relativeScaleRatio = transform.localScale / GetCameraPlaneDistance(cameraHolderTransform, transform.position); 
             builderCamera = camera;
+            this.cameraHolderTransform = cameraHolderTransform;
             axisX.SetGizmo(this);
             axisY.SetGizmo(this);
             axisZ.SetGizmo(this);
+        }
+
+        public void ForceRelativeScaleRatio()
+        {
+            relativeScaleRatio = new Vector3(0.06f, 0.06f, 0.06f);
         }
 
         public string GetGizmoType()
@@ -122,15 +129,15 @@ namespace Builder.Gizmos
             SetPositionToTarget();
             if (builderCamera)
             {
-                float dist = GetCameraPlaneDistance(builderCamera, transform.position);
+                float dist = GetCameraPlaneDistance(cameraHolderTransform, transform.position);
                 transform.localScale = relativeScaleRatio * dist;
             }
         }
 
-        private static float GetCameraPlaneDistance(Camera camera, Vector3 objectPosition)
+        private static float GetCameraPlaneDistance(Transform cameraTransform, Vector3 objectPosition)
         {
-            Plane plane = new Plane(camera.transform.forward, camera.transform.position);
+            Plane plane = new Plane(cameraTransform.forward, cameraTransform.position);
             return plane.GetDistanceToPoint(objectPosition);
-        }
+        }     
     }
 }

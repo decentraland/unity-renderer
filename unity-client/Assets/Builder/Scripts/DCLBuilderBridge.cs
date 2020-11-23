@@ -47,7 +47,7 @@ namespace Builder
         private bool isPreviewMode = false;
         private List<string> outOfBoundariesEntitiesId = new List<string>();
         private int lastEntitiesOutOfBoundariesCount = 0;
-        private List<DCLBuilderEntity> selectedEntities;
+        private List<EditableEntity> selectedEntities;
         private bool entitiesMoved = false;
 
         private bool isGameObjectActive = false;
@@ -486,7 +486,7 @@ namespace Builder
             entitiesMoved = true;
         }
 
-        private void OnObjectSelected(DCLBuilderEntity entity, string gizmoType)
+        private void OnObjectSelected(EditableEntity entity, string gizmoType)
         {
             NotifyGizmosSelectedEvent(entity, gizmoType);
         }
@@ -496,17 +496,17 @@ namespace Builder
             NotifyGizmosSelectedEvent(null, DCLGizmos.Gizmo.NONE);
         }
 
-        private void OnSelectionChanged(Transform selectionParent, List<DCLBuilderEntity> selectedEntitiesList)
+        private void OnSelectionChanged(Transform selectionParent, List<EditableEntity> selectedEntitiesList)
         {
             selectedEntities = selectedEntitiesList;
         }
 
-        private void NotifyGizmosTransformEvent(List<DCLBuilderEntity> entities, string gizmoType)
+        private void NotifyGizmosTransformEvent(List<EditableEntity> entities, string gizmoType)
         {
             builderWebInterface.SendEntitiesTransform(entities, gizmoType, currentScene.sceneData.id);
         }
 
-        private void NotifyGizmosSelectedEvent(DCLBuilderEntity entity, string gizmoType)
+        private void NotifyGizmosSelectedEvent(EditableEntity entity, string gizmoType)
         {
             builderWebInterface.SendEntitySelected(entity, gizmoType, currentScene.sceneData.id);
         }

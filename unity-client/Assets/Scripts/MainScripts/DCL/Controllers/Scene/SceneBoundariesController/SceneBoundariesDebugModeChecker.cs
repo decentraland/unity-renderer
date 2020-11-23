@@ -19,6 +19,12 @@ namespace DCL.Controllers
                 this.meshesInfo = meshesInfo;
             }
 
+            public void ResetMaterials(DecentralandEntity.MeshesInfo meshesInfo)
+            {
+                this.meshesInfo = meshesInfo;
+                ResetMaterials();
+            }
+
             public void ResetMaterials()
             {
                 if (meshesInfo.meshRootGameObject == null) return;
@@ -71,12 +77,12 @@ namespace DCL.Controllers
             return isInsideBoundaries;
         }
 
-        protected override void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries, Bounds meshBounds)
+        protected override void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries)
         {
             if (isInsideBoundaries)
                 RemoveInvalidMeshEffect(entity);
             else
-                AddInvalidMeshEffect(entity, meshBounds);
+                AddInvalidMeshEffect(entity);
         }
 
         void RemoveInvalidMeshEffect(DecentralandEntity entity)
@@ -102,7 +108,7 @@ namespace DCL.Controllers
             invalidMeshesInfo[entity.gameObject].ResetMaterials();
         }
 
-        void AddInvalidMeshEffect(DecentralandEntity entity, Bounds meshBounds)
+        void AddInvalidMeshEffect(DecentralandEntity entity)
         {
             if (!WasEntityInAValidPosition(entity)) return;
 

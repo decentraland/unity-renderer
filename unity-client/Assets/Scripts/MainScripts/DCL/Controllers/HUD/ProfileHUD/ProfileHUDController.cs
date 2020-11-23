@@ -33,8 +33,11 @@ public class ProfileHUDController : IHUD
     {
         mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
 
+     
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ProfileHUD")).GetComponent<ProfileHUDView>();
         view.name = "_ProfileHUD";
+
+        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
 
         SetBackpackButtonVisibility(false);
         view.connectedWalletSection.SetActive(false);
@@ -67,6 +70,10 @@ public class ProfileHUDController : IHUD
         }
     }
 
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus)
+    {
+        SetVisibility(current);
+    }
     public void SetVisibility(bool visible)
     {
         view?.SetVisibility(visible);
@@ -95,6 +102,7 @@ public class ProfileHUDController : IHUD
             GameObject.Destroy(view.gameObject);
         }
         ownUserProfile.OnUpdate -= OnProfileUpdated;
+        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
         if (mouseCatcher != null) mouseCatcher.OnMouseLock -= OnMouseLocked;
 
         if (!DCL.Configuration.EnvironmentSettings.RUNNING_TESTS)

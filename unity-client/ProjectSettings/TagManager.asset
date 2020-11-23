@@ -6,6 +6,7 @@ TagManager:
   tags:
   - VisualTestsCam
   - MiniMapCamera
+  - Voxel
   layers:
   - Default
   - TransparentFX

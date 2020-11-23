@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 
@@ -28,7 +28,7 @@ namespace Builder.Gizmos
         private DCLBuilderGizmoAxis hoveredAxis = null;
 
         private Transform selectedEntitiesParent;
-        private List<DCLBuilderEntity> selectedEntities;
+        private List<EditableEntity> selectedEntities;
 
         public string GetSelectedGizmo()
         {
@@ -39,7 +39,7 @@ namespace Builder.Gizmos
             return DCL.Components.DCLGizmos.Gizmo.NONE;
         }
 
-        private void SetSnapFactor(float position, float rotation, float scale)
+        public void SetSnapFactor(float position, float rotation, float scale)
         {
             snapInfo.position = position;
             snapInfo.rotation = rotation;
@@ -86,7 +86,15 @@ namespace Builder.Gizmos
             hoveredAxis = axis;
         }
 
-        private void ShowGizmo()
+        public void SetAllGizmosInPosition(Vector3 position)
+        {
+            for (int i = 0; i < gizmos.Length; i++)
+            {
+                gizmos[i].ForceRelativeScaleRatio();
+            }
+        }
+
+        public void ShowGizmo()
         {
             if (activeGizmo != null)
             {
@@ -95,7 +103,7 @@ namespace Builder.Gizmos
             }
         }
 
-        private void HideGizmo()
+        public void HideGizmo()
         {
             if (activeGizmo != null)
             {
@@ -125,7 +133,7 @@ namespace Builder.Gizmos
                 DCLBuilderBridge.OnSelectGizmo += SetGizmoType;
                 DCLBuilderBridge.OnSetGridResolution += OnSetGridResolution;
                 DCLBuilderCamera.OnCameraZoomChanged += OnCameraZoomChanged;
-                DCLBuilderObjectSelector.OnSelectedObjectListChanged += OnSelectedListChanged;
+                DCLBuilderObjectSelector.OnSelectedObjectListChanged += SetSelectedEntities;
                 DCLBuilderObjectSelector.OnGizmosAxisPressed += OnGizmosAxisPressed;
                 DCLBuilderInput.OnMouseUp += OnMouseUp;
                 DCLBuilderInput.OnMouseDrag += OnMouseDrag;
@@ -138,7 +146,7 @@ namespace Builder.Gizmos
             DCLBuilderBridge.OnSelectGizmo -= SetGizmoType;
             DCLBuilderBridge.OnSetGridResolution -= OnSetGridResolution;
             DCLBuilderCamera.OnCameraZoomChanged -= OnCameraZoomChanged;
-            DCLBuilderObjectSelector.OnSelectedObjectListChanged -= OnSelectedListChanged;
+            DCLBuilderObjectSelector.OnSelectedObjectListChanged -= SetSelectedEntities;
             DCLBuilderObjectSelector.OnGizmosAxisPressed -= OnGizmosAxisPressed;
             DCLBuilderInput.OnMouseUp -= OnMouseUp;
             DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
@@ -153,7 +161,7 @@ namespace Builder.Gizmos
             }
         }
 
-        private void SetGizmoType(string gizmoType)
+        public void SetGizmoType(string gizmoType)
         {
             HideGizmo();
 
@@ -187,7 +195,12 @@ namespace Builder.Gizmos
             }
         }
 
-        private void InitializeGizmos(Camera camera)
+        public void InitializeGizmos(Camera camera)
+        {
+            InitializeGizmos(camera, camera.transform);
+        }
+
+        public void InitializeGizmos(Camera camera, Transform cameraTransform)
         {
             if (!isGizmosInitialized)
             {
@@ -195,7 +208,7 @@ namespace Builder.Gizmos
                 {
                     if (!gizmos[i].initialized)
                     {
-                        gizmos[i].Initialize(camera);
+                        gizmos[i].Initialize(camera, cameraTransform);
                     }
                 }
                 isGizmosInitialized = true;
@@ -212,13 +225,12 @@ namespace Builder.Gizmos
             SetSnapFactor(position, rotation, scale);
         }
 
-        private void OnSelectedListChanged(Transform selectionParent, List<DCLBuilderEntity> entities)
+        public void SetSelectedEntities(Transform selectionParent, List<EditableEntity> entities)
         {
             selectedEntities = entities;
             selectedEntitiesParent = selectionParent;
             GizmoStatusUpdate();
         }
-
         private void OnGizmosAxisPressed(DCLBuilderGizmoAxis pressedAxis)
         {
             OnBeginDrag(pressedAxis);

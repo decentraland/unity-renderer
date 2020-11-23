@@ -23,12 +23,21 @@ namespace DCL.Tutorial
             NewTutorialFinished = 256
         }
 
+        public enum TutorialType
+        {
+            Initital,
+            BuilderInWorld
+        }
+
         internal enum TutorialPath
         {
             FromGenesisPlaza,
             FromDeepLink,
-            FromResetTutorial
+            FromResetTutorial,
+            FromBuilderInWorld
         }
+
+   
 
         public static TutorialController i { get; private set; }
 
@@ -49,6 +58,9 @@ namespace DCL.Tutorial
 
         [Header("Tutorial Steps from Reset Tutorial")]
         [SerializeField] internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
+
+        [Header("Tutorial Steps from Builder In World")]
+        [SerializeField] internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
 
         [Header("3D Model Teacher")]
         [SerializeField] internal Camera teacherCamera;
@@ -78,7 +90,8 @@ namespace DCL.Tutorial
         internal float elapsedTimeInCurrentStep = 0f;
         internal TutorialPath currentPath;
         internal int currentStepNumber;
-
+        internal TutorialType tutorialType = TutorialType.Initital;
+        
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
         private Coroutine eagleEyeRotationCoroutine;
@@ -97,7 +110,7 @@ namespace DCL.Tutorial
                 CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
 
             if (debugRunTutorial)
-                SetTutorialEnabled(debugOpenedFromDeepLink.ToString());
+                SetTutorialEnabled(debugOpenedFromDeepLink.ToString(),TutorialType.Initital);
         }
 
         private void OnDestroy()
@@ -115,10 +128,11 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = false;
         }
 
+    
         /// <summary>
         /// Enables the tutorial controller and waits for the RenderingState is enabled to start to execute the corresponding tutorial steps.
         /// </summary>
-        public void SetTutorialEnabled(string fromDeepLink)
+        public void SetTutorialEnabled(string fromDeepLink,TutorialType tutorialType)
         {
             if (isRunning)
                 return;
@@ -127,6 +141,7 @@ namespace DCL.Tutorial
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
             openedFromDeepLink = Convert.ToBoolean(fromDeepLink);
+            this.tutorialType = tutorialType;
 
             hudController?.taskbarHud?.ShowTutorialOption(false);
             hudController?.profileHud?.HideProfileMenu();
@@ -195,32 +210,40 @@ namespace DCL.Tutorial
                 runningStep = null;
             }
 
-            if (playerIsInGenesisPlaza || tutorialReset)
+            switch (tutorialType)
             {
-                if (tutorialReset)
-                {
-                    yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
-                }
-                else
-                    yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
+                case TutorialType.Initital:
+                    if (playerIsInGenesisPlaza || tutorialReset)
+                    {
+                        if (tutorialReset)
+                        {
+                            yield return ExecuteSteps(TutorialPath.FromResetTutorial, stepIndex);
+                        }
+                        else
+                            yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
 
-            }
-            else if (openedFromDeepLink)
-            {
-                yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
-            }
-            else
-            {
-                SetTutorialDisabled();
-                yield break;
+                    }
+                    else if (openedFromDeepLink)
+                    {
+                        yield return ExecuteSteps(TutorialPath.FromDeepLink, stepIndex);
+                    }
+                    else
+                    {
+                        SetTutorialDisabled();
+                        yield break;
+                    }
+                    break;
+                case TutorialType.BuilderInWorld:
+                    yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
+                    break;
             }
         }
 
-        /// <summary>
-        /// Shows the teacher that will be guiding along the tutorial.
-        /// </summary>
-        /// <param name="active">True for show the teacher.</param>
-        public void ShowTeacher3DModel(bool active)
+    /// <summary>
+    /// Shows the teacher that will be guiding along the tutorial.
+    /// </summary>
+    /// <param name="active">True for show the teacher.</param>
+    public void ShowTeacher3DModel(bool active)
         {
             teacherCamera.enabled = active;
             teacherRawImage.gameObject.SetActive(active);
@@ -274,7 +297,8 @@ namespace DCL.Tutorial
 
             int skipIndex = stepsOnGenesisPlaza.Count +
                 stepsFromDeepLink.Count +
-                stepsFromReset.Count;
+                stepsFromReset.Count +
+                stepsFromBuilderInWorld.Count;
 
             StartCoroutine(StartTutorialFromStep(skipIndex));
 
@@ -338,6 +362,9 @@ namespace DCL.Tutorial
                 case TutorialPath.FromResetTutorial:
                     steps = stepsFromReset;
                     break;
+                case TutorialPath.FromBuilderInWorld:
+                    steps = stepsFromBuilderInWorld;
+                    break;
             }
 
             currentPath = tutorialPath;
@@ -393,7 +420,7 @@ namespace DCL.Tutorial
                     yield return new WaitForSeconds(timeBetweenSteps);
             }
 
-            if (!debugRunTutorial)
+            if (!debugRunTutorial && tutorialPath != TutorialPath.FromBuilderInWorld)
                 SetUserTutorialStepAsCompleted(TutorialFinishStep.NewTutorialFinished);
 
             runningStep = null;
@@ -437,7 +464,7 @@ namespace DCL.Tutorial
         {
             SetTutorialDisabled();
             tutorialReset = true;
-            SetTutorialEnabled(false.ToString());
+            SetTutorialEnabled(false.ToString(), TutorialType.Initital);
         }
 
         private bool IsPlayerInsideGenesisPlaza()
@@ -522,5 +549,5 @@ namespace DCL.Tutorial
                 hudController?.profileHud?.SetVisibility(true);
             }
         }
-    }
+}
 }

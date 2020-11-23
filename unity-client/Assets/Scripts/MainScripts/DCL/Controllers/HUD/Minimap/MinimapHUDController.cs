@@ -20,6 +20,7 @@ public class MinimapHUDController : IHUD
     public MinimapHUDController(MinimapHUDModel model)
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
+        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange += ChangeVisibilityForBuilderInWorld;
         minimapZoom.Set(1f);
 
         view = MinimapHUDView.Create(this);
@@ -32,6 +33,7 @@ public class MinimapHUDController : IHUD
             UnityEngine.Object.Destroy(view.gameObject);
 
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
+        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.OnChange -= ChangeVisibilityForBuilderInWorld;
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
@@ -87,6 +89,11 @@ public class MinimapHUDController : IHUD
     {
         if (!string.IsNullOrEmpty(currentSceneId))
             WebInterface.SendReportScene(currentSceneId);
+    }
+
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus)
+    {
+        SetVisibility(current);
     }
 
     public void SetVisibility(bool visible)
