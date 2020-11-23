@@ -60,11 +60,11 @@ namespace DCL
             if (rt == null)
                 rt = transform as RectTransform;
 
-            Vector3 myMinCoords = rt.TransformPoint(new Vector3(rt.rect.xMin, rt.rect.yMin));
-            Vector3 myMaxCoords = rt.TransformPoint(new Vector3(rt.rect.xMax, rt.rect.yMax));
+            Vector2 myMinCoords = rt.TransformPoint(new Vector3(rt.rect.xMin, rt.rect.yMin));
+            Vector2 myMaxCoords = rt.TransformPoint(new Vector3(rt.rect.xMax, rt.rect.yMax));
 
-            Vector3 viewMinCoords = owner.viewport.TransformPoint(new Vector3(owner.viewport.rect.xMin, owner.viewport.rect.yMin));
-            Vector3 viewMaxCoords = owner.viewport.TransformPoint(new Vector3(owner.viewport.rect.xMax, owner.viewport.rect.yMax));
+            Vector2 viewMinCoords = owner.viewport.TransformPoint(new Vector3(owner.viewport.rect.xMin, owner.viewport.rect.yMin));
+            Vector2 viewMaxCoords = owner.viewport.TransformPoint(new Vector3(owner.viewport.rect.xMax, owner.viewport.rect.yMax));
 
 #if UNITY_EDITOR
             if (VERBOSE)
