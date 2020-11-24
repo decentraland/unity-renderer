@@ -140,14 +140,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53ad70910d7e44db9bde549669fb212f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config: {fileID: 11400000, guid: 968cdc274f88341b1a47a523b7d1c286, type: 2}
   meshRenderer: {fileID: 0}
   collider: {fileID: 0}
   backgroundColor: {r: 0, g: 0, b: 0, a: 0}
   spinner: {fileID: 6031248581314555280}
   alreadyLoadedAsset: 0
-  materialIndex_Background: -1
-  materialIndex_NFTImage: -1
-  materialIndex_Frame: -1
+  materials: []
   noiseType: 2
   noiseIs3D: 0
   noiseIsFractal: 0

@@ -47,6 +47,7 @@ namespace DCL.Helpers.NFT.Markets
             ret.thumbnailUrl = response.image_thumbnail_url;
             ret.previewImageUrl = response.image_preview_url;
             ret.originalImageUrl = response.image_original_url;
+            ret.imageUrl = response.image_url;
             ret.assetLink = response.external_link;
             ret.marketLink = response.permalink;
 
