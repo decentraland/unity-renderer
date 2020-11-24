@@ -6,6 +6,7 @@
         public string description;
         public string owner;
         public long numSales;
+        public string imageUrl;
         public string thumbnailUrl;
         public string previewImageUrl;
         public string originalImageUrl;
