@@ -14,15 +14,26 @@
   font-size: 24px;
 }
 
-.termsOfServices .content p {
-  line-height: 1.4em;
-}
-
 .termsOfServices .content {
   margin: 6px 0 26px;
   padding: 0 30px;
   height: 306px;
   overflow: auto;
+}
+
+.termsOfServices .content::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.termsOfServices .content::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.termsOfServices .content p {
+  line-height: 1.4em;
 }
 
 .termsOfServices .actions {
