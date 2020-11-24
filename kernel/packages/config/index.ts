@@ -1,14 +1,6 @@
 import { contracts as contractInfo } from './contracts'
 const queryString = require('query-string')
 
-export const performanceConfigurations = [
-  { antialiasing: true, downsampling: 0, shadows: true },
-  { antialiasing: false, downsampling: 1, shadows: true },
-  { antialiasing: false, downsampling: 1, shadows: false },
-  { antialiasing: false, downsampling: 1, shadows: true },
-  { antialiasing: false, downsampling: 2, shadows: false }
-]
-
 export const NETWORK_HZ = 10
 
 export namespace interactionLimits {
@@ -85,19 +77,19 @@ export const PREVIEW: boolean = !!(global as any).preview
 export const EDITOR: boolean = !!(global as any).isEditor
 export const WORLD_EXPLORER = !EDITOR && !PREVIEW
 
-export const OPEN_AVATAR_EDITOR = location.search.indexOf('OPEN_AVATAR_EDITOR') !== -1 && WORLD_EXPLORER
+export const OPEN_AVATAR_EDITOR = location.search.includes('OPEN_AVATAR_EDITOR') && WORLD_EXPLORER
 
-export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!(global as any).staticWorld || EDITOR
+export const STATIC_WORLD = location.search.includes('STATIC_WORLD') || !!(global as any).staticWorld || EDITOR
 
 // Development
-export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3
-export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
-export const GIF_WORKERS = location.search.indexOf('GIF_WORKERS') !== -1
+export const ENABLE_WEB3 = location.search.includes('ENABLE_WEB3') || !!(global as any).enableWeb3
+export const ENV_OVERRIDE = location.search.includes('ENV')
+export const GIF_WORKERS = location.search.includes('GIF_WORKERS')
 
 const qs = queryString.parse(location.search)
 
 // Comms
-export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
+export const USE_LOCAL_COMMS = location.search.includes('LOCAL_COMMS') || PREVIEW
 export const COMMS = USE_LOCAL_COMMS ? 'v1-local' : qs.COMMS ? qs.COMMS : 'v2-p2p' // by default
 export const COMMS_PROFILE_TIMEOUT = 10000
 
@@ -107,47 +99,48 @@ export const FETCH_CONTENT_SERVICE = qs.FETCH_CONTENT_SERVICE
 export const FETCH_META_CONTENT_SERVICE = qs.FETCH_META_CONTENT_SERVICE
 export const COMMS_SERVICE = qs.COMMS_SERVICE
 export const RESIZE_SERVICE = qs.RESIZE_SERVICE
+export const ASSET_BUNDLES_DOMAIN = qs.ASSET_BUNDLES_DOMAIN || 'content-assets-as-bundle.decentraland.org'
 export const REALM = qs.realm
 
-export const VOICE_CHAT_DISABLED_FLAG = location.search.indexOf('VOICE_CHAT_DISABLED') !== -1
+export const VOICE_CHAT_DISABLED_FLAG = location.search.includes('VOICE_CHAT_DISABLED')
 
-export const VOICE_CHAT_ENABLED_FLAG = location.search.indexOf('VOICE_CHAT_ENABLED') !== -1
+export const VOICE_CHAT_ENABLED_FLAG = location.search.includes('VOICE_CHAT_ENABLED')
 
-export const AUTO_CHANGE_REALM = location.search.indexOf('AUTO_CHANGE_REALM') !== -1
+export const AUTO_CHANGE_REALM = location.search.includes('AUTO_CHANGE_REALM')
 
 export const LOS = qs.LOS
 
-export const DEBUG = location.search.indexOf('DEBUG_MODE') !== -1 || !!(global as any).mocha || PREVIEW || EDITOR
-export const DEBUG_ANALYTICS = location.search.indexOf('DEBUG_ANALYTICS') !== -1
-export const DEBUG_MOBILE = location.search.indexOf('DEBUG_MOBILE') !== -1
-export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
-export const DEBUG_MESSAGES_QUEUE_PERF = location.search.indexOf('DEBUG_MESSAGES_QUEUE_PERF') !== -1
-export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !== -1
-export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
-export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
-export const DEBUG_PM = location.search.indexOf('DEBUG_PM') !== -1
-export const DEBUG_SCENE_LOG = DEBUG || location.search.indexOf('DEBUG_SCENE_LOG') !== -1
+export const DEBUG = location.search.includes('DEBUG_MODE') || !!(global as any).mocha || PREVIEW || EDITOR
+export const DEBUG_ANALYTICS = location.search.includes('DEBUG_ANALYTICS')
+export const DEBUG_MOBILE = location.search.includes('DEBUG_MOBILE')
+export const DEBUG_MESSAGES = location.search.includes('DEBUG_MESSAGES')
+export const DEBUG_MESSAGES_QUEUE_PERF = location.search.includes('DEBUG_MESSAGES_QUEUE_PERF')
+export const DEBUG_WS_MESSAGES = location.search.includes('DEBUG_WS_MESSAGES')
+export const DEBUG_REDUX = location.search.includes('DEBUG_REDUX')
+export const DEBUG_LOGIN = location.search.includes('DEBUG_LOGIN')
+export const DEBUG_PM = location.search.includes('DEBUG_PM')
+export const DEBUG_SCENE_LOG = DEBUG || location.search.includes('DEBUG_SCENE_LOG')
 
-export const INIT_PRE_LOAD = location.search.indexOf('INIT_PRE_LOAD') !== -1
+export const INIT_PRE_LOAD = location.search.includes('INIT_PRE_LOAD')
 
-export const AWS = location.search.indexOf('AWS') !== -1
-export const NO_MOTD = location.search.indexOf('NO_MOTD') !== -1
-export const RESET_TUTORIAL = location.search.indexOf('RESET_TUTORIAL') !== -1
+export const AWS = location.search.includes('AWS')
+export const NO_MOTD = location.search.includes('NO_MOTD')
+export const RESET_TUTORIAL = location.search.includes('RESET_TUTORIAL')
 
-export const DISABLE_AUTH = location.search.indexOf('DISABLE_AUTH') !== -1 || DEBUG
-export const ENGINE_DEBUG_PANEL = location.search.indexOf('ENGINE_DEBUG_PANEL') !== -1
-export const SCENE_DEBUG_PANEL = location.search.indexOf('SCENE_DEBUG_PANEL') !== -1 && !ENGINE_DEBUG_PANEL
-export const SHOW_FPS_COUNTER = location.search.indexOf('SHOW_FPS_COUNTER') !== -1 || DEBUG
-export const HAS_INITIAL_POSITION_MARK = location.search.indexOf('position') !== -1
-export const NO_ASSET_BUNDLES = location.search.indexOf('NO_ASSET_BUNDLES') !== -1
+export const DISABLE_AUTH = location.search.includes('DISABLE_AUTH') || DEBUG
+export const ENGINE_DEBUG_PANEL = location.search.includes('ENGINE_DEBUG_PANEL')
+export const SCENE_DEBUG_PANEL = location.search.includes('SCENE_DEBUG_PANEL') && !ENGINE_DEBUG_PANEL
+export const SHOW_FPS_COUNTER = location.search.includes('SHOW_FPS_COUNTER') || DEBUG
+export const HAS_INITIAL_POSITION_MARK = location.search.includes('position')
+export const NO_ASSET_BUNDLES = location.search.includes('NO_ASSET_BUNDLES')
 export const WSS_ENABLED = qs.ws !== undefined
-export const FORCE_SEND_MESSAGE = location.search.indexOf('FORCE_SEND_MESSAGE') !== -1
+export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
 
 export const PIN_CATALYST = qs.CATALYST ? addHttpsIfNoProtocolIsSet(qs.CATALYST) : undefined
 
-export const HALLOWEEN = location.search.indexOf('HALLOWEEN') !== -1
+export const HALLOWEEN = location.search.includes('HALLOWEEN')
 
-export const TEST_WEARABLES_OVERRIDE = location.search.indexOf('TEST_WEARABLES') !== -1
+export const TEST_WEARABLES_OVERRIDE = location.search.includes('TEST_WEARABLES')
 
 const META_CONFIG_URL = qs.META_CONFIG_URL
 
@@ -183,7 +176,7 @@ export namespace commConfigurations {
     }
   ]
 
-  export const voiceChatUseHRTF = location.search.indexOf('VOICE_CHAT_USE_HRTF') !== -1
+  export const voiceChatUseHRTF = location.search.includes('VOICE_CHAT_USE_HRTF')
 }
 export const loginConfig = {
   org: {
@@ -254,8 +247,9 @@ export function getExclusiveServer() {
   return 'https://wearable-api.decentraland.org/v2/collections'
 }
 
-export const ALL_WEARABLES = location.search.indexOf('ALL_WEARABLES') !== -1 && getDefaultTLD() !== 'org'
-
+export const ALL_WEARABLES = location.search.includes('ALL_WEARABLES') && getDefaultTLD() !== 'org'
+export const WEARABLE_API_DOMAIN = qs.WEARABLE_API_DOMAIN || 'wearable-api.decentraland.org'
+export const WEARABLE_API_PATH_PREFIX = qs.WEARABLE_API_PATH_PREFIX || 'v2'
 export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
 export function getWearablesSafeURL() {
@@ -284,8 +278,8 @@ export function getServerConfigurations() {
   const metaConfigBaseUrl = META_CONFIG_URL || `https://config.decentraland.${notToday}/explorer.json`
 
   return {
-    contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
-    wearablesApi: `https://wearable-api.decentraland.org/v2`,
+    contentAsBundle: `https://${ASSET_BUNDLES_DOMAIN}`,
+    wearablesApi: `https://${WEARABLE_API_DOMAIN}/${WEARABLE_API_PATH_PREFIX}`,
     explorerConfiguration: `${metaConfigBaseUrl}?t=${new Date().getTime()}`,
     synapseUrl,
     fallbackResizeServiceUrl: `${PIN_CATALYST ?? 'https://peer.decentraland.' + notToday}/lambdas/images`,
