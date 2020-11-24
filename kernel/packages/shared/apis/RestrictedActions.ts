@@ -56,6 +56,11 @@ export class RestrictedActions extends ExposableAPI {
       return
     }
 
+    if (!this.isPositionValid(lastPlayerPosition)) {
+      defaultLogger.error('Error: Player is not inside of scene', lastPlayerPosition)
+      return
+    }
+
     unityInterface.TriggerSelfUserExpression(emote.predefined)
   }
 
