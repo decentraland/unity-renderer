@@ -180,8 +180,10 @@ MonoBehaviour:
   actionController: {fileID: 1208871512032110241}
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
   builderInWorldBridge: {fileID: 3917703040089432743}
+  outlinerMaterial: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
   firstPersonMode: {fileID: 1208871511546216253}
   editorMode: {fileID: 1208871512657624393}
+  builderRendererIndex: 1
   layerToRaycast:
     serializedVersion: 2
     m_Bits: 16384

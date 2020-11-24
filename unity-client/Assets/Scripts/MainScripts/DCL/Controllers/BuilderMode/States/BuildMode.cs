@@ -39,7 +39,7 @@ public class BuildMode : MonoBehaviour
         isModeActive = true;
     }
 
-    public virtual void Desactivate()
+    public virtual void Deactivate()
     {
         gameObject.SetActive(false);
         isModeActive = false;
@@ -109,7 +109,7 @@ public class BuildMode : MonoBehaviour
 
     public virtual void CheckInput()
     {
-       
+
     }
 
     public virtual void CheckInputSelectedEntities()
@@ -134,7 +134,7 @@ public class BuildMode : MonoBehaviour
         freeMovementGO.transform.rotation = zeroAnglesQuaternion;
         editionGO.transform.rotation = zeroAnglesQuaternion;
 
-        foreach(DecentralandEntityToEdit decentralandEntityToEdit in selectedEntities)
+        foreach (DecentralandEntityToEdit decentralandEntityToEdit in selectedEntities)
         {
             decentralandEntityToEdit.rootEntity.gameObject.transform.eulerAngles = Vector3.zero;
         }
@@ -166,7 +166,7 @@ public class BuildMode : MonoBehaviour
     protected List<BuildModeEntityAction> actionList = new List<BuildModeEntityAction>();
     protected void TransformActionStarted(DecentralandEntity entity, string type)
     {
-        
+
         BuildModeEntityAction buildModeEntityAction = new BuildModeEntityAction(entity);
         switch (type)
         {
@@ -192,16 +192,16 @@ public class BuildMode : MonoBehaviour
         {
             if (entityAction.entity == entity)
             {
-         
+
                 switch (type)
                 {
                     case "MOVE":
-                      
+
                         entityAction.newValue = entity.gameObject.transform.position;
-                        if (Vector3.Distance((Vector3)entityAction.oldValue ,(Vector3)entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
+                        if (Vector3.Distance((Vector3)entityAction.oldValue, (Vector3)entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
                         break;
                     case "ROTATE":
-                    
+
                         entityAction.newValue = entity.gameObject.transform.rotation.eulerAngles;
                         if (Vector3.Distance((Vector3)entityAction.oldValue, (Vector3)entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
                         break;
@@ -211,7 +211,7 @@ public class BuildMode : MonoBehaviour
                         break;
                 }
 
-             
+
             }
         }
         foreach (BuildModeEntityAction entityAction in removeList)

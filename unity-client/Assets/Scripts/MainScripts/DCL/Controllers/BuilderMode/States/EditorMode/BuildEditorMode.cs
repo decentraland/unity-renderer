@@ -60,7 +60,7 @@ public class BuildEditorMode : BuildMode
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
-        squareMultiSelectionInputAction.OnStarted += (o) => squareMultiSelectionButtonPressed = true;;
+        squareMultiSelectionInputAction.OnStarted += (o) => squareMultiSelectionButtonPressed = true;
         squareMultiSelectionInputAction.OnFinished += (o) => squareMultiSelectionButtonPressed = false;
     }
 
@@ -141,7 +141,7 @@ public class BuildEditorMode : BuildMode
         {
             if (isMakingSquareMultiSelection)
             {
-                EndBoundMultiSelection();          
+                EndBoundMultiSelection();
             }
         }
     }
@@ -159,14 +159,14 @@ public class BuildEditorMode : BuildMode
                 mousePressed = true;
                 freeCameraController.SetCameraCanMove(false);
                 buildModeController.SetOutlineCheckActive(false);
-  
+
             }
         }
     }
 
     public void EndBoundMultiSelection()
     {
-   
+
         isMakingSquareMultiSelection = false;
         mousePressed = false;
         freeCameraController.SetCameraCanMove(true);
@@ -213,38 +213,38 @@ public class BuildEditorMode : BuildMode
         SetLookAtObject();
 
 
-        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera 
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition;   
+        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
+        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition;
         freeCameraController.SetPosition(cameraPosition + Vector3.up * distanceEagleCamera);
         //
 
         freeCameraController.LookAt(lookAtT);
 
-   
+
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
-        gizmoManager.InitializeGizmos(Camera.main,freeCameraController.transform);
+        gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
         gizmoManager.SetAllGizmosInPosition(cameraPosition);
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
             gizmoManager.SetGizmoType("MOVE");
         mouseCatcher.enabled = false;
         SceneController.i.IsolateScene(sceneToEdit);
         Utils.UnlockCursor();
-       
+
         RenderSettings.fog = false;
         gizmoManager.HideGizmo();
         editionGO.transform.SetParent(null);
     }
-    public override void Desactivate()
+    public override void Deactivate()
     {
-        base.Desactivate();
+        base.Deactivate();
         mouseCatcher.enabled = true;
         Utils.LockCursor();
         cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
 
 
         SceneController.i.ReIntegrateIsolatedScene();
-        
+
         gizmoManager.HideGizmo();
         RenderSettings.fog = true;
     }
@@ -306,7 +306,7 @@ public class BuildEditorMode : BuildMode
     public override void EntityDeselected(DecentralandEntityToEdit entityDeselected)
     {
         base.EntityDeselected(entityDeselected);
-        if(selectedEntities.Count <= 0)
+        if (selectedEntities.Count <= 0)
             gizmoManager.HideGizmo();
         isPlacingNewObject = false;
         DesactivateVoxelMode();
@@ -374,7 +374,7 @@ public class BuildEditorMode : BuildMode
             else
                 gizmoManager.HideGizmo();
         }
-        
+
     }
 
     public void ScaleMode()
@@ -398,7 +398,7 @@ public class BuildEditorMode : BuildMode
     {
         foreach (DecentralandEntityToEdit entity in selectedEntities)
         {
-            TransformActionStarted(entity.rootEntity,gizmoType);
+            TransformActionStarted(entity.rootEntity, gizmoType);
         }
     }
     void OnGizmosTransformEnd(string gizmoType)
@@ -408,8 +408,8 @@ public class BuildEditorMode : BuildMode
             TransformActionEnd(entity.rootEntity, gizmoType);
         }
 
-        switch(gizmoType)
-        {           
+        switch (gizmoType)
+        {
             case "MOVE":
 
                 ActionFinish(BuildModeAction.ActionType.MOVE);
@@ -422,7 +422,7 @@ public class BuildEditorMode : BuildMode
                 ActionFinish(BuildModeAction.ActionType.SCALE);
                 break;
         }
-    }   
+    }
 
     void ShowGizmos()
     {
@@ -435,7 +435,7 @@ public class BuildEditorMode : BuildMode
 
         lookAtT.position = SceneController.i.ConvertSceneToUnityPosition(middlePoint);
     }
-   
+
     Vector3 CalculateMiddlePoint(Vector2Int[] positions)
     {
         Vector3 position;
@@ -465,11 +465,11 @@ public class BuildEditorMode : BuildMode
         position.y = totalY;
         position.z = centerZ;
 
-        int amountParcelsX = Mathf.Abs(maxX - minX)+1;
-        int amountParcelsZ = Mathf.Abs(maxY - minY)+1;
+        int amountParcelsX = Mathf.Abs(maxX - minX) + 1;
+        int amountParcelsZ = Mathf.Abs(maxY - minY) + 1;
 
-        position.x += ParcelSettings.PARCEL_SIZE/2 * amountParcelsX;
-        position.z += ParcelSettings.PARCEL_SIZE/2 * amountParcelsZ;
+        position.x += ParcelSettings.PARCEL_SIZE / 2 * amountParcelsX;
+        position.z += ParcelSettings.PARCEL_SIZE / 2 * amountParcelsZ;
 
         return position;
     }
