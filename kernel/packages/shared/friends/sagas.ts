@@ -29,7 +29,7 @@ import {
   HUDElementID
 } from 'shared/types'
 import { StoreContainer } from 'shared/store/rootTypes'
-import { getRealm } from 'shared/dao/selectors'
+import { getRealm, getUpdateProfileServer } from 'shared/dao/selectors'
 import { Realm } from 'shared/dao/types'
 import { lastPlayerPosition, positionObservable } from 'shared/world/positionThings'
 import { ensureRenderer } from 'shared/renderer/sagas'
@@ -89,7 +89,8 @@ function* initializeSaga() {
 
     const identity = yield select(getCurrentIdentity)
     try {
-      yield call(initializePrivateMessaging, getServerConfigurations().synapseUrl, identity)
+      const { synapseUrl } = getServerConfigurations()
+      yield call(initializePrivateMessaging, synapseUrl, identity)
     } catch (e) {
       logger.error(`error initializing private messaging`, e)
 
@@ -111,13 +112,16 @@ function* initializeSaga() {
 
 function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdentity) {
   const { address: ethAddress } = identity
-  let timestamp
+  let timestamp: number
 
-  try {
-    const response = yield fetch(CLOCK_SERVICE_URL)
-    const { datetime } = yield response.json()
-    timestamp = new Date(datetime).getTime()
-  } catch (e) {
+  // Try to fetch time from the catalyst server
+  timestamp = yield fetchTimeFromCatalystServer()
+
+  // If that fails, use the global time API
+  timestamp = timestamp ?? (yield fetchTimeFromClockService())
+
+  // If that fails, fall back to local time
+  if (!timestamp) {
     logger.warn(`Failed to fetch global time. Will fall back to local time`)
     timestamp = Date.now()
   }
@@ -702,4 +706,27 @@ function toSocialData(socialIds: string[]) {
       socialId
     }))
     .filter(({ userId }) => !!userId) as SocialData[]
+}
+
+function* fetchTimeFromCatalystServer() {
+  try {
+    const contentServer = getUpdateProfileServer(globalThis.globalStore.getState())
+    const response = yield fetch(`${contentServer}/status`)
+    if (response.ok) {
+      const { currentTime } = yield response.json()
+      return currentTime
+    }
+  } catch (e) {
+    logger.warn(`Failed to fetch time from catalyst server`, e)
+  }
+}
+
+function* fetchTimeFromClockService() {
+  try {
+    const response = yield fetch(CLOCK_SERVICE_URL)
+    const { datetime } = yield response.json()
+    return new Date(datetime).getTime()
+  } catch (e) {
+    logger.warn(`Failed to fetch time from clock service`)
+  }
 }
