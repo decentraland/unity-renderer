@@ -207,7 +207,6 @@ var WebVideoPlayer = {
       const playbackRate = vid.playbackRate;
       vid.pause();
       vid.load();
-      vid.play();
     } else if (vid.seekable && vid.seekable.length > 0) {
       vid.currentTime = second;
     }

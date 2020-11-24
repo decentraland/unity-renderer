@@ -1060,12 +1060,14 @@ export class VideoTexture extends ObservableComponent {
   }
 
   toJSON() {
-    if (this.seek < 0) {
-      return super.toJSON()
+    if (this.seek >= 0) { // the seek value was changed/used
+      this.pause()
+
+      const ret = JSON.parse(JSON.stringify(super.toJSON()))
+      this.seek = -1
+      return ret
     }
 
-    const ret = JSON.parse(JSON.stringify(super.toJSON()))
-    this.seek = -1
-    return ret
+    return super.toJSON()
   }
 }

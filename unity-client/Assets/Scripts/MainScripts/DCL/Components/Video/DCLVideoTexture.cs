@@ -114,25 +114,25 @@ namespace DCL.Components
 
             if (texturePlayer != null)
             {
-                if (texturePlayer.playing && !model.playing)
+                if (model.seek >= 0)
                 {
-                    texturePlayer.Pause();
+                    texturePlayer.SetTime(model.seek);
+                    model.seek = -1;
                 }
-                else if (model.playing)
+
+                if (model.playing)
                 {
                     texturePlayer.Play();
+                }
+                else if (texturePlayer.playing)
+                {
+                    texturePlayer.Pause();
                 }
 
                 if (baseVolume != model.volume)
                 {
                     baseVolume = model.volume;
                     UpdateVolume();
-                }
-
-                if (model.seek >= 0)
-                {
-                    texturePlayer.SetTime(model.seek);
-                    model.seek = -1;
                 }
 
                 texturePlayer.SetPlaybackRate(model.playbackRate);
