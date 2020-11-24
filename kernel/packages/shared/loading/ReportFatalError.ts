@@ -3,6 +3,7 @@ import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
   errorMessage,
   ExecutionLifecycleEvent,
+  ExecutionLifecycleEventsList,
   MOBILE_NOT_SUPPORTED,
   NETWORK_MISMATCH,
   NEW_LOGIN,
@@ -11,6 +12,7 @@ import {
 } from './types'
 import { StoreContainer } from 'shared/store/rootTypes'
 import Html from '../Html'
+import { queueTrackingEvent } from '../analytics'
 
 declare const globalThis: StoreContainer
 
@@ -47,7 +49,21 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
   aborted = true
 }
 
-export function ReportFatalError(event: ExecutionLifecycleEvent) {
+export type FatalErrorInfo = {
+  type: string
+  message: string
+  stack?: string
+  sagaStack?: string
+  filename?: string
+}
+
+export function ReportFatalError(event: ExecutionLifecycleEvent, errorInfo?: FatalErrorInfo) {
   bringDownClientAndShowError(event)
-  globalThis.globalStore && globalThis.globalStore.dispatch(action(event))
+  if (ExecutionLifecycleEventsList.includes(event)) {
+    return globalThis.globalStore && globalThis.globalStore.dispatch(action(event))
+  }
+  queueTrackingEvent('generic_error', {
+    message: event,
+    errorInfo
+  })
 }
