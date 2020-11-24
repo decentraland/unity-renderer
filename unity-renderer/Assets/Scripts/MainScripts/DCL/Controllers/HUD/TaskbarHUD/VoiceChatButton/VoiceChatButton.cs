@@ -7,8 +7,7 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
     [SerializeField] InputAction_Hold voiceChatAction;
     [SerializeField] Animator buttonAnimator;
 
-    private static readonly int recordingTrigger = Animator.StringToHash("Recording");
-    private static readonly int idleTrigger = Animator.StringToHash("Idle");
+    private static readonly int talkingAnimation = Animator.StringToHash("Talking");
 
     private bool isRecording = false;
 
@@ -24,10 +23,11 @@ public class VoiceChatButton : MonoBehaviour, IPointerDownHandler, IPointerUpHan
 
     public void SetOnRecording(bool recording)
     {
-        if (isRecording == recording || !gameObject.activeInHierarchy)
+        isRecording = recording;
+
+        if (!gameObject.activeInHierarchy)
             return;
 
-        isRecording = recording;
-        buttonAnimator.SetTrigger(isRecording ? recordingTrigger : idleTrigger);
+        buttonAnimator.SetBool(talkingAnimation, recording);
     }
 }
