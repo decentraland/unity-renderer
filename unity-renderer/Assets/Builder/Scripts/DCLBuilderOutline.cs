@@ -48,10 +48,30 @@ namespace Builder
 
         private void OnDestroy()
         {
-            if (outlineCanvas != null)   Destroy(outlineCanvas.gameObject);
+            if (outlineCanvas != null) Destroy(outlineCanvas.gameObject);
             if (outlineRawImage != null) Destroy(outlineRawImage.gameObject);
-            if (outlineCamera != null)   Destroy(outlineCamera.gameObject);
+            if (outlineCamera != null) Destroy(outlineCamera.gameObject);
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
+        }
+
+        public void Activate()
+        {
+            outlineCamera.gameObject.SetActive(true);
+            outlineCanvas.gameObject.SetActive(true);
+            outlineRawImage.gameObject.SetActive(true);
+        }
+
+        public void Deactivate()
+        {
+            outlineCamera.gameObject.SetActive(false);
+            outlineCanvas.gameObject.SetActive(false);
+            outlineRawImage.gameObject.SetActive(false);
+        }
+
+        public void SetOutlineMaterial(Material mat)
+        {
+            OutlineMaterial = mat;
+            outlineRawImage.material = OutlineMaterial;
         }
 
         private void OnResize()
