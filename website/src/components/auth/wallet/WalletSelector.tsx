@@ -47,7 +47,6 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
                 href="https://metamask.io/"
                 onClick={handleClick}
               />
-              <WalletButton logo="Fortmatic" onClick={handleClick} />
             </React.Fragment>
           )}
         </div>
