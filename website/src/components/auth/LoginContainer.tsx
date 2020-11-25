@@ -24,16 +24,16 @@ export enum LoginStage {
 }
 
 const mapStateToProps = (state: any) => {
-  const params = new URLSearchParams(window.location.search)
+  const params = new URLSearchParams(window.location.search);
   return {
     stage: state.session.loginStage,
     signing: state.session.signing,
     subStage: state.session.signup.stage,
     provider: state.session.currentProvider,
-    showWalletSelector: params.has('show_wallet'),
+    showWalletSelector: params.has("show_wallet"),
     hasWallet: !!window.ethereum,
     hasMetamask: !!(window.ethereum && window.ethereum.isMetaMask),
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -56,14 +56,15 @@ export interface LoginContainerProps {
 }
 
 export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
-  const loading = props.stage === LoginStage.LOADING
-  const full = loading || props.stage === LoginStage.SIGN_IN
+  const loading = props.stage === LoginStage.LOADING;
+  const full = loading || props.stage === LoginStage.SIGN_IN;
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
+  const provider = props.hasMetamask ? "Metamask" : props.provider;
   return (
     <React.Fragment>
       {shouldShow && (
-        <div className={'LoginContainer' + (full ? ' FullPage' : '')}>
+        <div className={"LoginContainer" + (full ? " FullPage" : "")}>
           {/* Nabvar */}
           <Navbar full={full} />
 
@@ -77,7 +78,7 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
                   loading={loading || props.signing}
                   onLogin={props.onLogin}
                   onGuest={props.onGuest}
-                  provider={props.provider}
+                  provider={provider}
                   showWallet={props.showWallet}
                 />
               )}
