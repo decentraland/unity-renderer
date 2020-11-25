@@ -3,6 +3,7 @@ import { future, IFuture } from 'fp-future'
 import { authenticate, updateTOS } from './session/actions'
 import { StoreContainer } from './store/rootTypes'
 import { LoadingState } from './loading/reducer'
+import { ENABLE_WEB3, PREVIEW } from '../config'
 
 declare const globalThis: StoreContainer
 const isReact = !!(window as any).reactVersion
@@ -155,7 +156,7 @@ export default class Html {
   }
 
   static showNetworkWarning() {
-    if (isReact) return
+    if (isReact || (PREVIEW && !ENABLE_WEB3)) return
     const element = document.getElementById('network-warning')
     if (element) {
       element.style.display = 'block'
