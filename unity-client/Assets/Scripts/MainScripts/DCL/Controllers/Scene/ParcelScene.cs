@@ -999,6 +999,11 @@ namespace DCL.Controllers
                         newComponent = new DCLFont(this);
                         break;
                     }
+                case CLASS_ID.NAME:
+                    {
+                        newComponent = new DCLName(this);                      
+                        break;
+                    }
 
                 default:
                     Debug.LogError($"Unknown classId");
