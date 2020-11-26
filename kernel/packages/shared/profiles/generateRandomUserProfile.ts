@@ -31,7 +31,7 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
     profile = backupProfile(getFetchContentServer(window.globalStore.getState()), userId)
   }
 
-  profile.name = createFakeName(userId)
+  profile.unclaimedName = createFakeName()
   profile.hasClaimedName = false
   profile.tutorialStep = 0
   profile.version = -1 // We signal random user profiles with -1

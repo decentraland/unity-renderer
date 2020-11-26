@@ -38,7 +38,7 @@ export function calculateDisplayName(userId: string, profile: any): string {
     return `${filterInvalidNameCharacters(profile.unclaimedName)}#${userId.slice(-4)}`
   }
 
-  return createFakeName(userId)
+  return `${createFakeName()}#${userId.slice(-4)}`
 }
 export function processServerProfile(userId: string, receivedProfile: any): Profile {
   const name = calculateDisplayName(userId, receivedProfile)
