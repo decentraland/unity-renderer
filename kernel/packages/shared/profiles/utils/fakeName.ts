@@ -1,4 +1,4 @@
-export const createFakeName = (userId: string) => {
+export const createFakeName = () => {
   const names = [
     'Baqiorana',
     'Domble',
@@ -116,5 +116,5 @@ export const createFakeName = (userId: string) => {
     'Worm',
     'Zebra'
   ]
-  return names[Math.floor(Math.random() * names.length)] + '-' + userId.substr(2, 6)
+  return names[Math.floor(Math.random() * names.length)]
 }
