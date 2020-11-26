@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using DCL.Interface;
 using UnityEngine;
 
@@ -58,7 +58,9 @@ namespace DCL.Models
         VIDEO_CLIP = 70,
         VIDEO_TEXTURE = 71,
 
-        AUDIO_CLIP = 200
+        AUDIO_CLIP = 200,
+
+        NAME = 300
     }
 
     public static class Protocol
