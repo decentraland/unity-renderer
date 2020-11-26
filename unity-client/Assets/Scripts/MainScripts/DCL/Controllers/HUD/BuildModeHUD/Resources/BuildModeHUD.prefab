@@ -703,7 +703,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -731,7 +731,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -742,7 +742,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -950,7 +950,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -978,7 +978,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -989,7 +989,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -7126,7 +7126,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -7154,7 +7154,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -7165,7 +7165,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -9641,7 +9641,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -9669,7 +9669,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -9680,7 +9680,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -11899,7 +11899,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.09075928}
   m_SizeDelta: {x: 0, y: -0.18151093}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -11950,6 +11950,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 851071764515424546}
+  - component: {fileID: 2858140822079303849}
   m_Layer: 5
   m_Name: QuickBarShortcuts
   m_TagString: Untagged
@@ -11977,6 +11978,30 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 450}
   m_SizeDelta: {x: 1440, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2858140822079303849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851071764515424547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63ca2ec1bcf6c364fbd37f25eee7e8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shortcutsImgs:
+  - {fileID: 851071765561143011}
+  - {fileID: 851071764309140254}
+  - {fileID: 851071765275498553}
+  - {fileID: 851071763867812911}
+  - {fileID: 851071764728912765}
+  - {fileID: 851071765654552107}
+  - {fileID: 851071764268358310}
+  - {fileID: 851071764041325476}
+  - {fileID: 851071764752923431}
+  generalCanvas: {fileID: 851071764747098676}
+  catalogGroupListView: {fileID: 851071763915059372}
 --- !u!1 &851071764522330807
 GameObject:
   m_ObjectHideFlags: 0
@@ -13379,7 +13404,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &851071764665949381
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13479,7 +13504,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 851071764514386324}
   m_HandleRect: {fileID: 851071764514386325}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -14354,6 +14379,7 @@ MonoBehaviour:
   sceneLimitInfoController: {fileID: 851071765511007212}
   sceneObjectCatalogController: {fileID: 6818990461646912356}
   toolTipController: {fileID: 4730837589599637360}
+  quickBarController: {fileID: 2858140822079303849}
   firstPersonCanvasGO: {fileID: 851071763679374503}
   godModeCanvasGO: {fileID: 851071765252996793}
   extraBtnsGO: {fileID: 851071764922696198}
@@ -16418,7 +16444,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -16446,7 +16472,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -16457,7 +16483,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -16587,7 +16613,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6818990461646912356}
-        m_MethodName: ShowFavorites
+        m_MethodName: ToggleFavorites
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17380,7 +17406,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -17408,7 +17434,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -17419,7 +17445,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -18538,7 +18564,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -18566,7 +18592,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -18577,7 +18603,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -19552,7 +19578,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -19580,7 +19606,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -19591,7 +19617,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -22088,7 +22114,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6818990461646912356}
+      - m_Target: {fileID: 2858140822079303849}
         m_MethodName: QuickBarObjectSelected
         m_Mode: 3
         m_Arguments:
@@ -22116,7 +22142,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SetIndexToDrop
           m_Mode: 3
           m_Arguments:
@@ -22127,7 +22153,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-        - m_Target: {fileID: 6818990461646912356}
+        - m_Target: {fileID: 2858140822079303849}
           m_MethodName: SceneObjectDropped
           m_Mode: 0
           m_Arguments:
@@ -25189,6 +25215,7 @@ GameObject:
   m_Component:
   - component: {fileID: 851071765545109252}
   - component: {fileID: 6818990461646912356}
+  - component: {fileID: 181005791488322439}
   m_Layer: 5
   m_Name: SceneCatalog
   m_TagString: Untagged
@@ -25228,7 +25255,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe74cb22466a6c479568eedc95801ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generalCanvas: {fileID: 851071764747098676}
   catalogTitleTxt: {fileID: 851071763806827043}
   catalogAssetPackListView: {fileID: 851071765659676003}
   catalogGroupListView: {fileID: 851071763915059372}
@@ -25243,6 +25269,20 @@ MonoBehaviour:
   - {fileID: 851071764268358310}
   - {fileID: 851071764041325476}
   - {fileID: 851071764752923431}
+  favoritesController: {fileID: 181005791488322439}
+  quickBarController: {fileID: 2858140822079303849}
+--- !u!114 &181005791488322439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 851071765545109253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 895d63441da05b6449048521e5890f74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &851071765561143009
 GameObject:
   m_ObjectHideFlags: 0
