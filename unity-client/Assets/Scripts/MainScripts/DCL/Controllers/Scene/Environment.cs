@@ -1,5 +1,8 @@
 ﻿using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Rendering;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL
 {
@@ -7,10 +10,11 @@ namespace DCL
     {
         public static readonly Environment i = new Environment();
 
-        public WorldBlockersController worldBlockersController { get; private set; }
         public readonly MessagingControllersManager messagingControllersManager;
         public readonly PointerEventsController pointerEventsController;
         public readonly MemoryManager memoryManager;
+        public WorldBlockersController worldBlockersController { get; private set; }
+        public ICullingController cullingController { get; private set; }
         public InteractionHoverCanvasController interactionHoverCanvasController { get; private set; }
         public Clipboard clipboard { get; }
 
@@ -32,6 +36,7 @@ namespace DCL
             messagingControllersManager.Initialize(messageHandler);
             pointerEventsController.Initialize();
             memoryManager.Initialize();
+            cullingController = CullingController.Create();
             worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(sceneHandler, DCLCharacterController.i.characterPosition);
 
             initialized = true;

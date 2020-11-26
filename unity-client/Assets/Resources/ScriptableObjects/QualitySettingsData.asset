@@ -26,6 +26,8 @@ MonoBehaviour:
     fpsCap: 1
     colorGrading: 0
     shadowDistance: 30
+    enableDetailObjectCulling: 1
+    detailObjectCullingThreshold: 100
   - displayName: Medium
     baseResolution: 1
     antiAliasing: 1
@@ -38,6 +40,8 @@ MonoBehaviour:
     fpsCap: 1
     colorGrading: 1
     shadowDistance: 45
+    enableDetailObjectCulling: 1
+    detailObjectCullingThreshold: 53.5
   - displayName: High
     baseResolution: 2
     antiAliasing: 2
@@ -50,3 +54,5 @@ MonoBehaviour:
     fpsCap: 0
     colorGrading: 1
     shadowDistance: 60
+    enableDetailObjectCulling: 1
+    detailObjectCullingThreshold: 0

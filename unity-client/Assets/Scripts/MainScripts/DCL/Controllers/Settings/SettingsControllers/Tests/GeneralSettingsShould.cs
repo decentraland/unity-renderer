@@ -25,7 +25,7 @@ namespace Tests
         Light environmentLight;
 
         Volume postProcessVolume;
-        UniversalRenderPipelineAsset lwrpAsset;
+        UniversalRenderPipelineAsset urpAsset;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()
@@ -42,7 +42,9 @@ namespace Tests
                 shadowResolution = UnityEngine.Rendering.Universal.ShadowResolution._512,
                 cameraDrawDistance = 50.1f,
                 bloom = false,
-                colorGrading = true
+                colorGrading = true,
+                detailObjectCullingThreshold = 0,
+                enableDetailObjectCulling = true
             };
 
             testGeneralSettings = new GeneralSettings()
@@ -127,7 +129,7 @@ namespace Tests
 
         public void SetupReferences()
         {
-            lwrpAsset = GraphicsSettings.renderPipelineAsset as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
+            urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
             GeneralSettingsController generalSettingsController = GameObject.FindObjectOfType<GeneralSettingsController>();
             QualitySettingsController qualitySettingsController = GameObject.FindObjectOfType<QualitySettingsController>();
 
@@ -165,11 +167,11 @@ namespace Tests
 
         private void CheckIfQualitySettingsAreApplied()
         {
-            Assert.IsTrue(lwrpAsset.msaaSampleCount == (int) DCL.Settings.i.qualitySettings.antiAliasing, "antiAliasing mismatch");
-            Assert.IsTrue(lwrpAsset.renderScale == DCL.Settings.i.qualitySettings.renderScale, "renderScale mismatch");
-            Assert.IsTrue(lwrpAsset.supportsMainLightShadows == DCL.Settings.i.qualitySettings.shadows, "shadows mismatch");
-            Assert.IsTrue(lwrpAsset.supportsSoftShadows == DCL.Settings.i.qualitySettings.softShadows, "softShadows mismatch");
-            Assert.IsTrue(lwrpAsset.mainLightShadowmapResolution == (int) DCL.Settings.i.qualitySettings.shadowResolution, "shadowResolution mismatch");
+            Assert.IsTrue(urpAsset.msaaSampleCount == (int) DCL.Settings.i.qualitySettings.antiAliasing, "antiAliasing mismatch");
+            Assert.IsTrue(urpAsset.renderScale == DCL.Settings.i.qualitySettings.renderScale, "renderScale mismatch");
+            Assert.IsTrue(urpAsset.supportsMainLightShadows == DCL.Settings.i.qualitySettings.shadows, "shadows mismatch");
+            Assert.IsTrue(urpAsset.supportsSoftShadows == DCL.Settings.i.qualitySettings.softShadows, "softShadows mismatch");
+            Assert.IsTrue(urpAsset.mainLightShadowmapResolution == (int) DCL.Settings.i.qualitySettings.shadowResolution, "shadowResolution mismatch");
 
             LightShadows shadowType = LightShadows.None;
             if (DCL.Settings.i.qualitySettings.shadows)
