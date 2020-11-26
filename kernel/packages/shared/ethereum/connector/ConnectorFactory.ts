@@ -1,4 +1,5 @@
 import { MetamaskConnector } from './MetamaskConnector'
+import { DapperConnector } from './DapperConnector'
 import { ConnectorInterface } from './ConnectorInterface'
 import { ProviderType } from '../ProviderType'
 import { GuestConnector } from './GuestConnector'
@@ -15,6 +16,9 @@ export class ConnectorFactory {
   create(type: ProviderType, network: ETHEREUM_NETWORK): ConnectorInterface {
     if (type === ProviderType.METAMASK) {
       return new MetamaskConnector()
+    }
+    if (type === ProviderType.DAPPER) {
+      return new DapperConnector()
     }
     if (type === ProviderType.GUEST) {
       return new GuestConnector(ethereumConfigurations[network].wss)

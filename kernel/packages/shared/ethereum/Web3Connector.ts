@@ -49,7 +49,7 @@ export class Web3Connector {
     if (!this.connector || this.isType(ProviderType.GUEST)) {
       return undefined
     }
-    if (this.isType(ProviderType.METAMASK)) {
+    if (this.isType(ProviderType.METAMASK) || this.isType(ProviderType.DAPPER)) {
       return new Eth(new LegacyProviderAdapter((window as any).ethereum))
     }
     return new Eth(this.connector.getProvider())
