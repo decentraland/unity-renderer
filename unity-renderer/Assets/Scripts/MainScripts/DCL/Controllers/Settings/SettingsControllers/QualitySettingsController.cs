@@ -1,6 +1,8 @@
+using System;
 using Cinemachine;
 using System.Reflection;
 using DCL.Interface;
+using DCL.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -15,7 +17,7 @@ namespace DCL.SettingsController
 {
     public class QualitySettingsController : MonoBehaviour
     {
-        private UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset lightweightRenderPipelineAsset = null;
+        private UniversalRenderPipelineAsset lightweightRenderPipelineAsset = null;
 
         private FieldInfo lwrpaShadowField = null;
         private FieldInfo lwrpaSoftShadowField = null;
@@ -27,11 +29,13 @@ namespace DCL.SettingsController
         public CinemachineFreeLook thirdPersonCamera = null;
         public CinemachineVirtualCamera firstPersonCamera = null;
 
+        public CullingControllerSettingsData cullingControllerSettingsData = null;
+
         void Start()
         {
             if (lightweightRenderPipelineAsset == null)
             {
-                lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
+                lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
 
                 // NOTE: LightweightRenderPipelineAsset doesn't expose properties to set any of the following fields
                 lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -69,7 +73,7 @@ namespace DCL.SettingsController
 
             if (lightweightRenderPipelineAsset)
             {
-                lightweightRenderPipelineAsset.msaaSampleCount = (int)qualitySettings.antiAliasing;
+                lightweightRenderPipelineAsset.msaaSampleCount = (int) qualitySettings.antiAliasing;
                 lightweightRenderPipelineAsset.renderScale = qualitySettings.renderScale;
                 lightweightRenderPipelineAsset.shadowDistance = qualitySettings.shadowDistance;
 
@@ -104,6 +108,27 @@ namespace DCL.SettingsController
                 }
             }
 
+            Environment.i.cullingController.SetObjectCulling(qualitySettings.enableDetailObjectCulling);
+            Environment.i.cullingController.SetShadowCulling(qualitySettings.enableDetailObjectCulling);
+            Environment.i.cullingController.SetDirty();
+
+            if (qualitySettings.enableDetailObjectCulling)
+            {
+                var settings = Environment.i.cullingController.GetSettingsCopy();
+
+                settings.rendererProfile = CullingControllerProfile.Lerp(
+                    cullingControllerSettingsData.rendererProfileMin,
+                    cullingControllerSettingsData.rendererProfileMax,
+                    qualitySettings.detailObjectCullingThreshold / 100.0f);
+
+                settings.skinnedRendererProfile = CullingControllerProfile.Lerp(
+                    cullingControllerSettingsData.skinnedRendererProfileMin,
+                    cullingControllerSettingsData.skinnedRendererProfileMax,
+                    qualitySettings.detailObjectCullingThreshold / 100.0f);
+
+                Environment.i.cullingController.SetSettings(settings);
+            }
+
             if (thirdPersonCamera)
             {
                 thirdPersonCamera.m_Lens.FarClipPlane = qualitySettings.cameraDrawDistance;
@@ -120,7 +145,9 @@ namespace DCL.SettingsController
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")] public static extern void ToggleFPSCap(bool useFPSCap);
 #else
-        public static void ToggleFPSCap(bool useFPSCap) { }
+        public static void ToggleFPSCap(bool useFPSCap)
+        {
+        }
 #endif
     }
 }

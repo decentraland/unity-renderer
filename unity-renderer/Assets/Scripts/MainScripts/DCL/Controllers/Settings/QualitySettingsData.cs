@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Serialization;
 
 namespace DCL.SettingsData
 {
@@ -47,7 +48,8 @@ namespace DCL.SettingsData
 
         public string displayName;
 
-        [Tooltip("Base resolution level")] public BaseResolution baseResolution;
+        [Tooltip("Base resolution level")] 
+        public BaseResolution baseResolution;
 
         [Tooltip("Controls the global anti aliasing setting")]
         public UnityEngine.Rendering.Universal.MsaaQuality antiAliasing;
@@ -67,7 +69,7 @@ namespace DCL.SettingsData
         [Tooltip("Camera Far")] [Range(40, 100)]
         public float cameraDrawDistance;
 
-        [Tooltip("Enable bloom post process")]
+        [Tooltip("Enable bloom post process")] 
         public bool bloom;
 
         [Tooltip("Enable 30 FPS capping for more stable framerate")]
@@ -79,19 +81,28 @@ namespace DCL.SettingsData
         [Tooltip("Shadow Distance")] [Range(30, 100)]
         public float shadowDistance;
 
+        [Tooltip("Enable culling for detail objects in the viewport.")]
+        public bool enableDetailObjectCulling;
+
+        [Tooltip("If detail object culling is ON, this slider determines the relative size of culled objects from tiny to big. Bigger values gives better performance, but more objects will be hidden.")] [Range(0, 100)]
+        public float detailObjectCullingThreshold;
+
         public bool Equals(QualitySettings otherSetting)
         {
             if (baseResolution != otherSetting.baseResolution) return false;
             if (antiAliasing != otherSetting.antiAliasing) return false;
-            if (renderScale != otherSetting.renderScale) return false;
+            if (Mathf.Abs(renderScale - otherSetting.renderScale) > 0.001f) return false;
             if (shadows != otherSetting.shadows) return false;
             if (softShadows != otherSetting.softShadows) return false;
             if (shadowResolution != otherSetting.shadowResolution) return false;
-            if (cameraDrawDistance != otherSetting.cameraDrawDistance) return false;
+            if (Mathf.Abs(cameraDrawDistance - otherSetting.cameraDrawDistance) > 0.001f) return false;
             if (bloom != otherSetting.bloom) return false;
             if (fpsCap != otherSetting.fpsCap) return false;
             if (colorGrading != otherSetting.colorGrading) return false;
-            if (shadowDistance != otherSetting.shadowDistance) return false;
+            if (Mathf.Abs(shadowDistance - otherSetting.shadowDistance) > 0.001f) return false;
+            if (enableDetailObjectCulling != otherSetting.enableDetailObjectCulling) return false;
+            if (Mathf.Abs(detailObjectCullingThreshold - otherSetting.detailObjectCullingThreshold) > 0.001f) return false;
+
             return true;
         }
     }

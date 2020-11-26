@@ -49,6 +49,8 @@ MonoBehaviour:
   postProcessVolume: {fileID: 0}
   thirdPersonCamera: {fileID: 0}
   firstPersonCamera: {fileID: 0}
+  cullingControllerSettingsData: {fileID: 11400000, guid: 695d4455361db244ea35bc8bc8646cbd,
+    type: 2}
 --- !u!114 &7150802491235533512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,4 +80,3 @@ MonoBehaviour:
   autoQualityEnabled: {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
   performanceMetricsData: {fileID: 11400000, guid: 38cb55938716a6c4c84605022422df76,
     type: 2}
-  qualitySettings: {fileID: 11400000, guid: 4f354f4007280f54886a9ac09ca4655f, type: 2}
