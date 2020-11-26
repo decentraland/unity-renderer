@@ -10,6 +10,7 @@ public class BuildModeHUDView : MonoBehaviour
     public SceneLimitInfoController sceneLimitInfoController;
     public SceneObjectCatalogController sceneObjectCatalogController;
     public ToolTipController toolTipController;
+    public QuickBarController quickBarController;
 
     public GameObject firstPersonCanvasGO, godModeCanvasGO, extraBtnsGO, shortCutsGO;
     public Button firstPersonChangeModeBtn,changeModeBtn,extraBtn,controlsBtn,closeControlsBtn,hideUIBtn,entityListBtn,closeEntityListBtn,catalogBtn,closeCatalogBtn;
@@ -99,8 +100,8 @@ public class BuildModeHUDView : MonoBehaviour
         deleteBtn.onClick.AddListener(() => OnDeleteSelectionAction?.Invoke());
 
         sceneObjectCatalogController.OnSceneObjectSelected += (x) => OnSceneObjectSelected?.Invoke(x);
-        sceneObjectCatalogController.OnResumeInput += () => OnResumeInput?.Invoke();
-        sceneObjectCatalogController.OnStopInput += () => OnStopInput?.Invoke();
+        quickBarController.OnResumeInput += () => OnResumeInput?.Invoke();
+        quickBarController.OnStopInput += () => OnStopInput?.Invoke();
 
         tutorialBtn.onClick.AddListener(() => OnTutorialAction?.Invoke());
         publishBtn.onClick.AddListener(() => OnPublishAction?.Invoke()); 
@@ -189,7 +190,7 @@ public class BuildModeHUDView : MonoBehaviour
 
     void QuickBarInput(int quickBarSlot)
     {
-        sceneObjectCatalogController.QuickBarObjectSelected(quickBarSlot);
+        quickBarController.QuickBarObjectSelected(quickBarSlot);
     }
     #region Triggers
 
