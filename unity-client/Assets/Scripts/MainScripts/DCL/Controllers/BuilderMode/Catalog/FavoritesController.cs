@@ -4,9 +4,19 @@ using UnityEngine;
 
 public class FavoritesController : MonoBehaviour
 {
-    #region Favorites
+    public CatalogGroupListView catalogGroupListView;
 
     List<SceneObject> favoritesSceneObjects = new List<SceneObject>();
+
+    private void Start()
+    {
+        catalogGroupListView.OnSceneObjectFavorite += ToggleFavoriteState;
+    }
+
+    private void OnDestroy()
+    {
+        catalogGroupListView.OnSceneObjectFavorite -= ToggleFavoriteState;
+    }
 
     public List<SceneObject> GetFavorites()
     {
@@ -30,5 +40,4 @@ public class FavoritesController : MonoBehaviour
         adapter.SetFavorite(sceneObject.isFavorite);
     }
 
-    #endregion
 }

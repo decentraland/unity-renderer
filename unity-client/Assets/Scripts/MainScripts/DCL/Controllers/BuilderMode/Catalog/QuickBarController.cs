@@ -91,11 +91,12 @@ public class QuickBarController : MonoBehaviour
     void SetQuickBarShortcut(SceneObject sceneObject, int index, Texture texture)
     {
         quickBarShortcutsSceneObjects[index] = sceneObject;
-        if (index < shortcutsImgs.Length)
-        {
-            shortcutsImgs[index].texture = texture;
-            shortcutsImgs[index].enabled = true;
-        }
+        if (index >= shortcutsImgs.Length)
+            return;
+
+        shortcutsImgs[index].texture = texture;
+        shortcutsImgs[index].enabled = true;
+
     }
 
     int FindEmptyShortcutSlot()

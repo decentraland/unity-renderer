@@ -24,7 +24,6 @@ public class SceneObjectCatalogController : MonoBehaviour
     public CatalogAssetPackListView catalogAssetPackListView;
     public CatalogGroupListView catalogGroupListView;
     public TMP_InputField searchInputField;
-    public RawImage[] shortcutsImgs;
     public FavoritesController favoritesController;
     public QuickBarController quickBarController;
 
@@ -41,7 +40,6 @@ public class SceneObjectCatalogController : MonoBehaviour
         OnResultReceived += AddFullSceneObjectCatalog;
         catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
-        catalogGroupListView.OnSceneObjectFavorite += ToggleFavoriteState;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
         quickBarController.OnSceneObjectSelected += SceneObjectSelected;
     }
@@ -51,7 +49,6 @@ public class SceneObjectCatalogController : MonoBehaviour
         catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
         OnResultReceived -= AddFullSceneObjectCatalog;
-        catalogGroupListView.OnSceneObjectFavorite -= ToggleFavoriteState;
         quickBarController.OnSceneObjectSelected -= SceneObjectSelected;
     }
 
@@ -108,10 +105,6 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     #endregion
 
-    public void ToggleFavoriteState(SceneObject sceneObject, CatalogItemAdapter adapter)
-    {
-        favoritesController.ToggleFavoriteState(sceneObject, adapter);
-    }
 
     public void ToggleFavorites()
     {

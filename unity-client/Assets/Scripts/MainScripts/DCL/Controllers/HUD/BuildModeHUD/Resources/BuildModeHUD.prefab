@@ -25259,16 +25259,6 @@ MonoBehaviour:
   catalogAssetPackListView: {fileID: 851071765659676003}
   catalogGroupListView: {fileID: 851071763915059372}
   searchInputField: {fileID: 851071764848031699}
-  shortcutsImgs:
-  - {fileID: 851071765561143011}
-  - {fileID: 851071764309140254}
-  - {fileID: 851071765275498553}
-  - {fileID: 851071763867812911}
-  - {fileID: 851071764728912765}
-  - {fileID: 851071765654552107}
-  - {fileID: 851071764268358310}
-  - {fileID: 851071764041325476}
-  - {fileID: 851071764752923431}
   favoritesController: {fileID: 181005791488322439}
   quickBarController: {fileID: 2858140822079303849}
 --- !u!114 &181005791488322439
@@ -25283,6 +25273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 895d63441da05b6449048521e5890f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  catalogGroupListView: {fileID: 851071763915059372}
 --- !u!1 &851071765561143009
 GameObject:
   m_ObjectHideFlags: 0
