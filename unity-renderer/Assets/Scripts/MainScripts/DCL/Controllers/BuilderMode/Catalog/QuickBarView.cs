@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class QuickBarView : MonoBehaviour
 {
-    public RawImage[] shortcutsImgs;
+    public QuickBarSlot[] shortcutsImgs;
     public Canvas generalCanvas;
     public CatalogGroupListView catalogGroupListView;
 
@@ -118,8 +118,7 @@ public class QuickBarView : MonoBehaviour
         if (index >= shortcutsImgs.Length)
             return;
 
-        shortcutsImgs[index].texture = texture;
-        shortcutsImgs[index].enabled = true;
+        shortcutsImgs[index].SetTexture(texture);
     }
 
     void QuickBarInput(int quickBarSlot)
