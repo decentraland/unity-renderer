@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -8, y: -12}
+  m_SizeDelta: {x: -8, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5869145302167082934
 CanvasRenderer:
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_fontSizeMax: 11
   m_fontStyle: 16
   m_textAlignment: 514
-  m_characterSpacing: 0
+  m_characterSpacing: -2
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -192,7 +192,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 42}
+  m_SizeDelta: {x: 0, y: 45.13733}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6045310853190171436
 CanvasRenderer:
@@ -221,10 +221,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'An integrated graphics card has been detected on your machine.
-
-    You
-    may encounter performance issues as a result.'
+  m_text: Your machine is not using a dedicated graphics card to run Decentraland.
+    This might lead to performance issues. Check your browser and OS configuration.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c0f2e4affe3f2438d9042ca1db45764f, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 70f3d6b07a517476dbd2b89cf148f858, type: 2}
@@ -252,7 +250,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 12.55
+  m_fontSize: 13
   m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -260,7 +258,7 @@ MonoBehaviour:
   m_fontSizeMax: 13
   m_fontStyle: 0
   m_textAlignment: 513
-  m_characterSpacing: 0
+  m_characterSpacing: -2
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -293,10 +291,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 4587693585895782332}
-    characterCount: 112
+    characterCount: 152
     spriteCount: 0
-    spaceCount: 17
-    wordCount: 18
+    spaceCount: 23
+    wordCount: 24
     linkCount: 0
     lineCount: 2
     pageCount: 1
@@ -447,7 +445,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -20, y: 0}
-  m_SizeDelta: {x: -41.23584, y: 0}
+  m_SizeDelta: {x: -40, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &5029029999379869632
 MonoBehaviour:
@@ -509,7 +507,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -8, y: -12}
+  m_SizeDelta: {x: -8, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3152237720295375982
 CanvasRenderer:
@@ -669,7 +667,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 26}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4169714842114260873
 CanvasRenderer:
@@ -782,7 +780,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 80
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: 0
   m_FlexibleHeight: -1
@@ -828,7 +826,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 64}
+  m_SizeDelta: {x: 670, y: 64}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &985022821136881170
 MonoBehaviour:
@@ -970,7 +968,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 26}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &4812707432859327484
 CanvasRenderer:
@@ -1083,7 +1081,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 80
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: 0
   m_FlexibleHeight: -1
