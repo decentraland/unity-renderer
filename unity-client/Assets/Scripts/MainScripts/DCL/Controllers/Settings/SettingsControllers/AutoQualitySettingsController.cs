@@ -30,6 +30,13 @@ public class AutoQualitySettingsController : MonoBehaviour
         SetAutoSettings(autoQualityEnabled.Get(), !autoQualityEnabled.Get());
     }
 
+    private void OnDestroy()
+    {
+        if (autoQualityEnabled == null)
+            return;
+        autoQualityEnabled.OnChange -= SetAutoSettings;
+    }
+
     private void SetAutoSettings(bool newValue, bool oldValue)
     {
         if (settingsCheckerCoroutine != null)

@@ -29,32 +29,11 @@ SpriteAtlas:
       enableRotation: 1
       enableTightPacking: 1
     variantMultiplier: 1
-    packables:
-    - {fileID: 102900000, guid: cecfd5e3c93f24ae0a6aab00ce83f9d5, type: 3}
-    totalSpriteSurfaceArea: 1472237
+    packables: []
+    totalSpriteSurfaceArea: 0
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
-  m_PackedSprites:
-  - {fileID: 21300000, guid: 689e0120104894ef6aa3f8e2970600ef, type: 3}
-  - {fileID: 21300000, guid: 11d6254034fca4721bb8ea5533eb755e, type: 3}
-  - {fileID: 21300000, guid: 94992a723426b4bd7bfef9b30add6375, type: 3}
-  - {fileID: 21300000, guid: bc311da2e0c96400f80ec835f296ee1e, type: 3}
-  - {fileID: 21300000, guid: f32f0323856ca4155860d21e2ea1b72a, type: 3}
-  - {fileID: 21300000, guid: e2e6ba482d7f64b8bb45a393eef31ef9, type: 3}
-  - {fileID: 21300000, guid: 578ab63c27a2f4555b99106fcfafa166, type: 3}
-  - {fileID: 21300000, guid: a201277c8982140328584757fc77a828, type: 3}
-  - {fileID: 21300000, guid: 6cbe1f7d53ae54f62a577c8877d9422f, type: 3}
-  - {fileID: 21300000, guid: 98b4b7cd299864e708e16bc07eeab23a, type: 3}
-  m_PackedSpriteNamesToIndex:
-  - TinyBackWhite
-  - KeyBinding
-  - CloseButton
-  - WaveHand
-  - FistPump
-  - EllipticalMenu
-  - Ellipse
-  - AvataerExpressionIcon
-  - RobotDance
-  - SelectedEllipticalMenu
+  m_PackedSprites: []
+  m_PackedSpriteNamesToIndex: []
   m_Tag: AvatarExpressions
   m_IsVariant: 0

@@ -169,6 +169,7 @@ function* startSignUp(userId: string, identity: ExplorerIdentity) {
   let profile: Profile = prevGuest ? prevGuest : yield generateRandomUserProfile(userId)
   profile.userId = identity.address.toString()
   profile.ethAddress = identity.address.toString()
+  profile.unclaimedName = '' // clean here to allow user complete in passport step
   profile.hasClaimedName = false
   profile.inventory = []
   profile.version = 0

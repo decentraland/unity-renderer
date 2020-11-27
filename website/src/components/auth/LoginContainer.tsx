@@ -33,6 +33,7 @@ const mapStateToProps = (state: any) => {
     showWalletSelector: params.has("show_wallet"),
     hasWallet: !!window.ethereum,
     hasMetamask: !!(window.ethereum && window.ethereum.isMetaMask),
+    hasDapper: !!(window.ethereum && window.ethereum.isDapper),
   };
 };
 
@@ -51,6 +52,7 @@ export interface LoginContainerProps {
   showWallet?: boolean;
   hasWallet?: boolean;
   hasMetamask?: boolean;
+  hasDapper?: boolean;
   onLogin: (provider: string) => void;
   onGuest: () => void;
 }
@@ -60,7 +62,11 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
   const full = loading || props.stage === LoginStage.SIGN_IN;
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
-  const provider = props.hasMetamask ? "Metamask" : props.provider;
+  const provider = props.hasMetamask
+    ? "Metamask"
+    : props.hasDapper
+    ? "Dapper"
+    : props.provider;
   return (
     <React.Fragment>
       {shouldShow && (
