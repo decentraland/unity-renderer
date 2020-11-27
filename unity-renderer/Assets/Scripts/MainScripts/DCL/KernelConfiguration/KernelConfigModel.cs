@@ -6,14 +6,15 @@ public class KernelConfigModel
 {
     public Comms comms = new Comms();
     public Profiles profiles = new Profiles();
-
+    public bool gifSupported = false;
 
     public bool Equals(KernelConfigModel other)
     {
         if (other == null) return false;
 
         return this.comms.Equals(other.comms) &&
-               this.profiles.Equals(other.profiles);
+               this.profiles.Equals(other.profiles) &&
+               this.gifSupported == other.gifSupported;
     }
 
     public KernelConfigModel Clone()

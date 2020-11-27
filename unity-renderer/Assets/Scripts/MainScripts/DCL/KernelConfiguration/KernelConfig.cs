@@ -22,7 +22,7 @@ public class KernelConfig
     static KernelConfig config = null;
 
     KernelConfigModel value = new KernelConfigModel();
-    List<Promise<KernelConfigModel>> initializationPromises = new List<Promise<KernelConfigModel>>();
+    List<Promise<KernelConfigModel>> initializationPromises;
 
     internal bool initialized = false;
 
@@ -74,6 +74,10 @@ public class KernelConfig
         }
         else
         {
+            if (initializationPromises == null)
+            {
+                initializationPromises = new List<Promise<KernelConfigModel>>();
+            }
             initializationPromises.Add(newPromise);
         }
         return newPromise;
