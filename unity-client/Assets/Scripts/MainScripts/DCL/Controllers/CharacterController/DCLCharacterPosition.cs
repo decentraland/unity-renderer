@@ -60,7 +60,7 @@ public class DCLCharacterPosition
 
         if (Mathf.Abs(unityPositionValue.x) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int) (unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.x -= dist;
             offset.x += dist;
             dirty = true;
@@ -68,7 +68,7 @@ public class DCLCharacterPosition
 
         if (Mathf.Abs(unityPositionValue.z) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int) (unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.z -= dist;
             offset.z += dist;
             dirty = true;
@@ -84,7 +84,7 @@ public class DCLCharacterPosition
 
             CommonScriptableObjects.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.playerUnityToWorldOffset.Set(offset);
-            SceneController.i.physicsSyncController.MarkDirty();
+            DCL.Environment.i.physicsSyncController.MarkDirty();
         }
     }
 
