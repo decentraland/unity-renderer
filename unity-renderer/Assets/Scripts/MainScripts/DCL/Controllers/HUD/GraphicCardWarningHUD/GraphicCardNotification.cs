@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class GraphicCardNotification : Notification
 {
     // Filling this with the URL will automatically make the button visible
-    private const string MORE_INFO_URL = null;
+    private const string MORE_INFO_URL = "https://docs.decentraland.org/decentraland/hardware-acceleration/";
     [SerializeField] private Button moreInfoButton;
 
     private void Awake()
@@ -17,5 +17,6 @@ public class GraphicCardNotification : Notification
     private void OpenMoreInfoUrl()
     {
         WebInterface.OpenURL(MORE_INFO_URL);
+        Dismiss();
     }
 }
