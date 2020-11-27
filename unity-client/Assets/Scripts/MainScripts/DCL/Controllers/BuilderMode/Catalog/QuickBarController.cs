@@ -6,7 +6,7 @@ public class QuickBarController
 {
     public event System.Action<SceneObject> OnSceneObjectSelected;
 
-    List<SceneObject> quickBarShortcutsSceneObjects = new List<SceneObject>() { null, null, null, null, null, null, null, null, null };
+    SceneObject[] quickBarShortcutsSceneObjects = new SceneObject[9];
 
     public QuickBarController(QuickBarView view)
     { 
@@ -15,7 +15,7 @@ public class QuickBarController
 
     public void QuickBarObjectSelected(int index)
     {
-        if (quickBarShortcutsSceneObjects.Count > index && quickBarShortcutsSceneObjects[index] != null)
+        if (quickBarShortcutsSceneObjects.Length > index && quickBarShortcutsSceneObjects[index] != null)
             OnSceneObjectSelected?.Invoke(quickBarShortcutsSceneObjects[index]);
     }
 
@@ -26,17 +26,11 @@ public class QuickBarController
 
     int FindEmptyShortcutSlot()
     {
-        int index = quickBarShortcutsSceneObjects.Count;
-        int cont = 0;
-        foreach (SceneObject sceneObjectIteration in quickBarShortcutsSceneObjects)
+        for (int i = 0; i < quickBarShortcutsSceneObjects.Length; i++)
         {
-            if (sceneObjectIteration == null)
-            {
-                index = cont;
-                break;
-            }
-            cont++;
+            if (quickBarShortcutsSceneObjects[i] == null)
+                return i;
         }
-        return index;
+        return -1;
     }
 }
