@@ -6,7 +6,9 @@ public class QuickBarController
 {
     public event System.Action<SceneObject> OnSceneObjectSelected;
 
-    SceneObject[] quickBarShortcutsSceneObjects = new SceneObject[9];
+    SceneObject[] quickBarShortcutsSceneObjects = new SceneObject[amountOQuickBarfSlots];
+
+    const int amountOQuickBarfSlots = 9;
 
     public QuickBarController(QuickBarView view)
     { 
