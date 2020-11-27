@@ -21,7 +21,14 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = (props) => (
           Request.
         </div>
       )}
-      <div id="subtext-messages">{props.subMessage}</div>
+      <div id="subtext-messages">
+        {props.subMessage.split("\n").map((item) => (
+          <React.Fragment>
+            {item}
+            <br />
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   </div>
 );

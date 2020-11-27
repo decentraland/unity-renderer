@@ -9,7 +9,8 @@ export default {
     state: {
       status: "Getting things ready...",
       helpText: 0,
-      message: "",
+      message:
+        "Loading scenes 98%\nDownloading images, 3D models, and sounds 95%",
       pendingScenes: 4,
       loadPercentage: 30,
       subsystemsLoad: 0,
@@ -17,7 +18,7 @@ export default {
       showLoadingScreen: true,
     },
     showWalletPrompt: false,
-  } as LoadingContainerProps,
+  },
   component: LoadingContainer,
 } as Meta;
 
