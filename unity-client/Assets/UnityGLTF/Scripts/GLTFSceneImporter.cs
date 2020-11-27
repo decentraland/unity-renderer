@@ -2126,6 +2126,21 @@ namespace UnityGLTF
                 mesh.RecalculateNormals();
             }
 
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
+// Disable it in runtime so this optimization only takes place in
+// asset bundle converter time.
+#if UNITY_EDITOR
+            mesh.Optimize();
+
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+#endif
             if (!KeepCPUCopyOfMesh)
             {
                 mesh.UploadMeshData(true);
