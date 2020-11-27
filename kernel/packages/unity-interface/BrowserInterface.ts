@@ -416,20 +416,17 @@ export class BrowserInterface {
   }
 
   async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
-    const isSupported =
-      // tslint:disable-next-line
-      typeof OffscreenCanvas !== 'undefined' && typeof OffscreenCanvasRenderingContext2D === 'function'
-
-    if (!isSupported) {
-      unityInterface.RejectGIFProcessingRequest()
-      return
-    }
-
     if (!DCL.gifProcessor) {
       DCL.gifProcessor = new GIFProcessor(unityInterface.gameInstance, unityInterface, data.isWebGL1)
     }
 
     DCL.gifProcessor.ProcessGIF(data)
+  }
+
+  public DeleteGIF(data: { value: string }) {
+    if (DCL.gifProcessor) {
+      DCL.gifProcessor.DeleteGIF(data.value)
+    }
   }
 
   public async FetchBalanceOfMANA() {

@@ -20,12 +20,6 @@ namespace DCL
             public float[] frameDelays;
         }
 
-        // TODO: Change into a struct???
-        class GIFDataContainer
-        {
-            public UpdateGIFPointersPayload data = null;
-        }
-
         public static GIFProcessingBridge i { get; private set; }
 
         void Awake()
@@ -37,10 +31,12 @@ namespace DCL
             }
 
             i = this;
+
+            KernelConfig.i.EnsureConfigInitialized().Then(config => { jsGIFProcessingEnabled = config.gifSupported; });
         }
 
-        bool jsGIFProcessingEnabled = true;
-        Dictionary<string, GIFDataContainer> pendingGIFs = new Dictionary<string, GIFDataContainer>();
+        bool jsGIFProcessingEnabled = false;
+        Dictionary<string, GIFCache> cachedGIFs = new Dictionary<string, GIFCache>();
 
         /// <summary>
         /// Tells Kernel to start processing a desired GIF, waits for the data to come back from Kernel and passes it to the GIF through the onFinishCallback
@@ -54,28 +50,38 @@ namespace DCL
                 yield break;
             }
 
-            var gifDataContainer = new GIFDataContainer();
-            string pendingGifId = url;
+            string gifId = url;
 
-            // If we are already waiting for a GIF with the same URL, make another unique id, to avoid sharing the same textures and have problems when disposing them
-            while (pendingGIFs.ContainsKey(pendingGifId))
+            if (!cachedGIFs.TryGetValue(gifId, out GIFCache gif))
             {
-                pendingGifId = "1" + pendingGifId;
+                gif = new GIFCache()
+                {
+                    refCount = 0,
+                    status = GIFCache.Status.PENDING,
+                    data = new GIFCacheData()
+                    {
+                        id = gifId,
+                        url = url,
+                        textures = null
+                    }
+                };
+                cachedGIFs.Add(gifId, gif);
+                DCL.Interface.WebInterface.RequestGIFProcessor(
+                       gif.data.url,
+                       gif.data.id,
+                       SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2);
             }
 
-            pendingGIFs.Add(pendingGifId, gifDataContainer);
+            yield return new WaitUntil(() => gif.status != GIFCache.Status.PENDING);
 
-            DCL.Interface.WebInterface.RequestGIFProcessor(url, pendingGifId, SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2);
-
-            // We use a container class instead of just UpdateGIFPointersPayload to hold its reference and avoid accessing the collection on every yield check
-            yield return new WaitUntil(() => !jsGIFProcessingEnabled || gifDataContainer.data != null);
-
-            if (jsGIFProcessingEnabled)
-                onSuccess?.Invoke(GenerateTexturesList(gifDataContainer.data.width, gifDataContainer.data.height, gifDataContainer.data.pointers, gifDataContainer.data.frameDelays));
-            else
+            if (gif.status == GIFCache.Status.ERROR)
+            {
                 onFail?.Invoke();
+                yield break;
+            }
 
-            pendingGIFs.Remove(pendingGifId);
+            gif.refCount++;
+            onSuccess?.Invoke(gif.data.textures);
         }
 
         /// <summary>
@@ -85,8 +91,35 @@ namespace DCL
         {
             var parsedPayload = Utils.SafeFromJson<UpdateGIFPointersPayload>(payload);
 
-            if (pendingGIFs.ContainsKey(parsedPayload.id))
-                pendingGIFs[parsedPayload.id].data = parsedPayload;
+            if (cachedGIFs.TryGetValue(parsedPayload.id, out GIFCache gif))
+            {
+                gif.data.textures = GenerateTexturesList(parsedPayload.width, parsedPayload.height, parsedPayload.pointers, parsedPayload.frameDelays);
+                gif.status = GIFCache.Status.OK;
+            }
+        }
+
+        public void FailGIFFetch(string id)
+        {
+            if (cachedGIFs.TryGetValue(id, out GIFCache gif))
+            {
+                gif.status = GIFCache.Status.ERROR;
+                cachedGIFs.Remove(id);
+            }
+        }
+
+        public void DeleteGIF(string id)
+        {
+            if (cachedGIFs.TryGetValue(id, out GIFCache gif))
+            {
+                gif.refCount = Mathf.Max(0, gif.refCount - 1);
+                if (gif.refCount == 0)
+                {
+                    gif.status = GIFCache.Status.ERROR;
+                    gif.Dispose();
+                    cachedGIFs.Remove(id);
+                    DCL.Interface.WebInterface.DeleteGIF(id);
+                }
+            }
         }
 
         public List<UniGif.GifTexture> GenerateTexturesList(int width, int height, int[] pointers, float[] frameDelays)

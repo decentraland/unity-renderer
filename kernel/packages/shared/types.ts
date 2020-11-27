@@ -524,4 +524,5 @@ export type KernelConfigForRenderer = {
     nameValidRegex: string
     nameValidCharacterRegex: string
   }
+  gifSupported: boolean
 }

@@ -185,7 +185,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         bool foundDCLImage = false;
         if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.previewImageUrl, Asset_Gif.MaxSize.DONT_RESIZE, (downloadedTex, texturePromise) =>
+            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.previewImageUrl, (downloadedTex, texturePromise) =>
             {
                 foundDCLImage = true;
                 this.texturePromise = texturePromise;
@@ -215,7 +215,7 @@ public class NFTShapeLoaderController : MonoBehaviour
                 yield break;
             }
 
-            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.originalImageUrl, Asset_Gif.MaxSize._256,
+            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.originalImageUrl,
                 (downloadedTex, texturePromise) =>
                 {
                     foundDCLImage = true;
@@ -259,8 +259,11 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (resizeFrameMesh)
         {
-            Vector3 newScale = new Vector3(newAsset.width / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
-                newAsset.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
+            float w, h;
+            w = h = 0.5f;
+            if (newAsset.width > newAsset.height) h *= newAsset.height / (float)newAsset.width;
+            else if (newAsset.width < newAsset.height) w *= newAsset.width / (float)newAsset.height;
+            Vector3 newScale = new Vector3(w, h, 1f);
 
             meshRenderer.transform.localScale = newScale;
         }

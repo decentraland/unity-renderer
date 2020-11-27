@@ -210,7 +210,7 @@ public class NFTPromptHUDView : MonoBehaviour
                 {
                     nftImageAsset = downloadedTex;
                     this.texturePromise = texturePromise;
-                }, Asset_Gif.MaxSize._256);
+                });
         }
 
         if (nftImageAsset != null)

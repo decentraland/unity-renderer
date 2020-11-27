@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers.Gif;
 using DCL.Helpers;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL
@@ -27,15 +25,14 @@ namespace DCL
             }
         }
 
-        public static IEnumerator Fetch(string url, Action<ITexture, AssetPromise_Texture> OnSuccess, Asset_Gif.MaxSize maxTextureSize = Asset_Gif.MaxSize.DONT_RESIZE)
+        public static IEnumerator Fetch(string url, Action<ITexture, AssetPromise_Texture> OnSuccess)
         {
             string contentType = null;
             yield return GetHeader(url, "Content-Type", type => contentType = type, null);
-            yield return Fetch(contentType, url, maxTextureSize, OnSuccess);
+            yield return Fetch(contentType, url, OnSuccess);
         }
 
-        public static IEnumerator Fetch(string contentType, string url, Asset_Gif.MaxSize maxTextureSize,
-                                        Action<ITexture, AssetPromise_Texture> OnSuccess, Action OnFail = null)
+        public static IEnumerator Fetch(string contentType, string url, Action<ITexture, AssetPromise_Texture> OnSuccess, Action OnFail = null)
         {
             if (contentType != "image/gif")
             {
@@ -50,7 +47,7 @@ namespace DCL
                 yield break;
             }
 
-            var gif = new Asset_Gif(url, maxTextureSize, OnSuccess);
+            var gif = new Asset_Gif(url, OnSuccess);
 
             yield return gif.Load();
         }
