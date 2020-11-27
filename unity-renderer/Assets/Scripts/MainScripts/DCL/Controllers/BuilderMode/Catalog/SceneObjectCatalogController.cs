@@ -15,49 +15,47 @@ using UnityEngine.UI;
 
 public class SceneObjectCatalogController : MonoBehaviour 
 {
-    public System.Action<string> OnResultReceived;
-    public System.Action<SceneObject> OnSceneObjectSelected;
-    public System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
-    public System.Action OnStopInput, OnResumeInput;
+    public event System.Action<string> OnResultReceived;
+    public event System.Action<SceneObject> OnSceneObjectSelected;
+    public event System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
 
-    public Canvas generalCanvas;
+
     public TextMeshProUGUI catalogTitleTxt;
     public CatalogAssetPackListView catalogAssetPackListView;
     public CatalogGroupListView catalogGroupListView;
     public TMP_InputField searchInputField;
-    public RawImage[] shortcutsImgs;
-
-    const string favoriteName = "Favorites";
+    public FavoritesController favoritesController;
+    public QuickBarView quickBarView;
 
 
     List<Dictionary<string, List<SceneObject>>> filterObjects = new List<Dictionary<string, List<SceneObject>>>();
     string lastFilterName = "";
     bool catalogInitializaed = false, isShowingAssetPacks = false, isFavoriteFilterActive = false;
-    List<SceneObject> favoritesSceneObjects = new List<SceneObject>();
-    List<SceneObject> quickBarShortcutsSceneObjects = new List<SceneObject>() { null, null, null,null,null,null,null,null,null };
 
+
+    const string favoriteName = "Favorites";
+    QuickBarController quickBarController;
 
     private void Start()
     {
+        quickBarController = new QuickBarController(quickBarView);
+        favoritesController = new FavoritesController(catalogGroupListView);
+
+        quickBarView.OnQuickBarShortcutSelected += QuickBarInput;
         OnResultReceived += AddFullSceneObjectCatalog;
         catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
-        catalogGroupListView.OnSceneObjectFavorite += ToggleFavoriteState;
-        catalogGroupListView.OnAdapterStartDragging += SceneObjectStartDragged;
-        catalogGroupListView.OnAdapterDrag += OnDrag;
-        catalogGroupListView.OnAdapterEndDrag += OnEndDrag;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
+        quickBarController.OnSceneObjectSelected += SceneObjectSelected;
     }
 
     private void OnDestroy()
     {
+        quickBarView.OnQuickBarShortcutSelected -= QuickBarInput;
         catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
         OnResultReceived -= AddFullSceneObjectCatalog;
-        catalogGroupListView.OnSceneObjectFavorite -= ToggleFavoriteState;
-        catalogGroupListView.OnAdapterStartDragging -= SceneObjectStartDragged;
-        catalogGroupListView.OnAdapterDrag -= OnDrag;
-        catalogGroupListView.OnAdapterEndDrag -= OnEndDrag;
+        quickBarController.OnSceneObjectSelected -= SceneObjectSelected;
     }
 
     #region Filter
@@ -113,69 +111,10 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     #endregion
 
-    #region DragAndDrop
-
-    int lastIndexDroped = -1;
-    GameObject draggedObject;
-    public void SetIndexToDrop(int index)
+    void QuickBarInput(int quickBarSlot)
     {
-        lastIndexDroped = index;
+        quickBarController.QuickBarObjectSelected(quickBarSlot);
     }
-
-    void OnDrag(PointerEventData data)
-    {
-        draggedObject.transform.position = data.position;
-    }
-
-    void SceneObjectStartDragged(SceneObject sceneObjectClicked, CatalogItemAdapter adapter, BaseEventData data)
-    {
-        PointerEventData eventData = data as PointerEventData;
-
-        if(draggedObject == null)
-            draggedObject = Instantiate(adapter.gameObject, generalCanvas.transform);
-       
-        CatalogItemAdapter newAdapter = draggedObject.GetComponent<CatalogItemAdapter>();
-
-        RectTransform adapterRT = adapter.GetComponent<RectTransform>();
-        newAdapter.SetContent(adapter.GetContent());
-        newAdapter.EnableDragMode(adapterRT.sizeDelta);
-
-        OnStopInput?.Invoke();
-    }
-
-    void OnEndDrag(PointerEventData data)
-    {     
-        Destroy(draggedObject, 0.1f);
-        OnResumeInput?.Invoke();
-    }
-
-    public void SceneObjectDropped(BaseEventData data)
-    {
-     
-        CatalogItemAdapter adapter = draggedObject.GetComponent<CatalogItemAdapter>();
-        SceneObject sceneObject = adapter.GetContent();
-        Texture texture = null;
-        if (adapter.thumbnailImg.enabled)
-        {
-            texture = adapter.thumbnailImg.texture;
-            SetQuickBarShortcut(sceneObject, lastIndexDroped, texture);
-        }
-        Destroy(draggedObject);
-    }
-
-    #endregion
-
-    void SetQuickBarShortcut(SceneObject sceneObject, int index,Texture texture)
-    {     
-        quickBarShortcutsSceneObjects[index] = sceneObject;
-        if (index < shortcutsImgs.Length)
-        {
-            shortcutsImgs[index].texture = texture;
-            shortcutsImgs[index].enabled = true;
-        }
-    }
-
-    #region Favorites
 
     public void ToggleFavorites()
     {
@@ -186,104 +125,16 @@ public class SceneObjectCatalogController : MonoBehaviour
             ShowAssetsPacks();
             return;
         }
-
-      
-        List<Dictionary<string, List<SceneObject>>> favorites = new List<Dictionary<string, List<SceneObject>>>();
-        foreach (SceneAssetPack assetPack in CatalogController.sceneObjectCatalog.GetValues().ToList())
-        {
-            foreach (SceneObject sceneObject in assetPack.assets)
-            {
-                foreach (SceneObject favObject in favoritesSceneObjects)
-                {
-                    if (favObject == null) continue;
-
-                    if (sceneObject.id == favObject.id && sceneObject.asset_pack_id == favObject.asset_pack_id)
-                    {
-                        bool foundCategory = false;
-                        foreach (Dictionary<string, List<SceneObject>> groupedSceneObjects in favorites)
-                        {
-                            if (groupedSceneObjects.ContainsKey(favoriteName))
-                            {
-                                foundCategory = true;
-                                if (!groupedSceneObjects[favoriteName].Contains(sceneObject))
-                                    groupedSceneObjects[favoriteName].Add(sceneObject);
-                            }
-                        }
-                        if (!foundCategory)
-                        {
-                            Dictionary<string, List<SceneObject>> groupedSceneObjects = new Dictionary<string, List<SceneObject>>();
-                            groupedSceneObjects.Add(favoriteName, new List<SceneObject>() { sceneObject });
-                            favorites.Add(groupedSceneObjects);
-                        }
-                        break;
-
-                    }
-
-                }
-            }
-        }
         catalogTitleTxt.text = favoriteName;
         ShowCatalogContent();
+
+        List<Dictionary<string, List<SceneObject>>> favorites = new List<Dictionary<string, List<SceneObject>>>();
+        Dictionary<string, List<SceneObject>> groupedSceneObjects = new Dictionary<string, List<SceneObject>>();
+        groupedSceneObjects.Add(favoriteName, favoritesController.GetFavorites());
+        favorites.Add(groupedSceneObjects);
+
         catalogGroupListView.SetContent(favorites);
     }
-
-    public void ToggleFavoriteState(SceneObject sceneObject, CatalogItemAdapter adapter)
-    {
-
-        if (!favoritesSceneObjects.Contains(sceneObject))
-        {
-            favoritesSceneObjects.Add(sceneObject);
-
-            int index = FindEmptyShortcutSlot();
-            SetQuickBarShortcut(sceneObject,index,adapter.thumbnailImg.texture);
-
-            sceneObject.isFavorite = true;
-          
-        }
-        else
-        {
-            favoritesSceneObjects.Remove(sceneObject);
-
-            if (quickBarShortcutsSceneObjects.Contains(sceneObject))
-            {
-                int index = quickBarShortcutsSceneObjects.IndexOf(sceneObject);
-                if (index < shortcutsImgs.Length && index != -1)
-                {
-                    shortcutsImgs[index].enabled = false;
-                    quickBarShortcutsSceneObjects[index] = null;
-                }
-            }
-         
-            sceneObject.isFavorite = false;
-        }
-
-        adapter.SetFavorite(sceneObject.isFavorite);
-
-    }
-
-    public void QuickBarObjectSelected(int index)
-    {
-        if (quickBarShortcutsSceneObjects.Count > index && quickBarShortcutsSceneObjects[index] != null)
-            OnSceneObjectSelected?.Invoke(quickBarShortcutsSceneObjects[index]);
-    }
-
-    int FindEmptyShortcutSlot()
-    {
-        int index = quickBarShortcutsSceneObjects.Count;
-        int cont = 0;
-        foreach (SceneObject sceneObjectIteration in quickBarShortcutsSceneObjects)
-        {
-            if (sceneObjectIteration == null)
-            {
-                index = cont;
-                break;
-            }
-            cont++;
-        }
-        return index;
-    }
-
-    #endregion
 
     void SceneObjectSelected(SceneObject sceneObject)
     {
