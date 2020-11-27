@@ -56,7 +56,7 @@ namespace DCL
                 WebInterface.StartDecentraland();
             }
 
-            ParcelScene.parcelScenesCleaner.Start();
+            Environment.i.parcelScenesCleaner.Start();
 
             if (deferredMessagesDecoding) // We should be able to delete this code
                 StartCoroutine(DeferredDecoding()); //
@@ -103,14 +103,14 @@ namespace DCL
         {
             Environment.i.Restart(this, this);
 
-            ParcelScene.parcelScenesCleaner.ForceCleanup();
+            Environment.i.parcelScenesCleaner.ForceCleanup();
         }
 
         void OnDestroy()
         {
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
-            ParcelScene.parcelScenesCleaner.Stop();
+            Environment.i.parcelScenesCleaner.Stop();
             Environment.i.cullingController.Stop();
         }
 

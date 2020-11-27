@@ -24,8 +24,6 @@ namespace DCL.Controllers
             READY,
         }
 
-        public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
-
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -433,7 +431,7 @@ namespace DCL.Controllers
             }
             else
             {
-                parcelScenesCleaner.MarkForCleanup(entity);
+                Environment.i.parcelScenesCleaner.MarkForCleanup(entity);
             }
         }
 
@@ -453,7 +451,7 @@ namespace DCL.Controllers
                         if (instant)
                             rootEntities.Add(iterator.Current.Value);
                         else
-                            parcelScenesCleaner.MarkRootEntityForCleanup(this, iterator.Current.Value);
+                            Environment.i.parcelScenesCleaner.MarkRootEntityForCleanup(this, iterator.Current.Value);
                     }
                 }
             }
@@ -1267,7 +1265,7 @@ namespace DCL.Controllers
             List<string> allDisposableComponents = disposableComponents.Select(x => x.Key).ToList();
             foreach (string id in allDisposableComponents)
             {
-                parcelScenesCleaner.MarkDisposableComponentForCleanup(this, id);
+                Environment.i.parcelScenesCleaner.MarkDisposableComponentForCleanup(this, id);
             }
         }
 
