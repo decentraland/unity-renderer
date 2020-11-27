@@ -9725,7 +9725,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.000061035156}
   m_SizeDelta: {x: 0.000091552734, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &851071764306684488
@@ -11899,7 +11899,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0.09075928}
   m_SizeDelta: {x: 0, y: -0.18151093}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12002,6 +12002,24 @@ MonoBehaviour:
   - {fileID: 851071764752923431}
   generalCanvas: {fileID: 851071764747098676}
   catalogGroupListView: {fileID: 851071763915059372}
+  quickBar1InputAction: {fileID: 11400000, guid: 019a8b4972b1c1a45b15beba521da248,
+    type: 2}
+  quickBar2InputAction: {fileID: 11400000, guid: 702cc9951626b2342be70c2ea20e6b3c,
+    type: 2}
+  quickBar3InputAction: {fileID: 11400000, guid: 078b4efaef516bf49884dcc0f1b5a548,
+    type: 2}
+  quickBar4InputAction: {fileID: 11400000, guid: 64309d885afc99e40a66e73d021ca596,
+    type: 2}
+  quickBar5InputAction: {fileID: 11400000, guid: 1990a087888338544a13d0e1bf571111,
+    type: 2}
+  quickBar6InputAction: {fileID: 11400000, guid: 5aedd02bc65ca2b4c8d712d69e06a62d,
+    type: 2}
+  quickBar7InputAction: {fileID: 11400000, guid: 230c6a1a95c22cd4084a30b192b433f7,
+    type: 2}
+  quickBar8InputAction: {fileID: 11400000, guid: f458a244ef605bf4bbf6cb47c2cc7409,
+    type: 2}
+  quickBar9InputAction: {fileID: 11400000, guid: 80e3d0c91d2e18d45977a1f31b50621d,
+    type: 2}
 --- !u!1 &851071764522330807
 GameObject:
   m_ObjectHideFlags: 0
@@ -13404,7 +13422,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &851071764665949381
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14379,7 +14397,7 @@ MonoBehaviour:
   sceneLimitInfoController: {fileID: 851071765511007212}
   sceneObjectCatalogController: {fileID: 6818990461646912356}
   toolTipController: {fileID: 4730837589599637360}
-  quickBarController: {fileID: 2858140822079303849}
+  quickBarView: {fileID: 2858140822079303849}
   firstPersonCanvasGO: {fileID: 851071763679374503}
   godModeCanvasGO: {fileID: 851071765252996793}
   extraBtnsGO: {fileID: 851071764922696198}
@@ -14426,24 +14444,6 @@ MonoBehaviour:
   toggleSceneInfoInputAction: {fileID: 11400000, guid: b01ba6523971e0149a23c36b50259cdd,
     type: 2}
   toggleCatalogInputAction: {fileID: 11400000, guid: 7a0d84998e5175746a922761f2a867fe,
-    type: 2}
-  quickBar1InputAction: {fileID: 11400000, guid: 019a8b4972b1c1a45b15beba521da248,
-    type: 2}
-  quickBar2InputAction: {fileID: 11400000, guid: 702cc9951626b2342be70c2ea20e6b3c,
-    type: 2}
-  quickBar3InputAction: {fileID: 11400000, guid: 078b4efaef516bf49884dcc0f1b5a548,
-    type: 2}
-  quickBar4InputAction: {fileID: 11400000, guid: 64309d885afc99e40a66e73d021ca596,
-    type: 2}
-  quickBar5InputAction: {fileID: 11400000, guid: 1990a087888338544a13d0e1bf571111,
-    type: 2}
-  quickBar6InputAction: {fileID: 11400000, guid: 5aedd02bc65ca2b4c8d712d69e06a62d,
-    type: 2}
-  quickBar7InputAction: {fileID: 11400000, guid: 230c6a1a95c22cd4084a30b192b433f7,
-    type: 2}
-  quickBar8InputAction: {fileID: 11400000, guid: f458a244ef605bf4bbf6cb47c2cc7409,
-    type: 2}
-  quickBar9InputAction: {fileID: 11400000, guid: 80e3d0c91d2e18d45977a1f31b50621d,
     type: 2}
 --- !u!223 &851071764747098676
 Canvas:
@@ -25215,7 +25215,6 @@ GameObject:
   m_Component:
   - component: {fileID: 851071765545109252}
   - component: {fileID: 6818990461646912356}
-  - component: {fileID: 181005791488322439}
   m_Layer: 5
   m_Name: SceneCatalog
   m_TagString: Untagged
@@ -25259,21 +25258,7 @@ MonoBehaviour:
   catalogAssetPackListView: {fileID: 851071765659676003}
   catalogGroupListView: {fileID: 851071763915059372}
   searchInputField: {fileID: 851071764848031699}
-  favoritesController: {fileID: 181005791488322439}
-  quickBarController: {fileID: 2858140822079303849}
---- !u!114 &181005791488322439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 851071765545109253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 895d63441da05b6449048521e5890f74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  catalogGroupListView: {fileID: 851071763915059372}
+  quickBarView: {fileID: 2858140822079303849}
 --- !u!1 &851071765561143009
 GameObject:
   m_ObjectHideFlags: 0

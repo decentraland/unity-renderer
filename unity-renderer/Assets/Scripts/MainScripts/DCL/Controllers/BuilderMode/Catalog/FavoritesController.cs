@@ -2,20 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FavoritesController : MonoBehaviour
+public class FavoritesController 
 {
-    public CatalogGroupListView catalogGroupListView;
-
     List<SceneObject> favoritesSceneObjects = new List<SceneObject>();
 
-    private void Start()
+    public CatalogGroupListView catalogGroupListView;
+
+    public FavoritesController(CatalogGroupListView catalogGroupListView)
     {
         catalogGroupListView.OnSceneObjectFavorite += ToggleFavoriteState;
-    }
-
-    private void OnDestroy()
-    {
-        catalogGroupListView.OnSceneObjectFavorite -= ToggleFavoriteState;
     }
 
     public List<SceneObject> GetFavorites()
@@ -39,5 +34,4 @@ public class FavoritesController : MonoBehaviour
 
         adapter.SetFavorite(sceneObject.isFavorite);
     }
-
 }

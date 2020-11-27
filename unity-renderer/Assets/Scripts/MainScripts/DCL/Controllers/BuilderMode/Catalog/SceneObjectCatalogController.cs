@@ -25,7 +25,7 @@ public class SceneObjectCatalogController : MonoBehaviour
     public CatalogGroupListView catalogGroupListView;
     public TMP_InputField searchInputField;
     public FavoritesController favoritesController;
-    public QuickBarController quickBarController;
+    public QuickBarView quickBarView;
 
 
     List<Dictionary<string, List<SceneObject>>> filterObjects = new List<Dictionary<string, List<SceneObject>>>();
@@ -34,9 +34,14 @@ public class SceneObjectCatalogController : MonoBehaviour
 
 
     const string favoriteName = "Favorites";
+    QuickBarController quickBarController;
 
     private void Start()
     {
+        quickBarController = new QuickBarController(quickBarView);
+        favoritesController = new FavoritesController(catalogGroupListView);
+
+        quickBarView.OnQuickBarShortcutSelected += QuickBarInput;
         OnResultReceived += AddFullSceneObjectCatalog;
         catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
@@ -46,6 +51,7 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     private void OnDestroy()
     {
+        quickBarView.OnQuickBarShortcutSelected -= QuickBarInput;
         catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
         OnResultReceived -= AddFullSceneObjectCatalog;
@@ -105,6 +111,10 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     #endregion
 
+    void QuickBarInput(int quickBarSlot)
+    {
+        quickBarController.QuickBarObjectSelected(quickBarSlot);
+    }
 
     public void ToggleFavorites()
     {
