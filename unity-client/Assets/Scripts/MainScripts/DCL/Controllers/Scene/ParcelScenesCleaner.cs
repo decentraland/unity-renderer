@@ -1,12 +1,24 @@
+using System;
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class ParcelScenesCleaner
+    public interface IParcelScenesCleaner : IDisposable
+    {
+        void Start();
+        void Stop();
+        void MarkForCleanup(DecentralandEntity entity);
+        void MarkRootEntityForCleanup(ParcelScene scene, DecentralandEntity entity);
+        void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId);
+        void ForceCleanup();
+    }
+
+    public class ParcelScenesCleaner : IParcelScenesCleaner
     {
         const float MAX_TIME_BUDGET = 0.01f;
 
@@ -182,6 +194,12 @@ namespace DCL
 
                 yield return null;
             }
+        }
+
+        public void Dispose()
+        {
+            ForceCleanup();
+            Stop();
         }
     }
 }
