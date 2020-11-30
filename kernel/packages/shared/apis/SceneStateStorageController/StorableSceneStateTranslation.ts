@@ -46,7 +46,9 @@ const HUMAN_READABLE_TO_ID: Map<string, number> = new Map([
   ['Transform', CLASS_ID.TRANSFORM],
   ['GLTFShape', CLASS_ID.GLTF_SHAPE],
   ['NFTShape', CLASS_ID.NFT_SHAPE],
-  ['Name', CLASS_ID.NAME]
+  ['Name', CLASS_ID.NAME],
+  ['LockedOnEdit', CLASS_ID.LOCKED_ON_EDIT],
+  ['VisibleOnEdit', CLASS_ID.VISIBLE_ON_EDIT]
 ])
 
 function toHumanReadableType(type: number): string {
