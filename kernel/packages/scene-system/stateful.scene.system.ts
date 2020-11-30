@@ -3,12 +3,12 @@ import { inject, Script } from 'decentraland-rpc/lib/client/Script'
 import { ILogOpts, ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 import { IEngineAPI } from 'shared/apis/EngineAPI'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
-import { SceneStateStorageController } from 'shared/apis/SceneStateStorageController'
+import { SceneStateStorageController } from 'shared/apis/SceneStateStorageController/SceneStateStorageController'
 import { defaultLogger } from 'shared/logger'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { RendererStatefulActor } from './stateful-scene/RendererStatefulActor'
 import { SceneStateDefinition } from './stateful-scene/SceneStateDefinition'
-import { SceneStateDefinitionSerializer } from './stateful-scene/SceneStateDefinitionSerializer'
+import { deserializeSceneState, serializeSceneState } from './stateful-scene/SceneStateDefinitionSerializer'
 
 class StatefulWebWorkerScene extends Script {
   @inject('DevTools')
@@ -39,7 +39,8 @@ class StatefulWebWorkerScene extends Script {
     this.eventSubscriber = new EventSubscriber(this.engine)
 
     // Fetch stored scene
-    this.sceneState = SceneStateDefinitionSerializer.fromStorableFormat(await this.sceneStateStorage.getStoredState(sceneId))
+    const storedState = await this.sceneStateStorage.getStoredState(sceneId)
+    this.sceneState = storedState ? deserializeSceneState(storedState) : new SceneStateDefinition()
 
     // Listen to the renderer and update the local scene state
     this.renderer.forwardChangesTo(this.sceneState)
@@ -52,7 +53,7 @@ class StatefulWebWorkerScene extends Script {
     // Listen to storage requests
     this.eventSubscriber.on('stateEvent', ({ data }) => {
       if (data.type === 'StoreSceneState') {
-        this.sceneStateStorage.storeState(sceneId, SceneStateDefinitionSerializer.toStorableFormat(this.sceneState))
+        this.sceneStateStorage.storeState(sceneId, serializeSceneState(this.sceneState))
       }
     })
   }
