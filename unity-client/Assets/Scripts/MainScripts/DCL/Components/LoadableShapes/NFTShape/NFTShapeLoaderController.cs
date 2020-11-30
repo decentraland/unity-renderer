@@ -171,21 +171,11 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
 
-        string imageType = "";
-        yield return WrappedTextureUtils.GetHeader(nftInfo.previewImageUrl, "Content-Type", type => imageType = type, error => isError = true);
-
-        if (isError)
-        {
-            Debug.LogError($"Couldn't fetch NFT image header: '{darURLRegistry}/{darURLAsset}' {nftInfo.previewImageUrl}");
-            OnLoadingAssetFail?.Invoke();
-            yield break;
-        }
-
         // We download the "preview" 256px image
         bool foundDCLImage = false;
         if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
         {
-            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.previewImageUrl, (downloadedTex, texturePromise) =>
+            yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (downloadedTex, texturePromise) =>
             {
                 foundDCLImage = true;
                 this.texturePromise = texturePromise;
@@ -193,11 +183,10 @@ public class NFTShapeLoaderController : MonoBehaviour
 
                 var hqImageHandlerConfig = new NFTShapeHQImageConfig()
                 {
-                    contentType = imageType,
                     controller = this,
                     nftConfig = config,
                     nftInfo = nftInfo,
-                    previewTexture = texturePromise
+                    asset = NFTAssetFactory.CreateAsset(downloadedTex, config)
                 };
                 hqTextureHandler = NFTShapeHQImageHandler.Create(hqImageHandlerConfig);
             });
@@ -206,22 +195,20 @@ public class NFTShapeLoaderController : MonoBehaviour
         //We fall back to the nft original image which can have a really big size
         if (!foundDCLImage && !string.IsNullOrEmpty(nftInfo.originalImageUrl))
         {
-            yield return WrappedTextureUtils.GetHeader(nftInfo.originalImageUrl, "Content-Type", type => imageType = type, error => isError = true);
-
-            if (isError)
-            {
-                Debug.LogError($"Couldn't fetch NFT image header: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
-                OnLoadingAssetFail?.Invoke();
-                yield break;
-            }
-
-            yield return WrappedTextureUtils.Fetch(imageType, nftInfo.originalImageUrl,
+            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
                 (downloadedTex, texturePromise) =>
                 {
                     foundDCLImage = true;
                     this.texturePromise = texturePromise;
                     SetFrameImage(downloadedTex, resizeFrameMesh: true);
-                });
+                }, () => isError = true);
+        }
+
+        if (isError)
+        {
+            Debug.LogError($"Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
+            OnLoadingAssetFail?.Invoke();
+            yield break;
         }
 
         FinishLoading(foundDCLImage);
