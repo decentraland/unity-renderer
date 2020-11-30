@@ -67,7 +67,9 @@ export enum CLASS_ID {
   AVATAR_MODIFIER_AREA = 205,
 
   // For state sync only
-  NAME = 300
+  NAME = 300,
+  LOCKED_ON_EDIT = 301,
+  VISIBLE_ON_EDIT = 302
 }
 
 export enum AvatarModifiers {
@@ -89,7 +91,7 @@ export class AvatarModifierArea extends ObservableComponent {
   @ObservableComponent.field
   modifiers!: AvatarModifiers[]
 
-  constructor(args: { area: Area, modifiers: AvatarModifiers[] }) {
+  constructor(args: { area: Area; modifiers: AvatarModifiers[] }) {
     super()
     this.area = args.area
     this.modifiers = args.modifiers
@@ -206,13 +208,13 @@ export class Shape extends ObservableComponent {
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.BOX_SHAPE)
-export class BoxShape extends Shape { }
+export class BoxShape extends Shape {}
 
 /**
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.SPHERE_SHAPE)
-export class SphereShape extends Shape { }
+export class SphereShape extends Shape {}
 
 /**
  * @public
@@ -867,8 +869,8 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
 
   static uuidEvent(target: ObservableComponent, propertyKey: string) {
     if (delete (target as any)[propertyKey]) {
-      const componentSymbol = propertyKey + '_' + Math.random();
-      (target as any)[componentSymbol] = undefined
+      const componentSymbol = propertyKey + '_' + Math.random()
+      ;(target as any)[componentSymbol] = undefined
 
       Object.defineProperty(target, componentSymbol, {
         ...Object.getOwnPropertyDescriptor(target, componentSymbol),
@@ -962,7 +964,7 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
  * @internal
  */
 @Component('engine.smartItem', CLASS_ID.SMART_ITEM)
-export class SmartItem extends ObservableComponent { }
+export class SmartItem extends ObservableComponent {}
 
 /**
  * @public
@@ -1060,7 +1062,8 @@ export class VideoTexture extends ObservableComponent {
   }
 
   toJSON() {
-    if (this.seek >= 0) { // the seek value was changed/used
+    if (this.seek >= 0) {
+      // the seek value was changed/used
       this.pause()
 
       const ret = JSON.parse(JSON.stringify(super.toJSON()))
