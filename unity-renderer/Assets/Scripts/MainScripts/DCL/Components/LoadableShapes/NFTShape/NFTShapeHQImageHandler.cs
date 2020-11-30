@@ -1,21 +1,19 @@
 ﻿using System;
-using DCL;
 using DCL.Helpers.NFT;
 using UnityEngine;
 
-public class NFTShapeHQImageConfig
+internal class NFTShapeHQImageConfig
 {
-    public string contentType;
     public NFTInfo nftInfo;
     public NFTShapeConfig nftConfig;
     public NFTShapeLoaderController controller;
-    public AssetPromise_Texture previewTexture;
+    public INFTAsset asset;
 }
 
-public class NFTShapeHQImageHandler : IDisposable
+internal class NFTShapeHQImageHandler : IDisposable
 {
     NFTShapeHQImageConfig config;
-    AssetPromise_Texture hqTexture;
+    INFTAsset asset;
 
     bool isPlayerNear;
     bool isCameraInFront;
@@ -27,8 +25,10 @@ public class NFTShapeHQImageHandler : IDisposable
 
     static public NFTShapeHQImageHandler Create(NFTShapeHQImageConfig config)
     {
-        if (config.contentType == "image/gif")
+        if (config.asset == null)
+        {
             return null;
+        }
 
         return new NFTShapeHQImageHandler(config);
     }
@@ -36,11 +36,7 @@ public class NFTShapeHQImageHandler : IDisposable
     public void Dispose()
     {
         CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerPositionChanged;
-
-        if (hqTexture != null)
-        {
-            ForgetHQTexture();
-        }
+        asset.Dispose();
     }
 
     public void Update()
@@ -85,6 +81,9 @@ public class NFTShapeHQImageHandler : IDisposable
     private NFTShapeHQImageHandler(NFTShapeHQImageConfig config)
     {
         this.config = config;
+        this.asset = config.asset;
+        this.asset.UpdateTextureCallback = config.controller.UpdateTexture;
+
         camera = Camera.main;
         screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
 
@@ -116,32 +115,31 @@ public class NFTShapeHQImageHandler : IDisposable
 
     private void FetchHQTexture()
     {
-        if (hqTexture != null)
+        if (asset.isHQ)
             return;
 
-        hqTexture = new AssetPromise_Texture(string.Format("{0}=s{1}", config.nftInfo.imageUrl, config.nftConfig.hqImgResolution));
-        AssetPromiseKeeper_Texture.i.Keep(hqTexture);
-        hqTexture.OnSuccessEvent += (asset) => config.controller.UpdateTexture(asset.texture);
-        hqTexture.OnFailEvent += (asset) => hqTexture = null;
+        string url = string.Format("{0}=s{1}", config.nftInfo.imageUrl, asset.hqResolution);
+
+        Action debugSuccess = null;
+        Action debugFail = null;
+
+        if (config.nftConfig.verbose)
+        {
+            debugSuccess = () => Debug.Log($"Success: Fetch {config.nftInfo.name} HQ image");
+            debugFail = () => Debug.Log($"Fail: Fetch {config.nftInfo.name} HQ image");
+        }
+
+        asset.FetchAndSetHQAsset(url, debugSuccess, debugFail);
+
         if (config.nftConfig.verbose)
         {
             Debug.Log($"Fetch {config.nftInfo.name} HQ image");
         }
     }
 
-    private void ForgetHQTexture()
-    {
-        AssetPromiseKeeper_Texture.i.Forget(hqTexture);
-        hqTexture = null;
-        if (config.nftConfig.verbose)
-        {
-            Debug.Log($"Forget {config.nftInfo.name} HQ image");
-        }
-    }
-
     private void RestorePreviewTexture()
     {
-        config.controller.UpdateTexture(config.previewTexture.asset.texture);
+        asset.RestorePreviewAsset();
         if (config.nftConfig.verbose)
         {
             Debug.Log($"Restore {config.nftInfo.name} preview image");
@@ -150,10 +148,9 @@ public class NFTShapeHQImageHandler : IDisposable
 
     private void RestorePreviewTextureIfInHQ()
     {
-        if (hqTexture == null)
+        if (!asset.isHQ)
             return;
 
-        ForgetHQTexture();
         RestorePreviewTexture();
     }
 }

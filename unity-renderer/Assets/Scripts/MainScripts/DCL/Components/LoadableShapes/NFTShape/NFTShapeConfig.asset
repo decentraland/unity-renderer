@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: NFTShapeConfig
   m_EditorClassIdentifier: 
   loadingMinDistance: 30
-  hqImgMinDistance: 5
+  hqImgMinDistance: 7
   hqImgFacingDotProdMinValue: 0.4
   hqImgInFrontDotProdMinValue: 0.2
   hqImgResolution: 1024
+  hqGifResolution: 512
   verbose: 0
