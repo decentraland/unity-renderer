@@ -14,7 +14,12 @@ export class SceneStateDefinition implements StateContainer {
   }
 
   setComponent(entityId: EntityId, componentId: ComponentId, data: ComponentData): void {
-    this.entities.get(entityId)?.set(componentId, data)
+    const components = this.entities.get(entityId)
+    if (!components) {
+      this.entities.set(entityId, new Map([[componentId, data]]))
+    } else {
+      components.set(componentId, data)
+    }
   }
 
   removeComponent(entityId: EntityId, componentId: ComponentId): void {
