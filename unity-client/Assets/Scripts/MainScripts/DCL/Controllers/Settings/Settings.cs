@@ -102,6 +102,7 @@ namespace DCL
 
             lastValidAutoqualitySet = autoqualitySettings[index];
             lastValidAutoqualitySet.baseResolution = currentQualitySettings.baseResolution;
+            lastValidAutoqualitySet.fpsCap = currentQualitySettings.fpsCap;
 
             if (currentQualitySettings.Equals(lastValidAutoqualitySet))
                 return;
