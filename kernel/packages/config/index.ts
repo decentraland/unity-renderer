@@ -100,6 +100,7 @@ export const FETCH_META_CONTENT_SERVICE = qs.FETCH_META_CONTENT_SERVICE
 export const COMMS_SERVICE = qs.COMMS_SERVICE
 export const RESIZE_SERVICE = qs.RESIZE_SERVICE
 export const ASSET_BUNDLES_DOMAIN = qs.ASSET_BUNDLES_DOMAIN || 'content-assets-as-bundle.decentraland.org'
+export const HOTSCENES_SERVICE = qs.HOTSCENES_SERVICE
 export const REALM = qs.realm
 
 export const VOICE_CHAT_DISABLED_FLAG = location.search.includes('VOICE_CHAT_DISABLED')

@@ -21,7 +21,7 @@ export function normalizeContentMappings(
 
 export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
   const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
-  const sceneJsons = land.mappingsResponse.contents.filter(land => land.file === 'scene.json')
+  const sceneJsons = land.mappingsResponse.contents.filter((land) => land.file === 'scene.json')
   if (!sceneJsons.length) {
     throw new Error('Invalid scene mapping: no scene.json')
   }
@@ -113,10 +113,15 @@ export function getThumbnailUrlFromJsonData(jsonData?: SceneJsonData): string | 
   }
 
   const thumbnailUrl =
-    jsonData.display?.navmapThumbnail ??
-    (jsonData.source?.projectId
-      ? `https://builder-api.decentraland.org/v1/projects/${jsonData.source.projectId}/media/preview.png`
-      : undefined)
+    jsonData.display?.navmapThumbnail ?? getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
 
   return thumbnailUrl
+}
+
+export function getThumbnailUrlFromBuilderProjectId(projectId: string | undefined): string | undefined {
+  if (!projectId) {
+    return undefined
+  }
+
+  return `https://builder-api.decentraland.org/v1/projects/${projectId}/media/preview.png`
 }
