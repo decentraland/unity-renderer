@@ -29,8 +29,6 @@ public class DCLLockedOnEdit : BaseDisposable
         Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
         if (newModel.value != model.value)
         {
-
-
             model = newModel;
             RaiseOnAppliedChanges();
         }
