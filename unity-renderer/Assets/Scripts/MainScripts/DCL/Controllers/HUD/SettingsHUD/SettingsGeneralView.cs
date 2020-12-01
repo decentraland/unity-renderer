@@ -40,8 +40,8 @@ namespace DCL.SettingsHUD
         public TextMeshProUGUI cullingSliderValueLabel = null;
 
         [SerializeField] private Toggle autosettingsToggle;
-        [SerializeField] private CanvasGroup advancedCanvasGroup;
-        [SerializeField] private GameObject advancedBlocker;
+        [SerializeField] private CanvasGroup autoqualityBlockCanvasGroup;
+        [SerializeField] private GameObject autoqualityBlocker;
 
         private DCL.SettingsData.QualitySettings currentQualitySetting;
         private DCL.SettingsData.GeneralSettings currentGeneralSetting;
@@ -203,14 +203,16 @@ namespace DCL.SettingsHUD
 
         private void SetAutoQualityActive(bool active)
         {
-            advancedCanvasGroup.interactable = !active;
+            autoqualityBlockCanvasGroup.interactable = !active;
             tempGeneralSetting.autoqualityOn = active;
-            advancedBlocker.SetActive(active);
+            autoqualityBlocker.SetActive(active);
             if (active)
             {
                 QualitySettings.BaseResolution currentBaseResolution = tempQualitySetting.baseResolution;
+                bool currentFpsCap = tempQualitySetting.fpsCap;
                 tempQualitySetting = Settings.i.lastValidAutoqualitySet;
                 tempQualitySetting.baseResolution = currentBaseResolution;
+                tempQualitySetting.fpsCap = currentFpsCap;
                 isDirty = true;
             }
         }
