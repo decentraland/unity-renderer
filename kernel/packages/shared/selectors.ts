@@ -107,15 +107,43 @@ export function getSceneNameFromJsonData(jsonData?: SceneJsonData) {
   return title || 'Unnamed'
 }
 
+export function getThumbnailUrlFromJsonDataAndContent(
+  jsonData: SceneJsonData | undefined,
+  contents: Array<ContentMapping> | undefined,
+  downloadUrl: string
+): string | undefined {
+  if (!jsonData) {
+    return undefined
+  }
+
+  if (!contents || !downloadUrl) {
+    return getThumbnailUrlFromJsonData(jsonData)
+  }
+
+  let thumbnail: string | undefined = jsonData.display?.navmapThumbnail
+  if (thumbnail && !thumbnail.startsWith('http')) {
+    // We are assuming that the thumbnail is an uploaded file. We will try to find the matching hash
+    const thumbnailHash = contents?.find(({ file }) => file === thumbnail)?.hash
+    if (thumbnailHash) {
+      thumbnail = `${downloadUrl}/contents/${thumbnailHash}`
+    } else {
+      // If we couldn't find a file with the correct path, then we ignore whatever was set on the thumbnail property
+      thumbnail = undefined
+    }
+  }
+
+  if (!thumbnail) {
+    thumbnail = getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
+  }
+  return thumbnail
+}
+
 export function getThumbnailUrlFromJsonData(jsonData?: SceneJsonData): string | undefined {
   if (!jsonData) {
     return undefined
   }
 
-  const thumbnailUrl =
-    jsonData.display?.navmapThumbnail ?? getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
-
-  return thumbnailUrl
+  return jsonData.display?.navmapThumbnail ?? getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
 }
 
 export function getThumbnailUrlFromBuilderProjectId(projectId: string | undefined): string | undefined {

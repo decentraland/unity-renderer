@@ -6,9 +6,9 @@ import { fetchSceneJson } from 'decentraland-loader/lifecycle/utils/fetchSceneJs
 import { ILand, SceneJsonData } from 'shared/types'
 import { reportScenesFromTiles } from 'shared/atlas/actions'
 import { getSceneNameFromAtlasState, postProcessSceneName, getPoiTiles } from 'shared/atlas/selectors'
-import { getHotScenesService } from 'shared/dao/selectors'
+import { getHotScenesService, getUpdateProfileServer } from 'shared/dao/selectors'
 import defaultLogger from 'shared/logger'
-import { getOwnerNameFromJsonData, getThumbnailUrlFromJsonData } from 'shared/selectors'
+import { getOwnerNameFromJsonData, getThumbnailUrlFromJsonDataAndContent } from 'shared/selectors'
 
 declare const globalThis: StoreContainer
 
@@ -144,7 +144,12 @@ function createHotSceneInfo(
     id: id,
     name: getSceneName(baseCoord, sceneJsonData),
     creator: getOwnerNameFromJsonData(sceneJsonData),
-    thumbnail: getThumbnailUrlFromJsonData(sceneJsonData) ?? '',
+    thumbnail:
+      getThumbnailUrlFromJsonDataAndContent(
+        land?.sceneJsonData,
+        land?.mappingsResponse.contents,
+        getUpdateProfileServer(globalThis.globalStore.getState())
+      ) ?? '',
     baseCoords: { x: baseCoords[0], y: baseCoords[1] },
     parcels: sceneJsonData
       ? sceneJsonData.scene.parcels.map((parcel) => {
@@ -183,7 +188,12 @@ async function fetchPOIsAsHotSceneInfo(): Promise<HotSceneInfo[]> {
       id: land.sceneId,
       name: getSceneName(land.sceneJsonData.scene.base, land.sceneJsonData),
       creator: getOwnerNameFromJsonData(land.sceneJsonData),
-      thumbnail: getThumbnailUrlFromJsonData(land.sceneJsonData) ?? '',
+      thumbnail:
+        getThumbnailUrlFromJsonDataAndContent(
+          land.sceneJsonData,
+          land.mappingsResponse.contents,
+          getUpdateProfileServer(globalThis.globalStore.getState())
+        ) ?? '',
       baseCoords: { x: baseCoords[0], y: baseCoords[1] },
       parcels: land.sceneJsonData
         ? land.sceneJsonData.scene.parcels.map((parcel) => {
