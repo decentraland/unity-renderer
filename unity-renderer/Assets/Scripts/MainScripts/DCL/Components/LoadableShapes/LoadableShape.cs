@@ -15,6 +15,7 @@ namespace DCL.Components
         public new class Model : BaseShape.Model
         {
             public string src;
+            public string assetId;
         }
 
         public Model model = new Model();
@@ -116,7 +117,8 @@ namespace DCL.Components
 
             bool updateVisibility = previousModel.visible != model.visible;
             bool updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
-            bool triggerAttachment = !string.IsNullOrEmpty(model.src) && previousModel.src != model.src;
+            bool triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
+                                     (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId); 
 
             foreach (var entity in attachedEntities)
             {
@@ -137,13 +139,24 @@ namespace DCL.Components
 
         protected virtual void AttachShape(DecentralandEntity entity)
         {
-            if (scene.contentProvider.HasContentsUrl(model.src))
+            ContentProvider provider = null;
+
+            if (!string.IsNullOrEmpty(model.assetId))
+                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(model.assetId);
+                             
+            if(provider == null)
+                provider = scene.contentProvider;
+            
+            if (provider.HasContentsUrl(model.src))
             {
                 isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");
 
                 LoadWrapperType loadableShape = GetOrAddLoaderForEntity<LoadWrapperType>(entity);
 
+                if(loadableShape is LoadWrapper_GLTF gltfLoadWrapper)
+                    gltfLoadWrapper.customContentProvider = provider;
+                
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;

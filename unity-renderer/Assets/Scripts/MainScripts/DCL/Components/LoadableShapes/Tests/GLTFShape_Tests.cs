@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -34,6 +35,49 @@ public class GLTFShape_Tests : TestsBase
             "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
     }
 
+    [Test]
+    public void CustomContentProvider()
+    {
+        string entityId = "1";
+        TestHelpers.CreateSceneEntity(scene, entityId);
+
+        string mockupAssetId = "cdd5a4ea94388dd21babdecd26dd560f739dce2fbb8c99cc10a45bb8306b6076";
+        string mockupKey = "key";
+        string mockupValue = "Value";
+
+        SceneAssetPack sceneAssetPack = new SceneAssetPack();
+        sceneAssetPack.assets = new System.Collections.Generic.List<SceneObject>();
+        sceneAssetPack.id = "mockupId";
+        
+        SceneObject sceneObject = new SceneObject();
+        sceneObject.id = mockupAssetId;
+        sceneObject.contents = new System.Collections.Generic.Dictionary<string, string>();
+        sceneObject.contents.Add(mockupKey, mockupValue);
+
+        sceneAssetPack.assets.Add(sceneObject);
+
+        AssetCatalogBridge.AddSceneAssetPackToCatalog(sceneAssetPack);
+
+        TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            new
+            {
+                assetId = mockupAssetId,
+                src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+            }));
+
+
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
+
+        if (!(gltfShape is LoadWrapper_GLTF))
+            Assert.Fail();
+
+
+        LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF)gltfShape;
+        ContentProvider customContentProvider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(mockupAssetId);
+        Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
+        Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
+        Assert.AreEqual(mockupValue, gltfWrapper.customContentProvider.contents[0].hash);
+    }
 
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
