@@ -284,7 +284,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     void StartTutorial()
     {
-        TutorialController.i.SetTutorialEnabled(false.ToString(), TutorialController.TutorialType.BuilderInWorld);
+        TutorialController.i.SetBuilderInWorldTutorialEnabled();
     }
 
     void MouseClick(int buttonID, Vector3 position)
