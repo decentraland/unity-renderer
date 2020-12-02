@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL.Controllers;
+using DCL.Models;
 using TMPro;
 using UnityEngine;
 
@@ -28,6 +29,11 @@ namespace DCL.Components
             model = new Model();
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.FONT;
+        }
+
         public static IEnumerator SetFontFromComponent(ParcelScene scene, string componentId, TMP_Text text)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))
@@ -52,6 +58,11 @@ namespace DCL.Components
             {
                 text.font = fontComponent.fontAsset;
             }
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

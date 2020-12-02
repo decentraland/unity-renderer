@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -104,6 +104,11 @@ namespace DCL.Components
 
             Utils.SafeDestroy(entity.meshRootGameObject);
             entity.meshesInfo.CleanReferences();
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

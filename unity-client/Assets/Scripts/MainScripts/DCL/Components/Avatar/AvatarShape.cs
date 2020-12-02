@@ -48,6 +48,11 @@ namespace DCL
                 poolableObject.pool.RemoveFromPool(poolableObject);
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.

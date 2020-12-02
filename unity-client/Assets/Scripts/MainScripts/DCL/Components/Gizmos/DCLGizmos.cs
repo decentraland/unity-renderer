@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace DCL.Components
 {
@@ -24,6 +24,11 @@ namespace DCL.Components
         }
 
         public Model model;
+
+        public override object GetModel()
+        {
+            return model;
+        }
 
         public override IEnumerator ApplyChanges(string newJson)
         {

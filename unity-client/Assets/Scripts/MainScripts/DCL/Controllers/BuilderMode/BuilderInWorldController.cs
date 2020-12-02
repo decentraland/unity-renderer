@@ -18,7 +18,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.XR;
 
-public class BuildModeController : MonoBehaviour
+public class BuilderInWorldController : MonoBehaviour
 {
     public enum EditModeState
     {
@@ -31,7 +31,6 @@ public class BuildModeController : MonoBehaviour
 
     public bool activeFeature = false;
 
-
     [Header("Design variables")]
 
     public float scaleSpeed = 0.25f;
@@ -40,23 +39,24 @@ public class BuildModeController : MonoBehaviour
 
     public float distanceLimitToSelectObjects = 50;
 
-
     [Header("Snap variables")]
+
     public float snapFactor = 1f;
     public float snapRotationDegresFactor = 15f;
     public float snapScaleFactor = 0.5f;
 
     public float snapDistanceToActivateMovement = 10f;
 
-
     [Header("Scene References")]
+
     public GameObject cameraParentGO;
     public GameObject cursorGO;
     public InputController inputController;
 
     [Header("Prefab References")]
+
     public OutlinerController outlinerController;
-    public BuilderInputWrapper builderInputWrapper;
+    public BuilderInWorldInputWrapper builderInputWrapper;
     public DCLBuilderGizmoManager gizmoManager;
     public ActionController actionController;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
@@ -65,8 +65,8 @@ public class BuildModeController : MonoBehaviour
 
     [Header("Build Modes")]
 
-    public BuildFirstPersonMode firstPersonMode;
-    public BuildEditorMode editorMode;
+    public BuilderInWorldFirstPersonMode firstPersonMode;
+    public BuilderInWorldGodMode editorMode;
 
     [Header("Build References")]
 
@@ -85,7 +85,7 @@ public class BuildModeController : MonoBehaviour
     //Note(Adrian): This is for tutorial purposes
     public Action OnSceneObjectPlaced;
 
-    BuildMode currentActiveMode;
+    BuilderInWorldMode currentActiveMode;
 
     ParcelScene sceneToEdit;
 
@@ -103,6 +103,8 @@ public class BuildModeController : MonoBehaviour
 
     int outlinerOptimizationCounter = 0, checkerInsideSceneOptimizationCounter = 0;
 
+    string sceneToEditId;
+
     SceneObject lastSceneObjectCreated;
 
     const float RAYCAST_MAX_DISTANCE = 10000f;
@@ -114,6 +116,8 @@ public class BuildModeController : MonoBehaviour
     InputAction_Trigger.Triggered redoDelegate;
     InputAction_Trigger.Triggered undoDelegate;
     InputAction_Trigger.Triggered snapModeDelegate;
+
+    EditModeState currentEditModeState = EditModeState.Inactive;
 
     void Start()
     {
@@ -193,15 +197,18 @@ public class BuildModeController : MonoBehaviour
         multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
-        HUDController.i.buildModeHud.OnStopInput -= StopInput;
-        HUDController.i.buildModeHud.OnResumeInput -= ResumeInput;
+        if (HUDController.i.buildModeHud != null)
+        {
+            HUDController.i.buildModeHud.OnStopInput -= StopInput;
+            HUDController.i.buildModeHud.OnResumeInput -= ResumeInput;
 
-        HUDController.i.buildModeHud.OnChangeModeAction -= ChangeAdvanceMode;
-        HUDController.i.buildModeHud.OnResetAction -= ResetScaleAndRotation;
+            HUDController.i.buildModeHud.OnChangeModeAction -= ChangeAdvanceMode;
+            HUDController.i.buildModeHud.OnResetAction -= ResetScaleAndRotation;
 
-        HUDController.i.buildModeHud.OnSceneObjectSelected -= CreateSceneObjectSelected;
-        HUDController.i.buildModeHud.OnTutorialAction -= StartTutorial;
-        HUDController.i.buildModeHud.OnPublishAction -= PublishScene;
+            HUDController.i.buildModeHud.OnSceneObjectSelected -= CreateSceneObjectSelected;
+            HUDController.i.buildModeHud.OnTutorialAction -= StartTutorial;
+            HUDController.i.buildModeHud.OnPublishAction -= PublishScene;
+        }
 
 
         builderInputWrapper.OnMouseClick -= MouseClick;
@@ -325,6 +332,7 @@ public class BuildModeController : MonoBehaviour
         }
         return true;
     }
+
     void CreateSceneObjectSelected(SceneObject sceneObject)
     {
         if (!IsInsideTheLimits(sceneObject)) return;
@@ -353,15 +361,20 @@ public class BuildModeController : MonoBehaviour
         }
         SceneController.i.UpdateParcelScenesExecute(data);
 
-        //
-
         GLTFShape mesh = (GLTFShape)sceneToEdit.SharedComponentCreate(sceneObject.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
         mesh.model = new LoadableShape.Model();
         mesh.model.src = sceneObject.model;
 
+        DCLName name = (DCLName)sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
 
-        DecentralandEntityToEdit entity = builderInWorldEntityHandler.CreateEntity(sceneToEdit, currentActiveMode.GetCreatedEntityPoint(), editionGO.transform.position);
+
+
+        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, currentActiveMode.GetCreatedEntityPoint(), editionGO.transform.position);
+
         sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, mesh.id);
+        sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
+        name.SetNewName(sceneObject.name);
+
 
         if (sceneObject.asset_pack_id == BuilderInWorldSettings.VOXEL_ASSETS_PACK_ID)
             entity.isVoxel = true;
@@ -376,7 +389,7 @@ public class BuildModeController : MonoBehaviour
             Utils.LockCursor();
         lastSceneObjectCreated = sceneObject;
 
-        builderInWorldBridge.AddEntityOnKernel(entity.rootEntity, sceneToEdit);
+        builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
         InputDone();
         OnSceneObjectPlaced?.Invoke();
     }
@@ -406,8 +419,13 @@ public class BuildModeController : MonoBehaviour
 
     void UndoAction()
     {
-        actionController.TryToUndoAction();
         InputDone();
+
+        if (currentActiveMode.ShouldCancelUndoAction())
+            return;
+
+        actionController.TryToUndoAction();
+
     }
 
     void CheckEditModeInput()
@@ -454,6 +472,9 @@ public class BuildModeController : MonoBehaviour
                 HUDController.i.buildModeHud.ActivateGodModeUI();
                 break;
         }
+
+        currentEditModeState = state;
+
         if (currentActiveMode != null)
         {
             currentActiveMode.Activate(sceneToEdit);
@@ -462,6 +483,7 @@ public class BuildModeController : MonoBehaviour
         }
 
     }
+
     public void SetAdvanceMode(bool advanceModeActive)
     {
         if (!advanceModeActive)
@@ -472,9 +494,6 @@ public class BuildModeController : MonoBehaviour
         {
             SetBuildMode(EditModeState.Editor);
         }
-
-
-
     }
 
     void StartMultiSelection()
@@ -497,9 +516,9 @@ public class BuildModeController : MonoBehaviour
     {
         if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
         {
-            if (!BuildModeUtils.IsPointerOverUIElement())
+            if (!BuilderInWorldUtils.IsPointerOverUIElement())
             {
-                DecentralandEntityToEdit entity = GetEntityOnPointer();
+                DCLBuilderInWorldEntity entity = GetEntityOnPointer();
                 if (!isMultiSelectionActive)
                     outlinerController.CancelAllOutlines();
                 else
@@ -516,7 +535,7 @@ public class BuildModeController : MonoBehaviour
 
     public void UndoEditionGOLastStep()
     {
-        BuildModeUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
     }
 
     public void ResetScaleAndRotation()
@@ -555,8 +574,8 @@ public class BuildModeController : MonoBehaviour
     }
 
     void MouseClickDetected()
-    {
-        DecentralandEntityToEdit entityToSelect = GetEntityOnPointer();
+    {        
+        DCLBuilderInWorldEntity entityToSelect = GetEntityOnPointer();
         if (entityToSelect != null)
         {
             builderInWorldEntityHandler.EntityClicked(entityToSelect);
@@ -567,7 +586,7 @@ public class BuildModeController : MonoBehaviour
         }
     }
 
-    public DecentralandEntityToEdit GetEntityOnPointer()
+    public DCLBuilderInWorldEntity GetEntityOnPointer()
     {
         RaycastHit hit;
         UnityEngine.Ray ray;
@@ -601,7 +620,6 @@ public class BuildModeController : MonoBehaviour
 
         float currentDistance = 9999;
         VoxelEntityHit voxelEntityHit = null;
-        DecentralandEntityToEdit unselectedEntity = null;
 
         hits = Physics.RaycastAll(ray, RAYCAST_MAX_DISTANCE, layerToRaycast);
         foreach (RaycastHit hit in hits)
@@ -610,15 +628,14 @@ public class BuildModeController : MonoBehaviour
 
             if (sceneToEdit.entities.ContainsKey(entityID))
             {
-                DecentralandEntityToEdit entityToCheck = builderInWorldEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+                DCLBuilderInWorldEntity entityToCheck = builderInWorldEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
                 if (entityToCheck == null) continue;
 
                 if (!entityToCheck.IsSelected && entityToCheck.tag == BuilderInWorldSettings.VOXEL_TAG)
                 {
                     if (Vector3.Distance(Camera.main.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
                     {
-                        unselectedEntity = entityToCheck;
-                        voxelEntityHit = new VoxelEntityHit(unselectedEntity, hit);
+                        voxelEntityHit = new VoxelEntityHit(entityToCheck, hit);
                         currentDistance = Vector3.Distance(Camera.main.transform.position, entityToCheck.rootEntity.gameObject.transform.position);
                     }
                 }
@@ -627,11 +644,24 @@ public class BuildModeController : MonoBehaviour
         return voxelEntityHit;
     }
 
+    void NewSceneReady(string id)
+    {
+        if (sceneToEditId != id) return;
+        SceneController.i.OnReadyScene -= NewSceneReady;
+        sceneToEditId = null;
+        EnterEditMode();
+    }
+
     public void StartEnterEditMode()
     {
+        if (sceneToEditId != null) return;
+
         FindSceneToEdit();
+        sceneToEditId = sceneToEdit.sceneData.id;
+        SceneController.i.OnReadyScene += NewSceneReady;
+
         builderInWorldBridge.StartKernelEditMode(sceneToEdit);
-        StartCoroutine(WaitUntilNewSceneIsLoaded());
+    
     }
 
     public void EnterEditMode()
@@ -654,10 +684,6 @@ public class BuildModeController : MonoBehaviour
         if (currentActiveMode == null)
             SetBuildMode(EditModeState.Editor);
 
-        // NOTE(Adrian): This is a temporary as the kernel should do this job instead of the client
-        DCL.Environment.i.messagingControllersManager.messagingControllers[sceneToEdit.sceneData.id].systemBus.Stop();
-        //
-
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
@@ -669,11 +695,9 @@ public class BuildModeController : MonoBehaviour
         ActivateBuilderInWorldCamera();
     }
 
+
     public void ExitEditMode()
     {
-        // NOTE(Adrian): This is a temporary as the kernel should do this job instead of the client
-        DCL.Environment.i.messagingControllersManager.messagingControllers[sceneToEdit.sceneData.id].systemBus.Start();
-        //
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
@@ -696,6 +720,8 @@ public class BuildModeController : MonoBehaviour
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
         builderInputWrapper.gameObject.SetActive(false);
         builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
+
+        HUDController.i.buildModeHud.ClearEntityList();
 
         SceneController.i.DeactivateBuilderInWorldEditScene();
 
@@ -744,7 +770,7 @@ public class BuildModeController : MonoBehaviour
             if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
             {
                 if (sceneToEdit != null && sceneToEdit != scene)
-                    actionController.ClearActionList();
+                    actionController.ResetActionList();
                 sceneToEdit = scene;
                 break;
             }
@@ -753,11 +779,5 @@ public class BuildModeController : MonoBehaviour
     void PublishScene()
     {
         builderInWorldBridge.PublishScene(sceneToEdit);
-    }
-
-    IEnumerator WaitUntilNewSceneIsLoaded()
-    {
-        yield return new WaitForSeconds(0.8f);
-        EnterEditMode();
     }
 }

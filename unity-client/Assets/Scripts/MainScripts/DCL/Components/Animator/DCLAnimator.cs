@@ -1,4 +1,4 @@
-﻿using DCL.Models;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,6 +46,11 @@ namespace DCL.Components
         private void OnDestroy()
         {
             entity.OnShapeUpdated -= OnComponentUpdated;
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

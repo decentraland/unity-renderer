@@ -65,6 +65,11 @@ namespace DCL.Components
             }
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             if (rectTransform == null) yield break;

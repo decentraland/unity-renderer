@@ -30,6 +30,11 @@ namespace DCL.Components
             }
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.UI_SCREEN_SPACE_SHAPE;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(

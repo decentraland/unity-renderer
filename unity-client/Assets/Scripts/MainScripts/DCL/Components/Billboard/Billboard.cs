@@ -1,4 +1,4 @@
-﻿﻿using DCL.Components;
+﻿using DCL.Components;
 using System.Collections;
 using UnityEngine;
 
@@ -19,6 +19,11 @@ namespace DCL
         Transform entityTransform;
         Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
         Vector3 lastPosition;
+
+        public override object GetModel()
+        {
+            return model;
+        }
 
         public override IEnumerator ApplyChanges(string newJson)
         {

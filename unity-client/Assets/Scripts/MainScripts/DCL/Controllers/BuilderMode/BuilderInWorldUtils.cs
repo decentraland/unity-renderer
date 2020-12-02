@@ -1,8 +1,14 @@
+using DCL;
+using DCL.Components;
+using DCL.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-public static partial class BuildModeUtils
+public static partial class BuilderInWorldUtils
 {
 
     public static void DrawScreenRect(Rect rect, Color color)
@@ -58,7 +64,7 @@ public static partial class BuildModeUtils
     public static bool IsWithInSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
     {
         Camera camera = Camera.main;
-        var viewPortBounds = BuildModeUtils.GetViewportBounds(camera, lastClickMousePosition, mousePosition);
+        var viewPortBounds = BuilderInWorldUtils.GetViewportBounds(camera, lastClickMousePosition, mousePosition);
         return viewPortBounds.Contains(camera.WorldToViewportPoint(point));
     }
 
@@ -81,7 +87,7 @@ public static partial class BuildModeUtils
     public static bool IsPointerOverMaskElement(LayerMask mask)
     {
         RaycastHit hitInfo;
-        Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        UnityEngine.Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         return Physics.Raycast(mouseRay, out hitInfo, 5555, mask);
     }
 
@@ -94,5 +100,52 @@ public static partial class BuildModeUtils
         return results.Count > 1;
     }
 
+    public static string ConvertEntityToJSON(DecentralandEntity entity)
+    {
+        EntityData builderInWorldEntityData = new EntityData();
+        builderInWorldEntityData.entityId = entity.entityId;
+
+
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> keyValuePair in entity.components)
+        {
+            if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
+            {
+                EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
+
+                entityComponentModel.position = SceneController.i.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene); 
+                entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
+                entityComponentModel.scale = entity.gameObject.transform.localScale;
+
+                builderInWorldEntityData.transformComponent = entityComponentModel;
+
+            }
+            else
+            {
+                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                entityComponentModel.componentId = (int) keyValuePair.Key;
+                entityComponentModel.data = keyValuePair.Value.GetModel();
+
+                builderInWorldEntityData.components.Add(entityComponentModel);
+            }
+        }
+
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePair in entity.GetSharedComponents())
+        {
+            ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+            entityComponentModel.componentId = keyValuePair.Value.GetClassId();
+            entityComponentModel.data = keyValuePair.Value.GetModel();
+            entityComponentModel.classId = keyValuePair.Value.id;
+
+            builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+        }
+
+
+        return JsonConvert.SerializeObject(builderInWorldEntityData);
+    }
+
+    public static EntityData ConvertJSONToEntityData(string json)
+    {
+        return JsonConvert.DeserializeObject<EntityData>(json);
+    }
 }
 

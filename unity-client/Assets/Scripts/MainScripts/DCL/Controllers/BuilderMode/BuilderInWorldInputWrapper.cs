@@ -5,16 +5,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BuilderInputWrapper : MonoBehaviour
+public class BuilderInWorldInputWrapper : MonoBehaviour
 {
     public LayerMask layerToStopClick;
     public float msClickThreshold = 200;
     public float movementClickThreshold = 50;
 
-    public Action<int,Vector3> OnMouseClick,OnMouseDown,OnMouseUp;
+    public event Action<int,Vector3> OnMouseClick;
+    public event Action<int,Vector3> OnMouseDown;
+    public event Action<int,Vector3> OnMouseUp;
+
+    public event Action<float> OnMouseWheel;
+
     public event OnMouseDragDelegate OnMouseDrag;
     public event OnMouseDragDelegateRaw OnMouseDragRaw;
-    public Action<float> OnMouseWheel;
+
 
     public delegate void OnMouseDragDelegate(int buttonId, Vector3 position, float axisX, float axisY);
     public delegate void OnMouseDragDelegateRaw(int buttonId, Vector3 position, float axisX, float axisY);
@@ -47,7 +52,7 @@ public class BuilderInputWrapper : MonoBehaviour
         if (!canInputBeMade)
             return;
     
-        if (!BuildModeUtils.IsPointerOverUIElement() && !BuildModeUtils.IsPointerOverMaskElement(layerToStopClick))
+        if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
         {
             OnMouseUp?.Invoke(buttonId, mousePosition);
             if (Vector3.Distance(mousePosition, lastMousePosition) >= movementClickThreshold)
@@ -65,7 +70,7 @@ public class BuilderInputWrapper : MonoBehaviour
 
         if (!canInputBeMade)
             return;
-        if (!BuildModeUtils.IsPointerOverUIElement() && !BuildModeUtils.IsPointerOverMaskElement(layerToStopClick))
+        if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
             OnMouseDown?.Invoke(buttonId, mousePosition);
     }
 
@@ -73,7 +78,7 @@ public class BuilderInputWrapper : MonoBehaviour
     {
         if (!canInputBeMade)
             return;
-        if (!BuildModeUtils.IsPointerOverUIElement())
+        if (!BuilderInWorldUtils.IsPointerOverUIElement())
             OnMouseWheel?.Invoke(axisValue);
     }
 
@@ -81,7 +86,7 @@ public class BuilderInputWrapper : MonoBehaviour
     {
         if (!canInputBeMade)
             return;
-        if (!BuildModeUtils.IsPointerOverUIElement())
+        if (!BuilderInWorldUtils.IsPointerOverUIElement())
             OnMouseDrag?.Invoke(buttonId, mousePosition, axisX, axisY);
     }
 
@@ -89,7 +94,7 @@ public class BuilderInputWrapper : MonoBehaviour
     {
         if (!canInputBeMade)
             return;
-        if (!BuildModeUtils.IsPointerOverUIElement())
+        if (!BuilderInWorldUtils.IsPointerOverUIElement())
             OnMouseDragRaw?.Invoke(buttonId, mousePosition, axisX, axisY);
     }
 }

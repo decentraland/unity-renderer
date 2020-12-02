@@ -7,12 +7,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.Configuration;
+using System;
 
-public class DecentralandEntityToEdit : EditableEntity
+public class DCLBuilderInWorldEntity : EditableEntity
 {
     public string entityUniqueId;
 
-    public System.Action<DecentralandEntityToEdit> onStatusUpdate, OnDelete;
+    public string descriptiveName { get; private set; }
+
+    public event System.Action<DCLBuilderInWorldEntity> onStatusUpdate;
+    public event System.Action<DCLBuilderInWorldEntity> OnDelete;
 
     private bool isLockedValue = false;
     public bool IsLocked
@@ -84,6 +88,7 @@ public class DecentralandEntityToEdit : EditableEntity
     {
         rootEntity = entity;
         rootEntity.OnShapeUpdated += OnShapeUpdate;
+        rootEntity.OnNameChange += OnNameUpdate;
 
         this.editMaterial = editMaterial;
         isVoxel = false;
@@ -91,6 +96,8 @@ public class DecentralandEntityToEdit : EditableEntity
 
         entityUniqueId = rootEntity.scene.sceneData.id + rootEntity.entityId;
         IsVisible = rootEntity.gameObject.activeSelf;
+
+        descriptiveName = GetDescriptiveName();
 
         if (rootEntity.meshRootGameObject && rootEntity.meshesInfo.renderers.Length > 0)
         {
@@ -134,6 +141,9 @@ public class DecentralandEntityToEdit : EditableEntity
 
     public void Delete()
     {
+        rootEntity.OnShapeUpdated -= OnShapeUpdate;
+        rootEntity.OnNameChange -= OnNameUpdate;
+
         Deselect();
         DestroyColliders();
         OnDelete?.Invoke(this);
@@ -154,6 +164,40 @@ public class DecentralandEntityToEdit : EditableEntity
             GameObject.Destroy(entityCollider);
         }
         collidersDictionary.Clear();
+    }
+
+    public void SetDescriptiveName(string newName)
+    {
+        bool foundComponent = false;
+
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        {
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.NAME)
+            {
+                ((DCLName)keyValuePairBaseDisposable.Value).SetNewName(newName);
+                foundComponent = true;
+            }
+        }
+
+        if(!foundComponent)
+        {
+            DCLName name = (DCLName)rootEntity.scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
+            name.SetNewName(newName);
+            rootEntity.scene.SharedComponentAttach(rootEntity.entityId, name.id);
+        }
+    }
+
+    public string GetDescriptiveName()
+    {
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        {
+            if(keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
+            {
+                return descriptiveName = ((DCLName.Model)keyValuePairBaseDisposable.Value.GetModel()).value;
+               
+            }
+        }
+        return "";
     }
 
     void SetOriginalMaterials()
@@ -187,6 +231,12 @@ public class DecentralandEntityToEdit : EditableEntity
                 cont++;
             }
         }
+    }
+
+    void OnNameUpdate(DCLName.Model model)
+    {
+        descriptiveName = model.value;
+        onStatusUpdate?.Invoke(this);
     }
 
     void OnShapeUpdate(DecentralandEntity decentralandEntity)

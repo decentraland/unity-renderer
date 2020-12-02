@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL;
 using DCL.Components;
 using System.Collections;
@@ -33,6 +33,11 @@ public class AvatarModifierArea : BaseComponent
             { "HIDE_AVATARS", new HideAvatarsModifier() },
             { "DISABLE_PASSPORTS", new DisablePassportModifier() }
         };
+    }
+
+    public override object GetModel()
+    {
+        return model;
     }
 
     public override IEnumerator ApplyChanges(string newJson)

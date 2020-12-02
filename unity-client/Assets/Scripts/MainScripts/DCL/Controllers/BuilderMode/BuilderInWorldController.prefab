@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 1208871511274338202}
   - component: {fileID: 1208871511274338203}
   m_Layer: 0
-  m_Name: BuildModeController
+  m_Name: BuilderInWorldController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -448,9 +448,13 @@ MonoBehaviour:
   snapRotationDegresFactor: 30
   snapScaleFactor: 0.25
   snapDistanceToActivateMovement: 1
+  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  actionController: {fileID: 1208871512032110241}
+  builderInWorldBridge: {fileID: 3917703040089432743}
   scaleSpeed: 0.25
   rotationSpeed: 0.5
   distanceFromCameraForNewEntitties: 5
+  builderInputWrapper: {fileID: 1208871511405416592}
   rotationHold: {fileID: 11400000, guid: 3aea5eddf3f7c8a4988b3e4d951ca84a, type: 2}
 --- !u!1 &1208871511595241338
 GameObject:
@@ -964,7 +968,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b96042e804882648915f5b4d1daa70b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionListview: {fileID: 0}
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
 --- !u!1 &1208871512097731729
 GameObject:
@@ -1546,6 +1549,9 @@ MonoBehaviour:
   snapRotationDegresFactor: 0.5
   snapScaleFactor: 0.5
   snapDistanceToActivateMovement: 1
+  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  actionController: {fileID: 1208871512032110241}
+  builderInWorldBridge: {fileID: 3917703040089432743}
   distanceEagleCamera: 20
   freeCameraController: {fileID: 0}
   gizmoManager: {fileID: 1208871511615770936}
@@ -1553,7 +1559,6 @@ MonoBehaviour:
   builderInputWrapper: {fileID: 1208871511405416592}
   outlinerController: {fileID: 1208871511725701524}
   buildModeController: {fileID: 1208871511274338203}
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
   cameraController: {fileID: 0}
   lookAtT: {fileID: 1208871513090114763}
   mouseCatcher: {fileID: 0}
@@ -1584,6 +1589,7 @@ MonoBehaviour:
   outlinerController: {fileID: 1208871511725701524}
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
   freeCameraMovement: {fileID: 0}
+  actionController: {fileID: 1208871512032110241}
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -1707,7 +1713,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1208871512899340006}
   m_Layer: 0
-  m_Name: BuildModes
+  m_Name: BuilderInWorldModes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2115,6 +2121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duplicateOffset: 2
+  msBetweenTransformUpdates: 2000
   outlinerController: {fileID: 1208871511725701524}
   entityInformationController: {fileID: 0}
   buildModeController: {fileID: 1208871511274338203}
