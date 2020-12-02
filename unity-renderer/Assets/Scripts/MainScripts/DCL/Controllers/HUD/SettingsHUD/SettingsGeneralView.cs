@@ -124,8 +124,8 @@ namespace DCL.SettingsHUD
 
             mouseSensitivitySlider.onValueChanged.AddListener(value =>
             {
-                tempGeneralSetting.mouseSensitivity = value;
-                mouseSensitivityValueLabel.text = value.ToString("0.0");
+                tempGeneralSetting.mouseSensitivity = RemapMouseSensitivityTo01(value);
+                mouseSensitivityValueLabel.text = value.ToString();
                 isDirty = true;
             });
 
@@ -298,7 +298,7 @@ namespace DCL.SettingsHUD
         void UpdateGeneralSettings()
         {
             soundToggle.isOn = tempGeneralSetting.sfxVolume > 0 ? true : false;
-            mouseSensitivitySlider.value = tempGeneralSetting.mouseSensitivity;
+            mouseSensitivitySlider.value = Mathf.Lerp(mouseSensitivitySlider.minValue, mouseSensitivitySlider.maxValue, tempGeneralSetting.mouseSensitivity);
             voiceChatVolumeSlider.value = tempGeneralSetting.voiceChatVolume * 100;
             voiceChatAllowSpinBox.value = (int) tempGeneralSetting.voiceChatAllow;
             autosettingsToggle.isOn = tempGeneralSetting.autoqualityOn;
@@ -315,6 +315,11 @@ namespace DCL.SettingsHUD
         {
             Settings.i.ApplyQualitySettings(currentQualitySetting);
             Settings.i.ApplyGeneralSettings(currentGeneralSetting);
+        }
+
+        private float RemapMouseSensitivityTo01(float value)
+        {
+            return (value - mouseSensitivitySlider.minValue) / (mouseSensitivitySlider.maxValue - mouseSensitivitySlider.minValue) * (1 - 0) + 0; //(value - from1) / (to1 - from1) * (to2 - from2) + from2
         }
     }
 }
