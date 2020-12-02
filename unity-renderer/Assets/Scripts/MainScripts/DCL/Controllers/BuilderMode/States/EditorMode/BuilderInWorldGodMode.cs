@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuildEditorMode : BuildMode
+public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
@@ -19,10 +19,9 @@ public class BuildEditorMode : BuildMode
     public FreeCameraMovement freeCameraController;
     public DCLBuilderGizmoManager gizmoManager;
     public VoxelController voxelController;
-    public BuilderInputWrapper builderInputWrapper;
+    public BuilderInWorldInputWrapper builderInputWrapper;
     public OutlinerController outlinerController;
-    public BuildModeController buildModeController;
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    public BuilderInWorldController buildModeController;
     public CameraController cameraController;
     public Transform lookAtT;
     public MouseCatcher mouseCatcher;
@@ -81,18 +80,18 @@ public class BuildEditorMode : BuildMode
             }
             else
             {
-                List<DecentralandEntityToEdit> allEntities = null;
+                List<DCLBuilderInWorldEntity> allEntities = null;
                 if (!isTypeOfBoundSelectionSelected || !isVoxelBoundMultiSelection)
                     allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
                 else if (isVoxelBoundMultiSelection)
                     allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
 
-                foreach (DecentralandEntityToEdit entity in allEntities)
+                foreach (DCLBuilderInWorldEntity entity in allEntities)
                 {
                     if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected) continue;
                     if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
                     {
-                        if (BuildModeUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                        if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                         {
                             if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
                             {
@@ -119,16 +118,16 @@ public class BuildEditorMode : BuildMode
     {
         if (mousePressed && isMakingSquareMultiSelection)
         {
-            var rect = BuildModeUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
-            BuildModeUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.5f));
-            BuildModeUtils.DrawScreenRectBorder(rect, 1, Color.white);
+            var rect = BuilderInWorldUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
+            BuilderInWorldUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.5f));
+            BuilderInWorldUtils.DrawScreenRectBorder(rect, 1, Color.white);
         }
     }
 
-    public override void Init(GameObject _goToEdit, GameObject _undoGo, GameObject _snapGO, GameObject _freeMovementGO, List<DecentralandEntityToEdit> _selectedEntities)
+    public override void Init(GameObject goToEdit, GameObject undoGo, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
     {
-        base.Init(_goToEdit, _undoGo, _snapGO, _freeMovementGO, _selectedEntities);
-        voxelController.SetEditionGO(_goToEdit);
+        base.Init(goToEdit, undoGo, snapGO, freeMovementGO, selectedEntities);
+        voxelController.SetEditionGO(goToEdit);
 
         HUDController.i.buildModeHud.OnTranslateSelectedAction += TranslateMode;
         HUDController.i.buildModeHud.OnRotateSelectedAction += RotateMode;
@@ -170,16 +169,16 @@ public class BuildEditorMode : BuildMode
         isMakingSquareMultiSelection = false;
         mousePressed = false;
         freeCameraController.SetCameraCanMove(true);
-        List<DecentralandEntityToEdit> allEntities = null;
+        List<DCLBuilderInWorldEntity> allEntities = null;
         if (!isVoxelBoundMultiSelection) allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
         else allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
 
-        foreach (DecentralandEntityToEdit entity in allEntities)
+        foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
             if (entity.isVoxel && !isVoxelBoundMultiSelection) continue;
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
-                if (BuildModeUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
                     builderInWorldEntityHandler.SelectEntity(entity);
                 }
@@ -263,7 +262,7 @@ public class BuildEditorMode : BuildMode
         editionGO.transform.position += Vector3.right * offset;
     }
 
-    public override void CreatedEntity(DecentralandEntityToEdit createdEntity)
+    public override void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
     {
         base.CreatedEntity(createdEntity);
         isPlacingNewObject = true;
@@ -281,12 +280,12 @@ public class BuildEditorMode : BuildMode
         return GetFloorPointAtMouse();
     }
 
-    public override void SelectedEntity(DecentralandEntityToEdit selectedEntity)
+    public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
         base.SelectedEntity(selectedEntity);
 
         List<EditableEntity> editableEntities = new List<EditableEntity>();
-        foreach (DecentralandEntityToEdit entity in selectedEntities)
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             editableEntities.Add(entity);
         }
@@ -303,13 +302,23 @@ public class BuildEditorMode : BuildMode
         }
     }
 
-    public override void EntityDeselected(DecentralandEntityToEdit entityDeselected)
+    public override void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)
     {
         base.EntityDeselected(entityDeselected);
         if (selectedEntities.Count <= 0)
             gizmoManager.HideGizmo();
         isPlacingNewObject = false;
         DesactivateVoxelMode();
+    }
+    public override bool ShouldCancelUndoAction()
+    {
+        if (isPlacingNewObject)
+        {
+            builderInWorldEntityHandler.DestroyLastCreatedEntities();
+            isPlacingNewObject = false;
+            return true;
+        }
+        return false;
     }
 
     public override void SetSnapActive(bool isActive)
@@ -389,21 +398,21 @@ public class BuildEditorMode : BuildMode
         }
     }
 
-    public void FocusGameObject(List<DecentralandEntityToEdit> entitiesToFocus)
+    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus)
     {
         freeCameraController.FocusOnEntities(entitiesToFocus);
     }
 
     void OnGizmosTransformStart(string gizmoType)
     {
-        foreach (DecentralandEntityToEdit entity in selectedEntities)
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             TransformActionStarted(entity.rootEntity, gizmoType);
         }
     }
     void OnGizmosTransformEnd(string gizmoType)
     {
-        foreach (DecentralandEntityToEdit entity in selectedEntities)
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             TransformActionEnd(entity.rootEntity, gizmoType);
         }
@@ -412,14 +421,14 @@ public class BuildEditorMode : BuildMode
         {
             case "MOVE":
 
-                ActionFinish(BuildModeAction.ActionType.MOVE);
+                ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
                 break;
             case "ROTATE":
 
-                ActionFinish(BuildModeAction.ActionType.ROTATE);
+                ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
                 break;
             case "SCALE":
-                ActionFinish(BuildModeAction.ActionType.SCALE);
+                ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
                 break;
         }
     }

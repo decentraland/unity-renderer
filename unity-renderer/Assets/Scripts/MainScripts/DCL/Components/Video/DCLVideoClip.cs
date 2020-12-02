@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using DCL.Controllers;
+using DCL.Models;
 
 namespace DCL.Components
 {
@@ -19,6 +20,16 @@ namespace DCL.Components
         public DCLVideoClip(ParcelScene scene) : base(scene)
         {
             model = new Model();
+        }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.VIDEO_CLIP;
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

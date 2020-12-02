@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -162,6 +163,11 @@ namespace DCL.Components
         {
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.UI_IMAGE_SHAPE;
+        }
+
         public string GetDebugName()
         {
             if (string.IsNullOrEmpty(model.name))
@@ -172,6 +178,11 @@ namespace DCL.Components
             {
                 return GetType().Name + " - " + model.name;
             }
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

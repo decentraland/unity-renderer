@@ -68,6 +68,11 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.PBR_MATERIAL;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
@@ -77,6 +82,11 @@ namespace DCL.Components
 
             entity.RemoveSharedComponent(typeof(BasicMaterial));
             base.AttachTo(entity);
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

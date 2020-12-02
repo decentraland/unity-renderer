@@ -459,6 +459,7 @@ namespace DCL
         public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
         [System.NonSerialized] public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
 
+        public event Action<string> OnReadyScene;
 
         public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
@@ -498,7 +499,7 @@ namespace DCL
             Environment.i.messagingControllersManager.AddControllerIfNotExists(this, data.id);
 
             loadedScenes.Add(data.id, newScene);
-            OnNewSceneAdded?.Invoke(newScene);
+            OnNewSceneAdded?.Invoke(newScene);        
 
             return newScene;
         }
@@ -512,6 +513,8 @@ namespace DCL
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
 
             Environment.i.worldBlockersController.SetupWorldBlockers();
+
+            OnReadyScene?.Invoke(sceneId);
         }
 
         public string TryToGetSceneCoordsID(string id)

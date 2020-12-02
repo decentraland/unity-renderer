@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -42,6 +42,16 @@ namespace DCL.Components
 
         public LoadableShape(ParcelScene scene) : base(scene)
         {
+        }
+
+        public override int GetClassId()
+        {
+            return -1;
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)

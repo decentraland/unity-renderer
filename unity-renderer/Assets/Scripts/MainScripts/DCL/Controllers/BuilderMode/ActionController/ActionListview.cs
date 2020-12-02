@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionListview : ListView<BuildModeAction>
+public class ActionListview : ListView<BuildInWorldCompleteAction>
 {
     public ActionAdapter adapter;
 
-    public System.Action<BuildModeAction> OnActionSelected;
+    public System.Action<BuildInWorldCompleteAction> OnActionSelected;
 
 
     List<ActionAdapter> actionList = new List<ActionAdapter>();
@@ -14,13 +14,13 @@ public class ActionListview : ListView<BuildModeAction>
     {
         base.AddAdapters();
 
-        foreach (BuildModeAction action in contentList)
+        foreach (BuildInWorldCompleteAction action in contentList)
         {
             CreateAdapter(action);
         }
     }
 
-    public void ActionSelected(BuildModeAction action, ActionAdapter adapter)
+    public void ActionSelected(BuildInWorldCompleteAction action, ActionAdapter adapter)
     {
         OnActionSelected?.Invoke(action);
     }
@@ -31,10 +31,10 @@ public class ActionListview : ListView<BuildModeAction>
         actionList.Clear();
     }
 
-    public void AddAdapter(BuildModeAction action)
+    public void AddAdapter(BuildInWorldCompleteAction action)
     {
         if (contentList == null)
-            contentList = new List<BuildModeAction>();
+            contentList = new List<BuildInWorldCompleteAction>();
         contentList.Add(action);
         CreateAdapter(action);
     }
@@ -47,7 +47,7 @@ public class ActionListview : ListView<BuildModeAction>
         }
     }
 
-    void CreateAdapter(BuildModeAction action)
+    void CreateAdapter(BuildInWorldCompleteAction action)
     {
         ActionAdapter instanciatedAdapter = Instantiate(adapter, contentPanelTransform).GetComponent<ActionAdapter>();
         instanciatedAdapter.SetContent(action);

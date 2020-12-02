@@ -17,6 +17,11 @@ namespace DCL.Components
         private bool isPlaying = false;
         private float settingsVolume = 0;
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());

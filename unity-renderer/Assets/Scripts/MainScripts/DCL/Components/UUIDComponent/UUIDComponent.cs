@@ -63,6 +63,11 @@ namespace DCL
             }
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = SceneController.i.SafeFromJson<Model>(newJson);
@@ -74,5 +79,7 @@ namespace DCL
 
             return null;
         }
+
+       
     }
 }

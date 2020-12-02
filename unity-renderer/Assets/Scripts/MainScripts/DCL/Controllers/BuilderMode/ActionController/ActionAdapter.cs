@@ -14,26 +14,26 @@ public class ActionAdapter : MonoBehaviour
                   createdSprite;
 
     public TextMeshProUGUI actionTitle;
-    public System.Action<BuildModeAction, ActionAdapter> OnActionSelected;
+    public System.Action<BuildInWorldCompleteAction, ActionAdapter> OnActionSelected;
 
-    BuildModeAction action;
+    BuildInWorldCompleteAction action;
 
-    public void SetContent(BuildModeAction action)
+    public void SetContent(BuildInWorldCompleteAction action)
     {
         this.action = action;
 
         switch (this.action.actionType)
         {
-            case BuildModeAction.ActionType.MOVE:
+            case BuildInWorldCompleteAction.ActionType.MOVE:
                 actionImg.sprite = moveSprite;
                 break;
-            case BuildModeAction.ActionType.ROTATE:
+            case BuildInWorldCompleteAction.ActionType.ROTATE:
                 actionImg.sprite = rotateSprite;
                 break;
-            case BuildModeAction.ActionType.SCALE:
+            case BuildInWorldCompleteAction.ActionType.SCALE:
                 actionImg.sprite = scaleSprite;
                 break;
-            case BuildModeAction.ActionType.CREATED:
+            case BuildInWorldCompleteAction.ActionType.CREATED:
                 actionImg.sprite = createdSprite;
                 break;
         

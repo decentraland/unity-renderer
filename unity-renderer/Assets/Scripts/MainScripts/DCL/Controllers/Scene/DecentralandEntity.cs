@@ -125,6 +125,7 @@ namespace DCL.Models
 
         public System.Action<MonoBehaviour> OnComponentUpdated;
         public System.Action<DecentralandEntity> OnShapeUpdated;
+        public System.Action<DCLName.Model> OnNameChange;
         public System.Action<DecentralandEntity> OnRemoved;
         public System.Action<DCLTransform.Model> OnTransformChange;
         public System.Action<DecentralandEntity> OnMeshesInfoUpdated;

@@ -5,13 +5,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildFirstPersonMode : BuildMode
+public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 {
     [Header("Design variables")]
     public float scaleSpeed = 0.25f;
     public float rotationSpeed = 0.5f;
     public float distanceFromCameraForNewEntitties = 5;
 
+    [Header("Prefab references")]
+    public BuilderInWorldInputWrapper builderInputWrapper;
 
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold rotationHold;
@@ -34,6 +36,8 @@ public class BuildFirstPersonMode : BuildMode
 
         rotationHold.OnStarted += rotationHoldStartDelegate;
         rotationHold.OnFinished += rotationHoldFinishedDelegate;
+
+        builderInputWrapper.OnMouseClick += OnMouseClick;
     }
 
     private void OnDestroy()
@@ -68,7 +72,7 @@ public class BuildFirstPersonMode : BuildMode
             }
             else if (Vector3.Distance(snapGO.transform.position, editionGO.transform.position) >= snapDistanceToActivateMovement)
             {
-                BuildModeUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+                BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
 
 
                 snapObjectAlreadyMoved = true;
@@ -84,6 +88,31 @@ public class BuildFirstPersonMode : BuildMode
             freeMovementGO.transform.rotation = lookOnLook;
         }
 
+    }
+
+    public void OnMouseClick(int buttonId, Vector3 mouseposition)
+    {
+        if (!isModeActive) return;
+        if (buttonId != 1) return;
+        if (selectedEntities.Count <= 0) return;
+
+        UndoSelection();
+    }
+
+    public override bool ShouldCancelUndoAction()
+    {      
+        if (builderInWorldEntityHandler.GetSelectedEntityList().Count >= 1)
+        {
+            UndoSelection();
+            return true;
+        }
+        return false;
+    }
+
+    public void UndoSelection()
+    {
+        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        builderInWorldEntityHandler.DeselectEntities();
     }
 
     public override void SetDuplicationOffset(float offset)
@@ -131,7 +160,7 @@ public class BuildFirstPersonMode : BuildMode
         SetObjectIfSnapOrNot();
     }
 
-    public override void SelectedEntity(DecentralandEntityToEdit selectedEntity)
+    public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
         base.SelectedEntity(selectedEntity);
 
@@ -140,10 +169,10 @@ public class BuildFirstPersonMode : BuildMode
         SetObjectIfSnapOrNot();
 
         currentYRotationAdded = 0;
-        BuildModeUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+        BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
     }
 
-    public override void CreatedEntity(DecentralandEntityToEdit createdEntity)
+    public override void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
     {
         base.CreatedEntity(createdEntity);
         Utils.LockCursor();

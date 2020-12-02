@@ -143,12 +143,14 @@ public class BuildModeHUDView : MonoBehaviour
     {
         firstPersonCanvasGO.SetActive(true);
         godModeCanvasGO.SetActive(false);
+        HideToolTip();
     }
 
     public void SetGodModeView()
     {
         firstPersonCanvasGO.SetActive(false);
         godModeCanvasGO.SetActive(true);
+        HideToolTip();
     }
 
     public void HideToolTip()
