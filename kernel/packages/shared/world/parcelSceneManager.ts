@@ -15,7 +15,7 @@ import { renderStateObservable } from './worldState'
 import { ILandToLoadableParcelScene } from 'shared/selectors'
 
 export type EnableParcelSceneLoadingOptions = {
-  parcelSceneClass: { new(x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
+  parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
   preloadScene: (parcelToLoad: ILand) => Promise<any>
   onPositionSettled?: (spawnPoint: InstancedSpawnPoint) => void
   onLoadParcelScenes?(x: ILand[]): void
@@ -54,7 +54,11 @@ export function forceStopParcelSceneWorker(worker: SceneWorker) {
   loadedSceneWorkers.delete(sceneId)
 }
 
-export function loadParcelScene(parcelScene: ParcelSceneAPI, transport?: ScriptingTransport, persistent: boolean = false) {
+export function loadParcelScene(
+  parcelScene: ParcelSceneAPI,
+  transport?: ScriptingTransport,
+  persistent: boolean = false
+) {
   const sceneId = getParcelSceneID(parcelScene)
 
   let parcelSceneWorker = loadedSceneWorkers.get(sceneId)
@@ -99,7 +103,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
 
     let timer: any
 
-    const observer = sceneLifeCycleObservable.add(sceneStatus => {
+    const observer = sceneLifeCycleObservable.add((sceneStatus) => {
       if (sceneStatus.sceneId === sceneId) {
         sceneLifeCycleObservable.remove(observer)
         clearForegroundTimeout(timer)
@@ -157,7 +161,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
     ret.notify('User.setPosition', { position, teleported: true })
   })
 
-  positionObservable.add(obj => {
+  positionObservable.add((obj) => {
     // immediate reposition should only be broadcasted to others, otherwise our scene reloads
     if (obj.immediate) return
 
