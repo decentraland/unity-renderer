@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AvatarAnimationsVariable", menuName = "AvatarAnimationsVariable")]
-public class AvatarAnimationsVariable : BaseVariable<AvatarAnimation[]>
+public class AvatarAnimationsVariable : BaseVariableAsset<AvatarAnimation[]>
 {
     public override bool Equals(AvatarAnimation[] other)
     {

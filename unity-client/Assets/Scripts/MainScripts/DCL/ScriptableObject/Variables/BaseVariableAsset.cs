@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseVariable : ScriptableObject
+public abstract class BaseVariableAsset : ScriptableObject
 {
 #if UNITY_EDITOR
     protected abstract void RaiseOnChange();
 
-    [UnityEditor.CustomEditor(typeof(BaseVariable), true)]
-    public class BaseVariableEditor : UnityEditor.Editor
+    [UnityEditor.CustomEditor(typeof(BaseVariableAsset), true)]
+    public class BaseVariableAssetEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
             if (Application.isPlaying && GUILayout.Button("Raise OnChange"))
             {
-                ((BaseVariable)target).RaiseOnChange();
+                ((BaseVariableAsset)target).RaiseOnChange();
             }
         }
     }
 #endif
 }
 
-public class BaseVariable<T> : BaseVariable, IEquatable<T>
+public class BaseVariableAsset<T> : BaseVariableAsset, IEquatable<T>
 {
     public delegate void Change(T current, T previous);
 
@@ -45,7 +45,7 @@ public class BaseVariable<T> : BaseVariable, IEquatable<T>
         return value;
     }
 
-    public static implicit operator T(BaseVariable<T> value) => value.value;
+    public static implicit operator T(BaseVariableAsset<T> value) => value.value;
 
     public virtual bool Equals(T other)
     {
