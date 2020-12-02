@@ -119,6 +119,8 @@ public class BuilderInWorldController : MonoBehaviour
 
     EditModeState currentEditModeState = EditModeState.Inactive;
 
+    bool catalogAdded = false;
+
     void Start()
     {
         if (snapGO == null)
@@ -183,6 +185,11 @@ public class BuilderInWorldController : MonoBehaviour
 
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
+
+
+        AssetCatalogBridge.sceneAssetPackCatalog.GetValues();
+        ExternalCallsController.i.GetContentAsString(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+
     }
 
     private void OnDestroy()
@@ -244,6 +251,12 @@ public class BuilderInWorldController : MonoBehaviour
             checkerInsideSceneOptimizationCounter++;
         }
 
+    }
+
+    void CatalogReceived(string catalogJson)
+    {
+        AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
+        catalogAdded = true;
     }
 
     void StopInput()
@@ -430,7 +443,6 @@ public class BuilderInWorldController : MonoBehaviour
 
     void CheckEditModeInput()
     {
-
         if (!builderInWorldEntityHandler.IsAnyEntitySelected() || isMultiSelectionActive)
         {
             CheckOutline();
