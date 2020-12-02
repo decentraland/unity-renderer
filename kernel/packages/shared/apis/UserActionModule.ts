@@ -3,6 +3,11 @@ import { ExposableAPI } from './ExposableAPI'
 import { StoreContainer } from 'shared/store/rootTypes'
 import defaultLogger from 'shared/logger'
 import { unityInterface } from 'unity-interface/UnityInterface'
+import { getOwnerNameFromJsonData, getThumbnailUrlFromJsonDataAndContent } from 'shared/selectors'
+import { getUpdateProfileServer } from 'shared/dao/selectors'
+import { fetchSceneIds } from 'decentraland-loader/lifecycle/utils/fetchSceneIds'
+import { fetchSceneJson } from 'decentraland-loader/lifecycle/utils/fetchSceneJson'
+import { getSceneNameFromAtlasState, postProcessSceneName } from 'shared/atlas/selectors'
 
 declare const globalThis: StoreContainer
 
@@ -14,36 +19,40 @@ export interface IUserActionModule {
 export class UserActionModule extends ExposableAPI implements IUserActionModule {
   @exposeMethod
   async requestTeleport(destination: string): Promise<void> {
-    if (destination === "magic" || destination === "crowd") {
+    if (destination === 'magic' || destination === 'crowd') {
       unityInterface.RequestTeleport({ destination })
       return
-    } else if (!(/^\-?\d+\,\-?\d+$/).test(destination)) {
+    } else if (!/^\-?\d+\,\-?\d+$/.test(destination)) {
       defaultLogger.error(`teleportTo: invalid destination ${destination}`)
       return
     }
 
-    let sceneThumbnailUrl: string = ""
+    let sceneThumbnailUrl: string | undefined
     let sceneName: string = destination
-    let sceneCreator: string = "Unknown"
+    let sceneCreator: string = 'Unknown'
     let sceneEvent = {}
 
-    const mapSceneData = globalThis.globalStore.getState().atlas.tileToScene[destination]
+    const sceneId = await fetchSceneIds([destination])
+    const mapSceneData = sceneId ? (await fetchSceneJson([sceneId[0]!]))[0] : undefined
+
+    sceneName = this.getSceneName(destination, mapSceneData?.sceneJsonData)
+    sceneCreator = getOwnerNameFromJsonData(mapSceneData?.sceneJsonData)
 
     if (mapSceneData) {
-      sceneName = mapSceneData.name
-      if (mapSceneData.sceneJsonData?.contact?.name) {
-        sceneCreator = mapSceneData.sceneJsonData.contact.name
-      }
+      sceneThumbnailUrl = getThumbnailUrlFromJsonDataAndContent(
+        mapSceneData.sceneJsonData,
+        mapSceneData.mappingsResponse.contents,
+        getUpdateProfileServer(globalThis.globalStore.getState())
+      )
     }
-
-    if (mapSceneData && mapSceneData.sceneJsonData?.display?.navmapThumbnail) {
-      sceneThumbnailUrl = mapSceneData.sceneJsonData.display.navmapThumbnail
-    } else {
+    if (!sceneThumbnailUrl) {
       let sceneParcels = [destination]
       if (mapSceneData && mapSceneData.sceneJsonData?.scene.parcels) {
         sceneParcels = mapSceneData.sceneJsonData.scene.parcels
       }
-      sceneThumbnailUrl = `https://api.decentraland.org/v1/map.png?width=480&height=237&size=10&center=${destination}&selected=${sceneParcels.join(";")}`
+      sceneThumbnailUrl = `https://api.decentraland.org/v1/map.png?width=480&height=237&size=10&center=${destination}&selected=${sceneParcels.join(
+        ';'
+      )}`
     }
 
     try {
@@ -67,8 +76,14 @@ export class UserActionModule extends ExposableAPI implements IUserActionModule 
       sceneData: {
         name: sceneName,
         owner: sceneCreator,
-        previewImageUrl: sceneThumbnailUrl
+        previewImageUrl: sceneThumbnailUrl ?? ''
       }
     })
+  }
+
+  private getSceneName(baseCoord: string, sceneJsonData: any): string {
+    const sceneName =
+      getSceneNameFromAtlasState(sceneJsonData) ?? globalThis.globalStore.getState().atlas.tileToScene[baseCoord]?.name
+    return postProcessSceneName(sceneName)
   }
 }
