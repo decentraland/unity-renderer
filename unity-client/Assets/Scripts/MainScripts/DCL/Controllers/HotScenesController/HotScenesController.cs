@@ -17,17 +17,23 @@ public class HotScenesController : MonoBehaviour
     private float lastUpdateTime = float.MinValue * .5f;
 
     [Serializable]
-    public struct HotSceneInfo
+    public class HotSceneInfo
     {
         [Serializable]
-        public struct Realm
+        public class Realm
         {
             public string serverName;
             public string layer;
             public int usersCount;
             public int usersMax;
         }
+        public string id;
+        public string name;
+        public string creator;
+        public string description;
+        public string thumbnail;
         public Vector2Int baseCoords;
+        public Vector2Int[] parcels;
         public int usersTotalCount;
         public Realm[] realms;
     }

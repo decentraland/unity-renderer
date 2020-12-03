@@ -53,9 +53,9 @@ internal class ExploreHUDView : MonoBehaviour
         highlightScenesController.RefreshIfNeeded();
     }
 
-    public void Initialize(ExploreMiniMapDataController mapDataController, FriendTrackerController friendsController)
+    public void Initialize(FriendTrackerController friendsController)
     {
-        highlightScenesController.Initialize(mapDataController, friendsController);
+        highlightScenesController.Initialize(friendsController);
     }
 
     private void RaiseOnClose()
