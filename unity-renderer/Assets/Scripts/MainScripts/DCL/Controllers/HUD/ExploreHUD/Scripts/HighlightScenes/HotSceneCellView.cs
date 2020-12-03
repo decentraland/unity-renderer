@@ -43,7 +43,6 @@ internal class HotSceneCellView : MonoBehaviour
 
     public event Action<Texture2D> OnThumbnailSet;
 
-    public CrowdHandler crowdHandler { private set; get; }
     public MapInfoHandler mapInfoHandler { private set; get; }
     public FriendsHandler friendsHandler { private set; get; }
     public ThumbnailHandler thumbnailHandler { private set; get; }
@@ -52,7 +51,9 @@ internal class HotSceneCellView : MonoBehaviour
     private ViewPool<ExploreFriendsView> friendPool;
     private Dictionary<string, ExploreFriendsView> friendViewById;
     private bool isLoaded = false;
-    private bool isSetup = false;
+    private bool isInitialized = false;
+
+    HotScenesController.HotSceneInfo hotSceneInfo;
 
     protected void Awake()
     {
@@ -73,24 +74,20 @@ internal class HotSceneCellView : MonoBehaviour
         sceneInfoButton.OnPointerDown += () => OnInfoButtonPointerDown?.Invoke(this);
         sceneInfoButton.OnPointerExit += () => OnInfoButtonPointerExit?.Invoke();
 
-        Setup();
+        Initialize();
     }
 
-    public void Setup()
+    public void Initialize()
     {
-        if (isSetup)
+        if (isInitialized)
             return;
 
-        isSetup = true;
+        isInitialized = true;
 
         friendPool = new ViewPool<ExploreFriendsView>(friendsView, 0);
         friendViewById = new Dictionary<string, ExploreFriendsView>();
 
-        crowdHandler = new CrowdHandler();
-        crowdHandler.onInfoUpdate += OnCrowdInfoUpdated;
-
         mapInfoHandler = new MapInfoHandler();
-        mapInfoHandler.onInfoUpdate += OnMapInfoUpdated;
 
         friendsHandler = new FriendsHandler(mapInfoHandler);
         friendsHandler.onFriendAdded += OnFriendAdded;
@@ -100,9 +97,17 @@ internal class HotSceneCellView : MonoBehaviour
         animationHandler = new AnimationHandler(viewAnimator);
     }
 
+    public void Setup(HotScenesController.HotSceneInfo sceneInfo)
+    {
+        hotSceneInfo = sceneInfo;
+        mapInfoHandler.SetMinimapSceneInfo(sceneInfo);
+
+        OnCrowdInfoUpdated(sceneInfo);
+        OnMapInfoUpdated(sceneInfo);
+    }
+
     public void Clear()
     {
-        mapInfoHandler.Clear();
         thumbnailImage.texture = null;
         thumbnailHandler.Dispose();
         thumbnailImage.gameObject.SetActive(false);
@@ -112,16 +117,16 @@ internal class HotSceneCellView : MonoBehaviour
     public void JumpInPressed()
     {
         HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
-        for (int i = 0; i < crowdHandler.info.realms.Length; i++)
+        for (int i = 0; i < hotSceneInfo.realms.Length; i++)
         {
-            if (crowdHandler.info.realms[i].usersCount < crowdHandler.info.realms[i].usersMax)
+            if (hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].usersMax)
             {
-                realm = crowdHandler.info.realms[i];
+                realm = hotSceneInfo.realms[i];
                 break;
             }
         }
 
-        OnJumpIn?.Invoke(crowdHandler.info.baseCoords, realm.serverName, realm.layer);
+        OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
     }
 
     private void OnDestroy()
@@ -129,8 +134,6 @@ internal class HotSceneCellView : MonoBehaviour
         friendPool.Dispose();
         thumbnailHandler.Dispose();
 
-        crowdHandler.onInfoUpdate -= OnCrowdInfoUpdated;
-        mapInfoHandler.onInfoUpdate -= OnMapInfoUpdated;
         friendsHandler.onFriendAdded -= OnFriendAdded;
         friendsHandler.onFriendRemoved -= OnFriendRemoved;
     }
@@ -169,12 +172,12 @@ internal class HotSceneCellView : MonoBehaviour
         }
     }
 
-    private void OnMapInfoUpdated(MinimapMetadata.MinimapSceneInfo info)
+    private void OnMapInfoUpdated(HotScenesController.HotSceneInfo sceneInfo)
     {
-        sceneName.text = info.name;
+        sceneName.text = sceneInfo.name;
 
-        FetchThumbnail(info.previewImageUrl,
-            onFail: () => FetchThumbnail(MapUtils.GetMarketPlaceThumbnailUrl(info, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR),
+        FetchThumbnail(sceneInfo.thumbnail,
+            onFail: () => FetchThumbnail(MapUtils.GetMarketPlaceThumbnailUrl(sceneInfo.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR),
             onFail: () => SetThumbnail(errorThumbnail.texture)));
     }
 
@@ -190,8 +193,6 @@ internal class HotSceneCellView : MonoBehaviour
         OnThumbnailSet?.Invoke(texture);
 
         SetLoaded();
-
-       
     }
 
     private void SetLoaded()

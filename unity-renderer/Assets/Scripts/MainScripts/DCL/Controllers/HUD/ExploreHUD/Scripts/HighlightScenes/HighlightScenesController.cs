@@ -8,7 +8,7 @@ using DCL.Interface;
 internal class HighlightScenesController : MonoBehaviour
 {
     const float SCENES_UPDATE_INTERVAL = 60;
-    private const float SCENE_FIRST_LOAD_DELAY = 0.2f;
+    private const float SCENE_FIRST_LOAD_DELAY = 0.1f;
 
     [SerializeField] HotSceneCellView hotsceneBaseCellView;
     [SerializeField] ScrollRect scrollRect;
@@ -16,7 +16,6 @@ internal class HighlightScenesController : MonoBehaviour
     Dictionary<Vector2Int, HotSceneCellView> cachedHotScenes = new Dictionary<Vector2Int, HotSceneCellView>();
     Dictionary<Vector2Int, HotSceneCellView> activeHotSceneViews = new Dictionary<Vector2Int, HotSceneCellView>();
 
-    ExploreMiniMapDataController mapDataController;
     FriendTrackerController friendsController;
 
     ViewPool<HotSceneCellView> hotScenesViewPool;
@@ -24,9 +23,8 @@ internal class HighlightScenesController : MonoBehaviour
     float lastTimeRefreshed = 0;
     private Coroutine firstLoadAnimRoutine = null;
 
-    public void Initialize(ExploreMiniMapDataController mapDataController, FriendTrackerController friendsController)
+    public void Initialize(FriendTrackerController friendsController)
     {
-        this.mapDataController = mapDataController;
         this.friendsController = friendsController;
         hotScenesViewPool = new ViewPool<HotSceneCellView>(hotsceneBaseCellView, 9);
     }
@@ -61,8 +59,6 @@ internal class HighlightScenesController : MonoBehaviour
     void OnFetchHotScenes()
     {
         HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
-
-        mapDataController.ClearPending();
         ProcessHotScenes();
     }
 
@@ -97,7 +93,7 @@ internal class HighlightScenesController : MonoBehaviour
         else
         {
             hotSceneView = hotScenesViewPool.GetView();
-            hotSceneView.Setup();
+            hotSceneView.Initialize();
             cachedHotScenes.Add(baseCoords, hotSceneView);
         }
 
@@ -113,21 +109,8 @@ internal class HighlightScenesController : MonoBehaviour
             AddActiveHotSceneCell(baseCoords, hotSceneView);
         }
 
-        hotSceneView.crowdHandler.SetCrowdInfo(hotSceneInfo);
-
-        if (!hotSceneView.mapInfoHandler.HasMinimapSceneInfo())
-        {
-            mapDataController.SetMinimapData(baseCoords, hotSceneView.mapInfoHandler,
-                (resolvedView) =>
-                {
-                    friendsController.AddHandler(hotSceneView.friendsHandler);
-                },
-                (rejectedView) =>
-                {
-                    hotScenesViewPool.PoolView(hotSceneView);
-                    cachedHotScenes[baseCoords] = null;
-                });
-        }
+        hotSceneView.Setup(hotSceneInfo);
+        friendsController.AddHandler(hotSceneView.friendsHandler);
     }
 
     void AddActiveHotSceneCell(Vector2Int coords, HotSceneCellView view)
