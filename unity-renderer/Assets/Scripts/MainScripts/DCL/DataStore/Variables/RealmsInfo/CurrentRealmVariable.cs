@@ -31,5 +31,14 @@ namespace Variables.RealmsInfo
         {
             return this.serverName == serverName && this.layer == layer;
         }
+
+        public CurrentRealmModel Clone()
+        {
+            return new CurrentRealmModel()
+            {
+                serverName = serverName,
+                layer = layer
+            };
+        }
     }
 }

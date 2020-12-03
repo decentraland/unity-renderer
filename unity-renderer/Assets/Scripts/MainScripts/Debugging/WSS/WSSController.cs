@@ -453,6 +453,7 @@ namespace DCL
                                 HUDController.i.SetUsersMuted(msg.payload);
                                 break;
                             case "SetKernelConfiguration":
+                            case "UpdateRealmsInfo":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             default:
