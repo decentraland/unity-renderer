@@ -110,7 +110,7 @@ namespace DCL.SettingsController
 
             Environment.i.cullingController.SetObjectCulling(qualitySettings.enableDetailObjectCulling);
             Environment.i.cullingController.SetShadowCulling(qualitySettings.enableDetailObjectCulling);
-            Environment.i.cullingController.SetDirty();
+            Environment.i.cullingController.MarkDirty();
 
             if (qualitySettings.enableDetailObjectCulling)
             {

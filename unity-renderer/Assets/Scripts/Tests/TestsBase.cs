@@ -52,6 +52,9 @@ public class TestsBase
             yield return SetUp_SceneIntegrityChecker();
             SetUp_Renderer();
             Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
+            yield return null;
+            //TODO(Brian): Remove when the init layer is ready
+            Environment.i.cullingController.Stop();
             yield break;
         }
 
@@ -64,6 +67,9 @@ public class TestsBase
 
         SetUp_Renderer();
         Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
+        yield return null;
+        //TODO(Brian): Remove when the init layer is ready
+        Environment.i.cullingController.Stop();
     }
 
 

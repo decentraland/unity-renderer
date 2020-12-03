@@ -41,7 +41,6 @@ namespace DCL.Models
             {
                 get
                 {
-                    
                     if (meshRootGameObject.transform.position != lastBoundsCalculationPosition)
                     {
                         mergedBoundsValue.center += meshRootGameObject.transform.position - lastBoundsCalculationPosition;
@@ -66,7 +65,7 @@ namespace DCL.Models
                     meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
 
                     RecalculateBounds();
-                    Environment.i.cullingController.SetDirty();
+                    Environment.i.cullingController.MarkDirty();
                     OnUpdated?.Invoke();
                 }
             }

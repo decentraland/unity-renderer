@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace DCL.Controllers
 {
@@ -394,7 +392,6 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
-                Environment.i.cullingController.SetDirty();
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -488,50 +485,49 @@ namespace DCL.Controllers
 
             DecentralandEntity me = GetEntityForUpdate(entityId);
 
-            if (me != null)
+            if (me == null)
+                return;
+
+            if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
             {
-                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                // In this case, the entity will attached to the first person camera
+                // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
+                SceneController.i.boundariesChecker.AddPersistent(me);
+            }
+            else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+            {
+                // In this case, the entity will be attached to the avatar
+                // It will simply rotate with the avatar, regardless of where the camera is pointing
+                me.SetParent(DCLCharacterController.i.avatarReference);
+                SceneController.i.boundariesChecker.AddPersistent(me);
+            }
+            else
+            {
+                if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
                 {
-                    // In this case, the entity will attached to the first person camera
-                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
-                    SceneController.i.boundariesChecker.AddPersistent(me);
-                    Environment.i.physicsSyncController.MarkDirty();
+                    SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
                 }
-                else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+
+                if (parentId == "0")
                 {
-                    // In this case, the entity will be attached to the avatar
-                    // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(DCLCharacterController.i.avatarReference);
-                    SceneController.i.boundariesChecker.AddPersistent(me);
-                    Environment.i.physicsSyncController.MarkDirty();
+                    // The entity will be child of the scene directly
+                    me.SetParent(null);
+                    me.gameObject.transform.SetParent(gameObject.transform, false);
                 }
                 else
                 {
-                    if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
-                    {
-                        SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
-                    }
+                    DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
-                    if (parentId == "0")
+                    if (myParent != null)
                     {
-                        // The entity will be child of the scene directly
-                        me.SetParent(null);
-                        me.gameObject.transform.SetParent(gameObject.transform, false);
-                        Environment.i.physicsSyncController.MarkDirty();
-                    }
-                    else
-                    {
-                        DecentralandEntity myParent = GetEntityForUpdate(parentId);
-
-                        if (myParent != null)
-                        {
-                            me.SetParent(myParent);
-                            Environment.i.physicsSyncController.MarkDirty();
-                        }
+                        me.SetParent(myParent);
                     }
                 }
             }
+
+            Environment.i.cullingController.MarkDirty();
+            Environment.i.physicsSyncController.MarkDirty();
         }
 
         /**
@@ -601,7 +597,7 @@ namespace DCL.Controllers
                 }
 
                 Environment.i.physicsSyncController.MarkDirty();
-
+                Environment.i.cullingController.MarkDirty();
                 return null;
             }
 
@@ -667,6 +663,7 @@ namespace DCL.Controllers
             }
 
             Environment.i.physicsSyncController.MarkDirty();
+            Environment.i.cullingController.MarkDirty();
             return newComponent;
         }
 
@@ -708,6 +705,7 @@ namespace DCL.Controllers
                 }
 
                 Environment.i.physicsSyncController.MarkDirty();
+                Environment.i.cullingController.MarkDirty();
                 return null;
             }
 
@@ -773,7 +771,6 @@ namespace DCL.Controllers
                 if (!entity.components.ContainsKey(classId))
                 {
                     newComponent = factory.CreateItemFromId<BaseComponent>(classId);
-                    Environment.i.physicsSyncController.MarkDirty();
 
                     if (newComponent != null)
                     {
@@ -802,6 +799,7 @@ namespace DCL.Controllers
             }
 
             Environment.i.physicsSyncController.MarkDirty();
+            Environment.i.cullingController.MarkDirty();
             return newComponent;
         }
 
