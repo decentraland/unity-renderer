@@ -9,20 +9,21 @@ using static DCL.Rendering.CullingControllerUtils;
 
 namespace DCL.Rendering
 {
-    public interface ICullingController
+    public interface ICullingController : IDisposable
     {
         void Start();
         void Stop();
-        event CullingController.DataReport OnDataReport;
-        void SetDirty();
-
+        void MarkDirty();
         void SetSettings(CullingControllerSettings settings);
         CullingControllerSettings GetSettingsCopy();
-
         void SetObjectCulling(bool enabled);
         void SetAnimationCulling(bool enabled);
         void SetShadowCulling(bool enabled);
         bool IsRunning();
+
+        bool IsDirty();
+        ICullingObjectsTracker objectsTracker { get; }
+        event CullingController.DataReport OnDataReport;
     }
 
     /// <summary>
@@ -31,10 +32,8 @@ namespace DCL.Rendering
     /// - Disable unneeded shadows.
     /// - Enable/disable animation culling for skinned renderers and animation components.
     /// </summary>
-    public class CullingController : ICullingController, IDisposable
+    public class CullingController : ICullingController
     {
-        public float maxTimeBudget = 4 / 1000f;
-
         internal List<CullingControllerProfile> profiles = null;
 
         private CullingControllerSettings settings;
@@ -44,17 +43,17 @@ namespace DCL.Rendering
 
         public UniversalRenderPipelineAsset urpAsset;
 
-        internal ICullingObjectsTracker objectsTracker;
+        public ICullingObjectsTracker objectsTracker { get; private set; }
         private Coroutine updateCoroutine;
         private float timeBudgetCount = 0;
         private bool resetObjectsNextFrame = false;
         private bool playerPositionDirty;
+        private bool objectPositionsDirty;
         private bool running = false;
 
         public delegate void DataReport(int rendererCount, int hiddenRendererCount, int hiddenShadowCount);
 
         public event DataReport OnDataReport;
-
 
         public static CullingController Create()
         {
@@ -145,7 +144,7 @@ namespace DCL.Rendering
 
             for (var i = 0; i < renderers.Length; i++)
             {
-                if (timeBudgetCount > maxTimeBudget)
+                if (timeBudgetCount > settings.maxTimeBudget)
                 {
                     timeBudgetCount = 0;
                     yield return null;
@@ -206,9 +205,10 @@ namespace DCL.Rendering
         {
             while (true)
             {
-                bool shouldCheck = objectsTracker.IsDirty() || playerPositionDirty;
+                bool shouldCheck = objectPositionsDirty || playerPositionDirty;
 
                 playerPositionDirty = false;
+                objectPositionsDirty = false;
 
                 if (!shouldCheck)
                 {
@@ -283,7 +283,7 @@ namespace DCL.Rendering
 
             for (var i = 0; i < animsLength; i++)
             {
-                if (timeBudgetCount > maxTimeBudget)
+                if (timeBudgetCount > settings.maxTimeBudget)
                 {
                     timeBudgetCount = 0;
                     yield return null;
@@ -336,6 +336,7 @@ namespace DCL.Rendering
 
         public void Dispose()
         {
+            objectsTracker.Dispose();
             Stop();
         }
 
@@ -347,7 +348,7 @@ namespace DCL.Rendering
             if (!running)
                 return;
 
-            SetDirty();
+            MarkDirty();
 
             if (rendererState)
                 StartInternal();
@@ -368,9 +369,17 @@ namespace DCL.Rendering
         /// In the next update iteration, all the scene objects are going to be gathered.
         /// This method has performance impact. 
         /// </summary>
-        public void SetDirty()
+        public void MarkDirty()
         {
-            objectsTracker.SetDirty();
+            objectPositionsDirty = true;
+        }
+
+        /// <summary>
+        /// Gets the scene objects dirtiness.
+        /// </summary>
+        public bool IsDirty()
+        {
+            return objectPositionsDirty;
         }
 
         /// <summary>
@@ -381,7 +390,8 @@ namespace DCL.Rendering
         {
             this.settings = settings;
             profiles = new List<CullingControllerProfile> {settings.rendererProfile, settings.skinnedRendererProfile};
-            SetDirty();
+            objectsTracker?.MarkDirty();
+            MarkDirty();
         }
 
         /// <summary>
@@ -405,7 +415,8 @@ namespace DCL.Rendering
 
             settings.enableObjectCulling = enabled;
             resetObjectsNextFrame = true;
-            SetDirty();
+            MarkDirty();
+            objectsTracker?.MarkDirty();
         }
 
         /// <summary>
@@ -419,7 +430,8 @@ namespace DCL.Rendering
 
             settings.enableAnimationCulling = enabled;
             resetObjectsNextFrame = true;
-            SetDirty();
+            MarkDirty();
+            objectsTracker?.MarkDirty();
         }
 
         /// <summary>
@@ -433,7 +445,8 @@ namespace DCL.Rendering
 
             settings.enableShadowCulling = enabled;
             resetObjectsNextFrame = true;
-            SetDirty();
+            MarkDirty();
+            objectsTracker?.MarkDirty();
         }
 
         /// <summary>

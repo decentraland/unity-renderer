@@ -19,11 +19,19 @@ namespace CullingControllerTests
         [SetUp]
         public void SetUp()
         {
-            cullingController = Substitute.ForPartsOf<CullingController>();
-            cullingController.objectsTracker = new CullingObjectsTracker();
-            cullingController.urpAsset = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
-            cullingController.SetSettings(new CullingControllerSettings());
-            cullingController.maxTimeBudget = float.MaxValue;
+            cullingController = CreateMockedCulledController(null, null, null);
+        }
+
+        private static CullingController CreateMockedCulledController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
+        {
+            var result = Substitute.ForPartsOf<CullingController>(
+                urpAsset == null ? GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset : urpAsset,
+                settings ?? new CullingControllerSettings(),
+                cullingObjectsTracker ?? new CullingObjectsTracker());
+
+            result.SetSettings(new CullingControllerSettings() { maxTimeBudget = float.MaxValue });
+
+            return result;
         }
 
         [TearDown]
@@ -161,7 +169,7 @@ namespace CullingControllerTests
             anim.cullingType = AnimationCullingType.BasedOnRenderers;
 
             var mockTracker = Substitute.For<ICullingObjectsTracker>();
-            cullingController.objectsTracker = mockTracker;
+            cullingController = CreateMockedCulledController(null, null, mockTracker);
 
             mockTracker.GetRenderers().Returns(info => go1.GetComponentsInChildren<Renderer>());
             mockTracker.GetSkinnedRenderers().Returns(info => go2.GetComponentsInChildren<SkinnedMeshRenderer>());
@@ -202,7 +210,7 @@ namespace CullingControllerTests
 
             cullingController.SetSettings(settings);
 
-            cullingController.objectsTracker.SetDirty();
+            cullingController.objectsTracker.MarkDirty();
             yield return cullingController.objectsTracker.PopulateRenderersList();
 
             // Test #1
@@ -314,7 +322,7 @@ namespace CullingControllerTests
             settings.enableObjectCulling = true;
 
             cullingController.SetSettings(settings);
-            cullingController.objectsTracker.SetDirty();
+            cullingController.objectsTracker.MarkDirty();
 
             yield return cullingController.objectsTracker.PopulateRenderersList();
 

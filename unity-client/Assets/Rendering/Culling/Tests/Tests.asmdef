@@ -5,7 +5,10 @@
         "UnityEditor.TestRunner",
         "CullingController",
         "Unity.RenderPipelines.Universal.Runtime",
-        "ScriptableObjects"
+        "ScriptableObjects",
+        "TestHelpers",
+        "MainScripts",
+        "CoroutineHelpers"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

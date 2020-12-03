@@ -65,10 +65,11 @@ namespace DCL
 
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
-            //TODO(Brian): Move those suscriptions elsewhere when we have the PoolManager in its own
-            //             assembly. (already done in PR #1149, not merged yet)
+            //TODO(Brian): Move those suscriptions elsewhere.
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet += Environment.i.physicsSyncController.MarkDirty;
+            PoolManager.i.OnGet -= Environment.i.cullingController.objectsTracker.MarkDirty;
+            PoolManager.i.OnGet += Environment.i.cullingController.objectsTracker.MarkDirty;
 
 #if !UNITY_EDITOR
             worldEntryPoint = new EntryPoint_World(this); // independent subsystem => put at entrypoint but not at environment
@@ -109,6 +110,7 @@ namespace DCL
         void OnDestroy()
         {
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
+            PoolManager.i.OnGet -= Environment.i.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             Environment.i.parcelScenesCleaner.Stop();
             Environment.i.cullingController.Stop();
@@ -499,7 +501,7 @@ namespace DCL
             Environment.i.messagingControllersManager.AddControllerIfNotExists(this, data.id);
 
             loadedScenes.Add(data.id, newScene);
-            OnNewSceneAdded?.Invoke(newScene);        
+            OnNewSceneAdded?.Invoke(newScene);
 
             return newScene;
         }

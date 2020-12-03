@@ -38,6 +38,7 @@ namespace DCL
             performanceMetricsController = new PerformanceMetricsController();
             clipboard = Clipboard.Create();
             parcelScenesCleaner = new ParcelScenesCleaner();
+            cullingController = CullingController.Create();
         }
 
         public void Initialize(IMessageProcessHandler messageHandler, ISceneHandler sceneHandler)
@@ -48,9 +49,9 @@ namespace DCL
             messagingControllersManager.Initialize(messageHandler);
             pointerEventsController.Initialize();
             memoryManager.Initialize();
-            cullingController = CullingController.Create();
             worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(sceneHandler, DCLCharacterController.i.characterPosition);
             parcelScenesCleaner.Start();
+            cullingController.Start();
 
             initialized = true;
         }
@@ -72,6 +73,7 @@ namespace DCL
             pointerEventsController.Cleanup();
             worldBlockersController.Dispose();
             parcelScenesCleaner.Dispose();
+            cullingController.Dispose();
         }
 
         public void Restart(IMessageProcessHandler messageHandler, ISceneHandler sceneHandler)
