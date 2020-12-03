@@ -526,3 +526,15 @@ export type KernelConfigForRenderer = {
   }
   gifSupported: boolean
 }
+
+export type RealmsInfoForRenderer = {
+  current: Realm
+  realms: {
+    layer: string
+    serverName: string
+    url: string
+    usersCount: number
+    usersMax: number
+    userParcels: [number, number][]
+  }[]
+}

@@ -50,6 +50,7 @@ export type DaoState = {
   commsServer: string
   resizeService: string
   hotScenesService: string
+  exploreRealmsService: string
   realm: Realm | undefined
   candidates: Candidate[]
   contentWhitelist: Candidate[]
