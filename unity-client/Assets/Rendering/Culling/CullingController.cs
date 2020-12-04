@@ -142,6 +142,8 @@ namespace DCL.Rendering
             else
                 renderers = objectsTracker.GetSkinnedRenderers();
 
+
+
             for (var i = 0; i < renderers.Length; i++)
             {
                 if (timeBudgetCount > settings.maxTimeBudget)
@@ -154,6 +156,14 @@ namespace DCL.Rendering
 
                 if (r == null)
                     continue;
+
+                bool rendererIsInIgnoreLayer = ((1 << r.gameObject.layer) & settings.ignoredLayersMask) != 0;
+                if (rendererIsInIgnoreLayer)
+                {
+                    SetCullingForRenderer(r, true, true);
+                    continue;
+                }
+
 
                 float startTime = Time.realtimeSinceStartup;
 
@@ -199,7 +209,7 @@ namespace DCL.Rendering
         }
 
         /// <summary>
-        /// Main culling loop. Controlled by Start() and Stop() methods. 
+        /// Main culling loop. Controlled by Start() and Stop() methods.
         /// </summary>
         IEnumerator UpdateCoroutine()
         {
@@ -367,7 +377,7 @@ namespace DCL.Rendering
         /// <summary>
         /// Sets the scene objects dirtiness.
         /// In the next update iteration, all the scene objects are going to be gathered.
-        /// This method has performance impact. 
+        /// This method has performance impact.
         /// </summary>
         public void MarkDirty()
         {
@@ -471,7 +481,7 @@ namespace DCL.Rendering
         }
 
         /// <summary>
-        /// Draw debug gizmos on the scene view.  
+        /// Draw debug gizmos on the scene view.
         /// </summary>
         /// <param name="shouldBeVisible"></param>
         /// <param name="bounds"></param>
