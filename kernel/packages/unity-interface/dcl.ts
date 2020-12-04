@@ -1,7 +1,11 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, NO_ASSET_BUNDLES, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, NO_ASSET_BUNDLES, PREVIEW, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
 import { aborted } from 'shared/loading/ReportFatalError'
-import { loadingScenes, setLoadingScreen, teleportTriggered } from 'shared/loading/types'
+import {
+  loadingScenes,
+  setLoadingScreen,
+  teleportTriggered
+} from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
 import { ILand, LoadableParcelScene, MappingsResponse, SceneJsonData } from 'shared/types'
 import {
@@ -285,7 +289,9 @@ teleportObservable.add((position: { x: number; y: number; text?: string }) => {
 
 renderStateObservable.add(async (isRunning) => {
   if (isRunning) {
-    await loginCompleted
+    if (PREVIEW) {
+      await loginCompleted
+    }
     setLoadingScreenVisible(false)
   }
 })
