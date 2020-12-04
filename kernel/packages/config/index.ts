@@ -139,7 +139,7 @@ export const FORCE_SEND_MESSAGE = location.search.includes('FORCE_SEND_MESSAGE')
 
 export const PIN_CATALYST = qs.CATALYST ? addHttpsIfNoProtocolIsSet(qs.CATALYST) : undefined
 
-export const HALLOWEEN = location.search.includes('HALLOWEEN')
+export const FORCE_RENDERING_STYLE = qs.FORCE_RENDERING_STYLE
 
 export const TEST_WEARABLES_OVERRIDE = location.search.includes('TEST_WEARABLES')
 
