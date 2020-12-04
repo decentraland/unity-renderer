@@ -3,7 +3,7 @@
 namespace DCL.Rendering
 {
     /// <summary>
-    /// This class contains the settings CullingController. Mainly used by the quality settings panel. 
+    /// This class contains the settings CullingController. Mainly used by the quality settings panel.
     /// </summary>
     [System.Serializable]
     public class CullingControllerSettings
@@ -14,6 +14,8 @@ namespace DCL.Rendering
         public bool enableAnimationCulling = true;
 
         public float enableAnimationCullingDistance = 7.5f;
+
+        public int ignoredLayersMask = 0;
 
         public CullingControllerProfile rendererProfile =
             new CullingControllerProfile
