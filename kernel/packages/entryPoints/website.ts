@@ -7,7 +7,7 @@ global.enableWeb3 = true
 
 import { initShared } from 'shared'
 import { createLogger } from 'shared/logger'
-import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { ReportFatalError, ReportSceneError } from 'shared/loading/ReportFatalError'
 import {
   AUTH_ERROR_LOGGED_OUT,
   experienceStarted,
@@ -195,6 +195,7 @@ namespace webApp {
     document.body.classList.remove('dcl-loading')
     globalThis.UnityLoader.Error.handler = (error: any) => {
       if (error.isSceneError) {
+        ReportSceneError((error.message || 'unknown') as string, error)
         // @see packages/shared/world/SceneWorker.ts#loadSystem
         debugger
         return
