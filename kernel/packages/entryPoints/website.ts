@@ -20,13 +20,12 @@ import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR } from
 import { signalParcelLoadingStarted, signalRendererInitialized } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { RootStore, StoreContainer } from 'shared/store/rootTypes'
-import { startUnitySceneWorkers } from '../unity-interface/dcl'
+import { setLoadingScreenVisible, startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity, InitializeUnityResult } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
 import {
   foregroundObservable,
   isForeground,
-  onNextRendererEnabled,
   renderStateObservable
 } from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
@@ -130,13 +129,25 @@ namespace webApp {
         i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
         i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
 
+        const observer = renderStateObservable.add((isRendering) => {
+          if (isRendering) {
+            renderStateObservable.remove(observer)
+            globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
+
+            globalThis.globalStore.dispatch(experienceStarted())
+
+            setLoadingScreenVisible(false)
+
+            Html.switchGameContainer(true)
+
+            i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
+          }
+        })
+
         EnsureProfile(identity.address)
           .then((profile) => {
             i.ConfigureEmailPrompt(profile.tutorialStep)
             i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
-            i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
-            globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
-            Html.switchGameContainer(true)
           })
           .catch((e) => logger.error(`error getting profile ${e}`))
       })
@@ -146,8 +157,6 @@ namespace webApp {
       })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
-
-    onNextRendererEnabled(() => globalThis.globalStore.dispatch(experienceStarted()))
 
     await realmInitialized()
     startRealmsReportToRenderer()
