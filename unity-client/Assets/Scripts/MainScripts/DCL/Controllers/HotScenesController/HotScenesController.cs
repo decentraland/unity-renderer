@@ -26,6 +26,7 @@ public class HotScenesController : MonoBehaviour
             public string layer;
             public int usersCount;
             public int usersMax;
+            public Vector2Int[] userParcels;
         }
         public string id;
         public string name;
