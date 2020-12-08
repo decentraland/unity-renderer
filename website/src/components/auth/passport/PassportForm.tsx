@@ -81,8 +81,8 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
     <div className="passportForm">
       <form method="POST" onSubmit={handleSubmit}>
         <div className="inputGroup inputGroupName">
-          <label>Name your avatar</label>
-          <em className="required">non-alphanumeric characters or spaces allowed</em>
+          <label>Name your avatar <span className="required">*</span></label>
+          {/* <em className="required">non-alphanumeric characters or spaces allowed</em> */}
           <input
             type="text"
             name="name"
@@ -98,7 +98,7 @@ export const PassportForm: React.FC<PassportFormProps> = (props) => {
         </div>
         <div className="inputGroup inputGroupEmail">
           <label>Let's stay in touch</label>
-          <em className="required">susbscribe to our newsletter (optional)</em>
+          <em className="required">susbscribe to our newsletter</em>
           <input
             type="text"
             name="email"
