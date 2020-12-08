@@ -97,10 +97,7 @@ namespace Tests
 
         [Test]
         [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
         [TestCase(5)]
-        [TestCase(10)]
         public void UserProfile_GetItemAmount(int amount)
         {
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();

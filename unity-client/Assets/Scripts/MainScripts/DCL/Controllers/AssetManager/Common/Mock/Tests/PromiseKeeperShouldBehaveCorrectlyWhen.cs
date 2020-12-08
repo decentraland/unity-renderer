@@ -63,7 +63,7 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             keeper.Keep(prom);
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
 
             Assert.AreEqual(AssetPromiseState.LOADING, prom.state);
 
@@ -71,7 +71,7 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
 
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.1f);
 
             Assert.IsTrue(asset == null);
             Assert.IsTrue(!library.Contains(asset));
@@ -111,7 +111,7 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 
-            yield return new WaitForSeconds(prom.loadTime * 0.5f);
+            yield return new WaitForSeconds(prom.loadTime * 0.2f);
 
             keeper.Forget(prom);
 

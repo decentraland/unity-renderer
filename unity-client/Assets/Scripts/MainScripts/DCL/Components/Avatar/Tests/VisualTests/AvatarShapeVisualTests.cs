@@ -28,8 +28,8 @@ namespace Tests
         {
             yield return InitVisualTestsScene("AvatarShape_A");
 
-            AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
@@ -61,8 +61,8 @@ namespace Tests
         {
             yield return InitVisualTestsScene("AvatarShape_B");
 
-            AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;

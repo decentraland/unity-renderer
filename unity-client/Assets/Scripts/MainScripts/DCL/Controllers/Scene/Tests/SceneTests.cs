@@ -128,14 +128,14 @@ namespace Tests
             var lanternEntity = TestHelpers.CreateSceneEntity(scene);
             var lanternShape = TestHelpers.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
             });
             yield return TestHelpers.WaitForGLTFLoad(lanternEntity);
 
             var cesiumManEntity = TestHelpers.CreateSceneEntity(scene);
             var cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
             });
             yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
 
@@ -145,7 +145,7 @@ namespace Tests
             TestHelpers.DetachSharedComponent(scene, cesiumManEntity.entityId, cesiumManShape.id);
             cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
             });
             yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
 
@@ -153,11 +153,11 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(8, 1, 8));
 
             AssertMetricsModel(scene,
-                triangles: 6214,
+                triangles: 1126,
                 materials: 2,
                 entities: 4,
-                meshes: 6,
-                bodies: 6,
+                meshes: 4,
+                bodies: 4,
                 textures: 0);
 
             TestHelpers.RemoveSceneEntity(scene, "1");
@@ -223,7 +223,7 @@ namespace Tests
             sceneController.UnloadScene(loadedSceneID);
 
             yield return new WaitForAllMessagesProcessed();
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(0.1f);
 
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID) == false);
 
