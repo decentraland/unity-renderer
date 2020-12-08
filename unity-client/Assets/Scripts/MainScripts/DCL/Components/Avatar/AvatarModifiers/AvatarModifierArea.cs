@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using DCL;
 using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 
 public class AvatarModifierArea : BaseComponent
@@ -49,7 +50,7 @@ public class AvatarModifierArea : BaseComponent
         OnAvatarExit = null;
 
         // Update
-        model = SceneController.i.SafeFromJson<Model>(newJson);
+        model = Utils.SafeFromJson<Model>(newJson);
         if (model.modifiers != null)
         {
             // Add all listeners

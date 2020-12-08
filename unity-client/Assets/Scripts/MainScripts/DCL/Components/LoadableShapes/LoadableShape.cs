@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -113,7 +113,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             previousModel = model;
-            model = SceneController.i.SafeFromJson<LoadWrapperModelType>(newJson);
+            model = Utils.SafeFromJson<LoadWrapperModelType>(newJson);
 
             bool updateVisibility = previousModel.visible != model.visible;
             bool updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;

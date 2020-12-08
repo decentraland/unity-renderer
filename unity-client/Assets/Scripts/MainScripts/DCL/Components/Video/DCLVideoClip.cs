@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 
 namespace DCL.Components
@@ -34,7 +35,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
             isExternalURL = model.url.StartsWith("http://") || model.url.StartsWith("https://");
             isStream = !new[] { ".mp4", ".ogg", ".mov", ".webm" }.Any(x => model.url.EndsWith(x));
             yield break;

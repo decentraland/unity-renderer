@@ -98,6 +98,7 @@ namespace DCL.Components
                 loadingState = LoadState.IDLE;
             }
         }
+
         public override object GetModel()
         {
             return model;
@@ -107,7 +108,7 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.url))
             {

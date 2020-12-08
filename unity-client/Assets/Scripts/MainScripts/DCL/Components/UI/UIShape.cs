@@ -79,7 +79,7 @@ namespace DCL.Components
         /// </summary>
         public void PreApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<ModelType>(newJson);
+            model = Utils.SafeFromJson<ModelType>(newJson);
 
             raiseOnAttached = false;
             firstApplyChangesCall = false;
@@ -165,7 +165,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_IMAGE_SHAPE;
+            return (int) CLASS_ID.UI_IMAGE_SHAPE;
         }
 
         public string GetDebugName()
@@ -447,7 +447,12 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
-        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent)
+        {
+        }
+
+        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent)
+        {
+        }
     }
 }

@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
@@ -67,7 +68,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (string.IsNullOrEmpty(model.src))
             {
@@ -90,6 +91,7 @@ namespace DCL.Components
                 {
                     Debug.Log($"couldn't fetch font from resources {resourceName}");
                 }
+
                 loaded = true;
                 error = fontAsset == null;
             }

@@ -4,6 +4,7 @@ using DCL.Interface;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -64,7 +65,7 @@ namespace DCL
 
             DisablePassport();
 
-            model = SceneController.i.SafeFromJson<AvatarModel>(newJson);
+            model = Utils.SafeFromJson<AvatarModel>(newJson);
 
             everythingIsLoaded = false;
 

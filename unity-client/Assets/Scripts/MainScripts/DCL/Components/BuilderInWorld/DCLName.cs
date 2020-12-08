@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 /// <summary>
@@ -39,14 +40,14 @@ public class DCLName : BaseDisposable
     {
         Model newModel = new Model();
         newModel.value = value;
-      
+
         UpdateFromJSON(JsonUtility.ToJson(newModel));
     }
 
     public override IEnumerator ApplyChanges(string newJson)
     {
-        Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
-        if(newModel.value != model.value)
+        Model newModel = Utils.SafeFromJson<Model>(newJson);
+        if (newModel.value != model.value)
         {
             string oldValue = model.value;
             model = newModel;

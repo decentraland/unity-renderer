@@ -1,5 +1,6 @@
 using System.Collections;
 using DCL.Controllers;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -12,8 +13,7 @@ namespace DCL.Components
         {
             public bool billboard;
 
-            [Header("Font Properties")]
-            public string value = "";
+            [Header("Font Properties")] public string value = "";
 
             public bool visible = true;
 
@@ -24,8 +24,7 @@ namespace DCL.Components
             public string fontWeight = "normal";
             public string font;
 
-            [Header("Text box properties")]
-            public string hTextAlign = "bottom";
+            [Header("Text box properties")] public string hTextAlign = "bottom";
 
             public string vTextAlign = "left";
             public float width = 1f;
@@ -40,15 +39,13 @@ namespace DCL.Components
             public int lineCount = 0;
             public bool textWrapping = false;
 
-            [Header("Text shadow properties")]
-            public float shadowBlur = 0f;
+            [Header("Text shadow properties")] public float shadowBlur = 0f;
 
             public float shadowOffsetX = 0f;
             public float shadowOffsetY = 0f;
             public Color shadowColor = new Color(1, 1, 1);
 
-            [Header("Text outline properties")]
-            public float outlineWidth = 0f;
+            [Header("Text outline properties")] public float outlineWidth = 0f;
 
             public Color outlineColor = Color.white;
         }
@@ -74,7 +71,7 @@ namespace DCL.Components
         {
             if (rectTransform == null) yield break;
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             rectTransform.sizeDelta = new Vector2(model.width, model.height);
 
@@ -96,7 +93,7 @@ namespace DCL.Components
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.visible ? model.opacity : 0);
-            text.fontSize = (int)model.fontSize;
+            text.fontSize = (int) model.fontSize;
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
             text.enableAutoSizing = model.fontAutoSize;
@@ -104,10 +101,10 @@ namespace DCL.Components
             text.margin =
                 new Vector4
                 (
-                    (int)model.paddingLeft,
-                    (int)model.paddingTop,
-                    (int)model.paddingRight,
-                    (int)model.paddingBottom
+                    (int) model.paddingLeft,
+                    (int) model.paddingTop,
+                    (int) model.paddingRight,
+                    (int) model.paddingBottom
                 );
 
             text.alignment = GetAlignment(model.vTextAlign, model.hTextAlign);

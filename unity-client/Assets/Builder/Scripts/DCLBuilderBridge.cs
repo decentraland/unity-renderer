@@ -107,7 +107,7 @@ namespace Builder
         public void GetMousePosition(string newJson)
         {
             if (LOG_MESSAGES) Debug.Log($"RECEIVE: GetMousePosition {newJson}");
-            MousePayload m = SceneController.i.SafeFromJson<MousePayload>(newJson);
+            MousePayload m = Utils.SafeFromJson<MousePayload>(newJson);
 
             Vector3 mousePosition = new Vector3(m.x, Screen.height - m.y, 0);
             Vector3 hitPoint;
