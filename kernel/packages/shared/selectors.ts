@@ -1,5 +1,5 @@
 import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
-import { ContentMapping, ILand, EnvironmentData, LoadableParcelScene, SceneJsonData } from './types'
+import { ContentMapping, ILand, EnvironmentData, LoadableParcelScene, SceneJsonData, SceneFeatureToggle } from './types'
 
 export function normalizeContentMappings(
   mappings: Record<string, string> | Array<ContentMapping>
@@ -91,6 +91,17 @@ export function getOwnerNameFromJsonData(jsonData?: SceneJsonData) {
   }
 
   return ownerName || 'Unknown'
+}
+
+export function isFeatureToggleEnabled(toggle: SceneFeatureToggle, sceneJsonData?: SceneJsonData): boolean {
+  const featureToggles = sceneJsonData?.featureToggles
+  let feature = featureToggles?.[toggle.name]
+
+  if (!feature || (feature !== 'enabled' && feature !== 'disabled')) {
+    // If not set or value is invalid, then use default
+    feature = toggle.default
+  }
+  return feature === 'enabled'
 }
 
 export function getSceneDescriptionFromJsonData(jsonData?: SceneJsonData) {

@@ -38,6 +38,9 @@ import { unityInterface } from 'unity-interface/UnityInterface'
 import { ensureMetaConfigurationInitialized } from 'shared/meta'
 import { isVoiceChatEnabledFor } from 'shared/meta/selectors'
 import { userAuthentified } from 'shared/session'
+import { sceneObservable } from 'shared/world/sceneState'
+import { SceneFeatureToggles } from 'shared/types'
+import { isFeatureToggleEnabled } from 'shared/selectors'
 
 const DEBUG = false
 const logger = createLogger('comms: ')
@@ -57,7 +60,24 @@ export function* commsSaga() {
     yield takeEvery(VOICE_RECORDING_UPDATE, updatePlayerVoiceRecording)
     yield takeEvery(SET_VOICE_VOLUME, updateVoiceChatVolume)
     yield takeEvery(SET_VOICE_MUTE, updateVoiceChatMute)
+    yield listenToWhetherSceneSupportsVoiceChat()
   }
+}
+
+function* listenToWhetherSceneSupportsVoiceChat() {
+  sceneObservable.add(({ previousScene, newScene }) => {
+    const previouslyEnabled = previousScene
+      ? isFeatureToggleEnabled(SceneFeatureToggles.VOICE_CHAT, previousScene.sceneJsonData)
+      : undefined
+    const nowEnabled = isFeatureToggleEnabled(SceneFeatureToggles.VOICE_CHAT, newScene.sceneJsonData)
+    if (previouslyEnabled !== nowEnabled) {
+      unityInterface.SetVoiceChatEnabledByScene(nowEnabled)
+      if (!nowEnabled) {
+        // We want to stop any potential recordings when a user enters a new scene
+        updateVoiceRecordingStatus(false)
+      }
+    }
+  })
 }
 
 function* establishCommunications() {
