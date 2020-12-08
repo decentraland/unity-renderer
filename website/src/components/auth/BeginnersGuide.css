@@ -1,5 +1,7 @@
 .eth-beginners-guide {
   color: #333;
+  background-image: url('../../images/login/pattern.svg');
+  background-position: top center;
 }
 
 .eth-beginners-guide h2 {
