@@ -9,13 +9,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static ProtocolV2;
+using Environment = DCL.Environment;
 
 /// <summary>
 /// This class will handle all the messages that will be sent to kernel. 
 /// </summary>
 public class BuilderInWorldBridge : MonoBehaviour
 {
-
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     TransformComponent entityTransformComponentModel = new TransformComponent();
 
@@ -32,12 +32,12 @@ public class BuilderInWorldBridge : MonoBehaviour
 
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.NAME)
-            {       
-                entitySingleComponentPayload.data = ((DCLName)keyValuePairBaseDisposable.Value).GetModel();
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
+            {
+                entitySingleComponentPayload.data = ((DCLName) keyValuePairBaseDisposable.Value).GetModel();
             }
         }
-       
+
 
         modifyEntityComponentEvent.payload = entitySingleComponentPayload;
 
@@ -65,10 +65,10 @@ public class BuilderInWorldBridge : MonoBehaviour
             componentPayLoad.componentId = Convert.ToInt32(keyValuePair.Key);
 
             if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
-            {             
+            {
                 TransformComponent entityComponentModel = new TransformComponent();
 
-                entityComponentModel.position = SceneController.i.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+                entityComponentModel.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
                 entityComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
                 entityComponentModel.scale = entity.gameObject.transform.localScale;
 
@@ -80,8 +80,6 @@ public class BuilderInWorldBridge : MonoBehaviour
             }
 
             list.Add(componentPayLoad);
-
-
         }
 
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.GetSharedComponents())
@@ -102,7 +100,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.TRANSFORM;
 
-        entityTransformComponentModel.position = SceneController.i.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+        entityTransformComponentModel.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
         entityTransformComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
         entityTransformComponentModel.scale = entity.gameObject.transform.localScale;
 
@@ -117,7 +115,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
 
         //Note (Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
-    
+
         string message = JsonConvert.SerializeObject(sceneEvent, Formatting.None, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore

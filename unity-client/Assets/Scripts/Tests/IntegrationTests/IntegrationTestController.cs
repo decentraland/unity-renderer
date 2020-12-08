@@ -43,7 +43,7 @@ public class IntegrationTestController : MonoBehaviour
 
         yield return new WaitForAllMessagesProcessed();
 
-        var scene = sceneController.loadedScenes[sceneName];
+        var scene = Environment.i.worldState.loadedScenes[sceneName];
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
@@ -106,7 +106,7 @@ public class IntegrationTestController : MonoBehaviour
     public IEnumerator Verify()
     {
         var sceneController = FindObjectOfType<SceneController>();
-        var scene = sceneController.loadedScenes[sceneName];
+        var scene = Environment.i.worldState.loadedScenes[sceneName];
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);

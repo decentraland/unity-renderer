@@ -39,44 +39,49 @@ namespace DCL.Tutorial
 
         public static TutorialController i { get; private set; }
 
-        public HUDController hudController { get => HUDController.i; }
+        public HUDController hudController
+        {
+            get => HUDController.i;
+        }
 
         public int currentStepIndex { get; private set; }
 
-        [Header("General Configuration")]
-        [SerializeField] internal int tutorialVersion = 1;
+        [Header("General Configuration")] [SerializeField]
+        internal int tutorialVersion = 1;
+
         [SerializeField] internal float timeBetweenSteps = 0.5f;
         [SerializeField] internal bool sendStats = true;
 
-        [Header("Tutorial Steps on Genesis Plaza")]
-        [SerializeField] internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
+        [Header("Tutorial Steps on Genesis Plaza")] [SerializeField]
+        internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Deep Link")]
-        [SerializeField] internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
+        [Header("Tutorial Steps from Deep Link")] [SerializeField]
+        internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Reset Tutorial")]
-        [SerializeField] internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
+        [Header("Tutorial Steps from Reset Tutorial")] [SerializeField]
+        internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Builder In World")]
-        [SerializeField] internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
+        [Header("Tutorial Steps from Builder In World")] [SerializeField]
+        internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
 
-        [Header("3D Model Teacher")]
-        [SerializeField] internal Camera teacherCamera;
+        [Header("3D Model Teacher")] [SerializeField]
+        internal Camera teacherCamera;
+
         [SerializeField] internal RawImage teacherRawImage;
         [SerializeField] internal TutorialTeacher teacher;
         [SerializeField] internal float teacherMovementSpeed = 4f;
         [SerializeField] internal AnimationCurve teacherMovementCurve;
         [SerializeField] internal Canvas teacherCanvas;
 
-        [Header("Eagle Eye Camera")]
-        [SerializeField] internal CinemachineVirtualCamera eagleEyeCamera;
+        [Header("Eagle Eye Camera")] [SerializeField]
+        internal CinemachineVirtualCamera eagleEyeCamera;
+
         [SerializeField] internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
         [SerializeField] internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
         [SerializeField] internal bool eagleCamRotationActived = true;
         [SerializeField] internal float eagleCamRotationSpeed = 1f;
 
-        [Header("Debugging")]
-        [SerializeField] internal bool debugRunTutorial = false;
+        [Header("Debugging")] [SerializeField] internal bool debugRunTutorial = false;
         [SerializeField] internal int debugStartingStepIndex;
         [SerializeField] internal bool debugOpenedFromDeepLink = false;
 
@@ -194,7 +199,7 @@ namespace DCL.Tutorial
 
             if (SceneController.i != null)
             {
-                WebInterface.SendSceneExternalActionEvent(SceneController.i.currentSceneId, "tutorial", "end");
+                WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "end");
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -235,7 +240,6 @@ namespace DCL.Tutorial
                         }
                         else
                             yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-
                     }
                     else if (openedFromDeepLink)
                     {
@@ -246,6 +250,7 @@ namespace DCL.Tutorial
                         SetTutorialDisabled();
                         yield break;
                     }
+
                     break;
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
@@ -310,9 +315,9 @@ namespace DCL.Tutorial
             }
 
             int skipIndex = stepsOnGenesisPlaza.Count +
-                stepsFromDeepLink.Count +
-                stepsFromReset.Count +
-                stepsFromBuilderInWorld.Count;
+                            stepsFromDeepLink.Count +
+                            stepsFromReset.Count +
+                            stepsFromBuilderInWorld.Count;
 
             StartCoroutine(StartTutorialFromStep(skipIndex));
 
@@ -444,7 +449,7 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)
         {
-            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int)finishStepType);
+            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType);
         }
 
         private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
@@ -483,11 +488,12 @@ namespace DCL.Tutorial
 
         private bool IsPlayerInsideGenesisPlaza()
         {
-            if (SceneController.i == null || SceneController.i.currentSceneId == null)
+            WorldState worldState = Environment.i.worldState;
+            if (worldState == null || worldState.currentSceneId == null)
                 return false;
 
             Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
-            ParcelScene currentScene = SceneController.i.loadedScenes[SceneController.i.currentSceneId];
+            ParcelScene currentScene = worldState.loadedScenes[worldState.currentSceneId];
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;

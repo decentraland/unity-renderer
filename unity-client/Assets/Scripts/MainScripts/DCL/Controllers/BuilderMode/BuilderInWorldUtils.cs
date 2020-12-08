@@ -7,10 +7,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Environment = DCL.Environment;
 
 public static partial class BuilderInWorldUtils
 {
-
     public static void DrawScreenRect(Rect rect, Color color)
     {
         GUI.color = color;
@@ -81,7 +81,6 @@ public static partial class BuilderInWorldUtils
             gameObjectToReceive.transform.rotation = gameObjectToCopy.transform.rotation;
 
         gameObjectToReceive.transform.localScale = gameObjectToCopy.transform.lossyScale;
-
     }
 
     public static bool IsPointerOverMaskElement(LayerMask mask)
@@ -112,12 +111,11 @@ public static partial class BuilderInWorldUtils
             {
                 EntityData.TransformComponent entityComponentModel = new EntityData.TransformComponent();
 
-                entityComponentModel.position = SceneController.i.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene); 
+                entityComponentModel.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position, entity.scene);
                 entityComponentModel.rotation = entity.gameObject.transform.localRotation.eulerAngles;
                 entityComponentModel.scale = entity.gameObject.transform.localScale;
 
                 builderInWorldEntityData.transformComponent = entityComponentModel;
-
             }
             else
             {
@@ -148,4 +146,3 @@ public static partial class BuilderInWorldUtils
         return JsonConvert.DeserializeObject<EntityData>(json);
     }
 }
-

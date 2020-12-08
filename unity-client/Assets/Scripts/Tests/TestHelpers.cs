@@ -98,8 +98,8 @@ namespace DCL.Helpers
             where K : new()
         {
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
-                ? (int)scene.ownerController.componentFactory.GetIdForType<T>()
-                : (int)classId;
+                ? (int) scene.ownerController.componentFactory.GetIdForType<T>()
+                : (int) classId;
 
             string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
 
@@ -117,7 +117,7 @@ namespace DCL.Helpers
 
             return scene.EntityComponentCreateOrUpdate(
                 entity.entityId,
-                (CLASS_ID_COMPONENT)componentClassId,
+                (CLASS_ID_COMPONENT) componentClassId,
                 data
                 , out _) as T;
         }
@@ -191,9 +191,9 @@ namespace DCL.Helpers
 
             disposableIdCounter++;
 
-            string uniqueId = GetComponentUniqueId(scene, "material", (int)id, "-shared-" + disposableIdCounter);
+            string uniqueId = GetComponentUniqueId(scene, "material", (int) id, "-shared-" + disposableIdCounter);
 
-            T result = scene.SharedComponentCreate(uniqueId, (int)id) as T;
+            T result = scene.SharedComponentCreate(uniqueId, (int) id) as T;
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
@@ -239,7 +239,7 @@ namespace DCL.Helpers
         {
             DecentralandEntity entity = CreateSceneEntity(scene);
             string componentId =
-                GetComponentUniqueId(scene, "textShape", (int)CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
+                GetComponentUniqueId(scene, "textShape", (int) CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
 
             TextShape textShape = EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, model);
 
@@ -250,7 +250,7 @@ namespace DCL.Helpers
 
         public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
-            string componentId = GetComponentUniqueId(scene, "gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
+            string componentId = GetComponentUniqueId(scene, "gltfShape", (int) CLASS_ID.GLTF_SHAPE, entity.entityId);
             GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
 
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
@@ -261,13 +261,13 @@ namespace DCL.Helpers
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
         {
             DecentralandEntity entity = null;
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url,
             out DecentralandEntity entity)
         {
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
@@ -292,7 +292,7 @@ namespace DCL.Helpers
 
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model { visible = visible });
+            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model {visible = visible});
         }
 
         public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position,
@@ -304,7 +304,7 @@ namespace DCL.Helpers
 
         public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model { visible = visible });
+            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model {visible = visible});
         }
 
         public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position,
@@ -316,7 +316,7 @@ namespace DCL.Helpers
 
         public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model { visible = visible });
+            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model {visible = visible});
         }
 
         public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position,
@@ -328,7 +328,7 @@ namespace DCL.Helpers
 
         public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model { visible = visible });
+            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model {visible = visible});
         }
 
         public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position,
@@ -339,7 +339,7 @@ namespace DCL.Helpers
 
         public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithConeShape(scene, position, new ConeShape.Model { visible = visible });
+            return CreateEntityWithConeShape(scene, position, new ConeShape.Model {visible = visible});
         }
 
         private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId,
@@ -454,7 +454,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentCreate(
                 materialComponentID,
-                (int)DCL.Models.CLASS_ID.BASIC_MATERIAL
+                (int) DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
 
             scene.SharedComponentUpdate(
@@ -474,7 +474,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentCreate(
                 materialComponentID,
-                (int)CLASS_ID.PBR_MATERIAL
+                (int) CLASS_ID.PBR_MATERIAL
             );
 
             scene.SharedComponentUpdate(
@@ -518,7 +518,7 @@ namespace DCL.Helpers
 
             DCLAudioClip audioClip = scene.SharedComponentCreate(
                 audioClipId,
-                (int)CLASS_ID.AUDIO_CLIP
+                (int) CLASS_ID.AUDIO_CLIP
             ) as DCLAudioClip;
 
             scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
@@ -556,7 +556,7 @@ namespace DCL.Helpers
 
         public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, string entityId)
         {
-            string baseId = salt + "-" + (int)classId + "-" + entityId;
+            string baseId = salt + "-" + (int) classId + "-" + entityId;
             string finalId = baseId;
 
             while (scene.GetSharedComponent(finalId) != null)
@@ -569,11 +569,11 @@ namespace DCL.Helpers
 
         public static string CreateAndSetShape(ParcelScene scene, string entityId, CLASS_ID classId, string model)
         {
-            string componentId = GetComponentUniqueId(scene, "shape", (int)classId, entityId);
+            string componentId = GetComponentUniqueId(scene, "shape", (int) classId, entityId);
 
             scene.SharedComponentCreate(
                 componentId,
-                (int)classId
+                (int) classId
             );
 
             scene.SharedComponentUpdate(
@@ -697,9 +697,9 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            int id = (int)scene.ownerController.componentFactory.GetIdForType<TComponent>();
+            int id = (int) scene.ownerController.componentFactory.GetIdForType<TComponent>();
 
-            scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT)id, "{}");
+            scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
 
             if (component.routine != null)
             {
@@ -910,7 +910,7 @@ namespace DCL.Helpers
             yield return parentElement.routine;
 
             // make canvas invisible
-            yield return SharedComponentUpdate(parentElement, new UIScreenSpace.Model { visible = false });
+            yield return SharedComponentUpdate(parentElement, new UIScreenSpace.Model {visible = false});
 
             TComponent targetUIElement =
                 SharedComponentCreate<TComponent, TComponentModel>(scene,
@@ -1066,8 +1066,8 @@ namespace DCL.Helpers
             Vector2 pos = imagePos;
 
             pos *= scale;
-            pos.x *= ((RectTransform)canvas.transform).sizeDelta.x / Screen.width;
-            pos.y *= ((RectTransform)canvas.transform).sizeDelta.y / Screen.height;
+            pos.x *= ((RectTransform) canvas.transform).sizeDelta.x / Screen.width;
+            pos.y *= ((RectTransform) canvas.transform).sizeDelta.y / Screen.height;
 
             pointerEventData.position = pos;
 
@@ -1260,7 +1260,7 @@ namespace DCL.Helpers
                 return;
             }
 
-            foreach (var keyValuePair in sceneController.loadedScenes.Where(x => x.Value.isPersistent))
+            foreach (var keyValuePair in Environment.i.worldState.loadedScenes.Where(x => x.Value.isPersistent))
             {
                 keyValuePair.Value.isPersistent = false;
             }
