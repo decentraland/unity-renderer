@@ -175,15 +175,6 @@ namespace DCL
         const float MAX_TIME_FOR_DECODE = 0.005f;
         public bool msgStepByStep = false;
 
-        public T SafeFromJson<T>(string data)
-        {
-            ProfilingEvents.OnMessageDecodeStart?.Invoke("Misc");
-            T result = Utils.SafeFromJson<T>(data);
-            ProfilingEvents.OnMessageDecodeEnds?.Invoke("Misc");
-
-            return result;
-        }
-
         public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
         {
             string sceneId = msgObject.sceneId;
@@ -632,7 +623,7 @@ namespace DCL
             LoadParcelScenesMessage.UnityParcelScene scene;
 
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
-            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+            scene = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
             if (scene == null || scene.id == null) return;
@@ -686,7 +677,7 @@ namespace DCL
             LoadParcelScenesMessage.UnityParcelScene scene;
 
             ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_UPDATE);
-            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+            scene = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
             ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
 
             if (Environment.i.worldState.loadedScenes.ContainsKey(scene.id))
@@ -803,7 +794,7 @@ namespace DCL
             if (debugScenes && ignoreGlobalScenes)
                 return;
 #endif
-            CreateUISceneMessage uiScene = SafeFromJson<CreateUISceneMessage>(json);
+            CreateUISceneMessage uiScene = Utils.SafeFromJson<CreateUISceneMessage>(json);
 
             string uiSceneId = uiScene.id;
 

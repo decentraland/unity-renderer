@@ -32,7 +32,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_SCREEN_SPACE_SHAPE;
+            return (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -47,7 +47,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (scene.uiScreenSpace == null)
             {

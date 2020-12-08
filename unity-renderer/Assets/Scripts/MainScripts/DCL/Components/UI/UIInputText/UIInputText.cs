@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -34,7 +35,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_INPUT_TEXT_SHAPE;
+            return (int) CLASS_ID.UI_INPUT_TEXT_SHAPE;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -53,7 +54,7 @@ namespace DCL.Components
             //             client data structure to be like this, so we can serialize all of it in one shot.
             if (!scene.isTestScene)
             {
-                model.textModel = SceneController.i.SafeFromJson<TextShape.Model>(newJson);
+                model.textModel = Utils.SafeFromJson<TextShape.Model>(newJson);
             }
 
             inputField.textViewport = referencesContainer.rectTransform;
@@ -116,7 +117,7 @@ namespace DCL.Components
         {
             bool validString = !string.IsNullOrEmpty(tmpText.text);
 
-            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+            if (tmpText.text.Length == 1 && (byte) tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
             {
                 validString = false;
             }
@@ -127,7 +128,7 @@ namespace DCL.Components
 
                 ForceFocus();
             }
-            else if(scene.isPersistent) // DCL UI Chat text input
+            else if (scene.isPersistent) // DCL UI Chat text input
             {
                 inputField.DeactivateInputField();
                 referencesContainer.mouseCatcher.LockCursor();

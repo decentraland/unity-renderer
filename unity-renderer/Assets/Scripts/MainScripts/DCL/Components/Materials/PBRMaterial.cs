@@ -91,7 +91,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             LoadMaterial(PBR_MATERIAL_NAME);
 
@@ -283,7 +283,7 @@ namespace DCL.Components
                     CoroutineStarter.Start(DCLTexture.FetchTextureComponent(scene, textureComponentId,
                         (fetchedDCLTexture) =>
                         {
-                            if(material != null)
+                            if (material != null)
                             {
                                 material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
                                 SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);

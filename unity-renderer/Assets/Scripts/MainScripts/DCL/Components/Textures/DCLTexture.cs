@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -78,7 +79,7 @@ namespace DCL
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             unitySamplingMode = model.samplingMode;
 

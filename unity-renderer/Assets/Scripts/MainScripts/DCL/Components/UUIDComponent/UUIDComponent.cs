@@ -70,7 +70,7 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.uuid))
             {
@@ -79,7 +79,5 @@ namespace DCL
 
             return null;
         }
-
-       
     }
 }

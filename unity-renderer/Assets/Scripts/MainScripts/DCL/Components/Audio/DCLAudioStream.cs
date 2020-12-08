@@ -1,5 +1,6 @@
 using System.Collections;
 using DCL.Controllers;
+using DCL.Helpers;
 
 namespace DCL.Components
 {
@@ -27,7 +28,7 @@ namespace DCL.Components
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             Model prevModel = model;
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             bool forceUpdate = prevModel.volume != model.volume;
             settingsVolume = Settings.i.generalSettings.sfxVolume;

@@ -67,7 +67,7 @@ namespace DCL.Components
             material.name = "BasicMaterial_" + id;
 #endif
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.texture))
             {

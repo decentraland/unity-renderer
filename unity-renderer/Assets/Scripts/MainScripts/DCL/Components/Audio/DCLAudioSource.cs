@@ -46,7 +46,7 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;
