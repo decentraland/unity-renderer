@@ -1180,6 +1180,9 @@ namespace DCL.Helpers
         /// <summary>
         /// This method intercepts a message being sent to kernel and calls OnSuccess
         /// When the message matches the targetMessageType
+        ///
+        /// CAUTION: Do not use this to assert a message is NOT being sent to kernel,
+        /// the enumerator will yield until the timeout (2 seconds) have passed.
         /// </summary>
         /// <param name="targetMessageType">
         /// The target message type to be intercepted.

@@ -36,7 +36,7 @@ namespace AvatarEditorHUD_Tests
                 userProfile = ScriptableObject.CreateInstance<UserProfile>();
             }
 
-            catalog = AvatarTestHelpers.CreateTestCatalogLocal();
+            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
             controller.SetVisibility(true);

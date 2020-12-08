@@ -28,9 +28,9 @@ namespace Tests
         {
             yield return InitVisualTestsScene("AvatarShapeVisualTests_MouthWithMask");
 
-            AvatarTestHelpers.CreateTestCatalogLocal();
-            var model = AvatarTestHelpers.GetTestAvatarModel("Avatar #1", "TestAvatar_MaskMouth.json");
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, model);
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+            var model = AvatarShapeTestHelpers.GetTestAvatarModel("Avatar #1", "TestAvatar_MaskMouth.json");
+            AvatarShape avatar = AvatarShapeTestHelpers.CreateAvatarShape(scene, model);
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;

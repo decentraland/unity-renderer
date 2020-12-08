@@ -37,6 +37,8 @@ namespace DCL.SettingsController
             {
                 lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
 
+                if (lightweightRenderPipelineAsset == null) return;
+
                 // NOTE: LightweightRenderPipelineAsset doesn't expose properties to set any of the following fields
                 lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
                 lwrpaSoftShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);

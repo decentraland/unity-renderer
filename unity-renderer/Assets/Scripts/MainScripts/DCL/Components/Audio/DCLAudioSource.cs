@@ -19,7 +19,7 @@ namespace DCL.Components
 
         public float playTime => audioSource.time;
         public Model model;
-        AudioSource audioSource;
+        internal AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
         private void Awake()

@@ -102,7 +102,7 @@ namespace Tests
 
             animator.animComponent.cullingType = AnimationCullingType.AlwaysAnimate;
 
-            yield return new WaitForSeconds(1.5f);
+            yield return null;
 
             Animation animation = entity.gameObject.GetComponentInChildren<Animation>();
             foreach (AnimationState animState in animation)
@@ -170,7 +170,7 @@ namespace Tests
 
             animator.animComponent.cullingType = AnimationCullingType.AlwaysAnimate;
 
-            yield return new WaitForSeconds(1.5f);
+            yield return null;
 
             Animation animation = entity.gameObject.GetComponentInChildren<Animation>();
 
@@ -365,7 +365,7 @@ namespace Tests
             animatorModel.states[0].playing = true;
             yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
 
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(0.1f);
 
             Assert.IsFalse(animatedGameObject.localScale == originalScale);
             Assert.IsFalse(animatedGameObject.localPosition == originalPos);

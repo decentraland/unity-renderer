@@ -34,9 +34,9 @@ namespace AvatarShape_Tests
                 {
                 }
             };
-            catalog = AvatarTestHelpers.CreateTestCatalog();
+            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
-            var avatarShape = AvatarTestHelpers.CreateAvatarShape(scene, avatarModel);
+            var avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
             yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);
 
             avatarRenderer = avatarShape.avatarRenderer;
@@ -302,9 +302,9 @@ namespace AvatarShape_Tests
                 }
             };
 
-            AvatarTestHelpers.CreateTestCatalog();
+            AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
-            var avatarShape = AvatarTestHelpers.CreateAvatarShape(scene, avatarModel);
+            var avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
             yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);
 
             avatarRenderer = avatarShape.avatarRenderer;
