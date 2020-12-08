@@ -13,8 +13,8 @@
 <path fill-rule="evenodd" clip-rule="evenodd" d="M11.947 8.43441C13.1111 8.43441 14.0548 7.49037 14.0548 6.32585C14.0548 5.16132 13.1111 4.21729 11.947 4.21729C10.7828 4.21729 9.83911 5.16132 9.83911 6.32585C9.83911 7.49037 10.7828 8.43441 11.947 8.43441Z" fill="#FFC95B"/>
 </g>
 <defs>
-<filter id="filter0_d" x="0" y="0" width="179" height="34.4207" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter0_d" x="0" y="0" width="179" height="34.4207" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
 <feOffset dy="0.683609"/>
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.8 0"/>
@@ -22,16 +22,16 @@
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
 </filter>
 <linearGradient id="paint0_linear" x1="16.863" y1="-6.98716" x2="-6.9927" y2="16.8607" gradientUnits="userSpaceOnUse">
-<stop stop-color="#FF2D55"/>
-<stop offset="1" stop-color="#FFBC5B"/>
+<stop stopColor="#FF2D55"/>
+<stop offset="1" stopColor="#FFBC5B"/>
 </linearGradient>
 <linearGradient id="paint1_linear" x1="11.9437" y1="10.9645" x2="11.9437" y2="23.6159" gradientUnits="userSpaceOnUse">
-<stop stop-color="#A524B3"/>
-<stop offset="1" stop-color="#FF2D55"/>
+<stop stopColor="#A524B3"/>
+<stop offset="1" stopColor="#FF2D55"/>
 </linearGradient>
 <linearGradient id="paint2_linear" x1="22.6187" y1="17.7117" x2="22.6187" y2="26.9893" gradientUnits="userSpaceOnUse">
-<stop stop-color="#A524B3"/>
-<stop offset="1" stop-color="#FF2D55"/>
+<stop stopColor="#A524B3"/>
+<stop offset="1" stopColor="#FF2D55"/>
 </linearGradient>
 </defs>
 </svg>
