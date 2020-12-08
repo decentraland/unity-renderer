@@ -1,5 +1,3 @@
-import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
-import { Vector2 } from 'decentraland-ecs/src/decentraland/math'
 import { initParcelSceneWorker } from 'decentraland-loader/lifecycle/manager'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
@@ -8,7 +6,7 @@ import { globalSignalSceneFail, globalSignalSceneLoad, globalSignalSceneStart } 
 import { clearForegroundTimeout, setForegroundTimeout } from '../timers/index'
 import { EnvironmentData, ILand, InstancedSpawnPoint, LoadableParcelScene } from '../types'
 import { ParcelSceneAPI } from './ParcelSceneAPI'
-import { positionObservable, teleportObservable } from './positionThings'
+import { parcelObservable, teleportObservable } from './positionThings'
 import { SceneWorker } from './SceneWorker'
 import { SceneSystemWorker } from './SceneSystemWorker'
 import { renderStateObservable } from './worldState'
@@ -78,7 +76,6 @@ export function setNewParcelScene(sceneId: string, worker: SceneWorker) {
 
 export async function enableParcelSceneLoading(options: EnableParcelSceneLoadingOptions) {
   const ret = await initParcelSceneWorker()
-  const position = Vector2.Zero()
 
   ret.on('Scene.shouldPrefetch', async (opts: { sceneId: string }) => {
     const parcelSceneToLoad = await ret.getParcelData(opts.sceneId)
@@ -161,11 +158,10 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
     ret.notify('User.setPosition', { position, teleported: true })
   })
 
-  positionObservable.add((obj) => {
+  parcelObservable.add((obj) => {
     // immediate reposition should only be broadcasted to others, otherwise our scene reloads
     if (obj.immediate) return
 
-    worldToGrid(obj.position, position)
-    ret.notify('User.setPosition', { position, teleported: false })
+    ret.notify('User.setPosition', { position: obj.newParcel, teleported: false })
   })
 }

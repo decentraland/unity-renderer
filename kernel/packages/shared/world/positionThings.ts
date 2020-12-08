@@ -26,45 +26,62 @@ export type PositionReport = {
   /** Should this position be applied immediately */
   immediate: boolean
 }
+export type ParcelReport = {
+  /** Parcel where the user was before */
+  previousParcel?: ReadOnlyVector2
+  /** Parcel where the user is now */
+  newParcel: ReadOnlyVector2
+  /** Should this position be applied immediately */
+  immediate: boolean
+}
 
 export const positionObservable = new Observable<Readonly<PositionReport>>()
+// Called each time the user changes  parcel
+export const parcelObservable = new Observable<ParcelReport>()
 
 export const teleportObservable = new Observable<ReadOnlyVector2>()
 
 export const lastPlayerPosition = new Vector3()
+export let lastPlayerParcel: Vector2
 
-positionObservable.add(event => {
+positionObservable.add((event) => {
   lastPlayerPosition.copyFrom(event.position)
+})
+
+// Listen to position changes, and notify if the parcel changed
+positionObservable.add(({ position, immediate }) => {
+  const parcel = Vector2.Zero()
+  worldToGrid(position, parcel)
+  if (!lastPlayerParcel || parcel.x !== lastPlayerParcel.x || parcel.y !== lastPlayerParcel.y) {
+    parcelObservable.notifyObservers({ previousParcel: lastPlayerParcel, newParcel: parcel, immediate })
+    if (!lastPlayerParcel) {
+      lastPlayerParcel = parcel
+    } else {
+      lastPlayerParcel.copyFrom(parcel)
+    }
+  }
 })
 
 export function initializeUrlPositionObserver() {
   let lastTime: number = performance.now()
 
-  let previousPosition: string | null = null
-  const gridPosition = Vector2.Zero()
-
-  function updateUrlPosition(cameraVector: ReadOnlyVector3) {
+  function updateUrlPosition(newParcel: ReadOnlyVector2) {
     // Update position in URI every second
     if (performance.now() - lastTime > 1000) {
-      worldToGrid(cameraVector, gridPosition)
-      const currentPosition = `${gridPosition.x | 0},${gridPosition.y | 0}`
+      const currentPosition = `${newParcel.x | 0},${newParcel.y | 0}`
+      const stateObj = { position: currentPosition }
 
-      if (previousPosition !== currentPosition) {
-        const stateObj = { position: currentPosition }
-        previousPosition = currentPosition
+      const q = qs.parse(location.search)
+      q.position = currentPosition
 
-        const q = qs.parse(location.search)
-        q.position = currentPosition
-
-        history.replaceState(stateObj, 'position', `?${qs.stringify(q)}`)
-      }
+      history.replaceState(stateObj, 'position', `?${qs.stringify(q)}`)
 
       lastTime = performance.now()
     }
   }
 
-  positionObservable.add(event => {
-    updateUrlPosition(event.position)
+  parcelObservable.add(({ newParcel }) => {
+    updateUrlPosition(newParcel)
   })
 
   if (lastPlayerPosition.equalsToFloats(0, 0, 0)) {
@@ -114,7 +131,7 @@ function pickSpawnpoint(land: ILand): InstancedSpawnPoint | undefined {
   }
 
   // 1 - default spawn points
-  const defaults = land.sceneJsonData.spawnPoints.filter($ => $.default)
+  const defaults = land.sceneJsonData.spawnPoints.filter(($) => $.default)
 
   // 2 - if no default spawn points => all existing spawn points
   const eligiblePoints = defaults.length === 0 ? land.sceneJsonData.spawnPoints : defaults
