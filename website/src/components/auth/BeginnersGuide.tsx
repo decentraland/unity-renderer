@@ -6,7 +6,8 @@ import "./BeginnersGuide.css";
 export const BeginnersGuide: React.FC<React.HTMLAttributes<HTMLDivElement>> = (
   props
 ) => (
-    <Container className="eth-beginners-guide">
+  <div className="eth-beginners-guide">
+    <Container>
       <Content>
         <h2>Beginners Guide</h2>
         <Accordion
@@ -161,4 +162,5 @@ export const BeginnersGuide: React.FC<React.HTMLAttributes<HTMLDivElement>> = (
         </Accordion>
       </Content>
     </Container>
+    </div>
   );

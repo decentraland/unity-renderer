@@ -7,7 +7,8 @@
 
 .eth-login {
   width: 100%;
-  padding-left: 475px;
+  padding-left: 490px;
+  padding-right: 45px;
   padding-top: 168px;
   position: relative;
 }
@@ -15,7 +16,12 @@
 .eth-login .eth-avatars {
   position: absolute;
   top: 72px;
-  left: 0;
+  left: 72px;
+}
+
+.eth-login .eth-avatars img {
+  width: 405px;
+  height: auto;
 }
 
 .eth-login-description {

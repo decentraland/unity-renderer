@@ -56,24 +56,28 @@
 .LoginContainer.FullPage main {
   height: auto;
   min-height: 640px;
-  background-size: 100%;
-  background-color: white;
-  background-position: top center;
-  background-image: url("../../images/login/background@1x.jpg");
+  background-size: 100%, 100%, auto;
+  background-color: transparent;
+  background-position: top center, top center, bottom center;
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-image: url("../../images/login/background@1x.jpg"), url('../../images/login/pattern.svg');
   background-image: url("../../images/login/background@1x.jpg"),
-    url("https://decentraland.org/images/background@blur.jpg");
+    url("https://decentraland.org/images/background@blur.jpg"),
+    url('../../images/login/pattern.svg');
   background-image: -webkit-image-set(
       url("../../images/login/background@1x.jpg") 1x,
       url("../../images/login/background@2x.jpg") 2x,
       url("../../images/login/background@3x.jpg") 3x
     ),
-    url("https://decentraland.org/images/background@blur.jpg");
+    url("https://decentraland.org/images/background@blur.jpg"),
+    url('../../images/login/pattern.svg');
   background-image: image-set(
       url("../../images/login/background@1x.jpg") 1x,
       url("../../images/login/background@2x.jpg") 2x,
       url("../../images/login/background@3x.jpg") 3x
     ),
-    url("https://decentraland.org/images/background@blur.jpg");
+    url("https://decentraland.org/images/background@blur.jpg"),
+    url('../../images/login/pattern.svg');
   overflow: visible;
   align-items: flex-start;
 }
