@@ -297,9 +297,6 @@ namespace DCL.Controllers
 
         public DecentralandEntity CreateEntity(string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
-
             if (entities.ContainsKey(id))
             {
                 return entities[id];
@@ -353,7 +350,7 @@ namespace DCL.Controllers
 
             if (decentralandEntity.parent != null) SetEntityParent(duplicatedEntity.entityId, decentralandEntity.parent.entityId);
 
-            DCLTransform.model.position = SceneController.i.ConvertUnityToScenePosition(decentralandEntity.gameObject.transform.position);
+            DCLTransform.model.position = Environment.i.worldState.ConvertUnityToScenePosition(decentralandEntity.gameObject.transform.position);
             DCLTransform.model.rotation = decentralandEntity.gameObject.transform.rotation;
             DCLTransform.model.scale = decentralandEntity.gameObject.transform.lossyScale;
 
@@ -378,9 +375,6 @@ namespace DCL.Controllers
 
         public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
-
             if (entities.ContainsKey(id))
             {
                 DecentralandEntity entity = entities[id];
@@ -475,9 +469,6 @@ namespace DCL.Controllers
 
         public void SetEntityParent(string entityId, string parentId)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
-
             if (entityId == parentId)
             {
                 return;
@@ -535,9 +526,6 @@ namespace DCL.Controllers
           */
         public void SharedComponentAttach(string entityId, string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("AttachEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("AttachEntityComponent");
-
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
 
             if (decentralandEntity == null)
@@ -557,9 +545,6 @@ namespace DCL.Controllers
 
         public BaseComponent EntityComponentCreateOrUpdateFromUnity(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
-
             DecentralandEntity entity = GetEntityForUpdate(entityId);
 
             if (entity == null)
@@ -567,7 +552,6 @@ namespace DCL.Controllers
                 Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
                 return null;
             }
-
 
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
@@ -670,9 +654,6 @@ namespace DCL.Controllers
         public BaseComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data, out CleanableYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
-
-            SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
 
             DecentralandEntity entity = GetEntityForUpdate(entityId);
 
@@ -849,9 +830,6 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentCreate(string id, int classId)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentCreated");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentCreated");
-
             BaseDisposable disposableComponent;
 
             if (disposableComponents.TryGetValue(id, out disposableComponent))
@@ -1026,9 +1004,6 @@ namespace DCL.Controllers
 
         public void SharedComponentDispose(string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentDisposed");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentDisposed");
-
             BaseDisposable disposableComponent;
 
             if (disposableComponents.TryGetValue(id, out disposableComponent))
@@ -1044,10 +1019,6 @@ namespace DCL.Controllers
 
         public void EntityComponentRemove(string entityId, string name)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
-
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentRemoved");
-
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
             if (decentralandEntity == null)
             {
@@ -1107,9 +1078,9 @@ namespace DCL.Controllers
 
         public void SharedComponentUpdate(string id, string json, out CleanableYieldInstruction yieldInstruction)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
+            ProfilingEvents.OnMessageDecodeStart?.Invoke("ComponentUpdated");
             BaseDisposable newComponent = SharedComponentUpdate(id, json);
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             yieldInstruction = null;
 
@@ -1119,9 +1090,6 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentUpdate(string id, string json)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
-
             if (disposableComponents.TryGetValue(id, out BaseDisposable disposableComponent))
             {
                 disposableComponent.UpdateFromJSON(json);

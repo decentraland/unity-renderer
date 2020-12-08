@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityGLTF;
+using Environment = DCL.Environment;
 
 public class GLTFLoadingTestController : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);
 
-        var scene = sceneController.loadedScenes["0,0"];
+        var scene = Environment.i.worldState.loadedScenes["0,0"];
 
         // FULL GLB
         TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),
@@ -52,8 +53,8 @@ public class GLTFLoadingTestController : MonoBehaviour
     {
         var uwr = new UnityWebRequest(url, "POST");
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
-        uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
-        uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+        uwr.uploadHandler = (UploadHandler) new UploadHandlerRaw(jsonToSend);
+        uwr.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
         uwr.SetRequestHeader("Content-Type", "application/json");
 
         // Send the request then wait here until it returns

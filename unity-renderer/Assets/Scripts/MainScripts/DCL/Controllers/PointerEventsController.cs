@@ -46,15 +46,17 @@ namespace DCL
         {
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null) return;
 
+            WorldState worldState = Environment.i.worldState;
+
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter);
             bool uiIsBlocking = false;
-            string currentSceneId = SceneController.i.currentSceneId;
+            string currentSceneId = worldState.currentSceneId;
 
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
-            if (!string.IsNullOrEmpty(currentSceneId) && didHit && SceneController.i.loadedScenes.ContainsKey(currentSceneId))
+            if (!string.IsNullOrEmpty(currentSceneId) && didHit && worldState.loadedScenes.ContainsKey(currentSceneId))
             {
-                GraphicRaycaster raycaster = SceneController.i.loadedScenes[currentSceneId].uiScreenSpace?.graphicRaycaster;
+                GraphicRaycaster raycaster = worldState.loadedScenes[currentSceneId].uiScreenSpace?.graphicRaycaster;
                 if (raycaster)
                 {
                     uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width / 2, Screen.height / 2);
@@ -267,7 +269,7 @@ namespace DCL
                 pointerUpEvent = null;
             }
 
-            string sceneId = SceneController.i.currentSceneId;
+            string sceneId = Environment.i.worldState.currentSceneId;
 
             if (useRaycast && raycastGlobalLayerHitInfo.isValid)
             {
@@ -329,7 +331,7 @@ namespace DCL
                 lastPointerDownEventHitInfo = raycastInfoPointerEventLayer.hitInfo;
             }
 
-            string sceneId = SceneController.i.currentSceneId;
+            string sceneId = Environment.i.worldState.currentSceneId;
 
             if (useRaycast && raycastGlobalLayerHitInfo.isValid)
             {
