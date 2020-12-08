@@ -397,6 +397,10 @@ export class UnityInterface {
     this.gameInstance.SendMessage('HUDController', 'SetUsersMuted', JSON.stringify({ usersId: usersId, muted: muted }))
   }
 
+  public SetVoiceChatEnabledByScene(enabled: boolean) {
+    this.gameInstance.SendMessage('HUDController', 'SetVoiceChatEnabledByScene', enabled ? 1 : 0)
+  }
+
   public SetKernelConfiguration(config: KernelConfigForRenderer) {
     this.gameInstance.SendMessage('Bridges', 'SetKernelConfiguration', JSON.stringify(config))
   }
