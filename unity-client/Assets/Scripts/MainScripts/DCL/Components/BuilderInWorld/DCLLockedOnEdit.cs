@@ -14,7 +14,7 @@ public class DCLLockedOnEdit : BaseDisposable
     [System.Serializable]
     public class Model
     {
-        public bool value;
+        public bool isLocked;
     }
 
     public Model model;
@@ -27,7 +27,7 @@ public class DCLLockedOnEdit : BaseDisposable
     public override IEnumerator ApplyChanges(string newJson)
     {
         Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
-        if (newModel.value != model.value)
+        if (newModel.isLocked != model.isLocked)
         {
             model = newModel;
             RaiseOnAppliedChanges();
