@@ -109,7 +109,7 @@ namespace DCL
 
             avatarUserInfo.userId = model.id;
             avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.position;
+            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.localPosition;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
 
             avatarName.SetName(model.name);
