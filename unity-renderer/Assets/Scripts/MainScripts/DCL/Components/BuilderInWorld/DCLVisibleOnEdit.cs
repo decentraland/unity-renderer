@@ -15,7 +15,7 @@ public class DCLVisibleOnEdit : BaseDisposable
     [System.Serializable]
     public class Model
     {
-        public bool value;
+        public bool isVisible;
     }
 
     public Model model;
@@ -28,7 +28,7 @@ public class DCLVisibleOnEdit : BaseDisposable
     public override IEnumerator ApplyChanges(string newJson)
     {
         Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
-        if (newModel.value != model.value)
+        if (newModel.isVisible != model.isVisible)
         {
             model = newModel;
             RaiseOnAppliedChanges();
