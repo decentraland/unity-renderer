@@ -49,18 +49,14 @@ namespace AvatarEditorHUD_Tests
                 }
             }, false);
 
-            catalog = AvatarTestHelpers.CreateTestCatalogLocal();
+            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
         }
 
         [Test]
         [TestCase("dcl://base-avatars/f_african_leggins", WearableLiterals.BodyShapes.FEMALE)]
-        [TestCase("dcl://base-avatars/f_mouth_00", WearableLiterals.BodyShapes.FEMALE)]
-        [TestCase("dcl://base-avatars/blue_bandana", WearableLiterals.BodyShapes.FEMALE)]
         [TestCase("dcl://base-avatars/eyebrows_02", WearableLiterals.BodyShapes.MALE)]
-        [TestCase("dcl://base-avatars/m_mountainshoes.glb", WearableLiterals.BodyShapes.MALE)]
-        [TestCase("dcl://base-avatars/moptop", WearableLiterals.BodyShapes.MALE)]
         public void Activate_CompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
         {
             userProfile.UpdateData(new UserProfileModel()
@@ -88,11 +84,7 @@ namespace AvatarEditorHUD_Tests
 
         [Test]
         [TestCase("dcl://base-avatars/f_african_leggins", WearableLiterals.BodyShapes.MALE)]
-        [TestCase("dcl://base-avatars/f_mouth_00", WearableLiterals.BodyShapes.MALE)]
-        [TestCase("dcl://base-avatars/bee_t_shirt", WearableLiterals.BodyShapes.MALE)]
         [TestCase("dcl://base-avatars/eyebrows_02", WearableLiterals.BodyShapes.FEMALE)]
-        [TestCase("dcl://base-avatars/m_mountainshoes.glb", WearableLiterals.BodyShapes.FEMALE)]
-        [TestCase("dcl://base-avatars/moptop", WearableLiterals.BodyShapes.FEMALE)]
         public void NotCreate_IncompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
         {
             userProfile.UpdateData(new UserProfileModel()
@@ -130,8 +122,6 @@ namespace AvatarEditorHUD_Tests
         }
 
         [Test]
-        [TestCase("dcl://halloween_2019/zombie_suit_upper_body")]
-        [TestCase("dcl://halloween_2019/vampire_upper_body")]
         [TestCase("dcl://halloween_2019/sad_clown_upper_body")]
         public void Add_Exclusives_ToCollectibles(string wearableId)
         {

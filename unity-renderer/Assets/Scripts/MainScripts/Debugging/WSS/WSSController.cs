@@ -411,7 +411,7 @@ namespace DCL
                                 MinimapMetadataController.i?.UpdateMinimapSceneInformation(msg.payload);
                                 break;
                             case "SetTutorialEnabled":
-                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabled(msg.payload, DCL.Tutorial.TutorialController.TutorialType.Initital);
+                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabled(msg.payload);
                                 break;
                             case "TriggerSelfUserExpression":
                                 HUDController.i.TriggerSelfUserExpression(msg.payload);
@@ -453,6 +453,7 @@ namespace DCL
                                 HUDController.i.SetUsersMuted(msg.payload);
                                 break;
                             case "SetKernelConfiguration":
+                            case "UpdateRealmsInfo":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             default:

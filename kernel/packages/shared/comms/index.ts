@@ -8,8 +8,9 @@ import {
 } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
-import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
+import { ChatMessage as InternalChatMessage, ChatMessageType, SceneFeatureToggles } from 'shared/types'
 import { positionObservable, PositionReport, lastPlayerPosition } from 'shared/world/positionThings'
+import { lastPlayerScene } from 'shared/world/sceneState'
 import { ProfileAsPromise } from '../profiles/ProfileAsPromise'
 import { notifyStatusThroughChat } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
@@ -104,6 +105,7 @@ import { VoicePolicy } from './types'
 import { isFriend } from 'shared/friends/selectors'
 import { EncodedFrame } from 'voice-chat-codec/types'
 import Html from 'shared/Html'
+import { isFeatureToggleEnabled } from 'shared/selectors'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -275,6 +277,11 @@ function requestMediaDevice() {
 
 export function updateVoiceRecordingStatus(recording: boolean) {
   if (!voiceCommunicator) {
+    return
+  }
+
+  if (!isVoiceChatAllowedByCurrentScene()) {
+    voiceCommunicator.pause()
     return
   }
 
@@ -487,7 +494,8 @@ function shouldPlayVoice(profile: Profile, voiceUserId: string) {
     isVoiceAllowedByPolicy(profile, voiceUserId) &&
     !isBlocked(profile, voiceUserId) &&
     !isMuted(profile, voiceUserId) &&
-    !hasBlockedMe(myAddress, voiceUserId)
+    !hasBlockedMe(myAddress, voiceUserId) &&
+    isVoiceChatAllowedByCurrentScene()
   )
 }
 
@@ -503,6 +511,10 @@ function isVoiceAllowedByPolicy(profile: Profile, voiceUserId: string): boolean 
     default:
       return true
   }
+}
+
+function isVoiceChatAllowedByCurrentScene() {
+  return isFeatureToggleEnabled(SceneFeatureToggles.VOICE_CHAT, lastPlayerScene?.sceneJsonData)
 }
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DCL.Helpers;
 
 namespace DCL.Components
 {
@@ -25,9 +26,14 @@ namespace DCL.Components
 
         public Model model;
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
             yield return null;
         }
     }

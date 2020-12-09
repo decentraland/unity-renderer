@@ -16,7 +16,8 @@ import {
   RenderProfile,
   BuilderConfiguration,
   Wearable,
-  KernelConfigForRenderer
+  KernelConfigForRenderer,
+  RealmsInfoForRenderer
 } from 'shared/types'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
@@ -396,8 +397,16 @@ export class UnityInterface {
     this.gameInstance.SendMessage('HUDController', 'SetUsersMuted', JSON.stringify({ usersId: usersId, muted: muted }))
   }
 
+  public SetVoiceChatEnabledByScene(enabled: boolean) {
+    this.gameInstance.SendMessage('HUDController', 'SetVoiceChatEnabledByScene', enabled ? 1 : 0)
+  }
+
   public SetKernelConfiguration(config: KernelConfigForRenderer) {
     this.gameInstance.SendMessage('Bridges', 'SetKernelConfiguration', JSON.stringify(config))
+  }
+
+  public UpdateRealmsInfo(realmsInfo: Partial<RealmsInfoForRenderer>) {
+    this.gameInstance.SendMessage('Bridges', 'UpdateRealmsInfo', JSON.stringify(realmsInfo))
   }
 
   // *********************************************************************************

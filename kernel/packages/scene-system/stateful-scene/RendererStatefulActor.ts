@@ -166,7 +166,7 @@ export class RendererStatefulActor extends StatefulActor {
       case CLASS_ID.TRANSFORM:
         return { name: 'transform', disposability: ComponentDisposability.NON_DISPOSABLE }
       case CLASS_ID.NAME:
-        return { name: 'name', disposability: ComponentDisposability.NON_DISPOSABLE }
+        return { name: 'name', disposability: ComponentDisposability.DISPOSABLE }
       case CLASS_ID.GLTF_SHAPE:
         return { name: 'shape', disposability: ComponentDisposability.DISPOSABLE }
       case CLASS_ID.NFT_SHAPE:

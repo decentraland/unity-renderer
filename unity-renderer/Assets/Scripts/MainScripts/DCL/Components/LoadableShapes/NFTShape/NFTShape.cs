@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -19,6 +19,11 @@ namespace DCL.Components
 
         public NFTShape(ParcelScene scene) : base(scene)
         {
+        }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.NFT_SHAPE;
         }
 
         protected override void AttachShape(DecentralandEntity entity)

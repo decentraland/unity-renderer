@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 /// <summary>
@@ -25,20 +26,43 @@ public class DCLName : BaseDisposable
         model = new Model();
     }
 
+    public override int GetClassId()
+    {
+        return (int)CLASS_ID.NAME;
+    }
+
+    public override object GetModel()
+    {
+        return model;
+    }
+
+    public void SetNewName(string value)
+    {
+        Model newModel = new Model();
+        newModel.value = value;
+
+        UpdateFromJSON(JsonUtility.ToJson(newModel));
+    }
+
     public override IEnumerator ApplyChanges(string newJson)
     {
-        Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
-        if(newModel.value != model.value)
+        Model newModel = Utils.SafeFromJson<Model>(newJson);
+        if (newModel.value != model.value)
         {
             string oldValue = model.value;
-
             model = newModel;
-            RaiseOnAppliedChanges();
+
+            foreach(DecentralandEntity entity in attachedEntities)
+            {
+                entity.OnNameChange?.Invoke(newModel);
+            }
 
 #if UNITY_EDITOR
             foreach (DecentralandEntity decentralandEntity in this.attachedEntities)
             {
-                decentralandEntity.gameObject.name.Replace(oldValue, "");
+                if(oldValue != null)
+                    decentralandEntity.gameObject.name.Replace(oldValue, "");
+
                 decentralandEntity.gameObject.name += "-"+model.value;
             }
 #endif

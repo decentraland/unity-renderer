@@ -16,8 +16,8 @@ If you are using Windows 10 we recommend you to enable the Linux subsystem and i
 ## Running the Explorer
 
 Make sure you have the following dependencies:
-- Node v10 or compatible installed via `sudo apt install nodejs`
-- yarn installed globally via `sudo npm install yarn -g`
+- Node v10 or compatible installed via `sudo apt install nodejs` or [nvm](https://github.com/nvm-sh/nvm)
+- yarn installed globally via `npm install yarn -g`
 
 IMPORTANT: If your path has spaces the build process will fail. Make sure to clone this repo in a properly named path.
 
@@ -40,9 +40,7 @@ Once the kernel is running, to run the Unity interface you will have to:
 
 1. Download and install Unity 2019.4.0f1
 2. Open the Initial Scene
-3. Run the Initial Scene in the Unity editor!
-
-And that should be it!
+3. Run the Initial Scene in the Unity editor
 
 Optionally, if you want to run the client in `debug` mode, append the following query parameter to the URL:
 
@@ -64,7 +62,7 @@ Json.NET or Google Protobuf), please execute the following command in the root f
 Then, on the Unity editor, click on `Assets > Reimport All`
 
 #### Missing xcrun (macOS)
-If you get the "missing xcrun" error when trying to run the `makw watch` command, you should download the latest command line tools for macOS, either by downloading them from https://developer.apple.com/download/more/?=command%20line%20tools or by re-installing XCode
+If you get the "missing xcrun" error when trying to run the `make watch` command, you should download the latest command line tools for macOS, either by downloading them from https://developer.apple.com/download/more/?=command%20line%20tools or by re-installing XCode
 
 
 ## Running tests
@@ -382,8 +380,6 @@ static/gif-processor/worker.js: packages/gif-processor/*.ts
 	@$(COMPILER) targets/engine/gif-processor.json
 ```
 6. You should be able to import your package that uses the Worker anywhere. Beware of the [limitations when passing data to/from workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm) and also consider [passing the data as Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Transferable) to improve performance.
-
-- configurar file en targhets/engne/loader crear unopara el gif player
 
 ## Copyright info
 

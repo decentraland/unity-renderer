@@ -1,11 +1,10 @@
 import { call, put, select, take, takeLatest } from 'redux-saga/effects'
-import { getServerConfigurations, HALLOWEEN } from 'config'
+import { FORCE_RENDERING_STYLE, getServerConfigurations } from 'config'
 import { META_CONFIGURATION_INITIALIZED, metaConfigurationInitialized, metaUpdateMessageOfTheDay } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
 import { MetaConfiguration, USE_UNITY_INDEXED_DB_CACHE, WorldConfig } from './types'
 import { isMetaConfigurationInitiazed } from './selectors'
-import { RenderProfile } from 'shared/types'
 import { USER_AUTHENTIFIED } from '../session/actions'
 import { getUserId } from '../session/selectors'
 
@@ -31,12 +30,12 @@ const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
 export function* metaSaga(): any {
   const config: Partial<MetaConfiguration> = yield call(fetchMetaConfiguration)
 
-  if (HALLOWEEN) {
+  if (FORCE_RENDERING_STYLE) {
     if (!config.world) {
       config.world = {} as WorldConfig
     }
 
-    config.world.renderProfile = HALLOWEEN ? RenderProfile.HALLOWEEN : RenderProfile.DEFAULT
+    config.world.renderProfile = FORCE_RENDERING_STYLE
   }
 
   yield put(metaConfigurationInitialized(config))

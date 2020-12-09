@@ -17,16 +17,7 @@ export class StatefulWorker extends SceneWorker {
       name: `StatefulWorker(${parcelScene.data.sceneId})`
     })
 
-    // the first error handler will flag the error as a scene worker error enabling error
-    // filtering in DCLUnityLoader.js, unhandled errors (like WebSocket messages failing)
-    // are not handled by the update loop and therefore those break the whole worker
-    const transportOverride = CustomWebWorkerTransport(worker)
-
-    transportOverride.onError!((e: any) => {
-      e['isSceneError'] = true
-    })
-
-    return transportOverride
+    return CustomWebWorkerTransport(worker)
   }
 
   setPosition() {

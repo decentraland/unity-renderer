@@ -37,36 +37,9 @@ public class CatalogController : MonoBehaviour
         }
     }
 
-    private static SceneAssetPackDictionary sceneAssetPackCatalogValue;
-    public static SceneAssetPackDictionary sceneObjectCatalog
-    {
-        get
-        {
-            if (sceneAssetPackCatalogValue == null)
-            {
-                sceneAssetPackCatalogValue = Resources.Load<SceneAssetPackDictionary>("SceneAssetPackCatalog");
-
-            }
-
-            return sceneAssetPackCatalogValue;
-        }
-    }
-
     public void Awake()
     {
         i = this;
-    }
-
-    public void AddSceneObjectToCatalog(JObject payload)
-    {
-
-        SceneAssetPack sceneAssetPack = JsonConvert.DeserializeObject<SceneAssetPack>(payload.ToString());
-
-        if (VERBOSE)
-            Debug.Log("add sceneObject: " + payload);
-
-
-        sceneAssetPackCatalogValue.Add(sceneAssetPack.id, sceneAssetPack);
     }
  
     public void AddWearableToCatalog(string payload)

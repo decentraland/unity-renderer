@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
-    public BuilderInputWrapper builderInputWrapper;
+    public BuilderInWorldInputWrapper builderInputWrapper;
 
     public float smoothLookAtSpeed = 5f;
     public float focusDistance = 5f;
@@ -223,7 +223,7 @@ public class FreeCameraMovement : CameraStateBase
         return transform.eulerAngles;
     }
 
-    public void FocusOnEntities(List<DecentralandEntityToEdit> entitiesToFocus)
+    public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
     {
         if (entitiesToFocus.Count > 0)
         {
@@ -259,11 +259,11 @@ public class FreeCameraMovement : CameraStateBase
         smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
     }
 
-    Vector3 FindMidPoint(List<DecentralandEntityToEdit> entitiesToLook)
+    Vector3 FindMidPoint(List<DCLBuilderInWorldEntity> entitiesToLook)
     {
         Vector3 finalPosition = Vector3.zero;
         int totalPoints = 0;
-        foreach(DecentralandEntityToEdit entity in entitiesToLook)
+        foreach(DCLBuilderInWorldEntity entity in entitiesToLook)
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {

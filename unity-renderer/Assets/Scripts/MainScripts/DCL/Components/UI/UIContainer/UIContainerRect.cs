@@ -24,6 +24,11 @@ namespace DCL.Components
         {
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.UI_CONTAINER_RECT;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(

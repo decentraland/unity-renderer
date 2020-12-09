@@ -1039,7 +1039,7 @@ MonoBehaviour:
   baseUrlMode: 0
   baseUrlCustom: 
   environment: 4
-  startInCoords: {x: 3, y: 18}
+  startInCoords: {x: 4, y: 18}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
@@ -1076,12 +1076,12 @@ PrefabInstance:
     - target: {fileID: 1208871511274338200, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: m_Name
-      value: BuildModeController
+      value: BuilderInWorldController
       objectReference: {fileID: 0}
     - target: {fileID: 1208871511274338200, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1208871511274338202, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
@@ -1155,6 +1155,11 @@ PrefabInstance:
       objectReference: {fileID: 326638024064006571}
     - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
+      propertyPath: msToWaitUntilSceneIsLoaded
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
       propertyPath: activeFeature
       value: 0
       objectReference: {fileID: 0}
@@ -1163,6 +1168,11 @@ PrefabInstance:
       propertyPath: outlinerMaterial
       value: 
       objectReference: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
+    - target: {fileID: 1208871511546216253, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: builderInWorldBridge
+      value: 
+      objectReference: {fileID: 2067631887}
     - target: {fileID: 1208871511845330199, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderCamera
@@ -1188,6 +1198,11 @@ PrefabInstance:
       propertyPath: mouseCatcher
       value: 
       objectReference: {fileID: 1441454338}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: builderInWorldBridge
+      value: 
+      objectReference: {fileID: 2067631887}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceb04930a6bb25b44a6ad241f62abdf5, type: 3}
 --- !u!114 &1608366483 stripped
@@ -1271,6 +1286,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2067631887 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3917703040089432743, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1515935914}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c96c5543d89960749bdf3025e5fc122b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &326638024064006570
 PrefabInstance:
   m_ObjectHideFlags: 0

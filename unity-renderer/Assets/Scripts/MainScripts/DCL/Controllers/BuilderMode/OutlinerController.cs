@@ -9,17 +9,17 @@ public class OutlinerController : MonoBehaviour
 {
     public Material outlineMaterial;
    
-    List<DecentralandEntityToEdit> entitiesOutlined = new List<DecentralandEntityToEdit>();
+    List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
 
-    public void OutlineEntities(List<DecentralandEntityToEdit> entitiesToEdit)
+    public void OutlineEntities(List<DCLBuilderInWorldEntity> entitiesToEdit)
     {
-        foreach(DecentralandEntityToEdit entityToEdit in entitiesToEdit)
+        foreach(DCLBuilderInWorldEntity entityToEdit in entitiesToEdit)
         {
             OutlineEntity(entityToEdit);
         }
     }
 
-    public void OutlineEntity(DecentralandEntityToEdit entity)
+    public void OutlineEntity(DCLBuilderInWorldEntity entity)
     {
         if (!entity.rootEntity.meshRootGameObject && entity.rootEntity.renderers.Length <= 0) return;
 
@@ -53,7 +53,7 @@ public class OutlinerController : MonoBehaviour
         }
     }
 
-    public void CancelEntityOutline(DecentralandEntityToEdit entityToQuitOutline)
+    public void CancelEntityOutline(DCLBuilderInWorldEntity entityToQuitOutline)
     {
         if (!entitiesOutlined.Contains(entityToQuitOutline)) return;
 

@@ -22,7 +22,7 @@ namespace AvatarShape_Tests
             bodyShapeController = Substitute.For<IBodyShapeController>();
             bodyShapeController.bodyShapeId.Returns(WearableLiterals.BodyShapes.FEMALE);
 
-            catalog = AvatarTestHelpers.CreateTestCatalogLocal();
+            catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
         }
 
         [UnityTest]

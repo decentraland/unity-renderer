@@ -69,8 +69,9 @@ namespace DCL
 
         public void PopulateBusesToBeProcessed()
         {
-            string currentSceneId = SceneController.i.currentSceneId;
-            List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
+            WorldState worldState = Environment.i.worldState;
+            string currentSceneId = worldState.currentSceneId;
+            List<ParcelScene> scenesSortedByDistance = worldState.scenesSortedByDistance;
 
             int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
             // may change after a yield return

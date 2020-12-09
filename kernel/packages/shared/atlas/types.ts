@@ -1,5 +1,5 @@
 import { Vector2Component } from 'atomicHelpers/landHelpers'
-import { SceneJsonData } from 'shared/types'
+import { ContentMapping, SceneJsonData } from 'shared/types'
 
 export type AtlasState = {
   hasMarketData: boolean
@@ -19,6 +19,7 @@ export type MapSceneData = {
   estateId?: number
   sceneJsonData?: SceneJsonData
   alreadyReported: boolean
+  contents: Array<ContentMapping>
   requestStatus: undefined | 'loading' | 'ok' | 'fail'
 }
 
