@@ -23,6 +23,7 @@ import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
 import { defaultLogger } from 'shared/logger'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { renderStateObservable } from "../shared/world/worldState"
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -219,6 +220,7 @@ export class UnityInterface {
   }
 
   public DeactivateRendering() {
+    renderStateObservable.notifyObservers(false)
     this.gameInstance.SendMessage('SceneController', 'DeactivateRendering')
   }
 
