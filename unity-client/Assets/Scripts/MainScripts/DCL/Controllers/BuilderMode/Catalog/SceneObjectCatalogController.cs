@@ -42,10 +42,12 @@ public class SceneObjectCatalogController : MonoBehaviour
         favoritesController = new FavoritesController(catalogGroupListView);
 
         quickBarView.OnQuickBarShortcutSelected += QuickBarInput;
-        OnResultReceived += AddFullSceneObjectCatalog;
         catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
+
+     
+        catalogAssetPackListView.SetContent(AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList());
         quickBarController.OnSceneObjectSelected += SceneObjectSelected;
     }
 
@@ -54,7 +56,6 @@ public class SceneObjectCatalogController : MonoBehaviour
         quickBarView.OnQuickBarShortcutSelected -= QuickBarInput;
         catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
-        OnResultReceived -= AddFullSceneObjectCatalog;
         quickBarController.OnSceneObjectSelected -= SceneObjectSelected;
     }
 
@@ -77,7 +78,7 @@ public class SceneObjectCatalogController : MonoBehaviour
     void FilterAssets(string nameToFilter)
     {
         filterObjects.Clear();
-        foreach (SceneAssetPack assetPack in CatalogController.sceneObjectCatalog.GetValues().ToList())
+        foreach (SceneAssetPack assetPack in AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList())
         {
             foreach (SceneObject sceneObject in assetPack.assets)
             {
@@ -203,40 +204,13 @@ public class SceneObjectCatalogController : MonoBehaviour
     {
         catalogTitleTxt.text = BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE;
         Utils.UnlockCursor();
-        gameObject.SetActive(true);
-
-
-        if (!catalogInitializaed)
-        {
-            CatalogController.sceneObjectCatalog.GetValues();
-            ExternalCallsController.i.GetContentAsString(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, AddFullSceneObjectCatalog);
-            catalogInitializaed = true;
-        }
-    
+        gameObject.SetActive(true);   
     }
 
     public void CloseCatalog()
     {
         if(gameObject.activeSelf)
             StartCoroutine(CloseCatalogAfterOneFrame());
-    }
-
-    public void AddFullSceneObjectCatalog(string payload)
-    {
-
-        JObject jObject = (JObject)JsonConvert.DeserializeObject(payload);
-        if (jObject["ok"].ToObject<bool>())
-        {
-
-            JArray array = JArray.Parse(jObject["data"].ToString());
-
-            foreach (JObject item in array)
-            {
-                CatalogController.i.AddSceneObjectToCatalog(item);
-            }
-
-            catalogAssetPackListView.SetContent(CatalogController.sceneObjectCatalog.GetValues().ToList());
-        }
     }
 
     List<SceneObject> GetAssetsListByCategory(string category, SceneAssetPack sceneAssetPack)

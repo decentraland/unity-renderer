@@ -133,10 +133,12 @@ namespace Tests
 
             yield return TestHelpers.CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
-            yield return new WaitForSeconds((scene.GetSharedComponent("1") as DCLAudioClip).audioClip.length + 0.1f);
-
             DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
-            Assert.AreNotEqual(0, dclAudioSource.playTime);
+            float initTime = dclAudioSource.audioSource.clip.length - 0.05f;
+            dclAudioSource.audioSource.time = initTime;
+            yield return new WaitForSeconds(0.1f);
+
+            Assert.IsTrue(dclAudioSource.playTime > 0 && dclAudioSource.playTime < initTime);
         }
 
         [UnityTest]
@@ -149,9 +151,10 @@ namespace Tests
 
             yield return TestHelpers.CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
 
-            yield return new WaitForSeconds((scene.GetSharedComponent("1") as DCLAudioClip).audioClip.length + 0.1f);
-
             DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            dclAudioSource.audioSource.time = dclAudioSource.audioSource.clip.length - 0.05f;
+            yield return new WaitForSeconds(0.1f);
+
             Assert.AreEqual(0, dclAudioSource.playTime);
         }
 

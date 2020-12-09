@@ -214,8 +214,8 @@ export class BrowserInterface {
     } else {
       globalThis.globalStore.dispatch(signUpSetProfile(update))
       globalThis.globalStore.dispatch(changeSignUpStage('passport'))
-      unityInterface.DeactivateRendering()
       Html.switchGameContainer(false)
+      unityInterface.DeactivateRendering()
     }
   }
 

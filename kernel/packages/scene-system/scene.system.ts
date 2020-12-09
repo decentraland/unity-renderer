@@ -26,6 +26,8 @@ class WebWorkerScene extends SceneRuntime {
       console.error(e)
       this.updateEnabled = false
       debugger
+      e.preventDefault() // <-- "Hey browser, I handled it!"
+      if (this.devToolsAdapter) this.devToolsAdapter.error(e.error)
     })
   }
 

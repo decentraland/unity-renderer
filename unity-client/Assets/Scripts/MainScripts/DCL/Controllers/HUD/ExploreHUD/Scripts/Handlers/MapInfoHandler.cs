@@ -1,46 +1,28 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 internal class MapInfoHandler : IMapDataView
 {
-    public MinimapMetadata.MinimapSceneInfo info { private set; get; }
     public Vector2Int baseCoord { private set; get; }
-    public event Action<MinimapMetadata.MinimapSceneInfo> onInfoUpdate;
+    public string name { private set; get; }
+    public string creator { private set; get; }
+    public string description { private set; get; }
 
-    public void SetMinimapSceneInfo(MinimapMetadata.MinimapSceneInfo info)
-    {
-        this.info = info;
-        onInfoUpdate?.Invoke(info);
-    }
+    public Vector2Int[] parcels { private set; get; }
 
-    public MinimapMetadata.MinimapSceneInfo GetMinimapSceneInfo()
+    public void SetMinimapSceneInfo(HotScenesController.HotSceneInfo sceneInfo)
     {
-        return info;
-    }
-
-    public bool HasMinimapSceneInfo()
-    {
-        return info != null;
-    }
-
-    public void SetBaseCoord(Vector2Int coords)
-    {
-        baseCoord = coords;
-    }
-
-    public Vector2Int GetBaseCoord()
-    {
-        return baseCoord;
+        baseCoord = sceneInfo.baseCoords;
+        name = sceneInfo.name;
+        creator = sceneInfo.creator;
+        description = sceneInfo.description;
+        parcels = sceneInfo.parcels;
     }
 
     public bool ContainCoords(Vector2Int coords)
     {
-        if (info == null) return false;
-        return info.parcels.Contains(coords);
-    }
-
-    public void Clear()
-    {
-        info = null;
+        if (parcels == null) return false;
+        return parcels.Contains(coords);
     }
 }

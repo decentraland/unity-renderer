@@ -1,9 +1,8 @@
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 
 import { playerConfigurations } from 'config'
-import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { SceneWorker } from './SceneWorker'
-import { Vector3, Quaternion, Vector2 } from 'decentraland-ecs/src/decentraland/math'
+import { Vector3, Quaternion } from 'decentraland-ecs/src/decentraland/math'
 import { PositionReport, positionObservable } from './positionThings'
 import { Observer } from 'decentraland-ecs/src'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
@@ -34,7 +33,8 @@ export class SceneSystemWorker extends SceneWorker {
   constructor(
     parcelScene: ParcelSceneAPI,
     transport?: ScriptingTransport,
-    private readonly persistent: boolean = false) {
+    private readonly persistent: boolean = false
+  ) {
     super(parcelScene, transport ?? SceneSystemWorker.buildWebWorkerTransport(parcelScene))
 
     this.subscribeToSceneLifeCycleEvents()
@@ -46,16 +46,8 @@ export class SceneSystemWorker extends SceneWorker {
     const worker = new (Worker as any)(gamekitWorkerUrl, {
       name: `ParcelSceneWorker(${parcelScene.data.sceneId})`
     })
-    // the first error handler will flag the error as a scene worker error enabling error
-    // filtering in DCLUnityLoader.js, unhandled errors (like WebSocket messages failing)
-    // are not handled by the update loop and therefore those break the whole worker
-    const transportOverride = CustomWebWorkerTransport(worker)
 
-    transportOverride.onError!((e: any) => {
-      e['isSceneError'] = true
-    })
-
-    return transportOverride
+    return CustomWebWorkerTransport(worker)
   }
 
   setPosition(position: Vector3) {
@@ -116,11 +108,7 @@ export class SceneSystemWorker extends SceneWorker {
   }
 
   private subscribeToPositionEvents() {
-    const position = Vector2.Zero()
-
-    this.positionObserver = positionObservable.add(obj => {
-      worldToGrid(obj.position, position)
-
+    this.positionObserver = positionObservable.add((obj) => {
       this.sendUserViewMatrix(obj)
     })
   }
@@ -132,7 +120,7 @@ export class SceneSystemWorker extends SceneWorker {
   }
 
   private subscribeToSceneLifeCycleEvents() {
-    this.sceneLifeCycleObserver = sceneLifeCycleObservable.add(obj => {
+    this.sceneLifeCycleObserver = sceneLifeCycleObservable.add((obj) => {
       if (this.getSceneId() === obj.sceneId && obj.status === 'ready') {
         this.sceneReady = true
         sceneLifeCycleObservable.remove(this.sceneLifeCycleObserver)
@@ -148,5 +136,4 @@ export class SceneSystemWorker extends SceneWorker {
       renderStateObservable.remove(this.renderStateObserver)
     }
   }
-
 }

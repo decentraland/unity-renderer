@@ -46,7 +46,7 @@ public class GraphicCardWarningHUDController : IHUD
 
     private void TryShowNotification()
     {
-        if (IsIntegratedGraphicCard())
+        if (GraphicCardNotification.CanShowGraphicCardPopup() && IsIntegratedGraphicCard())
         {
             NotificationsController.i.ShowNotification(new Notification.Model
             {

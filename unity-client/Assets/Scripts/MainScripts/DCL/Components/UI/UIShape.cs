@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -78,7 +79,7 @@ namespace DCL.Components
         /// </summary>
         public void PreApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<ModelType>(newJson);
+            model = Utils.SafeFromJson<ModelType>(newJson);
 
             raiseOnAttached = false;
             firstApplyChangesCall = false;
@@ -162,6 +163,11 @@ namespace DCL.Components
         {
         }
 
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID.UI_IMAGE_SHAPE;
+        }
+
         public string GetDebugName()
         {
             if (string.IsNullOrEmpty(model.name))
@@ -172,6 +178,11 @@ namespace DCL.Components
             {
                 return GetType().Name + " - " + model.name;
             }
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -436,7 +447,12 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
-        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
+        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent)
+        {
+        }
+
+        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent)
+        {
+        }
     }
 }

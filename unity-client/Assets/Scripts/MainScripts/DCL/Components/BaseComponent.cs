@@ -71,6 +71,8 @@ namespace DCL.Components
             updateHandler.ApplyChangesIfModified(updateHandler.oldSerialization ?? "{}");
         }
 
+        public abstract object GetModel();
+
         public abstract IEnumerator ApplyChanges(string newJson);
 
         public virtual ComponentUpdateHandler CreateUpdateHandler()

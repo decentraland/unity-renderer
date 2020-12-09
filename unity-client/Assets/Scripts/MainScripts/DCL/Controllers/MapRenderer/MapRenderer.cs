@@ -40,6 +40,7 @@ namespace DCL
         public RawImage parcelHighlightImage;
         public TextMeshProUGUI highlightedParcelText;
         public Transform overlayContainer;
+        public Transform globalUserMarkerContainer;
 
         public Image playerPositionIcon;
 
@@ -48,11 +49,15 @@ namespace DCL
 
         public MapSceneIcon scenesOfInterestIconPrefab;
         public MapSceneIcon userIconPrefab;
+        public UserMarkerObject globalUserMarkerPrefab;
+
+        public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
 
         private HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
         private Dictionary<string, MinimapMetadata.MinimapUserInfo> usersInfo = new Dictionary<string, MinimapMetadata.MinimapUserInfo>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
+
         private Pool usersInfoPool;
 
         private bool parcelHighlightEnabledValue = false;
@@ -105,6 +110,12 @@ namespace DCL
             parcelHighlightImage.rectTransform.localScale = new Vector3(parcelHightlightScale, parcelHightlightScale, 1f);
 
             parcelHoldCountdown = parcelHoldTimeInSeconds;
+
+            usersPositionMarkerController = new MapGlobalUsersPositionMarkerController(globalUserMarkerPrefab,
+                globalUserMarkerContainer,
+                MapUtils.GetTileToLocalPosition);
+
+            usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
         }
 
         private void EnsurePools()
@@ -150,6 +161,8 @@ namespace DCL
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
+            usersPositionMarkerController?.Dispose();
+
             isInitialized = false;
         }
 
@@ -179,8 +192,8 @@ namespace DCL
             cursorMapCoords = Input.mousePosition - worldCoordsOriginInMap;
             cursorMapCoords = cursorMapCoords / parcelSizeInMap;
 
-            cursorMapCoords.x = (int) Mathf.Floor(cursorMapCoords.x);
-            cursorMapCoords.y = (int) Mathf.Floor(cursorMapCoords.y);
+            cursorMapCoords.x = (int)Mathf.Floor(cursorMapCoords.x);
+            cursorMapCoords.y = (int)Mathf.Floor(cursorMapCoords.y);
         }
 
         bool IsCursorOverMapChunk()
@@ -193,7 +206,7 @@ namespace DCL
 
         void UpdateParcelHighlight()
         {
-            if (!CoordinatesAreInsideTheWorld((int) cursorMapCoords.x, (int) cursorMapCoords.y))
+            if (!CoordinatesAreInsideTheWorld((int)cursorMapCoords.x, (int)cursorMapCoords.y))
             {
                 if (parcelHighlightImage.gameObject.activeSelf)
                     parcelHighlightImage.gameObject.SetActive(false);
@@ -230,7 +243,7 @@ namespace DCL
                 {
                     parcelHoldCountdown = 0f;
                     highlightedParcelText.text = string.Empty;
-                    OnParcelHold?.Invoke((int) cursorMapCoords.x, (int) cursorMapCoords.y);
+                    OnParcelHold?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
                 }
             }
             else
@@ -264,7 +277,7 @@ namespace DCL
                 centerTile += parcel;
             }
 
-            centerTile /= (float) sceneInfo.parcels.Count;
+            centerTile /= (float)sceneInfo.parcels.Count;
 
             (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileToLocalPosition(centerTile.x, centerTile.y);
 
@@ -341,7 +354,7 @@ namespace DCL
             if (oldCoords == newCoords)
                 return;
 
-            UpdateRendering(new Vector2((float) newCoords.x, (float) newCoords.y));
+            UpdateRendering(new Vector2((float)newCoords.x, (float)newCoords.y));
         }
 
         public void UpdateRendering(Vector2 newCoords)
@@ -381,7 +394,7 @@ namespace DCL
         public void ClickMousePositionParcel()
         {
             highlightedParcelText.text = string.Empty;
-            OnParcelClicked?.Invoke((int) cursorMapCoords.x, (int) cursorMapCoords.y);
+            OnParcelClicked?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
         }
     }
 }

@@ -100,13 +100,13 @@ jobs:
           command: |
             find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.unity -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
       - restore_cache:
-          name: Restore decentraland-renderer if exists
-          keys:
-            - unity-build-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache:
           name: Restore test results if they exist
           keys:
             - unity-tests-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache:
+          name: Restore library if exists
+          keys: 
+            - library-{{ .Branch }}
       - run:
           name: Run tests
           command: |
@@ -150,6 +150,10 @@ jobs:
           name: Restore decentraland-renderer if exists
           keys:
             - unity-build-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache:
+          name: Restore library if exists
+          keys: 
+            - library-{{ .Branch }}
       - run:
           name: Build decentraland-renderer
           command: |
@@ -168,6 +172,11 @@ jobs:
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/explorer/unity-client/Builds/
+      - save_cache:
+          name: Store library
+          key: library-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /tmp/explorer/unity-client/Library
       - store_artifacts:
           name: Store logs
           path: /tmp/buildlog.txt

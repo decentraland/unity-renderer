@@ -124,7 +124,7 @@ namespace Tests
 
             // UIScreenSpace.InitializeCanvas is not awaited by screenSpaceShape.routine
             // todo fix it properly
-            yield return new WaitForSeconds(0.2f);
+            yield return null;
 
             screenSpaceShape.Dispose();
         }

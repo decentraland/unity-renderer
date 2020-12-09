@@ -37,48 +37,51 @@ namespace DCL.Tutorial
             FromBuilderInWorld
         }
 
-   
-
         public static TutorialController i { get; private set; }
 
-        public HUDController hudController { get => HUDController.i; }
+        public HUDController hudController
+        {
+            get => HUDController.i;
+        }
 
         public int currentStepIndex { get; private set; }
 
-        [Header("General Configuration")]
-        [SerializeField] internal int tutorialVersion = 1;
+        [Header("General Configuration")] [SerializeField]
+        internal int tutorialVersion = 1;
+
         [SerializeField] internal float timeBetweenSteps = 0.5f;
         [SerializeField] internal bool sendStats = true;
 
-        [Header("Tutorial Steps on Genesis Plaza")]
-        [SerializeField] internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
+        [Header("Tutorial Steps on Genesis Plaza")] [SerializeField]
+        internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Deep Link")]
-        [SerializeField] internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
+        [Header("Tutorial Steps from Deep Link")] [SerializeField]
+        internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Reset Tutorial")]
-        [SerializeField] internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
+        [Header("Tutorial Steps from Reset Tutorial")] [SerializeField]
+        internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Builder In World")]
-        [SerializeField] internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
+        [Header("Tutorial Steps from Builder In World")] [SerializeField]
+        internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
 
-        [Header("3D Model Teacher")]
-        [SerializeField] internal Camera teacherCamera;
+        [Header("3D Model Teacher")] [SerializeField]
+        internal Camera teacherCamera;
+
         [SerializeField] internal RawImage teacherRawImage;
         [SerializeField] internal TutorialTeacher teacher;
         [SerializeField] internal float teacherMovementSpeed = 4f;
         [SerializeField] internal AnimationCurve teacherMovementCurve;
         [SerializeField] internal Canvas teacherCanvas;
 
-        [Header("Eagle Eye Camera")]
-        [SerializeField] internal CinemachineVirtualCamera eagleEyeCamera;
+        [Header("Eagle Eye Camera")] [SerializeField]
+        internal CinemachineVirtualCamera eagleEyeCamera;
+
         [SerializeField] internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
         [SerializeField] internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
         [SerializeField] internal bool eagleCamRotationActived = true;
         [SerializeField] internal float eagleCamRotationSpeed = 1f;
 
-        [Header("Debugging")]
-        [SerializeField] internal bool debugRunTutorial = false;
+        [Header("Debugging")] [SerializeField] internal bool debugRunTutorial = false;
         [SerializeField] internal int debugStartingStepIndex;
         [SerializeField] internal bool debugOpenedFromDeepLink = false;
 
@@ -91,14 +94,17 @@ namespace DCL.Tutorial
         internal TutorialPath currentPath;
         internal int currentStepNumber;
         internal TutorialType tutorialType = TutorialType.Initital;
-        
+
         private Coroutine executeStepsCoroutine;
         private Coroutine teacherMovementCoroutine;
         private Coroutine eagleEyeRotationCoroutine;
 
+        private int tutorialLayerMask;
+
         private void Awake()
         {
             i = this;
+            tutorialLayerMask = LayerMask.GetMask("Tutorial");
             ShowTeacher3DModel(false);
         }
 
@@ -110,7 +116,7 @@ namespace DCL.Tutorial
                 CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
 
             if (debugRunTutorial)
-                SetTutorialEnabled(debugOpenedFromDeepLink.ToString(),TutorialType.Initital);
+                SetTutorialEnabled(debugOpenedFromDeepLink.ToString());
         }
 
         private void OnDestroy()
@@ -128,11 +134,20 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = false;
         }
 
-    
+        public void SetTutorialEnabled(string fromDeepLink)
+        {
+            SetupTutorial(fromDeepLink, TutorialType.Initital);
+        }
+
+        public void SetBuilderInWorldTutorialEnabled()
+        {
+            SetupTutorial(false.ToString(), TutorialType.BuilderInWorld);
+        }
+
         /// <summary>
         /// Enables the tutorial controller and waits for the RenderingState is enabled to start to execute the corresponding tutorial steps.
         /// </summary>
-        public void SetTutorialEnabled(string fromDeepLink,TutorialType tutorialType)
+        void SetupTutorial(string fromDeepLink, TutorialType tutorialType)
         {
             if (isRunning)
                 return;
@@ -149,6 +164,8 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = true;
 
             WebInterface.SetDelightedSurveyEnabled(false);
+
+            ModifyCullingSettings();
 
             if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
@@ -182,7 +199,7 @@ namespace DCL.Tutorial
 
             if (SceneController.i != null)
             {
-                WebInterface.SendSceneExternalActionEvent(SceneController.i.currentSceneId,"tutorial","end");
+                WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "end");
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -190,6 +207,8 @@ namespace DCL.Tutorial
             hudController?.taskbarHud?.ShowTutorialOption(true);
 
             CommonScriptableObjects.tutorialActive.Set(false);
+
+            RestoreCullingSettings();
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         }
@@ -221,7 +240,6 @@ namespace DCL.Tutorial
                         }
                         else
                             yield return ExecuteSteps(TutorialPath.FromGenesisPlaza, stepIndex);
-
                     }
                     else if (openedFromDeepLink)
                     {
@@ -232,6 +250,7 @@ namespace DCL.Tutorial
                         SetTutorialDisabled();
                         yield break;
                     }
+
                     break;
                 case TutorialType.BuilderInWorld:
                     yield return ExecuteSteps(TutorialPath.FromBuilderInWorld, stepIndex);
@@ -239,11 +258,11 @@ namespace DCL.Tutorial
             }
         }
 
-    /// <summary>
-    /// Shows the teacher that will be guiding along the tutorial.
-    /// </summary>
-    /// <param name="active">True for show the teacher.</param>
-    public void ShowTeacher3DModel(bool active)
+        /// <summary>
+        /// Shows the teacher that will be guiding along the tutorial.
+        /// </summary>
+        /// <param name="active">True for show the teacher.</param>
+        public void ShowTeacher3DModel(bool active)
         {
             teacherCamera.enabled = active;
             teacherRawImage.gameObject.SetActive(active);
@@ -296,9 +315,9 @@ namespace DCL.Tutorial
             }
 
             int skipIndex = stepsOnGenesisPlaza.Count +
-                stepsFromDeepLink.Count +
-                stepsFromReset.Count +
-                stepsFromBuilderInWorld.Count;
+                            stepsFromDeepLink.Count +
+                            stepsFromReset.Count +
+                            stepsFromBuilderInWorld.Count;
 
             StartCoroutine(StartTutorialFromStep(skipIndex));
 
@@ -430,7 +449,7 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)
         {
-            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int)finishStepType);
+            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType);
         }
 
         private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
@@ -464,16 +483,17 @@ namespace DCL.Tutorial
         {
             SetTutorialDisabled();
             tutorialReset = true;
-            SetTutorialEnabled(false.ToString(), TutorialType.Initital);
+            SetTutorialEnabled(false.ToString());
         }
 
         private bool IsPlayerInsideGenesisPlaza()
         {
-            if (SceneController.i == null || SceneController.i.currentSceneId == null)
+            WorldState worldState = Environment.i.worldState;
+            if (worldState == null || worldState.currentSceneId == null)
                 return false;
 
             Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
-            ParcelScene currentScene = SceneController.i.loadedScenes[SceneController.i.currentSceneId];
+            ParcelScene currentScene = worldState.loadedScenes[worldState.currentSceneId];
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;
@@ -549,5 +569,19 @@ namespace DCL.Tutorial
                 hudController?.profileHud?.SetVisibility(true);
             }
         }
-}
+
+        private void ModifyCullingSettings()
+        {
+            var cullingSettings = Environment.i.cullingController.GetSettingsCopy();
+            cullingSettings.ignoredLayersMask |= tutorialLayerMask;
+            Environment.i.cullingController.SetSettings(cullingSettings);
+        }
+
+        private void RestoreCullingSettings()
+        {
+            var cullingSettings = Environment.i.cullingController.GetSettingsCopy();
+            cullingSettings.ignoredLayersMask &= ~tutorialLayerMask;
+            Environment.i.cullingController.SetSettings(cullingSettings);
+        }
+    }
 }

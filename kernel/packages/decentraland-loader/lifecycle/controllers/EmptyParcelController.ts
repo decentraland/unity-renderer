@@ -18,11 +18,15 @@ export class EmptyParcelController {
       rootUrl: string
     }
   ) {
-    if (options.worldConfig.renderProfile === RenderProfile.HALLOWEEN) {
+    /* tslint:disable */
+    if (options.worldConfig.renderProfile == RenderProfile.HALLOWEEN) {
       this.baseUrl = `${options.rootUrl}loader/empty-scenes-halloween/`
+    } else if (options.worldConfig.renderProfile == RenderProfile.XMAS) {
+      this.baseUrl = `${options.rootUrl}loader/empty-scenes-xmas/`
     } else {
       this.baseUrl = `${options.rootUrl}loader/empty-scenes/`
     }
+    /* tslint:enable */
   }
 
   resolveEmptyParcels() {

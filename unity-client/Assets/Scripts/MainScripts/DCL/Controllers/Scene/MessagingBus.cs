@@ -199,7 +199,7 @@ namespace DCL
                 if (message.type == QueuedSceneMessage.Type.SCENE_MESSAGE)
                 {
                     QueuedSceneMessage_Scene sm = message as QueuedSceneMessage_Scene;
-                    sceneController?.OnMessageWillQueue?.Invoke(sm.method);
+                    ProfilingEvents.OnMessageWillQueue?.Invoke(sm.method);
                 }
 
                 if (type == MessagingBusType.INIT)
@@ -225,7 +225,6 @@ namespace DCL
                 return false;
 
             float startTime = Time.realtimeSinceStartup;
-            SceneController sceneController = SceneController.i;
 
             while (enabled && pendingMessagesCount > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
@@ -268,7 +267,7 @@ namespace DCL
                         }
 
                         OnMessageProcessed();
-                        sceneController.OnMessageWillDequeue?.Invoke(sceneMessage.method);
+                        ProfilingEvents.OnMessageWillDequeue?.Invoke(sceneMessage.method);
 
                         if (msgYieldInstruction != null)
                         {
@@ -280,19 +279,19 @@ namespace DCL
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         handler.LoadParcelScenesExecute(m.message);
-                        sceneController.OnMessageWillDequeue?.Invoke("LoadScene");
+                        ProfilingEvents.OnMessageWillDequeue?.Invoke("LoadScene");
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_PARCEL:
                         handler.UnloadParcelSceneExecute(m.message);
-                        sceneController.OnMessageWillDequeue?.Invoke("UnloadScene");
+                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadScene");
                         break;
                     case QueuedSceneMessage.Type.UPDATE_PARCEL:
                         handler.UpdateParcelScenesExecute(m.message);
-                        sceneController.OnMessageWillDequeue?.Invoke("UpdateScene");
+                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UpdateScene");
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_SCENES:
                         handler.UnloadAllScenes();
-                        sceneController.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
+                        ProfilingEvents.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
                         break;
                 }
 
@@ -344,7 +343,7 @@ namespace DCL
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
-            string finalTag = SceneController.i.TryToGetSceneCoordsID(bus.debugTag);
+            string finalTag = Environment.i.worldState.TryToGetSceneCoordsID(bus.debugTag);
 
             if (logType)
             {

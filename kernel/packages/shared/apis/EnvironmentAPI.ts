@@ -30,8 +30,8 @@ export class EnvironmentAPI extends ExposableAPI {
    * Returns whether the scene is running in preview mode or not
    */
   @exposeMethod
-  isPreviewMode(): Promise<boolean> {
-    return Promise.resolve(PREVIEW)
+  async isPreviewMode(): Promise<boolean> {
+    return PREVIEW
   }
 
   /**

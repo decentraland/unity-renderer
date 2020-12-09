@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -13,6 +14,11 @@ namespace DCL.Components
 
         public SphereShape(ParcelScene scene) : base(scene)
         {
+        }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.SPHERE_SHAPE;
         }
 
         public static Mesh mesh = null;

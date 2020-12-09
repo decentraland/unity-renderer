@@ -8,7 +8,7 @@ namespace DCL.Helpers
     {
         private void SetHitInfo(ref HitInfo hitInfo, RaycastHit hit)
         {
-            hitInfo.point = SceneController.i.ConvertUnityToScenePosition(hit.point);
+            hitInfo.point = Environment.i.worldState.ConvertUnityToScenePosition(hit.point);
             hitInfo.distance = hit.distance;
             hitInfo.normal = hit.normal;
             hitInfo.collider = hit.collider;
@@ -77,7 +77,7 @@ namespace DCL.Helpers
 
             if (scene != null)
                 hitInfo.isValid = info.scene == scene;
-            else if (scene == null && SceneController.i.IsCharacterInsideScene(info.scene))
+            else if (scene == null && Environment.i.worldState.IsCharacterInsideScene(info.scene))
                 hitInfo.isValid = true;
         }
     }

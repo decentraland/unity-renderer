@@ -20,6 +20,11 @@ namespace DCL.Components
         {
         }
 
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID.UI_TEXT_SHAPE;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError("Aborted UITextShape attachment to an entity. UIShapes shouldn't be attached to entities.");
@@ -33,7 +38,7 @@ namespace DCL.Components
         {
             if (!scene.isTestScene)
             {
-                model.textModel = SceneController.i.SafeFromJson<TextShape.Model>(newJson);
+                model.textModel = Utils.SafeFromJson<TextShape.Model>(newJson);
             }
 
             yield return TextShape.ApplyModelChanges(scene, referencesContainer.text, model.textModel);

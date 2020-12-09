@@ -122,6 +122,10 @@ public class HUDController : MonoBehaviour
         {
             NotificationsController.i?.ShowNotification(hiddenUINotification);
         }
+        else
+        {
+            NotificationsController.i?.DismissAllNotifications(hiddenUINotification.groupID);
+        }
     }
 
     public enum HUDElementID

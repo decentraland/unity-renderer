@@ -7,9 +7,15 @@ export function CustomWebWorkerTransport(worker: Worker): ScriptingTransport {
     },
     onError(handler) {
       worker.addEventListener('error', (err: ErrorEvent) => {
+        // `err.error['isSceneError'] = true` will flag the error as a scene worker error enabling error
+        // filtering in DCLUnityLoader.js, unhandled errors (like WebSocket messages failing)
+        // are not handled by the update loop and therefore those break the whole worker
+
         if (err.error) {
+          err.error['isSceneError'] = true
           handler(err.error)
         } else if (err.message) {
+          (err as any)['isSceneError'] = true
           handler(err as any)
         }
       })

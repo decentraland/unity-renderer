@@ -1,5 +1,6 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -15,6 +16,11 @@ namespace DCL.Components
 
         public static Mesh cubeMesh = null;
         private static int cubeMeshRefCount = 0;
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.BOX_SHAPE;
+        }
 
         public override Mesh GenerateGeometry()
         {

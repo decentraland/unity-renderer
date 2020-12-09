@@ -40,8 +40,8 @@ namespace DCL.SettingsHUD
         public TextMeshProUGUI cullingSliderValueLabel = null;
 
         [SerializeField] private Toggle autosettingsToggle;
-        [SerializeField] private CanvasGroup advancedCanvasGroup;
-        [SerializeField] private GameObject advancedBlocker;
+        [SerializeField] private CanvasGroup autoqualityBlockCanvasGroup;
+        [SerializeField] private GameObject autoqualityBlocker;
 
         private DCL.SettingsData.QualitySettings currentQualitySetting;
         private DCL.SettingsData.GeneralSettings currentGeneralSetting;
@@ -124,8 +124,8 @@ namespace DCL.SettingsHUD
 
             mouseSensitivitySlider.onValueChanged.AddListener(value =>
             {
-                tempGeneralSetting.mouseSensitivity = value;
-                mouseSensitivityValueLabel.text = value.ToString("0.0");
+                tempGeneralSetting.mouseSensitivity = RemapMouseSensitivityTo01(value);
+                mouseSensitivityValueLabel.text = value.ToString();
                 isDirty = true;
             });
 
@@ -203,14 +203,16 @@ namespace DCL.SettingsHUD
 
         private void SetAutoQualityActive(bool active)
         {
-            advancedCanvasGroup.interactable = !active;
+            autoqualityBlockCanvasGroup.interactable = !active;
             tempGeneralSetting.autoqualityOn = active;
-            advancedBlocker.SetActive(active);
+            autoqualityBlocker.SetActive(active);
             if (active)
             {
                 QualitySettings.BaseResolution currentBaseResolution = tempQualitySetting.baseResolution;
+                bool currentFpsCap = tempQualitySetting.fpsCap;
                 tempQualitySetting = Settings.i.lastValidAutoqualitySet;
                 tempQualitySetting.baseResolution = currentBaseResolution;
+                tempQualitySetting.fpsCap = currentFpsCap;
                 isDirty = true;
             }
         }
@@ -296,7 +298,7 @@ namespace DCL.SettingsHUD
         void UpdateGeneralSettings()
         {
             soundToggle.isOn = tempGeneralSetting.sfxVolume > 0 ? true : false;
-            mouseSensitivitySlider.value = tempGeneralSetting.mouseSensitivity;
+            mouseSensitivitySlider.value = Mathf.Lerp(mouseSensitivitySlider.minValue, mouseSensitivitySlider.maxValue, tempGeneralSetting.mouseSensitivity);
             voiceChatVolumeSlider.value = tempGeneralSetting.voiceChatVolume * 100;
             voiceChatAllowSpinBox.value = (int) tempGeneralSetting.voiceChatAllow;
             autosettingsToggle.isOn = tempGeneralSetting.autoqualityOn;
@@ -313,6 +315,11 @@ namespace DCL.SettingsHUD
         {
             Settings.i.ApplyQualitySettings(currentQualitySetting);
             Settings.i.ApplyGeneralSettings(currentGeneralSetting);
+        }
+
+        private float RemapMouseSensitivityTo01(float value)
+        {
+            return (value - mouseSensitivitySlider.minValue) / (mouseSensitivitySlider.maxValue - mouseSensitivitySlider.minValue) * (1 - 0) + 0; //(value - from1) / (to1 - from1) * (to2 - from2) + from2
         }
     }
 }
