@@ -97,7 +97,19 @@ function* handleMessageFromEngine(
   const { type, jsonEncodedMessage } = action.payload
   DEBUG && logger.info(`handleMessageFromEngine`, action.payload)
   if (_instancedJS) {
-    _instancedJS.then(($) => $.onMessage(type, JSON.parse(jsonEncodedMessage))).catch((e) => logger.error(e.message))
+    _instancedJS
+      .then(($) => {
+        let parsedJson = null
+        try {
+          parsedJson = JSON.parse(jsonEncodedMessage)
+        } catch (e) {
+          // we log the whole message to gain visibility
+          logger.error(e.message + ' messageFromEngine:' + JSON.stringify(action))
+          throw e
+        }
+        $.onMessage(type, parsedJson)
+      })
+      .catch((e) => logger.error(e.message))
   } else {
     logger.error('Message received without initializing engine', type, jsonEncodedMessage)
   }
