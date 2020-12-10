@@ -104,9 +104,11 @@ namespace DCL
         public CameraController cameraController;
         public GameObject bridgesGameObject;
 
-        [System.NonSerialized] public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
+        [System.NonSerialized]
+        public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
 
-        [System.NonSerialized] public static volatile bool queuedMessagesDirty;
+        [System.NonSerialized]
+        public static volatile bool queuedMessagesDirty;
 
         public bool isServerReady
         {
@@ -115,17 +117,24 @@ namespace DCL
 
         public bool openBrowserWhenStart;
 
-        [Header("Kernel General Settings")] public bool useCustomContentServer = false;
+        [Header("Kernel General Settings")]
+        public bool useCustomContentServer = false;
+
         public string customContentServerUrl = "http://localhost:1338/";
 
-        [Space(10)] public BaseUrl baseUrlMode;
+        [Space(10)]
+        public BaseUrl baseUrlMode;
+
         public string baseUrlCustom;
 
-        [Space(10)] public Environment environment;
+        [Space(10)]
+        public Environment environment;
 
         public Vector2 startInCoords = new Vector2(-99, 109);
 
-        [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
+        [Header("Kernel Misc Settings")]
+        public bool forceLocalComms = true;
+
         public bool allWearables = false;
         public bool testWearables = false;
         public bool enableTutorial = false;
@@ -147,7 +156,7 @@ namespace DCL
             }
 
 #if UNITY_EDITOR
-            SceneController.i.isWssDebugMode = true;
+            DCL.DataStore.debugConfig.isWssDebugMode = true;
 
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
@@ -255,19 +264,19 @@ namespace DCL
                         switch (msg.type)
                         {
                             case "SetDebug":
-                                sceneController.SetDebug();
+                                DCL.Environment.i.debugController.SetDebug();
                                 break;
                             case "SetSceneDebugPanel":
-                                sceneController.SetSceneDebugPanel();
+                                DCL.Environment.i.debugController.SetSceneDebugPanel();
                                 break;
                             case "ShowFPSPanel":
-                                sceneController.ShowFPSPanel();
+                                DCL.Environment.i.debugController.ShowFPSPanel();
                                 break;
                             case "HideFPSPanel":
-                                sceneController.HideFPSPanel();
+                                DCL.Environment.i.debugController.HideFPSPanel();
                                 break;
                             case "SetEngineDebugPanel":
-                                sceneController.SetEngineDebugPanel();
+                                DCL.Environment.i.debugController.SetEngineDebugPanel();
                                 break;
                             case "SendSceneMessage":
                                 sceneController.SendSceneMessage(msg.payload);

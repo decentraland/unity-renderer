@@ -249,7 +249,7 @@ namespace DCL
                         if (handler.ProcessMessage(sceneMessage, out msgYieldInstruction))
                         {
 #if UNITY_EDITOR
-                            if (sceneController.msgStepByStep)
+                            if (DataStore.debugConfig.msgStepByStep)
                             {
                                 if (VERBOSE)
                                 {

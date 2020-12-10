@@ -1,25 +1,26 @@
+﻿using System.Collections.Generic;
+using System.Linq;
 using DCL.Helpers;
 using DCL.Models;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Controllers
 {
-    public class SceneBoundariesDebugModeChecker : SceneBoundariesChecker
+    public class SceneBoundsFeedbackStyle_RedFlicker : ISceneBoundsFeedbackStyle
     {
         class InvalidMeshInfo
         {
             public Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
             public List<GameObject> wireframeObjects = new List<GameObject>();
-            public DecentralandEntity.MeshesInfo meshesInfo;
+            public MeshesInfo meshesInfo;
             public System.Action OnResetMaterials;
 
-            public InvalidMeshInfo(DecentralandEntity.MeshesInfo meshesInfo)
+            public InvalidMeshInfo(MeshesInfo meshesInfo)
             {
                 this.meshesInfo = meshesInfo;
             }
 
-            public void ResetMaterials(DecentralandEntity.MeshesInfo meshesInfo)
+            public void ResetMaterials(MeshesInfo meshesInfo)
             {
                 this.meshesInfo = meshesInfo;
                 ResetMaterials();
@@ -53,48 +54,39 @@ namespace DCL.Controllers
         Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
         HashSet<Renderer> invalidSubmeshes = new HashSet<Renderer>();
 
-        public SceneBoundariesDebugModeChecker() : base()
+        public SceneBoundsFeedbackStyle_RedFlicker()
         {
             invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
             invalidMeshMaterial = Resources.Load(INVALID_MESH_MATERIAL_NAME) as Material;
             invalidSubMeshMaterial = Resources.Load(INVALID_SUBMESH_MATERIAL_NAME) as Material;
         }
 
-        protected override bool AreSubmeshesInsideBoundaries(DecentralandEntity entity)
+        public void OnRendererExitBounds(Renderer renderer)
         {
-            bool isInsideBoundaries = true;
-
-            for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
-            {
-                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].bounds))
-                {
-                    isInsideBoundaries = false;
-
-                    invalidSubmeshes.Add(entity.renderers[i]);
-                }
-            }
-
-            return isInsideBoundaries;
+            invalidSubmeshes.Add(renderer);
         }
 
-        protected override void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries)
+        public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
             if (isInsideBoundaries)
-                RemoveInvalidMeshEffect(entity);
-            else
-                AddInvalidMeshEffect(entity);
+            {
+                RemoveInvalidMeshEffect(meshesInfo);
+                return;
+            }
+
+            AddInvalidMeshEffect(meshesInfo);
         }
 
-        void RemoveInvalidMeshEffect(DecentralandEntity entity)
+        void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
         {
-            if (entity == null || WasEntityInAValidPosition(entity)) return;
+            if (meshesInfo == null || WasGameObjectInAValidPosition(meshesInfo.innerGameObject)) return;
 
-            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(entity.meshesInfo.meshRootGameObject);
+            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(meshesInfo.meshRootGameObject);
 
             if (shapePoolableObjectBehaviour != null)
-                shapePoolableObjectBehaviour.OnRelease -= invalidMeshesInfo[entity.gameObject].ResetMaterials;
+                shapePoolableObjectBehaviour.OnRelease -= invalidMeshesInfo[meshesInfo.innerGameObject].ResetMaterials;
 
-            var renderers = entity.meshesInfo.renderers;
+            var renderers = meshesInfo.renderers;
 
             if (renderers != null)
             {
@@ -105,18 +97,18 @@ namespace DCL.Controllers
                 }
             }
 
-            invalidMeshesInfo[entity.gameObject].ResetMaterials();
+            invalidMeshesInfo[meshesInfo.innerGameObject].ResetMaterials();
         }
 
-        void AddInvalidMeshEffect(DecentralandEntity entity)
+        void AddInvalidMeshEffect(MeshesInfo meshesInfo)
         {
-            if (!WasEntityInAValidPosition(entity)) return;
+            if (!WasGameObjectInAValidPosition(meshesInfo.innerGameObject)) return;
 
-            InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(entity.meshesInfo);
+            InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(meshesInfo);
 
-            invalidMeshInfo.OnResetMaterials = () => { invalidMeshesInfo.Remove(entity.gameObject); };
+            invalidMeshInfo.OnResetMaterials = () => { invalidMeshesInfo.Remove(meshesInfo.innerGameObject); };
 
-            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(entity.meshesInfo.meshRootGameObject);
+            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(meshesInfo.meshRootGameObject);
             if (shapePoolableObjectBehaviour != null)
             {
                 shapePoolableObjectBehaviour.OnRelease -= invalidMeshInfo.ResetMaterials;
@@ -124,7 +116,7 @@ namespace DCL.Controllers
             }
 
             // Apply invalid material
-            Renderer[] entityRenderers = entity.meshesInfo.renderers;
+            Renderer[] entityRenderers = meshesInfo.renderers;
             for (int i = 0; i < entityRenderers.Length; i++)
             {
                 // Save original materials
@@ -137,7 +129,7 @@ namespace DCL.Controllers
                     GameObject wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
                     wireframeObject.transform.position = entityRenderers[i].bounds.center;
                     wireframeObject.transform.localScale = entityRenderers[i].bounds.size * 1.01f;
-                    wireframeObject.transform.SetParent(entity.gameObject.transform);
+                    wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
 
                     entityRenderers[i].sharedMaterial = invalidSubMeshMaterial;
 
@@ -149,32 +141,29 @@ namespace DCL.Controllers
                 }
             }
 
-            invalidMeshesInfo.Add(entity.gameObject, invalidMeshInfo);
+            invalidMeshesInfo.Add(meshesInfo.innerGameObject, invalidMeshInfo);
         }
 
-        public bool WasEntityInAValidPosition(DecentralandEntity entity)
+        public bool WasGameObjectInAValidPosition(GameObject gameObject)
         {
-            return !invalidMeshesInfo.ContainsKey(entity.gameObject);
+            return !invalidMeshesInfo.ContainsKey(gameObject);
         }
 
-        public Dictionary<Renderer, Material> GetOriginalMaterials(DecentralandEntity entity)
+        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
         {
-            if (invalidMeshesInfo.ContainsKey(entity.gameObject))
+            if (invalidMeshesInfo.ContainsKey(meshesInfo.innerGameObject))
             {
-                return invalidMeshesInfo[entity.gameObject].originalMaterials;
+                return invalidMeshesInfo[meshesInfo.innerGameObject].originalMaterials.Values.ToList();
             }
 
-            return null;
-        }
+            List<Material> result = new List<Material>();
 
-        protected override void OnRemoveEntity(DecentralandEntity entity)
-        {
-            base.OnRemoveEntity(entity);
-
-            if (entity.gameObject != null)
+            for (int i = 0; i < meshesInfo.renderers.Length; i++)
             {
-                RemoveInvalidMeshEffect(entity);
+                result.AddRange(meshesInfo.renderers[i].sharedMaterials);
             }
+
+            return result;
         }
     }
 }
