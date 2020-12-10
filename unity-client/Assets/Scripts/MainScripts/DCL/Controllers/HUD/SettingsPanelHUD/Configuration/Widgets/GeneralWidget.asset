@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ccae9e4d9011e4da0803905f169221, type: 3}
+  m_Name: GeneralWidget
+  m_EditorClassIdentifier: 
+  title: General
+  widgetPrefab: {fileID: 5794240731996032819, guid: cc8cedcaa38f2424b9f20b88b673f8a9,
+    type: 3}
+  widgetController: {fileID: 11400000, guid: 58b3a5282c16beb42a91390cf2ddfc85, type: 2}
+  controlColumns:
+    array:
+    - controls:
+        array:
+        - {fileID: 11400000, guid: 8e433d09f0948e1428d7fecc8ac6f00a, type: 2}
+        - {fileID: 11400000, guid: 1e349d18d99e3d242bdc6d864b8463a3, type: 2}
+    - controls:
+        array:
+        - {fileID: 11400000, guid: 83f29ed692998ff44b96f9a42111fc9f, type: 2}
+        - {fileID: 11400000, guid: a9f573106b03156409e03bfb9978d32b, type: 2}

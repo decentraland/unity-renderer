@@ -1,5 +1,3 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -22,11 +20,25 @@ namespace DCL
             voiceChatAction.OnStarted += voiceChatStartedDelegate;
             voiceChatAction.OnFinished += voiceChatFinishedDelegate;
             voiceChatToggleAction.OnTriggered += voiceChatToggleDelegate;
+
+            KernelConfig.i.EnsureConfigInitialized().Then(config => EnableVoiceChat(config.comms.voiceChatEnabled));
+            KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
         void OnDestroy()
         {
             voiceChatAction.OnStarted -= voiceChatStartedDelegate;
             voiceChatAction.OnFinished -= voiceChatFinishedDelegate;
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
+        }
+
+        void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            EnableVoiceChat(current.comms.voiceChatEnabled);
+        }
+
+        void EnableVoiceChat(bool enable)
+        {
+            CommonScriptableObjects.voiceChatDisabled.Set(!enable);
         }
     }
 }
