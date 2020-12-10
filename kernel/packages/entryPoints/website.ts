@@ -136,13 +136,13 @@ namespace webApp {
           globalThis.globalStore.dispatch(experienceStarted())
           globalThis.globalStore.dispatch(setLoadingScreen(false))
           Html.switchGameContainer(true)
-          i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
         })
 
         EnsureProfile(identity.address)
           .then((profile) => {
             i.ConfigureEmailPrompt(profile.tutorialStep)
             i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
+            i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
           })
           .catch((e) => logger.error(`error getting profile ${e}`))
       })

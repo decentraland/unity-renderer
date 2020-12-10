@@ -21,7 +21,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            SceneController.i.SetDebug();
+            Environment.i.debugController.SetDebug();
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
         }
 
@@ -393,22 +393,22 @@ namespace Tests
 
             // Make sure that it doesn't have a parent
             Assert.IsNull(entity.parent);
-            Assert.IsFalse(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+            Assert.IsFalse(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Set player reference as parent
             TestHelpers.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
             Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
-            Assert.IsTrue(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+            Assert.IsTrue(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Set avatar position reference as parent
             TestHelpers.SetEntityParent(scene, entityId, "AvatarEntityReference");
             Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
-            Assert.IsTrue(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+            Assert.IsTrue(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Remove all parents
             TestHelpers.SetEntityParent(scene, entityId, "0");
             Assert.IsNull(entity.parent);
-            Assert.IsFalse(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+            Assert.IsFalse(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
         }
     }
 }

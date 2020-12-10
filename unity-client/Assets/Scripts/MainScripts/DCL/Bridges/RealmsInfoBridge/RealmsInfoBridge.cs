@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 
-public class RealmsInfoBridge : MonoBehaviour
+namespace DCL
 {
-    RealmsInfoHandler handler = new RealmsInfoHandler();
-
-    public void UpdateRealmsInfo(string payload)
+    public class RealmsInfoBridge : MonoBehaviour
     {
-        handler.Set(payload);
+        RealmsInfoHandler handler = new RealmsInfoHandler();
+
+        public void UpdateRealmsInfo(string payload)
+        {
+            handler.Set(payload);
+        }
     }
 }

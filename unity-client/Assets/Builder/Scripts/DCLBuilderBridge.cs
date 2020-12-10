@@ -373,7 +373,7 @@ namespace Builder
                 CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
             }
 
-            SceneController.i?.fpsPanel.SetActive(false);
+            Environment.i.debugController.HideFPSPanel();
             SetCaptureKeyboardInputEnabled(false);
         }
 
@@ -637,7 +637,7 @@ namespace Builder
                 outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
             }
 
-            DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
+            Environment.i.sceneBoundsChecker?.EvaluateEntityPosition(entity.rootEntity);
         }
 
         private void SendOutOfBoundariesEntities()
@@ -651,7 +651,7 @@ namespace Builder
             {
                 for (int i = 0; i < selectedEntities.Count; i++)
                 {
-                    DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
+                    Environment.i.sceneBoundsChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
                 }
             }
         }

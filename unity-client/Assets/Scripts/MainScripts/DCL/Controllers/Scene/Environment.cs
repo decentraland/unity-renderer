@@ -10,10 +10,13 @@ namespace DCL
     {
         public static readonly Environment i = new Environment();
 
+        public DebugController debugController { get; private set; }
         public readonly WorldState worldState;
         public readonly MessagingControllersManager messagingControllersManager;
         public readonly PointerEventsController pointerEventsController;
         public readonly MemoryManager memoryManager;
+
+        public SceneBoundsChecker sceneBoundsChecker { get; private set; }
         public WorldBlockersController worldBlockersController { get; private set; }
         public ICullingController cullingController { get; private set; }
         public InteractionHoverCanvasController interactionHoverCanvasController { get; private set; }
@@ -38,9 +41,11 @@ namespace DCL
             physicsSyncController = new PhysicsSyncController();
             performanceMetricsController = new PerformanceMetricsController();
             clipboard = Clipboard.Create();
+            sceneBoundsChecker = new SceneBoundsChecker();
             parcelScenesCleaner = new ParcelScenesCleaner();
             cullingController = CullingController.Create();
             worldState = new WorldState();
+            debugController = new DebugController();
         }
 
         public void Initialize(IMessageProcessHandler messageHandler)
@@ -51,11 +56,11 @@ namespace DCL
             messagingControllersManager.Initialize(messageHandler);
             pointerEventsController.Initialize();
             memoryManager.Initialize();
-            worldState.Initialize();
             worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(worldState, DCLCharacterController.i.characterPosition);
+            worldState.Initialize();
             parcelScenesCleaner.Start();
             cullingController.Start();
-
+            sceneBoundsChecker.Start();
             initialized = true;
         }
 
@@ -74,9 +79,11 @@ namespace DCL
             messagingControllersManager.Cleanup();
             memoryManager.CleanupPoolsIfNeeded(true);
             pointerEventsController.Cleanup();
+            sceneBoundsChecker.Stop();
             worldBlockersController.Dispose();
             parcelScenesCleaner.Dispose();
             cullingController.Dispose();
+            debugController.Dispose();
         }
 
         public void Restart(IMessageProcessHandler messageHandler)

@@ -55,7 +55,6 @@ namespace DCL
 
         private HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
-        private Dictionary<string, MinimapMetadata.MinimapUserInfo> usersInfo = new Dictionary<string, MinimapMetadata.MinimapUserInfo>();
         private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
 
         private Pool usersInfoPool;
@@ -291,46 +290,33 @@ namespace DCL
 
         private void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
         {
-            if (usersInfo.TryGetValue(userInfo.userId, out MinimapMetadata.MinimapUserInfo existingUserInfo))
+            if (!usersInfoMarkers.TryGetValue(userInfo.userId, out PoolableObject marker))
             {
-                existingUserInfo = userInfo;
-
-                if (usersInfoMarkers.TryGetValue(userInfo.userId, out PoolableObject go))
-                    ConfigureUserIcon(go.gameObject, userInfo.worldPosition, userInfo.userName);
+                marker = usersInfoPool.Get();
+                marker.gameObject.name = $"UserIcon-{userInfo.userName}";
+                marker.gameObject.transform.SetParent(overlayContainer.transform, true);
+                marker.gameObject.transform.localScale = Vector3.one;
+                usersInfoMarkers.Add(userInfo.userId, marker);
             }
-            else
-            {
-                usersInfo.Add(userInfo.userId, userInfo);
 
-                PoolableObject newUserIcon = usersInfoPool.Get();
-                newUserIcon.gameObject.name = $"UserIcon-{userInfo.userName}";
-                newUserIcon.gameObject.transform.SetParent(overlayContainer.transform, true);
-                newUserIcon.gameObject.transform.localScale = Vector3.one;
-                ConfigureUserIcon(newUserIcon.gameObject, userInfo.worldPosition, userInfo.userName);
-
-                usersInfoMarkers.Add(userInfo.userId, newUserIcon);
-            }
+            ConfigureUserIcon(marker.gameObject, userInfo.worldPosition);
         }
 
         private void MapRenderer_OnUserInfoRemoved(string userId)
         {
-            if (!usersInfo.Remove(userId))
-                return;
-
-            if (usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
+            if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
             {
-                usersInfoPool.Release(go);
-                usersInfoMarkers.Remove(userId);
+                return;
             }
+
+            usersInfoPool.Release(go);
+            usersInfoMarkers.Remove(userId);
         }
 
-        private void ConfigureUserIcon(GameObject iconGO, Vector3 pos, string name)
+        private void ConfigureUserIcon(GameObject iconGO, Vector3 pos)
         {
             var gridPosition = Utils.WorldToGridPositionUnclamped(pos);
             iconGO.transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
-            MapSceneIcon icon = iconGO.GetComponent<MapSceneIcon>();
-            if (icon.title != null)
-                icon.title.text = name;
         }
 
         private void OnCharacterMove(Vector3 current, Vector3 previous)
