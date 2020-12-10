@@ -112,7 +112,11 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         settingsButton.onClick.AddListener(() =>
         {
-            view.controller.settingsHud.SetVisibility(true);
+            if (view.controller.useNewSettings)
+                view.controller.settingsPanelHud.SetVisibility(true);
+            else
+                view.controller.settingsHud.SetVisibility(true);
+
             view.moreButton.SetToggleState(false);
         });
     }
