@@ -18,3 +18,5 @@ export enum CONTENT_PATH {
   MODELS_FOLDER = 'models',
   BUNDLED_GAME_FILE = 'bin/game.js'
 }
+
+export type DeploymentResult = { ok: true } | { ok: false; error: string }
