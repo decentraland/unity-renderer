@@ -20,7 +20,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            SceneController.i.useBoundariesChecker = false;
+            Environment.i.sceneBoundsChecker.Stop();
 
             // Set character position and camera rotation
             DCLCharacterController.i.PauseGravity();
