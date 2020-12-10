@@ -145,6 +145,10 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'SetRenderProfile', JSON.stringify({ id: id }))
   }
 
+  public DumpScenesLoadInfo() {
+    this.gameInstance.SendMessage('SceneController', 'DumpScenesLoadInfo')
+  }
+
   public CreateUIScene(data: { id: string; baseUrl: string }) {
     /**
      * UI Scenes are scenes that does not check any limit or boundary. The
