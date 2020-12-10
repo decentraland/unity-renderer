@@ -10,7 +10,9 @@ public class DCLCharacterController : MonoBehaviour
 {
     public static DCLCharacterController i { get; private set; }
 
-    [Header("Movement")] public float minimumYPosition = 1f;
+    [Header("Movement")]
+    public float minimumYPosition = 1f;
+
     public float groundCheckExtraDistance = 0.25f;
     public float gravity = -55f;
     public float jumpForce = 12f;
@@ -22,13 +24,17 @@ public class DCLCharacterController : MonoBehaviour
 
     public DCLCharacterPosition characterPosition;
 
-    [Header("Collisions")] public LayerMask groundLayers;
+    [Header("Collisions")]
+    public LayerMask groundLayers;
 
-    [System.NonSerialized] public bool initialPositionAlreadySet = false;
+    [System.NonSerialized]
+    public bool initialPositionAlreadySet = false;
 
-    [System.NonSerialized] public bool characterAlwaysEnabled = true;
+    [System.NonSerialized]
+    public bool characterAlwaysEnabled = true;
 
-    [System.NonSerialized] public CharacterController characterController;
+    [System.NonSerialized]
+    public CharacterController characterController;
 
     FreeMovementController freeMovementController;
 
@@ -55,7 +61,9 @@ public class DCLCharacterController : MonoBehaviour
     Quaternion groundLastRotation;
     bool jumpButtonPressed = false;
 
-    [Header("InputActions")] public InputAction_Hold jumpAction;
+    [Header("InputActions")]
+    public InputAction_Hold jumpAction;
+
     public InputAction_Hold sprintAction;
 
     public Vector3 moveVelocity;
@@ -75,15 +83,24 @@ public class DCLCharacterController : MonoBehaviour
     // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
     public DCL.Models.DecentralandEntity avatarReference { get; private set; }
     public DCL.Models.DecentralandEntity firstPersonCameraReference { get; private set; }
-    [SerializeField] private GameObject avatarGameObject;
-    [SerializeField] private GameObject firstPersonCameraGameObject;
 
-    [SerializeField] private InputAction_Measurable characterYAxis;
-    [SerializeField] private InputAction_Measurable characterXAxis;
+    [SerializeField]
+    private GameObject avatarGameObject;
+
+    [SerializeField]
+    private GameObject firstPersonCameraGameObject;
+
+    [SerializeField]
+    private InputAction_Measurable characterYAxis;
+
+    [SerializeField]
+    private InputAction_Measurable characterXAxis;
+
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
-    [System.NonSerialized] public float movingPlatformSpeed;
+    [System.NonSerialized]
+    public float movingPlatformSpeed;
 
     void Awake()
     {
@@ -108,7 +125,7 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
-        SceneController.OnDebugModeSet += () => supportsMovingPlatforms = true;
+        Environment.i.debugController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
         transform.parent = null;
