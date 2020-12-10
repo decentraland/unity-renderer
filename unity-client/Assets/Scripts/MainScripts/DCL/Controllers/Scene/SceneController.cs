@@ -53,8 +53,6 @@ namespace DCL
             DataStore.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
             DataStore.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
 
-            InitializeSceneBoundariesChecker(DataStore.debugConfig.isDebugMode);
-
             RenderProfileManifest.i.Initialize();
             Environment.i.Initialize(this);
 
@@ -98,7 +96,7 @@ namespace DCL
             //             case. Calling Initialize multiple times in a row is safe.
             Environment.i.Initialize(this);
             Environment.i.worldBlockersController.SetEnabled(false);
-            InitializeSceneBoundariesChecker(true);
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
 
         void Start()
@@ -524,30 +522,12 @@ namespace DCL
 
         public void ActivateBuilderInWorldEditScene()
         {
-            InitializeSceneBoundariesChecker(true);
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
 
         public void DeactivateBuilderInWorldEditScene()
         {
-            InitializeSceneBoundariesChecker(false);
-        }
-
-        public void InitializeSceneBoundariesChecker(bool debugMode)
-        {
-            if (!useBoundariesChecker) return;
-
-            if (boundariesChecker != null)
-                boundariesChecker.Stop();
-
-            if (debugMode)
-            {
-                boundariesChecker = new SceneBoundariesDebugModeChecker();
-                boundariesChecker.timeBetweenChecks = 0f;
-            }
-            else
-            {
-                boundariesChecker = new SceneBoundariesChecker();
-            }
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         }
 
         private void SetPositionDirty(DCLCharacterPosition character)
@@ -887,12 +867,7 @@ namespace DCL
         public bool prewarmSceneMessagesPool = true;
 
         [System.NonSerialized]
-        public bool useBoundariesChecker = true;
-
-        [System.NonSerialized]
         public bool prewarmEntitiesPool = true;
-
-        public SceneBoundariesChecker boundariesChecker { get; private set; }
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;

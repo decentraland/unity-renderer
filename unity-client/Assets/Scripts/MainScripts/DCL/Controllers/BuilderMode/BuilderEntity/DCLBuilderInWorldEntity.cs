@@ -19,12 +19,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
     public event System.Action<DCLBuilderInWorldEntity> OnDelete;
 
     private bool isLockedValue = false;
+
     public bool IsLocked
     {
-        get
-        {
-            return isLockedValue;
-        }
+        get { return isLockedValue; }
         set
         {
             isLockedValue = value;
@@ -33,12 +31,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
     }
 
     private bool isSelectedValue = false;
+
     public bool IsSelected
     {
-        get
-        {
-            return isSelectedValue;
-        }
+        get { return isSelectedValue; }
         set
         {
             isSelectedValue = value;
@@ -47,12 +43,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
     }
 
     private bool isNewValue = false;
+
     public bool IsNew
     {
-        get
-        {
-            return isNewValue;
-        }
+        get { return isNewValue; }
         set
         {
             isNewValue = value;
@@ -61,12 +55,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
     }
 
     private bool isVisibleValue = true;
+
     public bool IsVisible
     {
-        get
-        {
-            return isVisibleValue;
-        }
+        get { return isVisibleValue; }
         set
         {
             isVisibleValue = value;
@@ -112,7 +104,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SaveOriginalMaterialAndSetEditMaterials();
-        SceneController.i.boundariesChecker.AddPersistent(rootEntity);
+        DCL.Environment.i.sceneBoundsChecker.AddPersistent(rootEntity);
     }
 
     public void Deselect()
@@ -122,9 +114,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
-        SceneController.i.boundariesChecker.RemoveEntityToBeChecked(rootEntity);
+        DCL.Environment.i.sceneBoundsChecker.RemoveEntityToBeChecked(rootEntity);
         SetOriginalMaterials();
-
     }
 
     public void ToggleShowStatus()
@@ -163,6 +154,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         {
             GameObject.Destroy(entityCollider);
         }
+
         collidersDictionary.Clear();
     }
 
@@ -172,16 +164,16 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.NAME)
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
             {
-                ((DCLName)keyValuePairBaseDisposable.Value).SetNewName(newName);
+                ((DCLName) keyValuePairBaseDisposable.Value).SetNewName(newName);
                 foundComponent = true;
             }
         }
 
-        if(!foundComponent)
+        if (!foundComponent)
         {
-            DCLName name = (DCLName)rootEntity.scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
+            DCLName name = (DCLName) rootEntity.scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
             name.SetNewName(newName);
             rootEntity.scene.SharedComponentAttach(rootEntity.entityId, name.id);
         }
@@ -191,12 +183,12 @@ public class DCLBuilderInWorldEntity : EditableEntity
     {
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
         {
-            if(keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
             {
-                return descriptiveName = ((DCLName.Model)keyValuePairBaseDisposable.Value.GetModel()).value;
-               
+                return descriptiveName = ((DCLName.Model) keyValuePairBaseDisposable.Value.GetModel()).value;
             }
         }
+
         return "";
     }
 
@@ -210,7 +202,6 @@ public class DCLBuilderInWorldEntity : EditableEntity
             renderer.material = originalMaterials[cont];
             cont++;
         }
-
     }
 
     void SetEntityAsVoxel()
@@ -218,6 +209,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         isVoxel = true;
         gameObject.tag = BuilderInWorldSettings.VOXEL_TAG;
     }
+
     void SaveOriginalMaterialAndSetEditMaterials()
     {
         if (rootEntity.meshesInfo.renderers != null && rootEntity.meshesInfo.renderers.Length >= 1)
@@ -226,7 +218,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             int cont = 0;
             foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
             {
-                if(renderer.material != editMaterial)originalMaterials[cont] = renderer.material;
+                if (renderer.material != editMaterial) originalMaterials[cont] = renderer.material;
                 renderer.material = editMaterial;
                 cont++;
             }
@@ -251,7 +243,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     void CreateCollidersForEntity(DecentralandEntity entity)
     {
-        DecentralandEntity.MeshesInfo meshInfo = entity.meshesInfo;
+        MeshesInfo meshInfo = entity.meshesInfo;
         if (meshInfo == null ||
             meshInfo.currentShape == null ||
             !meshInfo.currentShape.IsVisible())
@@ -294,12 +286,11 @@ public class DCLBuilderInWorldEntity : EditableEntity
             {
                 meshCollider.sharedMesh = meshInfo.renderers[i].GetComponent<MeshFilter>().sharedMesh;
             }
-            meshCollider.enabled = meshInfo.renderers[i].enabled;
 
+            meshCollider.enabled = meshInfo.renderers[i].enabled;
         }
 
         collidersDictionary.Add(entity.scene.sceneData.id + entity.entityId, entityCollider);
-
     }
 
     bool IsEntityAFloor()

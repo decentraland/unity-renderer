@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using DCL;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 namespace Builder
 {
@@ -75,8 +76,8 @@ namespace Builder
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
 
             //builder evaluate boundaries by itself
-            if (DCL.SceneController.i.useBoundariesChecker)
-                entity.OnShapeUpdated -= DCL.SceneController.i.boundariesChecker.EvaluateEntityPosition;
+            if (Environment.i.sceneBoundsChecker.enabled)
+                entity.OnShapeUpdated -= Environment.i.sceneBoundsChecker.EvaluateEntityPosition;
 
             gameObject.transform.localScale = Vector3.zero;
 
@@ -99,6 +100,7 @@ namespace Builder
             {
                 return rootEntity.scene.IsInsideSceneBoundaries(Utils.BuildMergedBounds(rootEntity.meshesInfo.renderers));
             }
+
             return true;
         }
 
@@ -270,7 +272,7 @@ namespace Builder
             }
         }
 
-        private void CreateColliders(DecentralandEntity.MeshesInfo meshInfo)
+        private void CreateColliders(MeshesInfo meshInfo)
         {
             meshColliders = new DCLBuilderSelectionCollider[meshInfo.renderers.Length];
             for (int i = 0; i < meshInfo.renderers.Length; i++)
@@ -297,6 +299,7 @@ namespace Builder
                 gameObject.transform.localScale = scale;
                 yield return null;
             }
+
             gameObject.transform.localScale = scaleTarget;
             isScalingAnimation = false;
             ProcessEntityShape(rootEntity);
@@ -314,6 +317,7 @@ namespace Builder
                         Destroy(meshColliders[i].gameObject);
                     }
                 }
+
                 meshColliders = null;
             }
         }
