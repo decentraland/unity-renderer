@@ -167,4 +167,10 @@ export class SceneDataDownloadManager {
     }
     return this.resolveLandData(sceneId)
   }
+
+  invalidateParcels(parcels: string[]) {
+    for (const parcel of parcels) {
+      this.positionToSceneId.delete(parcel)
+    }
+  }
 }

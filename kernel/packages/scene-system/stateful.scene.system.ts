@@ -51,9 +51,10 @@ class StatefulWebWorkerScene extends Script {
     this.log('Sent initial load')
 
     // Listen to storage requests
-    this.eventSubscriber.on('stateEvent', ({ data }) => {
+    this.eventSubscriber.on('stateEvent', async ({ data }) => {
       if (data.type === 'StoreSceneState') {
-        this.sceneStateStorage.storeState(sceneId, serializeSceneState(this.sceneState))
+        const result = await this.sceneStateStorage.storeState(sceneId, serializeSceneState(this.sceneState))
+        this.renderer.informPublishResult(result)
       }
     })
   }

@@ -44,12 +44,11 @@ import { reportHotScenes } from 'shared/social/hotScenes'
 import { GIFProcessor } from 'gif-processor/processor'
 import { setVoiceChatRecording, setVoicePolicy, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
-import { SceneSystemWorker } from 'shared/world/SceneSystemWorker'
 import { StatefulWorker } from 'shared/world/StatefulWorker'
-import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
 import Html from 'shared/Html'
+import { reloadScene } from 'decentraland-loader/lifecycle/utils/reloadScene'
 
 declare const DCL: any
 
@@ -235,7 +234,7 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(saveProfileRequest(update))
   }
 
-  public ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
+  public async ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
     switch (eventType) {
       case 'SceneReady': {
         const { sceneId } = payload
@@ -250,14 +249,18 @@ export class BrowserInterface {
       }
       case 'StartStatefulMode': {
         const { sceneId } = payload
-        const parcelScene = this.resetScene(sceneId)
+        const worker = getSceneWorkerBySceneID(sceneId)!
+        unityInterface.UnloadScene(sceneId) // Maybe unity should do it by itself?
+        const parcelScene = worker.getParcelScene()
+        stopParcelSceneWorker(worker)
+        const data = parcelScene.data.data as LoadableParcelScene
+        unityInterface.LoadParcelScenes([data]) // Maybe unity should do it by itself?
         setNewParcelScene(sceneId, new StatefulWorker(parcelScene))
         break
       }
       case 'StopStatefulMode': {
         const { sceneId } = payload
-        const parcelScene = this.resetScene(sceneId)
-        setNewParcelScene(sceneId, new SceneSystemWorker(parcelScene))
+        await reloadScene(sceneId)
         break
       }
       default: {
@@ -449,17 +452,6 @@ export class BrowserInterface {
     } else {
       globalThis.globalStore.dispatch(unmutePlayers(data.usersId))
     }
-  }
-
-  /** Kill the current worker, reset the scene in Unity and return the ParcelSceneAPI that was being used */
-  private resetScene(sceneId: string): ParcelSceneAPI {
-    const worker = getSceneWorkerBySceneID(sceneId)!
-    unityInterface.UnloadScene(sceneId) // Maybe unity should do it by itself?
-    const parcelScene = worker.getParcelScene()
-    stopParcelSceneWorker(worker)
-    const data = parcelScene.data.data as LoadableParcelScene
-    unityInterface.LoadParcelScenes([data]) // Maybe unity should do it by itself?
-    return parcelScene
   }
 }
 
