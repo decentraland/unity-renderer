@@ -373,7 +373,7 @@ namespace Builder
                 CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
             }
 
-            SceneController.i?.fpsPanel.SetActive(false);
+            Environment.i.debugController.HideFPSPanel();
             SetCaptureKeyboardInputEnabled(false);
         }
 

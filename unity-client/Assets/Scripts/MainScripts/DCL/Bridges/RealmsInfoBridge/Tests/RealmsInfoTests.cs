@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityEngine;
 using Variables.RealmsInfo;
+using DCL;
 
 public class RealmsInfoTests
 {
@@ -76,7 +77,7 @@ public class RealmsInfoTests
 
         var testModel = new RealmsInfoModel()
         {
-            realms = new RealmModel[] { realm1, realm2 }
+            realms = new RealmModel[] {realm1, realm2}
         };
 
         var handler = new RealmsInfoHandler();
