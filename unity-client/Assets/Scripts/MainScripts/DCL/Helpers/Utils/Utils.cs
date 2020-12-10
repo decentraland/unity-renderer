@@ -457,7 +457,8 @@ namespace DCL.Helpers
         [Serializable]
         private class DummyJsonUtilityFromArray<T> where T : IEnumerable //UnityEngine.JsonUtility is really fast but cannot deserialize json arrays
         {
-            [SerializeField] private T value;
+            [SerializeField]
+            private T value;
 
             public static T GetFromJsonArray(string jsonArray)
             {
@@ -489,14 +490,11 @@ namespace DCL.Helpers
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
         public static bool isCursorLocked { get; private set; } = false;
 
-#if WEB_PLATFORM
-        private static bool requestedUnlock = false;
-        private static bool requestedLock = false;
-#endif
-
         public static void LockCursor()
         {
 #if WEB_PLATFORM
+            //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+            //             behaviour using strategy pattern instead of this.
             if (isCursorLocked)
             {
                 return;
@@ -519,6 +517,8 @@ namespace DCL.Helpers
         public static void UnlockCursor()
         {
 #if WEB_PLATFORM
+            //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+            //             behaviour using strategy pattern instead of this.
             if (!isCursorLocked)
             {
                 return;
@@ -537,7 +537,13 @@ namespace DCL.Helpers
             EventSystem.current.SetSelectedGameObject(null);
         }
 
-#if WEB_PLATFORM
+        #region BROWSER_ONLY
+
+        //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+        //             behaviour using strategy pattern instead of this.
+        private static bool requestedUnlock = false;
+        private static bool requestedLock = false;
+
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
@@ -545,12 +551,14 @@ namespace DCL.Helpers
             {
                 Cursor.lockState = CursorLockMode.None;
             }
+
             isCursorLocked = locked;
             Cursor.visible = !locked;
             requestedUnlock = false;
             requestedLock = false;
         }
-#endif
+
+        #endregion
 
         public static void DestroyAllChild(this Transform transform)
         {
