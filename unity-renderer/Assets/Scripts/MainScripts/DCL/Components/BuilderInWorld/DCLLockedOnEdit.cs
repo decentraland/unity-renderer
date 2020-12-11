@@ -1,6 +1,8 @@
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,10 +25,19 @@ public class DCLLockedOnEdit : BaseDisposable
     {
         model = new Model();
     }
+    public override int GetClassId()
+    {
+        return (int)CLASS_ID.LOCKED_ON_EDIT;
+    }
+
+    public override object GetModel()
+    {
+        return model;
+    }
 
     public override IEnumerator ApplyChanges(string newJson)
     {
-        Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
+        Model newModel = Utils.SafeFromJson<Model>(newJson);
         if (newModel.isLocked != model.isLocked)
         {
             model = newModel;
