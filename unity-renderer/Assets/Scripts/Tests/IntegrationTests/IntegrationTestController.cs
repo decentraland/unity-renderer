@@ -105,7 +105,6 @@ public class IntegrationTestController : MonoBehaviour
 
     public IEnumerator Verify()
     {
-        var sceneController = FindObjectOfType<SceneController>();
         var scene = Environment.i.worldState.loadedScenes[sceneName];
         var cube = scene.entities[entityId];
 

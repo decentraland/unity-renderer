@@ -29,7 +29,6 @@ namespace Tests
             GameObject wssControllerGO = new GameObject("WSS Controller");
 
             WSSController wssController = wssControllerGO.AddComponent<WSSController>();
-            wssController.sceneController = sceneController;
             DCLCharacterController.i.gravity = 0;
 
             yield return new WaitForSeconds(1.0f);

@@ -18,7 +18,7 @@ public class ExternalUrlPromptHUDController : IHUD
         view.name = "_ExternalUrlPromptHUD";
         view.content.SetActive(false);
 
-        if (SceneController.i)
+        if (SceneController.i != null)
             SceneController.i.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
     }
 
@@ -43,7 +43,7 @@ public class ExternalUrlPromptHUDController : IHUD
 
     public void Dispose()
     {
-        if (SceneController.i)
+        if (SceneController.i != null)
             SceneController.i.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
 
         trustedDomains.Clear();
@@ -82,6 +82,7 @@ public class ExternalUrlPromptHUDController : IHUD
                         OpenUrl(url);
                         break;
                 }
+
                 SetVisibility(false);
             });
         }

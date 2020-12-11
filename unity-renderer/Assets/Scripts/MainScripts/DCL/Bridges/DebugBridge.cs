@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Components;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -45,6 +46,11 @@ namespace DCL
             }
 
             Debug.unityLogger.logEnabled = prevLogValue;
+        }
+
+        public void SetDisableAssetBundles()
+        {
+            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
         }
     }
 }

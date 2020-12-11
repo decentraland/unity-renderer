@@ -56,7 +56,7 @@ namespace DCL
 
             if (mainCoroutine == null)
             {
-                mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages());
+                mainCoroutine = CoroutineStarter.Start(ProcessMessages());
             }
         }
 
@@ -152,7 +152,7 @@ namespace DCL
         {
             if (mainCoroutine != null)
             {
-                SceneController.i.StopCoroutine(mainCoroutine);
+                CoroutineStarter.Stop(mainCoroutine);
                 mainCoroutine = null;
             }
 
