@@ -986,6 +986,19 @@ namespace DCL.Controllers
                     newComponent = new DCLName(this);
                     break;
                 }
+
+                case CLASS_ID.LOCKED_ON_EDIT:
+                {
+                    newComponent = new DCLLockedOnEdit(this);
+                    break;
+                }
+
+                case CLASS_ID.VISIBLE_ON_EDIT:
+                {
+                    newComponent = new DCLVisibleOnEdit(this);
+                    break;
+                }
+
                 default:
                     Debug.LogError($"Unknown classId");
                     break;
