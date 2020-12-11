@@ -13,6 +13,7 @@ import {
 import { Component, ComponentData, ComponentId, EntityId, StatefulActor } from './types'
 import { EventSubscriber } from 'decentraland-rpc'
 import { generatePBObjectJSON } from 'scene-system/sdk/Utils'
+import { DeploymentResult } from 'shared/apis/SceneStateStorageController/types'
 
 export class RendererStatefulActor extends StatefulActor {
   private readonly eventSubscriber: EventSubscriber
@@ -110,6 +111,10 @@ export class RendererStatefulActor extends StatefulActor {
         listener(payload.entityId, payload.componentId)
       }
     })
+  }
+
+  informPublishResult(result: DeploymentResult) {
+    this.engine.sendBatch([{ type: 'PublishSceneResult', payload: result }])
   }
 
   private mapComponentToActions(entityId: EntityId, componentId: ComponentId, data: ComponentData): EntityAction[] {

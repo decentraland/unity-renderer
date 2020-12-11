@@ -32,5 +32,19 @@ namespace DCL
         {
             Environment.i.debugController.SetEngineDebugPanel();
         }
+
+        public void DumpScenesLoadInfo()
+        {
+            bool prevLogValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            foreach (var scene in DCL.Environment.i.worldState.loadedScenes)
+            {
+                Debug.Log("Dumping state for scene: " + scene.Value.sceneData.id);
+                scene.Value.GetWaitingComponentsDebugInfo();
+            }
+
+            Debug.unityLogger.logEnabled = prevLogValue;
+        }
     }
 }

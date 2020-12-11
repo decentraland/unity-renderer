@@ -65,6 +65,7 @@ export type EntityActionType =
   | 'InitMessagesFinished'
   | 'OpenExternalUrl'
   | 'OpenNFTDialog'
+  | 'PublishSceneResult'
 
 export type QueryPayload = { queryId: string; payload: RayQuery }
 
@@ -420,7 +421,9 @@ export enum HUDElementID {
   HELP_AND_SUPPORT_HUD = 20,
   EMAIL_PROMPT = 21,
   USERS_AROUND_LIST_HUD = 22,
-  GRAPHIC_CARD_WARNING = 23
+  GRAPHIC_CARD_WARNING = 23,
+  BUILD_MODE = 24,
+  SETTINGS_PANEL = 25
 }
 
 export type HUDConfiguration = {
