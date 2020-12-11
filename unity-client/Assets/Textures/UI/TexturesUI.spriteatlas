@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2628846
+    totalSpriteSurfaceArea: 2632942
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -190,6 +190,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0829529b4cd624727a16edcc165c4a97, type: 3}
   - {fileID: 21300000, guid: 01894c9b0e4cc4d15a7f0fe26505e2c9, type: 3}
   - {fileID: 21300000, guid: f3e766ab5571e436ebb74c06db87db7b, type: 3}
+  - {fileID: 21300000, guid: 7bfca4cb270a343c682028817c0d5bf4, type: 3}
   - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
   - {fileID: 21300000, guid: 64b96cebc797f4e75ad10e05ff68466f, type: 3}
@@ -356,6 +357,7 @@ SpriteAtlas:
   - Button8
   - RectRadius12
   - ToggleCheckOff
+  - SettingsIcon
   - Compass
   - BackpackIconNew
   - ChatIcon

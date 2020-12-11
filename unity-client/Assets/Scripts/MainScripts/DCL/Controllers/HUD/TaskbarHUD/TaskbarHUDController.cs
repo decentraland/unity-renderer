@@ -67,6 +67,8 @@ public class TaskbarHUDController : IHUD
         view.OnChatToggleOn += View_OnChatToggleOn;
         view.OnFriendsToggleOff += View_OnFriendsToggleOff;
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
+        view.OnSettingsToggleOff += View_OnSettingsToggleOff;
+        view.OnSettingsToggleOn += View_OnSettingsToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
 
@@ -156,6 +158,24 @@ public class TaskbarHUDController : IHUD
             return;
 
         OpenPrivateChatWindow(head.profile.userId);
+    }
+
+    private void View_OnSettingsToggleOn()
+    {
+        if (useNewSettings)
+            settingsPanelHud.SetVisibility(true);
+        else
+            settingsHud.SetVisibility(true);
+
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnSettingsToggleOff()
+    {
+        if (useNewSettings)
+            settingsPanelHud.SetVisibility(false);
+        else
+            settingsHud.SetVisibility(false);
     }
 
     private void View_OnExploreToggleOn()
@@ -303,8 +323,19 @@ public class TaskbarHUDController : IHUD
 
         settingsHud = controller;
         view.OnAddSettingsWindow();
+        settingsHud.OnOpen += () =>
+        {
+            view.settingsButton.SetToggleState(true, false);
+            view.exploreButton.SetToggleState(false);
+        };
         settingsHud.OnClose += () =>
         {
+            view.settingsButton.SetToggleState(false, false);
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
+        };
+        settingsHud.OnClose += () =>
+        {
+            view.settingsButton.SetToggleState(false, false);
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
 
@@ -321,8 +352,14 @@ public class TaskbarHUDController : IHUD
 
         settingsPanelHud = controller;
         view.OnAddSettingsWindow();
+        settingsPanelHud.OnOpen += () =>
+        {
+            view.settingsButton.SetToggleState(true, false);
+            view.exploreButton.SetToggleState(false);
+        };
         settingsPanelHud.OnClose += () =>
         {
+            view.settingsButton.SetToggleState(false, false);
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
 
@@ -339,6 +376,11 @@ public class TaskbarHUDController : IHUD
 
         exploreHud = controller;
         view.OnAddExploreWindow();
+        exploreHud.OnOpen += () =>
+        {
+            view.exploreButton.SetToggleState(true, false);
+            view.settingsButton.SetToggleState(false);
+        };
         exploreHud.OnClose += () =>
         {
             view.exploreButton.SetToggleState(false, false);
@@ -397,6 +439,8 @@ public class TaskbarHUDController : IHUD
             view.OnChatToggleOn -= View_OnChatToggleOn;
             view.OnFriendsToggleOff -= View_OnFriendsToggleOff;
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
+            view.OnSettingsToggleOff -= View_OnSettingsToggleOff;
+            view.OnSettingsToggleOn -= View_OnSettingsToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
 

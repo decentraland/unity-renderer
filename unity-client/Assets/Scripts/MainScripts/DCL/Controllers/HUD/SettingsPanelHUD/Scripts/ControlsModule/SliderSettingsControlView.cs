@@ -14,14 +14,14 @@ namespace DCL.SettingsPanelHUD.Controls
 
         public Slider sliderControl => slider;
 
-        private SliderControlModel controlConfig;
+        private SliderControlModel sliderControlConfig;
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
-            this.controlConfig = (SliderControlModel)controlConfig;
-            slider.maxValue = this.controlConfig.sliderMaxValue;
-            slider.minValue = this.controlConfig.sliderMinValue;
-            slider.wholeNumbers = this.controlConfig.sliderWholeNumbers;
+            this.sliderControlConfig = (SliderControlModel)controlConfig;
+            slider.maxValue = this.sliderControlConfig.sliderMaxValue;
+            slider.minValue = this.sliderControlConfig.sliderMinValue;
+            slider.wholeNumbers = this.sliderControlConfig.sliderWholeNumbers;
 
             base.Initialize(controlConfig, settingsControlController);
 

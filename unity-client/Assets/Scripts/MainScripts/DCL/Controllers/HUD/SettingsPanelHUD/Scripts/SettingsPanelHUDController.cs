@@ -65,6 +65,7 @@ namespace DCL.SettingsPanelHUD
     {
         public SettingsPanelHUDView view { get; private set; }
 
+        public event System.Action OnOpen;
         public event System.Action OnClose;
 
         public List<ISettingsSectionView> sections { get; } = new List<ISettingsSectionView>();
@@ -87,6 +88,10 @@ namespace DCL.SettingsPanelHUD
             if (!visible && view.isOpen)
             {
                 OnClose?.Invoke();
+            }
+            else if (visible && !view.isOpen)
+            {
+                OnOpen?.Invoke();
             }
 
             view.SetVisibility(visible);

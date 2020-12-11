@@ -21,7 +21,6 @@ public class TaskbarMoreMenu : MonoBehaviour
 
     [SerializeField] internal Button controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
-    [SerializeField] internal Button settingsButton;
     [SerializeField] internal Button helpAndSupportButton;
     [SerializeField] internal Button tutorialButton;
     [SerializeField] internal Button dayModeButton;
@@ -41,7 +40,6 @@ public class TaskbarMoreMenu : MonoBehaviour
         collapseBarButton.gameObject.SetActive(true);
         hideUIButton.gameObject.SetActive(true);
         controlsButton.gameObject.SetActive(false);
-        settingsButton.gameObject.SetActive(false);
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
 
@@ -102,21 +100,6 @@ public class TaskbarMoreMenu : MonoBehaviour
         controlsButton.onClick.AddListener(() =>
         {
             controlsToggleAction.RaiseOnTriggered();
-            view.moreButton.SetToggleState(false);
-        });
-    }
-
-    internal void ActivateSettingsButton()
-    {
-        settingsButton.gameObject.SetActive(true);
-
-        settingsButton.onClick.AddListener(() =>
-        {
-            if (view.controller.useNewSettings)
-                view.controller.settingsPanelHud.SetVisibility(true);
-            else
-                view.controller.settingsHud.SetVisibility(true);
-
             view.moreButton.SetToggleState(false);
         });
     }
