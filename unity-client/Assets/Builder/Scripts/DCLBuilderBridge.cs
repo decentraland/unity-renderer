@@ -274,7 +274,7 @@ namespace Builder
         public void UnloadBuilderScene(string sceneKey)
         {
             if (LOG_MESSAGES) Debug.Log($"RECEIVE: UnloadBuilderScene {sceneKey}");
-            SceneController.i?.UnloadScene(sceneKey);
+            Environment.i.sceneController.UnloadScene(sceneKey);
         }
 
         public void SetSelectedEntities(string msj)

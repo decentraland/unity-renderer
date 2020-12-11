@@ -11,8 +11,8 @@ public class NFTPromptHUDController : IHUD
         view.name = "_NFTPromptHUD";
         view.content.SetActive(false);
 
-        if (SceneController.i != null)
-            SceneController.i.OnOpenNFTDialogRequest += OpenNftInfoDialog;
+        if (Environment.i.sceneController != null)
+            Environment.i.sceneController.OnOpenNFTDialogRequest += OpenNftInfoDialog;
     }
 
     public void OpenNftInfoDialog(string assetContractAddress, string tokenId, string comment)
@@ -37,7 +37,7 @@ public class NFTPromptHUDController : IHUD
             Object.Destroy(view.gameObject);
         }
 
-        if (SceneController.i != null)
-            SceneController.i.OnOpenNFTDialogRequest -= OpenNftInfoDialog;
+        if (Environment.i != null)
+            Environment.i.sceneController.OnOpenNFTDialogRequest -= OpenNftInfoDialog;
     }
 }

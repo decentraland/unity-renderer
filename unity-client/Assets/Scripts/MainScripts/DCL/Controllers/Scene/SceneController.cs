@@ -15,8 +15,6 @@ namespace DCL
 {
     public class SceneController : IMessageProcessHandler, IMessageQueueHandler
     {
-        public static SceneController i => Environment.i != null ? Environment.i.sceneController : null;
-
         public static bool VERBOSE = false;
 
         //======================================================================

@@ -81,7 +81,7 @@ public class TestsBase
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
-        TestHelpers.ForceUnloadAllScenes(SceneController.i);
+        TestHelpers.ForceUnloadAllScenes(Environment.i.sceneController);
 
         Environment.i.Cleanup();
 

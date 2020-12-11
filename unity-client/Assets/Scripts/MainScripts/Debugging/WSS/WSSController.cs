@@ -278,25 +278,25 @@ namespace DCL
                                 DCL.Environment.i.debugController.SetEngineDebugPanel();
                                 break;
                             case "SendSceneMessage":
-                                SceneController.i.SendSceneMessage(msg.payload);
+                                DCL.Environment.i.sceneController.SendSceneMessage(msg.payload);
                                 break;
                             case "LoadParcelScenes":
-                                SceneController.i.LoadParcelScenes(msg.payload);
+                                DCL.Environment.i.sceneController.LoadParcelScenes(msg.payload);
                                 break;
                             case "UnloadScene":
-                                SceneController.i.UnloadScene(msg.payload);
+                                DCL.Environment.i.sceneController.UnloadScene(msg.payload);
                                 break;
                             case "Reset":
-                                SceneController.i.UnloadAllScenesQueued();
+                                DCL.Environment.i.sceneController.UnloadAllScenesQueued();
                                 break;
                             case "CreateUIScene":
-                                SceneController.i.CreateUIScene(msg.payload);
+                                DCL.Environment.i.sceneController.CreateUIScene(msg.payload);
                                 break;
                             case "BuilderReady":
                                 Main.i.BuilderReady();
                                 break;
                             case "UpdateParcelScenes":
-                                SceneController.i.UpdateParcelScenes(msg.payload);
+                                DCL.Environment.i.sceneController.UpdateParcelScenes(msg.payload);
                                 break;
                             case "Teleport":
                                 characterController.Teleport(msg.payload);

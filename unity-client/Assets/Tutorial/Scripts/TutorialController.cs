@@ -46,44 +46,76 @@ namespace DCL.Tutorial
 
         public int currentStepIndex { get; private set; }
 
-        [Header("General Configuration")] [SerializeField]
+        [Header("General Configuration")]
+        [SerializeField]
         internal int tutorialVersion = 1;
 
-        [SerializeField] internal float timeBetweenSteps = 0.5f;
-        [SerializeField] internal bool sendStats = true;
+        [SerializeField]
+        internal float timeBetweenSteps = 0.5f;
 
-        [Header("Tutorial Steps on Genesis Plaza")] [SerializeField]
+        [SerializeField]
+        internal bool sendStats = true;
+
+        [Header("Tutorial Steps on Genesis Plaza")]
+        [SerializeField]
         internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Deep Link")] [SerializeField]
+        [Header("Tutorial Steps from Deep Link")]
+        [SerializeField]
         internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Reset Tutorial")] [SerializeField]
+        [Header("Tutorial Steps from Reset Tutorial")]
+        [SerializeField]
         internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
 
-        [Header("Tutorial Steps from Builder In World")] [SerializeField]
+        [Header("Tutorial Steps from Builder In World")]
+        [SerializeField]
         internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
 
-        [Header("3D Model Teacher")] [SerializeField]
+        [Header("3D Model Teacher")]
+        [SerializeField]
         internal Camera teacherCamera;
 
-        [SerializeField] internal RawImage teacherRawImage;
-        [SerializeField] internal TutorialTeacher teacher;
-        [SerializeField] internal float teacherMovementSpeed = 4f;
-        [SerializeField] internal AnimationCurve teacherMovementCurve;
-        [SerializeField] internal Canvas teacherCanvas;
+        [SerializeField]
+        internal RawImage teacherRawImage;
 
-        [Header("Eagle Eye Camera")] [SerializeField]
+        [SerializeField]
+        internal TutorialTeacher teacher;
+
+        [SerializeField]
+        internal float teacherMovementSpeed = 4f;
+
+        [SerializeField]
+        internal AnimationCurve teacherMovementCurve;
+
+        [SerializeField]
+        internal Canvas teacherCanvas;
+
+        [Header("Eagle Eye Camera")]
+        [SerializeField]
         internal CinemachineVirtualCamera eagleEyeCamera;
 
-        [SerializeField] internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
-        [SerializeField] internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
-        [SerializeField] internal bool eagleCamRotationActived = true;
-        [SerializeField] internal float eagleCamRotationSpeed = 1f;
+        [SerializeField]
+        internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
 
-        [Header("Debugging")] [SerializeField] internal bool debugRunTutorial = false;
-        [SerializeField] internal int debugStartingStepIndex;
-        [SerializeField] internal bool debugOpenedFromDeepLink = false;
+        [SerializeField]
+        internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
+
+        [SerializeField]
+        internal bool eagleCamRotationActived = true;
+
+        [SerializeField]
+        internal float eagleCamRotationSpeed = 1f;
+
+        [Header("Debugging")]
+        [SerializeField]
+        internal bool debugRunTutorial = false;
+
+        [SerializeField]
+        internal int debugStartingStepIndex;
+
+        [SerializeField]
+        internal bool debugOpenedFromDeepLink = false;
 
         internal bool isRunning = false;
         internal bool openedFromDeepLink = false;
@@ -197,7 +229,7 @@ namespace DCL.Tutorial
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
-            if (SceneController.i != null)
+            if (Environment.i != null)
             {
                 WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "end");
             }
