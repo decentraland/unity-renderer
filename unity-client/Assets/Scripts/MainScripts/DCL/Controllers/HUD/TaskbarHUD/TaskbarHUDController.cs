@@ -15,7 +15,7 @@ public class TaskbarHUDController : IHUD
     public struct Configuration
     {
         public bool enableVoiceChat;
-        public bool enableNewSettings; // TODO (Santi): Remove once the new Settings HUD is implemented
+        public bool enableOldSettings; // TODO (Santi): Remove once the new Settings HUD is implemented
     }
 
     public TaskbarHUDView view;
