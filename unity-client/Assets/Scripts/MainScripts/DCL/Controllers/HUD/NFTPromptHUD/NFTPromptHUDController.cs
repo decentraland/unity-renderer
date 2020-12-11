@@ -11,7 +11,7 @@ public class NFTPromptHUDController : IHUD
         view.name = "_NFTPromptHUD";
         view.content.SetActive(false);
 
-        if (SceneController.i)
+        if (SceneController.i != null)
             SceneController.i.OnOpenNFTDialogRequest += OpenNftInfoDialog;
     }
 
@@ -36,8 +36,8 @@ public class NFTPromptHUDController : IHUD
         {
             Object.Destroy(view.gameObject);
         }
-        if (SceneController.i)
+
+        if (SceneController.i != null)
             SceneController.i.OnOpenNFTDialogRequest -= OpenNftInfoDialog;
     }
-
 }

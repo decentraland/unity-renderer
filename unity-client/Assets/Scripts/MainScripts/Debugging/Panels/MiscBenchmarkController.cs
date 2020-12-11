@@ -82,6 +82,8 @@ namespace DCL
             statsPanel.SetCellText(0, (int) Rows.MESSAGE_BUSES, MESSAGES_BUSES_TEXT);
         }
 
+        private Coroutine updateCoroutine;
+
         public void StartProfiling()
         {
             if (enabled)
@@ -94,7 +96,7 @@ namespace DCL
                 Init();
             }
 
-            SceneController.i.StartCoroutine(RefreshProfilingData());
+            updateCoroutine = CoroutineStarter.Start(RefreshProfilingData());
             enabled = true;
         }
 
@@ -105,7 +107,7 @@ namespace DCL
                 return;
             }
 
-            SceneController.i.StopCoroutine(RefreshProfilingData());
+            CoroutineStarter.Stop(updateCoroutine);
             enabled = false;
         }
 

@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -350,7 +350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1387384965948666, guid: b387035aa46399445bdc7951a41d5213, type: 3}
       propertyPath: m_Name
-      value: SceneController
+      value: Main
       objectReference: {fileID: 0}
     - target: {fileID: 4276559848798084, guid: b387035aa46399445bdc7951a41d5213, type: 3}
       propertyPath: m_LocalPosition.x
@@ -398,18 +398,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b387035aa46399445bdc7951a41d5213, type: 3}
---- !u!114 &322303338 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114754758112584508, guid: b387035aa46399445bdc7951a41d5213,
-    type: 3}
-  m_PrefabInstance: {fileID: 322303337}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 684a81b0389327548a0bf5ed9d645d2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &322303339 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1629508456149027013, guid: b387035aa46399445bdc7951a41d5213,
@@ -1101,7 +1089,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b5e6e1eec417844b92edd6ca2f8a2b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneController: {fileID: 322303338}
   renderingController: {fileID: 322303339}
   characterController: {fileID: 1989862556}
   cameraController: {fileID: 1608366483}

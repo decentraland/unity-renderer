@@ -15,6 +15,7 @@ using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
+using Object = System.Object;
 
 namespace DCL.Helpers
 {
@@ -1098,28 +1099,28 @@ namespace DCL.Helpers
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
-            var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
+            var main = UnityEngine.Object.FindObjectOfType<Main>();
 
-            if (sceneController != null && sceneController.componentFactory == null)
+            if (main != null && main.componentFactory == null)
             {
-                ForceUnloadAllScenes(sceneController);
-                Utils.SafeDestroy(sceneController);
-                sceneController = null;
+                ForceUnloadAllScenes(main.sceneController);
+                Utils.SafeDestroy(main);
+                main = null;
             }
 
-            if (sceneController == null)
+            if (main == null)
             {
                 GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
-                sceneController = GO.GetComponent<SceneController>();
+                main = GO.GetComponent<Main>();
             }
             else
             {
-                sceneController.Restart();
+                main.sceneController.Restart();
             }
 
             if (usesWebServer)
             {
-                var webServer = sceneController.GetComponent<WebServerComponent>();
+                var webServer = main.GetComponent<WebServerComponent>();
 
                 if (webServer != null)
                 {
@@ -1127,18 +1128,18 @@ namespace DCL.Helpers
                 }
                 else
                 {
-                    sceneController.gameObject.AddComponent<WebServerComponent>();
+                    main.gameObject.AddComponent<WebServerComponent>();
                 }
             }
 
             Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
-            sceneController.deferredMessagesDecoding = false;
-            sceneController.prewarmSceneMessagesPool = false;
+            main.sceneController.deferredMessagesDecoding = false;
+            main.sceneController.prewarmSceneMessagesPool = false;
 
-            ForceUnloadAllScenes(sceneController);
+            ForceUnloadAllScenes(main.sceneController);
 
-            return sceneController;
+            return main.sceneController;
         }
 
         // static string lastMessageFromEngineType;
