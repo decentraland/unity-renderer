@@ -313,7 +313,7 @@ public class HUDController : MonoBehaviour
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
-                        bool addNewSettingsHUD = false;
+                        bool addOldSettingsHUD = false;
                         if (!string.IsNullOrEmpty(extraPayload))
                         {
                             var config = JsonUtility.FromJson<TaskbarHUDController.Configuration>(extraPayload);
@@ -323,13 +323,13 @@ public class HUDController : MonoBehaviour
                             }
 
                             // TODO (Santi): Remove once the new Settings HUD is implemented
-                            addNewSettingsHUD = config.enableNewSettings;
+                            addOldSettingsHUD = config.enableOldSettings;
                         }
 
-                        if (addNewSettingsHUD)
-                            taskbarHud.AddSettingsWindow(settingsPanelHud);
-                        else
+                        if (addOldSettingsHUD)
                             taskbarHud.AddSettingsWindow(settingsHud);
+                        else
+                            taskbarHud.AddSettingsWindow(settingsPanelHud);
                     }
                 }
                 else
