@@ -1251,7 +1251,6 @@ namespace DCL.Controllers
             }
         }
 
-#if UNITY_EDITOR
         [ContextMenu("Get Waiting Components Debug Info")]
         public void GetWaitingComponentsDebugInfo()
         {
@@ -1294,6 +1293,5 @@ namespace DCL.Controllers
                     break;
             }
         }
-#endif
     }
 }

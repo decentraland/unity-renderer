@@ -6,7 +6,7 @@ import { Authenticator } from 'dcl-crypto'
 import { ExposableAPI } from '../ExposableAPI'
 import { defaultLogger } from '../../logger'
 import { DEBUG } from '../../../config'
-import { CONTENT_PATH, SerializedSceneState } from './types'
+import { CONTENT_PATH, DeploymentResult, SerializedSceneState } from './types'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { Asset, AssetId, AssetManager } from './AssetManager'
 import {
@@ -28,15 +28,13 @@ export class SceneStateStorageController extends ExposableAPI {
   private parcelIdentity = this.options.getAPIInstance(ParcelIdentity)
 
   @exposeMethod
-  async storeState(sceneId: string, sceneState: SerializedSceneState): Promise<void> {
+  async storeState(sceneId: string, sceneState: SerializedSceneState): Promise<DeploymentResult> {
     // Convert to storable format
     const storableFormat = fromSerializedStateToStorableFormat(sceneState)
 
     if (DEBUG) {
       saveToLocalStorage(`scene-state-${sceneId}`, storableFormat)
-
-      // TODO: Let the renderer know that the deployment was successful
-      return
+      return { ok: true }
     }
 
     try {
@@ -61,12 +59,8 @@ export class SceneStateStorageController extends ExposableAPI {
       ])
 
       // Build the entity
-      const { files, entityId } = await DeploymentBuilder.buildEntity(
-        EntityType.SCENE,
-        this.getParcels(),
-        entityFiles,
-        sceneJson
-      )
+      const parcels = this.getParcels()
+      const { files, entityId } = await DeploymentBuilder.buildEntity(EntityType.SCENE, parcels, entityFiles, sceneJson)
 
       // Sign entity id
       const store: Store<RootState> = window['globalStore']
@@ -80,11 +74,10 @@ export class SceneStateStorageController extends ExposableAPI {
       const contentClient = this.getContentClient()
       await contentClient.deployEntity({ files, entityId, authChain })
 
-      // TODO: Let the renderer know that the deployment was successful
-    } catch (e) {
-      defaultLogger.error('Deployment failed', e)
-
-      // TODO: Let the renderer know that the deployment was unsuccessful
+      return { ok: true }
+    } catch (error) {
+      defaultLogger.error('Deployment failed', error)
+      return { ok: false, error: `${error}` }
     }
   }
 

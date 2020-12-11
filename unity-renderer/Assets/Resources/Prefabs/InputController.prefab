@@ -63,6 +63,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960, type: 2}
   - {fileID: 11400000, guid: cc2c99abe33848af5819b363546ec09f, type: 2}
   - {fileID: 11400000, guid: 42ed2e1ec46cf7144b0bbfd566135c55, type: 2}
+  - {fileID: 11400000, guid: 6f31c2fc30264d64db048fa133946cfa, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}

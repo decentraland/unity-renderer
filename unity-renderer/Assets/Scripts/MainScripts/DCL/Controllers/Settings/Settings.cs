@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 namespace DCL
@@ -68,13 +68,7 @@ namespace DCL
 
         private void LoadGeneralSettings()
         {
-            currentGeneralSettings = new SettingsData.GeneralSettings()
-            {
-                sfxVolume = 1,
-                mouseSensitivity = 0.6f,
-                voiceChatVolume = 1,
-                voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS
-            };
+            currentGeneralSettings = GetDefaultGeneralSettings();
 
             if (PlayerPrefs.HasKey(GENERAL_SETTINGS_KEY))
             {
@@ -89,6 +83,28 @@ namespace DCL
                     Debug.Log(e.Message);
                 }
             }
+        }
+
+        public void LoadDefaultSettings()
+        {
+            autosettingsEnabled.Set(false);
+            currentQualitySettings = qualitySettingsPreset.defaultPreset;
+            currentGeneralSettings = GetDefaultGeneralSettings();
+
+            ApplyQualitySettings(currentQualitySettings);
+            ApplyGeneralSettings(currentGeneralSettings);
+        }
+
+        private SettingsData.GeneralSettings GetDefaultGeneralSettings()
+        {
+            return new SettingsData.GeneralSettings()
+            {
+                sfxVolume = 1,
+                mouseSensitivity = 0.6f,
+                voiceChatVolume = 1,
+                voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS,
+                autoqualityOn = false
+            };
         }
 
         /// <summary>

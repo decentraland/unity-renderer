@@ -41,7 +41,7 @@ MonoBehaviour:
     colorGrading: 1
     shadowDistance: 45
     enableDetailObjectCulling: 1
-    detailObjectCullingThreshold: 53.5
+    detailObjectCullingThreshold: 54
   - displayName: High
     baseResolution: 2
     antiAliasing: 2

@@ -4,6 +4,7 @@ using DCL.HelpAndSupportHUD;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.SettingsHUD;
+using DCL.SettingsPanelHUD;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,13 +15,15 @@ public class TaskbarHUDController : IHUD
     public struct Configuration
     {
         public bool enableVoiceChat;
+        public bool enableNewSettings; // TODO (Santi): Remove once the new Settings HUD is implemented
     }
 
     public TaskbarHUDView view;
     public WorldChatWindowHUDController worldChatWindowHud;
     public PrivateChatWindowHUDController privateChatWindowHud;
     public FriendsHUDController friendsHud;
-    public SettingsHUDController settingsHud;
+    public SettingsHUDController settingsHud; // TODO (Santi): Remove once the new Settings HUD is implemented
+    public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
     public HelpAndSupportHUDController helpAndSupportHud;
 
@@ -36,6 +39,9 @@ public class TaskbarHUDController : IHUD
     public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
     public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
     public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
+
+    // TODO (Santi): Remove once the new Settings HUD is implemented
+    public bool useNewSettings { get; private set; }
 
     public void Initialize(IMouseCatcher mouseCatcher, IChatController chatController, IFriendsController friendsController)
     {
@@ -286,6 +292,7 @@ public class TaskbarHUDController : IHUD
         friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
+    // TODO (Santi): Remove once the new Settings HUD is implemented
     public void AddSettingsWindow(SettingsHUDController controller)
     {
         if (controller == null)
@@ -300,6 +307,26 @@ public class TaskbarHUDController : IHUD
         {
             MarkWorldChatAsReadIfOtherWindowIsOpen();
         };
+
+        useNewSettings = false;
+    }
+
+    public void AddSettingsWindow(SettingsPanelHUDController controller)
+    {
+        if (controller == null)
+        {
+            Debug.LogWarning("AddSettingsWindow >>> Settings window doesn't exist yet!");
+            return;
+        }
+
+        settingsPanelHud = controller;
+        view.OnAddSettingsWindow();
+        settingsPanelHud.OnClose += () =>
+        {
+            MarkWorldChatAsReadIfOtherWindowIsOpen();
+        };
+
+        useNewSettings = true;
     }
 
     public void AddExploreWindow(ExploreHUDController controller)
