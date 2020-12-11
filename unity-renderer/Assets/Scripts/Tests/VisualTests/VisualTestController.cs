@@ -38,7 +38,7 @@ public class VisualTestController : MonoBehaviour
 
     IEnumerator InstantiateTestedObjects()
     {
-        var sceneController = FindObjectOfType<Main>().sceneController;
+        var sceneController = Environment.i.sceneController;
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
         sceneController.UnloadAllScenes();

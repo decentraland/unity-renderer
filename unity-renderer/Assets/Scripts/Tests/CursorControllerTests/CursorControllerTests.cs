@@ -17,6 +17,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            Environment.i.sceneController.SortScenesByDistance();
             sceneInitialized = false;
         }
 

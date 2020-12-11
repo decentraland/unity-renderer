@@ -1103,7 +1103,7 @@ namespace DCL.Helpers
 
             if (main != null && main.componentFactory == null)
             {
-                ForceUnloadAllScenes(main.sceneController);
+                ForceUnloadAllScenes(Environment.i.sceneController);
                 Utils.SafeDestroy(main);
                 main = null;
             }
@@ -1115,7 +1115,7 @@ namespace DCL.Helpers
             }
             else
             {
-                main.sceneController.Restart();
+                Environment.i.Restart();
             }
 
             if (usesWebServer)
@@ -1134,12 +1134,12 @@ namespace DCL.Helpers
 
             Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
-            main.sceneController.deferredMessagesDecoding = false;
-            main.sceneController.prewarmSceneMessagesPool = false;
+            Environment.i.sceneController.deferredMessagesDecoding = false;
+            Environment.i.sceneController.prewarmSceneMessagesPool = false;
 
-            ForceUnloadAllScenes(main.sceneController);
+            ForceUnloadAllScenes(Environment.i.sceneController);
 
-            return main.sceneController;
+            return Environment.i.sceneController;
         }
 
         // static string lastMessageFromEngineType;

@@ -53,8 +53,11 @@ namespace DCL
             bool uiIsBlocking = false;
             string currentSceneId = worldState.currentSceneId;
 
+            bool validCurrentSceneId = !string.IsNullOrEmpty(currentSceneId);
+            bool validCurrentScene = validCurrentSceneId && worldState.loadedScenes.ContainsKey(currentSceneId);
+
             // NOTE: in case of a single scene loaded (preview or builder) sceneId is set to null when stepping outside
-            if (!string.IsNullOrEmpty(currentSceneId) && didHit && worldState.loadedScenes.ContainsKey(currentSceneId))
+            if (didHit && validCurrentSceneId && validCurrentScene)
             {
                 GraphicRaycaster raycaster = worldState.loadedScenes[currentSceneId].uiScreenSpace?.graphicRaycaster;
                 if (raycaster)
@@ -62,7 +65,6 @@ namespace DCL
                     uiGraphicRaycastPointerEventData.position = new Vector2(Screen.width / 2, Screen.height / 2);
                     uiGraphicRaycastResults.Clear();
                     raycaster.Raycast(uiGraphicRaycastPointerEventData, uiGraphicRaycastResults);
-
                     uiIsBlocking = uiGraphicRaycastResults.Count > 0;
                 }
             }

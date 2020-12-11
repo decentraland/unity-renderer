@@ -15,7 +15,7 @@ namespace DCL
 {
     public class SceneController : IMessageProcessHandler, IMessageQueueHandler
     {
-        public static SceneController i => Main.i != null ? Main.i.sceneController : null;
+        public static SceneController i => Environment.i != null ? Environment.i.sceneController : null;
 
         public static bool VERBOSE = false;
 
@@ -26,16 +26,21 @@ namespace DCL
         //======================================================================
         private EntryPoint_World worldEntryPoint;
 
-        public DCLComponentFactory componentFactory;
+        public DCLComponentFactory componentFactory => Main.i.componentFactory;
 
         public bool enabled = true;
+        public bool initialized = false;
 
-        public void Initialize(DCLComponentFactory componentFactory)
+        public void Initialize()
         {
-            this.componentFactory = componentFactory;
+            if (initialized)
+                return;
 
-            RenderProfileManifest.i.Initialize();
-            Environment.i.Initialize(this);
+            sceneSortDirty = true;
+            positionDirty = true;
+            lastSortFrame = 0;
+            enabled = true;
+            initialized = true;
 
             Environment.i.debugController.OnDebugModeSet += OnDebugModeSet;
 
@@ -72,7 +77,7 @@ namespace DCL
         {
             //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
             //             case. Calling Initialize multiple times in a row is safe.
-            Environment.i.Initialize(this);
+            Environment.i.Initialize();
             Environment.i.worldBlockersController.SetEnabled(false);
             Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
@@ -95,15 +100,9 @@ namespace DCL
             componentFactory.PrewarmPools();
         }
 
-        public void Restart()
-        {
-            Environment.i.Restart(this);
-
-            Environment.i.parcelScenesCleaner.ForceCleanup();
-        }
-
         public void OnDestroy()
         {
+            initialized = false;
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
@@ -532,7 +531,7 @@ namespace DCL
             }
         }
 
-        private void SortScenesByDistance()
+        public void SortScenesByDistance()
         {
             if (DCLCharacterController.i == null) return;
 
@@ -540,6 +539,7 @@ namespace DCL
 
             worldState.currentSceneId = null;
             worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+            Debug.Log("SortScenesByDistance()");
 
             using (var iterator = Environment.i.worldState.scenesSortedByDistance.GetEnumerator())
             {
