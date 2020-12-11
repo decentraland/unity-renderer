@@ -1,6 +1,7 @@
 using DCL;
 using DCL.Components;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,9 +26,19 @@ public class DCLVisibleOnEdit : BaseDisposable
         model = new Model();
     }
 
+    public override int GetClassId()
+    {
+        return (int)CLASS_ID.VISIBLE_ON_EDIT;
+    }
+
+    public override object GetModel()
+    {
+        return model;
+    }
+
     public override IEnumerator ApplyChanges(string newJson)
     {
-        Model newModel = SceneController.i.SafeFromJson<Model>(newJson);
+        Model newModel = Utils.SafeFromJson<Model>(newJson);
         if (newModel.isVisible != model.isVisible)
         {
             model = newModel;
@@ -36,4 +47,6 @@ public class DCLVisibleOnEdit : BaseDisposable
 
         return null;
     }
+
+  
 }
