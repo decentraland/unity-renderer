@@ -12,7 +12,6 @@ namespace DCL.SettingsPanelHUD
     {
         [Header("General configuration")]
         [SerializeField] private GameObject mainWindow;
-        [SerializeField] private Transform blackOverlay;
 
         [Header("Sections configuration")]
         [SerializeField] private SettingsPanelModel settingsPanelConfig;
@@ -24,6 +23,7 @@ namespace DCL.SettingsPanelHUD
         [SerializeField] private ShowHideAnimator resetAllConfirmation;
         [SerializeField] private Button resetAllOkButton;
         [SerializeField] private Button resetAllCancelButton;
+        [SerializeField] private GameObject resetAllBlackOverlay;
 
         [Header("Open/Close Settings")]
         [SerializeField] private Button closeButton;
@@ -98,20 +98,20 @@ namespace DCL.SettingsPanelHUD
         private void ShowResetAllConfirmation()
         {
             resetAllConfirmation.Show();
-            blackOverlay.SetSiblingIndex(resetAllConfirmation.transform.GetSiblingIndex() - 1);
+            resetAllBlackOverlay.SetActive(true);
         }
 
         private void HideResetAllConfirmation()
         {
             resetAllConfirmation.Hide();
-            blackOverlay.SetSiblingIndex(0);
+            resetAllBlackOverlay.SetActive(false);
         }
 
         private void ResetAllSettings()
         {
             settingsPanelController.ResetAllSettings();
             resetAllConfirmation.Hide();
-            blackOverlay.SetSiblingIndex(0);
+            resetAllBlackOverlay.SetActive(false);
         }
 
         private void CloseSettingsPanel()
