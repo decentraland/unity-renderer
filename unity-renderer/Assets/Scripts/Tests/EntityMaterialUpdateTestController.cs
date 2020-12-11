@@ -8,7 +8,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 {
     void Start()
     {
-        var sceneController = SceneController.i;
+        var sceneController = Environment.i.sceneController;
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
         sceneController.UnloadAllScenes();

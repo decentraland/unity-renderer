@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using DCL.Interface;
 using DCL.Helpers;
+using Environment = DCL.Environment;
 
 public class ExternalUrlPromptHUDController : IHUD
 {
@@ -18,8 +19,8 @@ public class ExternalUrlPromptHUDController : IHUD
         view.name = "_ExternalUrlPromptHUD";
         view.content.SetActive(false);
 
-        if (SceneController.i != null)
-            SceneController.i.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
+        if (Environment.i != null)
+            Environment.i.sceneController.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
     }
 
     public void SetVisibility(bool visible)
@@ -43,8 +44,8 @@ public class ExternalUrlPromptHUDController : IHUD
 
     public void Dispose()
     {
-        if (SceneController.i != null)
-            SceneController.i.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
+        if (Environment.i != null)
+            Environment.i.sceneController.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
 
         trustedDomains.Clear();
 

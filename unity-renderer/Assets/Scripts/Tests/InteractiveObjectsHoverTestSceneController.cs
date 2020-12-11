@@ -55,7 +55,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
 
         yield return new WaitForSeconds(0.01f);
 
-        scene = SceneController.i.CreateTestScene();
+        scene = Environment.i.sceneController.CreateTestScene();
         yield return null;
     }
 }

@@ -38,11 +38,14 @@ namespace DCL.Controllers
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
 
-        [System.NonSerialized] public bool isTestScene = false;
+        [System.NonSerialized]
+        public bool isTestScene = false;
 
-        [System.NonSerialized] public bool isPersistent = false;
+        [System.NonSerialized]
+        public bool isPersistent = false;
 
-        [System.NonSerialized] public bool unloadWithDistance = true;
+        [System.NonSerialized]
+        public bool unloadWithDistance = true;
 
         public bool isReady => state == State.READY;
 
@@ -306,7 +309,7 @@ namespace DCL.Controllers
             var newEntity = new DecentralandEntity();
             newEntity.entityId = id;
 
-            SceneController.i.EnsureEntityPool();
+            Environment.i.sceneController.EnsureEntityPool();
 
             // As we know that the pool already exists, we just get one gameobject from it
             PoolableObject po = PoolManager.i.Get(SceneController.EMPTY_GO_POOL_NAME);
@@ -1236,7 +1239,7 @@ namespace DCL.Controllers
 
             state = State.READY;
 
-            SceneController.i.SendSceneReady(sceneData.id);
+            Environment.i.sceneController.SendSceneReady(sceneData.id);
             RefreshName();
 
             OnSceneReady?.Invoke(this);

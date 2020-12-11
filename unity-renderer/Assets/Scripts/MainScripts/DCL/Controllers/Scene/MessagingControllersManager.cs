@@ -52,7 +52,7 @@ namespace DCL
             if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
                 messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
 
-            SceneController.i.OnSortScenes += MarkBusesDirty;
+            Environment.i.sceneController.OnSortScenes += MarkBusesDirty;
 
             if (mainCoroutine == null)
             {
@@ -165,7 +165,7 @@ namespace DCL
                 }
             }
 
-            SceneController.i.OnSortScenes -= PopulateBusesToBeProcessed;
+            Environment.i.sceneController.OnSortScenes -= PopulateBusesToBeProcessed;
 
             messagingControllers.Clear();
         }

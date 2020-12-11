@@ -13,8 +13,11 @@ namespace DCL.Tutorial
     {
         private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
 
-        [SerializeField] Button okButton;
-        [SerializeField] TMP_Text titleText;
+        [SerializeField]
+        Button okButton;
+
+        [SerializeField]
+        TMP_Text titleText;
 
         private bool stepIsFinished = false;
         private int defaultTeacherCanvasSortOrder;
@@ -39,7 +42,7 @@ namespace DCL.Tutorial
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
                 tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(false);
 
-                if (SceneController.i != null)
+                if (Environment.i != null)
                 {
                     WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "begin");
                 }
