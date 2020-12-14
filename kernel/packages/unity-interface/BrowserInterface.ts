@@ -234,7 +234,7 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(saveProfileRequest(update))
   }
 
-  public async ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
+  public ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
     switch (eventType) {
       case 'SceneReady': {
         const { sceneId } = payload
@@ -260,7 +260,7 @@ export class BrowserInterface {
       }
       case 'StopStatefulMode': {
         const { sceneId } = payload
-        await reloadScene(sceneId)
+        reloadScene(sceneId).catch((error) => defaultLogger.warn(`Failed to stop stateful mode`, error))
         break
       }
       default: {

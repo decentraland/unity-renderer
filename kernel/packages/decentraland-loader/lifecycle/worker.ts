@@ -108,7 +108,7 @@ let downloadManager: SceneDataDownloadManager
         }
       })
 
-      connector.on('Scene.reload', async (data: { sceneId: string }) => {
+      connector.on('Scene.reload', (data: { sceneId: string }) => {
         sceneController.reloadScene(data.sceneId)
       })
 
