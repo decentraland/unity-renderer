@@ -537,7 +537,6 @@ namespace DCL
 
             worldState.currentSceneId = null;
             worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
-            Debug.Log("SortScenesByDistance()");
 
             using (var iterator = Environment.i.worldState.scenesSortedByDistance.GetEnumerator())
             {

@@ -25,6 +25,12 @@ namespace DCL.Components
 
         public static LoadWrapper GetLoaderForEntity(DecentralandEntity entity)
         {
+            if (entity.meshRootGameObject == null)
+            {
+                Debug.LogWarning("NULL meshRootGameObject at GetLoaderForEntity()");
+                return null;
+            }
+
             attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result);
             return result;
         }
@@ -118,7 +124,7 @@ namespace DCL.Components
             bool updateVisibility = previousModel.visible != model.visible;
             bool updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
             bool triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
-                                     (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId); 
+                                     (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
 
             foreach (var entity in attachedEntities)
             {
@@ -143,10 +149,10 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.assetId))
                 provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(model.assetId);
-                             
+
             if(provider == null)
                 provider = scene.contentProvider;
-            
+
             if (provider.HasContentsUrl(model.src))
             {
                 isLoaded = false;
@@ -156,7 +162,7 @@ namespace DCL.Components
 
                 if(loadableShape is LoadWrapper_GLTF gltfLoadWrapper)
                     gltfLoadWrapper.customContentProvider = provider;
-                
+
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
