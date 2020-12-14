@@ -45,13 +45,13 @@ import { startRealmsReportToRenderer } from 'unity-interface/realmsForRenderer'
 
 const logger = createLogger('website.ts: ')
 
-function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean) {
+function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean, useOldSettings: boolean) {
   i.ConfigureHUDElement(
     HUDElementID.TASKBAR,
     { active: true, visible: true },
     {
       enableVoiceChat: voiceChatEnabled,
-      enableOldSettings: ENABLE_OLD_SETTINGS
+      enableOldSettings: useOldSettings
     }
   )
   i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
@@ -91,6 +91,9 @@ namespace webApp {
 
   export async function loadUnity({ instancedJS }: InitializeUnityResult) {
     const i = (await instancedJS).unityInterface
+    const worldConfig: WorldConfig | undefined = globalThis.globalStore.getState().meta.config.world
+    const useOldSettings = worldConfig ? (worldConfig.enableOldSettings ?? ENABLE_OLD_SETTINGS) : ENABLE_OLD_SETTINGS
+    const renderProfile = worldConfig ? (worldConfig.renderProfile ?? RenderProfile.DEFAULT) : RenderProfile.DEFAULT
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
@@ -98,8 +101,8 @@ namespace webApp {
       active: true,
       visible: OPEN_AVATAR_EDITOR
     })
-    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: ENABLE_OLD_SETTINGS, visible: false })
-    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: !ENABLE_OLD_SETTINGS, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: useOldSettings, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: !useOldSettings, visible: false })
     i.ConfigureHUDElement(HUDElementID.EXPRESSIONS, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.PLAYER_INFO_CARD, {
       active: true,
@@ -127,7 +130,7 @@ namespace webApp {
         configForRenderer.comms.voiceChatEnabled = voiceChatEnabled
         i.SetKernelConfiguration(configForRenderer)
 
-        configureTaskbarDependentHUD(i, voiceChatEnabled)
+        configureTaskbarDependentHUD(i, voiceChatEnabled, useOldSettings)
 
         i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
         i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
@@ -150,7 +153,7 @@ namespace webApp {
       })
       .catch((e) => {
         logger.error('error on configuring taskbar & friends hud / tutorial. Trying to default to simple taskbar', e)
-        configureTaskbarDependentHUD(i, false)
+        configureTaskbarDependentHUD(i, false, useOldSettings)
       })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
@@ -164,13 +167,7 @@ namespace webApp {
 
     await ensureMetaConfigurationInitialized()
 
-    let worldConfig: WorldConfig = globalThis.globalStore.getState().meta.config.world!
-
-    if (worldConfig.renderProfile) {
-      i.SetRenderProfile(worldConfig.renderProfile)
-    } else {
-      i.SetRenderProfile(RenderProfile.DEFAULT)
-    }
+    i.SetRenderProfile(renderProfile)
 
     if (isForeground()) {
       i.ReportFocusOn()
