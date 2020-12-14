@@ -445,6 +445,12 @@ namespace DCL
                             case "SetPlayerTalking":
                                 HUDController.i.SetPlayerTalking(msg.payload);
                                 break;
+                            case "SetVoiceChatEnabledByScene":
+                                if (int.TryParse(msg.payload, out int value))
+                                {
+                                    HUDController.i.SetVoiceChatEnabledByScene(value);
+                                }
+                                break;
                             case "SetRenderProfile":
                                 RenderProfileBridge.i.SetRenderProfile(msg.payload);
                                 break;

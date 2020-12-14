@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2632942
+    totalSpriteSurfaceArea: 2659733
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -137,6 +137,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0771864752bc141ab96ff9dcc751419d, type: 3}
   - {fileID: 21300000, guid: 243dd557f2b614bc5ba2599f40d20448, type: 3}
   - {fileID: 21300000, guid: 7b4468575e3ab49e1aec3edd88298137, type: 3}
+  - {fileID: 21300000, guid: 058e0097872914023991446b014562ef, type: 3}
   - {fileID: 21300000, guid: 7404b1b7d6b0f40929ae536f5b39be50, type: 3}
   - {fileID: 21300000, guid: 9af081c7b27544b809eda744a31a2889, type: 3}
   - {fileID: 21300000, guid: 0f4ebac7e595c4582aa0491ec5e6466a, type: 3}
@@ -166,6 +167,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a1317b1aff4d943b9b7361cc061816bf, type: 3}
   - {fileID: 21300000, guid: 7b9d8b2a13149489fac02d8d802c41b6, type: 3}
   - {fileID: 21300000, guid: c911da3afe9724d9e9b54f5a13c970d7, type: 3}
+  - {fileID: 21300000, guid: 4716bd3a235374a27bd75705f5b7a1af, type: 3}
   - {fileID: 21300000, guid: 0b63c85aaf7c44493a7613587a1a8a4f, type: 3}
   - {fileID: 21300000, guid: df21406aac3b94b18b9edcf3e6ae36c4, type: 3}
   - {fileID: 21300000, guid: 593f8d6a3ab9548768fe19dc0eaaad16, type: 3}
@@ -218,6 +220,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6e8b3a7ec6a0949b4a3ba5a6c983c30f, type: 3}
   - {fileID: 21300000, guid: bd444b7e346a6e547af4156af246a29a, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
+  - {fileID: 21300000, guid: b529921fedbcd44e4ba4d0ad88690b3e, type: 3}
   - {fileID: 21300000, guid: 7566cf5f3986d4c32a672de8279ced32, type: 3}
   - {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
   - {fileID: 21300000, guid: 60e92aaf3c91f4bc18ec574bed72f832, type: 3}
@@ -304,6 +307,7 @@ SpriteAtlas:
   - ProfileHudTopContainer
   - EllipticalSwitchBackground
   - ContainerRadius11Shadow
+  - VoiceChatDisable
   - MouseLocked
   - FriendsListImage
   - MagicWand
@@ -333,6 +337,7 @@ SpriteAtlas:
   - OngoingEventIcon
   - Handle
   - Emotes
+  - MicrophoneVoiceChatButton
   - ContainerRadius16
   - CardCollectiblesIcon
   - NowTag
@@ -385,6 +390,7 @@ SpriteAtlas:
   - EditIcon
   - WhitePixel
   - PatternPC
+  - DialogCornerLeft
   - LogOutIcon
   - RoundedContainerWhite
   - ControlsIconNew
