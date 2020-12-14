@@ -507,6 +507,11 @@ public class TaskbarHUDController : IHUD
         view?.voiceChatButton.SetOnRecording(recording);
     }
 
+    public void SetVoiceChatEnabledByScene(bool enabled)
+    {
+        view?.voiceChatButton.SetEnabledByScene(enabled);
+    }
+
     private void OnFriendsToggleInputPress()
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&

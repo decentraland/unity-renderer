@@ -462,6 +462,12 @@ public class HUDController : MonoBehaviour
         taskbarHud?.SetVoiceChatRecording("true".Equals(talking));
     }
 
+    public void SetVoiceChatEnabledByScene(int enabledPayload)
+    {
+        bool isEnabled = enabledPayload != 0;
+        taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
+    }
+
     public void SetUserTalking(string payload)
     {
         var model = JsonUtility.FromJson<UserTalkingModel>(payload);
