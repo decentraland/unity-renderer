@@ -32,8 +32,8 @@ export class UserActionModule extends ExposableAPI implements IUserActionModule 
     let sceneCreator: string = 'Unknown'
     let sceneEvent = {}
 
-    const sceneId = await fetchSceneIds([destination])
-    const mapSceneData = sceneId ? (await fetchSceneJson([sceneId[0]!]))[0] : undefined
+    const sceneId = (await fetchSceneIds([destination]))[0]
+    const mapSceneData = sceneId ? (await fetchSceneJson([sceneId!]))[0] : undefined
 
     sceneName = this.getSceneName(destination, mapSceneData?.sceneJsonData)
     sceneCreator = getOwnerNameFromJsonData(mapSceneData?.sceneJsonData)
