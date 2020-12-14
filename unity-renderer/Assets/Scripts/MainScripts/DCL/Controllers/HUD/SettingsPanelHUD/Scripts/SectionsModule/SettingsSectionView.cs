@@ -1,6 +1,7 @@
 using DCL.SettingsPanelHUD.Widgets;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.SettingsPanelHUD.Sections
 {
@@ -29,9 +30,11 @@ namespace DCL.SettingsPanelHUD.Sections
     public class SettingsSectionView : MonoBehaviour, ISettingsSectionView
     {
         [SerializeField] private Transform widgetsContainer;
+        [SerializeField] private ScrollRect scrollRect;
 
         private ISettingsSectionController settingsSectionController;
         private List<SettingsWidgetModel> widgets;
+        private bool isOpen = false;
 
         public void Initialize(ISettingsSectionController settingsSectionController, List<SettingsWidgetModel> widgets)
         {
@@ -44,6 +47,11 @@ namespace DCL.SettingsPanelHUD.Sections
         public void SetActive(bool active)
         {
             gameObject.SetActive(active);
+
+            if (!isOpen && active)
+                scrollRect.verticalNormalizedPosition = 1f;
+
+            isOpen = active;
         }
 
         private void CreateWidgets()

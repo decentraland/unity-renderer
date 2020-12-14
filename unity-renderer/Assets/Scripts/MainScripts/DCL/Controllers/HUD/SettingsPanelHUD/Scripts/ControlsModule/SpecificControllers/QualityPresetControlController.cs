@@ -68,6 +68,7 @@ namespace DCL.SettingsPanelHUD.Controls
                 preset = Settings.i.qualitySettingsPresets[i];
                 if (preset.Equals(currentQualitySetting))
                 {
+                    qualityPresetControlView.spinBoxControl.OverrideCurrentLabel(preset.displayName);
                     return i;
                 }
             }

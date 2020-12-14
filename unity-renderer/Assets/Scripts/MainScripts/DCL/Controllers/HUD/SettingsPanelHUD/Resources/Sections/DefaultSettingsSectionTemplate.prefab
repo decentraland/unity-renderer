@@ -51,6 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   widgetsContainer: {fileID: 1517513337811367436}
+  scrollRect: {fileID: 4704788137750585244}
 --- !u!222 &1244561979755116451
 CanvasRenderer:
   m_ObjectHideFlags: 0
