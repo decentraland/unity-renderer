@@ -132,6 +132,9 @@ namespace DCL.SettingsPanelHUD
         {
             foreach (var section in sections)
             {
+                if (section == sectionToOpen)
+                    continue;
+
                 section.SetActive(false);
             }
 
@@ -142,6 +145,9 @@ namespace DCL.SettingsPanelHUD
         {
             foreach (var section in sections)
             {
+                if (section == sections[sectionIndex])
+                    continue;
+
                 section.SetActive(false);
             }
 

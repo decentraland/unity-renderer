@@ -133,6 +133,8 @@ namespace DCL.SettingsPanelHUD
                 settingsAnimator.Show();
                 mainWindow.SetActive(true);
                 HideResetAllConfirmation();
+                settingsPanelController.OpenSection(0);
+                settingsPanelController.MarkMenuButtonAsSelected(0);
             }
             else
             {
