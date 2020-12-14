@@ -1,12 +1,11 @@
 ﻿using DCL.Components;
-using DCL.Configuration;
 using DCL.Helpers.NFT;
 using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using System.Collections.Generic;
 using DCL.Controllers.Gif;
 using DCL;
+using NFTShape_Internal;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
