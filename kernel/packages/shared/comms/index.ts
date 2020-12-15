@@ -1,3 +1,4 @@
+import { setInterval } from 'timers'
 import {
   commConfigurations,
   parcelLimits,
@@ -49,7 +50,6 @@ import {
   position2parcel,
   sameParcel,
   squareDistance,
-  ParcelArray,
   rotateUsingQuaternion
 } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
@@ -62,7 +62,7 @@ import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceC
 
 import { Authenticator, AuthIdentity } from 'dcl-crypto'
 import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
-import { Realm, LayerUserInfo } from 'shared/dao/types'
+import { Realm } from 'shared/dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
@@ -1267,21 +1267,6 @@ export function disconnect() {
       context.worldInstanceConnection.close()
     }
   }
-}
-
-export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
-  const realm = getRealm(store.getState())
-  const commsUrl = getCommsServer(store.getState())
-
-  if (realm && realm.layer && commsUrl) {
-    const layerUsersResponse = await fetch(`${commsUrl}/layers/${realm.layer}/users`)
-    if (layerUsersResponse.ok) {
-      const layerUsers: LayerUserInfo[] = await layerUsersResponse.json()
-      return layerUsers.filter((it) => it.parcel).map((it) => it.parcel!)
-    }
-  }
-
-  return []
 }
 
 globalThis.printCommsInformation = function () {

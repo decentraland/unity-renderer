@@ -1,3 +1,4 @@
+import { setTimeout } from 'timers'
 import { defaultLogger } from 'shared/logger'
 import { getCurrentUserProfile } from 'shared/profiles/selectors'
 import { StoreContainer } from 'shared/store/rootTypes'
