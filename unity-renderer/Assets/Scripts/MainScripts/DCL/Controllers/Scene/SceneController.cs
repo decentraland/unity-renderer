@@ -39,7 +39,7 @@ namespace DCL
             lastSortFrame = 0;
             enabled = true;
             initialized = true;
-            
+
             Environment.i.debugController.OnDebugModeSet += OnDebugModeSet;
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
@@ -96,6 +96,9 @@ namespace DCL
             }
 
             componentFactory.PrewarmPools();
+            
+            // Warmup some shader variants
+            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
         }
 
         public void OnDestroy()
