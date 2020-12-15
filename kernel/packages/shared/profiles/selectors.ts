@@ -61,7 +61,7 @@ export const getEthereumAddress = (store: RootProfileState, userId: string): str
   getProfileValueIfOkOrLoading(
     store,
     userId,
-    (info) => (info.data as Profile).ethAddress,
+    (info) => (info.data as Profile).userId,
     () => undefined
   )
 

@@ -32,10 +32,10 @@ function delightedSurvey() {
       const profile = getCurrentUserProfile(globalThis.globalStore.getState())
       if (profile) {
         const payload = {
-          email: profile.ethAddress + '@dcl.gg',
+          email: profile.userId + '@dcl.gg',
           name: profile.name || 'Guest',
           properties: {
-            ethAddress: profile.ethAddress,
+            userId: profile.userId,
             anonymous_id: analytics && analytics.user ? analytics.user().anonymousId() : null
           }
         }

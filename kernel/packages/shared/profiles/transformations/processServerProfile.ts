@@ -57,7 +57,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     hasClaimedName:
       typeof receivedProfile.hasClaimedName === 'undefined' ? !!receivedProfile.name : receivedProfile.hasClaimedName,
     description: receivedProfile.description || '',
-    ethAddress: userId || 'noeth',
+    ethAddress: receivedProfile.ethAddress || 'noeth',
     version: receivedProfile.version ?? receivedProfile.avatar.version ?? 1,
     avatar: {
       eyeColor: colorString(eyeColor),
