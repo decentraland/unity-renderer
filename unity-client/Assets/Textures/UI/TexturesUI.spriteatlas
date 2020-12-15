@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2659733
+    totalSpriteSurfaceArea: 2667913
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -94,6 +94,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 01b18fd2b4265411bbd6afcd11e373cc, type: 3}
   - {fileID: 21300000, guid: a628efe28360b426c8ca23b43ad06c2b, type: 3}
   - {fileID: 21300000, guid: 04c3edf2ef4a747ffbe6f20a72aac0d9, type: 3}
+  - {fileID: 21300000, guid: 42402c03014144e64b56b0f83f883e5e, type: 3}
   - {fileID: 21300000, guid: bdbc7733c51e44718b2794d9b74dd50c, type: 3}
   - {fileID: 21300000, guid: 446caa43f3cad4f7d8abc800a474534b, type: 3}
   - {fileID: 21300000, guid: db1616631e9344b4aa7ce7fdb5218656, type: 3}
@@ -124,6 +125,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3e026055304a14525a6f24ebe12e875f, type: 3}
   - {fileID: 21300000, guid: 1a32f285ef84d8e44856f0e495cffd4d, type: 3}
   - {fileID: 21300000, guid: 5c569e851fe024c7e8e4b57c07575226, type: 3}
+  - {fileID: 21300000, guid: 520d44b5687394783ae96976dbb73c7c, type: 3}
   - {fileID: 21300000, guid: aafb5ac5e24714df99ac5bc757bbbecb, type: 3}
   - {fileID: 21300000, guid: e2754ed5e27ef44bfaacd0c451d88263, type: 3}
   - {fileID: 21300000, guid: b16568f5e2de64c8dbc491d9ac2830e9, type: 3}
@@ -143,6 +145,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0f4ebac7e595c4582aa0491ec5e6466a, type: 3}
   - {fileID: 21300000, guid: b0b580e7bcb4e4d1fb4fc635fd057a89, type: 3}
   - {fileID: 21300000, guid: e0fcedf7c3fa64d24b85a27aa8bb93a9, type: 3}
+  - {fileID: 21300000, guid: 7fa4c0281629e43abbcb190d00fe187a, type: 3}
   - {fileID: 21300000, guid: 08d52e28c31ca4d049008be051e8b8a1, type: 3}
   - {fileID: 21300000, guid: 8cb10138a6a0d47bf9e2eef30242fc29, type: 3}
   - {fileID: 21300000, guid: d6af1b4802f064d6fadd765950b0b2b8, type: 3}
@@ -264,6 +267,7 @@ SpriteAtlas:
   - VoiceChatOn
   - DisclaimerBackground
   - NFTContainer
+  - ContainerRectLeft20
   - RoundedLine
   - Pin
   - AcceptButton
@@ -294,6 +298,7 @@ SpriteAtlas:
   - MagicSpark
   - RectRadius12Shadow
   - RectRadius12Bottom
+  - SettingsGraphicsIcon
   - ProfileStrokeShadow
   - CodeIcon
   - PoiIcon
@@ -313,6 +318,7 @@ SpriteAtlas:
   - MagicWand
   - DayModeIcon
   - MapIcon
+  - SettingsGeneralIcon
   - NFTFrame
   - NightModeIcon
   - NFTStarUniqueContainer

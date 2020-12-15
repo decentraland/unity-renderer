@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2548c6ebc3c846446810452bb5cc2606, type: 3}
   m_Name: GeneralSection
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 914d7e458aea54023ade17e08c509416, type: 3}
+  icon: {fileID: 21300000, guid: 7fa4c0281629e43abbcb190d00fe187a, type: 3}
   text: General
   menuButtonPrefab: {fileID: 2470334045984490575, guid: 829d414daa3047541a35abc7d88a1fe5,
     type: 3}
