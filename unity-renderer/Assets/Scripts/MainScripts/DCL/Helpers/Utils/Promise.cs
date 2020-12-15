@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DCL.Helpers
 {
-    public class Promise<T> : CustomYieldInstruction
+    public class Promise<T> : CustomYieldInstruction, IDisposable
     {
         private bool resolved = false;
         private bool failed = false;
@@ -56,6 +56,13 @@ namespace DCL.Helpers
             {
                 errorCallback?.Invoke(this.error);
             }
+        }
+
+        public void Dispose()
+        {
+            onSuccess = null;
+            onError = null;
+            resolved = true;
         }
     }
 }

@@ -80,11 +80,10 @@ internal class SceneInfoView : MonoBehaviour
 
     void SetMapInfoData(IMapDataView mapInfoView)
     {
-        MinimapMetadata.MinimapSceneInfo mapInfo = mapInfoView.GetMinimapSceneInfo();
-        sceneName.text = mapInfo.name;
-        coordinates.text = $"{mapInfoView.GetBaseCoord().x},{mapInfoView.GetBaseCoord().y}";
-        creatorName.text = mapInfo.owner;
-        description.text = mapInfo.description;
+        sceneName.text = mapInfoView.name;
+        coordinates.text = $"{mapInfoView.baseCoord.x},{mapInfoView.baseCoord.y}";
+        creatorName.text = mapInfoView.creator;
+        description.text = mapInfoView.description;
     }
 
     void SetThumbnail(Texture2D thumbnailTexture)

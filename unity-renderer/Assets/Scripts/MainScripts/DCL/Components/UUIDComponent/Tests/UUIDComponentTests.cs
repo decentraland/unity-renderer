@@ -20,7 +20,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            SceneController.i.useBoundariesChecker = false;
+            Environment.i.sceneBoundsChecker.Stop();
 
             // Set character position and camera rotation
             DCLCharacterController.i.PauseGravity();
@@ -557,6 +557,9 @@ namespace Tests
                 },
                 (eventObj) =>
                 {
+                    if (eventTriggered)
+                        return true;
+
                     if (eventObj.eventType != sceneEvent.eventType)
                         return false;
 
@@ -611,6 +614,9 @@ namespace Tests
                 () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
+                    if (eventTriggered)
+                        return true;
+
                     //Debug.Log($"triggered? \npointerEvent {JsonUtility.ToJson(pointerEvent, true)}\nsceneEvent {JsonUtility.ToJson(sceneEvent, true)}");
 
                     if (pointerEvent.eventType == sceneEvent.eventType &&
@@ -672,6 +678,9 @@ namespace Tests
                 () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
                 (pointerEvent) =>
                 {
+                    if (eventTriggered)
+                        return true;
+
                     if (pointerEvent.eventType == sceneEvent.eventType &&
                         pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
                         pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
@@ -723,52 +732,55 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
-            bool eventTriggered = false;
 
+            bool eventTriggered1 = false;
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
 
             yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
                 () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
                 (pointerEvent) =>
                 {
+                    if (eventTriggered1)
+                        return true;
+
                     if (pointerEvent.eventType == sceneEvent.eventType &&
                         pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
                         pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
                     {
-                        eventTriggered = true;
+                        eventTriggered1 = true;
                         return true;
                     }
 
                     return false;
                 });
 
-            Assert.IsTrue(eventTriggered);
+            Assert.IsTrue(eventTriggered1);
 
             // turn shape invisible
-            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
-                new
-                {
-                    visible = false
-                }));
-
+            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-            eventTriggered = false;
-            yield return TestHelpers.ExpectMessageToKernel(targetEventType, sceneEvent,
-                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
-                (pointerEvent) =>
+
+            var pointerUpReceived = false;
+            void MsgFromEngineCallback(string eventType, string eventPayload)
+            {
+                if (string.IsNullOrEmpty(eventPayload) || eventType != targetEventType)
+                    return;
+
+                var pointerEvent = JsonUtility.FromJson<WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>>(eventPayload);
+                if (pointerEvent.eventType == sceneEvent.eventType
+                    && pointerEvent.payload.uuid == sceneEvent.payload.uuid
+                    && pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
                 {
-                    if (pointerEvent.eventType == sceneEvent.eventType &&
-                        pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
-                        pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
-                    {
-                        eventTriggered = true;
-                        return true;
-                    }
+                    pointerUpReceived = true;
+                }
+            }
 
-                    return false;
-                });
+            // Hook up to web interface engine message reporting
+            WebInterface.OnMessageFromEngine += MsgFromEngineCallback;
+            InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, InputController_Legacy.EVENT.BUTTON_UP, true);
+            WebInterface.OnMessageFromEngine -= MsgFromEngineCallback;
 
-            Assert.IsFalse(eventTriggered);
+            Assert.IsFalse(pointerUpReceived);
         }
 
         [UnityTest]

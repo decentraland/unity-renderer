@@ -97,16 +97,17 @@ namespace DCL
         public static WSSController i { get; private set; }
         static bool VERBOSE = false;
         WebSocketServer ws;
-        public SceneController sceneController;
         public RenderingController renderingController;
         public DCLCharacterController characterController;
         private Builder.DCLBuilderBridge builderBridge = null;
         public CameraController cameraController;
         public GameObject bridgesGameObject;
 
-        [System.NonSerialized] public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
+        [System.NonSerialized]
+        public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
 
-        [System.NonSerialized] public static volatile bool queuedMessagesDirty;
+        [System.NonSerialized]
+        public static volatile bool queuedMessagesDirty;
 
         public bool isServerReady
         {
@@ -115,17 +116,24 @@ namespace DCL
 
         public bool openBrowserWhenStart;
 
-        [Header("Kernel General Settings")] public bool useCustomContentServer = false;
+        [Header("Kernel General Settings")]
+        public bool useCustomContentServer = false;
+
         public string customContentServerUrl = "http://localhost:1338/";
 
-        [Space(10)] public BaseUrl baseUrlMode;
+        [Space(10)]
+        public BaseUrl baseUrlMode;
+
         public string baseUrlCustom;
 
-        [Space(10)] public Environment environment;
+        [Space(10)]
+        public Environment environment;
 
         public Vector2 startInCoords = new Vector2(-99, 109);
 
-        [Header("Kernel Misc Settings")] public bool forceLocalComms = true;
+        [Header("Kernel Misc Settings")]
+        public bool forceLocalComms = true;
+
         public bool allWearables = false;
         public bool testWearables = false;
         public bool enableTutorial = false;
@@ -147,7 +155,7 @@ namespace DCL
             }
 
 #if UNITY_EDITOR
-            SceneController.i.isWssDebugMode = true;
+            DCL.DataStore.debugConfig.isWssDebugMode = true;
 
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
@@ -255,40 +263,46 @@ namespace DCL
                         switch (msg.type)
                         {
                             case "SetDebug":
-                                sceneController.SetDebug();
+                                DCL.Environment.i.debugController.SetDebug();
                                 break;
                             case "SetSceneDebugPanel":
-                                sceneController.SetSceneDebugPanel();
+                                DCL.Environment.i.debugController.SetSceneDebugPanel();
                                 break;
                             case "ShowFPSPanel":
-                                sceneController.ShowFPSPanel();
+                                DCL.Environment.i.debugController.ShowFPSPanel();
                                 break;
                             case "HideFPSPanel":
-                                sceneController.HideFPSPanel();
+                                DCL.Environment.i.debugController.HideFPSPanel();
                                 break;
                             case "SetEngineDebugPanel":
-                                sceneController.SetEngineDebugPanel();
+                                DCL.Environment.i.debugController.SetEngineDebugPanel();
                                 break;
                             case "SendSceneMessage":
-                                sceneController.SendSceneMessage(msg.payload);
+                                DCL.Environment.i.sceneController.SendSceneMessage(msg.payload);
                                 break;
                             case "LoadParcelScenes":
-                                sceneController.LoadParcelScenes(msg.payload);
+                                DCL.Environment.i.sceneController.LoadParcelScenes(msg.payload);
                                 break;
                             case "UnloadScene":
-                                sceneController.UnloadScene(msg.payload);
+                                DCL.Environment.i.sceneController.UnloadScene(msg.payload);
+                                break;
+                            case "Reset":
+                                DCL.Environment.i.sceneController.UnloadAllScenesQueued();
+                                break;
+                            case "CreateUIScene":
+                                DCL.Environment.i.sceneController.CreateUIScene(msg.payload);
+                                break;
+                            case "BuilderReady":
+                                Main.i.BuilderReady();
+                                break;
+                            case "UpdateParcelScenes":
+                                DCL.Environment.i.sceneController.UpdateParcelScenes(msg.payload);
                                 break;
                             case "Teleport":
                                 characterController.Teleport(msg.payload);
                                 break;
                             case "SetRotation":
                                 cameraController.SetRotation(msg.payload);
-                                break;
-                            case "Reset":
-                                sceneController.UnloadAllScenesQueued();
-                                break;
-                            case "CreateUIScene":
-                                sceneController.CreateUIScene(msg.payload);
                                 break;
                             case "LoadProfile":
                                 UserProfileController.i?.LoadProfile(msg.payload);
@@ -319,12 +333,6 @@ namespace DCL
                                 break;
                             case "ShowNotificationFromJson":
                                 NotificationsController.i.ShowNotificationFromJson(msg.payload);
-                                break;
-                            case "BuilderReady":
-                                sceneController.BuilderReady();
-                                break;
-                            case "UpdateParcelScenes":
-                                sceneController.UpdateParcelScenes(msg.payload);
                                 break;
                             case "GetMousePosition":
                                 GetBuilderBridge()?.GetMousePosition(msg.payload);
@@ -411,7 +419,7 @@ namespace DCL
                                 MinimapMetadataController.i?.UpdateMinimapSceneInformation(msg.payload);
                                 break;
                             case "SetTutorialEnabled":
-                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabled(msg.payload, DCL.Tutorial.TutorialController.TutorialType.Initital);
+                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabled(msg.payload);
                                 break;
                             case "TriggerSelfUserExpression":
                                 HUDController.i.TriggerSelfUserExpression(msg.payload);
@@ -428,9 +436,6 @@ namespace DCL
                             case "RequestTeleport":
                                 HUDController.i.RequestTeleport(msg.payload);
                                 break;
-                            case "SetDisableAssetBundles":
-                                SceneController.i.SetDisableAssetBundles();
-                                break;
                             case "UpdateHotScenesList":
                                 HotScenesController.i.UpdateHotScenesList(msg.payload);
                                 break;
@@ -439,6 +444,12 @@ namespace DCL
                                 break;
                             case "SetPlayerTalking":
                                 HUDController.i.SetPlayerTalking(msg.payload);
+                                break;
+                            case "SetVoiceChatEnabledByScene":
+                                if (int.TryParse(msg.payload, out int value))
+                                {
+                                    HUDController.i.SetVoiceChatEnabledByScene(value);
+                                }
                                 break;
                             case "SetRenderProfile":
                                 RenderProfileBridge.i.SetRenderProfile(msg.payload);
@@ -453,7 +464,12 @@ namespace DCL
                                 HUDController.i.SetUsersMuted(msg.payload);
                                 break;
                             case "SetKernelConfiguration":
+                            case "UpdateRealmsInfo":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
+                                break;
+                            case "SetDisableAssetBundles":
+                                //TODO(Brian): Move this to bridges
+                                Main.i.SendMessage(msg.type);
                                 break;
                             default:
                                 Debug.Log(

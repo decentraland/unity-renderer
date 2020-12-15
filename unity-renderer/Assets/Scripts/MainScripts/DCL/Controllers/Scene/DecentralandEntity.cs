@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using System;
@@ -10,101 +10,6 @@ namespace DCL.Models
     [Serializable]
     public class DecentralandEntity : DCL.ICleanable, DCL.ICleanableEventDispatcher
     {
-        [Serializable]
-        public class MeshesInfo
-        {
-            public event Action OnUpdated;
-            public event Action OnCleanup;
-
-            public GameObject meshRootGameObject
-            {
-                get { return meshRootGameObjectValue; }
-                set
-                {
-                    meshRootGameObjectValue = value;
-
-                    UpdateRenderersCollection();
-                }
-            }
-
-            public BaseShape currentShape;
-            public Renderer[] renderers;
-            public MeshFilter[] meshFilters;
-            public List<Collider> colliders = new List<Collider>();
-
-            Vector3 lastBoundsCalculationPosition;
-            Vector3 lastBoundsCalculationScale;
-            Quaternion lastBoundsCalculationRotation;
-            Bounds mergedBoundsValue;
-
-            public Bounds mergedBounds
-            {
-                get
-                {
-                    
-                    if (meshRootGameObject.transform.position != lastBoundsCalculationPosition)
-                    {
-                        mergedBoundsValue.center += meshRootGameObject.transform.position - lastBoundsCalculationPosition;
-                        lastBoundsCalculationPosition = meshRootGameObject.transform.position;
-                    }
-
-                    if (meshRootGameObject.transform.lossyScale != lastBoundsCalculationScale || meshRootGameObject.transform.rotation != lastBoundsCalculationRotation)
-                        RecalculateBounds();
-
-                    return mergedBoundsValue;
-                }
-                set { mergedBoundsValue = value; }
-            }
-
-            GameObject meshRootGameObjectValue;
-
-            public void UpdateRenderersCollection()
-            {
-                if (meshRootGameObjectValue != null)
-                {
-                    renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
-                    meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
-
-                    RecalculateBounds();
-                    Environment.i.cullingController.SetDirty();
-                    OnUpdated?.Invoke();
-                }
-            }
-
-            public void RecalculateBounds()
-            {
-                if (renderers == null || renderers.Length == 0) return;
-
-                lastBoundsCalculationPosition = meshRootGameObject.transform.position;
-                lastBoundsCalculationScale = meshRootGameObject.transform.lossyScale;
-                lastBoundsCalculationRotation = meshRootGameObject.transform.rotation;
-
-                mergedBoundsValue = Utils.BuildMergedBounds(renderers);
-            }
-
-            public void CleanReferences()
-            {
-                OnCleanup?.Invoke();
-                meshRootGameObjectValue = null;
-                currentShape = null;
-                renderers = null;
-                colliders.Clear();
-            }
-
-            public void UpdateExistingMeshAtIndex(Mesh mesh, uint meshFilterIndex = 0)
-            {
-                if (meshFilters != null && meshFilters.Length > meshFilterIndex)
-                {
-                    meshFilters[meshFilterIndex].sharedMesh = mesh;
-                    OnUpdated?.Invoke();
-                }
-                else
-                {
-                    Debug.LogError($"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
-                }
-            }
-        }
-
         public ParcelScene scene;
         public bool markedForCleanup = false;
 
@@ -125,6 +30,7 @@ namespace DCL.Models
 
         public System.Action<MonoBehaviour> OnComponentUpdated;
         public System.Action<DecentralandEntity> OnShapeUpdated;
+        public System.Action<DCLName.Model> OnNameChange;
         public System.Action<DecentralandEntity> OnRemoved;
         public System.Action<DCLTransform.Model> OnTransformChange;
         public System.Action<DecentralandEntity> OnMeshesInfoUpdated;

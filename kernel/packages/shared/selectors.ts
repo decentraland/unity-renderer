@@ -1,5 +1,5 @@
 import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
-import { ContentMapping, ILand, EnvironmentData, LoadableParcelScene, SceneJsonData } from './types'
+import { ContentMapping, ILand, EnvironmentData, LoadableParcelScene, SceneJsonData, SceneFeatureToggle } from './types'
 
 export function normalizeContentMappings(
   mappings: Record<string, string> | Array<ContentMapping>
@@ -21,7 +21,7 @@ export function normalizeContentMappings(
 
 export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
   const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
-  const sceneJsons = land.mappingsResponse.contents.filter(land => land.file === 'scene.json')
+  const sceneJsons = land.mappingsResponse.contents.filter((land) => land.file === 'scene.json')
   if (!sceneJsons.length) {
     throw new Error('Invalid scene mapping: no scene.json')
   }
@@ -93,6 +93,17 @@ export function getOwnerNameFromJsonData(jsonData?: SceneJsonData) {
   return ownerName || 'Unknown'
 }
 
+export function isFeatureToggleEnabled(toggle: SceneFeatureToggle, sceneJsonData?: SceneJsonData): boolean {
+  const featureToggles = sceneJsonData?.featureToggles
+  let feature = featureToggles?.[toggle.name]
+
+  if (!feature || (feature !== 'enabled' && feature !== 'disabled')) {
+    // If not set or value is invalid, then use default
+    feature = toggle.default
+  }
+  return feature === 'enabled'
+}
+
 export function getSceneDescriptionFromJsonData(jsonData?: SceneJsonData) {
   return jsonData?.display?.description || ''
 }
@@ -107,16 +118,49 @@ export function getSceneNameFromJsonData(jsonData?: SceneJsonData) {
   return title || 'Unnamed'
 }
 
+export function getThumbnailUrlFromJsonDataAndContent(
+  jsonData: SceneJsonData | undefined,
+  contents: Array<ContentMapping> | undefined,
+  downloadUrl: string
+): string | undefined {
+  if (!jsonData) {
+    return undefined
+  }
+
+  if (!contents || !downloadUrl) {
+    return getThumbnailUrlFromJsonData(jsonData)
+  }
+
+  let thumbnail: string | undefined = jsonData.display?.navmapThumbnail
+  if (thumbnail && !thumbnail.startsWith('http')) {
+    // We are assuming that the thumbnail is an uploaded file. We will try to find the matching hash
+    const thumbnailHash = contents?.find(({ file }) => file === thumbnail)?.hash
+    if (thumbnailHash) {
+      thumbnail = `${downloadUrl}/contents/${thumbnailHash}`
+    } else {
+      // If we couldn't find a file with the correct path, then we ignore whatever was set on the thumbnail property
+      thumbnail = undefined
+    }
+  }
+
+  if (!thumbnail) {
+    thumbnail = getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
+  }
+  return thumbnail
+}
+
 export function getThumbnailUrlFromJsonData(jsonData?: SceneJsonData): string | undefined {
   if (!jsonData) {
     return undefined
   }
 
-  const thumbnailUrl =
-    jsonData.display?.navmapThumbnail ??
-    (jsonData.source?.projectId
-      ? `https://builder-api.decentraland.org/v1/projects/${jsonData.source.projectId}/media/preview.png`
-      : undefined)
+  return jsonData.display?.navmapThumbnail ?? getThumbnailUrlFromBuilderProjectId(jsonData.source?.projectId)
+}
 
-  return thumbnailUrl
+export function getThumbnailUrlFromBuilderProjectId(projectId: string | undefined): string | undefined {
+  if (!projectId) {
+    return undefined
+  }
+
+  return `https://builder-api.decentraland.org/v1/projects/${projectId}/media/preview.png`
 }

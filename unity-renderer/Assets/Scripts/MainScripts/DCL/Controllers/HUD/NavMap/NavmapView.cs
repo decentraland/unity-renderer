@@ -107,6 +107,9 @@ namespace DCL
                 // Center map
                 MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition));
 
+                // Set shorter interval of time for populated scenes markers fetch
+                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.FOREGROUND);
+
                 AudioScriptableObjects.dialogOpen.Play(true);
             }
             else
@@ -126,6 +129,9 @@ namespace DCL
                 (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
 
                 MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
+
+                // Set longer interval of time for populated scenes markers fetch
+                MapRenderer.i.usersPositionMarkerController?.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND); 
 
                 AudioScriptableObjects.dialogClose.Play(true);
             }

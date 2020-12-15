@@ -41,7 +41,7 @@ namespace DCL
 
             public Model Clone()
             {
-                return (Model)MemberwiseClone();
+                return (Model) MemberwiseClone();
             }
 
             public WebInterface.MetricsModel ToMetricsModel()
@@ -73,8 +73,7 @@ namespace DCL
             }
         }
 
-        [SerializeField]
-        protected Model model;
+        [SerializeField] protected Model model;
 
         protected Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
@@ -82,7 +81,10 @@ namespace DCL
 
         public bool isDirty { get; protected set; }
 
-        public Model GetModel() { return model.Clone(); }
+        public Model GetModel()
+        {
+            return model.Clone();
+        }
 
         public SceneMetricsController(ParcelScene sceneOwner)
         {
@@ -93,7 +95,10 @@ namespace DCL
             entitiesMetrics = new Dictionary<DecentralandEntity, EntityMetrics>();
             model = new Model();
 
-            if (VERBOSE) { Debug.Log("Start ScenePerformanceLimitsController..."); }
+            if (VERBOSE)
+            {
+                Debug.Log("Start ScenePerformanceLimitsController...");
+            }
         }
 
         public void Enable()
@@ -128,13 +133,13 @@ namespace DCL
                 float log = Mathf.Log(parcelCount + 1, 2);
                 float lineal = parcelCount;
 
-                cachedModel.triangles = (int)(lineal * LimitsConfig.triangles);
-                cachedModel.bodies = (int)(lineal * LimitsConfig.bodies);
-                cachedModel.entities = (int)(lineal * LimitsConfig.entities);
-                cachedModel.materials = (int)(log * LimitsConfig.materials);
-                cachedModel.textures = (int)(log * LimitsConfig.textures);
-                cachedModel.meshes = (int)(log * LimitsConfig.meshes);
-                cachedModel.sceneHeight = (int)(log * LimitsConfig.height);
+                cachedModel.triangles = (int) (lineal * LimitsConfig.triangles);
+                cachedModel.bodies = (int) (lineal * LimitsConfig.bodies);
+                cachedModel.entities = (int) (lineal * LimitsConfig.entities);
+                cachedModel.materials = (int) (log * LimitsConfig.materials);
+                cachedModel.textures = (int) (log * LimitsConfig.textures);
+                cachedModel.meshes = (int) (log * LimitsConfig.meshes);
+                cachedModel.sceneHeight = (int) (log * LimitsConfig.height);
             }
 
             return cachedModel;
@@ -184,8 +189,8 @@ namespace DCL
             {
                 SubstractMetrics(entity);
             }
-            AddMetrics(entity);
 
+            AddMetrics(entity);
         }
 
         protected void SubstractMetrics(DecentralandEntity entity)
@@ -270,46 +275,26 @@ namespace DCL
                 entitiesMetrics[entity] = entityMetrics;
             }
 
-            if (VERBOSE) { Debug.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString()); }
+            if (VERBOSE)
+            {
+                Debug.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString());
+            }
 
             isDirty = true;
         }
 
         void CalculateMaterials(DecentralandEntity entity, EntityMetrics entityMetrics)
         {
-            //get boundaries checker if in debug cause it may have swap meshes materials
-            var debugBoundariesChecker = SceneController.i.boundariesChecker as SceneBoundariesDebugModeChecker;
+            var originalMaterials = Environment.i.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
 
-            //can we count materials directly from the mesh renderers?
-            bool isInValidPosition = debugBoundariesChecker == null
-                || (debugBoundariesChecker != null && debugBoundariesChecker.WasEntityInAValidPosition(entity));
+            int originalMaterialsCount = originalMaterials.Count;
 
-            isInValidPosition |= !SceneController.i.useBoundariesChecker;
-
-            if (isInValidPosition)
+            for (int i = 0; i < originalMaterialsCount; i++)
             {
-                for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
-                {
-                    Renderer renderer = entity.meshesInfo.renderers[i];
-                    for (int j = 0; j < renderer.sharedMaterials.Length; j++)
-                    {
-                        Material m = renderer.sharedMaterials[j];
-                        AddMaterial(entityMetrics, m);
-                        if (VERBOSE) { Debug.Log("SceneMetrics: material (from renderer) " + m.name + " of entity " + entity.entityId); }
-                    }
-                }
-            }
-            else
-            {
-                var meshOriginalMaterialsDic = debugBoundariesChecker.GetOriginalMaterials(entity);
-                using (var iterator = meshOriginalMaterialsDic.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        AddMaterial(entityMetrics, iterator.Current.Value);
-                        if (VERBOSE) { Debug.Log("SceneMetrics: material (from debugBoundariesChecker) " + iterator.Current.Value.name + " of entity " + entity.entityId); }
-                    }
-                }
+                AddMaterial(entityMetrics, originalMaterials[i]);
+
+                if (VERBOSE)
+                    Debug.Log($"SceneMetrics: material (style: {Environment.i.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName}) {originalMaterials[i].name} of entity {entity.entityId}");
             }
         }
 

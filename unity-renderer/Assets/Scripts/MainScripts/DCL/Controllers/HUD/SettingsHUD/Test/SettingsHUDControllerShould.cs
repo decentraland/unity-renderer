@@ -76,7 +76,7 @@ namespace Tests
             Assert.IsTrue(generalContent.shadowToggle.isOn == false, "shadowToggle missmatch");
             Assert.IsTrue(generalContent.softShadowToggle.isOn == false, "softShadowToggle missmatch");
             Assert.IsTrue(generalContent.bloomToggle.isOn == true, "bloomToggle missmatch");
-            Assert.IsTrue(generalContent.mouseSensitivitySlider.value == 1, "mouseSensitivitySlider missmatch");
+            Assert.IsTrue(generalContent.mouseSensitivitySlider.value == generalContent.mouseSensitivitySlider.maxValue, "mouseSensitivitySlider missmatch");
             Assert.IsTrue(generalContent.antiAliasingSlider.value == 2, "antiAliasingSlider missmatch");
             Assert.IsTrue(generalContent.renderingScaleSlider.value == 0.1f, "renderingScaleSlider missmatch");
             Assert.IsTrue(generalContent.drawDistanceSlider.value == 51f, "drawDistanceSlider missmatch");

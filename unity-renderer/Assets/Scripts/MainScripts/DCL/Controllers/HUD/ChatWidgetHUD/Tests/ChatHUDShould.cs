@@ -39,6 +39,9 @@ public class ChatHUDShould : TestsBase
     [Test]
     public void TrimWhenTooMuchMessagesAreInView()
     {
+        int cacheMaxEntries = ChatHUDController.MAX_CHAT_ENTRIES;
+        const int newMaxEntries = 10;
+        ChatHUDController.MAX_CHAT_ENTRIES = newMaxEntries;
         for (int i = 0; i < ChatHUDController.MAX_CHAT_ENTRIES + 5; i++)
         {
             var msg = new ChatEntry.Model()
@@ -51,7 +54,8 @@ public class ChatHUDShould : TestsBase
             controller.AddChatMessage(msg);
         }
 
-        Assert.AreEqual(ChatHUDController.MAX_CHAT_ENTRIES, controller.view.entries.Count);
+        ChatHUDController.MAX_CHAT_ENTRIES = cacheMaxEntries;
+        Assert.AreEqual(newMaxEntries, controller.view.entries.Count);
         Assert.AreEqual("test5", controller.view.entries[0].model.bodyText);
     }
 

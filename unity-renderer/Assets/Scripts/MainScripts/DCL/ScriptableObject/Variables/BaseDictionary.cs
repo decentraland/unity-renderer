@@ -66,6 +66,11 @@ public class BaseDictionary<TKey, TValue> : ScriptableObject
         return dictionary.ContainsKey(key) ? dictionary[key] : default(TValue);
     }
 
+    public bool ContainsKey(TKey key)
+    {
+        return dictionary.ContainsKey(key);
+    }
+
     public bool TryGetValue(TKey key, out TValue value)
     {
         return dictionary.TryGetValue(key, out value);

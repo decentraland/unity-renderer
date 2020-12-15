@@ -60,7 +60,9 @@ namespace DCL.Models
 
         AUDIO_CLIP = 200,
 
-        NAME = 300
+        NAME = 300,
+        LOCKED_ON_EDIT = 301,
+        VISIBLE_ON_EDIT = 302
     }
 
     public static class Protocol

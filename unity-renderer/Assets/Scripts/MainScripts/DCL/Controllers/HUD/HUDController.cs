@@ -1,5 +1,6 @@
 using DCL.HelpAndSupportHUD;
 using DCL.SettingsHUD;
+using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -42,7 +43,10 @@ public class HUDController : MonoBehaviour
     public AvatarEditorHUDController avatarEditorHud =>
         GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
 
+    // TODO (Santi): Remove once the new Settings HUD is implemented
     public SettingsHUDController settingsHud => GetHUDElement(HUDElementID.SETTINGS) as SettingsHUDController;
+
+    public SettingsPanelHUDController settingsPanelHud => GetHUDElement(HUDElementID.SETTINGS_PANEL) as SettingsPanelHUDController;
 
     public ExpressionsHUDController expressionsHud =>
         GetHUDElement(HUDElementID.EXPRESSIONS) as ExpressionsHUDController;
@@ -95,7 +99,7 @@ public class HUDController : MonoBehaviour
 
     private void ShowSettings()
     {
-        settingsHud?.SetVisibility(true);
+        settingsPanelHud?.SetVisibility(true);
     }
 
     private void ShowControls()
@@ -110,7 +114,12 @@ public class HUDController : MonoBehaviour
                                        EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
                                        (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
 
-        if (anyInputFieldIsSelected || settingsHud.view.isOpen || avatarEditorHud.view.isOpen || DCL.NavmapView.isOpen || CommonScriptableObjects.tutorialActive)
+        if (anyInputFieldIsSelected ||
+            settingsHud.view.isOpen || // TODO (Santi): Remove once the new Settings HUD is implemented
+            settingsPanelHud.view.isOpen ||
+            avatarEditorHud.view.isOpen ||
+            DCL.NavmapView.isOpen ||
+            CommonScriptableObjects.tutorialActive)
             return;
 
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
@@ -121,6 +130,10 @@ public class HUDController : MonoBehaviour
         if (current)
         {
             NotificationsController.i?.ShowNotification(hiddenUINotification);
+        }
+        else
+        {
+            NotificationsController.i?.DismissAllNotifications(hiddenUINotification.groupID);
         }
     }
 
@@ -151,7 +164,8 @@ public class HUDController : MonoBehaviour
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
         BUILD_MODE = 24,
-        COUNT = 25
+        SETTINGS_PANEL = 25,
+        COUNT = 26
     }
 
     [System.Serializable]
@@ -209,7 +223,13 @@ public class HUDController : MonoBehaviour
                 }
                 break;
             case HUDElementID.SETTINGS:
+                // TODO (Santi): Remove once the new Settings HUD is implemented
                 CreateHudElement<SettingsHUDController>(configuration, hudElementId);
+                break;
+            case HUDElementID.SETTINGS_PANEL:
+                CreateHudElement<SettingsPanelHUDController>(configuration, hudElementId);
+                if (settingsPanelHud != null)
+                    settingsPanelHud.Initialize();
                 break;
             case HUDElementID.EXPRESSIONS:
                 CreateHudElement<ExpressionsHUDController>(configuration, hudElementId);
@@ -293,8 +313,7 @@ public class HUDController : MonoBehaviour
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
 
-                        taskbarHud.AddSettingsWindow(settingsHud);
-
+                        bool addOldSettingsHUD = false;
                         if (!string.IsNullOrEmpty(extraPayload))
                         {
                             var config = JsonUtility.FromJson<TaskbarHUDController.Configuration>(extraPayload);
@@ -302,7 +321,15 @@ public class HUDController : MonoBehaviour
                             {
                                 taskbarHud.OnAddVoiceChat();
                             }
+
+                            // TODO (Santi): Remove once the new Settings HUD is implemented
+                            addOldSettingsHUD = config.enableOldSettings;
                         }
+
+                        if (addOldSettingsHUD)
+                            taskbarHud.AddSettingsWindow(settingsHud);
+                        else
+                            taskbarHud.AddSettingsWindow(settingsPanelHud);
                     }
                 }
                 else
@@ -433,6 +460,12 @@ public class HUDController : MonoBehaviour
     public void SetPlayerTalking(string talking)
     {
         taskbarHud?.SetVoiceChatRecording("true".Equals(talking));
+    }
+
+    public void SetVoiceChatEnabledByScene(int enabledPayload)
+    {
+        bool isEnabled = enabledPayload != 0;
+        taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
     }
 
     public void SetUserTalking(string payload)

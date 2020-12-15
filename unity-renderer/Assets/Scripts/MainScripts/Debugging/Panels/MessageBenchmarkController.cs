@@ -181,17 +181,19 @@ namespace DCL
                 ResetTracker();
             }
 
-            SceneController.i.OnMessageWillQueue += OnMessageWillQueue;
-            SceneController.i.OnMessageWillDequeue += OnMessageWillDequeue;
+            ProfilingEvents.OnMessageWillQueue += OnMessageWillQueue;
+            ProfilingEvents.OnMessageWillDequeue += OnMessageWillDequeue;
 
-            SceneController.i.OnMessageProcessStart += OnMessageProcessStart;
-            SceneController.i.OnMessageProcessEnds += OnMessageProcessEnds;
+            ProfilingEvents.OnMessageProcessStart += OnMessageProcessStart;
+            ProfilingEvents.OnMessageProcessEnds += OnMessageProcessEnds;
 
-            SceneController.i.OnMessageDecodeStart += OnMessageDecodeStart;
-            SceneController.i.OnMessageDecodeEnds += OnMessageDecodeEnds;
+            ProfilingEvents.OnMessageDecodeStart += OnMessageDecodeStart;
+            ProfilingEvents.OnMessageDecodeEnds += OnMessageDecodeEnds;
 
-            SceneController.i.StartCoroutine(UpdateTotalMs());
+            updateCoroutine = CoroutineStarter.Start(UpdateTotalMs());
         }
+
+        private Coroutine updateCoroutine;
 
         public void StopProfiling()
         {
@@ -202,16 +204,16 @@ namespace DCL
 
             enabled = false;
 
-            SceneController.i.OnMessageWillQueue -= OnMessageWillQueue;
-            SceneController.i.OnMessageWillDequeue -= OnMessageWillDequeue;
+            ProfilingEvents.OnMessageWillQueue -= OnMessageWillQueue;
+            ProfilingEvents.OnMessageWillDequeue -= OnMessageWillDequeue;
 
-            SceneController.i.OnMessageProcessStart -= OnMessageProcessStart;
-            SceneController.i.OnMessageProcessEnds -= OnMessageProcessEnds;
+            ProfilingEvents.OnMessageProcessStart -= OnMessageProcessStart;
+            ProfilingEvents.OnMessageProcessEnds -= OnMessageProcessEnds;
 
-            SceneController.i.OnMessageDecodeStart -= OnMessageDecodeStart;
-            SceneController.i.OnMessageDecodeEnds -= OnMessageDecodeEnds;
+            ProfilingEvents.OnMessageDecodeStart -= OnMessageDecodeStart;
+            ProfilingEvents.OnMessageDecodeEnds -= OnMessageDecodeEnds;
 
-            SceneController.i.StopCoroutine(UpdateTotalMs());
+            CoroutineStarter.Stop(updateCoroutine);
         }
 
         IEnumerator UpdateTotalMs()

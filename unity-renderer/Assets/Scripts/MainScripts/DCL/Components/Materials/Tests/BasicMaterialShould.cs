@@ -14,7 +14,7 @@ public class BasicMaterialShould : TestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        SceneController.i.useBoundariesChecker = false;
+        Environment.i.sceneBoundsChecker.Stop();
     }
 
     [UnityTest]

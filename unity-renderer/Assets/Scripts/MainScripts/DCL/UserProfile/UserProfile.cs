@@ -14,6 +14,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public event Action<string, long> OnAvatarExpressionSet;
 
     public string userId => model.userId;
+    public string ethAddress => model.ethAddress;
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
@@ -45,6 +46,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         }
 
         model.userId = newModel.userId;
+        model.ethAddress = newModel.ethAddress;
         model.tutorialStep = newModel.tutorialStep;
         model.hasClaimedName = newModel.hasClaimedName;
         model.name = newModel.name;

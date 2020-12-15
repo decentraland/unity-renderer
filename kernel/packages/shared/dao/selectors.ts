@@ -29,3 +29,6 @@ export const getCatalystRealmCommsStatus = (store: RootDaoState) => store.dao.co
 
 export const isResizeServiceUrl = (store: RootDaoState, url: string | undefined) =>
   url?.startsWith(getResizeService(store)) || url?.startsWith(getServerConfigurations().fallbackResizeServiceUrl)
+
+export const getHotScenesService = (store: RootDaoState) => store.dao.hotScenesService
+export const getExploreRealmsService = (store: RootDaoState) => store.dao.exploreRealmsService

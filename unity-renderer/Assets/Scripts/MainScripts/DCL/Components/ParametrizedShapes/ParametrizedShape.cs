@@ -63,7 +63,7 @@ namespace DCL.Components
 
             MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshRootGameObject.AddComponent<MeshRenderer>();
-            entity.meshesInfo.renderers = new Renderer[] { meshRenderer };
+            entity.meshesInfo.renderers = new Renderer[] {meshRenderer};
             entity.meshesInfo.currentShape = this;
 
             meshFilter.sharedMesh = currentMesh;
@@ -106,9 +106,14 @@ namespace DCL.Components
             entity.meshesInfo.CleanReferences();
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
-            var newModel = SceneController.i.SafeFromJson<T>(newJson);
+            var newModel = Utils.SafeFromJson<T>(newJson);
             visibilityDirty = newModel.visible != model.visible;
             collisionsDirty = newModel.withCollisions != model.withCollisions || newModel.isPointerBlocker != model.isPointerBlocker;
             bool shouldGenerateMesh = ShouldGenerateNewMesh(newModel);
@@ -127,7 +132,6 @@ namespace DCL.Components
                     bool cachedCollisionDirty = collisionsDirty;
                     while (iterator.MoveNext())
                     {
-
                         //NOTE(Alex): Since UpdateRenderer updates the dirty flags as well we have to make sure every entity
                         //            gets updated accordingly to the original flags.
                         visibilityDirty = cachedVisibilityDirty;

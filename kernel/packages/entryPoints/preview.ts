@@ -8,9 +8,9 @@ global.enableWeb3 = window.enableWeb3
 
 import { initializeUnity } from 'unity-interface/initializer'
 import { loadPreviewScene } from 'unity-interface/dcl'
-import { DEBUG_WS_MESSAGES, HALLOWEEN } from 'config'
+import { DEBUG_WS_MESSAGES, FORCE_RENDERING_STYLE } from 'config'
 import defaultLogger from 'shared/logger'
-import { ILand, HUDElementID, RenderProfile } from 'shared/types'
+import { ILand, HUDElementID } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { signalRendererInitialized } from 'shared/renderer/actions'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -28,7 +28,7 @@ const defaultScene: IFuture<ILand> = future()
 
 let wsScene: string | undefined = undefined
 
-if (location.search.indexOf("WS_SCENE") !== -1) {
+if (location.search.indexOf('WS_SCENE') !== -1) {
   wsScene = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}/?scene`
 }
 
@@ -89,6 +89,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.AIRDROPPING, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
@@ -96,10 +97,8 @@ initializeUnity(container)
 
     global.globalStore.dispatch(signalRendererInitialized())
 
-    if (HALLOWEEN) {
-      i.SetRenderProfile(RenderProfile.HALLOWEEN)
-    } else {
-      i.SetRenderProfile(RenderProfile.DEFAULT)
+    if (FORCE_RENDERING_STYLE) {
+      i.SetRenderProfile(FORCE_RENDERING_STYLE)
     }
 
     const renderable = sceneRenderable()

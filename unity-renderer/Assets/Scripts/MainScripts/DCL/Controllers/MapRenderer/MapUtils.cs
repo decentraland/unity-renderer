@@ -23,18 +23,18 @@ namespace DCL.Helpers
             return result;
         }
 
-        public static string GetMarketPlaceThumbnailUrl(MinimapMetadata.MinimapSceneInfo info, int width, int height, int sizeFactor)
+        public static string GetMarketPlaceThumbnailUrl(Vector2Int[] parcels, int width, int height, int sizeFactor)
         {
-            string parcels = "";
+            string parcelsStr = "";
             Vector2Int min = new Vector2Int(int.MaxValue, int.MaxValue);
             Vector2Int max = new Vector2Int(int.MinValue, int.MinValue);
             Vector2Int coord;
 
-            for (int i = 0; i < info.parcels.Count; i++)
+            for (int i = 0; i < parcels.Length; i++)
             {
-                coord = info.parcels[i];
-                parcels += string.Format("{0},{1}", coord.x, coord.y);
-                if (i < info.parcels.Count - 1) parcels += ";";
+                coord = parcels[i];
+                parcelsStr += string.Format("{0},{1}", coord.x, coord.y);
+                if (i < parcels.Length - 1) parcelsStr += ";";
 
                 if (coord.x < min.x) min.x = coord.x;
                 if (coord.y < min.y) min.y = coord.y;
@@ -47,7 +47,7 @@ namespace DCL.Helpers
             int sceneMaxSize = Mathf.Clamp(Mathf.Max(max.x - min.x, max.y - min.y), 1, int.MaxValue);
             int size = sizeFactor / sceneMaxSize;
 
-            return $"https://api.decentraland.org/v1/map.png?width={width}&height={height}&size={size}&center={centerX},{centerY}&selected={parcels}";
+            return $"https://api.decentraland.org/v1/map.png?width={width}&height={height}&size={size}&center={centerX},{centerY}&selected={parcelsStr}";
         }
     }
 }

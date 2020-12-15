@@ -10,13 +10,12 @@ using System.Linq;
 using DCL.Components;
 using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DCL
 {
-    public class SceneController : MonoBehaviour, IMessageProcessHandler, IMessageQueueHandler, ISceneHandler
+    public class SceneController : IMessageProcessHandler, IMessageQueueHandler
     {
-        public static SceneController i { get; private set; }
+        public static bool VERBOSE = false;
 
         //======================================================================
 
@@ -25,53 +24,41 @@ namespace DCL
         //======================================================================
         private EntryPoint_World worldEntryPoint;
 
-        [FormerlySerializedAs("factoryManifest")]
-        public DCLComponentFactory componentFactory;
+        public DCLComponentFactory componentFactory => Main.i.componentFactory;
 
-        public bool startDecentralandAutomatically = true;
+        public bool enabled = true;
+        public bool initialized = false;
 
-        void Awake()
+        public void Initialize()
         {
-            if (i != null)
-            {
-                Utils.SafeDestroy(this);
+            if (initialized)
                 return;
-            }
 
-            i = this;
-
-#if !UNITY_EDITOR
-            Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = false;
-#endif
-
-            // Warmup some shader variants
-            Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
-
-            InitializeSceneBoundariesChecker(isDebugMode);
-
-            RenderProfileManifest.i.Initialize();
-            Environment.i.Initialize(this, this);
+            sceneSortDirty = true;
+            positionDirty = true;
+            lastSortFrame = 0;
+            enabled = true;
+            initialized = true;
+            
+            Environment.i.debugController.OnDebugModeSet += OnDebugModeSet;
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
-            if (startDecentralandAutomatically)
-            {
-                WebInterface.StartDecentraland();
-            }
+            WebInterface.StartDecentraland();
 
             Environment.i.parcelScenesCleaner.Start();
 
             if (deferredMessagesDecoding) // We should be able to delete this code
-                StartCoroutine(DeferredDecoding()); //
+                CoroutineStarter.Start(DeferredDecoding()); //
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneIdChange;
 
-            //TODO(Brian): Move those suscriptions elsewhere when we have the PoolManager in its own
-            //             assembly. (already done in PR #1149, not merged yet)
+            //TODO(Brian): Move those suscriptions elsewhere.
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet += Environment.i.physicsSyncController.MarkDirty;
+            PoolManager.i.OnGet -= Environment.i.cullingController.objectsTracker.MarkDirty;
+            PoolManager.i.OnGet += Environment.i.cullingController.objectsTracker.MarkDirty;
 
 #if !UNITY_EDITOR
             worldEntryPoint = new EntryPoint_World(this); // independent subsystem => put at entrypoint but not at environment
@@ -84,7 +71,16 @@ namespace DCL
             }
         }
 
-        void Start()
+        private void OnDebugModeSet()
+        {
+            //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
+            //             case. Calling Initialize multiple times in a row is safe.
+            Environment.i.Initialize();
+            Environment.i.worldBlockersController.SetEnabled(false);
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
+        }
+
+        public void Start()
         {
             if (prewarmSceneMessagesPool)
             {
@@ -102,24 +98,24 @@ namespace DCL
             componentFactory.PrewarmPools();
         }
 
-        public void Restart()
+        public void OnDestroy()
         {
-            Environment.i.Restart(this, this);
-
-            Environment.i.parcelScenesCleaner.ForceCleanup();
-        }
-
-        void OnDestroy()
-        {
+            initialized = false;
             PoolManager.i.OnGet -= Environment.i.physicsSyncController.MarkDirty;
+            PoolManager.i.OnGet -= Environment.i.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
+            Environment.i.debugController.OnDebugModeSet -= OnDebugModeSet;
+
             Environment.i.parcelScenesCleaner.Stop();
             Environment.i.cullingController.Stop();
         }
 
 
-        private void Update()
+        public void Update()
         {
+            if (!enabled)
+                return;
+
             InputController_Legacy.i.Update();
 
             Environment.i.pointerEventsController.Update();
@@ -134,8 +130,11 @@ namespace DCL
             Environment.i.performanceMetricsController?.Update();
         }
 
-        private void LateUpdate()
+        public void LateUpdate()
         {
+            if (!enabled)
+                return;
+
             Environment.i.physicsSyncController.Sync();
         }
 
@@ -164,15 +163,6 @@ namespace DCL
 
         //======================================================================
 
-        //NOTE(Brian): For performance reasons, these events may need to be removed for production.
-        public Action<string> OnMessageWillQueue;
-        public Action<string> OnMessageWillDequeue;
-
-        public Action<string> OnMessageProcessStart;
-        public Action<string> OnMessageProcessEnds;
-
-        public Action<string> OnMessageDecodeStart;
-        public Action<string> OnMessageDecodeEnds;
 
 #if UNITY_EDITOR
         public delegate void ProcessDelegate(string sceneId, string method);
@@ -180,19 +170,11 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoStart;
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
-        [NonSerialized] public bool deferredMessagesDecoding = false;
+        [NonSerialized]
+        public bool deferredMessagesDecoding = false;
+
         Queue<string> payloadsToDecode = new Queue<string>();
         const float MAX_TIME_FOR_DECODE = 0.005f;
-        public bool msgStepByStep = false;
-
-        public T SafeFromJson<T>(string data)
-        {
-            OnMessageDecodeStart?.Invoke("Misc");
-            T result = Utils.SafeFromJson<T>(data);
-            OnMessageDecodeEnds?.Invoke("Misc");
-
-            return result;
-        }
 
         public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
         {
@@ -203,11 +185,13 @@ namespace DCL
 
             ParcelScene scene;
             bool res = false;
+            WorldState worldState = Environment.i.worldState;
+            DebugConfig debugConfig = DataStore.debugConfig;
 
-            if (loadedScenes.TryGetValue(sceneId, out scene))
+            if (worldState.loadedScenes.TryGetValue(sceneId, out scene))
             {
 #if UNITY_EDITOR
-                if (debugScenes && scene is GlobalScene && ignoreGlobalScenes)
+                if (debugConfig.soloScene && scene is GlobalScene && debugConfig.ignoreGlobalScenes)
                 {
                     return false;
                 }
@@ -220,7 +204,7 @@ namespace DCL
 #if UNITY_EDITOR
                 OnMessageProcessInfoStart?.Invoke(sceneId, method);
 #endif
-                OnMessageProcessStart?.Invoke(method);
+                ProfilingEvents.OnMessageProcessStart?.Invoke(method);
 
                 switch (method)
                 {
@@ -324,7 +308,7 @@ namespace DCL
                         return true;
                 }
 
-                OnMessageProcessEnds?.Invoke(method);
+                ProfilingEvents.OnMessageProcessEnds?.Invoke(method);
 
 #if UNITY_EDITOR
                 OnMessageProcessInfoEnds?.Invoke(sceneId, method);
@@ -345,7 +329,7 @@ namespace DCL
 
         public void ParseQuery(object payload, string sceneId)
         {
-            ParcelScene scene = loadedScenes[sceneId];
+            ParcelScene scene = Environment.i.worldState.loadedScenes[sceneId];
 
             if (!(payload is RaycastQuery raycastQuery))
                 return;
@@ -357,16 +341,15 @@ namespace DCL
             PhysicsCast.i.Query(raycastQuery);
         }
 
-        public string SendSceneMessage(string payload)
+        public void SendSceneMessage(string payload)
         {
-            return SendSceneMessage(payload, deferredMessagesDecoding);
+            SendSceneMessage(payload, deferredMessagesDecoding);
         }
 
-        private string SendSceneMessage(string payload, bool enqueue)
+        private void SendSceneMessage(string payload, bool enqueue)
         {
             string[] chunks = payload.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             int count = chunks.Length;
-            string lastBusId = null;
 
             for (int i = 0; i < count; i++)
             {
@@ -376,16 +359,14 @@ namespace DCL
                 }
                 else
                 {
-                    lastBusId = DecodeAndEnqueue(chunks[i]);
+                    DecodeAndEnqueue(chunks[i]);
                 }
             }
-
-            return lastBusId;
         }
 
-        private string DecodeAndEnqueue(string payload)
+        private void DecodeAndEnqueue(string payload)
         {
-            OnMessageDecodeStart?.Invoke("Misc");
+            ProfilingEvents.OnMessageDecodeStart?.Invoke("Misc");
 
             string sceneId;
             string message;
@@ -394,7 +375,7 @@ namespace DCL
 
             if (!MessageDecoder.DecodePayloadChunk(payload, out sceneId, out message, out messageTag, out sendSceneMessage))
             {
-                return null;
+                return;
             }
 
             MessagingBus.QueuedSceneMessage_Scene queuedMessage;
@@ -408,9 +389,7 @@ namespace DCL
 
             EnqueueSceneMessage(queuedMessage);
 
-            OnMessageDecodeEnds?.Invoke("Misc");
-
-            return "";
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke("Misc");
         }
 
         private IEnumerator DeferredDecoding()
@@ -439,7 +418,7 @@ namespace DCL
 
         public void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message)
         {
-            TryGetScene(message.sceneId, out ParcelScene scene);
+            Environment.i.worldState.TryGetScene(message.sceneId, out ParcelScene scene);
 
             Environment.i.messagingControllersManager.AddControllerIfNotExists(this, message.sceneId);
 
@@ -458,10 +437,7 @@ namespace DCL
         #region SCENES_MANAGEMENT
 
         //======================================================================
-        public HashSet<string> readyScenes = new HashSet<string>();
-        public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
-        [System.NonSerialized] public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
-
+        public event Action<string> OnReadyScene;
 
         public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
         {
@@ -480,10 +456,10 @@ namespace DCL
                 data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
             }
 
-            if (loadedScenes.ContainsKey(data.id))
+            if (Environment.i.worldState.loadedScenes.ContainsKey(data.id))
             {
                 Debug.LogWarning($"Scene {data.id} is already loaded.");
-                return loadedScenes[data.id];
+                return Environment.i.worldState.loadedScenes[data.id];
             }
 
             var go = new GameObject();
@@ -496,11 +472,11 @@ namespace DCL
             if (DCLCharacterController.i != null)
                 newScene.InitializeDebugPlane();
 
-            scenesSortedByDistance.Add(newScene);
+            Environment.i.worldState.scenesSortedByDistance.Add(newScene);
 
             Environment.i.messagingControllersManager.AddControllerIfNotExists(this, data.id);
 
-            loadedScenes.Add(data.id, newScene);
+            Environment.i.worldState.loadedScenes.Add(data.id, newScene);
             OnNewSceneAdded?.Invoke(newScene);
 
             return newScene;
@@ -508,95 +484,26 @@ namespace DCL
 
         public void SendSceneReady(string sceneId)
         {
-            readyScenes.Add(sceneId);
+            Environment.i.worldState.readyScenes.Add(sceneId);
 
             Environment.i.messagingControllersManager.SetSceneReady(sceneId);
 
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
 
             Environment.i.worldBlockersController.SetupWorldBlockers();
+
+            OnReadyScene?.Invoke(sceneId);
         }
 
-        public string TryToGetSceneCoordsID(string id)
-        {
-            if (loadedScenes.ContainsKey(id))
-                return loadedScenes[id].sceneData.basePosition.ToString();
-
-            return id;
-        }
-
-        public bool TryGetScene(string id, out ParcelScene scene)
-        {
-            scene = null;
-
-            if (!loadedScenes.ContainsKey(id))
-                return false;
-
-            scene = loadedScenes[id];
-            return true;
-        }
-
-        public Vector3 ConvertUnityToScenePosition(Vector3 pos, ParcelScene scene = null)
-        {
-            if (scene == null)
-            {
-                string sceneId = currentSceneId;
-
-                if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
-                    scene = loadedScenes[currentSceneId];
-                else
-                    return pos;
-            }
-
-            Vector3 worldPosition = DCLCharacterController.i.characterPosition.UnityToWorldPosition(pos);
-            return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
-        }
-
-        public Vector3 ConvertSceneToUnityPosition(Vector3 pos, ParcelScene scene = null)
-        {
-            if (scene == null)
-            {
-                string sceneId = currentSceneId;
-
-                if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
-                    scene = loadedScenes[currentSceneId];
-                else
-                    return pos;
-            }
-
-            Vector3 sceneRealPosition = scene.gameObject.transform.position;
-            Vector3 sceneFictionPosition = new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y);
-            Vector3 sceneOffset = sceneRealPosition - sceneFictionPosition;
-            Vector3 solvedPosition = pos + sceneOffset;
-            return solvedPosition;
-        }
 
         public void ActivateBuilderInWorldEditScene()
         {
-            InitializeSceneBoundariesChecker(true);
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
 
         public void DeactivateBuilderInWorldEditScene()
         {
-            InitializeSceneBoundariesChecker(false);
-        }
-
-        void InitializeSceneBoundariesChecker(bool debugMode)
-        {
-            if (!useBoundariesChecker) return;
-
-            if (boundariesChecker != null)
-                boundariesChecker.Stop();
-
-            if (debugMode)
-            {
-                boundariesChecker = new SceneBoundariesDebugModeChecker();
-                boundariesChecker.timeBetweenChecks = 0f;
-            }
-            else
-            {
-                boundariesChecker = new SceneBoundariesChecker();
-            }
+            Environment.i.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         }
 
         private void SetPositionDirty(DCLCharacterPosition character)
@@ -622,14 +529,16 @@ namespace DCL
             }
         }
 
-        private void SortScenesByDistance()
+        public void SortScenesByDistance()
         {
             if (DCLCharacterController.i == null) return;
 
-            currentSceneId = null;
-            scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+            WorldState worldState = Environment.i.worldState;
 
-            using (var iterator = scenesSortedByDistance.GetEnumerator())
+            worldState.currentSceneId = null;
+            worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+
+            using (var iterator = Environment.i.worldState.scenesSortedByDistance.GetEnumerator())
             {
                 ParcelScene scene;
                 bool characterIsInsideScene;
@@ -642,16 +551,27 @@ namespace DCL
 
                     characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
 
-                    if (scene.sceneData.id != globalSceneId && characterIsInsideScene)
+                    if (scene.sceneData.id != worldState.globalSceneId && characterIsInsideScene)
                     {
-                        currentSceneId = scene.sceneData.id;
+                        worldState.currentSceneId = scene.sceneData.id;
                         break;
                     }
                 }
             }
 
-            if (!string.IsNullOrEmpty(currentSceneId))
-                CommonScriptableObjects.sceneID.Set(currentSceneId);
+            if (string.IsNullOrEmpty(worldState.currentSceneId))
+            {
+                // When we don't know the current scene yet, we must lock the rendering from enabling until it is set
+                CommonScriptableObjects.rendererState.AddLock(this);
+            }
+            else
+            {
+                // 1. Set current scene id
+                CommonScriptableObjects.sceneID.Set(worldState.currentSceneId);
+
+                // 2. Attempt to remove SceneController's lock on rendering
+                CommonScriptableObjects.rendererState.RemoveLock(this);
+            }
 
             OnSortScenes?.Invoke();
         }
@@ -669,7 +589,7 @@ namespace DCL
 
         private void OnCurrentSceneIdChange(string newSceneId, string prevSceneId)
         {
-            if (TryGetScene(newSceneId, out ParcelScene newCurrentScene) && !newCurrentScene.isReady)
+            if (Environment.i.worldState.TryGetScene(newSceneId, out ParcelScene newCurrentScene) && !newCurrentScene.isReady)
             {
                 CommonScriptableObjects.rendererState.AddLock(newCurrentScene);
 
@@ -681,39 +601,43 @@ namespace DCL
         {
             LoadParcelScenesMessage.UnityParcelScene scene;
 
-            OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
-            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
-            OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
+            ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_LOAD);
+            scene = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
             if (scene == null || scene.id == null) return;
 
             var sceneToLoad = scene;
 
+
+            DebugConfig debugConfig = DataStore.debugConfig;
 #if UNITY_EDITOR
-            if (debugScenes && sceneToLoad.basePosition.ToString() != debugSceneCoords.ToString())
+            if (debugConfig.soloScene && sceneToLoad.basePosition.ToString() != debugConfig.soloSceneCoords.ToString())
             {
                 SendSceneReady(sceneToLoad.id);
                 return;
             }
 #endif
 
-            OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
+            ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            if (!loadedScenes.ContainsKey(sceneToLoad.id))
+            WorldState worldState = Environment.i.worldState;
+
+            if (!worldState.loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
 
-                if (isDebugMode)
+                if (debugConfig.isDebugMode)
                 {
                     newScene.InitializeDebugPlane();
                 }
 
                 newScene.ownerController = this;
-                loadedScenes.Add(sceneToLoad.id, newScene);
-                scenesSortedByDistance.Add(newScene);
+                worldState.loadedScenes.Add(sceneToLoad.id, newScene);
+                worldState.scenesSortedByDistance.Add(newScene);
 
                 sceneSortDirty = true;
 
@@ -725,7 +649,7 @@ namespace DCL
                     Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
             }
 
-            OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
+            ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
         }
 
 
@@ -733,12 +657,12 @@ namespace DCL
         {
             LoadParcelScenesMessage.UnityParcelScene scene;
 
-            OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_UPDATE);
-            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
-            OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
+            ProfilingEvents.OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_UPDATE);
+            scene = Utils.SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
 
-            if (loadedScenes.ContainsKey(scene.id))
-                loadedScenes[scene.id].SetUpdateData(scene);
+            if (Environment.i.worldState.loadedScenes.ContainsKey(scene.id))
+                Environment.i.worldState.loadedScenes[scene.id].SetUpdateData(scene);
             else
                 LoadParcelScenesExecute(decentralandSceneJSON);
         }
@@ -750,9 +674,9 @@ namespace DCL
 
             var sceneToLoad = scene;
 
-            OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_UPDATE);
-            loadedScenes[sceneToLoad.id].SetUpdateData(sceneToLoad);
-            OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
+            ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_UPDATE);
+            Environment.i.worldState.loadedScenes[sceneToLoad.id].SetUpdateData(sceneToLoad);
+            ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
         }
 
         public void UnloadScene(string sceneKey)
@@ -760,7 +684,7 @@ namespace DCL
             var queuedMessage = new MessagingBus.QueuedSceneMessage()
             { type = MessagingBus.QueuedSceneMessage.Type.UNLOAD_PARCEL, message = sceneKey };
 
-            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
+            ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
             Environment.i.messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
 
@@ -769,19 +693,21 @@ namespace DCL
 
         public void UnloadParcelSceneExecute(string sceneKey)
         {
-            OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_DESTROY);
+            ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent)
+            WorldState worldState = Environment.i.worldState;
+
+            if (!worldState.loadedScenes.ContainsKey(sceneKey) || worldState.loadedScenes[sceneKey].isPersistent)
             {
                 return;
             }
 
-            var scene = loadedScenes[sceneKey];
+            var scene = worldState.loadedScenes[sceneKey];
 
-            loadedScenes.Remove(sceneKey);
+            worldState.loadedScenes.Remove(sceneKey);
 
             // Remove the scene id from the msg. priorities list
-            scenesSortedByDistance.Remove(scene);
+            worldState.scenesSortedByDistance.Remove(scene);
 
             // Remove messaging controller for unloaded scene
             Environment.i.messagingControllersManager.RemoveController(scene.sceneData.id);
@@ -796,12 +722,12 @@ namespace DCL
                 }
             }
 
-            OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
+            ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
         }
 
         public void UnloadAllScenes()
         {
-            var list = loadedScenes.ToArray();
+            var list = Environment.i.worldState.loadedScenes.ToArray();
             for (int i = 0; i < list.Length; i++)
             {
                 UnloadParcelSceneExecute(list[i].Key);
@@ -816,7 +742,7 @@ namespace DCL
                 message = decentralandSceneJSON
             };
 
-            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
+            ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
             Environment.i.messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
 
@@ -829,7 +755,7 @@ namespace DCL
             var queuedMessage = new MessagingBus.QueuedSceneMessage()
             { type = MessagingBus.QueuedSceneMessage.Type.UPDATE_PARCEL, message = decentralandSceneJSON };
 
-            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_UPDATE);
+            ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_UPDATE);
 
             Environment.i.messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
@@ -838,7 +764,7 @@ namespace DCL
         {
             var queuedMessage = new MessagingBus.QueuedSceneMessage() { type = MessagingBus.QueuedSceneMessage.Type.UNLOAD_SCENES };
 
-            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
+            ProfilingEvents.OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
             Environment.i.messagingControllersManager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
@@ -846,14 +772,18 @@ namespace DCL
         public void CreateUIScene(string json)
         {
 #if UNITY_EDITOR
-            if (debugScenes && ignoreGlobalScenes)
+            DebugConfig debugConfig = DataStore.debugConfig;
+
+            if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
                 return;
 #endif
-            CreateUISceneMessage uiScene = SafeFromJson<CreateUISceneMessage>(json);
+            CreateUISceneMessage uiScene = Utils.SafeFromJson<CreateUISceneMessage>(json);
 
             string uiSceneId = uiScene.id;
 
-            if (loadedScenes.ContainsKey(uiSceneId))
+            WorldState worldState = Environment.i.worldState;
+
+            if (worldState.loadedScenes.ContainsKey(uiSceneId))
                 return;
 
             var newGameObject = new GameObject("UI Scene - " + uiSceneId);
@@ -872,12 +802,12 @@ namespace DCL
 
             newScene.SetData(data);
 
-            loadedScenes.Add(uiSceneId, newScene);
+            worldState.loadedScenes.Add(uiSceneId, newScene);
             OnNewSceneAdded?.Invoke(newScene);
 
-            globalSceneId = uiSceneId;
+            worldState.globalSceneId = uiSceneId;
 
-            Environment.i.messagingControllersManager.AddControllerIfNotExists(this, globalSceneId, isGlobal: true);
+            Environment.i.messagingControllersManager.AddControllerIfNotExists(this, worldState.globalSceneId, isGlobal: true);
 
             if (VERBOSE)
             {
@@ -887,7 +817,7 @@ namespace DCL
 
         public void IsolateScene(ParcelScene sceneToActive)
         {
-            foreach (ParcelScene scene in scenesSortedByDistance)
+            foreach (ParcelScene scene in Environment.i.worldState.scenesSortedByDistance)
             {
                 if (scene != sceneToActive) scene.gameObject.SetActive(false);
             }
@@ -895,114 +825,25 @@ namespace DCL
 
         public void ReIntegrateIsolatedScene()
         {
-            foreach (ParcelScene scene in scenesSortedByDistance)
+            foreach (ParcelScene scene in Environment.i.worldState.scenesSortedByDistance)
             {
                 scene.gameObject.SetActive(true);
             }
         }
 
-        public bool IsCharacterInsideScene(ParcelScene scene)
-        {
-            return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
-        }
-
-        public HashSet<Vector2Int> GetAllLoadedScenesCoords()
-        {
-            HashSet<Vector2Int> allLoadedParcelCoords = new HashSet<Vector2Int>();
-
-            // Create fast (hashset) collection of loaded parcels coords
-            foreach (var element in loadedScenes)
-            {
-                if (!element.Value.isReady) continue;
-
-                allLoadedParcelCoords.UnionWith(element.Value.parcels);
-            }
-
-            return allLoadedParcelCoords;
-        }
-
         //======================================================================
 
         #endregion
 
         //======================================================================
-
-
-        //======================================================================
-
-        #region DEBUG_MANAGEMENT
-
-        //======================================================================
-        [Header("Debug Tools")] public GameObject fpsPanel;
-        [Header("Debug Panel")] public GameObject engineDebugPanel;
-        public GameObject sceneDebugPanel;
-        public bool debugScenes;
-        public Vector2Int debugSceneCoords;
-        public static Action OnDebugModeSet;
-        [System.NonSerialized] public bool isDebugMode;
-        [System.NonSerialized] public bool isWssDebugMode;
-        public static bool VERBOSE = false;
-        public bool ignoreGlobalScenes = false;
-
-        // Beware this SetDebug() may be called before Awake() somehow...
-        [ContextMenu("Set Debug mode")]
-        public void SetDebug()
-        {
-            Debug.unityLogger.logEnabled = true;
-
-            isDebugMode = true;
-            fpsPanel.SetActive(true);
-
-            InitializeSceneBoundariesChecker(true);
-
-            OnDebugModeSet?.Invoke();
-
-            //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
-            //             case. Calling Initialize multiple times in a row is safe.
-            Environment.i.Initialize(this, this);
-            Environment.i.worldBlockersController.SetEnabled(false);
-        }
-
-        public void HideFPSPanel()
-        {
-            fpsPanel.SetActive(false);
-        }
-
-        public void ShowFPSPanel()
-        {
-            fpsPanel.SetActive(true);
-        }
-
-        public void SetSceneDebugPanel()
-        {
-            engineDebugPanel.SetActive(false);
-            sceneDebugPanel.SetActive(true);
-        }
-
-        public void SetEngineDebugPanel()
-        {
-            sceneDebugPanel.SetActive(false);
-            engineDebugPanel.SetActive(true);
-        }
-
-        //======================================================================
-
-        #endregion
-
-        //======================================================================
-
 
         public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
-        [System.NonSerialized] public bool prewarmSceneMessagesPool = true;
-        [System.NonSerialized] public bool useBoundariesChecker = true;
+        [System.NonSerialized]
+        public bool prewarmSceneMessagesPool = true;
 
-        [System.NonSerialized] public bool prewarmEntitiesPool = true;
-
-        public string globalSceneId { get; private set; }
-        public string currentSceneId { get; private set; }
-
-        public SceneBoundariesChecker boundariesChecker { get; private set; }
+        [System.NonSerialized]
+        public bool prewarmEntitiesPool = true;
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;
@@ -1021,16 +862,5 @@ namespace DCL
 
 
         public const string EMPTY_GO_POOL_NAME = "Empty";
-
-
-        public void SetDisableAssetBundles()
-        {
-            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
-        }
-
-        public void BuilderReady()
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        }
     }
 }

@@ -13,6 +13,7 @@ public class UserProfileModel
     }
 
     public string userId;
+    public string ethAddress;
     public string name;
     public string email;
     public string description;

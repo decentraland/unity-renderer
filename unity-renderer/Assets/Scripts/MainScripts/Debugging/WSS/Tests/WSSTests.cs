@@ -29,7 +29,6 @@ namespace Tests
             GameObject wssControllerGO = new GameObject("WSS Controller");
 
             WSSController wssController = wssControllerGO.AddComponent<WSSController>();
-            wssController.sceneController = sceneController;
             DCLCharacterController.i.gravity = 0;
 
             yield return new WaitForSeconds(1.0f);
@@ -97,9 +96,9 @@ namespace Tests
 
                 yield return null;
 
-                Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID),
+                Assert.IsTrue(DCL.Environment.i.worldState.loadedScenes.ContainsKey(loadedSceneID),
                     "Expected loadedScene not found!");
-                Assert.IsTrue(sceneController.loadedScenes[loadedSceneID] != null,
+                Assert.IsTrue(DCL.Environment.i.worldState.loadedScenes[loadedSceneID] != null,
                     "Expected loadedScene found but was null!!!");
             }
 

@@ -107,12 +107,12 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
         if (screenPoint.z > 0)
         {
-            RectTransform canvasRect = (RectTransform)canvas.transform;
+            RectTransform canvasRect = (RectTransform) canvas.transform;
             float width = canvasRect.rect.width;
             float height = canvasRect.rect.height;
             screenPoint.Scale(new Vector3(width, height, 0));
 
-            ((RectTransform)backgroundTransform).anchoredPosition = screenPoint;
+            ((RectTransform) backgroundTransform).anchoredPosition = screenPoint;
         }
     }
 }

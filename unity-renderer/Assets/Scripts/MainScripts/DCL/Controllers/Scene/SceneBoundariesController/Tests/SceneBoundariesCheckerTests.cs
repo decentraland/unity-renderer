@@ -1,6 +1,7 @@
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace SceneBoundariesCheckerTests
         {
             yield return base.SetUp();
 
-            sceneController.boundariesChecker.timeBetweenChecks = 0f;
+            Environment.i.sceneBoundsChecker.timeBetweenChecks = 0f;
         }
 
         [UnityTest]
@@ -109,7 +110,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(-28, 1, 8)});
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
@@ -122,7 +123,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(-28, 1, 8)});
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
@@ -134,18 +135,13 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(-28, 1, 8)});
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(2, 1, 2) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(2, 1, 2)});
             yield return null;
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.IsTrue(dclAudioSource.enabled);
-        }
-
-        public bool MeshIsInvalid(DecentralandEntity.MeshesInfo meshesInfo)
-        {
-            return SBC_Asserts.MeshIsInvalid(meshesInfo);
         }
     }
 }

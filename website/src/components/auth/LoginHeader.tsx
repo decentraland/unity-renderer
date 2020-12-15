@@ -1,9 +1,9 @@
 import React from "react";
-import { Isologotipo } from "../common/Isologotipo";
+import { MainIsologotipo } from "../common/MainIsologotipo";
 
 export const LoginHeader: React.FC = () => (
   <div className="eth-login-description">
-    <Isologotipo />
+    <MainIsologotipo />
     <p>
       Immerse yourself into the first virtual world fully owned by its users.
     </p>

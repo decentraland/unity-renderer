@@ -1,16 +1,21 @@
-﻿namespace DCL.Rendering
+﻿using System;
+
+namespace DCL.Rendering
 {
     /// <summary>
-    /// This class contains the settings CullingController. Mainly used by the quality settings panel. 
+    /// This class contains the settings CullingController. Mainly used by the quality settings panel.
     /// </summary>
     [System.Serializable]
     public class CullingControllerSettings
     {
+        [NonSerialized] public float maxTimeBudget = 4 / 1000f;
         public bool enableObjectCulling = true;
         public bool enableShadowCulling = true;
         public bool enableAnimationCulling = true;
 
         public float enableAnimationCullingDistance = 7.5f;
+
+        public int ignoredLayersMask = 0;
 
         public CullingControllerProfile rendererProfile =
             new CullingControllerProfile

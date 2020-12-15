@@ -17,7 +17,8 @@ import {
   COMMS_SERVICE,
   FETCH_META_CONTENT_SERVICE,
   RESIZE_SERVICE,
-  PIN_CATALYST
+  PIN_CATALYST,
+  HOTSCENES_SERVICE
 } from 'config'
 
 export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
@@ -31,6 +32,8 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
       updateContentServer: '',
       commsServer: '',
       resizeService: '',
+      hotScenesService: '',
+      exploreRealmsService: '',
       realm: undefined,
       candidates: [],
       addedCandidates: [],
@@ -123,6 +126,8 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
     updateContentServer: UPDATE_CONTENT_SERVICE && configOverride ? UPDATE_CONTENT_SERVICE : domain + '/content',
     commsServer: COMMS_SERVICE && configOverride ? COMMS_SERVICE : domain + '/comms',
     resizeService: RESIZE_SERVICE && configOverride ? RESIZE_SERVICE : domain + '/lambdas/images',
+    hotScenesService: HOTSCENES_SERVICE && configOverride ? HOTSCENES_SERVICE : domain + '/lambdas/explore/hot-scenes',
+    exploreRealmsService: domain + '/lambdas/explore/realms',
     realm
   }
 }

@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 namespace VariableTests
 {
     public class BaseVariableTest<ValueType, VariableType>
-        where VariableType : BaseVariable<ValueType>
+        where VariableType : BaseVariableAsset<ValueType>
     {
         protected void VariableValueIsChangedProperly(ValueType value1, ValueType value2)
         {
@@ -25,7 +25,7 @@ namespace VariableTests
 
             bool onChangeWasCalled = false;
 
-            BaseVariable<ValueType>.Change onChange = (x, y) => { onChangeWasCalled = true; };
+            BaseVariableAsset<ValueType>.Change onChange = (x, y) => { onChangeWasCalled = true; };
 
             variable.OnChange += onChange;
 
