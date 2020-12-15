@@ -37,6 +37,11 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.BASIC_MATERIAL;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
@@ -44,6 +49,11 @@ namespace DCL.Components
 
             entity.RemoveSharedComponent(typeof(PBRMaterial));
             base.AttachTo(entity);
+        }
+
+        public override object GetModel()
+        {
+            return model;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -57,7 +67,7 @@ namespace DCL.Components
             material.name = "BasicMaterial_" + id;
 #endif
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.texture))
             {

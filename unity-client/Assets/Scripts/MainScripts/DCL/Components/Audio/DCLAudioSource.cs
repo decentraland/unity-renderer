@@ -19,7 +19,7 @@ namespace DCL.Components
 
         public float playTime => audioSource.time;
         public Model model;
-        AudioSource audioSource;
+        internal AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
         private void Awake()
@@ -37,11 +37,16 @@ namespace DCL.Components
             lastDCLAudioClip = dclAudioClip;
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;

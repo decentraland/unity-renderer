@@ -16,12 +16,15 @@ import {
   RenderProfile,
   BuilderConfiguration,
   Wearable,
-  KernelConfigForRenderer
+  KernelConfigForRenderer,
+  RealmsInfoForRenderer
 } from 'shared/types'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
 import { defaultLogger } from 'shared/logger'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
+import { renderStateObservable } from '../shared/world/worldState'
+import { DeploymentResult } from '../shared/apis/SceneStateStorageController/types'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -132,15 +135,19 @@ export class UnityInterface {
   }
 
   public SetDebug() {
-    this.gameInstance.SendMessage('SceneController', 'SetDebug')
+    this.gameInstance.SendMessage('Main', 'SetDebug')
   }
 
   public LoadProfile(profile: ProfileForRenderer) {
-    this.gameInstance.SendMessage('SceneController', 'LoadProfile', JSON.stringify(profile))
+    this.gameInstance.SendMessage('Main', 'LoadProfile', JSON.stringify(profile))
   }
 
   public SetRenderProfile(id: RenderProfile) {
-    this.gameInstance.SendMessage('SceneController', 'SetRenderProfile', JSON.stringify({ id: id }))
+    this.gameInstance.SendMessage('Main', 'SetRenderProfile', JSON.stringify({ id: id }))
+  }
+
+  public DumpScenesLoadInfo() {
+    this.gameInstance.SendMessage('Main', 'DumpScenesLoadInfo')
   }
 
   public CreateUIScene(data: { id: string; baseUrl: string }) {
@@ -150,7 +157,7 @@ export class UnityInterface {
      * kind of scenes is the Avatar scene. All the avatars are just GLTFs in
      * a scene.
      */
-    this.gameInstance.SendMessage('SceneController', 'CreateUIScene', JSON.stringify(data))
+    this.gameInstance.SendMessage('Main', 'CreateUIScene', JSON.stringify(data))
   }
 
   /** Sends the camera position & target to the engine */
@@ -175,18 +182,18 @@ export class UnityInterface {
       throw new Error('Only one scene at a time!')
     }
 
-    this.gameInstance.SendMessage('SceneController', 'LoadParcelScenes', JSON.stringify(parcelsToLoad[0]))
+    this.gameInstance.SendMessage('Main', 'LoadParcelScenes', JSON.stringify(parcelsToLoad[0]))
   }
 
   public UpdateParcelScenes(parcelsToLoad: LoadableParcelScene[]) {
     if (parcelsToLoad.length > 1) {
       throw new Error('Only one scene at a time!')
     }
-    this.gameInstance.SendMessage('SceneController', 'UpdateParcelScenes', JSON.stringify(parcelsToLoad[0]))
+    this.gameInstance.SendMessage('Main', 'UpdateParcelScenes', JSON.stringify(parcelsToLoad[0]))
   }
 
   public UnloadScene(sceneId: string) {
-    this.gameInstance.SendMessage('SceneController', 'UnloadScene', sceneId)
+    this.gameInstance.SendMessage('Main', 'UnloadScene', sceneId)
   }
 
   public SendSceneMessage(messages: string) {
@@ -194,31 +201,32 @@ export class UnityInterface {
   }
 
   public SetSceneDebugPanel() {
-    this.gameInstance.SendMessage('SceneController', 'SetSceneDebugPanel')
+    this.gameInstance.SendMessage('Main', 'SetSceneDebugPanel')
   }
 
   public ShowFPSPanel() {
-    this.gameInstance.SendMessage('SceneController', 'ShowFPSPanel')
+    this.gameInstance.SendMessage('Main', 'ShowFPSPanel')
   }
 
   public HideFPSPanel() {
-    this.gameInstance.SendMessage('SceneController', 'HideFPSPanel')
+    this.gameInstance.SendMessage('Main', 'HideFPSPanel')
   }
 
   public SetEngineDebugPanel() {
-    this.gameInstance.SendMessage('SceneController', 'SetEngineDebugPanel')
+    this.gameInstance.SendMessage('Main', 'SetEngineDebugPanel')
   }
 
   public SetDisableAssetBundles() {
-    this.gameInstance.SendMessage('SceneController', 'SetDisableAssetBundles')
+    this.gameInstance.SendMessage('Main', 'SetDisableAssetBundles')
   }
 
   public ActivateRendering() {
-    this.gameInstance.SendMessage('SceneController', 'ActivateRendering')
+    this.gameInstance.SendMessage('Main', 'ActivateRendering')
   }
 
   public DeactivateRendering() {
-    this.gameInstance.SendMessage('SceneController', 'DeactivateRendering')
+    renderStateObservable.notifyObservers(false)
+    this.gameInstance.SendMessage('Main', 'DeactivateRendering')
   }
 
   public ReportFocusOn() {
@@ -234,29 +242,29 @@ export class UnityInterface {
   }
 
   public SetCursorState(locked: boolean) {
-    this.gameInstance.SendMessage('MouseCatcher', 'UnlockCursorBrowser', locked ? 1 : 0)
+    this.gameInstance.SendMessage('Bridges', 'UnlockCursorBrowser', locked ? 1 : 0)
   }
 
   public SetBuilderReady() {
-    this.gameInstance.SendMessage('SceneController', 'BuilderReady')
+    this.gameInstance.SendMessage('Main', 'BuilderReady')
   }
 
   public AddUserProfileToCatalog(peerProfile: ProfileForRenderer) {
-    this.gameInstance.SendMessage('SceneController', 'AddUserProfileToCatalog', JSON.stringify(peerProfile))
+    this.gameInstance.SendMessage('Main', 'AddUserProfileToCatalog', JSON.stringify(peerProfile))
   }
 
   public AddWearablesToCatalog(wearables: Wearable[]) {
     for (const wearable of wearables) {
-      this.gameInstance.SendMessage('SceneController', 'AddWearableToCatalog', JSON.stringify(wearable))
+      this.gameInstance.SendMessage('Main', 'AddWearableToCatalog', JSON.stringify(wearable))
     }
   }
 
   public RemoveWearablesFromCatalog(wearableIds: string[]) {
-    this.gameInstance.SendMessage('SceneController', 'RemoveWearablesFromCatalog', JSON.stringify(wearableIds))
+    this.gameInstance.SendMessage('Main', 'RemoveWearablesFromCatalog', JSON.stringify(wearableIds))
   }
 
   public ClearWearableCatalog() {
-    this.gameInstance.SendMessage('SceneController', 'ClearWearableCatalog')
+    this.gameInstance.SendMessage('Main', 'ClearWearableCatalog')
   }
 
   public ShowNotification(notification: Notification) {
@@ -290,7 +298,7 @@ export class UnityInterface {
   public UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
     for (let i = 0; i < info.length; i += MINIMAP_CHUNK_SIZE) {
       const chunk = info.slice(i, i + MINIMAP_CHUNK_SIZE)
-      this.gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
+      this.gameInstance.SendMessage('Main', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
     }
   }
 
@@ -303,23 +311,23 @@ export class UnityInterface {
   }
 
   public AddMessageToChatWindow(message: ChatMessage) {
-    this.gameInstance.SendMessage('SceneController', 'AddMessageToChatWindow', JSON.stringify(message))
+    this.gameInstance.SendMessage('Main', 'AddMessageToChatWindow', JSON.stringify(message))
   }
 
   public InitializeFriends(initializationMessage: FriendsInitializationMessage) {
-    this.gameInstance.SendMessage('SceneController', 'InitializeFriends', JSON.stringify(initializationMessage))
+    this.gameInstance.SendMessage('Main', 'InitializeFriends', JSON.stringify(initializationMessage))
   }
 
   public UpdateFriendshipStatus(updateMessage: FriendshipUpdateStatusMessage) {
-    this.gameInstance.SendMessage('SceneController', 'UpdateFriendshipStatus', JSON.stringify(updateMessage))
+    this.gameInstance.SendMessage('Main', 'UpdateFriendshipStatus', JSON.stringify(updateMessage))
   }
 
   public UpdateUserPresence(status: UpdateUserStatusMessage) {
-    this.gameInstance.SendMessage('SceneController', 'UpdateUserPresence', JSON.stringify(status))
+    this.gameInstance.SendMessage('Main', 'UpdateUserPresence', JSON.stringify(status))
   }
 
   public FriendNotFound(queryString: string) {
-    this.gameInstance.SendMessage('SceneController', 'FriendNotFound', JSON.stringify(queryString))
+    this.gameInstance.SendMessage('Main', 'FriendNotFound', JSON.stringify(queryString))
   }
 
   public RequestTeleport(teleportData: {}) {
@@ -335,20 +343,20 @@ export class UnityInterface {
 
     for (let i = 0; i < chunks.length; i++) {
       const payload = { chunkIndex: i, chunksCount: chunks.length, scenesInfo: chunks[i] }
-      this.gameInstance.SendMessage('SceneController', 'UpdateHotScenesList', JSON.stringify(payload))
+      this.gameInstance.SendMessage('Main', 'UpdateHotScenesList', JSON.stringify(payload))
     }
   }
 
   public SendGIFPointers(id: string, width: number, height: number, pointers: number[], frameDelays: number[]) {
     this.gameInstance.SendMessage(
-      'SceneController',
+      'Main',
       'UpdateGIFPointers',
       JSON.stringify({ id, width, height, pointers, frameDelays })
     )
   }
 
   public SendGIFFetchFailure(id: string) {
-    this.gameInstance.SendMessage('SceneController', 'FailGIFFetch', id)
+    this.gameInstance.SendMessage('Main', 'FailGIFFetch', id)
   }
 
   public ConfigureEmailPrompt(tutorialStep: number) {
@@ -381,7 +389,7 @@ export class UnityInterface {
 
   public ShowAvatarEditorInSignIn() {
     this.gameInstance.SendMessage('HUDController', 'ShowAvatarEditorInSignUp')
-    this.gameInstance.SendMessage('SceneController', 'ForceActivateRendering')
+    this.gameInstance.SendMessage('Main', 'ForceActivateRendering')
   }
 
   public SetUserTalking(userId: string, talking: boolean) {
@@ -396,8 +404,20 @@ export class UnityInterface {
     this.gameInstance.SendMessage('HUDController', 'SetUsersMuted', JSON.stringify({ usersId: usersId, muted: muted }))
   }
 
+  public SetVoiceChatEnabledByScene(enabled: boolean) {
+    this.gameInstance.SendMessage('HUDController', 'SetVoiceChatEnabledByScene', enabled ? 1 : 0)
+  }
+
   public SetKernelConfiguration(config: KernelConfigForRenderer) {
     this.gameInstance.SendMessage('Bridges', 'SetKernelConfiguration', JSON.stringify(config))
+  }
+
+  public UpdateRealmsInfo(realmsInfo: Partial<RealmsInfoForRenderer>) {
+    this.gameInstance.SendMessage('Bridges', 'UpdateRealmsInfo', JSON.stringify(realmsInfo))
+  }
+
+  public SendPublishSceneResult(result: DeploymentResult) {
+    this.gameInstance.SendMessage('Main', 'PublishSceneResult', JSON.stringify(result))
   }
 
   // *********************************************************************************

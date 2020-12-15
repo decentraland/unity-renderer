@@ -1,3 +1,4 @@
+declare var window: Window & { Rollbar: any }
 import { action } from 'typesafe-actions'
 import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
@@ -66,4 +67,17 @@ export function ReportFatalError(event: ExecutionLifecycleEvent, errorInfo?: Fat
     message: event,
     errorInfo
   })
+}
+
+export function ReportSceneError(message: string, error: any) {
+  const eventData = {
+    error,
+    scene: true,
+    message,
+    position: new URLSearchParams(location.search).get('position')
+  }
+  queueTrackingEvent('scene_error', eventData)
+  if (window.Rollbar) {
+    window.Rollbar.error(message, eventData)
+  }
 }

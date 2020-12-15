@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -19,6 +20,11 @@ namespace DCL.Components
         }
 
         public CylinderShape(ParcelScene scene) : base(scene) { }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.CYLINDER_SHAPE;
+        }
 
         public override Mesh GenerateGeometry()
         {

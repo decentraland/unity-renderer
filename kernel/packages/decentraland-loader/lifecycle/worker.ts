@@ -108,6 +108,10 @@ let downloadManager: SceneDataDownloadManager
         }
       })
 
+      connector.on('Scene.reload', (data: { sceneId: string }) => {
+        sceneController.reloadScene(data.sceneId)
+      })
+
       connector.on('Scene.prefetchDone', (opt: { sceneId: string }) => {
         sceneController.reportDataLoaded(opt.sceneId)
       })

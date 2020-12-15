@@ -64,24 +64,28 @@ export async function initialize(segmentKey: string): Promise<void> {
   }
 }
 
+function baseAnalyticsIdentifierContext() {
+  return {
+    explorer_commit_hash: (window as any)['VERSION']
+  }
+}
+
 export function identifyUser(id: string) {
   if (window.analytics) {
-    window.analytics.identify(id, {
-      explorer_commit_hash: (window as any)['VERSION']
-    })
+    window.analytics.identify(id, baseAnalyticsIdentifierContext())
   }
 }
 
 export function identifyEmail(email: string, userId?: string) {
   if (userId) {
-    window.analytics.identify(userId, { email })
+    window.analytics.identify(userId, { email, ...baseAnalyticsIdentifierContext() })
   } else {
-    window.analytics.identify({ email })
+    window.analytics.identify({ email, ...baseAnalyticsIdentifierContext() })
   }
 }
 
 export function queueTrackingEvent(eventName: string, eventData: any) {
-  const data = { ...eventData, time: new Date().toISOString(), sessionId }
+  const data = { ...eventData, time: new Date().toISOString(), sessionId, version: (window as any)['VERSION'] }
 
   if (DEBUG_ANALYTICS) {
     defaultLogger.info(`Tracking event "${eventName}": `, data)

@@ -49,13 +49,13 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
     protected virtual IEnumerator InitScene()
     {
         DCL.Configuration.EnvironmentSettings.DEBUG = true;
-        SceneController.i.SetDebug();
+        Environment.i.debugController.SetDebug();
 
         TestHelpers.InitializeSceneController(false);
 
         yield return new WaitForSeconds(0.01f);
 
-        scene = SceneController.i.CreateTestScene();
+        scene = Environment.i.sceneController.CreateTestScene();
         yield return null;
     }
 }

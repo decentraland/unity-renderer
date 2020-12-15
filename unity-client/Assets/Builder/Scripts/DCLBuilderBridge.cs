@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
 namespace Builder
@@ -106,7 +107,7 @@ namespace Builder
         public void GetMousePosition(string newJson)
         {
             if (LOG_MESSAGES) Debug.Log($"RECEIVE: GetMousePosition {newJson}");
-            MousePayload m = SceneController.i.SafeFromJson<MousePayload>(newJson);
+            MousePayload m = Utils.SafeFromJson<MousePayload>(newJson);
 
             Vector3 mousePosition = new Vector3(m.x, Screen.height - m.y, 0);
             Vector3 hitPoint;
@@ -273,7 +274,7 @@ namespace Builder
         public void UnloadBuilderScene(string sceneKey)
         {
             if (LOG_MESSAGES) Debug.Log($"RECEIVE: UnloadBuilderScene {sceneKey}");
-            SceneController.i?.UnloadScene(sceneKey);
+            Environment.i.sceneController.UnloadScene(sceneKey);
         }
 
         public void SetSelectedEntities(string msj)
@@ -318,10 +319,11 @@ namespace Builder
         private static ParcelScene GetLoadedScene()
         {
             ParcelScene loadedScene = null;
+            WorldState worldState = Environment.i.worldState;
 
-            if (SceneController.i != null && SceneController.i.loadedScenes.Count > 0)
+            if (worldState != null && worldState.loadedScenes.Count > 0)
             {
-                using (var iterator = SceneController.i.loadedScenes.GetEnumerator())
+                using (var iterator = worldState.loadedScenes.GetEnumerator())
                 {
                     iterator.MoveNext();
                     loadedScene = iterator.Current.Value;
@@ -371,7 +373,7 @@ namespace Builder
                 CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
             }
 
-            SceneController.i?.fpsPanel.SetActive(false);
+            Environment.i.debugController.HideFPSPanel();
             SetCaptureKeyboardInputEnabled(false);
         }
 
@@ -591,9 +593,9 @@ namespace Builder
         private void HideHUDs()
         {
             IHUD hud;
-            for (int i = 0; i < (int)HUDController.HUDElementID.COUNT; i++)
+            for (int i = 0; i < (int) HUDController.HUDElementID.COUNT; i++)
             {
-                hud = HUDController.i.GetHUDElement((HUDController.HUDElementID)i);
+                hud = HUDController.i.GetHUDElement((HUDController.HUDElementID) i);
                 if (hud != null)
                 {
                     hud.SetVisibility(false);
@@ -635,7 +637,7 @@ namespace Builder
                 outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
             }
 
-            DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
+            Environment.i.sceneBoundsChecker?.EvaluateEntityPosition(entity.rootEntity);
         }
 
         private void SendOutOfBoundariesEntities()
@@ -649,7 +651,7 @@ namespace Builder
             {
                 for (int i = 0; i < selectedEntities.Count; i++)
                 {
-                    DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
+                    Environment.i.sceneBoundsChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
                 }
             }
         }

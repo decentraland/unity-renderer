@@ -74,7 +74,7 @@ MonoBehaviour:
   m_YAxis:
     Value: 0
     m_MaxSpeed: 2
-    m_AccelTime: 0.2
+    m_AccelTime: 0.4
     m_DecelTime: 0.03
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
@@ -96,8 +96,8 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
-    m_AccelTime: 0.2
+    m_MaxSpeed: 250
+    m_AccelTime: 0.4
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
@@ -332,8 +332,8 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
-    m_AccelTime: 0.2
+    m_MaxSpeed: 250
+    m_AccelTime: 0.3
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
@@ -457,8 +457,8 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
-    m_AccelTime: 0.2
+    m_MaxSpeed: 250
+    m_AccelTime: 0.3
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
@@ -656,8 +656,8 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
-    m_AccelTime: 0.2
+    m_MaxSpeed: 250
+    m_AccelTime: 0.3
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
@@ -968,9 +968,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_VerticalAxis:
-    Value: 29.99998
+    Value: 29.999973
     m_MaxSpeed: 200
-    m_AccelTime: 0.2
+    m_AccelTime: 0.1
     m_DecelTime: 0.03
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
@@ -993,7 +993,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: -45
     m_MaxSpeed: 200
-    m_AccelTime: 0.2
+    m_AccelTime: 0.1
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
@@ -1155,7 +1155,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5902165421965975136}
-  m_LocalRotation: {x: 0.23911744, y: -0.36964384, z: 0.0990457, w: 0.89239913}
+  m_LocalRotation: {x: 0.23911741, y: -0.36964384, z: 0.09904569, w: 0.89239913}
   m_LocalPosition: {x: -553.2, y: -329.36002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []

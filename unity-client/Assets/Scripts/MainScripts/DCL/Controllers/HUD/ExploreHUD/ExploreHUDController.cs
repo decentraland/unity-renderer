@@ -10,7 +10,6 @@ public class ExploreHUDController : IHUD
     internal ExploreHUDView view;
     internal InputAction_Trigger toggleExploreTrigger;
 
-    ExploreMiniMapDataController miniMapDataController;
     FriendTrackerController friendsController;
 
     public event Action OnToggleTriggered;
@@ -42,9 +41,8 @@ public class ExploreHUDController : IHUD
     public void Initialize(IFriendsController friendsController)
     {
         this.friendsController = new FriendTrackerController(friendsController, view.friendColors);
-        miniMapDataController = new ExploreMiniMapDataController();
 
-        view.Initialize(miniMapDataController, this.friendsController);
+        view.Initialize(this.friendsController);
         view.togglePopupButton.gameObject.SetActive(false);
     }
 
@@ -79,7 +77,6 @@ public class ExploreHUDController : IHUD
 
     public void Dispose()
     {
-        miniMapDataController?.Dispose();
         friendsController?.Dispose();
 
         toggleExploreTrigger.OnTriggered -= OnToggleActionTriggered;

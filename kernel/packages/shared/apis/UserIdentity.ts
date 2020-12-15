@@ -4,7 +4,8 @@ import { UserData } from 'shared/types'
 import { getIdentity } from 'shared/session'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { calculateDisplayName } from 'shared/profiles/transformations/processServerProfile'
-import { getCurrentUserProfile } from 'shared/profiles/selectors'
+import { EnsureProfile } from 'shared/profiles/ProfileAsPromise'
+import { loginCompleted } from 'shared/ethereum/provider'
 
 import { ExposableAPI } from './ExposableAPI'
 
@@ -26,6 +27,7 @@ export interface IUserIdentity {
 export class UserIdentity extends ExposableAPI implements IUserIdentity {
   @exposeMethod
   async getUserPublicKey(): Promise<string | null> {
+    await loginCompleted
     const identity = getIdentity()
 
     return identity && identity.hasConnectedWeb3 ? identity.address : null
@@ -33,10 +35,10 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
 
   @exposeMethod
   async getUserData(): Promise<UserData | null> {
+    await loginCompleted
     const identity = getIdentity()
-    const profile = getCurrentUserProfile(globalThis.globalStore.getState())
-
-    if (!identity || !profile || !identity.address) return null
+    if (!identity || !identity.address) return null
+    const profile = await EnsureProfile(identity?.address)
 
     return {
       displayName: calculateDisplayName(identity.address, profile),

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1beb2919801a5f49833bb7df5673e4e, type: 3}
+  m_Name: SoftShadowsControlConfiguration
+  m_EditorClassIdentifier: 
+  title: SOFT SHADOWS
+  controlPrefab: {fileID: 202718616210799590, guid: aa5ca631e7cc4b543bf10102794f0eea,
+    type: 3}
+  controlController: {fileID: 11400000, guid: d55884db0a499dd4ba4b41620322e42e, type: 2}
+  flagsThatDisableMe:
+  - {fileID: 11400000, guid: fdeb14ee220a14e40a71ecf4fc17b0c3, type: 2}
+  - {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
+  flagsThatDeactivateMe: []
+  isBeta: 0

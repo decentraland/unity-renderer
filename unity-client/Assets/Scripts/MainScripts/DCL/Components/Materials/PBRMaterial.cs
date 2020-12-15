@@ -68,6 +68,11 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.PBR_MATERIAL;
+        }
+
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
@@ -79,9 +84,14 @@ namespace DCL.Components
             base.AttachTo(entity);
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             LoadMaterial(PBR_MATERIAL_NAME);
 
@@ -273,7 +283,7 @@ namespace DCL.Components
                     CoroutineStarter.Start(DCLTexture.FetchTextureComponent(scene, textureComponentId,
                         (fetchedDCLTexture) =>
                         {
-                            if(material != null)
+                            if (material != null)
                             {
                                 material.SetTexture(materialPropertyId, fetchedDCLTexture.texture);
                                 SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);

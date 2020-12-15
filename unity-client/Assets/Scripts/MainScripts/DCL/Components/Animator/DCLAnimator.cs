@@ -1,6 +1,7 @@
 ﻿using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components
@@ -48,9 +49,14 @@ namespace DCL.Components
             entity.OnShapeUpdated -= OnComponentUpdated;
         }
 
+        public override object GetModel()
+        {
+            return model;
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = SceneController.i.SafeFromJson<Model>(newJson);
+            model = Utils.SafeFromJson<Model>(newJson);
 
             //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
             if (newJson == "{}")

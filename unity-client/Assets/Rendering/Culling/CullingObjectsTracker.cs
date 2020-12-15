@@ -1,12 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
 {
-    public interface ICullingObjectsTracker
+    public interface ICullingObjectsTracker : IDisposable
     {
-        void SetDirty();
+        void MarkDirty();
         bool IsDirty();
         Renderer[] GetRenderers();
         SkinnedMeshRenderer[] GetSkinnedRenderers();
@@ -51,7 +53,7 @@ namespace DCL.Rendering
         /// <summary>
         /// Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call.
         /// </summary>
-        public void SetDirty()
+        public void MarkDirty()
         {
             dirty = true;
         }
@@ -90,6 +92,14 @@ namespace DCL.Rendering
         public Animation[] GetAnimations()
         {
             return animations;
+        }
+
+        public void Dispose()
+        {
+            dirty = true;
+            renderers = null;
+            animations = null;
+            skinnedRenderers = null;
         }
     }
 }

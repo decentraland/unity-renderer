@@ -7,16 +7,17 @@ global.enableWeb3 = true
 
 import { initShared } from 'shared'
 import { createLogger } from 'shared/logger'
-import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { ReportFatalError, ReportSceneError } from 'shared/loading/ReportFatalError'
 import {
   AUTH_ERROR_LOGGED_OUT,
   experienceStarted,
   FAILED_FETCHING_UNITY,
   NOT_INVITED,
+  setLoadingScreen,
   setLoadingWaitTutorial
 } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR } from '../config/index'
+import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR, ENABLE_OLD_SETTINGS } from '../config/index'
 import { signalParcelLoadingStarted, signalRendererInitialized } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { RootStore, StoreContainer } from 'shared/store/rootTypes'
@@ -24,9 +25,9 @@ import { startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity, InitializeUnityResult } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
 import {
+  ensureRendererEnabled,
   foregroundObservable,
   isForeground,
-  onNextRendererEnabled,
   renderStateObservable
 } from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
@@ -40,29 +41,25 @@ import { UnityInterface } from 'unity-interface/UnityInterface'
 import { kernelConfigForRenderer } from '../unity-interface/kernelConfigForRenderer'
 import Html from 'shared/Html'
 import { filterInvalidNameCharacters, isBadWord } from 'shared/profiles/utils/names'
+import { startRealmsReportToRenderer } from 'unity-interface/realmsForRenderer'
 
 const logger = createLogger('website.ts: ')
 
-function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean) {
-  i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: true, visible: true }, { enableVoiceChat: voiceChatEnabled })
+function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean, useOldSettings: boolean) {
+  i.ConfigureHUDElement(
+    HUDElementID.TASKBAR,
+    { active: true, visible: true },
+    {
+      enableVoiceChat: voiceChatEnabled,
+      enableOldSettings: useOldSettings
+    }
+  )
   i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
 
   i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
   i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: true, visible: false })
   i.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
 }
-/**
- * Subscribe to uncaught errors
- */
-window.addEventListener('error', (event: ErrorEvent) => {
-  ReportFatalError(event.message as any, {
-    type: event.type,
-    message: event.message,
-    stack: event.error.stack,
-    filename: event.filename
-  })
-  return false
-})
 
 namespace webApp {
   export function createStore(): RootStore {
@@ -94,6 +91,9 @@ namespace webApp {
 
   export async function loadUnity({ instancedJS }: InitializeUnityResult) {
     const i = (await instancedJS).unityInterface
+    const worldConfig: WorldConfig | undefined = globalThis.globalStore.getState().meta.config.world
+    const useOldSettings = worldConfig ? (worldConfig.enableOldSettings ?? ENABLE_OLD_SETTINGS) : ENABLE_OLD_SETTINGS
+    const renderProfile = worldConfig ? (worldConfig.renderProfile ?? RenderProfile.DEFAULT) : RenderProfile.DEFAULT
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
@@ -101,7 +101,8 @@ namespace webApp {
       active: true,
       visible: OPEN_AVATAR_EDITOR
     })
-    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: useOldSettings, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: !useOldSettings, visible: false })
     i.ConfigureHUDElement(HUDElementID.EXPRESSIONS, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.PLAYER_INFO_CARD, {
       active: true,
@@ -129,32 +130,36 @@ namespace webApp {
         configForRenderer.comms.voiceChatEnabled = voiceChatEnabled
         i.SetKernelConfiguration(configForRenderer)
 
-        configureTaskbarDependentHUD(i, voiceChatEnabled)
+        configureTaskbarDependentHUD(i, voiceChatEnabled, useOldSettings)
 
         i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
         i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
         i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
+
+        ensureRendererEnabled().then(() => {
+          globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
+          globalThis.globalStore.dispatch(experienceStarted())
+          globalThis.globalStore.dispatch(setLoadingScreen(false))
+          Html.switchGameContainer(true)
+        })
 
         EnsureProfile(identity.address)
           .then((profile) => {
             i.ConfigureEmailPrompt(profile.tutorialStep)
             i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
             i.ConfigureHUDElement(HUDElementID.GRAPHIC_CARD_WARNING, { active: true, visible: true })
-            globalThis.globalStore.dispatch(setLoadingWaitTutorial(false))
-            Html.switchGameContainer(true)
           })
           .catch((e) => logger.error(`error getting profile ${e}`))
       })
       .catch((e) => {
         logger.error('error on configuring taskbar & friends hud / tutorial. Trying to default to simple taskbar', e)
-        configureTaskbarDependentHUD(i, false)
+        configureTaskbarDependentHUD(i, false, useOldSettings)
       })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 
-    onNextRendererEnabled(() => globalThis.globalStore.dispatch(experienceStarted()))
-
     await realmInitialized()
+    startRealmsReportToRenderer()
 
     await startUnitySceneWorkers()
 
@@ -162,13 +167,7 @@ namespace webApp {
 
     await ensureMetaConfigurationInitialized()
 
-    let worldConfig: WorldConfig = globalThis.globalStore.getState().meta.config.world!
-
-    if (worldConfig.renderProfile) {
-      i.SetRenderProfile(worldConfig.renderProfile)
-    } else {
-      i.SetRenderProfile(RenderProfile.DEFAULT)
-    }
+    i.SetRenderProfile(renderProfile)
 
     if (isForeground()) {
       i.ReportFocusOn()
@@ -199,12 +198,14 @@ namespace webApp {
     document.body.classList.remove('dcl-loading')
     globalThis.UnityLoader.Error.handler = (error: any) => {
       if (error.isSceneError) {
+        ReportSceneError((error.message || 'unknown') as string, error)
         // @see packages/shared/world/SceneWorker.ts#loadSystem
         debugger
         return
       }
 
       console['error'](error)
+      ReportFatalError(error.message)
     }
     return true
   }

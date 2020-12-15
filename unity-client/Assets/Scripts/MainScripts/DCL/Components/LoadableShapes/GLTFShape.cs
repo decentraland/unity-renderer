@@ -1,4 +1,5 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
+using DCL.Models;
 
 namespace DCL.Components
 {
@@ -8,6 +9,11 @@ namespace DCL.Components
 
         public GLTFShape(ParcelScene scene) : base(scene)
         {
+        }
+
+        public override int GetClassId()
+        {
+            return (int)CLASS_ID.GLTF_SHAPE;
         }
 
         public override string ToString()

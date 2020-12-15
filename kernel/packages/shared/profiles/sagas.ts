@@ -240,6 +240,9 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
       if (!profile || (localProfile && profile.version < localProfile.version)) {
         profile = localProfile
       }
+
+      const identity: ExplorerIdentity = yield select(getCurrentIdentity)
+      profile.ethAddress = identity.rawAddress
     }
 
     if (!profile) {
@@ -404,12 +407,11 @@ function* sendLoadProfile(profile: Profile) {
 }
 
 function* handleFetchInventory(action: InventoryRequest) {
-  const { userId, ethAddress } = action.payload
   try {
-    const inventoryItems = yield call(fetchInventoryItemsByAddress, ethAddress)
-    yield put(inventorySuccess(userId, inventoryItems))
+    const inventoryItems = yield call(fetchInventoryItemsByAddress, action.payload.userId)
+    yield put(inventorySuccess(action.payload.userId, inventoryItems))
   } catch (error) {
-    yield put(inventoryFailure(userId, error))
+    yield put(inventoryFailure(action.payload.userId, error))
   }
 }
 

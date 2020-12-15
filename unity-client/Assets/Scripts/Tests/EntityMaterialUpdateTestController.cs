@@ -8,13 +8,13 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 {
     void Start()
     {
-        var sceneController = FindObjectOfType<SceneController>();
+        var sceneController = Environment.i.sceneController;
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);
 
-        var scene = sceneController.loadedScenes["0,0"];
+        var scene = Environment.i.worldState.loadedScenes["0,0"];
 
         DCLTexture dclAtlasTexture = TestHelpers.CreateDCLTexture(
             scene,

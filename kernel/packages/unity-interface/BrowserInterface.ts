@@ -5,7 +5,7 @@ import { avatarMessageObservable } from 'shared/comms/peers'
 import { hasConnectedWeb3 } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { reportScenesAroundParcel } from 'shared/atlas/actions'
-import { decentralandConfigurations, ethereumConfigurations, playerConfigurations } from 'config'
+import { decentralandConfigurations, ethereumConfigurations, playerConfigurations, WORLD_EXPLORER } from 'config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
@@ -44,12 +44,11 @@ import { reportHotScenes } from 'shared/social/hotScenes'
 import { GIFProcessor } from 'gif-processor/processor'
 import { setVoiceChatRecording, setVoicePolicy, setVoiceVolume, toggleVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
-import { SceneSystemWorker } from 'shared/world/SceneSystemWorker'
 import { StatefulWorker } from 'shared/world/StatefulWorker'
-import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { ensureFriendProfile } from 'shared/friends/ensureFriendProfile'
 import Html from 'shared/Html'
+import { reloadScene } from 'decentraland-loader/lifecycle/utils/reloadScene'
 
 declare const DCL: any
 
@@ -214,8 +213,8 @@ export class BrowserInterface {
     } else {
       globalThis.globalStore.dispatch(signUpSetProfile(update))
       globalThis.globalStore.dispatch(changeSignUpStage('passport'))
-      unityInterface.DeactivateRendering()
       Html.switchGameContainer(false)
+      unityInterface.DeactivateRendering()
     }
   }
 
@@ -250,14 +249,18 @@ export class BrowserInterface {
       }
       case 'StartStatefulMode': {
         const { sceneId } = payload
-        const parcelScene = this.resetScene(sceneId)
+        const worker = getSceneWorkerBySceneID(sceneId)!
+        unityInterface.UnloadScene(sceneId) // Maybe unity should do it by itself?
+        const parcelScene = worker.getParcelScene()
+        stopParcelSceneWorker(worker)
+        const data = parcelScene.data.data as LoadableParcelScene
+        unityInterface.LoadParcelScenes([data]) // Maybe unity should do it by itself?
         setNewParcelScene(sceneId, new StatefulWorker(parcelScene))
         break
       }
       case 'StopStatefulMode': {
         const { sceneId } = payload
-        const parcelScene = this.resetScene(sceneId)
-        setNewParcelScene(sceneId, new SceneSystemWorker(parcelScene))
+        reloadScene(sceneId).catch((error) => defaultLogger.warn(`Failed to stop stateful mode`, error))
         break
       }
       default: {
@@ -406,9 +409,11 @@ export class BrowserInterface {
   }
 
   public FetchHotScenes() {
-    reportHotScenes().catch((e: any) => {
-      return defaultLogger.error('FetchHotScenes error', e)
-    })
+    if (WORLD_EXPLORER) {
+      reportHotScenes().catch((e: any) => {
+        return defaultLogger.error('FetchHotScenes error', e)
+      })
+    }
   }
 
   public SetBaseResolution(data: { baseResolution: number }) {
@@ -449,17 +454,6 @@ export class BrowserInterface {
     } else {
       globalThis.globalStore.dispatch(unmutePlayers(data.usersId))
     }
-  }
-
-  /** Kill the current worker, reset the scene in Unity and return the ParcelSceneAPI that was being used */
-  private resetScene(sceneId: string): ParcelSceneAPI {
-    const worker = getSceneWorkerBySceneID(sceneId)!
-    unityInterface.UnloadScene(sceneId) // Maybe unity should do it by itself?
-    const parcelScene = worker.getParcelScene()
-    stopParcelSceneWorker(worker)
-    const data = parcelScene.data.data as LoadableParcelScene
-    unityInterface.LoadParcelScenes([data]) // Maybe unity should do it by itself?
-    return parcelScene
   }
 }
 

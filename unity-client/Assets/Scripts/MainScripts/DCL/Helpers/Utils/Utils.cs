@@ -125,7 +125,6 @@ namespace DCL.Helpers
         }
 
 
-
         /// <summary>
         /// Reimplementation of the LayoutRebuilder.ForceRebuildLayoutImmediate() function (Unity UI API) for make it more performant.
         /// </summary>
@@ -137,7 +136,7 @@ namespace DCL.Helpers
             // NOTE(Santi): It seems to be very much cheaper to execute the next instructions manually than execute directly the function
             //              'LayoutRebuilder.ForceRebuildLayoutImmediate()', that theorically already contains these instructions.
             var layoutElements = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutElement), true).ToList();
-            layoutElements.RemoveAll(e => (e is Behaviour && !((Behaviour)e).isActiveAndEnabled) || e is TextMeshProUGUI);
+            layoutElements.RemoveAll(e => (e is Behaviour && !((Behaviour) e).isActiveAndEnabled) || e is TextMeshProUGUI);
             foreach (var layoutElem in layoutElements)
             {
                 (layoutElem as ILayoutElement).CalculateLayoutInputHorizontal();
@@ -145,7 +144,7 @@ namespace DCL.Helpers
             }
 
             var layoutControllers = rectTransformRoot.GetComponentsInChildren(typeof(ILayoutController), true).ToList();
-            layoutControllers.RemoveAll(e => e is Behaviour && !((Behaviour)e).isActiveAndEnabled);
+            layoutControllers.RemoveAll(e => e is Behaviour && !((Behaviour) e).isActiveAndEnabled);
             foreach (var layoutCtrl in layoutControllers)
             {
                 (layoutCtrl as ILayoutController).SetLayoutHorizontal();
@@ -346,6 +345,8 @@ namespace DCL.Helpers
 
         public static T SafeFromJson<T>(string json)
         {
+            ProfilingEvents.OnMessageDecodeStart?.Invoke("Misc");
+
             T returningValue = default(T);
 
             if (!string.IsNullOrEmpty(json))
@@ -359,6 +360,8 @@ namespace DCL.Helpers
                     Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 }
             }
+
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke("Misc");
 
             return returningValue;
         }
@@ -454,7 +457,8 @@ namespace DCL.Helpers
         [Serializable]
         private class DummyJsonUtilityFromArray<T> where T : IEnumerable //UnityEngine.JsonUtility is really fast but cannot deserialize json arrays
         {
-            [SerializeField] private T value;
+            [SerializeField]
+            private T value;
 
             public static T GetFromJsonArray(string jsonArray)
             {
@@ -486,14 +490,11 @@ namespace DCL.Helpers
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
         public static bool isCursorLocked { get; private set; } = false;
 
-#if WEB_PLATFORM
-        private static bool requestedUnlock = false;
-        private static bool requestedLock = false;
-#endif
-
         public static void LockCursor()
         {
 #if WEB_PLATFORM
+            //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+            //             behaviour using strategy pattern instead of this.
             if (isCursorLocked)
             {
                 return;
@@ -516,6 +517,8 @@ namespace DCL.Helpers
         public static void UnlockCursor()
         {
 #if WEB_PLATFORM
+            //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+            //             behaviour using strategy pattern instead of this.
             if (!isCursorLocked)
             {
                 return;
@@ -534,7 +537,13 @@ namespace DCL.Helpers
             EventSystem.current.SetSelectedGameObject(null);
         }
 
-#if WEB_PLATFORM
+        #region BROWSER_ONLY
+
+        //TODO(Brian): Encapsulate all this mechanism to a new MouseLockController and branch
+        //             behaviour using strategy pattern instead of this.
+        private static bool requestedUnlock = false;
+        private static bool requestedLock = false;
+
         // NOTE: This should come from browser's pointerlockchange callback
         public static void BrowserSetCursorState(bool locked)
         {
@@ -542,12 +551,14 @@ namespace DCL.Helpers
             {
                 Cursor.lockState = CursorLockMode.None;
             }
+
             isCursorLocked = locked;
             Cursor.visible = !locked;
             requestedUnlock = false;
             requestedLock = false;
         }
-#endif
+
+        #endregion
 
         public static void DestroyAllChild(this Transform transform)
         {

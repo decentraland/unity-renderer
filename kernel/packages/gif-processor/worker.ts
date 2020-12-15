@@ -101,15 +101,18 @@ let frameImageData: any = undefined
         if (processedImageData) framesAsArrayBuffer.push(processedImageData.data.buffer)
       }
 
-      self.postMessage({
-        success: true,
-        arrayBufferFrames: framesAsArrayBuffer,
-        width: finalWidth,
-        height: finalHeight,
-        delays: frameDelays,
-        url: e.data.url,
-        id: e.data.id
-      } as WorkerMessageData, framesAsArrayBuffer)
+      self.postMessage(
+        {
+          success: true,
+          arrayBufferFrames: framesAsArrayBuffer,
+          width: finalWidth,
+          height: finalHeight,
+          delays: frameDelays,
+          url: e.data.url,
+          id: e.data.id
+        } as WorkerMessageData,
+        framesAsArrayBuffer
+      )
     } catch (err) {
       abortController = null
       self.postMessage({

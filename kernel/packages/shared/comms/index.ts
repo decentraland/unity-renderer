@@ -1,3 +1,4 @@
+import { setInterval } from 'timers'
 import {
   commConfigurations,
   parcelLimits,
@@ -8,8 +9,9 @@ import {
 } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
-import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
+import { ChatMessage as InternalChatMessage, ChatMessageType, SceneFeatureToggles } from 'shared/types'
 import { positionObservable, PositionReport, lastPlayerPosition } from 'shared/world/positionThings'
+import { lastPlayerScene } from 'shared/world/sceneState'
 import { ProfileAsPromise } from '../profiles/ProfileAsPromise'
 import { notifyStatusThroughChat } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
@@ -48,7 +50,6 @@ import {
   position2parcel,
   sameParcel,
   squareDistance,
-  ParcelArray,
   rotateUsingQuaternion
 } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
@@ -61,7 +62,7 @@ import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceC
 
 import { Authenticator, AuthIdentity } from 'dcl-crypto'
 import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
-import { Realm, LayerUserInfo } from 'shared/dao/types'
+import { Realm } from 'shared/dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
@@ -104,6 +105,7 @@ import { VoicePolicy } from './types'
 import { isFriend } from 'shared/friends/selectors'
 import { EncodedFrame } from 'voice-chat-codec/types'
 import Html from 'shared/Html'
+import { isFeatureToggleEnabled } from 'shared/selectors'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -275,6 +277,11 @@ function requestMediaDevice() {
 
 export function updateVoiceRecordingStatus(recording: boolean) {
   if (!voiceCommunicator) {
+    return
+  }
+
+  if (!isVoiceChatAllowedByCurrentScene()) {
+    voiceCommunicator.pause()
     return
   }
 
@@ -487,7 +494,8 @@ function shouldPlayVoice(profile: Profile, voiceUserId: string) {
     isVoiceAllowedByPolicy(profile, voiceUserId) &&
     !isBlocked(profile, voiceUserId) &&
     !isMuted(profile, voiceUserId) &&
-    !hasBlockedMe(myAddress, voiceUserId)
+    !hasBlockedMe(myAddress, voiceUserId) &&
+    isVoiceChatAllowedByCurrentScene()
   )
 }
 
@@ -503,6 +511,10 @@ function isVoiceAllowedByPolicy(profile: Profile, voiceUserId: string): boolean 
     default:
       return true
   }
+}
+
+function isVoiceChatAllowedByCurrentScene() {
+  return isFeatureToggleEnabled(SceneFeatureToggles.VOICE_CHAT, lastPlayerScene?.sceneJsonData)
 }
 
 const TIME_BETWEEN_PROFILE_RESPONSES = 1000
@@ -1255,21 +1267,6 @@ export function disconnect() {
       context.worldInstanceConnection.close()
     }
   }
-}
-
-export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
-  const realm = getRealm(store.getState())
-  const commsUrl = getCommsServer(store.getState())
-
-  if (realm && realm.layer && commsUrl) {
-    const layerUsersResponse = await fetch(`${commsUrl}/layers/${realm.layer}/users`)
-    if (layerUsersResponse.ok) {
-      const layerUsers: LayerUserInfo[] = await layerUsersResponse.json()
-      return layerUsers.filter((it) => it.parcel).map((it) => it.parcel!)
-    }
-  }
-
-  return []
 }
 
 globalThis.printCommsInformation = function () {

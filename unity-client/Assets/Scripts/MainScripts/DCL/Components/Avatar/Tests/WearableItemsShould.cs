@@ -36,8 +36,8 @@ namespace AvatarShape_Tests
                     {
                     }
                 };
-                catalog = AvatarTestHelpers.CreateTestCatalogLocal();
-                avatarShape = AvatarTestHelpers.CreateAvatarShape(scene, avatarModel);
+                catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
+                avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
 
                 yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);
             }
@@ -167,7 +167,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator SetTheCorrectMaterial()
         {
-            avatarModel = AvatarTestHelpers.GetTestAvatarModel("test", "TestAvatar.json");
+            avatarModel = AvatarShapeTestHelpers.GetTestAvatarModel("test", "TestAvatar.json");
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var wearableControllers = AvatarRenderer_Mock.GetWearableMockControllers(avatarShape.avatarRenderer);
@@ -188,7 +188,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator SetTheCorrectMaterialWhenLoadingMultipleTimes()
         {
-            avatarModel = AvatarTestHelpers.GetTestAvatarModel("test", "TestAvatar.json");
+            avatarModel = AvatarShapeTestHelpers.GetTestAvatarModel("test", "TestAvatar.json");
             avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);
             avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);
             avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);

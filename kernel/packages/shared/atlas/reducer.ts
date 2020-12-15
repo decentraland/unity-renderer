@@ -25,6 +25,7 @@ const MAP_SCENE_DATA_INITIAL_STATE: MapSceneData = {
   estateId: 0,
   sceneJsonData: undefined,
   alreadyReported: false,
+  contents: [],
   requestStatus: 'loading'
 }
 
@@ -122,6 +123,7 @@ function reduceSuccessDataFromSceneJson(state: AtlasState, landData: ILand[]) {
 
     mapScene.requestStatus = 'ok'
     mapScene.sceneJsonData = land.sceneJsonData
+    mapScene.contents = land.mappingsResponse.contents
 
     const name = getSceneNameFromAtlasState(mapScene.sceneJsonData) ?? mapScene.name
     mapScene.name = postProcessSceneName(name)
@@ -197,7 +199,8 @@ function reduceMarketData(state: AtlasState, marketData: MarketData) {
         estateId: value.estate_id,
         sceneJsonData: undefined,
         alreadyReported: false,
-        requestStatus: undefined
+        requestStatus: undefined,
+        contents: []
       }
     }
 

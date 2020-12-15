@@ -129,7 +129,7 @@ public class Notification : MonoBehaviour
         }
     }
 
-    public void Dismiss()
+    protected virtual void Dismiss()
     {
         Dismiss(false);
     }

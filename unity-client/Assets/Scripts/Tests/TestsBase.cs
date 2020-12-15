@@ -51,7 +51,10 @@ public class TestsBase
         {
             yield return SetUp_SceneIntegrityChecker();
             SetUp_Renderer();
-            Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
+            Environment.i.Initialize();
+            yield return null;
+            //TODO(Brian): Remove when the init layer is ready
+            Environment.i.cullingController.Stop();
             yield break;
         }
 
@@ -63,7 +66,10 @@ public class TestsBase
         yield return SetUp_SceneIntegrityChecker();
 
         SetUp_Renderer();
-        Environment.i.Initialize(new DummyMessageHandler(), Substitute.For<ISceneHandler>());
+        Environment.i.Initialize();
+        yield return null;
+        //TODO(Brian): Remove when the init layer is ready
+        Environment.i.cullingController.Stop();
     }
 
 
@@ -75,7 +81,7 @@ public class TestsBase
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
-        TestHelpers.ForceUnloadAllScenes(SceneController.i);
+        TestHelpers.ForceUnloadAllScenes(Environment.i.sceneController);
 
         Environment.i.Cleanup();
 
@@ -170,7 +176,7 @@ public class TestsBase
         sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
         if (debugMode)
-            sceneController.SetDebug();
+            Environment.i.debugController.SetDebug();
 
         yield return null;
 

@@ -129,7 +129,7 @@ namespace AssetPromiseKeeper_Tests
 
             keeper.Keep(prom);
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
 
             keeper.Forget(prom);
 
@@ -177,7 +177,7 @@ namespace AssetPromiseKeeper_Tests
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 
             yield return prom;
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(0.1f);
 
             Assert.IsTrue(asset != null);
             Assert.IsTrue(asset2 != null);

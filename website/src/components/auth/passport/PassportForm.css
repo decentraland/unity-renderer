@@ -30,6 +30,11 @@
   line-height: 18px;
 }
 
+.passportForm form .inputGroup span.required {
+  color: #fe2d55;
+  font-size: 22px;
+}
+
 .passportForm form .inputGroup em.hint {
   position: absolute;
   bottom: 32px;
@@ -39,7 +44,7 @@
 }
 
 .passportForm form .inputGroup.inputGroupName em.hint {
-  bottom: 14px;
+  bottom: 32px;
 }
 
 .passportForm form .inputGroup.inputGroupEmail em.hint {

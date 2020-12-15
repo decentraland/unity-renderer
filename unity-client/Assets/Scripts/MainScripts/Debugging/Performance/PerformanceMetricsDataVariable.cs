@@ -13,7 +13,7 @@ namespace DCL
     }
 
     [CreateAssetMenu(fileName = "PerformanceMetricsDataVariable", menuName = "Variables/PerformanceMetricsDataVariable")]
-    public class PerformanceMetricsDataVariable : BaseVariable<PerformanceMetricsData>
+    public class PerformanceMetricsDataVariable : BaseVariableAsset<PerformanceMetricsData>
     {
         public override bool Equals(PerformanceMetricsData other)
         {

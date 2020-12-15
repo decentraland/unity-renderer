@@ -139,6 +139,8 @@ export class GIFProcessor {
             this.reportFailureToRenderer(e.data.id)
             delete this.assets[e.data.id]
           }
+        } else {
+          this.reportFailureToRenderer(e.data.id)
         }
 
         if (multipleGIFWorkers) {

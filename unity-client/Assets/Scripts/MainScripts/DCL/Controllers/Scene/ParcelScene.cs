@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace DCL.Controllers
 {
@@ -40,11 +38,14 @@ namespace DCL.Controllers
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
 
-        [System.NonSerialized] public bool isTestScene = false;
+        [System.NonSerialized]
+        public bool isTestScene = false;
 
-        [System.NonSerialized] public bool isPersistent = false;
+        [System.NonSerialized]
+        public bool isPersistent = false;
 
-        [System.NonSerialized] public bool unloadWithDistance = true;
+        [System.NonSerialized]
+        public bool unloadWithDistance = true;
 
         public bool isReady => state == State.READY;
 
@@ -147,8 +148,9 @@ namespace DCL.Controllers
                 gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
 #if UNITY_EDITOR
+            DebugConfig debugConfig = DataStore.debugConfig;
             //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
-            if (SceneController.i.debugScenes && SceneController.i.debugSceneCoords != data.basePosition)
+            if (debugConfig.soloScene && debugConfig.soloSceneCoords != data.basePosition)
             {
                 SetSceneReady();
                 return;
@@ -299,9 +301,6 @@ namespace DCL.Controllers
 
         public DecentralandEntity CreateEntity(string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
-
             if (entities.ContainsKey(id))
             {
                 return entities[id];
@@ -310,10 +309,12 @@ namespace DCL.Controllers
             var newEntity = new DecentralandEntity();
             newEntity.entityId = id;
 
-            SceneController.i.EnsureEntityPool();
+            Environment.i.sceneController.EnsureEntityPool();
 
             // As we know that the pool already exists, we just get one gameobject from it
             PoolableObject po = PoolManager.i.Get(SceneController.EMPTY_GO_POOL_NAME);
+
+            newEntity.meshesInfo.innerGameObject = po.gameObject;
             newEntity.gameObject = po.gameObject;
 
 #if UNITY_EDITOR
@@ -325,8 +326,8 @@ namespace DCL.Controllers
 
             newEntity.OnCleanupEvent += po.OnCleanup;
 
-            if (SceneController.i.useBoundariesChecker)
-                newEntity.OnShapeUpdated += SceneController.i.boundariesChecker.AddEntityToBeChecked;
+            if (Environment.i.sceneBoundsChecker.enabled)
+                newEntity.OnShapeUpdated += Environment.i.sceneBoundsChecker.AddEntityToBeChecked;
 
             entities.Add(id, newEntity);
 
@@ -355,7 +356,7 @@ namespace DCL.Controllers
 
             if (decentralandEntity.parent != null) SetEntityParent(duplicatedEntity.entityId, decentralandEntity.parent.entityId);
 
-            DCLTransform.model.position = SceneController.i.ConvertUnityToScenePosition(decentralandEntity.gameObject.transform.position);
+            DCLTransform.model.position = Environment.i.worldState.ConvertUnityToScenePosition(decentralandEntity.gameObject.transform.position);
             DCLTransform.model.rotation = decentralandEntity.gameObject.transform.rotation;
             DCLTransform.model.scale = decentralandEntity.gameObject.transform.lossyScale;
 
@@ -380,9 +381,6 @@ namespace DCL.Controllers
 
         public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
-
             if (entities.ContainsKey(id))
             {
                 DecentralandEntity entity = entities[id];
@@ -394,7 +392,6 @@ namespace DCL.Controllers
                 }
 
                 entities.Remove(id);
-                Environment.i.cullingController.SetDirty();
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -417,10 +414,10 @@ namespace DCL.Controllers
 
             OnEntityRemoved?.Invoke(entity);
 
-            if (SceneController.i.useBoundariesChecker)
+            if (Environment.i.sceneBoundsChecker.enabled)
             {
-                entity.OnShapeUpdated -= SceneController.i.boundariesChecker.AddEntityToBeChecked;
-                SceneController.i.boundariesChecker.RemoveEntityToBeChecked(entity);
+                entity.OnShapeUpdated -= Environment.i.sceneBoundsChecker.AddEntityToBeChecked;
+                Environment.i.sceneBoundsChecker.RemoveEntityToBeChecked(entity);
             }
 
             if (removeImmediatelyFromEntitiesList)
@@ -478,9 +475,6 @@ namespace DCL.Controllers
 
         public void SetEntityParent(string entityId, string parentId)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
-
             if (entityId == parentId)
             {
                 return;
@@ -488,50 +482,49 @@ namespace DCL.Controllers
 
             DecentralandEntity me = GetEntityForUpdate(entityId);
 
-            if (me != null)
+            if (me == null)
+                return;
+
+            if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
             {
-                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
+                // In this case, the entity will attached to the first person camera
+                // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
+                Environment.i.sceneBoundsChecker.AddPersistent(me);
+            }
+            else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+            {
+                // In this case, the entity will be attached to the avatar
+                // It will simply rotate with the avatar, regardless of where the camera is pointing
+                me.SetParent(DCLCharacterController.i.avatarReference);
+                Environment.i.sceneBoundsChecker.AddPersistent(me);
+            }
+            else
+            {
+                if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
                 {
-                    // In this case, the entity will attached to the first person camera
-                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
-                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
-                    SceneController.i.boundariesChecker.AddPersistent(me);
-                    Environment.i.physicsSyncController.MarkDirty();
+                    Environment.i.sceneBoundsChecker.RemoveEntityToBeChecked(me);
                 }
-                else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
+
+                if (parentId == "0")
                 {
-                    // In this case, the entity will be attached to the avatar
-                    // It will simply rotate with the avatar, regardless of where the camera is pointing
-                    me.SetParent(DCLCharacterController.i.avatarReference);
-                    SceneController.i.boundariesChecker.AddPersistent(me);
-                    Environment.i.physicsSyncController.MarkDirty();
+                    // The entity will be child of the scene directly
+                    me.SetParent(null);
+                    me.gameObject.transform.SetParent(gameObject.transform, false);
                 }
                 else
                 {
-                    if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
-                    {
-                        SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
-                    }
+                    DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
-                    if (parentId == "0")
+                    if (myParent != null)
                     {
-                        // The entity will be child of the scene directly
-                        me.SetParent(null);
-                        me.gameObject.transform.SetParent(gameObject.transform, false);
-                        Environment.i.physicsSyncController.MarkDirty();
-                    }
-                    else
-                    {
-                        DecentralandEntity myParent = GetEntityForUpdate(parentId);
-
-                        if (myParent != null)
-                        {
-                            me.SetParent(myParent);
-                            Environment.i.physicsSyncController.MarkDirty();
-                        }
+                        me.SetParent(myParent);
                     }
                 }
             }
+
+            Environment.i.cullingController.MarkDirty();
+            Environment.i.physicsSyncController.MarkDirty();
         }
 
         /**
@@ -539,9 +532,6 @@ namespace DCL.Controllers
           */
         public void SharedComponentAttach(string entityId, string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("AttachEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("AttachEntityComponent");
-
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
 
             if (decentralandEntity == null)
@@ -561,9 +551,6 @@ namespace DCL.Controllers
 
         public BaseComponent EntityComponentCreateOrUpdateFromUnity(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
-
             DecentralandEntity entity = GetEntityForUpdate(entityId);
 
             if (entity == null)
@@ -571,7 +558,6 @@ namespace DCL.Controllers
                 Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {entityId} doesn't exist!");
                 return null;
             }
-
 
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
@@ -597,11 +583,11 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localRotation = modelRecovered.rotation;
                     entity.gameObject.transform.localScale = modelRecovered.scale;
 
-                    SceneController.i.boundariesChecker?.AddEntityToBeChecked(entity);
+                    Environment.i.sceneBoundsChecker?.AddEntityToBeChecked(entity);
                 }
 
                 Environment.i.physicsSyncController.MarkDirty();
-
+                Environment.i.cullingController.MarkDirty();
                 return null;
             }
 
@@ -667,15 +653,13 @@ namespace DCL.Controllers
             }
 
             Environment.i.physicsSyncController.MarkDirty();
+            Environment.i.cullingController.MarkDirty();
             return newComponent;
         }
 
         public BaseComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data, out CleanableYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
-
-            SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
 
             DecentralandEntity entity = GetEntityForUpdate(entityId);
 
@@ -704,10 +688,11 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                     entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
-                    SceneController.i.boundariesChecker?.AddEntityToBeChecked(entity);
+                    Environment.i.sceneBoundsChecker?.AddEntityToBeChecked(entity);
                 }
 
                 Environment.i.physicsSyncController.MarkDirty();
+                Environment.i.cullingController.MarkDirty();
                 return null;
             }
 
@@ -773,7 +758,6 @@ namespace DCL.Controllers
                 if (!entity.components.ContainsKey(classId))
                 {
                     newComponent = factory.CreateItemFromId<BaseComponent>(classId);
-                    Environment.i.physicsSyncController.MarkDirty();
 
                     if (newComponent != null)
                     {
@@ -795,13 +779,14 @@ namespace DCL.Controllers
             if (newComponent != null)
             {
                 if (newComponent is IOutOfSceneBoundariesHandler)
-                    SceneController.i.boundariesChecker?.AddEntityToBeChecked(entity);
+                    Environment.i.sceneBoundsChecker?.AddEntityToBeChecked(entity);
 
                 if (newComponent.isRoutineRunning)
                     yieldInstruction = newComponent.yieldInstruction;
             }
 
             Environment.i.physicsSyncController.MarkDirty();
+            Environment.i.cullingController.MarkDirty();
             return newComponent;
         }
 
@@ -851,9 +836,6 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentCreate(string id, int classId)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentCreated");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentCreated");
-
             BaseDisposable disposableComponent;
 
             if (disposableComponents.TryGetValue(id, out disposableComponent))
@@ -1007,6 +989,19 @@ namespace DCL.Controllers
                     newComponent = new DCLName(this);
                     break;
                 }
+
+                case CLASS_ID.LOCKED_ON_EDIT:
+                {
+                    newComponent = new DCLLockedOnEdit(this);
+                    break;
+                }
+
+                case CLASS_ID.VISIBLE_ON_EDIT:
+                {
+                    newComponent = new DCLVisibleOnEdit(this);
+                    break;
+                }
+
                 default:
                     Debug.LogError($"Unknown classId");
                     break;
@@ -1028,9 +1023,6 @@ namespace DCL.Controllers
 
         public void SharedComponentDispose(string id)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentDisposed");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentDisposed");
-
             BaseDisposable disposableComponent;
 
             if (disposableComponents.TryGetValue(id, out disposableComponent))
@@ -1046,10 +1038,6 @@ namespace DCL.Controllers
 
         public void EntityComponentRemove(string entityId, string name)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
-
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentRemoved");
-
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
             if (decentralandEntity == null)
             {
@@ -1109,9 +1097,9 @@ namespace DCL.Controllers
 
         public void SharedComponentUpdate(string id, string json, out CleanableYieldInstruction yieldInstruction)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
+            ProfilingEvents.OnMessageDecodeStart?.Invoke("ComponentUpdated");
             BaseDisposable newComponent = SharedComponentUpdate(id, json);
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
+            ProfilingEvents.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             yieldInstruction = null;
 
@@ -1121,9 +1109,6 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentUpdate(string id, string json)
         {
-            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
-            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
-
             if (disposableComponents.TryGetValue(id, out BaseDisposable disposableComponent))
             {
                 disposableComponent.UpdateFromJSON(json);
@@ -1254,7 +1239,7 @@ namespace DCL.Controllers
 
             state = State.READY;
 
-            SceneController.i.SendSceneReady(sceneData.id);
+            Environment.i.sceneController.SendSceneReady(sceneData.id);
             RefreshName();
 
             OnSceneReady?.Invoke(this);
@@ -1269,7 +1254,6 @@ namespace DCL.Controllers
             }
         }
 
-#if UNITY_EDITOR
         [ContextMenu("Get Waiting Components Debug Info")]
         public void GetWaitingComponentsDebugInfo()
         {
@@ -1312,6 +1296,5 @@ namespace DCL.Controllers
                     break;
             }
         }
-#endif
     }
 }

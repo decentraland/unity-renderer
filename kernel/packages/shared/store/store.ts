@@ -5,12 +5,14 @@ import { createRootSaga } from './rootSaga'
 import { RootState } from './rootTypes'
 import { DEBUG_REDUX } from '../../config'
 import { ReportFatalError } from '../loading/ReportFatalError'
+import defaultLogger from '../logger'
 
 export let store: Store<RootState>
 
 export const buildStore = () => {
   const sagaMiddleware = createSagaMiddleware({
     onError: (error: Error, { sagaStack }: { sagaStack: string }) => {
+      defaultLogger.log('SAGA-ERROR: ', error)
       ReportFatalError(error.message as any, {
         type: 'saga',
         message: error.message,
