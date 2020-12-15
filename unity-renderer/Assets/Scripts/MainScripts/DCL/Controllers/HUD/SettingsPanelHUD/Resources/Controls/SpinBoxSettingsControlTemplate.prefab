@@ -73,8 +73,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4282004275
+  m_fontColor: {r: 0.2, g: 0.2, b: 0.22745098, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -365,7 +365,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 220, y: 15}
+  m_SizeDelta: {x: 220, y: 20}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5621281399442779270
 CanvasRenderer:
@@ -397,15 +397,14 @@ MonoBehaviour:
   m_text: Control Title
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4282004275
+  m_fontColor: {r: 0.2, g: 0.2, b: 0.22745098, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -423,12 +422,12 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 12
+  m_fontSizeMax: 14
   m_fontStyle: 0
   m_textAlignment: 513
   m_characterSpacing: 0
@@ -440,7 +439,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 0
+  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -715,6 +714,7 @@ GameObject:
   - component: {fileID: 7319752919325572531}
   - component: {fileID: 1042511896303968480}
   - component: {fileID: 1685552636221019275}
+  - component: {fileID: 5876730201811706177}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -778,6 +778,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &5876730201811706177
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4943351020373103430}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5884397133996633093
 GameObject:
   m_ObjectHideFlags: 0
@@ -812,11 +824,11 @@ RectTransform:
   m_Father: {fileID: 3781809617804807125}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 63, y: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -21.4, y: 0}
   m_SizeDelta: {x: 50.200012, y: 20.627296}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &8795725728733391025
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -865,6 +877,7 @@ GameObject:
   - component: {fileID: 2176003390713149032}
   - component: {fileID: 8980050401053270120}
   - component: {fileID: 6946578528177286607}
+  - component: {fileID: 2572643574321883610}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -928,6 +941,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &2572643574321883610
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6090183151121045792}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6417552060205858152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,7 +1216,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 220, y: 55}
+  m_SizeDelta: {x: 220, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1882231507603824778
 CanvasRenderer:
@@ -1214,9 +1239,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 946022103321159557}
+  titleDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
   betaIndicator: {fileID: 5884397133996633093}
-  spinBox: {fileID: 3837855004225010386}
   canvasGroup: {fileID: 7426026435316743473}
+  valueLabels:
+  - {fileID: 5533378053873845403}
+  valueLabelDeactivationColor: {r: 0.7019608, g: 0.7019608, b: 0.7019608, a: 1}
+  handleImages:
+  - {fileID: 8760731597316476144}
+  - {fileID: 1994506718636682904}
+  handlerDeactivationColor: {r: 0.95686275, g: 0.95686275, b: 0.95686275, a: 1}
+  controlBackgroundCanvasGroups:
+  - {fileID: 2572643574321883610}
+  - {fileID: 5876730201811706177}
+  controlBackgroundDeactivationAlpha: 0.5
+  spinBox: {fileID: 3837855004225010386}
 --- !u!225 &7426026435316743473
 CanvasGroup:
   m_ObjectHideFlags: 0

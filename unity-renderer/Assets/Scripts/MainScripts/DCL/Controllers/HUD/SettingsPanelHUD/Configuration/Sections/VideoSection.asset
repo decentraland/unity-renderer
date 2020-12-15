@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2548c6ebc3c846446810452bb5cc2606, type: 3}
   m_Name: VideoSection
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: c983eea4ebd9d43579acbb2e5c500480, type: 3}
-  text: Video
+  icon: {fileID: 21300000, guid: 520d44b5687394783ae96976dbb73c7c, type: 3}
+  text: Graphics
   menuButtonPrefab: {fileID: 2470334045984490575, guid: 829d414daa3047541a35abc7d88a1fe5,
     type: 3}
   sectionPrefab: {fileID: 5813236629143711783, guid: eb979bec9ddc8d04291cbfd7ff64b626,
