@@ -152,6 +152,7 @@ function* authenticate(action: AuthenticateAction) {
   }
   const session = yield authorize()
   let profile = yield getProfileByUserId(session.userId)
+
   if (profile || isGuestWithProfile(session) || PREVIEW) {
     return yield signIn(session.userId, session.identity)
   }
@@ -167,8 +168,8 @@ function* startSignUp(userId: string, identity: ExplorerIdentity) {
   yield put(signUpSetIsSignUp(true))
   let prevGuest = fetchProfileLocally(userId)
   let profile: Profile = prevGuest ? prevGuest : yield generateRandomUserProfile(userId)
-  profile.userId = identity.address.toString()
-  profile.ethAddress = identity.address.toString()
+  profile.userId = identity.address
+  profile.ethAddress = identity.rawAddress
   profile.unclaimedName = '' // clean here to allow user complete in passport step
   profile.hasClaimedName = false
   profile.inventory = []
@@ -215,12 +216,21 @@ function* authorize() {
   if (ENABLE_WEB3) {
     try {
       let userData
+
       if (isGuest()) {
         userData = getLastSessionByProvider(ProviderType.GUEST)
       } else {
-        const address = yield getUserEthAccountIfAvailable()
+        const ethAddress = yield getUserEthAccountIfAvailable(true)
+        const address = ethAddress.toLocaleLowerCase()
+
         userData = getStoredSession(address)
+
+        if (userData) {
+          // We save the raw ethereum address of the current user to avoid having to convert-back later after lowercasing it for the userId
+          userData.identity.rawAddress = ethAddress
+        }
       }
+
       // check that user data is stored & key is not expired
       if (!userData || isSessionExpired(userData)) {
         const identity = yield createAuthIdentity()
@@ -229,6 +239,7 @@ function* authorize() {
           identity
         }
       }
+
       return {
         userId: userData.identity.address,
         identity: userData.identity
@@ -285,8 +296,8 @@ function* signUp() {
   logger.log(`User ${session.userId} signed up`)
 
   const profile = yield select(getSignUpProfile)
-  profile.userId = session.userId.toString()
-  profile.ethAddress = session.userId.toString()
+  profile.userId = session.userId
+  profile.ethAddress = session.identity.rawAddress
   profile.version = 0
   profile.inventory = []
   profile.hasClaimedName = false
@@ -367,7 +378,8 @@ async function createAuthIdentity(): Promise<ExplorerIdentity> {
   }
 
   const auth = await Authenticator.initializeAuthChain(address, ephemeral, ephemeralLifespanMinutes, signer)
-  return { ...auth, address: address.toLocaleLowerCase(), hasConnectedWeb3, provider }
+
+  return { ...auth, rawAddress: address, address: address.toLocaleLowerCase(), hasConnectedWeb3, provider }
 }
 
 function* logout() {
