@@ -24,6 +24,7 @@ import { HotSceneInfo } from 'shared/social/hotScenes'
 import { defaultLogger } from 'shared/logger'
 import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { renderStateObservable } from '../shared/world/worldState'
+import { DeploymentResult } from '../shared/apis/SceneStateStorageController/types'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -413,6 +414,10 @@ export class UnityInterface {
 
   public UpdateRealmsInfo(realmsInfo: Partial<RealmsInfoForRenderer>) {
     this.gameInstance.SendMessage('Bridges', 'UpdateRealmsInfo', JSON.stringify(realmsInfo))
+  }
+
+  public SendPublishSceneResult(result: DeploymentResult) {
+    this.gameInstance.SendMessage('Main', 'PublishSceneResult', JSON.stringify(result))
   }
 
   // *********************************************************************************

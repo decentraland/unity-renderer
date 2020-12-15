@@ -55,7 +55,6 @@ class StatefulWebWorkerScene extends Script {
       if (data.type === 'StoreSceneState') {
         this.sceneStateStorage
           .storeState(sceneId, serializeSceneState(this.sceneState))
-          .then((result) => this.renderer.informPublishResult(result))
           .catch((error) => this.error(`Failed to store the scene's state`, error))
       }
     })

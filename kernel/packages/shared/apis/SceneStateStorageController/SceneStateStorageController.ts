@@ -29,56 +29,66 @@ export class SceneStateStorageController extends ExposableAPI {
 
   @exposeMethod
   async storeState(sceneId: string, sceneState: SerializedSceneState): Promise<DeploymentResult> {
+    let result: DeploymentResult
+
     // Convert to storable format
     const storableFormat = fromSerializedStateToStorableFormat(sceneState)
 
     if (DEBUG) {
       saveToLocalStorage(`scene-state-${sceneId}`, storableFormat)
-      return { ok: true }
-    }
+      result = { ok: true }
+    } else {
+      try {
+        // Fetch all asset metadata
+        const assets = await this.getAllAssets(sceneState)
 
-    try {
-      // Fetch all asset metadata
-      const assets = await this.getAllAssets(sceneState)
+        // Download asset files
+        const models = await this.downloadAssetFiles(assets)
 
-      // Download asset files
-      const models = await this.downloadAssetFiles(assets)
+        // Generate game file
+        const gameFile: string = createGameFile(sceneState, assets)
 
-      // Generate game file
-      const gameFile: string = createGameFile(sceneState, assets)
+        // Prepare scene.json
+        const sceneJson = this.parcelIdentity.land.sceneJsonData
 
-      // Prepare scene.json
-      const sceneJson = this.parcelIdentity.land.sceneJsonData
+        // Group all entity files
+        const entityFiles: Map<string, Buffer> = new Map([
+          [CONTENT_PATH.DEFINITION_FILE, Buffer.from(JSON.stringify(storableFormat))],
+          [CONTENT_PATH.BUNDLED_GAME_FILE, Buffer.from(gameFile)],
+          [CONTENT_PATH.SCENE_FILE, Buffer.from(JSON.stringify(sceneJson))],
+          ...models
+        ])
 
-      // Group all entity files
-      const entityFiles: Map<string, Buffer> = new Map([
-        [CONTENT_PATH.DEFINITION_FILE, Buffer.from(JSON.stringify(storableFormat))],
-        [CONTENT_PATH.BUNDLED_GAME_FILE, Buffer.from(gameFile)],
-        [CONTENT_PATH.SCENE_FILE, Buffer.from(JSON.stringify(sceneJson))],
-        ...models
-      ])
+        // Build the entity
+        const parcels = this.getParcels()
+        const { files, entityId } = await DeploymentBuilder.buildEntity(
+          EntityType.SCENE,
+          parcels,
+          entityFiles,
+          sceneJson
+        )
 
-      // Build the entity
-      const parcels = this.getParcels()
-      const { files, entityId } = await DeploymentBuilder.buildEntity(EntityType.SCENE, parcels, entityFiles, sceneJson)
+        // Sign entity id
+        const store: Store<RootState> = window['globalStore']
+        const identity = getCurrentIdentity(store.getState())
+        if (!identity) {
+          throw new Error('Identity not found when trying to deploy an entity')
+        }
+        const authChain = Authenticator.signPayload(identity, entityId)
 
-      // Sign entity id
-      const store: Store<RootState> = window['globalStore']
-      const identity = getCurrentIdentity(store.getState())
-      if (!identity) {
-        throw new Error('Identity not found when trying to deploy an entity')
+        // Deploy
+        const contentClient = this.getContentClient()
+        await contentClient.deployEntity({ files, entityId, authChain })
+
+        result = { ok: true }
+      } catch (error) {
+        defaultLogger.error('Deployment failed', error)
+        result = { ok: false, error: `${error}` }
       }
-      const authChain = Authenticator.signPayload(identity, entityId)
-
-      // Deploy
-      const contentClient = this.getContentClient()
-      await contentClient.deployEntity({ files, entityId, authChain })
-
-      return { ok: true }
-    } catch (error) {
-      defaultLogger.error('Deployment failed', error)
-      return { ok: false, error: `${error}` }
     }
+
+    window.unityInterface.SendPublishSceneResult(result)
+    return result
   }
 
   @exposeMethod
