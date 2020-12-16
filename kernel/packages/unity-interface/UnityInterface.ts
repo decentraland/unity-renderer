@@ -306,6 +306,10 @@ export class UnityInterface {
     this.gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled', JSON.stringify(fromDeepLink))
   }
 
+  public SetTutorialEnabledForUsersThatAlreadyDidTheTutorial() {
+    this.gameInstance.SendMessage('TutorialController', 'SetTutorialEnabledForUsersThatAlreadyDidTheTutorial')
+  }
+
   public TriggerAirdropDisplay(data: AirdropInfo) {
     // Disabled for security reasons
   }
@@ -374,6 +378,7 @@ export class UnityInterface {
       if (RESET_TUTORIAL || (tutorialStep & tutorialCompletedFlag) === 0) {
         this.SetTutorialEnabled(fromDeepLink)
       } else {
+        this.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial()
         setDelightedSurveyEnabled(true)
       }
     }

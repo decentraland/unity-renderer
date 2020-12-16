@@ -99,6 +99,30 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
 
+        [UnityTest]
+        public IEnumerator ExecuteTutorialStepsFromUserThatAlreadyDidTheTutorialCorrectly()
+        {
+            ConfigureTutorialForUserThatAlreadyDidTheTutorial();
+
+            yield return tutorialController.StartTutorialFromStep(0);
+
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsFromUserThatAlreadyDidTheTutorialCorrectly()
+        {
+            ConfigureTutorialForUserThatAlreadyDidTheTutorial();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
         [Test]
         public void ShowHideTutorialTeacherCorrectly()
         {
@@ -127,10 +151,12 @@ namespace DCL.Tutorial_Tests
             tutorialController.stepsOnGenesisPlaza.Clear();
             tutorialController.stepsFromDeepLink.Clear();
             tutorialController.stepsFromReset.Clear();
+            tutorialController.stepsFromUserThatAlreadyDidTheTutorial.Clear();
             tutorialController.timeBetweenSteps = 0f;
             tutorialController.sendStats = false;
             tutorialController.debugRunTutorial = false;
             tutorialController.tutorialReset = false;
+            tutorialController.userAlreadyDidTheTutorial = false;
         }
 
         private void DestroyTutorial()
@@ -188,6 +214,21 @@ namespace DCL.Tutorial_Tests
 
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
+            tutorialController.isRunning = true;
+            CommonScriptableObjects.tutorialActive.Set(true);
+        }
+
+        private void ConfigureTutorialForUserThatAlreadyDidTheTutorial()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                tutorialController.stepsFromUserThatAlreadyDidTheTutorial.Add(CreateNewFakeStep());
+            }
+
+            currentStepIndex = 0;
+            currentSteps = tutorialController.stepsFromUserThatAlreadyDidTheTutorial;
+
+            tutorialController.userAlreadyDidTheTutorial = true;
             tutorialController.isRunning = true;
             CommonScriptableObjects.tutorialActive.Set(true);
         }
