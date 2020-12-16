@@ -28,7 +28,9 @@ public class MinimapHUDView : MonoBehaviour
     public InputAction_Trigger toggleNavMapAction;
     [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
 
-    [Header("Tutorial Configuration")] [SerializeField] internal RectTransform minimapTooltipReference;
+    [Header("Tutorial Configuration")]
+    [SerializeField] internal RectTransform minimapTooltipReference;
+    [SerializeField] internal RectTransform usersAroundTooltipReference;
 
     private void Initialize(MinimapHUDController controller)
     {

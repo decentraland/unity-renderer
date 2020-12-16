@@ -60,5 +60,10 @@ namespace DCL.Tutorial
         protected virtual void SetTooltipPosition()
         {
         }
+
+        public void OverrideSetMaxTimeToHide(bool setMaxTimeToHide)
+        {
+            this.setMaxTimeToHide = setMaxTimeToHide;
+        }
     }
 }

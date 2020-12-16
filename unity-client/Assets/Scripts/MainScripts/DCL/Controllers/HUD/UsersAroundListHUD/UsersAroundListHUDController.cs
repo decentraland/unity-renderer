@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Interface;
 using UnityEngine;
@@ -18,6 +18,8 @@ public class UsersAroundListHUDController : IHUD
     private readonly List<string> usersToUnmute = new List<string>();
     private bool isMuteAll = false;
     private Coroutine updateMuteStatusRoutine = null;
+
+    public event System.Action OnOpen;
 
     public UsersAroundListHUDController()
     {
@@ -55,6 +57,7 @@ public class UsersAroundListHUDController : IHUD
             usersListView.OnRequestMuteUser -= OnMuteUser;
             usersListView.OnRequestMuteGlobal -= OnMuteAll;
             usersListView.OnGoToCrowdPressed -= OnGoToCrowd;
+            usersListView.OnOpen -= OnListOpen;
 
             usersListView.Dispose();
         }
@@ -115,6 +118,7 @@ public class UsersAroundListHUDController : IHUD
         usersListView.OnRequestMuteUser += OnMuteUser;
         usersListView.OnRequestMuteGlobal += OnMuteAll;
         usersListView.OnGoToCrowdPressed += OnGoToCrowd;
+        usersListView.OnOpen += OnListOpen;
 
         MinimapMetadata.GetMetadata().OnUserInfoUpdated += MapRenderer_OnUserInfoUpdated;
         MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
@@ -202,6 +206,11 @@ public class UsersAroundListHUDController : IHUD
     void OnGoToCrowd()
     {
         WebInterface.GoToCrowd();
+    }
+
+    void OnListOpen()
+    {
+        OnOpen?.Invoke();
     }
 
     private void OnRendererStateChanged(bool isEnable, bool prevState)

@@ -38,6 +38,7 @@ public class TaskbarHUDController : IHUD
 
     public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
     public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
+    public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
     public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
     // TODO (Santi): Remove once the new Settings HUD is implemented
