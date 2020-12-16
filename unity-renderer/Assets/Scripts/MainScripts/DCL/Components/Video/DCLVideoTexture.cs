@@ -118,16 +118,15 @@ namespace DCL.Components
                 {
                     texturePlayer.SetTime(model.seek);
                     model.seek = -1;
+
+                    // Applying seek is not immediate
+                    yield return null;
                 }
 
                 if (model.playing)
-                {
                     texturePlayer.Play();
-                }
-                else if (texturePlayer.playing)
-                {
+                else
                     texturePlayer.Pause();
-                }
 
                 if (baseVolume != model.volume)
                 {
