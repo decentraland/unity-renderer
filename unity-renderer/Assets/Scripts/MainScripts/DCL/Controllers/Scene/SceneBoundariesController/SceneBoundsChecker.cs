@@ -235,6 +235,9 @@ namespace DCL.Controllers
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
+            if (meshesInfo == null || meshesInfo.colliders == null)
+                return;
+
             int collidersCount = meshesInfo.colliders.Count;
             if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
             {
