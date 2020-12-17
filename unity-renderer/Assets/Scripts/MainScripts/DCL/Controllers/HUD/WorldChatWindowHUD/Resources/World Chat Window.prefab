@@ -1196,7 +1196,6 @@ GameObject:
   - component: {fileID: 5309770394841409927}
   - component: {fileID: 9066852120691048329}
   - component: {fileID: 6037274476719757411}
-  - component: {fileID: 6944842080470827101}
   m_Layer: 5
   m_Name: World Chat Window
   m_TagString: Untagged
@@ -1251,27 +1250,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!223 &6944842080470827101
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8602856546858110084}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 1
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
 --- !u!1 &9148549031739847183
 GameObject:
   m_ObjectHideFlags: 0

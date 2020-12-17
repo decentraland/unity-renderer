@@ -7,11 +7,18 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_Tooltip_SocialFeatures : TutorialStep_Tooltip
     {
+        private const int TEACHER_CANVAS_SORT_ORDER_START = 4;
+
         [SerializeField] InputAction_Hold voiceChatAction;
+
+        private int defaultTeacherCanvasSortOrder;
 
         public override void OnStepStart()
         {
             base.OnStepStart();
+
+            defaultTeacherCanvasSortOrder = tutorialController.teacherCanvas.sortingOrder;
+            tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
             if (tutorialController != null &&
                 tutorialController.hudController != null)
@@ -38,6 +45,8 @@ namespace DCL.Tutorial
         public override void OnStepFinished()
         {
             base.OnStepFinished();
+
+            tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
 
             if (tutorialController != null &&
                 tutorialController.hudController != null)
