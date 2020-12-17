@@ -9,6 +9,7 @@ public class KernelConfigurationShould
     {
         const float commRadiusTestValue = 1234;
         const bool voiceChatEnabledTestValue = false;
+        const bool builderInWorldEnabledTestValue = false;
         const string regexTestValue = "1234";
         KernelConfig.i.initialized = false;
 
@@ -26,7 +27,11 @@ public class KernelConfigurationShould
             {
                 nameValidCharacterRegex = regexTestValue,
                 nameValidRegex = regexTestValue
-            }
+            },
+            features = new Features()
+            {
+                enableBuilderInWorld = builderInWorldEnabledTestValue
+            },
         });
 
         Assert.IsFalse(promiseFromController.keepWaiting, "Promise should be resolved");
@@ -56,6 +61,8 @@ public class KernelConfigurationShould
         const float commRadiusTestValue2 = 5678;
         const bool voiceChatEnabledTestValue = false;
         const bool voiceChatEnabledTestValue2 = true;
+        const bool builderInWorldEnabledTestValue = false;
+        const bool builderInWorldEnabledTestValue2 = false;
         const string regexTestValue = "1234";
         const string regexTestValue2 = "5678";
 
@@ -75,7 +82,11 @@ public class KernelConfigurationShould
             {
                 nameValidCharacterRegex = regexTestValue,
                 nameValidRegex = regexTestValue
-            }
+            },
+            features = new Features()
+            {
+                enableBuilderInWorld = builderInWorldEnabledTestValue
+            },
         };
 
         KernelConfig.OnKernelConfigChanged onConfigChange = (current, prev) =>
@@ -125,7 +136,11 @@ public class KernelConfigurationShould
             {
                 nameValidCharacterRegex = regexTestValue2,
                 nameValidRegex = regexTestValue2
-            }
+            },
+            features = new Features()
+            {
+                enableBuilderInWorld = builderInWorldEnabledTestValue2
+            },
         });
         Assert.IsTrue(onChangePass);
 

@@ -3,6 +3,23 @@ using System;
 namespace KernelConfigurationTypes
 {
     [Serializable]
+    public class Features
+    {
+        public bool enableBuilderInWorld = false;
+
+        public bool Equals(Features other)
+        {
+            return enableBuilderInWorld == other?.enableBuilderInWorld;
+        }
+
+        public Features Clone()
+        {
+            Features clone = (Features) this.MemberwiseClone();
+            return clone;
+        }
+    }
+
+    [Serializable]
     public class Comms
     {
         public float commRadius = 4;
@@ -16,7 +33,7 @@ namespace KernelConfigurationTypes
 
         public Comms Clone()
         {
-            Comms clone = (Comms)this.MemberwiseClone();
+            Comms clone = (Comms) this.MemberwiseClone();
             return clone;
         }
     }
@@ -35,7 +52,7 @@ namespace KernelConfigurationTypes
 
         public Profiles Clone()
         {
-            Profiles clone = (Profiles)this.MemberwiseClone();
+            Profiles clone = (Profiles) this.MemberwiseClone();
             return clone;
         }
     }
