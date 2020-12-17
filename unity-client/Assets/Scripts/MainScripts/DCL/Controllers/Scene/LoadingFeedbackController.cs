@@ -49,7 +49,7 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private void SceneController_OnNewSceneAdded(ParcelScene scene)
     {
-        scene.OnStateRefreshed += Scene_OnStateRefreshed;
+        scene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
     }
 
     private void Scene_OnStateRefreshed(ParcelScene scene)
@@ -57,16 +57,16 @@ public class LoadingFeedbackController : MonoBehaviour
         SceneLoadingStatus refreshedScene = new SceneLoadingStatus
         {
             sceneId = scene.GetInstanceID(),
-            componentsLoading = scene.disposableNotReadyCount
+            componentsLoading = scene.sceneLifecycleHandler.disposableNotReadyCount
         };
 
-        switch (scene.state)
+        switch (scene.sceneLifecycleHandler.state)
         {
-            case ParcelScene.State.WAITING_FOR_COMPONENTS:
+            case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
                 AddOrUpdateLoadedScene(refreshedScene);
                 break;
-            case ParcelScene.State.READY:
-                scene.OnStateRefreshed -= Scene_OnStateRefreshed;
+            case SceneLifecycleHandler.State.READY:
+                scene.sceneLifecycleHandler.OnStateRefreshed -= Scene_OnStateRefreshed;
                 break;
         }
 

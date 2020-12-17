@@ -14,17 +14,10 @@ namespace DCL.Controllers
     {
         public static bool VERBOSE = false;
 
-        public enum State
-        {
-            NOT_READY,
-            WAITING_FOR_INIT_MESSAGES,
-            WAITING_FOR_COMPONENTS,
-            READY,
-        }
-
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
+
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
         public SceneController ownerController;
         public SceneMetricsController metricsController;
@@ -32,11 +25,8 @@ namespace DCL.Controllers
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
-        public event System.Action<ParcelScene> OnSceneReady;
-        public event System.Action<ParcelScene> OnStateRefreshed;
 
         public ContentProvider contentProvider;
-        public int disposableNotReadyCount => disposableNotReady.Count;
 
         [System.NonSerialized]
         public bool isTestScene = false;
@@ -47,34 +37,24 @@ namespace DCL.Controllers
         [System.NonSerialized]
         public bool unloadWithDistance = true;
 
-        public bool isReady => state == State.READY;
-
-        readonly List<string> disposableNotReady = new List<string>();
-        bool isReleased = false, isEditModeActive = false;
+        bool isEditModeActive = false;
 
         SceneDebugPlane sceneDebugPlane = null;
 
-        State stateValue = State.NOT_READY;
+        public SceneLifecycleHandler sceneLifecycleHandler;
 
-        public State state
-        {
-            get { return stateValue; }
-            set
-            {
-                stateValue = value;
-                OnStateRefreshed?.Invoke(this);
-            }
-        }
+        public bool isReleased { get; private set; }
+
 
         public void Awake()
         {
-            state = State.NOT_READY;
-
             if (DCLCharacterController.i)
                 DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
 
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
+
+            sceneLifecycleHandler = new SceneLifecycleHandler(this);
         }
 
         void OnDisable()
@@ -84,37 +64,12 @@ namespace DCL.Controllers
 
         private void Update()
         {
-            if (state == State.READY && CommonScriptableObjects.rendererState.Get())
+            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY && CommonScriptableObjects.rendererState.Get())
                 SendMetricsEvent();
         }
 
         protected virtual string prettyName => sceneData.basePosition.ToString();
 
-        protected void RefreshName()
-        {
-#if UNITY_EDITOR
-            switch (state)
-            {
-                case State.NOT_READY:
-                    this.name = gameObject.name = $"scene:{prettyName} - not ready...";
-                    break;
-                case State.WAITING_FOR_INIT_MESSAGES:
-                    this.name = gameObject.name = $"scene:{prettyName} - waiting for init messages...";
-                    break;
-                case State.WAITING_FOR_COMPONENTS:
-
-                    if (disposableComponents != null && disposableComponents.Count > 0)
-                        this.name = gameObject.name = $"scene:{prettyName} - left to ready:{disposableComponents.Count - disposableNotReadyCount}/{disposableComponents.Count}";
-                    else
-                        this.name = gameObject.name = $"scene:{prettyName} - no components. waiting...";
-
-                    break;
-                case State.READY:
-                    this.name = gameObject.name = $"scene:{prettyName} - ready!";
-                    break;
-            }
-#endif
-        }
 
         public void SetEditMode(bool isActive)
         {
@@ -126,6 +81,9 @@ namespace DCL.Controllers
             return isEditModeActive;
         }
 
+        public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
+        public event System.Action<string, BaseDisposable> OnAddSharedComponent;
+
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
             this.sceneData = data;
@@ -134,9 +92,6 @@ namespace DCL.Controllers
             contentProvider.baseUrl = data.baseUrl;
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
-
-            state = State.WAITING_FOR_INIT_MESSAGES;
-            RefreshName();
 
             parcels.Clear();
             for (int i = 0; i < sceneData.parcels.Length; i++)
@@ -147,18 +102,7 @@ namespace DCL.Controllers
             if (DCLCharacterController.i != null)
                 gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
-#if UNITY_EDITOR
-            DebugConfig debugConfig = DataStore.debugConfig;
-            //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
-            if (debugConfig.soloScene && debugConfig.soloSceneCoords != data.basePosition)
-            {
-                SetSceneReady();
-                return;
-            }
-#endif
-
-            if (isTestScene)
-                SetSceneReady();
+            OnSetData?.Invoke(data);
         }
 
         void OnPrecisionAdjust(DCLCharacterPosition position)
@@ -336,47 +280,47 @@ namespace DCL.Controllers
             return newEntity;
         }
 
-        public DecentralandEntity DuplicateEntity(DecentralandEntity decentralandEntity)
+        public DecentralandEntity DuplicateEntity(DecentralandEntity entity)
         {
-            if (!entities.ContainsKey(decentralandEntity.entityId)) return null;
+            if (!entities.ContainsKey(entity.entityId)) return null;
 
-            DecentralandEntity duplicatedEntity = CreateEntity(System.Guid.NewGuid().ToString());
+            DecentralandEntity newEntity = CreateEntity(System.Guid.NewGuid().ToString());
 
-            if (decentralandEntity.children.Count > 0)
+            if (entity.children.Count > 0)
             {
-                using (var iterator = decentralandEntity.children.GetEnumerator())
+                using (var iterator = entity.children.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {
                         DecentralandEntity childDuplicate = DuplicateEntity(iterator.Current.Value);
-                        childDuplicate.SetParent(duplicatedEntity);
+                        childDuplicate.SetParent(newEntity);
                     }
                 }
             }
 
-            if (decentralandEntity.parent != null) SetEntityParent(duplicatedEntity.entityId, decentralandEntity.parent.entityId);
+            if (entity.parent != null) SetEntityParent(newEntity.entityId, entity.parent.entityId);
 
-            DCLTransform.model.position = Environment.i.worldState.ConvertUnityToScenePosition(decentralandEntity.gameObject.transform.position);
-            DCLTransform.model.rotation = decentralandEntity.gameObject.transform.rotation;
-            DCLTransform.model.scale = decentralandEntity.gameObject.transform.lossyScale;
+            DCLTransform.model.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position);
+            DCLTransform.model.rotation = entity.gameObject.transform.rotation;
+            DCLTransform.model.scale = entity.gameObject.transform.lossyScale;
 
-            foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> component in decentralandEntity.components)
+            foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> component in entity.components)
             {
-                EntityComponentCreateOrUpdateFromUnity(duplicatedEntity.entityId, component.Key, DCLTransform.model);
+                EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, component.Key, DCLTransform.model);
             }
 
-            foreach (KeyValuePair<System.Type, BaseDisposable> component in decentralandEntity.GetSharedComponents())
+            foreach (KeyValuePair<System.Type, BaseDisposable> component in entity.GetSharedComponents())
             {
-                SharedComponentAttach(duplicatedEntity.entityId, component.Value.id);
+                SharedComponentAttach(newEntity.entityId, component.Value.id);
             }
 
             //TODO: (Adrian) Evaluate if all created components should be handle as equals instead of different
-            foreach (KeyValuePair<string, UUIDComponent> component in decentralandEntity.uuidComponents)
+            foreach (KeyValuePair<string, UUIDComponent> component in entity.uuidComponents)
             {
-                EntityComponentCreateOrUpdateFromUnity(duplicatedEntity.entityId, CLASS_ID_COMPONENT.UUID_CALLBACK, component.Value.model);
+                EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.UUID_CALLBACK, component.Value.model);
             }
 
-            return duplicatedEntity;
+            return newEntity;
         }
 
         public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
@@ -1011,11 +955,7 @@ namespace DCL.Controllers
             {
                 newComponent.id = id;
                 disposableComponents.Add(id, newComponent);
-
-                if (state != State.READY)
-                {
-                    disposableNotReady.Add(id);
-                }
+                OnAddSharedComponent?.Invoke(id, newComponent);
             }
 
             return newComponent;
@@ -1174,77 +1114,6 @@ namespace DCL.Controllers
             return decentralandEntity;
         }
 
-        private void OnDisposableReady(BaseDisposable disposable)
-        {
-            if (isReleased)
-                return;
-
-            disposableNotReady.Remove(disposable.id);
-
-            if (VERBOSE)
-            {
-                Debug.Log($"{sceneData.basePosition} Disposable objects left... {disposableNotReady.Count}");
-            }
-
-            if (disposableNotReady.Count == 0)
-            {
-                SetSceneReady();
-            }
-
-            OnStateRefreshed?.Invoke(this);
-            RefreshName();
-        }
-
-        public void SetInitMessagesDone()
-        {
-            if (isReleased)
-                return;
-
-            if (state == State.READY)
-            {
-                Debug.LogWarning($"Init messages done after ready?! {sceneData.basePosition}", gameObject);
-                return;
-            }
-
-            state = State.WAITING_FOR_COMPONENTS;
-            RefreshName();
-
-            if (disposableNotReadyCount > 0)
-            {
-                //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
-                //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
-                //             in each OnDisposableReady() call.
-
-                using (var iterator = disposableComponents.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        disposableComponents[iterator.Current.Value.id].CallWhenReady(OnDisposableReady);
-                    }
-                }
-            }
-            else
-            {
-                SetSceneReady();
-            }
-        }
-
-        private void SetSceneReady()
-        {
-            if (state == State.READY)
-                return;
-
-            if (VERBOSE)
-                Debug.Log($"{sceneData.basePosition} Scene Ready!");
-
-            state = State.READY;
-
-            Environment.i.sceneController.SendSceneReady(sceneData.id);
-            RefreshName();
-
-            OnSceneReady?.Invoke(this);
-        }
-
         private void DisposeAllSceneComponents()
         {
             List<string> allDisposableComponents = disposableComponents.Select(x => x.Key).ToList();
@@ -1254,14 +1123,42 @@ namespace DCL.Controllers
             }
         }
 
+        public string GetStateString()
+        {
+            switch (sceneLifecycleHandler.state)
+            {
+                case SceneLifecycleHandler.State.NOT_READY:
+                    return $"scene:{prettyName} - not ready...";
+                case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
+                    return $"scene:{prettyName} - waiting for init messages...";
+                case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
+                    if (disposableComponents != null && disposableComponents.Count > 0)
+                        return $"scene:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count}";
+                    else
+                        return $"scene:{prettyName} - no components. waiting...";
+                case SceneLifecycleHandler.State.READY:
+                    return $"scene:{prettyName} - ready!";
+            }
+
+            return $"scene:{prettyName} - no state?";
+        }
+
+        public void RefreshName()
+        {
+#if UNITY_EDITOR
+            gameObject.name = GetStateString();
+#endif
+        }
+
+
         [ContextMenu("Get Waiting Components Debug Info")]
         public void GetWaitingComponentsDebugInfo()
         {
-            switch (state)
+            switch (sceneLifecycleHandler.state)
             {
-                case State.WAITING_FOR_COMPONENTS:
+                case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
 
-                    foreach (string componentId in disposableNotReady)
+                    foreach (string componentId in sceneLifecycleHandler.disposableNotReady)
                     {
                         if (disposableComponents.ContainsKey(componentId))
                         {
@@ -1292,7 +1189,7 @@ namespace DCL.Controllers
                     break;
 
                 default:
-                    Debug.Log("This scene is not waiting for any components. Its current state is " + state);
+                    Debug.Log("This scene is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
         }

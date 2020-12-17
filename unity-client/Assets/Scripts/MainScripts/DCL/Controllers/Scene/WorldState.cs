@@ -89,7 +89,7 @@ namespace DCL
             // Create fast (hashset) collection of loaded parcels coords
             foreach (var element in loadedScenes)
             {
-                if (!element.Value.isReady) continue;
+                if (!element.Value.sceneLifecycleHandler.isReady) continue;
 
                 allLoadedParcelCoords.UnionWith(element.Value.parcels);
             }

@@ -278,7 +278,7 @@ namespace DCL
 
                     case MessagingTypes.INIT_DONE:
                     {
-                        scene.SetInitMessagesDone();
+                        scene.sceneLifecycleHandler.SetInitMessagesDone();
                         break;
                     }
 
@@ -589,11 +589,11 @@ namespace DCL
 
         private void OnCurrentSceneIdChange(string newSceneId, string prevSceneId)
         {
-            if (Environment.i.worldState.TryGetScene(newSceneId, out ParcelScene newCurrentScene) && !newCurrentScene.isReady)
+            if (Environment.i.worldState.TryGetScene(newSceneId, out ParcelScene newCurrentScene) && !newCurrentScene.sceneLifecycleHandler.isReady)
             {
                 CommonScriptableObjects.rendererState.AddLock(newCurrentScene);
 
-                newCurrentScene.OnSceneReady += (readyScene) => { CommonScriptableObjects.rendererState.RemoveLock(readyScene); };
+                newCurrentScene.sceneLifecycleHandler.OnSceneReady += (readyScene) => { CommonScriptableObjects.rendererState.RemoveLock(readyScene); };
             }
         }
 
