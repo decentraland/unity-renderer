@@ -537,6 +537,9 @@ export type KernelConfigForRenderer = {
     nameValidRegex: string
     nameValidCharacterRegex: string
   }
+  features: {
+    enableBuilderInWorld: boolean
+  }
   gifSupported: boolean
 }
 
