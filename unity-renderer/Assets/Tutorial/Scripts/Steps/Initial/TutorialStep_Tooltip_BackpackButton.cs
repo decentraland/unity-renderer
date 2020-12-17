@@ -11,10 +11,10 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.avatarEditorHud != null)
+                tutorialController.hudController.profileHud != null)
             {
-                tutorialController.hudController.avatarEditorHud.OnOpen += AvatarEditorHud_OnOpen;
-                tutorialController.hudController.avatarEditorHud.OnClose += AvatarEditorHud_OnClose;
+                tutorialController.hudController.profileHud.OnOpen += ProfileHud_OnOpen;
+                tutorialController.hudController.profileHud.OnClose += ProfileHud_OnClose;
             }
         }
 
@@ -24,10 +24,10 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
-                tutorialController.hudController.avatarEditorHud != null)
+                tutorialController.hudController.profileHud != null)
             {
-                tutorialController.hudController.avatarEditorHud.OnOpen -= AvatarEditorHud_OnOpen;
-                tutorialController.hudController.avatarEditorHud.OnClose -= AvatarEditorHud_OnClose;
+                tutorialController.hudController.profileHud.OnOpen -= ProfileHud_OnOpen;
+                tutorialController.hudController.profileHud.OnClose -= ProfileHud_OnClose;
             }
         }
 
@@ -43,14 +43,14 @@ namespace DCL.Tutorial
             }
         }
 
-        private void AvatarEditorHud_OnOpen()
+        private void ProfileHud_OnOpen()
         {
             isRelatedFeatureActived = true;
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        private void AvatarEditorHud_OnClose()
+        private void ProfileHud_OnClose()
         {
             if (isRelatedFeatureActived)
                 isRelatedFeatureActived = false;
