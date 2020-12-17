@@ -33,8 +33,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -32, y: 0}
+  m_AnchoredPosition: {x: 11, y: 0}
+  m_SizeDelta: {x: -21.944946, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &258066694980784214
 GameObject:
@@ -69,7 +69,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 120}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -80, y: 22}
+  m_AnchoredPosition: {x: -117.6, y: 19}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 1, y: 0}
 --- !u!1 &961069750720000318
@@ -180,8 +180,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 6.91}
-  m_SizeDelta: {x: -40, y: -28.809624}
+  m_AnchoredPosition: {x: 13.82, y: 6.91}
+  m_SizeDelta: {x: -67.63861, y: -28.809624}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6044884098513507028
 CanvasRenderer:
@@ -210,7 +210,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: View players in the scene and configure voice chat.
+  m_text: View players in the scene and configure voice chat. Hold T while speaking
+    into your mic to talk to players around you.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -280,12 +281,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 3947925781027475414}
-    characterCount: 51
+    characterCount: 118
     spriteCount: 0
-    spaceCount: 8
-    wordCount: 9
+    spaceCount: 21
+    wordCount: 22
     linkCount: 0
-    lineCount: 2
+    lineCount: 4
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -340,8 +341,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -221.99979, y: 121.599976}
-  m_SizeDelta: {x: 320, y: 100}
+  m_AnchoredPosition: {x: -194.17, y: 125.5}
+  m_SizeDelta: {x: 431.3199, y: 119.416916}
   m_Pivot: {x: 0.25, y: 1.2}
 --- !u!222 &7491104538370866601
 CanvasRenderer:
@@ -524,7 +525,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -40.7, y: 0}
+  m_AnchoredPosition: {x: -0.19999695, y: 2.5}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1001 &5623086089013573729
@@ -592,12 +593,12 @@ PrefabInstance:
     - target: {fileID: 2025551091650611686, guid: 2444f5fcc239b4e46aa76b2cd2bff5ff,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -19
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2025551091650611686, guid: 2444f5fcc239b4e46aa76b2cd2bff5ff,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -25
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 2025551091650611686, guid: 2444f5fcc239b4e46aa76b2cd2bff5ff,
         type: 3}
