@@ -29,6 +29,9 @@ public class ProfileHUDController : IHUD
 
     public RectTransform backpackTooltipReference { get => view.backpackTooltipReference; }
 
+    public event Action OnOpen;
+    public event Action OnClose;
+
     public ProfileHUDController()
     {
         mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
@@ -52,6 +55,8 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
+        view.OnOpen += () => OnOpen?.Invoke();
+        view.OnClose += () => OnClose?.Invoke();
 
         manaCounterView = view.GetComponentInChildren<ManaCounterView>(true);
         if (manaCounterView)

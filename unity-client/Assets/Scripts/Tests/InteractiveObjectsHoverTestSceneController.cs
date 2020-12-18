@@ -41,7 +41,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
         };
         var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-        scene.SetInitMessagesDone();
+        scene.sceneLifecycleHandler.SetInitMessagesDone();
 
         OnPointerEvent.enableInteractionHoverFeedback = true;
     }

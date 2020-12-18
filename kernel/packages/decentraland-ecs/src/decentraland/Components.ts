@@ -1030,6 +1030,7 @@ export class VideoTexture extends ObservableComponent {
 
   constructor(videoClip: VideoClip, opts?: Partial<Pick<VideoTexture, 'samplingMode' | 'wrap'>>) {
     super()
+
     if (!(videoClip instanceof VideoClip)) {
       throw new Error(`Trying to create VideoTexture(VideoClip) with an invalid VideoClip`)
     }
@@ -1053,6 +1054,7 @@ export class VideoTexture extends ObservableComponent {
 
   reset() {
     this.seekTime(0)
+    this.pause()
   }
 
   seekTime(seconds: number) {
@@ -1062,10 +1064,7 @@ export class VideoTexture extends ObservableComponent {
   }
 
   toJSON() {
-    if (this.seek >= 0) {
-      // the seek value was changed/used
-      this.pause()
-
+    if (this.seek >= 0) { // the seek value was changed/used
       const ret = JSON.parse(JSON.stringify(super.toJSON()))
       this.seek = -1
       return ret

@@ -174,7 +174,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You''ll find controls, settings and helpful tips in the taskbar menu. '
+  m_text: 'You''ll find controls and helpful tips in the taskbar menu. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -244,10 +244,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 3947925781027475414}
-    characterCount: 69
+    characterCount: 59
     spriteCount: 0
-    spaceCount: 11
-    wordCount: 11
+    spaceCount: 10
+    wordCount: 10
     linkCount: 0
     lineCount: 2
     pageCount: 1
@@ -305,7 +305,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -8.839996, y: 0}
-  m_SizeDelta: {x: 442, y: 100}
+  m_SizeDelta: {x: 397.74286, y: 100}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &7491104538370866601
 CanvasRenderer:

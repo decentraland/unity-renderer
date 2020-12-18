@@ -55,7 +55,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2667913
+    totalSpriteSurfaceArea: 2691324
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -123,6 +123,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4bb84435c63fb4e1f9276314c9e47125, type: 3}
   - {fileID: 21300000, guid: 914d7e458aea54023ade17e08c509416, type: 3}
   - {fileID: 21300000, guid: 3e026055304a14525a6f24ebe12e875f, type: 3}
+  - {fileID: 21300000, guid: 47acd065431664e80a9a8cdedf8acb31, type: 3}
   - {fileID: 21300000, guid: 1a32f285ef84d8e44856f0e495cffd4d, type: 3}
   - {fileID: 21300000, guid: 5c569e851fe024c7e8e4b57c07575226, type: 3}
   - {fileID: 21300000, guid: 520d44b5687394783ae96976dbb73c7c, type: 3}
@@ -204,6 +205,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 90be4f1cf715b4378954ea0510aeb9ba, type: 3}
   - {fileID: 21300000, guid: 794d4e3c645a24df9a6a20eeb079a67d, type: 3}
   - {fileID: 21300000, guid: f89f754c892ba4e8faa6b3390ff07e16, type: 3}
+  - {fileID: 21300000, guid: 2dcab87c551ac42a3b30debae889baad, type: 3}
   - {fileID: 21300000, guid: 17bb56ac8d30b4a76bbd9b2e841ba75f, type: 3}
   - {fileID: 21300000, guid: 31a98abcdcc4e4022b74038cdc7154be, type: 3}
   - {fileID: 21300000, guid: ce0e66cca3918473693726f3bf7da082, type: 3}
@@ -296,6 +298,7 @@ SpriteAtlas:
   - StokeRectRadius12
   - SettingsIconNew
   - MagicSpark
+  - BubblePeak
   - RectRadius12Shadow
   - RectRadius12Bottom
   - SettingsGraphicsIcon
@@ -377,6 +380,7 @@ SpriteAtlas:
   - ManaContainer
   - InfoIcon
   - CursorInteractive
+  - CrowdIcon
   - MagicButton
   - HelpIconNew
   - VoiceChatPlayer

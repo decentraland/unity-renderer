@@ -16,6 +16,7 @@ namespace DCL.SettingsPanelHUD.Controls
             SetLabels(((SpinBoxControlModel)controlConfig).spinBoxLabels);
 
             base.Initialize(controlConfig, settingsControlController);
+            settingsControlController.OnControlChanged(spinBox.value);
 
             spinBox.onValueChanged.AddListener(spinBoxValue =>
             {

@@ -172,7 +172,7 @@ namespace DCL.Controllers
 
             if (entity.meshRootGameObject == null || entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
             {
-                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.playerUnityToWorldOffset.Get()));
+                UpdateComponents(entity, entity.scene.IsInsideSceneBoundaries(entity.gameObject.transform.position + CommonScriptableObjects.worldOffset.Get()));
                 return;
             }
 
@@ -235,6 +235,9 @@ namespace DCL.Controllers
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
+            if (meshesInfo == null || meshesInfo.colliders == null)
+                return;
+
             int collidersCount = meshesInfo.colliders.Count;
             if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
             {

@@ -157,6 +157,7 @@ export function pickCatalystRealm(candidates: Candidate[]): Realm {
   })
 
   const sorted = candidates
+    .filter((it) => it)
     .filter((it) => it.status === ServerConnectionStatus.OK && it.layer.usersCount < it.layer.maxUsers)
     .sort((c1, c2) => {
       const elapsedDiff = c1.elapsed - c2.elapsed
@@ -241,7 +242,7 @@ function candidateToRealm(candidate: Candidate) {
 }
 
 function realmFor(name: string, layer: string, candidates: Candidate[]): Realm | undefined {
-  const candidate = candidates.find((it) => it.catalystName === name && it.layer.name === layer)
+  const candidate = candidates.find((it) => it && it.catalystName === name && it.layer.name === layer)
   return candidate ? candidateToRealm(candidate) : undefined
 }
 

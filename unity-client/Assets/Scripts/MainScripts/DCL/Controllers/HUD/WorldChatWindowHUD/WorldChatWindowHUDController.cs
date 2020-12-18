@@ -20,6 +20,7 @@ public class WorldChatWindowHUDController : IHUD
     public string lastPrivateMessageReceivedSender = string.Empty;
 
     public event UnityAction<string> OnPressPrivateMessage;
+    public event System.Action OnOpen;
 
     public void Initialize(IChatController chatController, IMouseCatcher mouseCatcher)
     {
@@ -138,6 +139,8 @@ public class WorldChatWindowHUDController : IHUD
 
     public bool OnPressReturn()
     {
+        OnOpen?.Invoke();
+
         if (EventSystem.current != null &&
             EventSystem.current.currentSelectedGameObject != null &&
             EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null)

@@ -1,5 +1,5 @@
 import { KernelConfigForRenderer } from 'shared/types'
-import { commConfigurations, WSS_ENABLED } from 'config'
+import { commConfigurations, ENABLE_BUILDER_IN_WORLD, WSS_ENABLED } from 'config'
 import { nameValidCharacterRegex, nameValidRegex } from 'shared/profiles/utils/names'
 
 export function kernelConfigForRenderer(): KernelConfigForRenderer {
@@ -11,6 +11,9 @@ export function kernelConfigForRenderer(): KernelConfigForRenderer {
     profiles: {
       nameValidCharacterRegex: nameValidCharacterRegex.toString().replace(/[/]/g, ''),
       nameValidRegex: nameValidRegex.toString().replace(/[/]/g, '')
+    },
+    features: {
+      enableBuilderInWorld: ENABLE_BUILDER_IN_WORLD
     },
     gifSupported:
       // tslint:disable-next-line

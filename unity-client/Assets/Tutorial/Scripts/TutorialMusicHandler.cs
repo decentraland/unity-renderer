@@ -50,6 +50,9 @@ public class TutorialMusicHandler : MonoBehaviour
 
     void TryPlayingMusic()
     {
+        if (tutorialController.userAlreadyDidTheTutorial)
+            return;
+
         if (rendererIsReady && tutorialHasBeenEnabled && !tutorialMusic.source.isPlaying)
         {
             if (fadeOut != null)

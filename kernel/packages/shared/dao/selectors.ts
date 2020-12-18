@@ -20,7 +20,9 @@ export const getCatalystCandidates = (store: RootDaoState) => store.dao.candidat
 export const getAddedCatalystCandidates = (store: RootDaoState) => store.dao.addedCandidates
 
 export const getAllCatalystCandidates = (store: RootDaoState) =>
-  getAddedCatalystCandidates(store).concat(getCatalystCandidates(store))
+  getAddedCatalystCandidates(store)
+    .concat(getCatalystCandidates(store))
+    .filter((it) => !!it)
 
 export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
 export const areCandidatesFetched = (store: RootDaoState) => store.dao.candidatesFetched

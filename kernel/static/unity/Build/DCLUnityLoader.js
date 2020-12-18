@@ -5243,7 +5243,7 @@ var UnityLoader = UnityLoader || {
       hasWebGL: (function () {
         if (!window.WebGLRenderingContext) return 0
         var e = document.createElement('canvas'),
-          t = e.getContext('webgl2')
+          t = e.getContext('webgl2', { preserveDrawingBuffer: true })
         return t
           ? 2
           : ((t = e.getContext('experimental-webgl2')),
