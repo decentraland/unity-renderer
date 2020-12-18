@@ -1098,13 +1098,13 @@ MonoBehaviour:
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
   baseUrlCustom: https://play.decentraland.zone/?
-  environment: 2
-  startInCoords: {x: 140, y: 140}
+  environment: 4
+  startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  soloScene: 0
+  soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
