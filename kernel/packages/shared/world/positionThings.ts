@@ -154,13 +154,21 @@ function computeComponentValue(x: number | number[]) {
   if (typeof x === 'number') {
     return x
   }
+
   if (x.length !== 2) {
     throw new Error(`array must have two values ${JSON.stringify(x)}`)
   }
-  const [min, max] = x
-  if (max <= min) {
-    throw new Error(`max value (${max}) must be greater than min value (${min})`)
+
+  let [min, max] = x
+
+  if (min === max) return max
+
+  if (min > max) {
+    const aux = min
+    min = max
+    max = aux
   }
+
   return Math.random() * (max - min) + min
 }
 
