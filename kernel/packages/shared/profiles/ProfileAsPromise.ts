@@ -11,7 +11,7 @@ declare const globalThis: StoreContainer
 const PROFILE_SOFT_TIMEOUT_MS = 5000
 
 // We reject the profile promise if more time than this has passed
-const PROFILE_HARD_TIMEOUT_MS = COMMS_PROFILE_TIMEOUT + 2000
+const PROFILE_HARD_TIMEOUT_MS = COMMS_PROFILE_TIMEOUT + 20000
 
 export function ProfileAsPromise(userId: string, version?: number, profileType?: ProfileType): Promise<Profile> {
   function isExpectedVersion(aProfile: Profile) {
