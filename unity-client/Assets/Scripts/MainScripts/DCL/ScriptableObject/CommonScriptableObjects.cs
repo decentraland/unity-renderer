@@ -83,8 +83,8 @@ public static class CommonScriptableObjects
     private static Vector3Variable playerUnityEulerAnglesValue;
     public static Vector3Variable playerUnityEulerAngles => GetOrLoad(ref playerUnityEulerAnglesValue, "ScriptableObjects/PlayerUnityEulerAngles");
 
-    private static Vector3Variable playerUnityToWorldOffsetValue;
-    public static Vector3Variable playerUnityToWorldOffset => GetOrLoad(ref playerUnityToWorldOffsetValue, "ScriptableObjects/PlayerUnityToWorldOffset");
+    private static Vector3Variable worldOffsetValue;
+    public static Vector3Variable worldOffset => GetOrLoad(ref worldOffsetValue, "ScriptableObjects/WorldOffset");
 
     private static Vector2IntVariable playerCoordsValue;
     public static Vector2IntVariable playerCoords => GetOrLoad(ref playerCoordsValue, "ScriptableObjects/PlayerCoords");
