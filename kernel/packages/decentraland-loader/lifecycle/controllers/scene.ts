@@ -50,6 +50,7 @@ export class SceneLifeCycleController extends EventEmitter {
 
       // Unload and re-load scenes
       this.emit('Unload scene', sceneId)
+      this.sceneStatus.delete(sceneId)
       const newScenes = await this.fetchSceneIds(parcels)
       await this.startSceneLoading(newScenes)
     }
