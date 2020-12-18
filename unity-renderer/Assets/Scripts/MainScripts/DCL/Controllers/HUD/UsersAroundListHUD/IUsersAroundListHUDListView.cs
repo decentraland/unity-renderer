@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 
 public interface IUsersAroundListHUDListView
 {
     event Action<string, bool> OnRequestMuteUser;
     event Action<bool> OnRequestMuteGlobal;
     event Action OnGoToCrowdPressed;
+    event Action OnOpen;
     void AddOrUpdateUser(MinimapMetadata.MinimapUserInfo userInfo);
     void RemoveUser(string userId);
     void SetUserRecording(string userId, bool isRecording);

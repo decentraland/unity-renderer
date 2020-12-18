@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using DCL;
+using DCL.SettingsData;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,28 +10,23 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
     public event Action<string, bool> OnRequestMuteUser;
     public event Action<bool> OnRequestMuteGlobal;
     public event Action OnGoToCrowdPressed;
+    public event Action OnOpen;
 
     [SerializeField] private UsersAroundListHUDListElementView listElementView;
     [SerializeField] private ShowHideAnimator showHideAnimator;
-    [SerializeField] internal TMPro.TextMeshProUGUI textFriendsTitle;
     [SerializeField] internal TMPro.TextMeshProUGUI textPlayersTitle;
-    [SerializeField] internal Transform contentFriends;
     [SerializeField] internal Transform contentPlayers;
     [SerializeField] internal Toggle muteAllToggle;
     [SerializeField] internal UserContextMenu contextMenu;
     [SerializeField] internal UserContextConfirmationDialog confirmationDialog;
-    [SerializeField] internal GameObject listGameObject;
     [SerializeField] internal GameObject emptyListGameObject;
     [SerializeField] internal Button gotoCrowdButton;
+    [SerializeField] internal SpinBoxPresetted voiceChatSpinBox;
 
     internal Queue<UsersAroundListHUDListElementView> availableElements;
     internal Dictionary<string, UsersAroundListHUDListElementView> userElementDictionary;
 
-    private string friendsTextPattern;
     private string playersTextPattern;
-    private int friendsCount = 0;
-    private int playersCount = 0;
-
     private bool isGameObjectDestroyed = false;
 
     private void Awake()
@@ -37,26 +34,25 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         availableElements = new Queue<UsersAroundListHUDListElementView>();
         userElementDictionary = new Dictionary<string, UsersAroundListHUDListElementView>();
 
-        friendsTextPattern = textFriendsTitle.text;
         playersTextPattern = textPlayersTitle.text;
-        textFriendsTitle.text = string.Format(friendsTextPattern, friendsCount);
-        textPlayersTitle.text = string.Format(playersTextPattern, playersCount);
+        textPlayersTitle.text = string.Format(playersTextPattern, userElementDictionary?.Count ?? 0);
 
         muteAllToggle.onValueChanged.AddListener(OnMuteGlobal);
         gotoCrowdButton.onClick.AddListener(() => OnGoToCrowdPressed?.Invoke());
+        voiceChatSpinBox.onValueChanged.AddListener(OnVoiceChatSettingChanged);
 
         listElementView.OnMuteUser += OnMuteUser;
         listElementView.OnShowUserContexMenu += OnUserContextMenu;
         listElementView.OnPoolRelease();
         availableElements.Enqueue(listElementView);
 
-        if (FriendsController.i)
-            FriendsController.i.OnUpdateFriendship += OnUpdateFriendship;
+        Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
     }
 
     void OnDestroy()
     {
         isGameObjectDestroyed = true;
+        Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
     }
 
     void IUsersAroundListHUDListView.AddOrUpdateUser(MinimapMetadata.MinimapUserInfo userInfo)
@@ -71,22 +67,14 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         if (profile == null)
             return;
 
-        bool isFriend = false;
-
-        if (FriendsController.i && FriendsController.i.friends.TryGetValue(userInfo.userId, out FriendsController.UserStatus status))
-        {
-            isFriend = status.friendshipStatus == FriendshipStatus.FRIEND;
-        }
-
         UsersAroundListHUDListElementView view = null;
         if (availableElements.Count > 0)
         {
             view = availableElements.Dequeue();
-            view.transform.SetParent(isFriend ? contentFriends : contentPlayers);
         }
         else
         {
-            view = Instantiate(listElementView, isFriend ? contentFriends : contentPlayers);
+            view = Instantiate(listElementView, contentPlayers);
             view.OnMuteUser += OnMuteUser;
             view.OnShowUserContexMenu += OnUserContextMenu;
         }
@@ -94,7 +82,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         view.OnPoolGet();
         view.SetUserProfile(profile);
         userElementDictionary.Add(userInfo.userId, view);
-        ModifyListCount(isFriend, 1);
+        OnModifyListCount();
         CheckListEmptyState();
     }
 
@@ -109,9 +97,9 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
             return;
         }
 
-        ModifyListCount(elementView.transform.parent == contentFriends, -1);
         PoolElementView(elementView);
         userElementDictionary.Remove(userId);
+        OnModifyListCount();
         CheckListEmptyState();
     }
 
@@ -153,6 +141,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
 
             showHideAnimator.Show();
             CheckListEmptyState();
+            OnOpen?.Invoke();
         }
         else
         {
@@ -164,9 +153,6 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
 
     void IUsersAroundListHUDListView.Dispose()
     {
-        if (FriendsController.i)
-            FriendsController.i.OnUpdateFriendship -= OnUpdateFriendship;
-
         userElementDictionary.Clear();
         availableElements.Clear();
 
@@ -198,58 +184,26 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         availableElements.Enqueue(element);
     }
 
-    void ModifyListCount(bool friendList, int delta)
+    void OnModifyListCount()
     {
-        if (friendList)
-        {
-            friendsCount += delta;
-            textFriendsTitle.text = string.Format(friendsTextPattern, friendsCount);
-        }
-        else
-        {
-            playersCount += delta;
-            textPlayersTitle.text = string.Format(playersTextPattern, playersCount);
-        }
-    }
-
-    bool IsInFriendsList(UsersAroundListHUDListElementView element)
-    {
-        return element.transform.parent == contentFriends;
-    }
-
-    void OnUpdateFriendship(string userId, FriendshipAction status)
-    {
-        if (!userElementDictionary.TryGetValue(userId, out UsersAroundListHUDListElementView elementView))
-        {
-            return;
-        }
-
-        bool isFriend = IsFriend(status);
-        bool isInFriendsList = IsInFriendsList(elementView);
-
-        if (isFriend && !isInFriendsList)
-        {
-            ModifyListCount(friendList: false, -1);
-            ModifyListCount(friendList: true, 1);
-            elementView.transform.SetParent(contentFriends);
-        }
-        else if (!isFriend && isInFriendsList)
-        {
-            ModifyListCount(friendList: true, -1);
-            ModifyListCount(friendList: false, 1);
-            elementView.transform.SetParent(contentPlayers);
-        }
-    }
-
-    bool IsFriend(FriendshipAction status)
-    {
-        return status == FriendshipAction.APPROVED;
+        textPlayersTitle.text = string.Format(playersTextPattern, userElementDictionary.Count);
     }
 
     void CheckListEmptyState()
     {
         bool isEmpty = userElementDictionary.Count == 0;
-        listGameObject.SetActive(!isEmpty);
         emptyListGameObject.SetActive(isEmpty);
+    }
+
+    void OnVoiceChatSettingChanged(int index)
+    {
+        var newSettings = Settings.i.generalSettings;
+        newSettings.voiceChatAllow = (GeneralSettings.VoiceChatAllow)index;
+        Settings.i.ApplyGeneralSettings(newSettings);
+    }
+
+    void OnSettingsChanged(GeneralSettings settings)
+    {
+        voiceChatSpinBox.SetValue((int)settings.voiceChatAllow, false);
     }
 }

@@ -54,7 +54,7 @@ namespace DCL
                     return pos;
             }
 
-            Vector3 worldPosition = DCLCharacterController.i.characterPosition.UnityToWorldPosition(pos);
+            Vector3 worldPosition = PositionUtils.UnityToWorldPosition(pos);
             return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         }
 
@@ -89,7 +89,7 @@ namespace DCL
             // Create fast (hashset) collection of loaded parcels coords
             foreach (var element in loadedScenes)
             {
-                if (!element.Value.isReady) continue;
+                if (!element.Value.sceneLifecycleHandler.isReady) continue;
 
                 allLoadedParcelCoords.UnionWith(element.Value.parcels);
             }

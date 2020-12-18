@@ -24,6 +24,8 @@ namespace DCL.SettingsPanelHUD.Controls
             slider.wholeNumbers = this.sliderControlConfig.sliderWholeNumbers;
 
             base.Initialize(controlConfig, settingsControlController);
+            OverrideIndicatorLabel(slider.value.ToString());
+            settingsControlController.OnControlChanged(slider.value);
 
             slider.onValueChanged.AddListener(sliderValue =>
             {

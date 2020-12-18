@@ -72,16 +72,16 @@ namespace Tests
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
-            scene.SetInitMessagesDone();
+            scene.sceneLifecycleHandler.SetInitMessagesDone();
 
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
+            Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
         }
 
         [Test]
         public void ParcelScene_TrackDisposables_Empty()
         {
             SetUp_TestScene();
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
+            Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
         }
 
         [UnityTest]
@@ -350,11 +350,11 @@ namespace Tests
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             });
 
-            Assert.AreEqual(1, scene.disposableNotReadyCount);
-            scene.SetInitMessagesDone();
-            Assert.AreEqual(1, scene.disposableNotReadyCount);
+            Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+            scene.sceneLifecycleHandler.SetInitMessagesDone();
+            Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
             yield return TestHelpers.WaitForGLTFLoad(entity);
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
+            Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
         }
 
         [Test]
@@ -367,7 +367,7 @@ namespace Tests
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
 
-            Assert.AreEqual(3, scene.disposableNotReadyCount);
+            Assert.AreEqual(3, scene.sceneLifecycleHandler.disposableNotReadyCount);
         }
 
         [UnityTest]
@@ -377,11 +377,11 @@ namespace Tests
         {
             SetUp_TestScene();
             var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-            Assert.AreEqual(1, scene.disposableNotReadyCount);
-            scene.SetInitMessagesDone();
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
+            Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);
+            scene.sceneLifecycleHandler.SetInitMessagesDone();
+            Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
             yield return boxShape.routine;
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
+            Assert.AreEqual(0, scene.sceneLifecycleHandler.disposableNotReadyCount);
         }
 
         [Test]

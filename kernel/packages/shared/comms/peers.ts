@@ -117,7 +117,7 @@ export function receiveUserData(uuid: string, data: Partial<UserInformation>) {
             type: AvatarMessageType.USER_DATA,
             uuid,
             data,
-            profile: profileToRendererFormat(profile, userData.identity)
+            profile: profileToRendererFormat(profile, { identity: userData.identity })
           })
         }
       })().catch((e) => {

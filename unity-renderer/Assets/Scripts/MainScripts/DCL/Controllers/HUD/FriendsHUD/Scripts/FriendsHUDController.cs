@@ -301,6 +301,8 @@ public class FriendsHUDController : IHUD
         }
         else
         {
+            OnFriendsClosed?.Invoke();
+
             AudioScriptableObjects.dialogClose.Play(true);
         }
     }

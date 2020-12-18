@@ -34,7 +34,7 @@ export class EmptyParcelController {
       return
     }
 
-    this.emptyScenesPromise = jsonFetch(this.baseUrl + 'index.json').then((scenes) => {
+    this.emptyScenesPromise = jsonFetch(this.baseUrl + 'mappings.json').then((scenes) => {
       this.emptySceneNames = Object.keys(scenes)
       this.emptyScenes = scenes
       return this.emptyScenes

@@ -1,6 +1,5 @@
 declare const globalThis: { UnityLoader: any } & StoreContainer
 declare const global: any
-
 ;(window as any).reactVersion = false
 
 // IMPORTANT! This should be execd before loading 'config' module to ensure that init values are successfully loaded
@@ -17,7 +16,12 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { startUnitySceneWorkers } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
-import { renderStateObservable, onNextRendererEnabled, foregroundObservable, isForeground } from 'shared/world/worldState'
+import {
+  renderStateObservable,
+  onNextRendererEnabled,
+  foregroundObservable,
+  isForeground
+} from 'shared/world/worldState'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
@@ -84,7 +88,7 @@ initializeUnity(container)
     try {
       await userAuthentified()
       const identity = getCurrentIdentity(globalThis.globalStore.getState())!
-      
+
       const voiceChatEnabled = isVoiceChatEnabledFor(globalThis.globalStore.getState(), identity.address)
 
       const configForRenderer = kernelConfigForRenderer()
@@ -131,7 +135,7 @@ initializeUnity(container)
       i.ReportFocusOn()
     } else {
       i.ReportFocusOff()
-    } 
+    }
 
     foregroundObservable.add((isForeground) => {
       if (isForeground) {

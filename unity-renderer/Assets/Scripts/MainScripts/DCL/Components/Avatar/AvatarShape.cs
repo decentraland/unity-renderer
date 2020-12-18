@@ -19,7 +19,10 @@ namespace DCL
         public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] private AvatarOnPointerDown onPointerDown;
+
+        [SerializeField]
+        private AvatarOnPointerDown onPointerDown;
+
         private StringVariable currentPlayerInfoCardId;
 
         private string currentSerialization = "";
@@ -85,8 +88,8 @@ namespace DCL
                 hoverText = "view profile"
             });
 
-            DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= PrecisionAdjust;
-            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += PrecisionAdjust;
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
+            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
 
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;
@@ -131,7 +134,7 @@ namespace DCL
             onPointerDown.collider.enabled = true;
         }
 
-        private void PrecisionAdjust(DCLCharacterPosition obj)
+        private void OnWorldReposition(Vector3 current, Vector3 previous)
         {
             avatarUserInfo.worldPosition = entity.gameObject.transform.position;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
@@ -172,7 +175,7 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
-            DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= PrecisionAdjust;
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
 
             if (entity != null)
             {

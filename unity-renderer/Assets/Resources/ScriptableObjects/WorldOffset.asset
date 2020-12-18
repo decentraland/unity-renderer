@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31e6564b5872422fa77436eed806c1db, type: 3}
-  m_Name: PlayerUnityToWorldOffset
+  m_Name: WorldOffset
   m_EditorClassIdentifier: 
   value: {x: 0, y: 0, z: 0}
