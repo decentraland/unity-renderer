@@ -175,6 +175,7 @@ function* initializeCatalystCandidates() {
 
 async function checkValidRealm(realm: Realm) {
   return (
+    realm &&
     realm.domain &&
     realm.catalystName &&
     realm.layer &&
