@@ -142,7 +142,17 @@ var WebVideoPlayer = {
       if (videoData.hlsInstance !== undefined) {
         videoData.hlsInstance.attachMedia(videoData.video);
       }
-      videoData.video.play();
+
+      const playPromise = videoData.video.play();
+      if (playPromise !== undefined) {
+          playPromise.then(function () {
+            // Playback starts with no problem
+          })
+          .catch(function (error) {
+            // Playback cancelled before the video finished loading (e.g. when teleporting)
+            // we mustn't report this error as it's harmless and affects our metrics
+          });
+        }
     } catch (err) {
       // Exception!
     }
