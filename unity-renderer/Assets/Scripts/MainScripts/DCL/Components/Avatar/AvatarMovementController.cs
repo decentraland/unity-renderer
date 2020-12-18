@@ -1,4 +1,5 @@
 ﻿using DCL.Components;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -33,7 +34,7 @@ namespace DCL
             set
             {
                 currentWorldPosition = value;
-                avatarTransform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(currentWorldPosition);
+                avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
             }
         }
 
@@ -62,19 +63,17 @@ namespace DCL
 
         void OnEnable()
         {
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
         }
 
         void OnDisable()
         {
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         }
 
-        void OnPrecisionAdjust(DCLCharacterPosition position)
+        void OnWorldReposition(Vector3 current, Vector3 previous)
         {
-            avatarTransform.position = position.WorldToUnityPosition(currentWorldPosition);
+            avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
         }
 
         public void OnTransformChanged(DCLTransform.Model model)

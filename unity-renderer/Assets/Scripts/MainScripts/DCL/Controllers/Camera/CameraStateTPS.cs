@@ -21,8 +21,7 @@ public class CameraStateTPS : CameraStateBase
     protected Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     protected Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
     protected Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-    protected Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
-
+    
     public float rotationLerpSpeed = 10;
 
     public override void Init(Camera camera)

@@ -35,7 +35,7 @@ public class BlockerHandlerCan
         //NOTE(Brian): Call OnFinish() when blockerAnimationHandler.FadeOut is called. 
         blockerAnimationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
-        blockerInstanceHandler = new BlockerInstanceHandler(new DCLCharacterPosition(), blockerAnimationHandler);
+        blockerInstanceHandler = new BlockerInstanceHandler(blockerAnimationHandler);
 
         blockersParent = new GameObject();
 
