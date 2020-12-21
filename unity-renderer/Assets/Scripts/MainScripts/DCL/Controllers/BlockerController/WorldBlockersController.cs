@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Controllers
@@ -19,7 +20,6 @@ namespace DCL.Controllers
 
         readonly ISceneHandler sceneHandler;
         readonly IBlockerInstanceHandler blockerInstanceHandler;
-        readonly DCLCharacterPosition characterPosition;
 
         HashSet<Vector2Int> blockersToRemove = new HashSet<Vector2Int>();
         HashSet<Vector2Int> blockersToAdd = new HashSet<Vector2Int>();
@@ -36,33 +36,30 @@ namespace DCL.Controllers
             new Vector2Int(-1, 1)
         };
 
-        public WorldBlockersController(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler, DCLCharacterPosition characterPosition)
+        public WorldBlockersController(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler)
         {
             this.blockerInstanceHandler = blockerInstanceHandler;
             this.sceneHandler = sceneHandler;
-            this.characterPosition = characterPosition;
 
             blockersParent = new GameObject("WorldBlockers").transform;
             blockersParent.position = Vector3.zero;
 
             blockerInstanceHandler.SetParent(blockersParent);
 
-            characterPosition.OnPrecisionAdjust += OnWorldReposition;
+            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
         }
 
-        public static WorldBlockersController CreateWithDefaultDependencies(ISceneHandler sceneHandler, DCLCharacterPosition characterPosition)
+        public static WorldBlockersController CreateWithDefaultDependencies(ISceneHandler sceneHandler)
         {
             var blockerAnimationHandler = new BlockerAnimationHandler();
 
             var blockerInstanceHandler = new BlockerInstanceHandler(
-                characterPosition,
                 blockerAnimationHandler
             );
 
             var worldBlockersController = new WorldBlockersController(
                 sceneHandler,
-                blockerInstanceHandler,
-                characterPosition);
+                blockerInstanceHandler);
 
             return worldBlockersController;
         }
@@ -82,15 +79,15 @@ namespace DCL.Controllers
                 blockerInstanceHandler.DestroyAllBlockers();
         }
 
-        void OnWorldReposition(DCLCharacterPosition charPos)
+        void OnWorldReposition(Vector3 current, Vector3 previous)
         {
-            var newPosition = charPos.WorldToUnityPosition(Vector3.zero); // Blockers parent original position
+            var newPosition = PositionUtils.WorldToUnityPosition(Vector3.zero); // Blockers parent original position
             blockersParent.position = newPosition;
         }
 
         public void Dispose()
         {
-            characterPosition.OnPrecisionAdjust -= OnWorldReposition;
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             blockerInstanceHandler.DestroyAllBlockers();
 
             if (blockersParent != null)

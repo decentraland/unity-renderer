@@ -15,7 +15,6 @@ namespace DCL.Components
         }
 
         public override string componentName => "NFT Shape";
-        LoadWrapper_NFT loadableShape;
 
         public NFTShape(ParcelScene scene) : base(scene)
         {
@@ -45,7 +44,7 @@ namespace DCL.Components
 
             entity.OnShapeUpdated += UpdateBackgroundColor;
 
-            LoadWrapper_NFT loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+            var loadableShape = GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
 
             loadableShape.entity = entity;
             loadableShape.component = this;
@@ -75,8 +74,8 @@ namespace DCL.Components
         {
             if (model.color == previousModel.color) return;
 
-            loadableShape = GetLoaderForEntity(entity) as LoadWrapper_NFT;
-            loadableShape.loaderController.UpdateBackgroundColor(model.color);
+            var loadableShape = GetLoaderForEntity(entity) as LoadWrapper_NFT;
+            loadableShape?.loaderController.UpdateBackgroundColor(model.color);
         }
 
         public override string ToString()

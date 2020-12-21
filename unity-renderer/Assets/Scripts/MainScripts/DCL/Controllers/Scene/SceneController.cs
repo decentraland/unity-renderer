@@ -336,7 +336,7 @@ namespace DCL
 
             Vector3 worldOrigin = raycastQuery.ray.origin + Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
 
-            raycastQuery.ray.unityOrigin = DCLCharacterController.i.characterPosition.WorldToUnityPosition(worldOrigin);
+            raycastQuery.ray.unityOrigin = PositionUtils.WorldToUnityPosition(worldOrigin);
             raycastQuery.sceneId = sceneId;
             PhysicsCast.i.Query(raycastQuery);
         }

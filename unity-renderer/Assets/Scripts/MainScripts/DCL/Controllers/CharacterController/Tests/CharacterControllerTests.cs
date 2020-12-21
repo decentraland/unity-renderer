@@ -46,6 +46,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterAdjustPosition()
         {
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0,
+                Vector3.Distance(Vector3.zero,
+                    CommonScriptableObjects.worldOffset), 0.05f);
+
             Vector3 originalCharacterPosition = new Vector3
             {
                 x = 50f,
@@ -87,12 +91,12 @@ namespace Tests
 
             // Reposition ground shape to be on the world-reposition-limit
             TestHelpers.SetEntityTransform(scene, shapeEntity,
-            new DCLTransform.Model
-            {
-                position = new Vector3(PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE, 1f, PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE),
-                rotation = Quaternion.Euler(90f, 0f, 0f),
-                scale = new Vector3(20, 20, 1)
-            });
+                new DCLTransform.Model
+                {
+                    position = new Vector3(PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE, 1f, PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE),
+                    rotation = Quaternion.Euler(90f, 0f, 0f),
+                    scale = new Vector3(20, 20, 1)
+                });
 
             // Place character on the ground shape and check if it's detected as ground
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
