@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Components;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -51,6 +52,32 @@ namespace DCL
         public void SetDisableAssetBundles()
         {
             RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
+        }
+
+        public void DumpRendererLockersInfo()
+        {
+            bool prevLogValue = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            RenderingController renderingController = FindObjectOfType<RenderingController>();
+            if (renderingController == null)
+            {
+                Debug.Log("RenderingController not found. Aborting.");
+                return;
+            }
+
+            Debug.Log($"Renderer is locked? {!renderingController.renderingActivatedAckLock.isUnlocked}");
+            Debug.Log($"Renderer is active? {CommonScriptableObjects.rendererState.Get()}");
+
+            System.Collections.Generic.HashSet<object> lockIds =
+                renderingController.renderingActivatedAckLock.GetLockIdsCopy();
+
+            foreach (var lockId in lockIds)
+            {
+                Debug.Log($"Renderer is locked by id: {lockId} of type {lockId.GetType()}");
+            }
+
+            Debug.unityLogger.logEnabled = prevLogValue;
         }
     }
 }
