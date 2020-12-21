@@ -15,8 +15,8 @@ export const requestManager = new RequestManager((window as any).ethereum ?? nul
 export const loginCompleted = future<void>()
 ;(window as any).loginCompleted = loginCompleted
 
-export function createEth(provider: any = null): Eth {
-  return web3Connector.createEth(provider)!
+export function createEth(provider: any = null) {
+  return web3Connector.createEth(provider)
 }
 
 // This function creates a Web3x eth object without the need of having initiated sign in / sign up. Used when requesting the catalysts
@@ -77,6 +77,9 @@ export function isSessionExpired(userData: any) {
 export async function getUserAccount(returnChecksum: boolean = false): Promise<string | undefined> {
   try {
     const eth = createEth()
+
+    if (!eth) return undefined
+
     const accounts = await eth.getAccounts()
 
     if (!accounts || accounts.length === 0) {
