@@ -96,7 +96,7 @@ public static partial class BuilderInWorldUtils
         eventData.position = Input.mousePosition;
         var results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
-        return results.Count > 1;
+        return results.Count > 2;
     }
 
     public static string ConvertEntityToJSON(DecentralandEntity entity)

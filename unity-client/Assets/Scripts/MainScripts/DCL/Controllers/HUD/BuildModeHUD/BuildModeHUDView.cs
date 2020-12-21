@@ -11,6 +11,7 @@ public class BuildModeHUDView : MonoBehaviour
     public SceneObjectCatalogController sceneObjectCatalogController;
     public ToolTipController toolTipController;
     public QuickBarView quickBarView;
+    public CatalogGroupListView catalogGroupListView;
 
     public GameObject firstPersonCanvasGO, godModeCanvasGO, extraBtnsGO, shortCutsGO;
     public Button firstPersonChangeModeBtn,changeModeBtn,extraBtn,controlsBtn,closeControlsBtn,hideUIBtn,entityListBtn,closeEntityListBtn,catalogBtn,closeCatalogBtn;
@@ -79,8 +80,8 @@ public class BuildModeHUDView : MonoBehaviour
         deleteBtn.onClick.AddListener(() => OnDeleteSelectionAction?.Invoke());
 
         sceneObjectCatalogController.OnSceneObjectSelected += (x) => OnSceneObjectSelected?.Invoke(x);
-        quickBarView.OnResumeInput += () => OnResumeInput?.Invoke();
-        quickBarView.OnStopInput += () => OnStopInput?.Invoke();
+        catalogGroupListView.OnResumeInput += () => OnResumeInput?.Invoke();
+        catalogGroupListView.OnStopInput += () => OnStopInput?.Invoke();
 
         tutorialBtn.onClick.AddListener(() => OnTutorialAction?.Invoke());
         publishBtn.onClick.AddListener(() => OnPublishAction?.Invoke()); 
