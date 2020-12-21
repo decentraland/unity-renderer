@@ -36,7 +36,7 @@ namespace DCL.Controllers.ParcelSceneDebug
                 position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT,
                     position.z + ParcelSettings.PARCEL_SIZE / 2);
 
-                plane.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(position);
+                plane.transform.position = PositionUtils.WorldToUnityPosition(position);
 
                 if (DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
                 {
@@ -61,10 +61,12 @@ namespace DCL.Controllers.ParcelSceneDebug
             {
                 return;
             }
+
             for (int i = 0; i < sceneParcelPlanes.Length; i++)
             {
                 UnityEngine.Object.Destroy(sceneParcelPlanes[i]);
             }
+
             sceneParcelPlanes = null;
         }
     }

@@ -60,7 +60,7 @@ namespace DCL
             pointerEventsController.Initialize();
             memoryManager.Initialize();
             worldState.Initialize();
-            worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(worldState, DCLCharacterController.i.characterPosition);
+            worldBlockersController = WorldBlockersController.CreateWithDefaultDependencies(worldState);
             parcelScenesCleaner.Start();
             cullingController.Start();
             sceneBoundsChecker.Start();

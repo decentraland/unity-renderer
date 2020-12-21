@@ -54,7 +54,7 @@ namespace DCL
                     return pos;
             }
 
-            Vector3 worldPosition = DCLCharacterController.i.characterPosition.UnityToWorldPosition(pos);
+            Vector3 worldPosition = PositionUtils.UnityToWorldPosition(pos);
             return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         }
 
