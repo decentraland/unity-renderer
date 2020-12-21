@@ -26,6 +26,7 @@ public class SceneObjectCatalogController : MonoBehaviour
     public TMP_InputField searchInputField;
     public FavoritesController favoritesController;
     public QuickBarView quickBarView;
+    public SceneObjectDropController sceneObjectDropController;
 
 
     List<Dictionary<string, List<SceneObject>>> filterObjects = new List<Dictionary<string, List<SceneObject>>>();
@@ -44,6 +45,7 @@ public class SceneObjectCatalogController : MonoBehaviour
         quickBarView.OnQuickBarShortcutSelected += QuickBarInput;
         catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
+        sceneObjectDropController.OnSceneObjectDropped += SceneObjectSelected;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
 
      
@@ -57,6 +59,7 @@ public class SceneObjectCatalogController : MonoBehaviour
         catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
         catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
         quickBarController.OnSceneObjectSelected -= SceneObjectSelected;
+        sceneObjectDropController.OnSceneObjectDropped -= SceneObjectSelected;
     }
 
     #region Filter
