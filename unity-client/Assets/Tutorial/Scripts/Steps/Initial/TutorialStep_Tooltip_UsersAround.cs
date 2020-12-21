@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Tutorial
@@ -26,7 +27,7 @@ namespace DCL.Tutorial
             base.OnStepFinished();
 
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-            PlayerPrefs.SetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED, 1);
+            PlayerPrefsUtils.SetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED, 1);
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
