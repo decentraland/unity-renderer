@@ -49,6 +49,11 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
+            //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if(isDisposed)
+                yield break;
+
             model = Utils.SafeFromJson<Model>(newJson);
 
             unitySamplingMode = model.samplingMode;

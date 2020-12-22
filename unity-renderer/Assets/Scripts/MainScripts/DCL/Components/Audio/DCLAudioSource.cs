@@ -22,6 +22,8 @@ namespace DCL.Components
         internal AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
+        private bool isDestroyed = false;
+
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
@@ -45,6 +47,11 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
+            //If the scene creates and destroy an audiosource before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if (isDestroyed)
+                yield break;
 
             model = Utils.SafeFromJson<Model>(newJson);
 
@@ -107,11 +114,13 @@ namespace DCL.Components
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
+            if(audioSource != null)
+                audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
         }
 
         private void OnDestroy()
         {
+            isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
 
             //NOTE(Brian): Unsuscribe events.
