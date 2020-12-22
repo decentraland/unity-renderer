@@ -59,8 +59,8 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
 
     void OnEndDrag(PointerEventData data)
     {
-        Destroy(draggedObject, 0.1f);
         OnResumeInput?.Invoke();
+        Destroy(draggedObject);
     }
 
     public CatalogItemAdapter GetLastSceneObjectDragged()

@@ -39,6 +39,7 @@ public class BuildModeHUDView : MonoBehaviour
 
     public event Action<SceneObject> OnSceneObjectSelected;
     public event Action OnStopInput, OnResumeInput,OnTutorialAction,OnPublishAction;
+    public event Action OnSceneObjectDrop;
 
     private void Awake()
     {
@@ -103,6 +104,11 @@ public class BuildModeHUDView : MonoBehaviour
         toggleOpenEntityListInputAction.OnTriggered -= OnEntityListActionTriggered;
         toggleSceneInfoInputAction.OnTriggered -= OnSceneLimitInfoControllerChangeVisibilityTriggered;
         toggleCatalogInputAction.OnTriggered -= OnSceneCatalogControllerChangeVisibilityTriggered;
+    }
+
+    public void SceneObjectDroppedInView()
+    {
+        OnSceneObjectDrop?.Invoke();
     }
 
     public void SetVisibilityOfCatalog(bool isVisible)
