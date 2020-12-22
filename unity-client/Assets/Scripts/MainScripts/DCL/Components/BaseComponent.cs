@@ -15,6 +15,7 @@ namespace DCL.Components
         IEnumerator ApplyChanges(string newJson);
         void RaiseOnAppliedChanges();
         ComponentUpdateHandler CreateUpdateHandler();
+        bool IsValid();
     }
 
     /// <summary>
@@ -48,9 +49,14 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        [NonSerialized] public ParcelScene scene;
-        [NonSerialized] public DecentralandEntity entity;
-        [NonSerialized] public PoolableObject poolableObject;
+        [NonSerialized]
+        public ParcelScene scene;
+
+        [NonSerialized]
+        public DecentralandEntity entity;
+
+        [NonSerialized]
+        public PoolableObject poolableObject;
 
         public string componentName => "BaseComponent";
 
@@ -78,6 +84,11 @@ namespace DCL.Components
         public virtual ComponentUpdateHandler CreateUpdateHandler()
         {
             return new ComponentUpdateHandler(this);
+        }
+
+        public bool IsValid()
+        {
+            return this != null;
         }
 
         public virtual void Cleanup()

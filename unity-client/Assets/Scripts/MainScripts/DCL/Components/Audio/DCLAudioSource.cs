@@ -58,6 +58,12 @@ namespace DCL.Components
 
         private void ApplyCurrentModel()
         {
+            if (audioSource == null)
+            {
+                Debug.LogWarning("AudioSource is null!.");
+                return;
+            }
+
             audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
@@ -76,7 +82,7 @@ namespace DCL.Components
                     {
                         audioSource.clip = dclAudioClip.audioClip;
 
-                        if(audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+                        if (audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                             audioSource.Play();
                     }
                     else

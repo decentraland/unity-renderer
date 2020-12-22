@@ -113,6 +113,11 @@ namespace DCL.Components
             return new ComponentUpdateHandler(this);
         }
 
+        public bool IsValid()
+        {
+            return true;
+        }
+
         public void Cleanup()
         {
             if (isRoutineRunning)

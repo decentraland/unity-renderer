@@ -11,12 +11,17 @@ public class AudioEvent : ScriptableObject
     }
 
     public bool loop = false;
+
     [Range(0f, 1f)]
     public float initialVolume = 1.0f;
+
     public float initialPitch = 1f;
+
     [Range(0f, 1f)]
     public float randomPitch = 0.0f;
+
     public float cooldownSeconds = 0.0f;
+
     [Reorderable]
     public AudioClipList clips;
 
@@ -28,8 +33,7 @@ public class AudioEvent : ScriptableObject
     private float lastPlayedTime, nextAvailablePlayTime; // Used for cooldown
     private Coroutine fadeInCoroutine, fadeOutCoroutine;
 
-    [HideInInspector]
-    public event System.Action OnPlay, OnStop, OnFadedIn, OnFadedOut;
+    [HideInInspector] public event System.Action OnPlay, OnStop, OnFadedIn, OnFadedOut;
 
     public virtual void Initialize(AudioContainer audioContainer)
     {
@@ -52,7 +56,7 @@ public class AudioEvent : ScriptableObject
         {
             source.clip = clips[0];
         }
-        
+
         source.volume = initialVolume;
         source.loop = loop;
         source.playOnAwake = false;
@@ -64,7 +68,7 @@ public class AudioEvent : ScriptableObject
         source.maxDistance = audioContainer.maxDistance;
     }
 
-    
+
     public void RandomizeIndex()
     {
         RandomizeIndex(0, clips.Length);
@@ -80,10 +84,18 @@ public class AudioEvent : ScriptableObject
 
     public virtual void Play(bool oneShot = false)
     {
-        if (source == null) { Debug.Log("AudioEvent: Tried to play " + name + " with source equal to null."); return; }
+        if (source == null)
+        {
+            Debug.Log($"AudioEvent: Tried to play {name} with source equal to null.");
+            return;
+        }
+
+        if (source.clip == null)
+            return;
 
         // Check if AudioSource is active and check cooldown time
-        if (!source.gameObject.activeSelf || Time.time < nextAvailablePlayTime) return;
+        if (!source.gameObject.activeSelf || Time.time < nextAvailablePlayTime)
+            return;
 
         source.clip = clips[clipIndex];
         source.pitch = pitch + Random.Range(0f, randomPitch) - (randomPitch * 0.5f);
