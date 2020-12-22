@@ -289,25 +289,31 @@ namespace UnityGLTF
                     queueCount--;
                     totalDownloadedCount++;
 
+                    if (this == null)
+                        yield break;
+
                     IncrementDownloadCount();
 
                     state = State.DOWNLOADING;
 
-                    yield return sceneImporter.LoadScene(-1);
+                    if (transform != null)
+                    {
+                        yield return sceneImporter.LoadScene(-1);
+
+                        // Override the shaders on all materials if a shader is provided
+                        if (shaderOverride != null)
+                        {
+                            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+                            foreach (Renderer renderer in renderers)
+                            {
+                                renderer.sharedMaterial.shader = shaderOverride;
+                            }
+                        }
+                    }
 
                     state = State.COMPLETED;
 
                     DecrementDownloadCount();
-
-                    // Override the shaders on all materials if a shader is provided
-                    if (shaderOverride != null)
-                    {
-                        Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-                        foreach (Renderer renderer in renderers)
-                        {
-                            renderer.sharedMaterial.shader = shaderOverride;
-                        }
-                    }
                 }
                 finally
                 {
@@ -336,22 +342,23 @@ namespace UnityGLTF
 
                     alreadyLoadedAsset = true;
                     OnFinishedLoadingAsset?.Invoke();
+
+                    CoroutineStarter.Stop(loadingRoutine);
+                    loadingRoutine = null;
+                    Destroy(loadingPlaceholder);
+                    Destroy(this);
                 }
             }
             else
             {
                 Debug.Log("couldn't load GLTF because url is empty");
             }
-
-            CoroutineStarter.Stop(loadingRoutine);
-            loadingRoutine = null;
-            Destroy(loadingPlaceholder);
-            Destroy(this);
         }
+
 
         private bool TestDistance()
         {
-            if (mainCamera == null)
+            if (mainCamera == null || this == null)
                 return true;
 
             float dist = Vector3.Distance(mainCamera.transform.position, transform.position);
