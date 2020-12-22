@@ -32,6 +32,7 @@ namespace DCL
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
+        protected bool isDisposed;
 
         public override int GetClassId()
         {
@@ -78,6 +79,11 @@ namespace DCL
         public override IEnumerator ApplyChanges(string newJson)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
+            //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if(isDisposed)
+                yield break;
 
             model = Utils.SafeFromJson<Model>(newJson);
 
@@ -194,6 +200,7 @@ namespace DCL
 
         public override void Dispose()
         {
+            isDisposed = true;
             if (texturePromise != null)
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);

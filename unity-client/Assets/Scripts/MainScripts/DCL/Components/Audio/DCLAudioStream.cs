@@ -17,6 +17,7 @@ namespace DCL.Components
         public Model model;
         private bool isPlaying = false;
         private float settingsVolume = 0;
+        private bool isDestroyed = false;
 
         public override object GetModel()
         {
@@ -26,6 +27,11 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
+            //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if(isDestroyed)
+                yield break;
 
             Model prevModel = model;
             model = Utils.SafeFromJson<Model>(newJson);
@@ -47,6 +53,7 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
+            isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;

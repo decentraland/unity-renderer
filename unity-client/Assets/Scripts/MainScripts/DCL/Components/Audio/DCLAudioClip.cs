@@ -22,6 +22,7 @@ namespace DCL.Components
 
         public Model model;
         public AudioClip audioClip;
+        private bool isDisposed = false;
 
         public enum LoadState
         {
@@ -108,6 +109,11 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
+            //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if(isDisposed)
+                yield break;
+
             model = Utils.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.url))
@@ -127,6 +133,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            isDisposed = true;
             Utils.SafeDestroy(audioClip);
             base.Dispose();
         }
