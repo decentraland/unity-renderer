@@ -18,6 +18,7 @@ namespace DCL
 
         public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
+        public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
 
         [SerializeField]
@@ -117,6 +118,8 @@ namespace DCL
 
             avatarName.SetName(model.name);
             avatarName.SetTalking(model.talking);
+
+            avatarCollider.gameObject.SetActive(true);
 
             everythingIsLoaded = true;
             OnAvatarShapeUpdated?.Invoke(entity, this);
