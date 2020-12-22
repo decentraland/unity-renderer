@@ -24819,7 +24819,6 @@ MonoBehaviour:
   catalogGroupListView: {fileID: 851071763915059372}
   searchInputField: {fileID: 851071764848031699}
   quickBarView: {fileID: 2858140822079303849}
-  sceneObjectDropController: {fileID: 1480823636982834102}
 --- !u!1 &851071765561143009
 GameObject:
   m_ObjectHideFlags: 0
@@ -26598,7 +26597,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 84112946647708823}
-  - component: {fileID: 1480823636982834102}
   - component: {fileID: 5887779308624769835}
   - component: {fileID: 7086200805059309350}
   - component: {fileID: 5758824516929350152}
@@ -26628,19 +26626,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1480823636982834102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4413728610159217901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 224e0c95cd2c7b64d93d9eba824f60e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  catalogGroupListView: {fileID: 851071763915059372}
 --- !u!222 &5887779308624769835
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -26695,9 +26680,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1480823636982834102}
-          m_MethodName: SceneObjectDropped
-          m_Mode: 0
+        - m_Target: {fileID: 6159676432718092696}
+          m_MethodName: SceneObjectDroppedInView
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
