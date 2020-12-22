@@ -47,5 +47,10 @@ namespace DCL.Helpers
             lockIds.Clear();
             OnAllLocksRemoved?.Invoke();
         }
+
+        public HashSet<object> GetLockIdsCopy()
+        {
+            return new HashSet<object>(lockIds);
+        }
     }
 }
