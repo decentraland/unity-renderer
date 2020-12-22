@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Events;
@@ -179,14 +180,14 @@ public class WorldChatWindowHUDController : IHUD
 
     private void SaveLatestReadWorldChatMessagesStatus()
     {
-        PlayerPrefs.SetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES, CommonScriptableObjects.lastReadWorldChatMessages.Get().ToString());
-        PlayerPrefs.Save();
+        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES, CommonScriptableObjects.lastReadWorldChatMessages.Get().ToString());
+        PlayerPrefsUtils.Save();
     }
 
     private void LoadLatestReadWorldChatMessagesStatus()
     {
         CommonScriptableObjects.lastReadWorldChatMessages.Set(0);
-        string storedLastReadWorldChatMessagesString = PlayerPrefs.GetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES);
+        string storedLastReadWorldChatMessagesString = PlayerPrefsUtils.GetString(PLAYER_PREFS_LAST_READ_WORLD_CHAT_MESSAGES);
         CommonScriptableObjects.lastReadWorldChatMessages.Set(System.Convert.ToInt64(string.IsNullOrEmpty(storedLastReadWorldChatMessagesString) ? 0 : System.Convert.ToInt64(storedLastReadWorldChatMessagesString)));
     }
 }

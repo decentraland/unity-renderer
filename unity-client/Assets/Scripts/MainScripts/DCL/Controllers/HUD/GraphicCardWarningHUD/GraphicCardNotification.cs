@@ -1,4 +1,5 @@
-﻿using DCL.Interface;
+﻿using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +25,7 @@ public class GraphicCardNotification : Notification
 
     protected override void Dismiss()
     {
-        PlayerPrefs.SetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, dontShowAgain.isOn ? 1 : 0);
+        PlayerPrefsUtils.SetInt(DONT_SHOW_GRAPHIC_CARD_POPUP_KEY, dontShowAgain.isOn ? 1 : 0);
         base.Dismiss();
     }
 

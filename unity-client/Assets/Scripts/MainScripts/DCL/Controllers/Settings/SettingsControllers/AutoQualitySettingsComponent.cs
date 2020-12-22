@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using DCL;
+using DCL.Helpers;
 using DCL.SettingsData;
 using UnityEngine;
 using QualitySettings = DCL.SettingsData.QualitySettings;
@@ -27,7 +28,7 @@ public class AutoQualitySettingsComponent : MonoBehaviour
         if (autoQualityEnabled == null || qualitySettings == null || qualitySettings.Length == 0)
             return;
 
-        currentQualityIndex = PlayerPrefs.GetInt(LAST_QUALITY_INDEX,(qualitySettings.Length - 1) / 2);
+        currentQualityIndex = PlayerPrefsUtils.GetInt(LAST_QUALITY_INDEX, (qualitySettings.Length - 1) / 2);
 
         controller = new AutoQualityUncappedFPSController(currentQualityIndex, qualitySettings);
 
@@ -93,7 +94,7 @@ public class AutoQualitySettingsComponent : MonoBehaviour
         if (newQualityIndex <= 0 || newQualityIndex >= qualitySettings.Length)
             return;
 
-        PlayerPrefs.SetInt(LAST_QUALITY_INDEX, currentQualityIndex);
+        PlayerPrefsUtils.SetInt(LAST_QUALITY_INDEX, currentQualityIndex);
         currentQualityIndex = newQualityIndex;
         Settings.i.ApplyAutoQualitySettings(currentQualityIndex);
     }

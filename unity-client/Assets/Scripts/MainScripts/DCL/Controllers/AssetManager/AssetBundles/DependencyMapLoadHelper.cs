@@ -95,7 +95,7 @@ public static class DependencyMapLoadHelper
 
         //NOTE(Brian): Use JsonConvert because unity JsonUtility doesn't support dictionaries
         string cacheJson = JsonConvert.SerializeObject(dependenciesMap);
-        PlayerPrefs.SetString(PERSISTENT_CACHE_KEY, cacheJson);
+        PlayerPrefsUtils.SetString(PERSISTENT_CACHE_KEY, cacheJson);
     }
 
     private static void LoadPersistentCache()

@@ -2,6 +2,7 @@ using DCL.Interface;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 
 public class PrivateChatWindowHUDController : IHUD
@@ -170,8 +171,8 @@ public class PrivateChatWindowHUDController : IHUD
             }
         }
 
-        PlayerPrefs.SetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES, JsonConvert.SerializeObject(lastReadChatMessagesList));
-        PlayerPrefs.Save();
+        PlayerPrefsUtils.SetString(PLAYER_PREFS_LAST_READ_CHAT_MESSAGES, JsonConvert.SerializeObject(lastReadChatMessagesList));
+        PlayerPrefsUtils.Save();
     }
 
     private void LoadLatestReadChatMessagesStatus()

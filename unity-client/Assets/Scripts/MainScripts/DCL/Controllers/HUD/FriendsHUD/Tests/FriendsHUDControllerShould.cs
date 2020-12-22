@@ -2,6 +2,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -191,7 +192,7 @@ public class FriendsHUDControllerShould : TestsBase
     [UnityTest]
     public IEnumerator TaskbarNotificationBadgeHasCorrectValue()
     {
-        PlayerPrefs.SetInt(FriendsHUDController.PLAYER_PREFS_SEEN_FRIEND_COUNT, 0);
+        PlayerPrefsUtils.SetInt(FriendsHUDController.PLAYER_PREFS_SEEN_FRIEND_COUNT, 0);
 
         var friendsRequestBadge = GetBadge("NotificationBadge_FriendsRequestTab");
         var friendsTaskbarBadge = GetBadge("NotificationBadge_FriendsButton");
@@ -204,7 +205,7 @@ public class FriendsHUDControllerShould : TestsBase
         yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-4");
         yield return TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.REQUESTED_FROM);
 
-         Assert.AreEqual(1, friendsRequestBadge.finalValue);
+        Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(5, friendsTaskbarBadge.finalValue);
 
         controller.SetVisibility(true);
