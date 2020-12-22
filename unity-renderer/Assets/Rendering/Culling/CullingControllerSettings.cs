@@ -11,7 +11,7 @@ namespace DCL.Rendering
         [NonSerialized] public float maxTimeBudget = 4 / 1000f;
         public bool enableObjectCulling = true;
         public bool enableShadowCulling = true;
-        public bool enableAnimationCulling = true;
+        public bool enableAnimationCulling = false;
 
         public float enableAnimationCullingDistance = 7.5f;
 
