@@ -1,0 +1,124 @@
+[
+   {
+      "progressStatus":"not_started",
+      "visibility":"visible",
+      "requirements":[
+
+      ],
+      "tasks":[
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"6f0e7710-c8f3-409c-a486-d7b09e84e053",
+            "description":"Talk to the old lady",
+            "steps":[
+               {
+                  "id":"467940e2-014a-4e01-9a12-bf174fc4c5a6",
+                  "type":"single",
+                  "payload":"{\"id\": \"467940e2-014a-4e01-9a12-bf174fc4c5a6\", \"status\": \"not_started\", \"type\": \"single\"}"
+               }
+            ]
+         },
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"bdaf85ee-66dd-4ca0-b3ca-b4ffbc9b50da",
+            "description":"Smash 10 pumpkins",
+            "steps":[
+               {
+                  "target":0,
+                  "type":"count",
+                  "payload":"{\"target\": 0, \"unit\": \"pumpkin\", \"status\": \"not_started\", \"id\": \"18b163c7-7026-498e-8650-e055f7004bab\", \"direction\": \"down\", \"type\": \"count\", \"current\": 10, \"start\": 10}"
+               }
+            ]
+         },
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"f1cbb646-249d-465a-838e-c9bcfa505bac",
+            "description":"Consume half of the candy",
+            "steps":[
+               {
+                  "target":250,
+                  "type":"arbitrary",
+                  "payload":"{\"target\": 250, \"unit\": \"candy\", \"status\": \"not_started\", \"id\": \"ec4940a0-a9dd-448b-bb6a-e2e29c6609ef\", \"direction\": \"down\", \"type\": \"arbitrary\", \"current\": 500, \"start\": 500}"
+               }
+            ]
+         }
+      ],
+      "active":true,
+      "id":"3b1ebbdf-03ae-491c-a93b-6b0578b73ce9",
+      "description":"Solve a mystery",
+      "name":"Halloween"
+   },
+   {
+      "progressStatus":"on_going",
+      "visibility":"visible",
+      "requirements":[
+
+      ],
+      "tasks":[
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"0cf0bf65-07eb-40d4-bd57-3b66b0df6f22",
+            "description":"Talk to the old lady",
+            "steps":[
+               {
+                  "id":"f9b742c5-b377-47ef-b0fc-ce1e0a79f84c",
+                  "type":"single",
+                  "payload":"{\"id\": \"f9b742c5-b377-47ef-b0fc-ce1e0a79f84c\", \"status\": \"not_started\", \"type\": \"single\"}"
+               }
+            ]
+         },
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"cfdff6fd-ddf1-4ed5-af54-c17ac40b359e",
+            "description":"Smash 10 pumpkins",
+            "steps":[
+               {
+                  "target":0,
+                  "type":"count",
+                  "payload":"{\"target\": 0, \"unit\": \"pumpkin\", \"status\": \"on_going\", \"id\": \"9500fb4f-f682-45df-9b24-94a4e5969b48\", \"direction\": \"down\", \"type\": \"count\", \"lastUpdate\": \"2020-12-18T15:54:29.511Z\", \"current\": 2, \"start\": 10}"
+               }
+            ]
+         },
+         {
+            "coordinates":null,
+            "requirements":[
+
+            ],
+            "required":true,
+            "id":"6d9c6c79-23b0-4dd2-9eea-895a2bee6563",
+            "description":"Consume half of the candy",
+            "steps":[
+               {
+                  "target":250,
+                  "type":"arbitrary",
+                  "payload":"{\"target\": 250, \"unit\": \"candy\", \"status\": \"not_started\", \"id\": \"7f300897-5469-4e15-b2f6-90cca2fa407e\", \"direction\": \"down\", \"type\": \"arbitrary\", \"current\": 500, \"start\": 500}"
+               }
+            ]
+         }
+      ],
+      "active":true,
+      "id":"1c6f6490-c6e2-4464-aff5-1ddf564f261d",
+      "description":"Solve a mystery",
+      "name":"halloween-started"
+   }
+]
