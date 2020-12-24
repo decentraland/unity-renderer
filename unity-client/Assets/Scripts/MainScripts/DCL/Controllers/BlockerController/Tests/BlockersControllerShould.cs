@@ -59,7 +59,6 @@ public class BlockersControllerShould
         if (blockerController != null)
             blockerController.Dispose();
 
-        blockerController = new WorldBlockersController();
         blockerController.Initialize(sceneHandler, blockerInstanceHandler);
 
         // Act-assert #1: first blockers added should be shown
