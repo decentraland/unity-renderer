@@ -2,7 +2,22 @@ using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 
-public class Clipboard
+public interface IClipboard
+{
+    /// <summary>
+    /// Push a string value to the clipboard
+    /// </summary>
+    /// <param name="text">string to store</param>
+    void WriteText(string text);
+
+    /// <summary>
+    /// Request the string stored at the clipboard
+    /// </summary>
+    /// <returns>Promise of the string value stored at clipboard</returns>
+    Promise<string> ReadText();
+}
+
+public class Clipboard : IClipboard
 {
     private readonly Queue<Promise<string>> promises = new Queue<Promise<string>>();
     private readonly IClipboardHandler handler = null;

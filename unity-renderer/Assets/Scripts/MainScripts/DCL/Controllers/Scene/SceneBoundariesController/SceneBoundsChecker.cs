@@ -18,12 +18,39 @@ namespace DCL.Controllers
         void UpdateOutOfBoundariesState(bool enable);
     }
 
-    public class SceneBoundsChecker
+    public interface ISceneBoundsChecker
+    {
+        float timeBetweenChecks { get; set; }
+        bool enabled { get; }
+        int entitiesToCheckCount { get; }
+        void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle);
+        ISceneBoundsFeedbackStyle GetFeedbackStyle();
+        List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
+        void Start();
+        void Stop();
+        void AddEntityToBeChecked(DecentralandEntity entity);
+
+        /// <summary>
+        /// Add an entity that will be consistently checked, until manually removed from the list.
+        /// </summary>
+        void AddPersistent(DecentralandEntity entity);
+
+        /// <summary>
+        /// Returns whether an entity was added to be consistently checked
+        /// </summary>
+        ///
+        bool WasAddedAsPersistent(DecentralandEntity entity);
+
+        void RemoveEntityToBeChecked(DecentralandEntity entity);
+        void EvaluateEntityPosition(DecentralandEntity entity);
+        bool IsEntityInsideSceneBoundaries(DecentralandEntity entity);
+    }
+
+    public class SceneBoundsChecker : ISceneBoundsChecker
     {
         public bool enabled => entitiesCheckRoutine != null;
 
-        [System.NonSerialized]
-        public float timeBetweenChecks = 1f;
+        public float timeBetweenChecks { get; set; } = 1f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
         HashSet<DecentralandEntity> entitiesToCheck = new HashSet<DecentralandEntity>();
@@ -64,11 +91,20 @@ namespace DCL.Controllers
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
                 if (entitiesToCheck.Count > 0 && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
                 {
+                    //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
+                    var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+
+                    if (messagingManager == null)
+                    {
+                        Debug.LogWarning("MessagingControllersManager is null! This shouldn't happen!");
+                        continue;
+                    }
+
                     using (var iterator = entitiesToCheck.GetEnumerator())
                     {
                         while (iterator.MoveNext())
                         {
-                            if (Environment.i.messaging.manager.timeBudgetCounter <= 0f) break;
+                            if (messagingManager.timeBudgetCounter <= 0f) break;
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -76,7 +112,7 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
-                            Environment.i.messaging.manager.timeBudgetCounter -= (finishTime - startTime);
+                            messagingManager.timeBudgetCounter -= (finishTime - startTime);
                         }
                     }
 

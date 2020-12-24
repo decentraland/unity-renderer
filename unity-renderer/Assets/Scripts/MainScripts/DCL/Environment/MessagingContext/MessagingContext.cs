@@ -5,9 +5,9 @@
     /// </summary>
     public class MessagingContext : System.IDisposable
     {
-        public readonly MessagingControllersManager manager;
+        public readonly IMessagingControllersManager manager;
 
-        public MessagingContext(MessagingControllersManager manager)
+        public MessagingContext(IMessagingControllersManager manager)
         {
             this.manager = manager;
         }

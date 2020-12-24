@@ -567,7 +567,7 @@ namespace DCL.Tutorial
 
         private bool IsPlayerInsideGenesisPlaza()
         {
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
             if (worldState == null || worldState.currentSceneId == null)
                 return false;
 

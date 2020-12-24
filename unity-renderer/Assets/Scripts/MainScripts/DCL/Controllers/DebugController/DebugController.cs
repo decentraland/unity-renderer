@@ -5,9 +5,19 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class DebugController : IDisposable
+    public interface IDebugController : IDisposable
     {
-        public DebugConfig debugConfig => DataStore.debugConfig;
+        event Action OnDebugModeSet;
+        void SetDebug();
+        void HideFPSPanel();
+        void ShowFPSPanel();
+        void SetSceneDebugPanel();
+        void SetEngineDebugPanel();
+    }
+
+    public class DebugController : IDebugController
+    {
+        private DebugConfig debugConfig => DataStore.debugConfig;
 
         public DebugView debugView;
 

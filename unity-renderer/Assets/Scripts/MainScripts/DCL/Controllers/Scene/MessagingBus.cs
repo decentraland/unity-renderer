@@ -94,6 +94,7 @@ namespace DCL
         public string debugTag;
 
         public MessagingController owner;
+        private MessagingControllersManager manager;
 
         Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
         public int unreliableMessagesReplaced = 0;
@@ -114,6 +115,7 @@ namespace DCL
             this.type = type;
             this.owner = owner;
             this.pendingMessagesCount = 0;
+            manager = Environment.i.messaging.manager as MessagingControllersManager;
         }
 
         public void Start()
@@ -201,13 +203,13 @@ namespace DCL
 
                 if (type == MessagingBusType.INIT)
                 {
-                    Environment.i.messaging.manager.pendingInitMessagesCount++;
+                    manager.pendingInitMessagesCount++;
                 }
 
                 if (owner != null)
                 {
                     owner.enabled = true;
-                    Environment.i.messaging.manager.MarkBusesDirty();
+                    manager.MarkBusesDirty();
                 }
             }
         }
@@ -310,14 +312,14 @@ namespace DCL
 
             if (type == MessagingBusType.INIT)
             {
-                Environment.i.messaging.manager.pendingInitMessagesCount--;
-                Environment.i.messaging.manager.processedInitMessagesCount++;
+                manager.pendingInitMessagesCount--;
+                manager.processedInitMessagesCount++;
             }
         }
 
         private LinkedListNode<QueuedSceneMessage> AddReliableMessage(QueuedSceneMessage message)
         {
-            Environment.i.messaging.manager.pendingMessagesCount++;
+            manager.pendingMessagesCount++;
             pendingMessagesCount++;
             return pendingMessages.AddLast(message);
         }
@@ -328,7 +330,7 @@ namespace DCL
             {
                 pendingMessages.RemoveFirst();
                 pendingMessagesCount--;
-                Environment.i.messaging.manager.pendingMessagesCount--;
+                manager.pendingMessagesCount--;
             }
         }
 

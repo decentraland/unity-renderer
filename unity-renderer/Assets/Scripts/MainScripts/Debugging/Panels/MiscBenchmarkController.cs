@@ -115,7 +115,9 @@ namespace DCL
 
         void Update()
         {
-            int messagesProcessedLastFrame = lastPendingMessages - Environment.i.messaging.manager.pendingMessagesCount;
+            MessagingControllersManager messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+
+            int messagesProcessedLastFrame = lastPendingMessages - messagingManager.pendingMessagesCount;
 
             if (messagesProcessedLastFrame > 0)
             {
@@ -124,7 +126,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int) Rows.MESSAGES_PER_SECOND_REAL, (mps / sampleCount).ToString(CultureInfo.InvariantCulture));
             }
 
-            lastPendingMessages = Environment.i.messaging.manager.pendingMessagesCount;
+            lastPendingMessages = messagingManager.pendingMessagesCount;
         }
 
 
