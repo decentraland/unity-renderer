@@ -21,11 +21,22 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             return prom;
         }
 
+        protected override IEnumerator TearDown()
+        {
+            yield return base.TearDown();
+
+            // AssetPromise_AB_GameObject promises are wired to AssetPromiseKeeper_AB.
+            // TODO(Brian): Pass the APK instance by ref to properly test this without this line.
+            AssetPromiseKeeper_AB.i.Cleanup();
+        }
+
+        /// <summary>
+        /// If this test fails, you should ensure that OnSilentForget is implemented properly.
+        /// OnSilentForget should unparent and hide the container to ensure blocked promises finish correctly.
+        /// </summary>
         [UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
-            //NOTE(Brian): If this test fails, you should ensure that OnSilentForget is implemented properly.
-            //             OnSilentForget should unparent and hide the container to ensure blocked promises finish correctly.
             GameObject parent = new GameObject("parent");
 
             var prom = CreatePromise();

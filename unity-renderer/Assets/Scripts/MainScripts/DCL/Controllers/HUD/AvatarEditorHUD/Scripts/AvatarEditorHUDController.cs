@@ -8,10 +8,12 @@ using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
-    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
-    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
+    protected static readonly string[] categoriesThatMustHaveSelection = {Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH};
+    protected static readonly string[] categoriesToRandomize = {Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET};
 
-    [NonSerialized] public bool bypassUpdateAvatarPreview = false;
+    [NonSerialized]
+    public bool bypassUpdateAvatarPreview = false;
+
     private UserProfile userProfile;
     private WearableDictionary catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
@@ -26,6 +28,7 @@ public class AvatarEditorHUDController : IHUD
     public AvatarEditorHUDView view;
 
     private bool isSignUpFlow = false;
+
     public bool IsSignUpFlowValue
     {
         get => isSignUpFlow;
@@ -428,7 +431,7 @@ public class AvatarEditorHUDController : IHUD
 
         if (!visible && view.isOpen)
         {
-            DCL.Environment.i.messagingControllersManager.paused = false;
+            DCL.Environment.i.messaging.manager.paused = false;
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.inWorld;
             currentRenderProfile.avatarProfile.Apply();
             if (prevMouseLockState)
@@ -440,7 +443,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
-            DCL.Environment.i.messagingControllersManager.paused = IsSignUpFlowValue;
+            DCL.Environment.i.messaging.manager.paused = IsSignUpFlowValue;
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
             currentRenderProfile.avatarProfile.Apply();
 

@@ -4,29 +4,23 @@ using UnityEngine.UI;
 
 public class CursorController : MonoBehaviour
 {
+    public static CursorController i { get; private set; }
     public Image cursorImage;
     public Sprite normalCursor;
     public Sprite hoverCursor;
 
-    void OnEnable()
+    void Awake()
     {
-        Environment.i.pointerEventsController.OnPointerHoverStarts += SetHoverCursor;
-        Environment.i.pointerEventsController.OnPointerHoverEnds += SetNormalCursor;
+        i = this;
     }
 
-    void OnDisable()
-    {
-        Environment.i.pointerEventsController.OnPointerHoverStarts -= SetHoverCursor;
-        Environment.i.pointerEventsController.OnPointerHoverEnds -= SetNormalCursor;
-    }
-
-    void SetNormalCursor()
+    public void SetNormalCursor()
     {
         cursorImage.sprite = normalCursor;
         cursorImage.SetNativeSize();
     }
 
-    void SetHoverCursor()
+    public void SetHoverCursor()
     {
         cursorImage.sprite = hoverCursor;
         cursorImage.SetNativeSize();

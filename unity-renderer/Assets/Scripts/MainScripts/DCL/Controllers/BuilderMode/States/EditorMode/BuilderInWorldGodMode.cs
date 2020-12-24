@@ -229,7 +229,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
             gizmoManager.SetGizmoType("MOVE");
         mouseCatcher.enabled = false;
-        Environment.i.sceneController.IsolateScene(sceneToEdit);
+        Environment.i.world.sceneController.IsolateScene(sceneToEdit);
         Utils.UnlockCursor();
 
         RenderSettings.fog = false;
@@ -245,7 +245,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
 
 
-        Environment.i.sceneController.ReIntegrateIsolatedScene();
+        Environment.i.world.sceneController.ReIntegrateIsolatedScene();
 
         gizmoManager.HideGizmo();
         RenderSettings.fog = true;
@@ -449,7 +449,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         Vector3 middlePoint = CalculateMiddlePoint(sceneToEdit.sceneData.parcels);
 
-        lookAtT.position = Environment.i.worldState.ConvertSceneToUnityPosition(middlePoint);
+        lookAtT.position = Environment.i.world.state.ConvertSceneToUnityPosition(middlePoint);
     }
 
     Vector3 CalculateMiddlePoint(Vector2Int[] positions)

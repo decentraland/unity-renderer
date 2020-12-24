@@ -20,7 +20,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.sceneBoundsChecker.Stop();
+            Environment.i.world.sceneBoundsChecker.Stop();
 
             // Set character position and camera rotation
             DCLCharacterController.i.PauseGravity();
@@ -757,10 +757,11 @@ namespace Tests
             Assert.IsTrue(eventTriggered1);
 
             // turn shape invisible
-            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new { visible = false }));
+            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new {visible = false}));
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
 
             var pointerUpReceived = false;
+
             void MsgFromEngineCallback(string eventType, string eventPayload)
             {
                 if (string.IsNullOrEmpty(eventPayload) || eventType != targetEventType)
@@ -1101,7 +1102,7 @@ namespace Tests
 
             yield return null;
 
-            var hoverCanvasController = Environment.i.interactionHoverCanvasController;
+            var hoverCanvasController = InteractionHoverCanvasController.i;
             Assert.IsNotNull(hoverCanvasController);
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
@@ -1154,7 +1155,7 @@ namespace Tests
 
             yield return null;
 
-            var hoverCanvas = Environment.i.interactionHoverCanvasController.canvas;
+            var hoverCanvas = InteractionHoverCanvasController.i.canvas;
             Assert.IsNotNull(hoverCanvas);
 
             Assert.IsTrue(hoverCanvas.enabled);

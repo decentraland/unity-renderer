@@ -1,3 +1,4 @@
+using System;
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,28 +7,44 @@ using UnityEngine.Profiling;
 
 namespace DCL
 {
-    public class MemoryManager
+    public class MemoryManager : IDisposable
     {
         private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
         private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f;
 
         private List<object> idsToCleanup = new List<object>();
 
+        private Coroutine autoCleanupCoroutine;
+
         public void Initialize()
         {
-            CoroutineStarter.Start(AutoCleanup());
+            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
+        }
+
+        public void Dispose()
+        {
+            CleanupPoolsIfNeeded(true, immediate: true);
+
+            if (autoCleanupCoroutine != null)
+                CoroutineStarter.Stop(autoCleanupCoroutine);
+
+            autoCleanupCoroutine = null;
+
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
         }
 
         public MemoryManager()
         {
-            CommonScriptableObjects.rendererState.OnChange += (isEnable, prevState) =>
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
+        }
+
+        private void OnRendererStateChange(bool isEnable, bool prevState)
+        {
+            if (isEnable)
             {
-                if (isEnable)
-                {
-                    Environment.i.parcelScenesCleaner.ForceCleanup();
-                    Resources.UnloadUnusedAssets();
-                }
-            };
+                Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+                Resources.UnloadUnusedAssets();
+            }
         }
 
         bool NeedsMemoryCleanup()
@@ -60,7 +77,7 @@ namespace DCL
             return pool.usedObjectsCount == 0;
         }
 
-        public IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false)
+        public IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false, bool immediate = false)
         {
             using (var iterator = PoolManager.i.pools.GetEnumerator())
             {
@@ -83,7 +100,9 @@ namespace DCL
                 for (int i = 0; i < count; i++)
                 {
                     PoolManager.i.RemovePool(idsToCleanup[i]);
-                    yield return null;
+
+                    if (!immediate)
+                        yield return null;
                 }
             }
         }

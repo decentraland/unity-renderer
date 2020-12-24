@@ -21,7 +21,7 @@ namespace DCL.Helpers
 {
     public class WaitForAllMessagesProcessed : CustomYieldInstruction
     {
-        public override bool keepWaiting => Environment.i.messagingControllersManager.hasPendingMessages;
+        public override bool keepWaiting => Environment.i.messaging.manager.hasPendingMessages;
     }
 
     // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
@@ -1097,54 +1097,6 @@ namespace DCL.Helpers
             }
         }
 
-        public static SceneController InitializeSceneController(bool usesWebServer = false)
-        {
-            var main = UnityEngine.Object.FindObjectOfType<Main>();
-
-            if (main != null && main.componentFactory == null)
-            {
-                ForceUnloadAllScenes(Environment.i.sceneController);
-                Utils.SafeDestroy(main);
-                main = null;
-            }
-
-            if (main == null)
-            {
-                GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
-                main = GO.GetComponent<Main>();
-            }
-            else
-            {
-                Environment.i.Restart();
-            }
-
-            if (usesWebServer)
-            {
-                var webServer = main.GetComponent<WebServerComponent>();
-
-                if (webServer != null)
-                {
-                    webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
-                }
-                else
-                {
-                    main.gameObject.AddComponent<WebServerComponent>();
-                }
-            }
-
-            Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-
-            Environment.i.sceneController.deferredMessagesDecoding = false;
-            Environment.i.sceneController.prewarmSceneMessagesPool = false;
-
-            ForceUnloadAllScenes(Environment.i.sceneController);
-
-            return Environment.i.sceneController;
-        }
-
-        // static string lastMessageFromEngineType;
-        // static string lastMessageFromEnginePayload;
-
         public static IEnumerator WaitForMessageFromEngine(string targetMessageType, string targetMessageJSONPayload,
             System.Action OnIterationStart, System.Action OnSuccess)
         {
@@ -1252,21 +1204,6 @@ namespace DCL.Helpers
                 $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
             Assert.AreEqual(Vector2.zero, rt.sizeDelta,
                 $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
-        }
-
-        public static void ForceUnloadAllScenes(SceneController sceneController)
-        {
-            if (sceneController == null)
-            {
-                return;
-            }
-
-            foreach (var keyValuePair in Environment.i.worldState.loadedScenes.Where(x => x.Value.isPersistent))
-            {
-                keyValuePair.Value.isPersistent = false;
-            }
-
-            sceneController.UnloadAllScenes();
         }
 
         public static void SetCharacterPosition(Vector3 newPosition)
