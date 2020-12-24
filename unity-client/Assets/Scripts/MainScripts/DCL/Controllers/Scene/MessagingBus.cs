@@ -201,13 +201,13 @@ namespace DCL
 
                 if (type == MessagingBusType.INIT)
                 {
-                    Environment.i.messagingControllersManager.pendingInitMessagesCount++;
+                    Environment.i.messaging.manager.pendingInitMessagesCount++;
                 }
 
                 if (owner != null)
                 {
                     owner.enabled = true;
-                    Environment.i.messagingControllersManager.MarkBusesDirty();
+                    Environment.i.messaging.manager.MarkBusesDirty();
                 }
             }
         }
@@ -310,14 +310,14 @@ namespace DCL
 
             if (type == MessagingBusType.INIT)
             {
-                Environment.i.messagingControllersManager.pendingInitMessagesCount--;
-                Environment.i.messagingControllersManager.processedInitMessagesCount++;
+                Environment.i.messaging.manager.pendingInitMessagesCount--;
+                Environment.i.messaging.manager.processedInitMessagesCount++;
             }
         }
 
         private LinkedListNode<QueuedSceneMessage> AddReliableMessage(QueuedSceneMessage message)
         {
-            Environment.i.messagingControllersManager.pendingMessagesCount++;
+            Environment.i.messaging.manager.pendingMessagesCount++;
             pendingMessagesCount++;
             return pendingMessages.AddLast(message);
         }
@@ -328,7 +328,7 @@ namespace DCL
             {
                 pendingMessages.RemoveFirst();
                 pendingMessagesCount--;
-                Environment.i.messagingControllersManager.pendingMessagesCount--;
+                Environment.i.messaging.manager.pendingMessagesCount--;
             }
         }
 
@@ -340,7 +340,7 @@ namespace DCL
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
-            string finalTag = Environment.i.worldState.TryToGetSceneCoordsID(bus.debugTag);
+            string finalTag = Environment.i.world.state.TryToGetSceneCoordsID(bus.debugTag);
 
             if (logType)
             {

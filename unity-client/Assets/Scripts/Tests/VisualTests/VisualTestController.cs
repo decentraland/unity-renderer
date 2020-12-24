@@ -38,7 +38,7 @@ public class VisualTestController : MonoBehaviour
 
     IEnumerator InstantiateTestedObjects()
     {
-        var sceneController = Environment.i.sceneController;
+        var sceneController = Environment.i.world.sceneController;
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
         sceneController.UnloadAllScenes();
@@ -46,7 +46,7 @@ public class VisualTestController : MonoBehaviour
 
         yield return null;
 
-        var scene = Environment.i.worldState.loadedScenes["0,0"];
+        var scene = Environment.i.world.state.loadedScenes["0,0"];
         string textureUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png";
 
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),

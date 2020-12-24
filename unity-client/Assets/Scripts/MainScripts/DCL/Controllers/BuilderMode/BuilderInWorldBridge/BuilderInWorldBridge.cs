@@ -68,7 +68,7 @@ public class BuilderInWorldBridge : MonoBehaviour
             {
                 TransformComponent entityComponentModel = new TransformComponent();
 
-                entityComponentModel.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+                entityComponentModel.position = Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
                 entityComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
                 entityComponentModel.scale = entity.gameObject.transform.localScale;
 
@@ -100,7 +100,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.TRANSFORM;
 
-        entityTransformComponentModel.position = Environment.i.worldState.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+        entityTransformComponentModel.position = Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
         entityTransformComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
         entityTransformComponentModel.scale = entity.gameObject.transform.localScale;
 

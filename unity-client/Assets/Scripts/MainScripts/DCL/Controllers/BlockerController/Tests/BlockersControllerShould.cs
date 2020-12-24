@@ -31,12 +31,15 @@ public class BlockersControllerShould
         //NOTE(Brian): Call OnFinish() when blockerAnimationHandler.FadeOut is called. 
         animationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
-        blockerInstanceHandler = new BlockerInstanceHandler(animationHandler);
+        var newBlockerInstanceHandler = new BlockerInstanceHandler();
+        newBlockerInstanceHandler.Initialize(animationHandler);
 
+        blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();
         blockerInstanceHandler.SetParent(blockersParent.transform);
 
-        blockerController = new WorldBlockersController(sceneHandler, blockerInstanceHandler);
+        blockerController = new WorldBlockersController();
+        blockerController.Initialize(sceneHandler, blockerInstanceHandler);
     }
 
     [TearDown]
@@ -56,7 +59,8 @@ public class BlockersControllerShould
         if (blockerController != null)
             blockerController.Dispose();
 
-        blockerController = new WorldBlockersController(sceneHandler, blockerInstanceHandler);
+        blockerController = new WorldBlockersController();
+        blockerController.Initialize(sceneHandler, blockerInstanceHandler);
 
         // Act-assert #1: first blockers added should be shown  
         blockerController.SetupWorldBlockers();

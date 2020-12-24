@@ -6,10 +6,8 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
 {
-
     public abstract class APKWithPoolableAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType>
-                        : TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType>
-
+        : TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType>
         where AssetPromiseType : AssetPromise<AssetType>
         where AssetType : Asset_WithPoolableContainer, new()
         where AssetLibraryType : AssetLibrary_Poolable<AssetType>, new()
@@ -31,10 +29,7 @@ namespace AssetPromiseKeeper_Tests
             AssetPromiseType prom2 = CreatePromise();
 
             prom2.OnFailEvent +=
-                (x) =>
-                {
-                    calledFail = true;
-                };
+                (x) => { calledFail = true; };
 
             keeper.Keep(prom2);
             GameObject container = prom2.asset.container;
@@ -91,11 +86,10 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(keeper.library.Contains(loadedAsset.id), "Asset should be still in library, it only should be removed from library when the Pool is cleaned by the MemoryManager");
             Assert.AreEqual(1, keeper.library.masterAssets.Count, "Asset should be still in library, it only should be removed from library when the Pool is cleaned by the MemoryManager");
 
-            yield return Environment.i.memoryManager.CleanupPoolsIfNeeded(true);
+            yield return Environment.i.platform.memoryManager.CleanupPoolsIfNeeded(true);
 
             Assert.AreEqual(0, keeper.library.masterAssets.Count, "After MemoryManager clear the pools, the asset should be removed from the library");
             Assert.IsTrue(!keeper.library.Contains(loadedAsset.id), "After MemoryManager clear the pools, the asset should be removed from the library");
-
         }
 
         [UnityTest]
@@ -106,10 +100,7 @@ namespace AssetPromiseKeeper_Tests
             bool calledFail = false;
 
             prom.OnFailEvent +=
-                (x) =>
-                {
-                    calledFail = true;
-                };
+                (x) => { calledFail = true; };
 
             keeper.Keep(prom);
             yield return null;
@@ -148,7 +139,7 @@ namespace AssetPromiseKeeper_Tests
 
             keeper.Forget(prom2);
 
-            yield return Environment.i.memoryManager.CleanupPoolsIfNeeded(true);
+            yield return Environment.i.platform.memoryManager.CleanupPoolsIfNeeded(true);
 
             Assert.IsTrue(asset.container == null);
             Assert.IsTrue(!keeper.library.Contains(asset));
@@ -207,16 +198,10 @@ namespace AssetPromiseKeeper_Tests
             bool calledFail = false;
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    calledSuccess = true;
-                };
+                (x) => { calledSuccess = true; };
 
             prom.OnFailEvent +=
-                (x) =>
-                {
-                    calledFail = true;
-                };
+                (x) => { calledFail = true; };
 
             keeper.Keep(prom);
             keeper.Forget(prom);
@@ -237,10 +222,7 @@ namespace AssetPromiseKeeper_Tests
             AssetType loadedAsset = null;
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    loadedAsset = x;
-                };
+                (x) => { loadedAsset = x; };
 
             keeper.Keep(prom);
             yield return prom;

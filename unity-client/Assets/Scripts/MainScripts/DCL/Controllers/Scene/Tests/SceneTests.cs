@@ -21,7 +21,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            Environment.i.debugController.SetDebug();
+            Environment.i.platform.debugController.SetDebug();
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
         }
 
@@ -37,12 +37,12 @@ namespace Tests
 
             GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
-            GlobalScene scene = Environment.i.worldState.loadedScenes[sceneId] as GlobalScene;
+            GlobalScene scene = Environment.i.world.state.loadedScenes[sceneId] as GlobalScene;
 
             Assert.IsTrue(scene != null, "Scene isn't a GlobalScene?");
             Assert.IsTrue(sceneGo != null, "scene game object not found!");
-            Assert.IsTrue(Environment.i.worldState.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
-            Assert.IsTrue(Environment.i.worldState.loadedScenes[sceneId].unloadWithDistance == false,
+            Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
+            Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId].unloadWithDistance == false,
                 "Scene will unload when far!");
 
             Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
@@ -60,7 +60,7 @@ namespace Tests
             sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
             Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
-            Assert.IsTrue(Environment.i.worldState.loadedScenes[sceneId] != null,
+            Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId] != null,
                 "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
         }
 
@@ -95,9 +95,9 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             string loadedSceneID = "0,0";
-            Assert.IsTrue(Environment.i.worldState.loadedScenes.ContainsKey(loadedSceneID));
+            Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID));
 
-            var scene = Environment.i.worldState.loadedScenes[loadedSceneID];
+            var scene = Environment.i.world.state.loadedScenes[loadedSceneID];
 
             var coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
             {
@@ -199,8 +199,8 @@ namespace Tests
 
             string loadedSceneID = "0,0";
 
-            Assert.IsTrue(Environment.i.worldState.loadedScenes.ContainsKey(loadedSceneID));
-            Assert.IsTrue(Environment.i.worldState.loadedScenes[loadedSceneID] != null);
+            Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID));
+            Assert.IsTrue(Environment.i.world.state.loadedScenes[loadedSceneID] != null);
         }
 
         [UnityTest]
@@ -212,20 +212,20 @@ namespace Tests
 
             string loadedSceneID = "0,0";
 
-            Assert.IsTrue(Environment.i.worldState.loadedScenes.ContainsKey(loadedSceneID));
+            Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID));
 
             // Add 1 entity to the loaded scene
-            TestHelpers.CreateSceneEntity(Environment.i.worldState.loadedScenes[loadedSceneID], "6");
+            TestHelpers.CreateSceneEntity(Environment.i.world.state.loadedScenes[loadedSceneID], "6");
 
-            var sceneRootGameObject = Environment.i.worldState.loadedScenes[loadedSceneID];
-            var sceneEntities = Environment.i.worldState.loadedScenes[loadedSceneID].entities;
+            var sceneRootGameObject = Environment.i.world.state.loadedScenes[loadedSceneID];
+            var sceneEntities = Environment.i.world.state.loadedScenes[loadedSceneID].entities;
 
             sceneController.UnloadScene(loadedSceneID);
 
             yield return new WaitForAllMessagesProcessed();
             yield return new WaitForSeconds(0.1f);
 
-            Assert.IsTrue(Environment.i.worldState.loadedScenes.ContainsKey(loadedSceneID) == false);
+            Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID) == false);
 
             Assert.IsTrue(sceneRootGameObject == null, "Scene root gameobject reference is not getting destroyed.");
 
@@ -234,7 +234,7 @@ namespace Tests
                 Assert.IsFalse(entity.Value.gameObject.activeInHierarchy, "Every entity should be disabled after returning to the pool");
             }
 
-            TestHelpers.ForceUnloadAllScenes(sceneController);
+            sceneController.UnloadAllScenes(includePersistent: true);
 
             yield return null;
         }
@@ -249,7 +249,7 @@ namespace Tests
                 .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
                 .Select(x => JsonUtility.ToJson(x));
 
-            Assert.AreEqual(Environment.i.worldState.loadedScenes.Count, 1);
+            Assert.AreEqual(Environment.i.world.state.loadedScenes.Count, 1);
 
             foreach (string jsonScene in jsonScenes)
             {
@@ -260,42 +260,42 @@ namespace Tests
 
             var referenceCheck = new List<DCL.Controllers.ParcelScene>();
 
-            foreach (var kvp in Environment.i.worldState.loadedScenes)
+            foreach (var kvp in Environment.i.world.state.loadedScenes)
             {
                 referenceCheck.Add(kvp.Value);
             }
 
-            Assert.AreEqual(12, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(12, Environment.i.world.state.loadedScenes.Count);
 
             foreach (var jsonScene in jsonScenes)
             {
                 sceneController.LoadParcelScenes(jsonScene);
             }
 
-            Assert.AreEqual(12, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(12, Environment.i.world.state.loadedScenes.Count);
 
             foreach (var reference in referenceCheck)
             {
-                Assert.IsTrue(Environment.i.worldState.loadedScenes.ContainsValue(reference), "References must be the same");
+                Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsValue(reference), "References must be the same");
             }
 
-            TestHelpers.ForceUnloadAllScenes(sceneController);
+            sceneController.UnloadAllScenes(includePersistent: true);
             yield return null;
         }
 
         [UnityTest]
         public IEnumerator PositionParcels()
         {
-            Assert.AreEqual(1, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(1, Environment.i.world.state.loadedScenes.Count);
 
             var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
             yield return new WaitForAllMessagesProcessed();
 
-            Assert.AreEqual(2, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(2, Environment.i.world.state.loadedScenes.Count);
 
-            var theScene = Environment.i.worldState.loadedScenes["xxx"];
+            var theScene = Environment.i.world.state.loadedScenes["xxx"];
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
@@ -313,16 +313,16 @@ namespace Tests
         [UnityTest]
         public IEnumerator PositionParcels2()
         {
-            Assert.AreEqual(1, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(1, Environment.i.world.state.loadedScenes.Count);
 
             var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
             yield return new WaitForAllMessagesProcessed();
 
-            Assert.AreEqual(2, Environment.i.worldState.loadedScenes.Count);
+            Assert.AreEqual(2, Environment.i.world.state.loadedScenes.Count);
 
-            var theScene = Environment.i.worldState.loadedScenes["xxx"];
+            var theScene = Environment.i.world.state.loadedScenes["xxx"];
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
@@ -393,22 +393,22 @@ namespace Tests
 
             // Make sure that it doesn't have a parent
             Assert.IsNull(entity.parent);
-            Assert.IsFalse(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
+            Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Set player reference as parent
             TestHelpers.SetEntityParent(scene, entityId, "FirstPersonCameraEntityReference");
             Assert.AreEqual(entity.parent, DCLCharacterController.i.firstPersonCameraReference);
-            Assert.IsTrue(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
+            Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Set avatar position reference as parent
             TestHelpers.SetEntityParent(scene, entityId, "AvatarEntityReference");
             Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarReference);
-            Assert.IsTrue(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
+            Assert.IsTrue(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
 
             // Remove all parents
             TestHelpers.SetEntityParent(scene, entityId, "0");
             Assert.IsNull(entity.parent);
-            Assert.IsFalse(Environment.i.sceneBoundsChecker.WasAddedAsPersistent(entity));
+            Assert.IsFalse(Environment.i.world.sceneBoundsChecker.WasAddedAsPersistent(entity));
         }
     }
 }

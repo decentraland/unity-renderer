@@ -40,16 +40,22 @@ namespace DCL.Controllers
         private Transform parent;
 
 
-        public BlockerInstanceHandler(IBlockerAnimationHandler animationHandler)
+        public void Initialize(IBlockerAnimationHandler animationHandler)
         {
             this.animationHandler = animationHandler;
+        }
 
+        public BlockerInstanceHandler()
+        {
             RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
             OnChangeProfile(RenderProfileManifest.i.currentProfile);
         }
 
         private void OnChangeProfile(RenderProfileWorld profile)
         {
+            if (profile == null)
+                return;
+
             blockerPrefabDirty = true;
             blockerPrefab = profile.loadingBlockerPrefab;
         }
@@ -90,7 +96,7 @@ namespace DCL.Controllers
             if (!instant)
                 animationHandler.FadeIn(blockerGo);
 
-            Environment.i.cullingController.MarkDirty();
+            Environment.i.platform.cullingController.MarkDirty();
         }
 
         private void EnsureBlockerPool()
