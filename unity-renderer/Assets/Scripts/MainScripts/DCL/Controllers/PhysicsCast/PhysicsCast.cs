@@ -37,7 +37,7 @@ namespace DCL
         {
             WebInterface.RaycastHitEntity hitEntity;
 
-            Environment.i.worldState.TryGetScene(query.sceneId, out ParcelScene scene);
+            Environment.i.world.state.TryGetScene(query.sceneId, out ParcelScene scene);
 
             RaycastResultInfo raycastInfo = raycastHandler.Raycast(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, scene);
             WebInterface.RayInfo rayInfo = GetRayInfoFromQuery(query);
@@ -76,7 +76,7 @@ namespace DCL
             WebInterface.RaycastHitEntities raycastHitEntities = new WebInterface.RaycastHitEntities();
 
             ParcelScene scene = null;
-            Environment.i.worldState.TryGetScene(query.sceneId, out scene);
+            Environment.i.world.state.TryGetScene(query.sceneId, out scene);
 
             RaycastResultInfoList raycastResults = raycastHandler.RaycastAll(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, scene);
 

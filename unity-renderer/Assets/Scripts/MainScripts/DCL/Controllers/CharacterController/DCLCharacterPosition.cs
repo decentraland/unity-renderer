@@ -71,7 +71,7 @@ public class DCLCharacterPosition
 
             CommonScriptableObjects.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.worldOffset.Set(offset);
-            DCL.Environment.i.physicsSyncController.MarkDirty();
+            DCL.Environment.i.platform.physicsSyncController.MarkDirty();
         }
     }
 

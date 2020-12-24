@@ -9,23 +9,24 @@ namespace AssetPromiseKeeper_GLTF_Tests
 {
     public class APK_GLTF_ShouldWorkWhen :
         APKWithPoolableAssetShouldWorkWhen_Base<AssetPromiseKeeper_GLTF,
-                                                AssetPromise_GLTF,
-                                                Asset_GLTF,
-                                                AssetLibrary_GLTF>
+            AssetPromise_GLTF,
+            Asset_GLTF,
+            AssetLibrary_GLTF>
     {
+        protected ContentProvider contentProvider;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
-            yield return SetUp_SceneController();
-            yield return SetUp_CharacterController();
             yield return base.SetUp();
+            contentProvider = new ContentProvider();
             GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
         }
 
         protected override AssetPromise_GLTF CreatePromise()
         {
             string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
-            var prom = new AssetPromise_GLTF(scene.contentProvider, url);
+            var prom = new AssetPromise_GLTF(contentProvider, url);
             return prom;
         }
     }

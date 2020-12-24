@@ -15,7 +15,7 @@ public class IntegrationTestController : MonoBehaviour
 
     public IEnumerator Initialize()
     {
-        var sceneController = TestHelpers.InitializeSceneController();
+        var sceneController = Environment.i.world.sceneController;
         DCLCharacterController.i.gravity = 0;
         DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
         {
@@ -43,7 +43,7 @@ public class IntegrationTestController : MonoBehaviour
 
         yield return new WaitForAllMessagesProcessed();
 
-        var scene = Environment.i.worldState.loadedScenes[sceneName];
+        var scene = Environment.i.world.state.loadedScenes[sceneName];
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
@@ -105,7 +105,7 @@ public class IntegrationTestController : MonoBehaviour
 
     public IEnumerator Verify()
     {
-        var scene = Environment.i.worldState.loadedScenes[sceneName];
+        var scene = Environment.i.world.state.loadedScenes[sceneName];
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);

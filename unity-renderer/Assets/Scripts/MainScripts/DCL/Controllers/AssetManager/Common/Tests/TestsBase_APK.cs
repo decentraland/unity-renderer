@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
 {
-    public abstract class TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType> : TestsBase
+    public abstract class TestsBase_APK<APKType, AssetPromiseType, AssetType, AssetLibraryType>
         where AssetPromiseType : AssetPromise<AssetType>
         where AssetType : Asset, new()
         where AssetLibraryType : AssetLibrary<AssetType>, new()
@@ -14,17 +14,17 @@ namespace AssetPromiseKeeper_Tests
         protected APKType keeper;
 
         [UnitySetUp]
-        protected override IEnumerator SetUp()
+        protected virtual IEnumerator SetUp()
         {
             keeper = new APKType();
             yield break;
         }
 
         [UnityTearDown]
-        protected override IEnumerator TearDown()
+        protected virtual IEnumerator TearDown()
         {
             keeper.Cleanup();
-            yield return TearDown_Memory();
+            yield break;
         }
     }
 }

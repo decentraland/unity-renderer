@@ -150,6 +150,10 @@ export class UnityInterface {
     this.gameInstance.SendMessage('Main', 'DumpScenesLoadInfo')
   }
 
+  public DumpRendererLockersInfo() {
+    this.gameInstance.SendMessage('Main', 'DumpRendererLockersInfo')
+  }
+
   public CreateUIScene(data: { id: string; baseUrl: string }) {
     /**
      * UI Scenes are scenes that does not check any limit or boundary. The

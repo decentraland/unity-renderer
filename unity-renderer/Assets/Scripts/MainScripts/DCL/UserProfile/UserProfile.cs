@@ -18,6 +18,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
+    public UserProfileModel.ParcelsWithAccess[] parcelsWithAccess => model.parcelsWithAccess;
     public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public List<string> muted => model.muted ?? new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
@@ -47,6 +48,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         model.userId = newModel.userId;
         model.ethAddress = newModel.ethAddress;
+        model.parcelsWithAccess = newModel.parcelsWithAccess;
         model.tutorialStep = newModel.tutorialStep;
         model.hasClaimedName = newModel.hasClaimedName;
         model.name = newModel.name;

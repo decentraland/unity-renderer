@@ -73,7 +73,8 @@ namespace DCL
             }
         }
 
-        [SerializeField] protected Model model;
+        [SerializeField]
+        protected Model model;
 
         protected Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
@@ -285,7 +286,7 @@ namespace DCL
 
         void CalculateMaterials(DecentralandEntity entity, EntityMetrics entityMetrics)
         {
-            var originalMaterials = Environment.i.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
+            var originalMaterials = Environment.i.world.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
 
             int originalMaterialsCount = originalMaterials.Count;
 
@@ -294,7 +295,7 @@ namespace DCL
                 AddMaterial(entityMetrics, originalMaterials[i]);
 
                 if (VERBOSE)
-                    Debug.Log($"SceneMetrics: material (style: {Environment.i.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName}) {originalMaterials[i].name} of entity {entity.entityId}");
+                    Debug.Log($"SceneMetrics: material (style: {Environment.i.world.sceneBoundsChecker.GetFeedbackStyle().GetType().FullName}) {originalMaterials[i].name} of entity {entity.entityId}");
             }
         }
 

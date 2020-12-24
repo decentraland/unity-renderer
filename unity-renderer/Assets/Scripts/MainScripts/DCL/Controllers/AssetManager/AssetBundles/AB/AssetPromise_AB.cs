@@ -9,6 +9,7 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
+        public static bool VERBOSE = false;
         public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
         public static int concurrentRequests = 0;
@@ -147,7 +148,8 @@ namespace DCL
 
             if (!assetBundleRequest.WebRequestSucceded())
             {
-                Debug.Log($"Request failed? {assetBundleRequest.error} ... {finalUrl}");
+                if (VERBOSE)
+                    Debug.Log($"Request failed? {assetBundleRequest.error} ... {finalUrl}");
                 failedRequestUrls.Add(finalUrl);
                 assetBundleRequest.Abort();
                 assetBundleRequest = null;

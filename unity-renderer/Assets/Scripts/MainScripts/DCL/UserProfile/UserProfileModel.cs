@@ -12,11 +12,27 @@ public class UserProfileModel
         public string body;
     }
 
+    [System.Serializable]
+    public class ParcelsWithAccess
+    {
+        public int x;
+        public int y;
+        public LandRole landRole;
+
+        [System.Serializable]
+        public enum LandRole
+        {
+            OWNER = 0,
+            OPERATOR = 1
+        }
+    }
+
     public string userId;
     public string ethAddress;
     public string name;
     public string email;
     public string description;
+    public ParcelsWithAccess[] parcelsWithAccess;
     public ulong created_at;
     public ulong updated_at;
     public string version;

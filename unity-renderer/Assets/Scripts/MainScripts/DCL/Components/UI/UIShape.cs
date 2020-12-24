@@ -42,6 +42,10 @@ namespace DCL.Components
         {
             if (type == Unit.PIXELS) return value;
 
+            // Prevent division by zero
+            if (parentSize <= Mathf.Epsilon)
+                parentSize = 1;
+
             return value / 100 * parentSize;
         }
     }
@@ -280,6 +284,7 @@ namespace DCL.Components
             position.x = model.positionX.GetScaledValue(parentTransform.rect.width);
             position.y = model.positionY.GetScaledValue(parentTransform.rect.height);
 
+            position = Utils.Sanitize(position);
             referencesContainer.layoutElementRT.localPosition += position;
         }
 

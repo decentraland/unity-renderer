@@ -100,12 +100,14 @@ namespace DCL
             Assert.IsFalse(applyChangesRunning, "ApplyChanges routine was interrupted when it shouldn't!");
             applyChangesRunning = true;
 #endif
-
-            var enumerator = owner.ApplyChanges(newJson);
-
-            if (enumerator != null)
+            if (owner.IsValid())
             {
-                yield return enumerator;
+                var enumerator = owner.ApplyChanges(newJson);
+
+                if (enumerator != null)
+                {
+                    yield return enumerator;
+                }
             }
 #if UNITY_EDITOR
             applyChangesRunning = false;

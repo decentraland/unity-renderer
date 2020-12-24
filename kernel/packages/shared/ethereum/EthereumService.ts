@@ -5,7 +5,7 @@ import { defaultLogger } from 'shared/logger'
 import { RPCSendableMessage } from 'shared/types'
 import { getERC20 } from './ERC20'
 import { getERC721 } from './ERC721'
-import { requestManager, getUserAccount as getUserAccountPrime } from './provider'
+import { requestManager, getUserAccount as getUserAccountPrime, awaitWeb3Approval } from './provider'
 
 export interface MessageDict {
   [key: string]: string
@@ -47,6 +47,7 @@ function isWhitelistedRPC(msg: RPCSendableMessage) {
 }
 
 export async function getUserAccount(): Promise<string | undefined> {
+  await awaitWeb3Approval()
   return getUserAccountPrime()
 }
 
@@ -240,7 +241,7 @@ export async function convertMessageToObject(message: string): Promise<MessageDi
   // First, split the string parts into nested array
   const arr = parsedMessage
     .split('\n')
-    .map(m => m.split(':'))
+    .map((m) => m.split(':'))
     .map(([key, value]) => [key, value.trim()])
 
   // convert the array into object of type MessageDict

@@ -621,5 +621,14 @@ namespace DCL.Helpers
 
             return value;
         }
+
+        public static Vector3 Sanitize(Vector3 value)
+        {
+            float x = float.IsInfinity(value.x) ? 0 : value.x;
+            float y = float.IsInfinity(value.y) ? 0 : value.y;
+            float z = float.IsInfinity(value.z) ? 0 : value.z;
+
+            return new Vector3(x, y, z);
+        }
     }
 }

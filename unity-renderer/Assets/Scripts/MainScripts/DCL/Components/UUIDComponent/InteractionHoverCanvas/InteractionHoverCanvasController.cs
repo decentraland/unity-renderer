@@ -7,6 +7,7 @@ using DCL;
 
 public class InteractionHoverCanvasController : MonoBehaviour
 {
+    public static InteractionHoverCanvasController i { get; private set; }
     public Canvas canvas;
     public RectTransform backgroundTransform;
     public TextMeshProUGUI text;
@@ -24,8 +25,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void Awake()
     {
-        Environment.i.SetInteractionHoverCanvasController(this);
-
+        i = this;
         mainCamera = Camera.main;
     }
 

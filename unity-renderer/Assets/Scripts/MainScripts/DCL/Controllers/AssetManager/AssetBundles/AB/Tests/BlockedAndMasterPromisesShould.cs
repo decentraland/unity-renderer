@@ -7,10 +7,8 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_AssetBundle_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_AB,
-                                                AssetPromise_AB,
-                                                Asset_AB,
-                                                AssetLibrary_AB>
+    public class BlockedAndMasterPromisesShould :
+        TestsBase_APK<AssetPromiseKeeper_AB, AssetPromise_AB, Asset_AB, AssetLibrary_AB>
     {
         protected AssetPromise_AB CreatePromise(string hash = null)
         {

@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 
 public class ChatHeadGroupView : MonoBehaviour
@@ -13,7 +14,9 @@ public class ChatHeadGroupView : MonoBehaviour
     public event System.Action<TaskbarButton> OnHeadToggleOff;
 
     public Transform container;
-    [System.NonSerialized] public List<ChatHeadButton> chatHeads = new List<ChatHeadButton>();
+
+    [System.NonSerialized]
+    public List<ChatHeadButton> chatHeads = new List<ChatHeadButton>();
 
     private IChatController chatController;
     private IFriendsController friendsController;
@@ -76,7 +79,7 @@ public class ChatHeadGroupView : MonoBehaviour
 
     private void RendererState_OnChange(bool current, bool previous)
     {
-        rendererStateTimeMark = (ulong)System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        rendererStateTimeMark = (ulong) System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
@@ -192,7 +195,7 @@ public class ChatHeadGroupView : MonoBehaviour
 
         if (saveStatusInStorage)
         {
-            CommonScriptableObjects.latestOpenChats.Add(new LatestOpenChatsList.Model { userId = userId, lastTimestamp = timestamp });
+            CommonScriptableObjects.latestOpenChats.Add(new LatestOpenChatsList.Model {userId = userId, lastTimestamp = timestamp});
             SaveLatestOpenChats();
         }
 
@@ -218,6 +221,7 @@ public class ChatHeadGroupView : MonoBehaviour
         {
             RemoveChatHead(chatHeadsToRemove[i], forceLayoutUpdate: false);
         }
+
         SetParentContainerAsDirty();
     }
 
@@ -262,8 +266,8 @@ public class ChatHeadGroupView : MonoBehaviour
 
     private void SaveLatestOpenChats()
     {
-        PlayerPrefs.SetString(PLAYER_PREFS_LATEST_OPEN_CHATS, JsonConvert.SerializeObject(CommonScriptableObjects.latestOpenChats.GetList()));
-        PlayerPrefs.Save();
+        PlayerPrefsUtils.SetString(PLAYER_PREFS_LATEST_OPEN_CHATS, JsonConvert.SerializeObject(CommonScriptableObjects.latestOpenChats.GetList()));
+        PlayerPrefsUtils.Save();
     }
 
     private void LoadLatestOpenChats()
@@ -280,6 +284,7 @@ public class ChatHeadGroupView : MonoBehaviour
                 CommonScriptableObjects.latestOpenChats.Add(item);
                 AddChatHead(item.userId, item.lastTimestamp, false, forceLayoutUpdate: false);
             }
+
             SetParentContainerAsDirty();
         }
     }

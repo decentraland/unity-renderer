@@ -215,7 +215,7 @@ namespace Builder
 
         private void OnSceneChanged(ParcelScene scene)
         {
-            boundsChecker = DCL.Environment.i.sceneBoundsChecker;
+            boundsChecker = DCL.Environment.i.world.sceneBoundsChecker;
             currentScene = scene;
         }
 

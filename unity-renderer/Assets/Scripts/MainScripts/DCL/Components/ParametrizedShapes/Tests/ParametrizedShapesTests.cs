@@ -308,15 +308,15 @@ public class ParametrizedShapesTests : TestsBase
     }
 
     [UnityTest]
-    [TestCase(5, true, ExpectedResult =  null)]
-    [TestCase(5, false, ExpectedResult =  null)]
+    [TestCase(5, true, ExpectedResult = null)]
+    [TestCase(5, false, ExpectedResult = null)]
     //TODO: When refactoring these tests to split them by shape, replicate this on them
     public IEnumerator UpdateWithCollisionInMultipleEntities(int entitiesCount, bool withCollision)
     {
-        Environment.i.sceneBoundsChecker.Stop();
+        Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of withCollision to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { withCollisions = !withCollision});
+        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {withCollisions = !withCollision});
         yield return shapeComponent.routine;
         List<DecentralandEntity> entities = new List<DecentralandEntity>();
         for (int i = 0; i < entitiesCount; i++)
@@ -327,7 +327,7 @@ public class ParametrizedShapesTests : TestsBase
         }
 
         // Act: Update withCollision
-        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model { withCollisions = withCollision }));
+        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model {withCollisions = withCollision}));
 
         // Assert:
         foreach (DecentralandEntity entity in entities)
@@ -340,15 +340,15 @@ public class ParametrizedShapesTests : TestsBase
     }
 
     [UnityTest]
-    [TestCase(5, true, ExpectedResult =  null)]
-    [TestCase(5, false, ExpectedResult =  null)]
+    [TestCase(5, true, ExpectedResult = null)]
+    [TestCase(5, false, ExpectedResult = null)]
     //TODO: When refactoring these tests to split them by shape, replicate this on them
     public IEnumerator UpdateVisibilityInMultipleEntities(int entitiesCount, bool visible)
     {
-        Environment.i.sceneBoundsChecker.Stop();
+        Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of visible to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { visible = !visible});
+        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {visible = !visible});
         yield return shapeComponent.routine;
         List<DecentralandEntity> entities = new List<DecentralandEntity>();
         for (int i = 0; i < entitiesCount; i++)
@@ -359,7 +359,7 @@ public class ParametrizedShapesTests : TestsBase
         }
 
         // Act: Update visible
-        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model { visible = visible }));
+        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model {visible = visible}));
 
         // Assert:
         foreach (DecentralandEntity entity in entities)

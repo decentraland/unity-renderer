@@ -142,7 +142,7 @@ namespace DCL.Controllers
 
             state = State.READY;
 
-            Environment.i.sceneController.SendSceneReady(owner.sceneData.id);
+            Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
             owner.RefreshName();
 
             OnSceneReady?.Invoke(owner);

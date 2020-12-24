@@ -55,7 +55,7 @@ public class RenderProfileBridge : MonoBehaviour
                 newProfile = RenderProfileManifest.i.halloweenProfile;
                 break;
             case ID.XMAS:
-                newProfile = RenderProfileManifest.i.defaultProfile;
+                newProfile = RenderProfileManifest.i.halloweenProfile;
                 break;
         }
 

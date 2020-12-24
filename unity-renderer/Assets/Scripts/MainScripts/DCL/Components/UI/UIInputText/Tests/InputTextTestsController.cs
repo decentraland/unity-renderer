@@ -11,9 +11,9 @@ namespace DCL
         protected SceneController sceneController;
         protected ParcelScene scene;
 
-        protected IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        protected IEnumerator InitScene(bool spawnCharController = true)
         {
-            sceneController = TestHelpers.InitializeSceneController(usesWebServer);
+            sceneController = Environment.i.world.sceneController;
 
             yield return new WaitForSeconds(0.01f);
 

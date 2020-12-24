@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
+using DCL.Helpers;
 
 namespace DCL.Tutorial
 {
@@ -183,7 +184,7 @@ namespace DCL.Tutorial
         public void SetTutorialEnabledForUsersThatAlreadyDidTheTutorial()
         {
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
-            if (PlayerPrefs.GetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED) == 1)
+            if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED) == 1)
                 return;
 
             SetupTutorial(false.ToString(), TutorialType.Initial, true);
@@ -250,7 +251,7 @@ namespace DCL.Tutorial
 
             if (Environment.i != null)
             {
-                WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "end");
+                WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "end");
             }
 
             NotificationsController.disableWelcomeNotification = false;
@@ -566,7 +567,7 @@ namespace DCL.Tutorial
 
         private bool IsPlayerInsideGenesisPlaza()
         {
-            WorldState worldState = Environment.i.worldState;
+            WorldState worldState = Environment.i.world.state;
             if (worldState == null || worldState.currentSceneId == null)
                 return false;
 
@@ -650,16 +651,16 @@ namespace DCL.Tutorial
 
         private void ModifyCullingSettings()
         {
-            var cullingSettings = Environment.i.cullingController.GetSettingsCopy();
+            var cullingSettings = Environment.i.platform.cullingController.GetSettingsCopy();
             cullingSettings.ignoredLayersMask |= tutorialLayerMask;
-            Environment.i.cullingController.SetSettings(cullingSettings);
+            Environment.i.platform.cullingController.SetSettings(cullingSettings);
         }
 
         private void RestoreCullingSettings()
         {
-            var cullingSettings = Environment.i.cullingController.GetSettingsCopy();
+            var cullingSettings = Environment.i.platform.cullingController.GetSettingsCopy();
             cullingSettings.ignoredLayersMask &= ~tutorialLayerMask;
-            Environment.i.cullingController.SetSettings(cullingSettings);
+            Environment.i.platform.cullingController.SetSettings(cullingSettings);
         }
     }
 }

@@ -130,11 +130,11 @@ public class BuilderInWorldController : MonoBehaviour
     EditModeState currentEditModeState = EditModeState.Inactive;
 
     bool catalogAdded = false;
-    
+
     void Start()
     {
         KernelConfig.i.EnsureConfigInitialized().Then(config => activeFeature = config.features.enableBuilderInWorld);
-        KernelConfig.i.OnChange += OnKernelConfigChanged; 
+        KernelConfig.i.OnChange += OnKernelConfigChanged;
 
         if (snapGO == null)
             snapGO = new GameObject("SnapGameObject");
@@ -399,7 +399,7 @@ public class BuilderInWorldController : MonoBehaviour
                 data.contents.Add(mappingPair);
         }
 
-        Environment.i.sceneController.UpdateParcelScenesExecute(data);
+        Environment.i.world.sceneController.UpdateParcelScenesExecute(data);
 
         GLTFShape mesh = (GLTFShape) sceneToEdit.SharedComponentCreate(sceneObject.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
         mesh.model = new LoadableShape.Model();
@@ -691,20 +691,45 @@ public class BuilderInWorldController : MonoBehaviour
     void NewSceneReady(string id)
     {
         if (sceneToEditId != id) return;
-        Environment.i.sceneController.OnReadyScene -= NewSceneReady;
+        Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
         sceneToEditId = null;
         EnterEditMode();
     }
 
     public void StartEnterEditMode()
     {
+        UserProfile userProfile = UserProfile.GetOwnUserProfile();
+
         if (sceneToEditId != null) return;
 
         FindSceneToEdit();
-        sceneToEditId = sceneToEdit.sceneData.id;
-        Environment.i.sceneController.OnReadyScene += NewSceneReady;
 
-        builderInWorldBridge.StartKernelEditMode(sceneToEdit);
+        bool canOperateInLand = false;
+
+        foreach(UserProfileModel.ParcelsWithAccess parcel in userProfile.parcelsWithAccess)
+        {
+            foreach(Vector2Int pos in sceneToEdit.sceneData.parcels)
+            {
+                if (parcel.x == pos.x && parcel.y == pos.y)
+                {
+                    canOperateInLand = true;
+                    break;
+                }
+            }
+
+        }
+        if (canOperateInLand)
+        {
+            sceneToEditId = sceneToEdit.sceneData.id;
+            Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
+
+            builderInWorldBridge.StartKernelEditMode(sceneToEdit);
+        }
+        else
+        {
+            sceneToEdit = null;
+            //TODO: Implement feedback to the user that he don't have permissions
+        }
     }
 
     public void EnterEditMode()
@@ -732,7 +757,7 @@ public class BuilderInWorldController : MonoBehaviour
         builderInputWrapper.gameObject.SetActive(true);
         builderInWorldEntityHandler.EnterEditMode(sceneToEdit);
 
-        Environment.i.sceneController.ActivateBuilderInWorldEditScene();
+        Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
         ActivateBuilderInWorldCamera();
     }
@@ -764,7 +789,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         HUDController.i.buildModeHud.ClearEntityList();
 
-        Environment.i.sceneController.DeactivateBuilderInWorldEditScene();
+        Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
 
         DeactivateBuilderInWorldCamera();
     }
@@ -808,7 +833,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     void FindSceneToEdit()
     {
-        foreach (ParcelScene scene in Environment.i.worldState.scenesSortedByDistance)
+        foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
             if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
             {

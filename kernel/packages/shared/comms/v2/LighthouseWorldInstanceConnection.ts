@@ -252,7 +252,17 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   private async sendData(topic: string, messageData: MessageData, type: PeerMessageType) {
-    await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
+    try {
+      await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
+    } catch (e) {
+      const message = e.message
+      if (typeof message === 'string' && message.startsWith('cannot send a message in a room not joined')) {
+        // We can ignore this error. This is usually just a problem of eventual consistency.
+        // And when it is not, it is usually caused by another error that we might find above. Effectively, we are just making noise.
+      } else {
+        throw e
+      }
+    }
   }
 
   private async sendPositionData(p: Position, topic: string, typeName: string) {

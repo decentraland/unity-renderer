@@ -8,7 +8,9 @@ using UnityEngine;
 
 public class EntityInformationController : MonoBehaviour
 {
-    [Header("Scene references")] public TextMeshProUGUI titleTxt;
+    [Header("Scene references")]
+    public TextMeshProUGUI titleTxt;
+
     public TextMeshProUGUI descTxt;
 
     DecentralandEntity currentEntity;
@@ -60,7 +62,7 @@ public class EntityInformationController : MonoBehaviour
     {
         if (currentEntity.gameObject != null)
         {
-            Vector3 positionConverted = Environment.i.worldState.ConvertUnityToScenePosition(currentEntity.gameObject.transform.position, parcelScene);
+            Vector3 positionConverted = Environment.i.world.state.ConvertUnityToScenePosition(currentEntity.gameObject.transform.position, parcelScene);
             Vector3 currentRotation = currentEntity.gameObject.transform.rotation.eulerAngles;
             Vector3 currentScale = currentEntity.gameObject.transform.localScale;
 

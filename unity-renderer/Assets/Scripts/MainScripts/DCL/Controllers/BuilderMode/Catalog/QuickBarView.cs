@@ -10,8 +10,6 @@ public class QuickBarView : MonoBehaviour
     public Canvas generalCanvas;
     public CatalogGroupListView catalogGroupListView;
 
-    public event System.Action OnResumeInput;
-    public event System.Action OnStopInput;
 
     public event System.Action<int> OnQuickBarShortcutSelected;
     public event System.Action<SceneObject, int> OnQuickBarAdd;
@@ -28,15 +26,10 @@ public class QuickBarView : MonoBehaviour
 
 
     int lastIndexDroped = -1;
-    GameObject draggedObject;
 
 
     private void Start()
     {
-        catalogGroupListView.OnAdapterStartDragging += SceneObjectStartDragged;
-        catalogGroupListView.OnAdapterDrag += OnDrag;
-        catalogGroupListView.OnAdapterEndDrag += OnEndDrag;
-
         quickBar1InputAction.OnTriggered += OnQuickBar1InputTriggedered;
         quickBar2InputAction.OnTriggered += OnQuickBar2InputTriggedered;
         quickBar3InputAction.OnTriggered += OnQuickBar3InputTriggedered;
@@ -50,10 +43,6 @@ public class QuickBarView : MonoBehaviour
 
     private void OnDestroy()
     {
-        catalogGroupListView.OnAdapterStartDragging -= SceneObjectStartDragged;
-        catalogGroupListView.OnAdapterDrag -= OnDrag;
-        catalogGroupListView.OnAdapterEndDrag -= OnEndDrag;
-
         quickBar1InputAction.OnTriggered -= OnQuickBar1InputTriggedered;
         quickBar2InputAction.OnTriggered -= OnQuickBar2InputTriggedered;
         quickBar3InputAction.OnTriggered -= OnQuickBar3InputTriggedered;
@@ -70,45 +59,17 @@ public class QuickBarView : MonoBehaviour
         lastIndexDroped = index;
     }
 
-    void OnDrag(PointerEventData data)
-    {
-        draggedObject.transform.position = data.position;
-    }
-
-    void SceneObjectStartDragged(SceneObject sceneObjectClicked, CatalogItemAdapter adapter, BaseEventData data)
-    {
-        PointerEventData eventData = data as PointerEventData;
-
-        if (draggedObject == null)
-            draggedObject = Instantiate(adapter.gameObject, generalCanvas.transform);
-
-        CatalogItemAdapter newAdapter = draggedObject.GetComponent<CatalogItemAdapter>();
-
-        RectTransform adapterRT = adapter.GetComponent<RectTransform>();
-        newAdapter.SetContent(adapter.GetContent());
-        newAdapter.EnableDragMode(adapterRT.sizeDelta);
-
-        OnStopInput?.Invoke();
-    }
-
-    void OnEndDrag(PointerEventData data)
-    {
-        Destroy(draggedObject, 0.1f);
-        OnResumeInput?.Invoke();
-    }
-
     public void SceneObjectDropped(BaseEventData data)
     {
-
-        CatalogItemAdapter adapter = draggedObject.GetComponent<CatalogItemAdapter>();
+        CatalogItemAdapter adapter = catalogGroupListView.GetLastSceneObjectDragged();
         SceneObject sceneObject = adapter.GetContent();
+
         Texture texture = null;
         if (adapter.thumbnailImg.enabled)
         {
             texture = adapter.thumbnailImg.texture;
             SetQuickBarShortcut(sceneObject, lastIndexDroped, texture);
         }
-        Destroy(draggedObject);
     }
 
     void SetQuickBarShortcut(SceneObject sceneObject, int index, Texture texture)

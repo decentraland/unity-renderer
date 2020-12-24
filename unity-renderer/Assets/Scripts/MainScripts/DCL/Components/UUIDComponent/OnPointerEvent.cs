@@ -21,11 +21,7 @@ namespace DCL.Components
             public bool showFeedback = true;
         }
 
-        public OnPointerEventColliders pointerEventColliders
-        {
-            get;
-            private set;
-        }
+        public OnPointerEventColliders pointerEventColliders { get; private set; }
 
         public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
@@ -37,7 +33,7 @@ namespace DCL.Components
             if (model == null)
                 this.model = new OnPointerEvent.Model();
             else
-                this.model = (OnPointerEvent.Model)model;
+                this.model = (OnPointerEvent.Model) model;
 
             Initialize();
 
@@ -71,7 +67,7 @@ namespace DCL.Components
             pointerEventColliders = Utils.GetOrCreateComponent<OnPointerEventColliders>(this.gameObject);
             pointerEventColliders.Initialize(entity);
             pointerEventColliders.refCount++;
-            hoverCanvasController = Environment.i.interactionHoverCanvasController;
+            hoverCanvasController = InteractionHoverCanvasController.i;
         }
 
         public bool IsVisible()
@@ -112,6 +108,7 @@ namespace DCL.Components
         {
             return model != null && other != null && Vector3.Distance(other.position, transform.position) <= model.distance;
         }
+
         public bool IsAtHoverDistance(float distance)
         {
             return distance <= model.distance;

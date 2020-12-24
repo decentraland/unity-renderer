@@ -1257,7 +1257,7 @@ PrefabInstance:
         type: 3}
       propertyPath: mouseCatcher
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1107221834}
     - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderInWorldBridge

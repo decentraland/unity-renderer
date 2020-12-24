@@ -44,7 +44,7 @@ namespace DCL.Tutorial
 
                 if (Environment.i != null)
                 {
-                    WebInterface.SendSceneExternalActionEvent(Environment.i.worldState.currentSceneId, "tutorial", "begin");
+                    WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "begin");
                 }
             }
         }
