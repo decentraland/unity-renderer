@@ -20,7 +20,7 @@ public class ExternalUrlPromptHUDController : IHUD
         view.content.SetActive(false);
 
         if (Environment.i != null)
-            Environment.i.sceneController.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
+            Environment.i.world.sceneController.OnOpenExternalUrlRequest += ProcessOpenUrlRequest;
     }
 
     public void SetVisibility(bool visible)
@@ -45,7 +45,7 @@ public class ExternalUrlPromptHUDController : IHUD
     public void Dispose()
     {
         if (Environment.i != null)
-            Environment.i.sceneController.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
+            Environment.i.world.sceneController.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
 
         trustedDomains.Clear();
 

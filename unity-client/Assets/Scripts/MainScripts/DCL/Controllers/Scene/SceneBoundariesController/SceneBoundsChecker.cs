@@ -22,7 +22,8 @@ namespace DCL.Controllers
     {
         public bool enabled => entitiesCheckRoutine != null;
 
-        [System.NonSerialized] public float timeBetweenChecks = 1f;
+        [System.NonSerialized]
+        public float timeBetweenChecks = 1f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
         HashSet<DecentralandEntity> entitiesToCheck = new HashSet<DecentralandEntity>();
@@ -67,7 +68,7 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            if (Environment.i.messagingControllersManager.timeBudgetCounter <= 0f) break;
+                            if (Environment.i.messaging.manager.timeBudgetCounter <= 0f) break;
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -75,7 +76,7 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
-                            Environment.i.messagingControllersManager.timeBudgetCounter -= (finishTime - startTime);
+                            Environment.i.messaging.manager.timeBudgetCounter -= (finishTime - startTime);
                         }
                     }
 

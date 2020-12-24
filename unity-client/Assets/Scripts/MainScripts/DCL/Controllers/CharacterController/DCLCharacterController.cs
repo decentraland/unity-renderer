@@ -125,7 +125,7 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-        Environment.i.debugController.OnDebugModeSet += () => supportsMovingPlatforms = true;
+        Environment.i.platform.debugController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
         transform.parent = null;
@@ -191,7 +191,7 @@ public class DCLCharacterController : MonoBehaviour
         lastPosition = characterPosition.worldPosition;
         characterPosition.worldPosition = newPosition;
         transform.position = characterPosition.unityPosition;
-        Environment.i.physicsSyncController.MarkDirty();
+        Environment.i.platform.physicsSyncController.MarkDirty();
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerWorldPosition.Set(characterPosition.worldPosition);
@@ -338,7 +338,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
             //             will reset the character controller to its previous position.
-            Environment.i.physicsSyncController.Sync();
+            Environment.i.platform.physicsSyncController.Sync();
             characterController.Move(velocity * deltaTime);
         }
 

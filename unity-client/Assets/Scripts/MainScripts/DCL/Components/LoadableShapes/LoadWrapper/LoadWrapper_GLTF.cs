@@ -46,7 +46,7 @@ namespace DCL.Components
             }
 
             loadHelper.OnSuccessEvent += (x) => OnSuccessWrapper(OnSuccess);
-            loadHelper.OnFailEvent += () => OnFailWrapper(OnSuccess);
+            loadHelper.OnFailEvent += () => OnFailWrapper(OnFail);
             loadHelper.Load(targetUrl);
         }
 

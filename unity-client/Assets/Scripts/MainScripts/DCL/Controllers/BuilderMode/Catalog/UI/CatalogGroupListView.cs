@@ -5,12 +5,16 @@ using UnityEngine.EventSystems;
 
 public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject>>>
 {
-
+    public Canvas generalCanvas;
     public CatalogAssetGroupAdapter categoryItemAdapterPrefab;
     public System.Action<SceneObject> OnSceneObjectClicked;
     public System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
-    public System.Action<SceneObject, CatalogItemAdapter, BaseEventData> OnAdapterStartDragging;
-    public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
+
+    public event System.Action OnResumeInput;
+    public event System.Action OnStopInput;
+
+    GameObject draggedObject;
+    CatalogItemAdapter catalogItemAdapterDragged;
 
     public override void AddAdapters()
     {
@@ -31,19 +35,37 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
         }         
     }
 
-    void OnDrag(PointerEventData eventData)
+    void OnDrag(PointerEventData data)
     {
-        OnAdapterDrag?.Invoke(eventData);
-    }
-
-    void OnEndDrag(PointerEventData eventData)
-    {
-        OnAdapterEndDrag?.Invoke(eventData);
+        draggedObject.transform.position = data.position;
     }
 
     void AdapterStartDragging(SceneObject sceneObjectClicked, CatalogItemAdapter adapter, BaseEventData data)
     {
-        OnAdapterStartDragging?.Invoke(sceneObjectClicked, adapter, data);
+        PointerEventData eventData = data as PointerEventData;
+
+        if (draggedObject == null)
+            draggedObject = Instantiate(adapter.gameObject, generalCanvas.transform);
+
+        CatalogItemAdapter newAdapter = draggedObject.GetComponent<CatalogItemAdapter>();
+
+        RectTransform adapterRT = adapter.GetComponent<RectTransform>();
+        newAdapter.SetContent(adapter.GetContent());
+        newAdapter.EnableDragMode(adapterRT.sizeDelta);
+        catalogItemAdapterDragged = newAdapter;
+
+        OnStopInput?.Invoke();
+    }
+
+    void OnEndDrag(PointerEventData data)
+    {
+        OnResumeInput?.Invoke();
+        Destroy(draggedObject);
+    }
+
+    public CatalogItemAdapter GetLastSceneObjectDragged()
+    {
+        return catalogItemAdapterDragged;
     }
 
     void SceneObjectSelected(SceneObject sceneObject)
@@ -55,4 +77,6 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
     {
         OnSceneObjectFavorite?.Invoke(sceneObject, adapter);
     }
+
+
 }

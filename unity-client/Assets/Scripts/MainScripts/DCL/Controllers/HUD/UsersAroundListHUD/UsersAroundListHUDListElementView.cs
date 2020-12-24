@@ -104,7 +104,10 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
     public void OnPoolGet()
     {
         muteGO.SetActive(false);
-        talkingAnimator.SetBool(talkingAnimation, false);
+
+        if (talkingAnimator.isActiveAndEnabled)
+            talkingAnimator.SetBool(talkingAnimation, false);
+
         avatarPreview.texture = null;
         userName.text = string.Empty;
         backgroundHover.SetActive(false);
@@ -112,14 +115,14 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         blockedGO.SetActive(false);
         gameObject.SetActive(true);
     }
-    
+
     void SetupFriends(string userId)
     {
         if (FriendsController.i == null)
         {
             return;
         }
-        
+
         if (FriendsController.i.friends.TryGetValue(userId, out FriendsController.UserStatus status))
         {
             SetupFriendship(status.friendshipStatus);
@@ -144,6 +147,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         {
             return;
         }
+
         OnMuteUser?.Invoke(profile.userId, !isMuted);
     }
 

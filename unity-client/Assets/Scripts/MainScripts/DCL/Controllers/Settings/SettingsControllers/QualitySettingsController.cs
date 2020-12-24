@@ -75,7 +75,7 @@ namespace DCL.SettingsController
 
             if (lightweightRenderPipelineAsset)
             {
-                lightweightRenderPipelineAsset.msaaSampleCount = (int)qualitySettings.antiAliasing;
+                lightweightRenderPipelineAsset.msaaSampleCount = (int) qualitySettings.antiAliasing;
                 lightweightRenderPipelineAsset.renderScale = qualitySettings.renderScale;
                 lightweightRenderPipelineAsset.shadowDistance = qualitySettings.shadowDistance;
 
@@ -110,13 +110,13 @@ namespace DCL.SettingsController
                 }
             }
 
-            Environment.i.cullingController.SetObjectCulling(qualitySettings.enableDetailObjectCulling);
-            Environment.i.cullingController.SetShadowCulling(qualitySettings.enableDetailObjectCulling);
-            Environment.i.cullingController.MarkDirty();
+            Environment.i.platform.cullingController.SetObjectCulling(qualitySettings.enableDetailObjectCulling);
+            Environment.i.platform.cullingController.SetShadowCulling(qualitySettings.enableDetailObjectCulling);
+            Environment.i.platform.cullingController.MarkDirty();
 
             if (qualitySettings.enableDetailObjectCulling)
             {
-                var settings = Environment.i.cullingController.GetSettingsCopy();
+                var settings = Environment.i.platform.cullingController.GetSettingsCopy();
 
                 settings.rendererProfile = CullingControllerProfile.Lerp(
                     cullingControllerSettingsData.rendererProfileMin,
@@ -128,7 +128,7 @@ namespace DCL.SettingsController
                     cullingControllerSettingsData.skinnedRendererProfileMax,
                     qualitySettings.detailObjectCullingThreshold / 100.0f);
 
-                Environment.i.cullingController.SetSettings(settings);
+                Environment.i.platform.cullingController.SetSettings(settings);
             }
 
             if (thirdPersonCamera)

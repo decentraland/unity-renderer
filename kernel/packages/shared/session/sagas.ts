@@ -343,7 +343,7 @@ async function createAuthIdentity(): Promise<ExplorerIdentity> {
   let hasConnectedWeb3 = false
 
   if (ENABLE_WEB3 && !isGuest()) {
-    const eth = createEth()
+    const eth = createEth()!
     const account = (await eth.getAccounts())[0]
 
     address = account.toJSON()

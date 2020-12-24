@@ -33,7 +33,7 @@ public class LoadingFeedbackController : MonoBehaviour
     {
         loadedScenes = new List<SceneLoadingStatus>();
 
-        Environment.i.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
+        Environment.i.world.sceneController.OnNewSceneAdded += SceneController_OnNewSceneAdded;
         GLTFComponent.OnDownloadingProgressUpdate += GLTFComponent_OnDownloadingProgressUpdate;
         AssetPromise_AB.OnDownloadingProgressUpdate += AssetPromise_AB_OnDownloadingProgressUpdate;
         CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
@@ -41,7 +41,7 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private void OnDestroy()
     {
-        Environment.i.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
+        Environment.i.world.sceneController.OnNewSceneAdded -= SceneController_OnNewSceneAdded;
         GLTFComponent.OnDownloadingProgressUpdate -= GLTFComponent_OnDownloadingProgressUpdate;
         AssetPromise_AB.OnDownloadingProgressUpdate -= AssetPromise_AB_OnDownloadingProgressUpdate;
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;

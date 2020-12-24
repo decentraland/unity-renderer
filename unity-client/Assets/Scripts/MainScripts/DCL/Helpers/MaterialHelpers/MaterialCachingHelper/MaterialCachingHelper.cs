@@ -141,7 +141,8 @@ namespace DCL.Helpers
                     }
                 }
 
-                r.sharedMaterials = matList.ToArray();
+                if(r != null)
+                    r.sharedMaterials = matList.ToArray();
             }
         }
     }

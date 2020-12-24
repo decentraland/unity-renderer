@@ -11,50 +11,99 @@ internal class ProfileHUDView : MonoBehaviour
     private const int NAME_POSTFIX_LENGTH = 4;
     private const float COPY_TOAST_VISIBLE_TIME = 3;
 
-    [SerializeField] internal ShowHideAnimator mainShowHideAnimator;
-    [SerializeField] internal ShowHideAnimator menuShowHideAnimator;
-    [SerializeField] internal GameObject loadingSpinner;
+    [SerializeField]
+    internal ShowHideAnimator mainShowHideAnimator;
 
-    [SerializeField] internal ShowHideAnimator copyToast;
-    [SerializeField] internal GameObject copyTooltip;
-    [SerializeField] internal InputAction_Trigger closeAction;
+    [SerializeField]
+    internal ShowHideAnimator menuShowHideAnimator;
+
+    [SerializeField]
+    internal GameObject loadingSpinner;
+
+    [SerializeField]
+    internal ShowHideAnimator copyToast;
+
+    [SerializeField]
+    internal GameObject copyTooltip;
+
+    [SerializeField]
+    internal InputAction_Trigger closeAction;
 
     [Header("Hide GOs on claimed name")]
-    [SerializeField] internal GameObject[] hideOnNameClaimed;
+    [SerializeField]
+    internal GameObject[] hideOnNameClaimed;
 
     [Header("Connected wallet sections")]
-    [SerializeField] internal GameObject connectedWalletSection;
-    [SerializeField] internal GameObject nonConnectedWalletSection;
+    [SerializeField]
+    internal GameObject connectedWalletSection;
+
+    [SerializeField]
+    internal GameObject nonConnectedWalletSection;
 
     [Header("Thumbnail")]
-    [SerializeField] internal RawImage imageAvatarThumbnail;
-    [SerializeField] internal Button buttonToggleMenu;
+    [SerializeField]
+    internal RawImage imageAvatarThumbnail;
+
+    [SerializeField]
+    internal Button buttonToggleMenu;
 
     [Header("Texts")]
-    [SerializeField] internal TextMeshProUGUI textName;
-    [SerializeField] internal TextMeshProUGUI textPostfix;
-    [SerializeField] internal TextMeshProUGUI textAddress;
+    [SerializeField]
+    internal TextMeshProUGUI textName;
+
+    [SerializeField]
+    internal TextMeshProUGUI textPostfix;
+
+    [SerializeField]
+    internal TextMeshProUGUI textAddress;
 
     [Header("Buttons")]
-    [SerializeField] internal Button buttonClaimName;
-    [SerializeField] internal Button buttonBackpack;
-    [SerializeField] internal Button buttonCopyAddress;
-    [SerializeField] internal Button buttonLogOut;
-    [SerializeField] internal Button buttonSignUp;
-    [SerializeField] internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
-    [SerializeField] internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
-    [SerializeField] internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
-    [SerializeField] internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
+    [SerializeField]
+    internal Button buttonClaimName;
+
+    [SerializeField]
+    internal Button buttonBackpack;
+
+    [SerializeField]
+    internal Button buttonCopyAddress;
+
+    [SerializeField]
+    internal Button buttonLogOut;
+
+    [SerializeField]
+    internal Button buttonSignUp;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonTermsOfServiceForConnectedWallets;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonPrivacyPolicyForConnectedWallets;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonTermsOfServiceForNonConnectedWallets;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonPrivacyPolicyForNonConnectedWallets;
 
     [Header("Name Edition")]
-    [SerializeField] internal GameObject editNameTooltipGO;
-    [SerializeField] internal Button_OnPointerDown buttonEditName;
-    [SerializeField] internal Button_OnPointerDown buttonEditNamePrefix;
-    [SerializeField] internal TMP_InputField inputName;
-    [SerializeField] internal TextMeshProUGUI textCharLimit;
+    [SerializeField]
+    internal GameObject editNameTooltipGO;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonEditName;
+
+    [SerializeField]
+    internal Button_OnPointerDown buttonEditNamePrefix;
+
+    [SerializeField]
+    internal TMP_InputField inputName;
+
+    [SerializeField]
+    internal TextMeshProUGUI textCharLimit;
 
     [Header("Tutorial Config")]
-    [SerializeField] internal RectTransform backpackTooltipReference;
+    [SerializeField]
+    internal RectTransform backpackTooltipReference;
 
     private InputAction_Trigger.Triggered closeActionDelegate;
 
@@ -211,7 +260,7 @@ internal class ProfileHUDView : MonoBehaviour
             return;
         }
 
-        DCL.Environment.i.clipboard.WriteText(profile.userId);
+        DCL.Environment.i.platform.clipboard.WriteText(profile.userId);
 
         copyTooltip.gameObject.SetActive(false);
         if (copyToastRoutine != null)
@@ -228,6 +277,7 @@ internal class ProfileHUDView : MonoBehaviour
         {
             copyToast.gameObject.SetActive(true);
         }
+
         copyToast.Show();
         yield return new WaitForSeconds(COPY_TOAST_VISIBLE_TIME);
         copyToast.Hide();

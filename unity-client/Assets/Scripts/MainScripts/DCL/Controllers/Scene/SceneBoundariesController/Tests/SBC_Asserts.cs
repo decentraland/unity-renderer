@@ -24,16 +24,16 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.SetEntityParent(scene, entity1, entity2);
 
             Assert.AreEqual(2, scene.entities.Count, "scene entities count can't be zero!");
-            Assert.AreEqual(2, Environment.i.sceneBoundsChecker.entitiesToCheckCount, "entities to check can't be zero!");
+            Assert.AreEqual(2, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check can't be zero!");
 
             yield return null;
 
             TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
 
-            Environment.i.parcelScenesCleaner.ForceCleanup();
+            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
 
             Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
-            Assert.AreEqual(0, Environment.i.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
+            Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.entitiesToCheckCount, "entities to check should be zero!");
         }
 
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
@@ -312,7 +312,7 @@ namespace SceneBoundariesCheckerTests
         {
             Assert.IsTrue(meshesInfo.meshRootGameObject != null, "MeshRootGameObject is null. The object is valid when it shouldn't.");
 
-            if (Environment.i.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
             {
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
@@ -339,7 +339,7 @@ namespace SceneBoundariesCheckerTests
             if (meshesInfo.meshRootGameObject == null)
                 return; // It's valid if there's no mesh
 
-            if (Environment.i.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
+            if (Environment.i.world.sceneBoundsChecker.GetFeedbackStyle() is SceneBoundsFeedbackStyle_RedFlicker)
             {
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {

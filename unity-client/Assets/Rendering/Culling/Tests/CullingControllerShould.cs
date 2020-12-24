@@ -29,7 +29,7 @@ namespace CullingControllerTests
                 settings ?? new CullingControllerSettings(),
                 cullingObjectsTracker ?? new CullingObjectsTracker());
 
-            result.SetSettings(new CullingControllerSettings() { maxTimeBudget = float.MaxValue });
+            result.SetSettings(new CullingControllerSettings() {maxTimeBudget = float.MaxValue});
 
             return result;
         }
@@ -139,6 +139,7 @@ namespace CullingControllerTests
 
             var settings = new CullingControllerSettings();
             settings.enableAnimationCullingDistance = 20;
+            settings.enableAnimationCulling = true;
 
             // Act
             var farTest = CullingControllerUtils.TestSkinnedRendererOffscreenRule(settings, 30);

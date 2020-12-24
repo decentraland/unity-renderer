@@ -22,6 +22,8 @@ namespace DCL.Components
         internal AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
+        private bool isDestroyed = false;
+
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
@@ -46,6 +48,11 @@ namespace DCL.Components
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
+            //If the scene creates and destroy an audiosource before our renderer has been turned on bad things happen!
+            //TODO: Analyze if we can catch this upstream and stop the IEnumerator
+            if (isDestroyed)
+                yield break;
+
             model = Utils.SafeFromJson<Model>(newJson);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
@@ -58,6 +65,12 @@ namespace DCL.Components
 
         private void ApplyCurrentModel()
         {
+            if (audioSource == null)
+            {
+                Debug.LogWarning("AudioSource is null!.");
+                return;
+            }
+
             audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
@@ -76,7 +89,7 @@ namespace DCL.Components
                     {
                         audioSource.clip = dclAudioClip.audioClip;
 
-                        if(audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+                        if (audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                             audioSource.Play();
                     }
                     else
@@ -101,11 +114,13 @@ namespace DCL.Components
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
+            if(audioSource != null)
+                audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
         }
 
         private void OnDestroy()
         {
+            isDestroyed = true;
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
 
             //NOTE(Brian): Unsuscribe events.
