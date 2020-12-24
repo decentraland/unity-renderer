@@ -8,19 +8,19 @@ namespace DCL
     /// </summary>
     public class PlatformContext : System.IDisposable
     {
-        public readonly MemoryManager memoryManager;
+        public readonly IMemoryManager memoryManager;
         public readonly ICullingController cullingController;
         public readonly IParcelScenesCleaner parcelScenesCleaner;
-        public readonly Clipboard clipboard;
-        public readonly PhysicsSyncController physicsSyncController;
-        public readonly DebugController debugController;
+        public readonly IClipboard clipboard;
+        public readonly IPhysicsSyncController physicsSyncController;
+        public readonly IDebugController debugController;
 
-        public PlatformContext(MemoryManager memoryManager,
-            CullingController cullingController,
-            Clipboard clipboard,
-            PhysicsSyncController physicsSyncController,
+        public PlatformContext(IMemoryManager memoryManager,
+            ICullingController cullingController,
+            IClipboard clipboard,
+            IPhysicsSyncController physicsSyncController,
             IParcelScenesCleaner parcelScenesCleaner,
-            DebugController debugController)
+            IDebugController debugController)
         {
             this.memoryManager = memoryManager;
             this.cullingController = cullingController;

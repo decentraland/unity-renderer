@@ -52,7 +52,7 @@ namespace DCL
         }
 
         /// <summary>
-        /// Wire the system dependencies. We should improve this approach later. 
+        /// Wire the system dependencies. We should improve this approach later.
         /// </summary>
         private static void Initialize()
         {
@@ -75,11 +75,11 @@ namespace DCL
             model.platform.cullingController.Start();
 
             // Messaging systems
-            model.messaging.manager.Initialize(model.world.sceneController);
+            model.messaging.manager.Initialize(i.world.sceneController);
         }
 
         /// <summary>
-        /// Dispose() and Setup() using the current environment configuration. 
+        /// Dispose() and Setup() using the current environment configuration.
         /// </summary>
         public static void Reset()
         {
@@ -88,7 +88,7 @@ namespace DCL
         }
 
         /// <summary>
-        /// Dispose() all the current environment systems. 
+        /// Dispose() all the current environment systems.
         /// </summary>
         public static void Dispose()
         {

@@ -13,13 +13,54 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class SceneController : IMessageProcessHandler, IMessageQueueHandler
+    public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler
+    {
+        bool enabled { get; set; }
+        bool deferredMessagesDecoding { get; set; }
+        bool prewarmSceneMessagesPool { get; set; }
+        bool prewarmEntitiesPool { get; set; }
+        DCLComponentFactory componentFactory { get; }
+        void Initialize();
+        void Start();
+        void Dispose();
+        void Update();
+        void LateUpdate();
+
+        void EnsureEntityPool(); // TODO: Move to PoolManagerFactory
+
+#if UNITY_EDITOR
+        event SceneController.ProcessDelegate OnMessageProcessInfoStart;
+        event SceneController.ProcessDelegate OnMessageProcessInfoEnds;
+#endif
+        void ParseQuery(object payload, string sceneId);
+        void SendSceneMessage(string payload);
+        event Action<string> OnReadyScene;
+        ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null);
+        void SendSceneReady(string sceneId);
+        void ActivateBuilderInWorldEditScene();
+        void DeactivateBuilderInWorldEditScene();
+        void SortScenesByDistance();
+        void UpdateParcelScenesExecute(LoadParcelScenesMessage.UnityParcelScene scene);
+        void UnloadScene(string sceneKey);
+        void LoadParcelScenes(string decentralandSceneJSON);
+        void UpdateParcelScenes(string decentralandSceneJSON);
+        void UnloadAllScenesQueued();
+        void CreateUIScene(string json);
+        void IsolateScene(ParcelScene sceneToActive);
+        void ReIntegrateIsolatedScene();
+        event Action OnSortScenes;
+        event Action<ParcelScene, string> OnOpenExternalUrlRequest;
+        event Action<ParcelScene> OnNewSceneAdded;
+        event SceneController.OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
+    }
+
+    public class SceneController : ISceneController
     {
         public static bool VERBOSE = false;
 
         public DCLComponentFactory componentFactory => Main.i.componentFactory;
 
-        public bool enabled = true;
+        public bool enabled { get; set; } = true;
 
         private Coroutine deferredDecodingCoroutine;
 
@@ -47,6 +88,7 @@ namespace DCL
             PoolManager.i.OnGet += Environment.i.platform.physicsSyncController.MarkDirty;
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
+
         }
 
         private void OnDebugModeSet()
@@ -148,8 +190,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoStart;
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
-        [NonSerialized]
-        public bool deferredMessagesDecoding = false;
+        public bool deferredMessagesDecoding { get; set; } = false;
 
         Queue<string> payloadsToDecode = new Queue<string>();
         const float MAX_TIME_FOR_DECODE = 0.005f;
@@ -163,7 +204,7 @@ namespace DCL
 
             ParcelScene scene;
             bool res = false;
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
             DebugConfig debugConfig = DataStore.debugConfig;
 
             if (worldState.loadedScenes.TryGetValue(sceneId, out scene))
@@ -511,7 +552,7 @@ namespace DCL
         {
             if (DCLCharacterController.i == null) return;
 
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             worldState.currentSceneId = null;
             worldState.scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
@@ -599,7 +640,7 @@ namespace DCL
 
             ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             if (!worldState.loadedScenes.ContainsKey(sceneToLoad.id))
             {
@@ -673,7 +714,7 @@ namespace DCL
         {
             ProfilingEvents.OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             if (!worldState.loadedScenes.ContainsKey(sceneId) || worldState.loadedScenes[sceneId].isPersistent)
             {
@@ -772,7 +813,7 @@ namespace DCL
 
             string uiSceneId = uiScene.id;
 
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             if (worldState.loadedScenes.ContainsKey(uiSceneId))
                 return;
@@ -830,11 +871,8 @@ namespace DCL
 
         public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
-        [System.NonSerialized]
-        public bool prewarmSceneMessagesPool = true;
-
-        [System.NonSerialized]
-        public bool prewarmEntitiesPool = true;
+        public bool prewarmSceneMessagesPool { get; set; } = true;
+        public bool prewarmEntitiesPool { get; set; } = true;
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;

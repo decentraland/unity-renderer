@@ -8,17 +8,17 @@ namespace DCL
     /// </summary>
     public class WorldRuntimeContext : System.IDisposable
     {
-        public readonly WorldState state;
-        public readonly SceneController sceneController;
-        public readonly PointerEventsController pointerEventsController;
-        public readonly SceneBoundsChecker sceneBoundsChecker;
-        public readonly WorldBlockersController blockersController;
+        public readonly IWorldState state;
+        public readonly ISceneController sceneController;
+        public readonly IPointerEventsController pointerEventsController;
+        public readonly ISceneBoundsChecker sceneBoundsChecker;
+        public readonly IWorldBlockersController blockersController;
 
-        public WorldRuntimeContext(WorldState state,
-            SceneController sceneController,
-            PointerEventsController pointerEventsController,
-            SceneBoundsChecker sceneBoundsChecker,
-            WorldBlockersController blockersController)
+        public WorldRuntimeContext(IWorldState state,
+            ISceneController sceneController,
+            IPointerEventsController pointerEventsController,
+            ISceneBoundsChecker sceneBoundsChecker,
+            IWorldBlockersController blockersController)
         {
             this.state = state;
             this.sceneController = sceneController;

@@ -319,7 +319,7 @@ namespace Builder
         private static ParcelScene GetLoadedScene()
         {
             ParcelScene loadedScene = null;
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             if (worldState != null && worldState.loadedScenes.Count > 0)
             {

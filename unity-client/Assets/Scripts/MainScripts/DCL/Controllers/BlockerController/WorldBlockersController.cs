@@ -4,6 +4,15 @@ using UnityEngine;
 
 namespace DCL.Controllers
 {
+    public interface IWorldBlockersController
+    {
+        void Initialize(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler);
+        void InitializeWithDefaultDependencies(ISceneHandler sceneHandler);
+        void SetupWorldBlockers();
+        void SetEnabled(bool targetValue);
+        void Dispose();
+    }
+
     /// <summary>
     /// This class is the domain-specific glue for BlockerInstanceHandler.
     /// <br/><br/>
@@ -12,7 +21,7 @@ namespace DCL.Controllers
     /// - Moving blockers when the world is repositioned<br/>
     /// - Handling lifecycle of BlockerInstanceHandler<br/>
     /// </summary>
-    public class WorldBlockersController
+    public class WorldBlockersController : IWorldBlockersController
     {
         public bool enabled = true;
 

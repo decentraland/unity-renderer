@@ -39,7 +39,6 @@ namespace DCL.Controllers
         private IBlockerAnimationHandler animationHandler;
         private Transform parent;
 
-
         public void Initialize(IBlockerAnimationHandler animationHandler)
         {
             this.animationHandler = animationHandler;

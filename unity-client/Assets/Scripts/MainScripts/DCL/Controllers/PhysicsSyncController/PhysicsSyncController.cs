@@ -2,27 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PhysicsSyncController
+namespace DCL
 {
-    public bool isDirty { get; private set; } = false;
-
-    public PhysicsSyncController()
+    public interface IPhysicsSyncController
     {
-        Physics.autoSimulation = false;
-        Physics.autoSyncTransforms = false;
+        bool isDirty { get; }
+        void MarkDirty();
+        void Sync();
     }
 
-    public void MarkDirty()
+    public class PhysicsSyncController : IPhysicsSyncController
     {
-        isDirty = true;
-    }
+        public bool isDirty { get; private set; } = false;
 
-    public void Sync()
-    {
-        if (!isDirty)
-            return;
+        public PhysicsSyncController()
+        {
+            Physics.autoSimulation = false;
+            Physics.autoSyncTransforms = false;
+        }
 
-        isDirty = false;
-        Physics.SyncTransforms();
+        public void MarkDirty()
+        {
+            isDirty = true;
+        }
+
+        public void Sync()
+        {
+            if (!isDirty)
+                return;
+
+            isDirty = false;
+            Physics.SyncTransforms();
+        }
     }
 }

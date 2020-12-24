@@ -23,7 +23,7 @@ public class TestsBase
 
     protected Component[] startingSceneComponents = null;
     protected bool sceneInitialized = false;
-    protected SceneController sceneController;
+    protected ISceneController sceneController;
     protected ParcelScene scene;
     protected CameraController cameraController;
 

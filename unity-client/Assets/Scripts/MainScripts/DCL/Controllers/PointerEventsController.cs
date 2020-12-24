@@ -9,7 +9,15 @@ using System.Collections.Generic;
 
 namespace DCL
 {
-    public class PointerEventsController
+    public interface IPointerEventsController
+    {
+        void Initialize();
+        void Update();
+        void Cleanup();
+        Ray GetRayFromCamera();
+    }
+
+    public class PointerEventsController : IPointerEventsController
     {
         private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
         public System.Action OnPointerHoverStarts;
@@ -52,7 +60,7 @@ namespace DCL
         {
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null) return;
 
-            WorldState worldState = Environment.i.world.state;
+            IWorldState worldState = Environment.i.world.state;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             bool didHit = Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter);

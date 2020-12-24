@@ -8,7 +8,7 @@ namespace DCL
 {
     public class InputTextTestsController : MonoBehaviour
     {
-        protected SceneController sceneController;
+        protected ISceneController sceneController;
         protected ParcelScene scene;
 
         protected IEnumerator InitScene(bool spawnCharController = true)

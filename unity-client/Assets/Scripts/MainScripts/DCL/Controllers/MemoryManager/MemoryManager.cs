@@ -7,7 +7,13 @@ using UnityEngine.Profiling;
 
 namespace DCL
 {
-    public class MemoryManager : IDisposable
+    public interface IMemoryManager : IDisposable
+    {
+        void Initialize();
+        IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false, bool immediate = false);
+    }
+
+    public class MemoryManager : IMemoryManager
     {
         private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
         private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f;
