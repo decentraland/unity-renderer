@@ -494,7 +494,7 @@ public class HUDController : MonoBehaviour
     {
         if (avatarEditorHud != null)
         {
-            avatarEditorHud.IsSignUpFlowValue = true;
+            CommonScriptableObjects.isSignUpFlow.Set(true);
             ShowAvatarEditor();
         }
     }
