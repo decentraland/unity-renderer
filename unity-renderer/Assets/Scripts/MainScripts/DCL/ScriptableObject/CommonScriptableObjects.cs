@@ -153,6 +153,9 @@ public static class CommonScriptableObjects
     private static BooleanVariable tutorialActiveValue;
     public static BooleanVariable tutorialActive => GetOrLoad(ref tutorialActiveValue, "ScriptableObjects/TutorialActive");
 
+    private static BooleanVariable isSignUpFlowValue;
+    public static BooleanVariable isSignUpFlow => GetOrLoad(ref isSignUpFlowValue, "ScriptableObjects/IsSignUpFlow");
+
     private static BooleanVariable featureKeyTriggersBlockedValue;
     public static BooleanVariable featureKeyTriggersBlocked => GetOrLoad(ref featureKeyTriggersBlockedValue, "ScriptableObjects/FeatureKeyTriggersBlocked");
 
