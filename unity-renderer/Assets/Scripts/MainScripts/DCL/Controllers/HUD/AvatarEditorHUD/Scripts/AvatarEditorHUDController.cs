@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Helpers;
 using DCL.Interface;
 using System;
@@ -26,14 +27,6 @@ public class AvatarEditorHUDController : IHUD
     private bool prevMouseLockState = false;
 
     public AvatarEditorHUDView view;
-
-    private bool isSignUpFlow = false;
-
-    public bool IsSignUpFlowValue
-    {
-        get => isSignUpFlow;
-        set => isSignUpFlow = value;
-    }
 
     public event Action OnOpen;
     public event Action OnClose;
@@ -443,7 +436,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
-            DCL.Environment.i.messaging.manager.paused = IsSignUpFlowValue;
+            DCL.Environment.i.messaging.manager.paused = DataStore.isSignUpFlow.Get();
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
             currentRenderProfile.avatarProfile.Apply();
 
@@ -484,16 +477,16 @@ public class AvatarEditorHUDController : IHUD
     public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
-        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, IsSignUpFlowValue);
+        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
 
         SetVisibility(false);
-        IsSignUpFlowValue = false;
+        DataStore.isSignUpFlow.Set(false);
     }
 
     public void DiscardAndClose()
     {
-        if (!IsSignUpFlowValue)
+        if (!DataStore.isSignUpFlow.Get())
             LoadUserProfile(userProfile);
         else
             WebInterface.SendCloseUserAvatar(true);
