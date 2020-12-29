@@ -33,8 +33,10 @@ export const isMOTDInitialized = (store: RootMetaState): boolean =>
 export const getMessageOfTheDay = (store: RootMetaState): MessageOfTheDayConfig | null =>
   store.meta.config.world ? store.meta.config.world.messageOfTheDay || null : null
 
-export const isVoiceChatEnabled = (store: RootMetaState): boolean =>
-  WORLD_EXPLORER && ((!!getCommsConfig(store).voiceChatEnabled && !VOICE_CHAT_DISABLED_FLAG) || VOICE_CHAT_ENABLED_FLAG)
+export const isVoiceChatEnabled = (store: RootMetaState): boolean => {
+  if (!WORLD_EXPLORER || VOICE_CHAT_DISABLED_FLAG) return false
+  return !!getCommsConfig(store).voiceChatEnabled || VOICE_CHAT_ENABLED_FLAG
+}
 
 export const getVoiceChatAllowlist = (store: RootMetaState): string[] => getCommsConfig(store).voiceChatAllowlist ?? []
 
