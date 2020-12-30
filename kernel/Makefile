@@ -101,6 +101,9 @@ public/test-scenes/%/game.js: $(SCENE_SYSTEM) public/test-scenes/%/game.ts
 TEST_ECS_SCENE_SOURCES := $(wildcard public/ecs-scenes/*/game.ts)
 TEST_ECS_SCENE_GAMEJS_FILES := $(subst .ts,.js,$(TEST_ECS_SCENE_SOURCES))
 
+watch-only-test-scenes:
+	@$(COMPILER) targets/scenes/test-scenes.json --watch
+
 # ECS scenes
 
 ECS_LIBRARY := public/ecs-scenes/-200.-30-libraries/node_modules/eth-wrapper/eth-wrapper.js
