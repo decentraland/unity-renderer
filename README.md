@@ -36,6 +36,8 @@ Optionally, you can build the test scenes which are used in `debug` mode:
 
     make test-scenes
 
+(If you want the test scenes to be updated dynamically after the first build, you should run `make watch-only-test-scenes` in another terminal and keep it watching for changes)
+
 Once the kernel is running, to run the Unity interface you will have to:
 
 1. Download and install Unity 2019.4.0f1
