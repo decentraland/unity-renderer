@@ -87,10 +87,7 @@ namespace DCL.Components
                     //NOTE(Brian): Play if finished loading, otherwise will wait for the loading to complete (or fail).
                     if (dclAudioClip.loadingState == DCLAudioClip.LoadState.LOADING_COMPLETED)
                     {
-                        audioSource.clip = dclAudioClip.audioClip;
-
-                        if (audioSource.enabled) //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
-                            audioSource.Play();
+                        ApplyLoadedAudioClip(dclAudioClip);
                     }
                     else
                     {
@@ -114,8 +111,10 @@ namespace DCL.Components
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
-            if(audioSource != null)
+            if (audioSource != null)
+            {
                 audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
+            }
         }
 
         private void OnDestroy()
@@ -141,10 +140,21 @@ namespace DCL.Components
         {
             if (obj.loadingState == DCLAudioClip.LoadState.LOADING_COMPLETED && audioSource != null)
             {
-                audioSource.PlayOneShot(obj.audioClip);
+                ApplyLoadedAudioClip(obj);
             }
 
             obj.OnLoadingFinished -= DclAudioClip_OnLoadingFinished;
+        }
+
+        private void ApplyLoadedAudioClip(DCLAudioClip clip)
+        {
+            audioSource.clip = clip.audioClip;
+
+            if (audioSource.enabled && model.playing)
+            {
+                //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
+                audioSource.Play();
+            }
         }
     }
 }
