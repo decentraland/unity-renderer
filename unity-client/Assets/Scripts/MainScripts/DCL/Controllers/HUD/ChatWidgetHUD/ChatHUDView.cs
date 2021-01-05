@@ -176,7 +176,7 @@ public class ChatHUDView : MonoBehaviour
 
     protected virtual void OnMessageTriggerHover(ChatEntry chatEntry)
     {
-        if (contextMenu.isVisible)
+        if (contextMenu == null || contextMenu.isVisible)
             return;
 
         messageHoverText.text = chatEntry.messageLocalDateTime;
