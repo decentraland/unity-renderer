@@ -1,4 +1,5 @@
 const qs: any = require('query-string')
+import { parcelLimits } from '../../config'
 import { worldToGrid, gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import {
   Vector3,
@@ -68,14 +69,7 @@ export function initializeUrlPositionObserver() {
   function updateUrlPosition(newParcel: ReadOnlyVector2) {
     // Update position in URI every second
     if (performance.now() - lastTime > 1000) {
-      const currentPosition = `${newParcel.x | 0},${newParcel.y | 0}`
-      const stateObj = { position: currentPosition }
-
-      const q = qs.parse(location.search)
-      q.position = currentPosition
-
-      history.replaceState(stateObj, 'position', `?${qs.stringify(q)}`)
-
+      replaceQueryStringPosition(newParcel.x, newParcel.y)
       lastTime = performance.now()
     }
   }
@@ -89,13 +83,29 @@ export function initializeUrlPositionObserver() {
     const query = qs.parse(location.search)
 
     if (query.position) {
-      const parcelCoords = query.position.split(',')
-      gridToWorld(parseFloat(parcelCoords[0]), parseFloat(parcelCoords[1]), lastPlayerPosition)
+      let [x, y] = query.position.split(',')
+      x = parseFloat(x)
+      y = parseFloat(y)
+
+      if (!isInsideParcelLimits(x, y)) {
+        x = 0
+        y = 0
+        replaceQueryStringPosition(x, y)
+      }
+      gridToWorld(x, y, lastPlayerPosition)
     } else {
       lastPlayerPosition.x = Math.round(Math.random() * 10) - 5
       lastPlayerPosition.z = 0
     }
   }
+}
+
+function replaceQueryStringPosition(x: any, y: any) {
+  const currentPosition = `${x | 0},${y | 0}`
+  const q = qs.parse(location.search)
+  q.position = currentPosition
+
+  history.replaceState({ position: currentPosition }, 'position', `?${qs.stringify(q)}`)
 }
 
 /**
@@ -183,4 +193,13 @@ export function getLandBase(land: ILand): { x: number; y: number } {
   } else {
     return parseParcelPosition(land.mappingsResponse.parcel_id)
   }
+}
+
+export function isInsideParcelLimits(x: number, y: number) {
+  return (
+    x > parcelLimits.minLandCoordinateX &&
+    x <= parcelLimits.maxLandCoordinateX &&
+    y > parcelLimits.minLandCoordinateY &&
+    y <= parcelLimits.maxLandCoordinateY
+  )
 }
