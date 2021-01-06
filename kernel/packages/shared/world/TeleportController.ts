@@ -1,6 +1,6 @@
 import { parcelLimits } from 'config'
 
-import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
+import { lastPlayerPosition, teleportObservable, isInsideParcelLimits } from 'shared/world/positionThings'
 import { POIs } from 'shared/comms/POIs'
 import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 import defaultLogger from 'shared/logger'
@@ -181,13 +181,4 @@ async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
   }
 
   return []
-}
-
-function isInsideParcelLimits(x: number, y: number) {
-  return (
-    x > parcelLimits.minLandCoordinateX &&
-    x <= parcelLimits.maxLandCoordinateX &&
-    y > parcelLimits.minLandCoordinateY &&
-    y <= parcelLimits.maxLandCoordinateY
-  )
 }
