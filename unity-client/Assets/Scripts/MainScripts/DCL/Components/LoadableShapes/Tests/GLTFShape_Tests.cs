@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
 
-public class GLTFShape_Tests : TestsBase
+public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 {
     [UnityTest]
     public IEnumerator ShapeUpdate()

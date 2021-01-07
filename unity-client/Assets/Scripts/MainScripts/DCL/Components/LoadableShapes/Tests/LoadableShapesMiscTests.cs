@@ -7,7 +7,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class LoadableShapesMiscTests : TestsBase
+public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
 {
     [UnityTest]
     public IEnumerator OBJShapeUpdate()

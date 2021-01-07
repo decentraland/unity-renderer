@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class PoolManagerTests : TestsBase
+    public class PoolManagerTests : IntegrationTestSuite_Legacy
     {
         public class PooledObjectInstantiator : IPooledObjectInstantiator
         {

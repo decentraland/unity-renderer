@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Linq;
 
-public class PlayerInfoCardHUDViewShould : TestsBase
+public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
 {
     private PlayerInfoCardHUDView view;
     private UserProfile userProfile;

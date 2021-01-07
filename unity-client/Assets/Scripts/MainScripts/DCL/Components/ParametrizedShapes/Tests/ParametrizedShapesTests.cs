@@ -8,7 +8,7 @@ using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class ParametrizedShapesTests : TestsBase
+public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
 {
     [UnityTest]
     public IEnumerator BoxShapeUpdate()

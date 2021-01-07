@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class TextShapeTests : TestsBase
+    public class TextShapeTests : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         public IEnumerator TestCreate()

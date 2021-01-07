@@ -9,7 +9,7 @@ using WebSocketSharp;
 namespace Tests
 {
     [Explicit]
-    public class WSSTests : TestsBase
+    public class WSSTests : IntegrationTestSuite_Legacy
     {
         protected override IEnumerator SetUp()
         {

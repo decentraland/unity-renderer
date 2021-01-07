@@ -16,7 +16,7 @@ using Assert = UnityEngine.Assertions.Assert;
 using DCL.Tutorial;
 using NSubstitute;
 
-public class TestsBase
+public class IntegrationTestSuite_Legacy
 {
     private const bool DEBUG_PAUSE_ON_INTEGRITY_FAIL = false;
     protected virtual string TEST_SCENE_NAME => "MainTest";

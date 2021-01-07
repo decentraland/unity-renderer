@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class AudioTests : TestsBase
+    public class AudioTests : IntegrationTestSuite_Legacy
     {
         protected override IEnumerator TearDown()
         {

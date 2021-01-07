@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine.TestTools;
 
-public class ProfileHUDTests : TestsBase
+public class ProfileHUDTests : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
     ProfileHUDController controller;

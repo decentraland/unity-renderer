@@ -2,7 +2,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-public class AirdroppingHUDView_Should : TestsBase
+public class AirdroppingHUDView_Should : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Tests
 {
-    public class ExploreHUDShould : TestsBase
+    public class ExploreHUDShould : IntegrationTestSuite_Legacy
     {
         private ExploreHUDController controller;
         private FriendsController_Mock friendsController;

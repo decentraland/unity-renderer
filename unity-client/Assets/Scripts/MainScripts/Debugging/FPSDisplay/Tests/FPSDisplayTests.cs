@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 namespace Tests
 {
     [Explicit]
-    public class FPSDisplayTests : TestsBase
+    public class FPSDisplayTests : IntegrationTestSuite_Legacy
     {
         [Test]
         public void LinealFPSTest()

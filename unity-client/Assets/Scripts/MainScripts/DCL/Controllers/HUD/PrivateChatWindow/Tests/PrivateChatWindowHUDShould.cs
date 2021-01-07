@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using NSubstitute;
 using UnityEngine.TestTools;
 
-public class PrivateChatWindowHUDShould : TestsBase
+public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
     private PrivateChatWindowHUDController controller;
     private PrivateChatWindowHUDView view;

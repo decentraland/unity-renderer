@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class TransformTests : TestsBase
+    public class TransformTests : IntegrationTestSuite_Legacy
     {
         [Test]
         public void TransformUpdate()

@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
-    public class AnyAssetPromiseShould : TestsBase
+    public class AnyAssetPromiseShould : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         public IEnumerator BeSetupCorrectlyAfterLoad()

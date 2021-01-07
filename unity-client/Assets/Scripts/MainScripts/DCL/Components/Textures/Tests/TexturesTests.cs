@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class TexturesTests : TestsBase
+    public class TexturesTests : IntegrationTestSuite_Legacy
     {
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.

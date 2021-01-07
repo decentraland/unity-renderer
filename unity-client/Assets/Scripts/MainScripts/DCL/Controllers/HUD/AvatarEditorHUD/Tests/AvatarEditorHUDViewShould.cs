@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AvatarEditorHUD_Tests
 {
-    public class AvatarEditorHUDViewShould : TestsBase
+    public class AvatarEditorHUDViewShould : IntegrationTestSuite_Legacy
     {
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;

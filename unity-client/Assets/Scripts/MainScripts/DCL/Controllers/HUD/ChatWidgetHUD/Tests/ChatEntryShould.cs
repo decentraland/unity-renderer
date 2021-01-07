@@ -2,7 +2,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-public class ChatEntryShould : TestsBase
+public class ChatEntryShould : IntegrationTestSuite_Legacy
 {
     ChatEntry entry;
     Canvas canvas;

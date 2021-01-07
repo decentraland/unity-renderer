@@ -12,7 +12,7 @@ using QualitySettingsController = DCL.SettingsController.QualitySettingsControll
 
 namespace Tests
 {
-    public class GeneralSettingsShould : TestsBase
+    public class GeneralSettingsShould : IntegrationTestSuite_Legacy
     {
         QualitySettings initQualitySettings;
         QualitySettings testQualitySettings;

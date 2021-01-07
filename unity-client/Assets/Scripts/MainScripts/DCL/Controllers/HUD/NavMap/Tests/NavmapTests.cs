@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class NavmapTests : TestsBase
+    public class NavmapTests : IntegrationTestSuite_Legacy
     {
         private MinimapHUDController controller;
         DCL.NavmapView navmapView;

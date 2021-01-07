@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class UsersAroundListHUDShould : TestsBase
+public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
 {
     private UsersAroundListHUDController controller;
 

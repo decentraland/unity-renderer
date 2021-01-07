@@ -3,7 +3,7 @@ using UnityEngine;
 using DCL;
 using DCL.Helpers;
 
-public class VisualTestsBase : TestsBase
+public class VisualTestsBase : IntegrationTestSuite_Legacy
 {
     protected override string TEST_SCENE_NAME => "MainVisualTest";
     protected override bool enableSceneIntegrityChecker => false;

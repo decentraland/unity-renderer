@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace AvatarAssets_Test
 {
-    public class GeneralReplacesListShould : TestsBase
+    public class GeneralReplacesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
         public void BeRetrievedProperly()
@@ -44,7 +44,7 @@ namespace AvatarAssets_Test
         }
     }
     
-    public class OverrideReplacesListShould : TestsBase
+    public class OverrideReplacesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
         public void BeRetrievedProperly()
@@ -70,7 +70,7 @@ namespace AvatarAssets_Test
         }
     }
     
-    public class GeneralHidesListShould : TestsBase
+    public class GeneralHidesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
         public void BeRetrievedProperly()
@@ -111,7 +111,7 @@ namespace AvatarAssets_Test
         }
     }
     
-    public class OverrideHidesListShould : TestsBase
+    public class OverrideHidesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
         public void BeRetrievedProperly()

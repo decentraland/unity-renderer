@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class WorldChatWindowHUDShould : TestsBase
+public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
 {
     private WorldChatWindowHUDController controller;
     private WorldChatWindowHUDView view;

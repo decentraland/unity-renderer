@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class FriendRequestEntryShould : TestsBase
+public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
 {
     static string FRIEND_REQUEST_ENTRY_RESOURCE_NAME = "FriendRequestEntry";
 

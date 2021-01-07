@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class UnreadNotificationBadgeShould : TestsBase
+public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
 {
     private const string UNREAD_NOTIFICATION_BADGE_RESOURCE_NAME = "UnreadNotificationBadge";
     private const string TEST_USER_ID = "testFriend";

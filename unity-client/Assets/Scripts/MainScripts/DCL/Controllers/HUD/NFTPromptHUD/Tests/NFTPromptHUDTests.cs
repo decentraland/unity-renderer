@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class NFTPromptHUDTests : TestsBase
+    public class NFTPromptHUDTests : IntegrationTestSuite_Legacy
     {
         private NFTPromptHUDController controller;
 

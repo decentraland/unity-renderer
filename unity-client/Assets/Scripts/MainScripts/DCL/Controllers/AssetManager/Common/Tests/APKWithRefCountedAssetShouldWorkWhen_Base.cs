@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
 {
-    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType> : TestsBase
+    public abstract class APKWithRefCountedAssetShouldWorkWhen_Base<APKType, AssetPromiseType, AssetType, AssetLibraryType> : IntegrationTestSuite_Legacy
         where AssetPromiseType : AssetPromise<AssetType>
         where AssetType : Asset, new()
         where AssetLibraryType : AssetLibrary_RefCounted<AssetType>, new()

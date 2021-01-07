@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace SceneBoundariesCheckerTests
 {
-    public class SceneBoundariesCheckerTests : TestsBase
+    public class SceneBoundariesCheckerTests : IntegrationTestSuite_Legacy
     {
         [UnitySetUp]
         protected override IEnumerator SetUp()

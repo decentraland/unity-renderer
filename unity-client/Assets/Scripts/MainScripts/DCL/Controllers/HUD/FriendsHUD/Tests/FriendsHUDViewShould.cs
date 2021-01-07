@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class FriendsHUDViewShould : TestsBase
+public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
 {
     FriendsHUDController controller;
     FriendsHUDView view;

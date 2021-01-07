@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Tests
 {
-    public class VideoTests : TestsBase
+    public class VideoTests : IntegrationTestSuite_Legacy
     {
 
         protected override IEnumerator SetUp()

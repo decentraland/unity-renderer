@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class MinimapHUDTests : TestsBase
+    public class MinimapHUDTests : IntegrationTestSuite_Legacy
     {
         private MinimapHUDController controller;
 

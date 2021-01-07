@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 
-public class TaskbarHUDShould : TestsBase
+public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 {
     private TaskbarHUDController controller;
     private TaskbarHUDView view;

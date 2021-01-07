@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Tests
 {
-    public class HelpAndSupportHUDControllerShould : TestsBase
+    public class HelpAndSupportHUDControllerShould : IntegrationTestSuite_Legacy
     {
         private HelpAndSupportHUDController controller;
 

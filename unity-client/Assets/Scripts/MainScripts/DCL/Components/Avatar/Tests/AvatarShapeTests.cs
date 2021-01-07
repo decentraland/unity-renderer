@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class AvatarShapeTests : TestsBase
+    public class AvatarShapeTests : IntegrationTestSuite_Legacy
     {
 
         void AssertMaterialsAreCorrect(Transform root)

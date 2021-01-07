@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class UITestsBase : TestsBase
+    public class UITestsBase : IntegrationTestSuite_Legacy
     {
         protected override IEnumerator SetUp()
         {
