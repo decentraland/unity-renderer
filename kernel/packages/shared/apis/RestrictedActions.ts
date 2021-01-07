@@ -4,7 +4,11 @@ import defaultLogger from '../logger'
 import { unityInterface } from 'unity-interface/UnityInterface'
 import { ParcelIdentity } from './ParcelIdentity'
 import { Quaternion, Vector3 } from 'decentraland-ecs/src'
-import { gridToWorld, isInParcel, parseParcelPosition } from '../../atomicHelpers/parcelScenePositions'
+import {
+  gridToWorld,
+  isWorldPositionInsideParcels,
+  parseParcelPosition
+} from '../../atomicHelpers/parcelScenePositions'
 import { lastPlayerPosition } from '../world/positionThings'
 import { browserInterface } from "../../unity-interface/BrowserInterface"
 
@@ -84,10 +88,7 @@ export class RestrictedActions extends ExposableAPI {
   }
 
   private isPositionValid(position: Vector3) {
-    return this.getSceneData().scene.parcels.some((parcel) => {
-      const { x, y } = parseParcelPosition(parcel)
-      return isInParcel(position, gridToWorld(x, y))
-    })
+    return isWorldPositionInsideParcels(this.getSceneData().scene.parcels, position)
   }
 }
 

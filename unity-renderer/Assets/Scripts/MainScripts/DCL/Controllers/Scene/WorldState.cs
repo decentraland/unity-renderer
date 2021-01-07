@@ -50,7 +50,7 @@ namespace DCL
         {
             scene = null;
 
-            if (!loadedScenes.ContainsKey(id))
+            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
                 return false;
 
             scene = loadedScenes[id];
