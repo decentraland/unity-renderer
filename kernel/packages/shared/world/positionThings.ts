@@ -1,6 +1,4 @@
 const qs: any = require('query-string')
-import { parcelLimits } from '../../config'
-import { worldToGrid, gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import {
   Vector3,
   ReadOnlyVector3,
@@ -11,6 +9,13 @@ import {
 import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 import { ILand } from 'shared/types'
 import { InstancedSpawnPoint } from '../types'
+import {
+  worldToGrid,
+  gridToWorld,
+  parseParcelPosition,
+  isWorldPositionInsideParcels
+} from 'atomicHelpers/parcelScenePositions'
+import { DEBUG, parcelLimits } from "../../config"
 
 declare var location: any
 declare var history: any
@@ -87,7 +92,7 @@ export function initializeUrlPositionObserver() {
       x = parseFloat(x)
       y = parseFloat(y)
 
-      if (!isInsideParcelLimits(x, y)) {
+      if (!isInsideWorldLimits(x, y)) {
         x = 0
         y = 0
         replaceQueryStringPosition(x, y)
@@ -150,12 +155,30 @@ function pickSpawnpoint(land: ILand): InstancedSpawnPoint | undefined {
   const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
 
   // 4 - generate random x, y, z components when in arrays
+  let finalPosition = {
+    x: computeComponentValue(position.x),
+    y: computeComponentValue(position.y),
+    z: computeComponentValue(position.z)
+  }
+
+  // 5 - If the final position is outside the scene limits, we zero it
+  if (!DEBUG) {
+    const sceneBaseParcelCoords = land.sceneJsonData.scene.base.split(',')
+    const sceneBaseParcelWorldPos = gridToWorld(parseInt(sceneBaseParcelCoords[0], 10), parseInt(sceneBaseParcelCoords[1], 10))
+    let finalWorldPosition = {
+      x: sceneBaseParcelWorldPos.x + finalPosition.x,
+      y: finalPosition.y,
+      z: sceneBaseParcelWorldPos.z + finalPosition.z
+    }
+
+    if (!isWorldPositionInsideParcels(land.sceneJsonData.scene.parcels, finalWorldPosition)) {
+      finalPosition.x = 0
+      finalPosition.z = 0
+    }
+  }
+
   return {
-    position: {
-      x: computeComponentValue(position.x),
-      y: computeComponentValue(position.y),
-      z: computeComponentValue(position.z)
-    },
+    position: finalPosition,
     cameraTarget
   }
 }
@@ -195,7 +218,7 @@ export function getLandBase(land: ILand): { x: number; y: number } {
   }
 }
 
-export function isInsideParcelLimits(x: number, y: number) {
+export function isInsideWorldLimits(x: number, y: number) {
   return (
     x > parcelLimits.minLandCoordinateX &&
     x <= parcelLimits.maxLandCoordinateX &&
