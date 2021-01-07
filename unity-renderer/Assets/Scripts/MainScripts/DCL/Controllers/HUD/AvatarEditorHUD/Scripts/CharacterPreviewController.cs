@@ -54,6 +54,9 @@ public class CharacterPreviewController : MonoBehaviour
             {CameraFocus.FaceSnapshot, faceSnapshotTemplate},
             {CameraFocus.BodySnapshot, bodySnapshotTemplate},
         };
+        var cullingSettings = DCL.Environment.i.platform.cullingController.GetSettingsCopy();
+        cullingSettings.ignoredLayersMask |= 1 << CHARACTER_PREVIEW_LAYER;
+        DCL.Environment.i.platform.cullingController.SetSettings(cullingSettings);
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
