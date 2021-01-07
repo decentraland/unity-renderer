@@ -100,7 +100,6 @@ namespace DCL
                 Environment.SetupWithDefaults();
             }
 
-            Environment.i.world.blockersController.SetEnabled(false);
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
 
