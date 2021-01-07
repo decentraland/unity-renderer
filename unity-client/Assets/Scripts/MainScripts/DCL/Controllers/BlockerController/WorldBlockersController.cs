@@ -52,7 +52,17 @@ namespace DCL.Controllers
 
             blockerInstanceHandler.SetParent(blockersParent);
 
+            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
+
+            CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
+            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
+        }
+
+        void OnRendererStateChange(bool newValue, bool oldValue)
+        {
+            if (newValue && DataStore.debugConfig.isDebugMode)
+                SetEnabled(false);
         }
 
         public WorldBlockersController()
