@@ -12,7 +12,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class EntityTests : TestsBase
+    public class EntityTests : IntegrationTestSuite_Legacy
     {
         [Test]
         public void EntityCreation()

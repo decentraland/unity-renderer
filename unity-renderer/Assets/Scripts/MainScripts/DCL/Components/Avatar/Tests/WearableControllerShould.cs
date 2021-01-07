@@ -9,7 +9,7 @@ using WaitUntil = DCL.WaitUntil;
 
 namespace AvatarShape_Tests
 {
-    public class WearableControllerShould : TestsBase
+    public class WearableControllerShould : IntegrationTestSuite_Legacy
     {
         private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
 

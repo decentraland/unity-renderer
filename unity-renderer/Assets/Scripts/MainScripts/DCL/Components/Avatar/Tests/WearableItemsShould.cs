@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AvatarShape_Tests
 {
-    public class WearableItemsShould : TestsBase
+    public class WearableItemsShould : IntegrationTestSuite_Legacy
     {
         private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
         private const string BLUE_BANDANA_ID = "dcl://base-avatars/blue_bandana";

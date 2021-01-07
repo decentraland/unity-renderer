@@ -6,7 +6,7 @@ using UnityEngine.TestTools;
 
 namespace CameraController_Test
 {
-    public class CameraControllerShould : TestsBase
+    public class CameraControllerShould : IntegrationTestSuite_Legacy
     {
         protected override bool enableSceneIntegrityChecker => false;
 

@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace SceneBoundariesCheckerTests
 {
-    public class SceneBoundariesCheckerTests_DebugMode : TestsBase
+    public class SceneBoundariesCheckerTests_DebugMode : IntegrationTestSuite_Legacy
     {
         protected override bool enableSceneIntegrityChecker => false;
         protected override bool justSceneSetUp => true;

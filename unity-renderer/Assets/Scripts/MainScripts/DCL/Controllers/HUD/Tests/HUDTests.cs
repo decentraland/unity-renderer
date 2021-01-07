@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class HUDControllerShould : TestsBase
+    public class HUDControllerShould : IntegrationTestSuite_Legacy
     {
         protected override bool justSceneSetUp => true;
 

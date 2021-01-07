@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace Tests
 {
-    public class UUIDComponentTests : TestsBase
+    public class UUIDComponentTests : IntegrationTestSuite_Legacy
     {
         protected override bool enableSceneIntegrityChecker => false;
 

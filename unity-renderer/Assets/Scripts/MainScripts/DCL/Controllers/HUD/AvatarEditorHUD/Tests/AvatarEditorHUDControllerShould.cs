@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AvatarEditorHUD_Tests
 {
-    public class AvatarEditorHUDControllerShould : TestsBase
+    public class AvatarEditorHUDControllerShould : IntegrationTestSuite_Legacy
     {
         private const string EYEBROWS_ID = "dcl://base-avatars/f_eyebrows_01";
         private const string FEMALE_CATGLASSES_ID = "dcl://base-avatars/f_glasses_cat_style";

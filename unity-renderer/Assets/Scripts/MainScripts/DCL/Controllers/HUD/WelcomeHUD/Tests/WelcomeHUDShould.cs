@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Tests
 {
-    public class WelcomeHUDControllerShould : TestsBase
+    public class WelcomeHUDControllerShould : IntegrationTestSuite_Legacy
     {
         [Test]
         public void CreateTheView()
@@ -81,7 +81,7 @@ namespace Tests
         }
     }
 
-    public class WelcomeHUDViewShould : TestsBase
+    public class WelcomeHUDViewShould : IntegrationTestSuite_Legacy
     {
         private WelcomeHUDView view;
 

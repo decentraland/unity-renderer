@@ -10,7 +10,7 @@ using Color = UnityEngine.Color;
 
 namespace Tests
 {
-    public class UIInputTextTests : TestsBase
+    public class UIInputTextTests : IntegrationTestSuite_Legacy
     {
         UIScreenSpace ssshape;
         UIInputText textInput;

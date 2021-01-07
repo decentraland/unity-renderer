@@ -7,7 +7,7 @@ using GeneralSettings = DCL.SettingsData.GeneralSettings;
 
 namespace Tests
 {
-    public class SettingsHUDControllerShould : TestsBase
+    public class SettingsHUDControllerShould : IntegrationTestSuite_Legacy
     {
         private SettingsHUDController controller;
         QualitySettings testQualitySettings;

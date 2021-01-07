@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Tests
 {
-    public class UserProfileTests : TestsBase
+    public class UserProfileTests : IntegrationTestSuite_Legacy
     {
         [Test]
         public void UserProfile_Creation()

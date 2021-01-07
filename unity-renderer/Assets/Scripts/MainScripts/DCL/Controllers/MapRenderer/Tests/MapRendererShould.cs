@@ -8,7 +8,7 @@ using Assert = UnityEngine.Assertions.Assert;
 
 namespace Tests
 {
-    public class MapRendererShould : TestsBase
+    public class MapRendererShould : IntegrationTestSuite_Legacy
     {
         private GameObject viewport;
 

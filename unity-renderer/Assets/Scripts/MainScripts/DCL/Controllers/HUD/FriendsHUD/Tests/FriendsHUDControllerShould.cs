@@ -6,7 +6,7 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class FriendsHUDControllerShould : TestsBase
+public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 {
     FriendsHUDController controller;
     FriendsHUDView view;

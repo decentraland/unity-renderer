@@ -2,7 +2,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 
-public class ChatHUDShould : TestsBase
+public class ChatHUDShould : IntegrationTestSuite_Legacy
 {
     ChatHUDController controller;
     ChatHUDView view;

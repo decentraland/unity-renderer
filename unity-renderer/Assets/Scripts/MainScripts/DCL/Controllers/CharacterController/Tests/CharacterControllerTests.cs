@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class CharacterControllerTests : TestsBase
+    public class CharacterControllerTests : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         public IEnumerator CharacterTeleportReposition()

@@ -10,7 +10,7 @@ using TMPro;
 
 namespace Tests
 {
-    public class FontTests : TestsBase
+    public class FontTests : IntegrationTestSuite_Legacy
     {
         const string TEST_BUILTIN_FONT_NAME = "builtin:SF-UI-Text-Regular SDF";
 

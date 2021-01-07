@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class NavmapToastViewShould : TestsBase
+    public class NavmapToastViewShould : IntegrationTestSuite_Legacy
     {
         NavmapToastView navmapToastView;
         private NavmapView navmapView;

@@ -8,7 +8,7 @@ using WaitUntil = DCL.WaitUntil;
 
 namespace AvatarShape_Tests
 {
-    public class FacialFeatureControllerShould : TestsBase
+    public class FacialFeatureControllerShould : IntegrationTestSuite_Legacy
     {
         private const string EYES_ID = "dcl://base-avatars/f_eyes_01";
         private const string DRACULA_MOUTH_ID = "dcl://base-avatars/dracula_mouth";

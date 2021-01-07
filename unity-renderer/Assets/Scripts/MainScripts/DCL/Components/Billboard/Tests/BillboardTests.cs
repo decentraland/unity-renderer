@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class BillboardTests : TestsBase
+    public class BillboardTests : IntegrationTestSuite_Legacy
     {
         Billboard billboard;
         string entityId = "e1";

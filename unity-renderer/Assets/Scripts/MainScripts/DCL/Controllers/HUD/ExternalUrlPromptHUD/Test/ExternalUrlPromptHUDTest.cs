@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class ExternalUrlPromptHUDShould : TestsBase
+    public class ExternalUrlPromptHUDShould : IntegrationTestSuite_Legacy
     {
         private ExternalUrlPromptHUDController controller;
 

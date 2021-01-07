@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class JumpInButtonShould : TestsBase
+public class JumpInButtonShould : IntegrationTestSuite_Legacy
 {
     private const string JUMP_IN_BUTTON_RESOURCE_NAME = "JumpInButton";
     private const string TEST_USER_ID = "testFriend";

@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace ExpressionsHUD_Test
 {
-    public class ExpressionsHUDControllerShould : TestsBase
+    public class ExpressionsHUDControllerShould : IntegrationTestSuite_Legacy
     {
         private ExpressionsHUDController controller;
 
@@ -38,7 +38,7 @@ namespace ExpressionsHUD_Test
         }
     }
 
-    public class ExpressionsHUDViewShould : TestsBase
+    public class ExpressionsHUDViewShould : IntegrationTestSuite_Legacy
     {
         private ExpressionsHUDController controller;
         private ExpressionsHUDView view;

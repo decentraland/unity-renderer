@@ -6,7 +6,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class NFTShape_Tests : TestsBase
+public class NFTShape_Tests : IntegrationTestSuite_Legacy
 {
 
     [UnityTest]

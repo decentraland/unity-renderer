@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
-    public class BlockedAndMasterPromisesShould : TestsBase
+    public class BlockedAndMasterPromisesShould : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDestroyed()

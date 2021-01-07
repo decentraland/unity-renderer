@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class MaterialTransitionControllerTests : TestsBase
+    public class MaterialTransitionControllerTests : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         [Category("Explicit")]

@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class CursorControllerTests : TestsBase
+    public class CursorControllerTests : IntegrationTestSuite_Legacy
     {
         protected override bool enableSceneIntegrityChecker => false;
 

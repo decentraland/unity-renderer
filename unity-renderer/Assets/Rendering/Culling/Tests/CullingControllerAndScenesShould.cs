@@ -10,7 +10,7 @@ using Environment = DCL.Environment;
 
 namespace CullingControllerTests
 {
-    public class CullingControllerAndScenesShould : TestsBase
+    public class CullingControllerAndScenesShould : IntegrationTestSuite_Legacy
     {
         protected override IEnumerator SetUp()
         {

@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class TeleportPromptHUDTest : TestsBase
+    public class TeleportPromptHUDTest : IntegrationTestSuite_Legacy
     {
         private TeleportPromptHUDController controller;
 

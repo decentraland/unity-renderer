@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-public class BuilderMeshLoadingIndicator : TestsBase
+public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
 

@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class HotScenesControllerTests : TestsBase
+public class HotScenesControllerTests : IntegrationTestSuite_Legacy
 {
     [UnityTest]
     public IEnumerator HotScenesControllerShouldParseJsonCorrectly()

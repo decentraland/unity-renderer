@@ -6,7 +6,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class PlaneShapeShould : TestsBase
+public class PlaneShapeShould : IntegrationTestSuite_Legacy
 {
     [UnityTest]
     public IEnumerator BeUpdatedCorrectly()

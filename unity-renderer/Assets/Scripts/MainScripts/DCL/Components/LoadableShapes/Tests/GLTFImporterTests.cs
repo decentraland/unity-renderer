@@ -13,7 +13,7 @@ using UnityGLTF;
 using UnityGLTF.Cache;
 using UnityGLTF.Cache;
 
-public class GLTFImporterTests : TestsBase
+public class GLTFImporterTests : IntegrationTestSuite_Legacy
 {
     public IEnumerator LoadModel(string path, System.Action<DecentralandEntity, InstantiatedGLTFObject> OnFinishLoading)
     {

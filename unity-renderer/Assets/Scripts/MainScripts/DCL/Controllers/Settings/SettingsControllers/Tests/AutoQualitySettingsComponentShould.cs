@@ -11,7 +11,7 @@ using QualitySettings = DCL.SettingsData.QualitySettings;
 
 namespace Tests
 {
-    public class AutoQualitySettingsComponentShould : TestsBase
+    public class AutoQualitySettingsComponentShould : IntegrationTestSuite_Legacy
     {
         private AutoQualitySettingsComponent component;
 
@@ -50,7 +50,7 @@ namespace Tests
         }
     }
 
-    public class AutoQualityCappedFPSControllerShould : TestsBase
+    public class AutoQualityCappedFPSControllerShould : IntegrationTestSuite_Legacy
     {
         private AutoQualityCappedFPSController controller;
         private QualitySettingsData qualities;
@@ -134,7 +134,7 @@ namespace Tests
         }
     }
 
-     public class AutoQualityUncappedFPSControllerShould : TestsBase
+     public class AutoQualityUncappedFPSControllerShould : IntegrationTestSuite_Legacy
     {
         private AutoQualityUncappedFPSController controller;
         private QualitySettingsData qualities;

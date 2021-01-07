@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class NotificationHudTests : TestsBase
+    public class NotificationHudTests : IntegrationTestSuite_Legacy
     {
         private NotificationHUDController controller;
 

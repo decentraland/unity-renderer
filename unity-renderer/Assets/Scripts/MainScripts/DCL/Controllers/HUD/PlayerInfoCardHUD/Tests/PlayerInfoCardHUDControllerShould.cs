@@ -2,7 +2,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 
-public class PlayerInfoCardHUDControllerShould : TestsBase
+public class PlayerInfoCardHUDControllerShould : IntegrationTestSuite_Legacy
 {
     private PlayerInfoCardHUDController controller;
 

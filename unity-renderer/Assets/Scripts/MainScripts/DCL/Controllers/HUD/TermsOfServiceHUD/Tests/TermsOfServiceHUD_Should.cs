@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-public class TermsOfServiceHUD_Should : TestsBase
+public class TermsOfServiceHUD_Should : IntegrationTestSuite_Legacy
 {
     protected override bool justSceneSetUp => true;
 

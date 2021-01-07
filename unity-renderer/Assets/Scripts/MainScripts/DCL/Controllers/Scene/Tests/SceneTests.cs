@@ -14,7 +14,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class SceneTests : TestsBase
+    public class SceneTests : IntegrationTestSuite_Legacy
     {
         protected override bool enableSceneIntegrityChecker => false;
 

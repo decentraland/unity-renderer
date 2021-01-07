@@ -15,7 +15,7 @@ namespace AvatarEditorHUD_Tests
         public string[] myCategoriesToRandomize => categoriesToRandomize;
     }
 
-    public class WearableItemsShould : TestsBase
+    public class WearableItemsShould : IntegrationTestSuite_Legacy
     {
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;

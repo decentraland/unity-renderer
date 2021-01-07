@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class ControlsHUDTest : TestsBase
+    public class ControlsHUDTest : IntegrationTestSuite_Legacy
     {
         private ControlsHUDController controller;
 

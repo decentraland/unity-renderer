@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
-public class PBRMaterialShould : TestsBase
+public class PBRMaterialShould : IntegrationTestSuite_Legacy
 {
     [UnitySetUp]
     protected override IEnumerator SetUp()

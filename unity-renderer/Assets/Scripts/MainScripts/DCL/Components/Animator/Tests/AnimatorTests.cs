@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class AnimatorTests : TestsBase
+    public class AnimatorTests : IntegrationTestSuite_Legacy
     {
         [UnityTest]
         public IEnumerator CreateAnimationComponent()
