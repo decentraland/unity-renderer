@@ -191,7 +191,7 @@ namespace DCL.Interface
         public class SendChatMessageEvent
         {
             public ChatMessage message;
-        }     
+        }
 
         [System.Serializable]
         public class RemoveEntityComponentsPayLoad
@@ -895,6 +895,11 @@ namespace DCL.Interface
         public class SendSaveUserUnverifiedNamePayload
         {
             public string newUnverifiedName;
+        }
+
+        public static void RequestOwnProfileUpdate()
+        {
+            SendMessage("RequestOwnProfileUpdate");
         }
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
