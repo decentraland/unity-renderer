@@ -239,6 +239,10 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
 
     if (currentId === userId) {
       const localProfile = fetchProfileLocally(userId)
+      // checks if profile name was changed on builder
+      if (profile && localProfile && localProfile.name !== profile.name) {
+        localProfile.name = profile.name
+      }
       if (!profile || (localProfile && profile.version < localProfile.version)) {
         profile = localProfile
       }

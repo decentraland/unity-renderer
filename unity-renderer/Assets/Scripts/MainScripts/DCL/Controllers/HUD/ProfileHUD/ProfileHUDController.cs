@@ -36,7 +36,7 @@ public class ProfileHUDController : IHUD
     {
         mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
 
-     
+
         view = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("ProfileHUD")).GetComponent<ProfileHUDView>();
         view.name = "_ProfileHUD";
 
@@ -55,7 +55,7 @@ public class ProfileHUDController : IHUD
         view.buttonTermsOfServiceForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_TERMS_OF_USE);
         view.buttonPrivacyPolicyForNonConnectedWallets.onPointerDown += () => WebInterface.OpenURL(URL_PRIVACY_POLICY);
         view.inputName.onSubmit.AddListener(UpdateProfileName);
-        view.OnOpen += () => OnOpen?.Invoke();
+        view.OnOpen += () => { WebInterface.RequestOwnProfileUpdate(); OnOpen?.Invoke(); };
         view.OnClose += () => OnClose?.Invoke();
 
         manaCounterView = view.GetComponentInChildren<ManaCounterView>(true);
