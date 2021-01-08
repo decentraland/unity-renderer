@@ -23,7 +23,7 @@ public static partial class UniGif
     /// <returns>IEnumerator</returns>
     public static IEnumerator GetTextureListCoroutine(
         byte[] bytes,
-        Action<List<GifTexture>, int, int, int> callback,
+        Action<GifFrameData[], int, int, int> callback,
         FilterMode filterMode = FilterMode.Bilinear,
         TextureWrapMode wrapMode = TextureWrapMode.Clamp,
         bool debugLog = false)
@@ -45,10 +45,10 @@ public static partial class UniGif
         }
 
         // Decode to textures from GIF data
-        List<GifTexture> gifTexList = null;
+        GifFrameData[] gifTexList = null;
         yield return DecodeTextureCoroutine(gifData, result => gifTexList = result, filterMode, wrapMode);
 
-        if (gifTexList == null || gifTexList.Count <= 0)
+        if (gifTexList == null || gifTexList.Length <= 0)
         {
             Debug.LogError("GIF texture decode error.");
             if (callback != null)

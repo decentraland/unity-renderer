@@ -9,7 +9,6 @@ namespace NFTShape_Internal
         int hqResolution { get; }
         DCL.ITexture previewAsset { get; }
         DCL.ITexture hqAsset { get; }
-        Action<Texture2D> UpdateTextureCallback { set; }
         void FetchAndSetHQAsset(string url, Action onSuccess, Action onFail);
         void RestorePreviewAsset();
     }

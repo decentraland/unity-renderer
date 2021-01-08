@@ -1,8 +1,11 @@
 {
-    "name": "UniGif",
+    "name": "GifProcessor",
     "references": [
-        "GUID:8f18b4ef38b9d4637b8190231eb24e38",
-        "GUID:0a33bdeafa5c84cb1b5534b5feb3c773"
+        "GUID:b82364d78784241f8afff9cbbf8bae9f",
+        "GUID:4efd4f6072cb64982ab90a7168745f82",
+        "GUID:0a33bdeafa5c84cb1b5534b5feb3c773",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

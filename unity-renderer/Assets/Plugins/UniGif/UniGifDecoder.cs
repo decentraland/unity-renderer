@@ -21,14 +21,14 @@ public static partial class UniGif
     /// <param name="filterMode">Textures filter mode</param>
     /// <param name="wrapMode">Textures wrap mode</param>
     /// <returns>IEnumerator</returns>
-    private static IEnumerator DecodeTextureCoroutine(GifData gifData, Action<List<GifTexture>> callback, FilterMode filterMode, TextureWrapMode wrapMode)
+    private static IEnumerator DecodeTextureCoroutine(GifData gifData, Action<GifFrameData[]> callback, FilterMode filterMode, TextureWrapMode wrapMode)
     {
         if (gifData.m_imageBlockList == null || gifData.m_imageBlockList.Count < 1)
         {
             yield break;
         }
 
-        List<GifTexture> gifTexList = new List<GifTexture>(gifData.m_imageBlockList.Count);
+        GifFrameData[] gifTexList = new GifFrameData[gifData.m_imageBlockList.Count];
         List<ushort> disposalMethodList = new List<ushort>(gifData.m_imageBlockList.Count);
 
         int imgIndex = 0;
@@ -67,7 +67,7 @@ public static partial class UniGif
             float delaySec = GetDelaySec(graphicCtrlEx);
 
             // Add to GIF texture list
-            gifTexList.Add(new GifTexture(tex, delaySec));
+            gifTexList[imgIndex] = new GifFrameData() {texture = tex, delay = delaySec};
 
             imgIndex++;
         }
@@ -180,7 +180,7 @@ public static partial class UniGif
     /// <summary>
     /// Create Texture2D object and initial settings
     /// </summary>
-    private static Texture2D CreateTexture2D(GifData gifData, List<GifTexture> gifTexList, int imgIndex, List<ushort> disposalMethodList, Color32 bgColor, FilterMode filterMode, TextureWrapMode wrapMode, out bool filledTexture)
+    private static Texture2D CreateTexture2D(GifData gifData, GifFrameData[] gifTexList, int imgIndex, List<ushort> disposalMethodList, Color32 bgColor, FilterMode filterMode, TextureWrapMode wrapMode, out bool filledTexture)
     {
         filledTexture = false;
 
@@ -229,7 +229,7 @@ public static partial class UniGif
         if (useBeforeIndex >= 0)
         {
             filledTexture = true;
-            Color32[] pix = gifTexList[useBeforeIndex].m_texture2d.GetPixels32();
+            Color32[] pix = gifTexList[useBeforeIndex].texture.GetPixels32();
             tex.SetPixels32(pix);
             tex.Apply();
         }

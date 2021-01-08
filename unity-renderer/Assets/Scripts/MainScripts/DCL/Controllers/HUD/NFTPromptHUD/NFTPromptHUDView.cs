@@ -6,7 +6,6 @@ using DCL.Helpers;
 using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
-using DCL.Controllers.Gif;
 
 public class NFTPromptHUDView : MonoBehaviour
 {
@@ -43,8 +42,9 @@ public class NFTPromptHUDView : MonoBehaviour
 
     Coroutine fetchNFTRoutine = null;
     Coroutine fetchNFTImageRoutine = null;
-    ITexture imageAsset = null;
-    AssetPromise_Texture texturePromise = null;
+
+    private IPromiseLike_TextureAsset imagePromise = null;
+    private GifPlayer gifPlayer = null;
 
     bool backgroundColorSet = false;
     string marketUrl = null;
@@ -194,42 +194,40 @@ public class NFTPromptHUDView : MonoBehaviour
     {
         spinnerNftImage.SetActive(true);
 
-        ITexture nftImageAsset = null;
+        bool imageFound = false;
 
         yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl,
-            (downloadedTex, texturePromise) =>
+            promise =>
             {
-                nftImageAsset = downloadedTex;
-                this.texturePromise = texturePromise;
+                imagePromise = promise;
+                imageFound = true;
             });
 
-        if (nftImageAsset == null)
+        if (!imageFound)
         {
             yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
-                (downloadedTex, texturePromise) =>
+                promise =>
                 {
-                    nftImageAsset = downloadedTex;
-                    this.texturePromise = texturePromise;
+                    imagePromise = promise;
+                    imageFound = true;
                 });
         }
 
-        if (nftImageAsset != null)
+        if (imageFound && imagePromise?.asset != null)
         {
-            imageAsset = nftImageAsset;
-            imageNft.texture = nftImageAsset.texture;
+            Texture2D texture = imagePromise.asset.texture;
+            imageNft.texture = texture;
 
-            if (nftImageAsset is Asset_Gif gifAsset)
+            if ((imagePromise.asset is Asset_Gif gif))
             {
-                gifAsset.OnFrameTextureChanged += (texture) => { imageNft.texture = texture; };
-                gifAsset.Play();
+                SetupGifPlayer(gif);
             }
-            else
+            else if (!backgroundColorSet)
             {
-                if (!backgroundColorSet)
-                    SetSmartBackgroundColor(nftImageAsset.texture);
+                SetSmartBackgroundColor(texture);
             }
 
-            SetNFTImageSize(nftImageAsset.texture);
+            SetNFTImageSize(texture);
 
             imageNft.gameObject.SetActive(true);
             spinnerNftImage.SetActive(false);
@@ -327,14 +325,23 @@ public class NFTPromptHUDView : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (texturePromise != null)
+        if (imagePromise != null)
         {
-            AssetPromiseKeeper_Texture.i.Forget(texturePromise);
-            texturePromise = null;
+            imagePromise.Forget();
+            imagePromise = null;
         }
-        else
+        gifPlayer?.Dispose();
+        gifPlayer = null;
+    }
+
+    private void SetupGifPlayer(Asset_Gif gif)
+    {
+        if (gifPlayer == null)
         {
-            imageAsset?.Dispose();
+            gifPlayer = new GifPlayer();
+            gifPlayer.OnFrameTextureChanged += (texture) => { imageNft.texture = texture; };
         }
+        gifPlayer.SetGif(gif);
+        gifPlayer.Play(true);
     }
 }

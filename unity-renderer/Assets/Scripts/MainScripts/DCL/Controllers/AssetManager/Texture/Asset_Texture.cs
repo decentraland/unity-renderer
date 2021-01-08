@@ -6,13 +6,6 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public interface ITexture : IDisposable
-    {
-        Texture2D texture { get; }
-        int width { get; }
-        int height { get; }
-    }
-
     public class Asset_Texture : Asset, ITexture
     {
         public Texture2D texture { get; set; }
