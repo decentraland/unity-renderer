@@ -148,9 +148,12 @@ namespace DCL.Components
 
         private void ApplyLoadedAudioClip(DCLAudioClip clip)
         {
-            audioSource.clip = clip.audioClip;
+            if (audioSource.clip != clip.audioClip)
+            {
+                audioSource.clip = clip.audioClip;
+            }
 
-            if (audioSource.enabled && model.playing)
+            if (audioSource.enabled && model.playing && !audioSource.isPlaying)
             {
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
