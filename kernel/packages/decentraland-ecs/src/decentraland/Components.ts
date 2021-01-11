@@ -6,7 +6,7 @@ import { IEvents } from './Types'
 import { ActionButton } from './Input'
 
 /** @public */
-export type TranformConstructorArgs = {
+export type TransformConstructorArgs = {
   position?: Vector3
   rotation?: Quaternion
   scale?: Vector3
@@ -112,7 +112,7 @@ export class Transform extends ObservableComponent {
   @ObservableComponent.field
   scale!: Vector3
 
-  constructor(args: TranformConstructorArgs = {}) {
+  constructor(args: TransformConstructorArgs = {}) {
     super()
     this.position = args.position || Vector3.Zero()
     this.rotation = args.rotation || Quaternion.Identity
@@ -1064,7 +1064,8 @@ export class VideoTexture extends ObservableComponent {
   }
 
   toJSON() {
-    if (this.seek >= 0) { // the seek value was changed/used
+    if (this.seek >= 0) {
+      // the seek value was changed/used
       const ret = JSON.parse(JSON.stringify(super.toJSON()))
       this.seek = -1
       return ret

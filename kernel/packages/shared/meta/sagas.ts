@@ -1,5 +1,5 @@
 import { call, put, select, take, takeLatest } from 'redux-saga/effects'
-import { FORCE_RENDERING_STYLE, getServerConfigurations } from 'config'
+import { FORCE_RENDERING_STYLE, getServerConfigurations, WORLD_EXPLORER } from 'config'
 import { META_CONFIGURATION_INITIALIZED, metaConfigurationInitialized, metaUpdateMessageOfTheDay } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
@@ -41,11 +41,14 @@ export function* metaSaga(): any {
   yield put(metaConfigurationInitialized(config))
   yield call(checkExplorerVersion, config)
   yield call(checkIndexedDB, config)
-  const userId = yield select(getUserId)
-  if (userId) {
-    yield call(fetchMessageOfTheDay)
-  } else {
-    yield takeLatest(USER_AUTHENTIFIED, fetchMessageOfTheDay)
+  if (WORLD_EXPLORER) {
+    // No need to fetch the message of the day on preview or builder mode
+    const userId = yield select(getUserId)
+    if (userId) {
+      yield call(fetchMessageOfTheDay)
+    } else {
+      yield takeLatest(USER_AUTHENTIFIED, fetchMessageOfTheDay)
+    }
   }
 }
 
