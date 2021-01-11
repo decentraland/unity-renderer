@@ -13,7 +13,7 @@ import {
   Realm as SocialRealm
 } from 'dcl-social-client'
 
-import { DEBUG_PM, INIT_PRE_LOAD, getServerConfigurations } from 'config'
+import { DEBUG_PM, INIT_PRE_LOAD, getServerConfigurations, WORLD_EXPLORER } from 'config'
 
 import { Vector3Component } from 'atomicHelpers/landHelpers'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
@@ -73,7 +73,10 @@ const presenceMap: Record<string, PresenceMemoization | undefined> = {}
 const CLOCK_SERVICE_URL = 'https://worldtimeapi.org/api/timezone/Etc/UTC'
 
 export function* friendsSaga() {
-  yield takeEvery(USER_AUTHENTIFIED, initializeSaga)
+  if (WORLD_EXPLORER) {
+    // We don't want to initialize the friends & chat feature if we are on preview or builder mode
+    yield takeEvery(USER_AUTHENTIFIED, initializeSaga)
+  }
 }
 
 function* initializeSaga() {
