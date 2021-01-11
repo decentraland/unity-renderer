@@ -10,7 +10,7 @@ import {
   parseParcelPosition
 } from '../../atomicHelpers/parcelScenePositions'
 import { lastPlayerPosition } from '../world/positionThings'
-import { browserInterface } from "../../unity-interface/BrowserInterface"
+import { browserInterface } from '../../unity-interface/BrowserInterface'
 
 export enum Permission {
   ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE = 'ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE',
@@ -29,9 +29,13 @@ export class RestrictedActions extends ExposableAPI {
       return
     }
 
-    const position = this.calculatePosition(newPosition)
+    const base = parseParcelPosition(this.getSceneData().scene.base)
+    const basePosition = new Vector3()
+    gridToWorld(base.x, base.y, basePosition)
 
-    // validate new position is inside of some scene
+    const position = basePosition.add(newPosition)
+
+    // validate new position is inside one of the scene's parcels
     if (!this.isPositionValid(position)) {
       defaultLogger.error('Error: Position is out of scene', position)
       return
@@ -41,7 +45,13 @@ export class RestrictedActions extends ExposableAPI {
       return
     }
 
-    unityInterface.Teleport({ position, cameraTarget }, false)
+    unityInterface.Teleport(
+      {
+        position,
+        cameraTarget: cameraTarget ? basePosition.add(cameraTarget) : undefined
+      },
+      false
+    )
 
     // Get ahead of the position report that will be done automatically later and report
     // position right now, also marked as an immediate update (last bool in Position structure)
@@ -76,15 +86,6 @@ export class RestrictedActions extends ExposableAPI {
     const json = this.getSceneData()
     const list = json.requiredPermissions || []
     return list.indexOf(permission) !== -1
-  }
-
-  private calculatePosition(newPosition: Vector3) {
-    const base = parseParcelPosition(this.getSceneData().scene.base)
-
-    const basePosition = new Vector3()
-    gridToWorld(base.x, base.y, basePosition)
-
-    return basePosition.add(newPosition)
   }
 
   private isPositionValid(position: Vector3) {
