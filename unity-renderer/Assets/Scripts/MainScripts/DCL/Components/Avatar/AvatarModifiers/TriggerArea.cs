@@ -11,11 +11,12 @@ public abstract class TriggerArea
 [System.Serializable]
 public class BoxTriggerArea : TriggerArea
 {
+    internal const string AVATAR_TRIGGER_LAYER = "AvatarTriggerDetection";
     public Vector3 box;
 
     public override HashSet<GameObject> DetectAvatars(Vector3 center, Quaternion rotation)
     {
-        Collider[] colliders = Physics.OverlapBox(center, box * 0.5f, rotation, LayerMask.GetMask("AvatarTriggerDetection"), QueryTriggerInteraction.Collide);
+        Collider[] colliders = Physics.OverlapBox(center, box * 0.5f, rotation, LayerMask.GetMask(AVATAR_TRIGGER_LAYER), QueryTriggerInteraction.Collide);
         if (colliders.Length == 0)
         {
             return null;
