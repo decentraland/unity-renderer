@@ -24,7 +24,7 @@ public class AvatarModifierArea : BaseComponent
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
-    private readonly Dictionary<string, AvatarModifier> modifiers;
+    internal readonly Dictionary<string, AvatarModifier> modifiers;
 
     public AvatarModifierArea()
     {
@@ -56,7 +56,9 @@ public class AvatarModifierArea : BaseComponent
             // Add all listeners
             foreach (string modifierKey in model.modifiers)
             {
-                AvatarModifier modifier = this.modifiers[modifierKey];
+                if (!modifiers.TryGetValue(modifierKey, out AvatarModifier modifier))
+                    continue;
+
                 OnAvatarEnter += modifier.ApplyModifier;
                 OnAvatarExit += modifier.RemoveModifier;
             }
@@ -67,7 +69,15 @@ public class AvatarModifierArea : BaseComponent
 
     private void OnDestroy()
     {
-        RemoveAllModifiers();
+        var toRemove = new HashSet<GameObject>();
+        if(avatarsInArea != null)
+            toRemove.UnionWith(avatarsInArea);
+
+        var currentInArea = DetectAllAvatarsInArea();
+        if(currentInArea != null)
+            toRemove.UnionWith(currentInArea);
+
+        RemoveAllModifiers(toRemove);
     }
 
     private void Update()
@@ -128,12 +138,16 @@ public class AvatarModifierArea : BaseComponent
 
     private void RemoveAllModifiers()
     {
+        RemoveAllModifiers(DetectAllAvatarsInArea());
+    }
+
+    private void RemoveAllModifiers(HashSet<GameObject> avatars)
+    {
         if (model?.area == null)
         {
             return;
         }
 
-        HashSet<GameObject> avatars = DetectAllAvatarsInArea();
         if (avatars != null)
         {
             foreach (GameObject avatar in avatars)
