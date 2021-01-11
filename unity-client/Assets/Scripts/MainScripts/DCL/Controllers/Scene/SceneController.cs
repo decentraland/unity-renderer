@@ -224,107 +224,7 @@ namespace DCL
 #endif
                 ProfilingEvents.OnMessageProcessStart?.Invoke(method);
 
-                switch (method)
-                {
-                    case MessagingTypes.ENTITY_CREATE:
-                        {
-                            if (msgObject.payload is Protocol.CreateEntity payload)
-                                scene.CreateEntity(payload.entityId);
-
-                            break;
-                        }
-                    case MessagingTypes.ENTITY_REPARENT:
-                        {
-                            if (msgObject.payload is Protocol.SetEntityParent payload)
-                                scene.SetEntityParent(payload.entityId, payload.parentId);
-
-                            break;
-                        }
-
-                    case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
-                        {
-                            if (msgObject.payload is Protocol.EntityComponentCreateOrUpdate payload)
-                                scene.EntityComponentCreateOrUpdate(payload.entityId, (CLASS_ID_COMPONENT)payload.classId, payload.json, out yieldInstruction);
-
-                            break;
-                        }
-
-                    case MessagingTypes.ENTITY_COMPONENT_DESTROY:
-                        {
-                            if (msgObject.payload is Protocol.EntityComponentDestroy payload)
-                                scene.EntityComponentRemove(payload.entityId, payload.name);
-
-                            break;
-                        }
-
-                    case MessagingTypes.SHARED_COMPONENT_ATTACH:
-                        {
-                            if (msgObject.payload is Protocol.SharedComponentAttach payload)
-                                scene.SharedComponentAttach(payload.entityId, payload.id);
-
-                            break;
-                        }
-
-                    case MessagingTypes.SHARED_COMPONENT_CREATE:
-                        {
-                            if (msgObject.payload is Protocol.SharedComponentCreate payload)
-                                scene.SharedComponentCreate(payload.id, payload.classId);
-
-                            break;
-                        }
-
-                    case MessagingTypes.SHARED_COMPONENT_DISPOSE:
-                        {
-                            if (msgObject.payload is Protocol.SharedComponentDispose payload)
-                                scene.SharedComponentDispose(payload.id);
-                            break;
-                        }
-
-                    case MessagingTypes.SHARED_COMPONENT_UPDATE:
-                        {
-                            if (msgObject.payload is Protocol.SharedComponentUpdate payload)
-                                scene.SharedComponentUpdate(payload.componentId, payload.json, out yieldInstruction);
-                            break;
-                        }
-
-                    case MessagingTypes.ENTITY_DESTROY:
-                        {
-                            if (msgObject.payload is Protocol.RemoveEntity payload)
-                                scene.RemoveEntity(payload.entityId);
-                            break;
-                        }
-
-                    case MessagingTypes.INIT_DONE:
-                        {
-                            scene.sceneLifecycleHandler.SetInitMessagesDone();
-                            break;
-                        }
-
-                    case MessagingTypes.QUERY:
-                        {
-                            if (msgObject.payload is QueryMessage queryMessage)
-                                ParseQuery(queryMessage.payload, scene.sceneData.id);
-                            break;
-                        }
-
-                    case MessagingTypes.OPEN_EXTERNAL_URL:
-                        {
-                            if (msgObject.payload is Protocol.OpenExternalUrl payload)
-                                OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
-                            break;
-                        }
-
-                    case MessagingTypes.OPEN_NFT_DIALOG:
-                        {
-                            if (msgObject.payload is Protocol.OpenNftDialog payload)
-                                OnOpenNFTDialogRequest?.Invoke(payload.contactAddress, payload.tokenId, payload.comment);
-                            break;
-                        }
-
-                    default:
-                        Debug.LogError($"Unknown method {method}");
-                        return true;
-                }
+                ProcessMessage(scene, method, msgObject.payload, out yieldInstruction);
 
                 ProfilingEvents.OnMessageProcessEnds?.Invoke(method);
 
@@ -343,6 +243,124 @@ namespace DCL
             sceneMessagesPool.Enqueue(msgObject);
 
             return res;
+        }
+
+        private void ProcessMessage(ParcelScene scene, string method, object msgPayload,
+            out CleanableYieldInstruction yieldInstruction)
+        {
+            yieldInstruction = null;
+
+            try
+            {
+                switch (method)
+                {
+                    case MessagingTypes.ENTITY_CREATE:
+                    {
+                        if (msgPayload is Protocol.CreateEntity payload)
+                            scene.CreateEntity(payload.entityId);
+
+                        break;
+                    }
+                    case MessagingTypes.ENTITY_REPARENT:
+                    {
+                        if (msgPayload is Protocol.SetEntityParent payload)
+                            scene.SetEntityParent(payload.entityId, payload.parentId);
+
+                        break;
+                    }
+
+                    case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                    {
+                        if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
+                            scene.EntityComponentCreateOrUpdate(payload.entityId,
+                                (CLASS_ID_COMPONENT)payload.classId, payload.json, out yieldInstruction);
+
+                        break;
+                    }
+
+                    case MessagingTypes.ENTITY_COMPONENT_DESTROY:
+                    {
+                        if (msgPayload is Protocol.EntityComponentDestroy payload)
+                            scene.EntityComponentRemove(payload.entityId, payload.name);
+
+                        break;
+                    }
+
+                    case MessagingTypes.SHARED_COMPONENT_ATTACH:
+                    {
+                        if (msgPayload is Protocol.SharedComponentAttach payload)
+                            scene.SharedComponentAttach(payload.entityId, payload.id);
+
+                        break;
+                    }
+
+                    case MessagingTypes.SHARED_COMPONENT_CREATE:
+                    {
+                        if (msgPayload is Protocol.SharedComponentCreate payload)
+                            scene.SharedComponentCreate(payload.id, payload.classId);
+
+                        break;
+                    }
+
+                    case MessagingTypes.SHARED_COMPONENT_DISPOSE:
+                    {
+                        if (msgPayload is Protocol.SharedComponentDispose payload)
+                            scene.SharedComponentDispose(payload.id);
+                        break;
+                    }
+
+                    case MessagingTypes.SHARED_COMPONENT_UPDATE:
+                    {
+                        if (msgPayload is Protocol.SharedComponentUpdate payload)
+                            scene.SharedComponentUpdate(payload.componentId, payload.json, out yieldInstruction);
+                        break;
+                    }
+
+                    case MessagingTypes.ENTITY_DESTROY:
+                    {
+                        if (msgPayload is Protocol.RemoveEntity payload)
+                            scene.RemoveEntity(payload.entityId);
+                        break;
+                    }
+
+                    case MessagingTypes.INIT_DONE:
+                    {
+                        scene.sceneLifecycleHandler.SetInitMessagesDone();
+                        break;
+                    }
+
+                    case MessagingTypes.QUERY:
+                    {
+                        if (msgPayload is QueryMessage queryMessage)
+                            ParseQuery(queryMessage.payload, scene.sceneData.id);
+                        break;
+                    }
+
+                    case MessagingTypes.OPEN_EXTERNAL_URL:
+                    {
+                        if (msgPayload is Protocol.OpenExternalUrl payload)
+                            OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
+                        break;
+                    }
+
+                    case MessagingTypes.OPEN_NFT_DIALOG:
+                    {
+                        if (msgPayload is Protocol.OpenNftDialog payload)
+                            OnOpenNFTDialogRequest?.Invoke(payload.contactAddress, payload.tokenId,
+                                payload.comment);
+                        break;
+                    }
+
+                    default:
+                        Debug.LogError($"Unknown method {method}");
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(
+                    $"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)} {e}");
+            }
         }
 
         public void ParseQuery(object payload, string sceneId)

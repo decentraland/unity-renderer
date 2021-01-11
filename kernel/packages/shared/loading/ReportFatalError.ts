@@ -81,3 +81,16 @@ export function ReportSceneError(message: string, error: any) {
     window.Rollbar.error(message, eventData)
   }
 }
+
+export function ReportRendererInterfaceError(message: string, error: any) {
+  const eventData = {
+    error,
+    message,
+    rendererInterface: true,
+    position: new URLSearchParams(location.search).get('position')
+  }
+  queueTrackingEvent('renderer_interface_error', eventData)
+  if (window.Rollbar) {
+    window.Rollbar.error(message, eventData)
+  }
+}
