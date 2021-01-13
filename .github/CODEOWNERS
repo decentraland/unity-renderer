@@ -15,3 +15,5 @@
 kernel/packages/build-ecs/**/*               @decentraland/kernel-team
 kernel/packages/decentraland-amd/**/*        @decentraland/kernel-team
 kernel/packages/decentraland-ecs/**/*        @decentraland/kernel-team
+kernel/packages/decentraland-ecs/**/*        menduz
+kernel/packages/scene-system/**/*            menduz
