@@ -9,6 +9,7 @@ namespace DCL
     {
         const TextureWrapMode DEFAULT_WRAP_MODE = TextureWrapMode.Clamp;
         const FilterMode DEFAULT_FILTER_MODE = FilterMode.Bilinear;
+        private const string PLAIN_BASE64_PROTOCOL = "data:text/plain;base64,";
 
         string url;
         string idWithTexSettings;
@@ -61,22 +62,34 @@ namespace DCL
                 return;
             }
 
-            webRequest = UnityWebRequestTexture.GetTexture(url);
-            webRequest.SendWebRequest().completed += (asyncOp) =>
+            if (!url.StartsWith(PLAIN_BASE64_PROTOCOL))
             {
-                bool success = webRequest != null && webRequest.WebRequestSucceded() && asset != null;
-                if (success)
+                webRequest = UnityWebRequestTexture.GetTexture(url);
+                webRequest.SendWebRequest().completed += (asyncOp) =>
                 {
-                    asset.texture = DownloadHandlerTexture.GetContent(webRequest);
-                    OnSuccess?.Invoke();
-                }
-                else
-                {
-                    OnFail?.Invoke();
-                }
-                webRequest?.Dispose();
-                webRequest = null;
-            };
+                    bool success = webRequest != null && webRequest.WebRequestSucceded() && asset != null;
+                    if (success)
+                    {
+                        asset.texture = DownloadHandlerTexture.GetContent(webRequest);
+                        OnSuccess?.Invoke();
+                    }
+                    else
+                    {
+                        OnFail?.Invoke();
+                    }
+                    webRequest?.Dispose();
+                    webRequest = null;
+                };
+            }
+            else
+            {
+                //For Base64 protocols we just take the bytes and create the texture
+                //to avoid Unity's web request issue with large URLs
+                byte[] decodedTexture = Convert.FromBase64String(url.Substring(PLAIN_BASE64_PROTOCOL.Length));
+                asset.texture = new Texture2D(1,1);
+                asset.texture.LoadImage(decodedTexture);
+                OnSuccess?.Invoke();
+            }
         }
 
         protected override bool AddToLibrary()
