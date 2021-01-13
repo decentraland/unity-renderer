@@ -21,7 +21,7 @@ export const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
 export class SceneSystemWorker extends SceneWorker {
   private sceneStarted: boolean = false
 
-  private position: Vector3 | undefined
+  private position!: Vector3
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
   private positionObserver: Observer<any> | null = null
@@ -82,7 +82,7 @@ export class SceneSystemWorker extends SceneWorker {
 
   private sendUserViewMatrix(positionReport: Readonly<PositionReport>) {
     if (this.engineAPI && 'positionChanged' in this.engineAPI.subscribedEvents) {
-      if (this.position && !this.lastSentPosition.equals(positionReport.position)) {
+      if (!this.lastSentPosition.equals(positionReport.position)) {
         this.engineAPI.sendSubscriptionEvent('positionChanged', {
           position: {
             x: positionReport.position.x - this.position.x,
