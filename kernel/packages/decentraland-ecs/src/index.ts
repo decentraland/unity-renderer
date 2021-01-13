@@ -17,8 +17,8 @@ import { DecentralandSynchronizationSystem } from './decentraland/Implementation
 import { Engine } from './ecs/Engine'
 import { Entity } from './ecs/Entity'
 
-const entity = new Entity('scene')
-;(entity as any).uuid = '0'
+const entity = new Entity('scene');
+(entity as any).uuid = '0'
 
 // Initialize engine
 /** @public */
@@ -35,12 +35,6 @@ import { DecentralandInterface } from './decentraland/Types'
 declare let dcl: DecentralandInterface | void
 if (typeof dcl !== 'undefined') {
   engine.addSystem(new DecentralandSynchronizationSystem(dcl), Infinity)
-}
-
-// We instantiate the camera, so that it starts listening to events
-import { Camera } from './decentraland/Camera'
-if (typeof dcl !== 'undefined') {
-  dcl.onStart(() => Camera.instance)
 }
 
 import { uuidEventSystem, pointerEventSystem, raycastEventSystem } from './decentraland/Systems'
