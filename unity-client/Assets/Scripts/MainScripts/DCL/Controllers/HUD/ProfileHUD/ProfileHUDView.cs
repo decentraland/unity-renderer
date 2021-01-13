@@ -129,6 +129,7 @@ internal class ProfileHUDView : MonoBehaviour
 
     internal void SetProfile(UserProfile userProfile)
     {
+        profile = userProfile;
         if (userProfile.hasClaimedName)
         {
             HandleClaimedProfileName(userProfile);
@@ -141,7 +142,6 @@ internal class ProfileHUDView : MonoBehaviour
         SetConnectedWalletSectionActive(userProfile.hasConnectedWeb3);
         HandleProfileAddress(userProfile);
         HandleProfileSnapshot(userProfile);
-        profile = userProfile;
     }
 
     internal void ToggleMenu()
