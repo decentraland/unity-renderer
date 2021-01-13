@@ -13,18 +13,21 @@ namespace DCL
         public readonly IPointerEventsController pointerEventsController;
         public readonly ISceneBoundsChecker sceneBoundsChecker;
         public readonly IWorldBlockersController blockersController;
+        public readonly IRuntimeComponentFactory componentFactory;
 
         public WorldRuntimeContext(IWorldState state,
             ISceneController sceneController,
             IPointerEventsController pointerEventsController,
             ISceneBoundsChecker sceneBoundsChecker,
-            IWorldBlockersController blockersController)
+            IWorldBlockersController blockersController,
+            IRuntimeComponentFactory componentFactory)
         {
             this.state = state;
             this.sceneController = sceneController;
             this.pointerEventsController = pointerEventsController;
             this.sceneBoundsChecker = sceneBoundsChecker;
             this.blockersController = blockersController;
+            this.componentFactory = componentFactory;
         }
 
         public void Dispose()

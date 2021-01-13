@@ -13,18 +13,6 @@ namespace DCL
         private static System.Func<WorldRuntimeContext> worldRuntimeBuilder;
 
         /// <summary>
-        /// Setup the environment with the default implementations of each context.
-        /// </summary>
-        public static void SetupWithDefaults()
-        {
-            Setup(
-                messagingBuilder: MessagingContextFactory.CreateDefault,
-                platformBuilder: PlatformContextFactory.CreateDefault,
-                worldRuntimeBuilder: WorldRuntimeContextFactory.CreateDefault
-            );
-        }
-
-        /// <summary>
         /// Configure and setup the environment with custom implementations given by each func passed as parameter.
         ///
         /// The funcs are stored. So the same environment can be replicated by just calling Setup() later.
@@ -32,13 +20,14 @@ namespace DCL
         /// <param name="messagingBuilder">A func returning a MessagingContext to be used by the environment.</param>
         /// <param name="platformBuilder">A func returning a PlatformContext to be used by the environment.</param>
         /// <param name="worldRuntimeBuilder">A func returning a WorldRuntimeContext to be used by the environment.</param>
-        public static void Setup(System.Func<MessagingContext> messagingBuilder,
-            System.Func<PlatformContext> platformBuilder,
-            System.Func<WorldRuntimeContext> worldRuntimeBuilder)
+        public static void SetupWithBuilders(
+            System.Func<MessagingContext> messagingBuilder = null,
+            System.Func<PlatformContext> platformBuilder = null,
+            System.Func<WorldRuntimeContext> worldRuntimeBuilder = null)
         {
-            Environment.messagingBuilder = messagingBuilder;
-            Environment.platformBuilder = platformBuilder;
-            Environment.worldRuntimeBuilder = worldRuntimeBuilder;
+            Environment.messagingBuilder = messagingBuilder ?? MessagingContextFactory.CreateDefault;
+            Environment.platformBuilder = platformBuilder ?? PlatformContextFactory.CreateDefault;
+            Environment.worldRuntimeBuilder = worldRuntimeBuilder ?? WorldRuntimeContextFactory.CreateDefault;
             Setup();
         }
 
@@ -62,7 +51,7 @@ namespace DCL
             //             more scalable.
 
             // World context systems
-            model.world.sceneController.Initialize();
+            model.world.sceneController.Initialize(model.world.componentFactory);
             model.world.pointerEventsController.Initialize();
             model.world.state.Initialize();
             model.world.blockersController.InitializeWithDefaultDependencies(

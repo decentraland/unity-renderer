@@ -24,7 +24,7 @@ namespace Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Environment.Setup(
+            Environment.SetupWithBuilders(
                 messagingBuilder: CreateMessagingContext,
                 platformBuilder: CreatePlatformContext,
                 worldRuntimeBuilder: CreateRuntimeContext

@@ -42,7 +42,7 @@ namespace DCL.Components
         }
     }
 
-    public abstract class BaseComponent : MonoBehaviour, IComponent, IPoolLifecycleHandler
+    public abstract class BaseComponent : MonoBehaviour, IComponent, IPoolLifecycleHandler, IPoolableObjectContainer
     {
         protected ComponentUpdateHandler updateHandler;
         public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
@@ -55,8 +55,7 @@ namespace DCL.Components
         [NonSerialized]
         public DecentralandEntity entity;
 
-        [NonSerialized]
-        public PoolableObject poolableObject;
+        public PoolableObject poolableObject { get; set; }
 
         public string componentName => "BaseComponent";
 
