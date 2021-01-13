@@ -4,27 +4,47 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.TestTools;
 using TMPro;
 
 namespace Tests
 {
-    public class FontTests : IntegrationTestSuite_Legacy
+    public class FontTests : IntegrationTestSuite
     {
         const string TEST_BUILTIN_FONT_NAME = "builtin:SF-UI-Text-Regular SDF";
+
+        private ParcelScene scene;
+
+        protected override WorldRuntimeContext CreateRuntimeContext()
+        {
+            return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
+            (
+                sceneController: new SceneController(),
+                state: new WorldState(),
+                componentFactory: RuntimeComponentFactory.Create()
+            );
+        }
+
+        [UnitySetUp]
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            scene = Environment.i.world.sceneController.CreateTestScene();
+        }
 
         [UnityTest]
         public IEnumerator BuiltInFontCreateAndLoadTest()
         {
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
+                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() {src = TEST_BUILTIN_FONT_NAME});
             yield return font.routine;
 
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             TextShape textShape =
-                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model() { font = font.id });
+                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model() {font = font.id});
             yield return textShape.routine;
 
             Assert.IsTrue(font.loaded, "Built-in font didn't load");
@@ -46,11 +66,11 @@ namespace Tests
             TMP_FontAsset defaultFont = textShape.GetComponentInChildren<TextMeshPro>().font;
 
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = "no-valid-font" });
+                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() {src = "no-valid-font"});
             yield return font.routine;
 
             scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
-                            JsonUtility.ToJson(new TextShape.Model { font = font.id }));
+                JsonUtility.ToJson(new TextShape.Model {font = font.id}));
             yield return textShape.routine;
 
             Assert.IsTrue(font.error, "Built-in font error has not araise properly");
@@ -67,11 +87,11 @@ namespace Tests
             yield return textShape.routine;
 
             DCLFont font =
-                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() { src = TEST_BUILTIN_FONT_NAME });
+                TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() {src = TEST_BUILTIN_FONT_NAME});
             yield return font.routine;
 
             scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.TEXT_SHAPE,
-                            JsonUtility.ToJson(new TextShape.Model { font = font.id }));
+                JsonUtility.ToJson(new TextShape.Model {font = font.id}));
             yield return textShape.routine;
 
             Assert.IsTrue(font.loaded, "Built-in font didn't load");

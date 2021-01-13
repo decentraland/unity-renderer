@@ -38,7 +38,7 @@ namespace DCL.Helpers
         [MenuItem("Assets/Create/Decentraland/DCLComponentFactory")]
         public static void CreateAsset()
         {
-            ScriptableObjectUtility.CreateAsset<DCLComponentFactory>();
+            ScriptableObjectUtility.CreateAsset<RuntimeComponentFactory>();
         }
     }
 }

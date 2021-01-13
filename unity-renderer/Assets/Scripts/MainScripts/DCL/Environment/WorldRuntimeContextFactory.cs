@@ -1,4 +1,5 @@
 ﻿using DCL.Controllers;
+using UnityEngine;
 
 namespace DCL
 {
@@ -11,7 +12,8 @@ namespace DCL
                 sceneController: new SceneController(),
                 pointerEventsController: new PointerEventsController(),
                 sceneBoundsChecker: new SceneBoundsChecker(),
-                blockersController: new WorldBlockersController());
+                blockersController: new WorldBlockersController(),
+                componentFactory: RuntimeComponentFactory.Create());
         }
     }
 }

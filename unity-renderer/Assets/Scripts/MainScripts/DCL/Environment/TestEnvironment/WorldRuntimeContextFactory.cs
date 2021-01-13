@@ -15,14 +15,16 @@ namespace DCL.Tests
             ISceneController sceneController = null,
             IPointerEventsController pointerEventsController = null,
             ISceneBoundsChecker sceneBoundsChecker = null,
-            IWorldBlockersController worldBlockersController = null)
+            IWorldBlockersController worldBlockersController = null,
+            IRuntimeComponentFactory componentFactory = null)
         {
             return new WorldRuntimeContext(
                 state: state ?? Substitute.For<IWorldState>(),
                 sceneController: sceneController ?? Substitute.For<ISceneController>(),
                 pointerEventsController: pointerEventsController ?? Substitute.For<IPointerEventsController>(),
                 sceneBoundsChecker: sceneBoundsChecker ?? Substitute.For<ISceneBoundsChecker>(),
-                blockersController: worldBlockersController ?? Substitute.For<IWorldBlockersController>());
+                blockersController: worldBlockersController ?? Substitute.For<IWorldBlockersController>(),
+                componentFactory: componentFactory ?? Substitute.For<IRuntimeComponentFactory>());
         }
     }
 }

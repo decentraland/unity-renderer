@@ -52,7 +52,7 @@ public class IntegrationTestSuite_Legacy
         if (justSceneSetUp)
         {
             RenderProfileManifest.i.Initialize();
-            Environment.SetupWithDefaults();
+            Environment.SetupWithBuilders();
             SetUp_SceneController();
 
             SetUp_TestScene();
@@ -65,7 +65,7 @@ public class IntegrationTestSuite_Legacy
         }
 
         RenderProfileManifest.i.Initialize();
-        Environment.SetupWithDefaults();
+        Environment.SetupWithBuilders();
 
         SetUp_SceneController();
         SetUp_TestScene();

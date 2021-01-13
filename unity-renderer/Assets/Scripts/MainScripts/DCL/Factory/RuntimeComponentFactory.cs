@@ -6,21 +6,38 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class DCLComponentFactory : ScriptableObject
+    public interface IRuntimeComponentFactory
+    {
+        void EnsureFactoryDictionary();
+        CLASS_ID_COMPONENT GetIdForType<T>() where T : Component;
+        void PrewarmPools();
+
+        ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
+            where ItemType : IPoolableObjectContainer;
+    }
+
+    public class RuntimeComponentFactory : ScriptableObject, IRuntimeComponentFactory
     {
         [System.Serializable]
         public class Item
         {
             public CLASS_ID_COMPONENT classId;
-            public BaseComponent prefab;
+            public Component prefab;
 
-            [Header("Pool Options")] public bool usePool;
+            [Header("Pool Options")]
+            public bool usePool;
+
             public int prewarmCount;
         }
 
         public Item[] factoryList;
 
         Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
+
+        public static RuntimeComponentFactory Create()
+        {
+            return Resources.Load("RuntimeComponentFactory") as RuntimeComponentFactory;
+        }
 
         public void EnsureFactoryDictionary()
         {
@@ -96,7 +113,7 @@ namespace DCL
         }
 
         public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
-            where ItemType : BaseComponent
+            where ItemType : IPoolableObjectContainer
         {
             EnsureFactoryDictionary();
 
