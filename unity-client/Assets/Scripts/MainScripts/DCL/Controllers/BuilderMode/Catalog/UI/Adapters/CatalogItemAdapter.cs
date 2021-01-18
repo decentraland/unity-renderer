@@ -48,7 +48,7 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
 
     private void GetThumbnail()
     {
-        var url = sceneObject?.ComposeThumbnailUrl();
+        var url = sceneObject?.GetComposedThumbnailUrl();
 
         if (url == loadedThumbnailURL)
             return;

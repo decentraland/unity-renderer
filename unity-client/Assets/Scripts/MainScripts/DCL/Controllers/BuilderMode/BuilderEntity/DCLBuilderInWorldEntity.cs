@@ -68,6 +68,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool isVoxel { get; set; } = false;
 
+    SceneObject associatedSceneObject;
     public bool isFloor { get; set; } = false;
     public bool isNFT { get; set; } = false;
 
@@ -103,6 +104,31 @@ public class DCLBuilderInWorldEntity : EditableEntity
         }
     }
 
+    public SceneObject GetSceneObjectAssociated()
+    {
+        if (associatedSceneObject != null)
+            return associatedSceneObject;
+
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        {
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.GLTF_SHAPE)
+            {
+                string assetId = ((GLTFShape)keyValuePairBaseDisposable.Value).model.assetId;
+                associatedSceneObject = AssetCatalogBridge.GetSceneObjectById(assetId);
+                return associatedSceneObject;
+            }
+        }
+
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        {
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.NFT_SHAPE)
+            {
+                //TODO: Implement NFT SceneObject and return them
+            }
+        }
+        return null;
+    }
+
     public bool HasShape()
     {
         return isShapeComponentSet;
@@ -113,6 +139,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SaveOriginalMaterialAndSetEditMaterials();
+        DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
     }
 
     public void Deselect()
@@ -122,6 +149,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
+        
+        DCL.Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(rootEntity);
         SetOriginalMaterials();
     }
 
@@ -233,6 +262,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             name.SetNewName(newName);
             rootEntity.scene.SharedComponentAttach(rootEntity.entityId, name.id);
         }
+        onStatusUpdate?.Invoke(this);
     }
 
     public string GetDescriptiveName()

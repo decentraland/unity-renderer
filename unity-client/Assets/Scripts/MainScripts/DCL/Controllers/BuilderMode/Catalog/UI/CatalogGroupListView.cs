@@ -34,7 +34,7 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
                 adapter.OnAdapterDrag += OnDrag;
                 adapter.OnAdapterEndDrag += OnEndDrag;
             }
-        }         
+        }
     }
 
     void OnDrag(PointerEventData data)
