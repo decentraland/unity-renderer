@@ -9,6 +9,7 @@ public class ActionController : MonoBehaviour
 {
     public static bool VERBOSE = false;
 
+    public BuilderInWorldController builderInWorldController;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
 
     public System.Action OnUndo, OnRedo;
@@ -67,7 +68,9 @@ public class ActionController : MonoBehaviour
 
     public void TryToUndoAction()
     {
-        if (currentUndoStepIndex < 0 || !actionsMade[0].isDone) return;
+        if (currentUndoStepIndex < 0 ||
+            actionsMade.Count <= 0 ||
+            !actionsMade[0].isDone) return;
 
         UndoCurrentAction();
 
@@ -96,7 +99,7 @@ public class ActionController : MonoBehaviour
             entityActionList.Add(builderInWorldEntityAction);
         }
 
-        buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.DELETED);
+        buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.DELETE);
 
         AddAction(buildAction);
     }
@@ -106,7 +109,7 @@ public class ActionController : MonoBehaviour
         BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity, entity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity));
 
         BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-        buildAction.CreateActionType(builderInWorldEntityAction, ActionType.CREATED);
+        buildAction.CreateActionType(builderInWorldEntityAction, ActionType.CREATE);
 
         AddAction(buildAction);
     }
@@ -151,7 +154,7 @@ public class ActionController : MonoBehaviour
                 entityToApply.gameObject.transform.localScale = new Vector3(convertedScale.x / parent.localScale.x, convertedScale.y / parent.localScale.y, convertedScale.z / parent.localScale.z);
                 break;
 
-            case ActionType.CREATED:
+            case ActionType.CREATE:
                 string entityString = (string)value;
                 if (isUndo)                
                     builderInWorldEntityHandler.DeleteEntity(entityString);                
@@ -160,7 +163,7 @@ public class ActionController : MonoBehaviour
                 
                 break;
 
-            case ActionType.DELETED:
+            case ActionType.DELETE:
                 string deletedEntityString = (string)value;
 
                 if (isUndo)               
@@ -168,6 +171,13 @@ public class ActionController : MonoBehaviour
                 else               
                     builderInWorldEntityHandler.DeleteEntity(deletedEntityString);
                 
+                break;
+            case ActionType.CHANGE_FLOOR:
+                string sceneObjectToApply = (string)value;
+               
+                SceneObject floorObject = JsonConvert.DeserializeObject<SceneObject>(sceneObjectToApply);
+                builderInWorldEntityHandler.DeleteFloorEntities();
+                builderInWorldController.CreateFloor(floorObject);
                 break;
         }
     }

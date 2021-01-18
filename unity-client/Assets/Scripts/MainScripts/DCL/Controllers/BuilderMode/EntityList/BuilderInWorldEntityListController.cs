@@ -46,6 +46,9 @@ public class BuilderInWorldEntityListController : MonoBehaviour
 
     public void SetEntityList(List<DCLBuilderInWorldEntity> sceneEntities)
     {
+        if (entityListView == null)
+            return;
+
         entitiesList = sceneEntities;
         if (entityListView.gameObject.activeSelf)
             entityListView.SetContent(entitiesList);

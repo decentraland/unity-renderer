@@ -230,7 +230,7 @@ public class VoxelController : MonoBehaviour
             }
 
             BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-            buildAction.actionType = BuildInWorldCompleteAction.ActionType.CREATED;
+            buildAction.actionType = BuildInWorldCompleteAction.ActionType.CREATE;
 
             List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
 
@@ -254,7 +254,7 @@ public class VoxelController : MonoBehaviour
             }
             else
             {
-                buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATED);
+                buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATE);
                 actionController.AddAction(buildAction);
             }
 

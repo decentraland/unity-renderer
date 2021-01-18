@@ -191,13 +191,13 @@ public class FreeCameraMovement : CameraStateBase
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
-        if(buttonId == 1)
+        if(buttonId == 0)
             CameraLook(axisX, axisY);
     }
 
     private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
-        if (buttonId == 0 ||buttonId == 2)
+        if (buttonId == 2 || buttonId == 1)
             CameraDrag(axisX, axisY);
     }
  

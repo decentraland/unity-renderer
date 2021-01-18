@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ExternalCallsController : MonoBehaviour
+public class ExternalCallsController
 {
     private static ExternalCallsController instanceValue;
 
@@ -19,7 +19,7 @@ public class ExternalCallsController : MonoBehaviour
         {
             if (instanceValue == null)
             {
-                instanceValue = new GameObject("_ExternalCallController").AddComponent<ExternalCallsController>();
+                instanceValue = new ExternalCallsController();
             }
 
             return instanceValue;

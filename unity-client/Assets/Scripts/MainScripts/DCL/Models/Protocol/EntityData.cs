@@ -8,6 +8,7 @@ public class EntityData
 {
     public string entityId;
     public TransformComponent transformComponent;
+    public NFTComponent nftComponent;
 
     public List<GenericComponent> components = new List<GenericComponent>();
     public List<GenericComponent> sharedComponents = new List<GenericComponent>();
@@ -20,6 +21,17 @@ public class EntityData
         public Vector3 position;
         public Vector3 rotation;
         public Vector3 scale;
+    }
+
+    [System.Serializable]
+    public class NFTComponent
+    {
+        public int componentId => (int)CLASS_ID.NFT_SHAPE;
+        public string id;
+        public string src;
+        public string assetId;
+        public ColorRepresentation color;
+        public int style = 0;
     }
 
 }

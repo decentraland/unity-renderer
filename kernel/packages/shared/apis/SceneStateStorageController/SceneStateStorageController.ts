@@ -65,7 +65,8 @@ export class SceneStateStorageController extends ExposableAPI {
           EntityType.SCENE,
           parcels,
           entityFiles,
-          sceneJson
+          sceneJson,
+          Date.now()
         )
 
         // Sign entity id

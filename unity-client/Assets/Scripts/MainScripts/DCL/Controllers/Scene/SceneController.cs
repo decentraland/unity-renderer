@@ -532,7 +532,6 @@ namespace DCL
             OnReadyScene?.Invoke(sceneId);
         }
 
-
         public void ActivateBuilderInWorldEditScene()
         {
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());

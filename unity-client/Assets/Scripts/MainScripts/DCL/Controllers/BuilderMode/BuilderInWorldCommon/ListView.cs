@@ -37,11 +37,17 @@ public class ListView<T> : MonoBehaviour
 
     public virtual void RemoveAdapters()
     {
+        if (contentPanelTransform == null||
+            contentPanelTransform.transform == null ||
+            contentPanelTransform.transform.childCount <= 0)
+            return;
+
 
         for (int i = 0; i < contentPanelTransform.transform.childCount; i++)
         {
             GameObject toRemove = contentPanelTransform.transform.GetChild(i).gameObject;
-            Destroy(toRemove);
+            if(toRemove != null)
+                Destroy(toRemove);
         }
     }
 }

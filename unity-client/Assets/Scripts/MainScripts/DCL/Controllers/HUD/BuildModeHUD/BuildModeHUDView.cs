@@ -1,15 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BuildModeHUDView : MonoBehaviour
 {
-
     public SceneLimitInfoController sceneLimitInfoController;
     public SceneObjectCatalogController sceneObjectCatalogController;
-    public ToolTipController toolTipController;
+    public ToolTipController tooltipController;
     public QuickBarView quickBarView;
     public CatalogGroupListView catalogGroupListView;
 
@@ -18,6 +18,14 @@ public class BuildModeHUDView : MonoBehaviour
     public Button translateBtn, rotateBtn, scaleBtn, resetBtn, duplicateBtn, deleteBtn,publishBtn;
 
     public Button tutorialBtn;
+    public Button logOutBtn;
+
+    public GameObject publishGO;
+    public GameObject publishingGO;
+    public GameObject publishingFinishedGO;
+
+    public TextMeshProUGUI publishStatusTxt;
+
     [SerializeField] internal ShowHideAnimator showHideAnimator;
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
     [SerializeField] internal InputAction_Trigger toggleControlsVisibilityInputAction;
@@ -39,6 +47,7 @@ public class BuildModeHUDView : MonoBehaviour
 
     public event Action<SceneObject> OnSceneObjectSelected;
     public event Action OnStopInput, OnResumeInput,OnTutorialAction,OnPublishAction;
+    public event Action OnLogoutAction;
     public event Action OnSceneObjectDrop;
 
     private void Awake()
@@ -57,10 +66,10 @@ public class BuildModeHUDView : MonoBehaviour
         toggleSceneInfoInputAction.OnTriggered += OnSceneLimitInfoControllerChangeVisibilityTriggered;
         toggleCatalogInputAction.OnTriggered += OnSceneCatalogControllerChangeVisibilityTriggered;
 
-    
+
         entityListBtn.onClick.AddListener(() => OnEntityListChangeVisibilityAction?.Invoke());
         closeEntityListBtn.onClick.AddListener(() => OnEntityListChangeVisibilityAction?.Invoke());
-        
+
 
         catalogBtn.onClick.AddListener(() => OnSceneCatalogControllerChangeVisibilityAction?.Invoke());
         closeCatalogBtn.onClick.AddListener(() => OnSceneCatalogControllerChangeVisibilityAction?.Invoke());
@@ -85,7 +94,8 @@ public class BuildModeHUDView : MonoBehaviour
         catalogGroupListView.OnStopInput += () => OnStopInput?.Invoke();
 
         tutorialBtn.onClick.AddListener(() => OnTutorialAction?.Invoke());
-        publishBtn.onClick.AddListener(() => OnPublishAction?.Invoke()); 
+        publishBtn.onClick.AddListener(() => OnPublishAction?.Invoke());
+        logOutBtn.onClick.AddListener(() => OnLogoutAction?.Invoke());
     }
 
     private void OnDestroy()
@@ -104,6 +114,35 @@ public class BuildModeHUDView : MonoBehaviour
         toggleOpenEntityListInputAction.OnTriggered -= OnEntityListActionTriggered;
         toggleSceneInfoInputAction.OnTriggered -= OnSceneLimitInfoControllerChangeVisibilityTriggered;
         toggleCatalogInputAction.OnTriggered -= OnSceneCatalogControllerChangeVisibilityTriggered;
+    }
+
+    public void PublishStart()
+    {
+        publishGO.SetActive(true);
+        publishingGO.SetActive(true);
+        publishingFinishedGO.SetActive(false);
+    }
+
+    public void PublishEnd(string message)
+    {
+        publishingGO.SetActive(false);
+        publishingFinishedGO.SetActive(true);
+        publishStatusTxt.text = message;
+    }
+
+    public void SetPublishBtnAvailability(bool isAvailable)
+    {
+        publishBtn.interactable = isAvailable;
+    }
+
+    public void RefreshCatalogAssetPack()
+    {
+        sceneObjectCatalogController.RefreshAssetPack();
+    }
+
+    public void RefreshCatalogContent()
+    {
+        sceneObjectCatalogController.RefreshCatalog();
     }
 
     public void SceneObjectDroppedInView()
@@ -162,7 +201,7 @@ public class BuildModeHUDView : MonoBehaviour
 
     public void HideToolTip()
     {
-        toolTipController.Desactivate();
+        tooltipController.Stop();
     }
 
     #region Triggers

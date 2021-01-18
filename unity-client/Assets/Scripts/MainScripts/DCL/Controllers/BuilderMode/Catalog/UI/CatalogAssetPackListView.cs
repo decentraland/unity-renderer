@@ -13,6 +13,9 @@ public class CatalogAssetPackListView : ListView<SceneAssetPack>
     public override void AddAdapters()
     {
         base.AddAdapters();
+        if (contentPanelTransform == null)
+            return;
+
         foreach (SceneAssetPack sceneAssetPack in contentList)
         {
             CatalogAssetPackAdapter adapter = Instantiate(catalopgAssetPackItemAdapterPrefab, contentPanelTransform).GetComponent<CatalogAssetPackAdapter>();
