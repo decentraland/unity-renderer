@@ -106,6 +106,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 746094ad79f2853439fc98abd3963fb8, type: 2}
   - {fileID: 11400000, guid: 9d995e577b758d248b97f78c9825d831, type: 2}
   - {fileID: 11400000, guid: 6d010659c23cf88408422156d7c5c78e, type: 2}
+  - {fileID: 11400000, guid: a9f9f5fb4f1639d4b8461c2838cfae56, type: 2}
+  - {fileID: 11400000, guid: f0a0f94cc4fd01c4e82210e0de670a65, type: 2}
   builderHoldActions:
   - {fileID: 11400000, guid: 5c1dc0623e14bc3439b6f58922b177ba, type: 2}
   - {fileID: 11400000, guid: 5126f09bb1e0d404294e71443813b65c, type: 2}

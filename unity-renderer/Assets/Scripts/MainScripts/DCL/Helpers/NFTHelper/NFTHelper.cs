@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using DCL.Helpers.NFT.Markets;
 
@@ -7,6 +7,21 @@ namespace DCL.Helpers.NFT
     public static class NFTHelper
     {
         static INFTMarket market = new OpenSea();
+
+        static public IEnumerator FetchNFTsFromOwner(string assetContractAddress, Action<NFTOwner> onSuccess, Action<string> onError)
+        {
+            INFTMarket selectedMarket = null;
+            yield return GetMarket(assetContractAddress, (mkt) => selectedMarket = mkt);
+
+            if (selectedMarket != null)
+            {
+                yield return selectedMarket.FetchNFTsFromOwner(assetContractAddress, onSuccess, onError);
+            }
+            else
+            {
+                onError?.Invoke($"Market not found for asset {assetContractAddress}");
+            }
+        }
 
         static public IEnumerator FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
@@ -25,6 +40,12 @@ namespace DCL.Helpers.NFT
 
         // NOTE: this method doesn't make sense now, but it will when support for other market is added
         static public IEnumerator GetMarket(string assetContractAddress, string tokenId, Action<INFTMarket> onSuccess)
+        {
+            onSuccess?.Invoke(market);
+            yield break;
+        }
+
+        static public IEnumerator GetMarket(string assetContractAddress,Action<INFTMarket> onSuccess)
         {
             onSuccess?.Invoke(market);
             yield break;

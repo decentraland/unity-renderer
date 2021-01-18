@@ -53,6 +53,11 @@ public class PlayerAvatarController : MonoBehaviour
         avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
+    public void SetAvatarVisibility(bool isVisible)
+    {
+        avatarRenderer.SetVisibility(isVisible);
+    }
+
     private void OnEnable()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;

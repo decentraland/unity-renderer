@@ -46,8 +46,7 @@ public class SceneObjectCatalogController : MonoBehaviour
         catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
 
-     
-        catalogAssetPackListView.SetContent(AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList());
+           
         quickBarController.OnSceneObjectSelected += SceneObjectSelected;
     }
 
@@ -189,6 +188,7 @@ public class SceneObjectCatalogController : MonoBehaviour
     {
         isShowingAssetPacks = true;
         catalogTitleTxt.text = BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE;
+        RefreshCatalog();
         catalogAssetPackListView.gameObject.SetActive(true);
         catalogGroupListView.gameObject.SetActive(false);
     }
@@ -202,6 +202,7 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     public void OpenCatalog()
     {
+        RefreshCatalog();
         catalogTitleTxt.text = BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE;
         Utils.UnlockCursor();
         gameObject.SetActive(true);   
@@ -211,6 +212,33 @@ public class SceneObjectCatalogController : MonoBehaviour
     {
         if(gameObject.activeSelf)
             StartCoroutine(CloseCatalogAfterOneFrame());
+    }
+
+    public void RefreshAssetPack()
+    {
+        catalogGroupListView.RefreshDisplay();
+    }
+
+    public void RefreshCatalog()
+    {
+        catalogAssetPackListView.SetContent(GetContentForCatalog());
+    }
+
+    List<SceneAssetPack> GetContentForCatalog()
+    {
+        List<SceneAssetPack> catalogList =  AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList();
+        catalogList.Add(GetCollectiblesAssetPack());
+        return catalogList;
+    }
+
+    SceneAssetPack GetCollectiblesAssetPack()
+    {
+        SceneAssetPack sceneAssetPack = new SceneAssetPack();
+        sceneAssetPack.id = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
+        sceneAssetPack.title = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
+
+        sceneAssetPack.assets = BuilderInWorldNFTController.i.GetNFTsAsSceneObjects();      
+        return sceneAssetPack;
     }
 
     List<SceneObject> GetAssetsListByCategory(string category, SceneAssetPack sceneAssetPack)

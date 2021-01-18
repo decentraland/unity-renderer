@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,36 @@ namespace DCL.Helpers.NFT.Markets
         MarketInfo openSeaMarketInfo = new MarketInfo() { name = "OpenSea" };
         OpenSeaRequestController requestController = new OpenSeaRequestController();
         Dictionary<string, NFTInfo> cachedResponses = new Dictionary<string, NFTInfo>();
+        Dictionary<string, NFTOwner> ownerCachedResponses = new Dictionary<string, NFTOwner>();
+
+
+        IEnumerator INFTMarket.FetchNFTsFromOwner(string assetContractAddress, Action<NFTOwner> onSuccess, Action<string> onError)
+        {
+            string ownerId = assetContractAddress;
+            if (cachedResponses.ContainsKey(ownerId))
+            {
+                onSuccess?.Invoke(ownerCachedResponses[ownerId]);
+                yield break;
+            }
+
+            OpenSeaRequestAllNFTs request = new OpenSeaRequestAllNFTs(assetContractAddress,
+                (assetsResponse) =>
+                {
+                    NFTOwner nftOwner = ResponseToNFTOwner(assetContractAddress, assetsResponse);
+
+                    if (!ownerCachedResponses.ContainsKey(ownerId))
+                    {
+                        ownerCachedResponses.Add(ownerId, nftOwner);
+                    }
+                    onSuccess?.Invoke(nftOwner);
+                },
+                (error) =>
+                {
+                    onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress} {error}");
+                });
+        }
+
+
 
         IEnumerator INFTMarket.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
@@ -38,6 +68,18 @@ namespace DCL.Helpers.NFT.Markets
                 });
         }
 
+        private NFTOwner ResponseToNFTOwner(string ethAddress,AssetsResponse response)
+        {
+            NFTOwner ownerInfo = NFTOwner.defaultNFTOwner;
+            ownerInfo.ethAddress = ethAddress;
+
+            foreach(AssetResponse assetResponse in response.assets)
+            {
+                ownerInfo.assets.Add(ResponseToNFTInfo(assetResponse));
+            }
+            return ownerInfo;
+        }
+
         private NFTInfo ResponseToNFTInfo(AssetResponse response)
         {
             NFTInfo ret = NFTInfo.defaultNFTInfo;
@@ -50,6 +92,10 @@ namespace DCL.Helpers.NFT.Markets
             ret.imageUrl = response.image_url;
             ret.assetLink = response.external_link;
             ret.marketLink = response.permalink;
+            ret.tokenId = response.token_id;
+
+            ret.assetContract.address = response.asset_contract.address;
+            ret.assetContract.name = response.asset_contract.name;
 
             if (!string.IsNullOrEmpty(response.owner?.address))
             {

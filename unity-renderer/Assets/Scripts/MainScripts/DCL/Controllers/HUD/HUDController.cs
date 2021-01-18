@@ -86,7 +86,9 @@ public class HUDController : MonoBehaviour
 
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
 
-    public BuildModeHUDController buildModeHud => GetHUDElement(HUDElementID.BUILD_MODE) as BuildModeHUDController;
+    public BuildModeHUDController builderInWorldMainHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_MAIN) as BuildModeHUDController;
+
+    public BuilderInWorldInititalHUDController builderInWorldInititalHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_INITIAL) as BuilderInWorldInititalHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -164,9 +166,10 @@ public class HUDController : MonoBehaviour
         EMAIL_PROMPT = 21,
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
-        BUILD_MODE = 24,
+        BUILDER_IN_WORLD_MAIN = 24,
         SETTINGS_PANEL = 25,
-        COUNT = 26
+        BUILDER_IN_WORLD_INITIAL = 26,
+        COUNT = 27
     }
 
     [System.Serializable]
@@ -313,6 +316,8 @@ public class HUDController : MonoBehaviour
                         taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i, FriendsController.i);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
+                        taskbarHud.AddBuilderInWorldWindow(builderInWorldInititalHud);
+                        
 
                         bool addOldSettingsHUD = false;
                         if (!string.IsNullOrEmpty(extraPayload))
@@ -385,8 +390,11 @@ public class HUDController : MonoBehaviour
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement<GraphicCardWarningHUDController>(configuration, hudElementId);
                 break;
-            case HUDElementID.BUILD_MODE:
+            case HUDElementID.BUILDER_IN_WORLD_MAIN:
                 CreateHudElement<BuildModeHUDController>(configuration, hudElementId);
+                break;
+            case HUDElementID.BUILDER_IN_WORLD_INITIAL:
+                CreateHudElement<BuilderInWorldInititalHUDController>(configuration, hudElementId);
                 break;
         }
 

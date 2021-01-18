@@ -7,10 +7,41 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using DCL.Configuration;
+using static ProtocolV2;
 using Environment = DCL.Environment;
 
 public static partial class BuilderInWorldUtils
 {
+    public static SceneObject CreateFloorSceneObject()
+    {
+        SceneObject floorSceneObject = new SceneObject();
+        floorSceneObject.id = BuilderInWorldSettings.FLOOR_ID;
+
+        floorSceneObject.model = BuilderInWorldSettings.FLOOR_MODEL;
+        floorSceneObject.name  = BuilderInWorldSettings.FLOOR_NAME;
+
+        floorSceneObject.contents = new Dictionary<string, string>();
+
+        floorSceneObject.contents.Add(BuilderInWorldSettings.FLOOR_GLTF_KEY, BuilderInWorldSettings.FLOOR_GLTF_VALUE);
+        floorSceneObject.contents.Add(BuilderInWorldSettings.FLOOR_TEXTURE_KEY, BuilderInWorldSettings.FLOOR_TEXTURE_VALUE);
+
+        floorSceneObject.metrics = new SceneObject.ObjectMetrics();
+
+        return floorSceneObject;
+    }
+
+    public static Dictionary<string,string> ConvertMappingsToDictionary(ContentServerUtils.MappingPair[] contents)
+    {
+        Dictionary<string, string> mappingDict = new Dictionary<string, string>();
+
+        foreach(ContentServerUtils.MappingPair mappingPair in contents)
+        {
+            mappingDict.Add(mappingPair.file, mappingPair.hash);
+        }
+        return mappingDict;
+    }
+
     public static void DrawScreenRect(Rect rect, Color color)
     {
         GUI.color = color;
@@ -90,13 +121,18 @@ public static partial class BuilderInWorldUtils
         return Physics.Raycast(mouseRay, out hitInfo, 5555, mask);
     }
 
-    public static bool IsPointerOverUIElement()
+    public static bool IsPointerOverUIElement(Vector3 mousePosition)
     {
         var eventData = new PointerEventData(EventSystem.current);
-        eventData.position = Input.mousePosition;
+        eventData.position = mousePosition;
         var results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, results);
         return results.Count > 2;
+    }
+
+    public static bool IsPointerOverUIElement()
+    {
+        return IsPointerOverUIElement(Input.mousePosition);
     }
 
     public static string ConvertEntityToJSON(DecentralandEntity entity)
@@ -129,12 +165,28 @@ public static partial class BuilderInWorldUtils
 
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePair in entity.GetSharedComponents())
         {
-            ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
-            entityComponentModel.componentId = keyValuePair.Value.GetClassId();
-            entityComponentModel.data = keyValuePair.Value.GetModel();
-            entityComponentModel.classId = keyValuePair.Value.id;
+            if (keyValuePair.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+            {
+                EntityData.NFTComponent nFTComponent = new EntityData.NFTComponent();
+                NFTShape.Model model = (NFTShape.Model)keyValuePair.Value.GetModel();
 
-            builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+                nFTComponent.id = keyValuePair.Value.id;
+                nFTComponent.color = new ColorRepresentation(model.color);
+                nFTComponent.assetId = model.assetId;
+                nFTComponent.src = model.src;
+                nFTComponent.style = model.style;
+
+                builderInWorldEntityData.nftComponent = nFTComponent;
+            }
+            else
+            {
+                ProtocolV2.GenericComponent entityComponentModel = new ProtocolV2.GenericComponent();
+                entityComponentModel.componentId = keyValuePair.Value.GetClassId();
+                entityComponentModel.data = keyValuePair.Value.GetModel();
+                entityComponentModel.classId = keyValuePair.Value.id;
+
+                builderInWorldEntityData.sharedComponents.Add(entityComponentModel);
+            }
         }
 
 

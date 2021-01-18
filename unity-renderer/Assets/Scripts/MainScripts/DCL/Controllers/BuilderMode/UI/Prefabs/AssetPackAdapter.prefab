@@ -131,6 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   titleTxt: {fileID: 2695838713389822786}
   packImg: {fileID: 31186816793950739}
+  collectiblesSprite: {fileID: 2800000, guid: b16568f5e2de64c8dbc491d9ac2830e9, type: 3}
 --- !u!222 &3166040672492413340
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -327,7 +328,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.2382553, y: 0.14622954}
   m_AnchorMax: {x: 0.87900007, y: 0.8212296}
-  m_AnchoredPosition: {x: 0.4300003, y: 0.1699791}
+  m_AnchoredPosition: {x: 0.42999268, y: 0.1699791}
   m_SizeDelta: {x: -0.30142212, y: -0.6113434}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1426284929158026406
@@ -484,7 +485,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -20.9, y: -0.0000033379}
+  m_AnchoredPosition: {x: -20.900024, y: -0.0000033379}
   m_SizeDelta: {x: 7.989956, y: 11.695461}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4913072921696772594

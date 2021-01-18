@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Builder.MeshLoadIndicator
@@ -72,7 +72,7 @@ namespace Builder.MeshLoadIndicator
             }
         }
 
-        private DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, string entityId)
+        public DCLBuilderMeshLoadIndicator ShowIndicator(Vector3 position, string entityId)
         {
             DCLBuilderMeshLoadIndicator ret;
 
@@ -92,7 +92,7 @@ namespace Builder.MeshLoadIndicator
             return ret;
         }
 
-        private void HideIndicator(string entityId)
+        public void HideIndicator(string entityId)
         {
             for (int i = 0; i < indicatorsInUse.Count; i++)
             {

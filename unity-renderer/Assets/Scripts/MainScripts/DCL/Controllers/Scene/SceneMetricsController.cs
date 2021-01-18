@@ -146,6 +146,32 @@ namespace DCL
             return cachedModel;
         }
 
+        public bool IsInsideTheLimits()
+        {
+            Model limits = GetLimits();
+            Model usage = GetModel();
+
+            if (usage.triangles > limits.triangles)
+                return false;
+
+            if (usage.bodies > limits.bodies)
+                return false;
+
+            if (usage.entities > limits.entities)
+                return false;
+
+            if (usage.materials > limits.materials)
+                return false;
+
+            if (usage.textures > limits.textures)
+                return false;
+
+            if (usage.meshes > limits.meshes)
+                return false;
+
+            return true;
+        }
+
         public void SendEvent()
         {
             if (isDirty)

@@ -12,14 +12,14 @@ public class TutorialStep_SceneObject : TutorialStep
     {
         base.OnStepStart();
 
-        HUDController.i.buildModeHud.OnSceneObjectSelected += SceneObjectSelected;
+        HUDController.i.builderInWorldMainHud.OnSceneObjectSelected += SceneObjectSelected;
     }
 
     public override void OnStepFinished()
     {
         base.OnStepFinished();
 
-        HUDController.i.buildModeHud.OnSceneObjectSelected -= SceneObjectSelected;
+        HUDController.i.builderInWorldMainHud.OnSceneObjectSelected -= SceneObjectSelected;
     }
 
 

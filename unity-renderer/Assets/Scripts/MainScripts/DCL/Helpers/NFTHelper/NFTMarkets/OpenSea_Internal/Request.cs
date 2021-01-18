@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -193,6 +193,86 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             if (fetchRoutine != null) CoroutineStarter.Stop(fetchRoutine);
             fetchRoutine = null;
             CloseGroup();
+        }
+    }
+
+    internal class OpenSeaRequestAllNFTs
+    {
+        const string API_URL_ASSETS = "https://api.opensea.io/api/v1/assets?owner=";
+        const int REQUEST_RETRIES = 3;
+
+        string assetContractAddress;
+
+        Coroutine fetchRoutine = null;
+
+        Action<AssetsResponse> OnSuccess;
+        Action<string> OnError;
+
+        public OpenSeaRequestAllNFTs(string assetContractAddress, Action<AssetsResponse> OnSuccess, Action<string> OnError)
+        {
+            this.assetContractAddress = assetContractAddress;
+            if (OpenSeaRequestController.VERBOSE) Debug.Log($"Request: created {this.ToString()}");
+
+            this.OnSuccess = OnSuccess;
+            this.OnError = OnError;
+
+            if (fetchRoutine != null) CoroutineStarter.Stop(fetchRoutine);
+            fetchRoutine = CoroutineStarter.Start(Fetch());
+        }
+
+        IEnumerator Fetch()
+        {
+            bool shouldRetry = true;
+            int retryCount = 0;
+
+            string url = API_URL_ASSETS + assetContractAddress;
+
+            do
+            {
+                using (UnityWebRequest request = UnityWebRequest.Get(url))
+                {
+                    if (OpenSeaRequestController.VERBOSE) Debug.Log($"RequestGroup: Request to OpenSea {url}");
+                    yield return request.SendWebRequest();
+
+                    AssetsResponse response = null;
+
+                    if (!request.isNetworkError && !request.isHttpError)
+                    {
+                        response = Utils.FromJsonWithNulls<AssetsResponse>(request.downloadHandler.text);
+                    }
+
+                    if (OpenSeaRequestController.VERBOSE) Debug.Log($"RequestGroup: Request resolving {response != null} {request.error} {url}");
+                    if (response != null)
+                    {
+                        shouldRetry = false;
+                        OnSuccess?.Invoke(response);
+                    }
+                    else
+                    {
+                        shouldRetry = retryCount < REQUEST_RETRIES;
+                        if (!shouldRetry)
+                        {
+                            OnError?.Invoke("Error " + request.downloadHandler.text);
+                        }
+                        else
+                        {
+                            retryCount++;
+                            if (OpenSeaRequestController.VERBOSE) Debug.Log($"RequestGroup: Request retrying {url}");
+                            yield return new WaitForSeconds(GetRetryDelay());
+                        }
+                    }
+                }
+            } while (shouldRetry);
+        }
+
+        float GetRetryDelay()
+        {
+            return OpenSeaRequestController.MIN_REQUEST_DELAY;
+        }
+
+        public override string ToString()
+        {
+            return $"asset_contract_addresses={assetContractAddress}";
         }
     }
 

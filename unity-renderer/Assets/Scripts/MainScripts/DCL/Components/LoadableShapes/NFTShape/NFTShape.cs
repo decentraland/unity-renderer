@@ -72,7 +72,7 @@ namespace DCL.Components
 
         void UpdateBackgroundColor(DecentralandEntity entity)
         {
-            if (model.color == previousModel.color) return;
+            if (previousModel is NFTShape.Model && model.color == previousModel.color) return;
 
             var loadableShape = GetLoaderForEntity(entity) as LoadWrapper_NFT;
             loadableShape?.loaderController.UpdateBackgroundColor(model.color);

@@ -1,8 +1,28 @@
-﻿namespace DCL.Helpers.NFT
+using System.Collections.Generic;
+
+namespace DCL.Helpers.NFT
 {
+    public struct NFTOwner
+    {
+        public string ethAddress;
+        public List<NFTInfo> assets;
+
+        static public NFTOwner defaultNFTOwner
+        {
+            get
+            {
+                NFTOwner ret = new NFTOwner();
+                ret.ethAddress = "0x0000000000000000000000000000000000000000";
+                ret.assets = new List<NFTInfo>();
+                return ret;
+            }
+        }
+    }
+
     public struct NFTInfo
     {
         public string name;
+        public string tokenId;
         public string description;
         public string owner;
         public long numSales;
@@ -19,6 +39,7 @@
         public MarketInfo? marketInfo;
         public string currentPrice;
         public PaymentTokenInfo? currentPriceToken;
+        public AssetContract assetContract;
 
         static public NFTInfo defaultNFTInfo
         {
@@ -27,6 +48,7 @@
                 NFTInfo ret = new NFTInfo();
                 ret.owner = "0x0000000000000000000000000000000000000000";
                 ret.numSales = 0;
+                ret.assetContract = new AssetContract();
                 return ret;
             }
         }
@@ -39,6 +61,12 @@
 
     public struct MarketInfo
     {
+        public string name;
+    }
+
+    public struct AssetContract
+    {
+        public string address;
         public string name;
     }
 }

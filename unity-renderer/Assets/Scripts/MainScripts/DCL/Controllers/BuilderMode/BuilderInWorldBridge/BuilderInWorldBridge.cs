@@ -12,10 +12,13 @@ using static ProtocolV2;
 using Environment = DCL.Environment;
 
 /// <summary>
-/// This class will handle all the messages that will be sent to kernel. 
+/// This class will handle all the messages that will be sent to kernel.
 /// </summary>
 public class BuilderInWorldBridge : MonoBehaviour
 {
+    public event Action OnPublishSuccess;
+    public event Action<string> OnPublishError;
+
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     TransformComponent entityTransformComponentModel = new TransformComponent();
 
@@ -23,6 +26,43 @@ public class BuilderInWorldBridge : MonoBehaviour
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
+
+
+    public void PublishSceneResult(string payload)
+    {
+        PublishSceneResultPayload publishSceneResultPayload = JsonUtility.FromJson<PublishSceneResultPayload>(payload);
+        string message;
+        if (publishSceneResultPayload.ok)
+        {
+            //Note (Adrian): This is temporary until implement the UI
+            message = "Done!\nThe scene has been published";
+            OnPublishSuccess?.Invoke();
+        }
+        else
+        {
+            message = publishSceneResultPayload.error;
+            OnPublishError?.Invoke(publishSceneResultPayload.error);
+        }
+
+        HUDController.i.builderInWorldMainHud.PublishEnd(message);
+    }
+
+    public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    {
+        entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
+        entitySingleComponentPayload.componentId = (int)CLASS_ID.LOCKED_ON_EDIT;
+
+
+        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
+        {
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.LOCKED_ON_EDIT)
+            {
+                entitySingleComponentPayload.data = ((DCLLockedOnEdit)keyValuePairBaseDisposable.Value).GetModel();
+            }
+        }
+
+        ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
 
     public void ChangedEntityName(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
@@ -38,8 +78,12 @@ public class BuilderInWorldBridge : MonoBehaviour
             }
         }
 
+        ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
 
-        modifyEntityComponentEvent.payload = entitySingleComponentPayload;
+    void ChangeEntityComponent(EntitySingleComponentPayload payload, ParcelScene scene)
+    {
+        modifyEntityComponentEvent.payload = payload;
 
         WebInterface.SceneEvent<ModifyEntityComponentEvent> sceneEvent = new WebInterface.SceneEvent<ModifyEntityComponentEvent>();
         sceneEvent.sceneId = scene.sceneData.id;
@@ -87,7 +131,24 @@ public class BuilderInWorldBridge : MonoBehaviour
             ComponentPayload componentPayLoad = new ComponentPayload();
 
             componentPayLoad.componentId = keyValuePairBaseDisposable.Value.GetClassId();
-            componentPayLoad.data = keyValuePairBaseDisposable.Value.GetModel();
+
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+            {
+                NFTComponent nftComponent = new NFTComponent();
+                NFTShape.Model model = (NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel();
+
+                nftComponent.color = new ColorRepresentation(model.color);
+                nftComponent.assetId = model.assetId;
+                nftComponent.src = model.src;
+                nftComponent.style = model.style;
+
+                componentPayLoad.data = nftComponent;
+            }
+            else
+            {
+                componentPayLoad.data = keyValuePairBaseDisposable.Value.GetModel();
+            }
+
 
             list.Add(componentPayLoad);
         }
@@ -115,12 +176,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
 
         //Note (Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
-
-        string message = JsonConvert.SerializeObject(sceneEvent, Formatting.None, new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
-
+        string message = JsonConvert.SerializeObject(sceneEvent);
 
         WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.SCENE_EVENT_NAME, message);
     }
@@ -164,11 +220,8 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.payload = addEntityEvent;
 
 
-        //Note (Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
-        string message = Newtonsoft.Json.JsonConvert.SerializeObject(sceneEvent, Formatting.None, new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        });
+        //Note(Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
+        string message = JsonConvert.SerializeObject(sceneEvent);
 
         WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.SCENE_EVENT_NAME, message);
     }

@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:unity-client/Assets/Scripts/MainScripts/DCL/Controllers/BuilderMode.meta
 guid: b0f3d9a0ea8d7ab48b6c90f8855e9fe0
-=======
-guid: c937747d11a744ed389d8fafaa322e9f
->>>>>>> master:unity-client/Assets/Scripts/MainScripts/DCL/Components/Avatar/AvatarName.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

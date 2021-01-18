@@ -13,6 +13,8 @@ namespace DCL.Configuration
         public static int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
 
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
+        public const string FLOOR_CATEGORY = "ground";
+
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
@@ -22,6 +24,24 @@ namespace DCL.Configuration
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
+
+
+        //Floor Scene Object
+        public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
+        public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
+        public const string FLOOR_NAME = "Floor";
+
+        public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
+        public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";
+
+        public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
+        public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
+
+
+        //Collectables
+        public const string ASSETS_COLLECTIBLES = "Collectibles";
+        public const string COLLECTIBLE_MODEL_PROTOCOL = "ethereum://";
+    
     }
 
     public static class ApplicationSettings

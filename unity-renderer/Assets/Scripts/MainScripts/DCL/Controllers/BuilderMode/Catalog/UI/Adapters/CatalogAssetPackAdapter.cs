@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ public class CatalogAssetPackAdapter : MonoBehaviour
 {
     public TextMeshProUGUI titleTxt;
     public RawImage packImg;
+    public Texture collectiblesSprite;
 
     public event Action<SceneAssetPack> OnSceneAssetPackClick;
     SceneAssetPack sceneAssetPack;
@@ -20,7 +22,16 @@ public class CatalogAssetPackAdapter : MonoBehaviour
     {
         this.sceneAssetPack = sceneAssetPack;
         titleTxt.text = this.sceneAssetPack.title;
-        GetThumbnail();
+
+        if (sceneAssetPack.id != BuilderInWorldSettings.ASSETS_COLLECTIBLES)
+        {
+            GetThumbnail();
+        }
+        else
+        {
+            packImg.enabled = true;
+            packImg.texture = collectiblesSprite;
+        }
     }
 
     private void GetThumbnail()

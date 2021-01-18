@@ -33,7 +33,7 @@ public class ActionAdapter : MonoBehaviour
             case BuildInWorldCompleteAction.ActionType.SCALE:
                 actionImg.sprite = scaleSprite;
                 break;
-            case BuildInWorldCompleteAction.ActionType.CREATED:
+            case BuildInWorldCompleteAction.ActionType.CREATE:
                 actionImg.sprite = createdSprite;
                 break;
         

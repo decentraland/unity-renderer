@@ -2,6 +2,7 @@ using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class BuildInWorldCompleteAction
 {
@@ -10,8 +11,9 @@ public class BuildInWorldCompleteAction
         MOVE = 0,
         ROTATE = 1,
         SCALE = 2,
-        CREATED = 3,
-        DELETED = 4
+        CREATE = 3,
+        DELETE = 4,
+        CHANGE_FLOOR = 5
     }
 
     public ActionType actionType;
@@ -45,6 +47,14 @@ public class BuildInWorldCompleteAction
     void ApplyValue(string entityToApply, object value, bool isUndo)
     {
         OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo);
+    }
+
+    public void CreateChangeFloorAction(SceneObject oldFloor,SceneObject newFloor)
+    {
+        BuilderInWorldEntityAction action = new BuilderInWorldEntityAction(JsonConvert.SerializeObject(oldFloor), JsonConvert.SerializeObject(newFloor));
+        List<BuilderInWorldEntityAction> list = new List<BuilderInWorldEntityAction>();
+        list.Add(action);
+        CreateAction(list, ActionType.CHANGE_FLOOR);
     }
 
     public void CreateActionType(BuilderInWorldEntityAction action, ActionType type)

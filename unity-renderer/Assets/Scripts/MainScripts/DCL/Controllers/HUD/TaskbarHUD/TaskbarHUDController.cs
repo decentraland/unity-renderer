@@ -26,6 +26,7 @@ public class TaskbarHUDController : IHUD
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
     public HelpAndSupportHUDController helpAndSupportHud;
+    public BuilderInWorldInititalHUDController builderInWorldInitialHUDController;
 
     IMouseCatcher mouseCatcher;
     IChatController chatController;
@@ -70,6 +71,8 @@ public class TaskbarHUDController : IHUD
         view.OnFriendsToggleOn += View_OnFriendsToggleOn;
         view.OnSettingsToggleOff += View_OnSettingsToggleOff;
         view.OnSettingsToggleOn += View_OnSettingsToggleOn;
+        view.OnBuilderInWorldToggleOff += View_OnBuilderInWorldToggleOff;
+        view.OnBuilderInWorldToggleOn += View_OnBuilderInWorldToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
 
@@ -179,6 +182,17 @@ public class TaskbarHUDController : IHUD
             settingsHud.SetVisibility(false);
     }
 
+    private void View_OnBuilderInWorldToggleOn()
+    {
+        builderInWorldInitialHUDController.OpenBuilderInWorldInitialView();
+        OnAnyTaskbarButtonClicked?.Invoke();
+    }
+
+    private void View_OnBuilderInWorldToggleOff()
+    {
+        builderInWorldInitialHUDController.CloseBuilderInWorldInitialView();
+    }
+
     private void View_OnExploreToggleOn()
     {
         exploreHud.SetVisibility(true);
@@ -211,6 +225,11 @@ public class TaskbarHUDController : IHUD
         MarkWorldChatAsReadIfOtherWindowIsOpen();
     }
 
+    public void SetBuilderInWorldStatus(bool isActive)
+    {
+        view.SetBuilderInWorldStatus(isActive);
+    }
+
     public void AddWorldChatWindow(WorldChatWindowHUDController controller)
     {
         if (controller == null || controller.view == null)
@@ -231,6 +250,19 @@ public class TaskbarHUDController : IHUD
 
         view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false);
+    }
+
+    public void AddBuilderInWorldWindow(BuilderInWorldInititalHUDController controller)
+    {
+        if (controller == null)
+        {
+            Debug.LogWarning("AddBuilderInWorldWindow >>> Controller doesn't exit yet!");
+            return;
+        }
+
+        builderInWorldInitialHUDController = controller;
+
+        builderInWorldInitialHUDController.OnClose += () => { view.builderInWorldButton.SetToggleState(false, false); };
     }
 
     public void OpenFriendsWindow()
@@ -442,6 +474,8 @@ public class TaskbarHUDController : IHUD
             view.OnFriendsToggleOn -= View_OnFriendsToggleOn;
             view.OnSettingsToggleOff -= View_OnSettingsToggleOff;
             view.OnSettingsToggleOn -= View_OnSettingsToggleOn;
+            view.OnBuilderInWorldToggleOff -= View_OnBuilderInWorldToggleOff;
+            view.OnBuilderInWorldToggleOn -= View_OnBuilderInWorldToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
 

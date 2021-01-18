@@ -82,7 +82,7 @@ public class QuickBarView : MonoBehaviour
         shortcutsImgs[index].SetTexture(texture);
     }
 
-    void QuickBarInput(int quickBarSlot)
+    public void QuickBarInput(int quickBarSlot)
     {
         OnQuickBarShortcutSelected?.Invoke(quickBarSlot);
     }

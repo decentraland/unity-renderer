@@ -14,14 +14,14 @@ public class TutorialStep_Catalog : TutorialStep
     {
         base.OnStepStart();
 
-        HUDController.i.buildModeHud.OnCatalogOpen += CatalogOpened;
+        HUDController.i.builderInWorldMainHud.OnCatalogOpen += CatalogOpened;
     }
 
     public override void OnStepFinished()
     {
         base.OnStepFinished();
 
-        HUDController.i.buildModeHud.OnCatalogOpen -= CatalogOpened;
+        HUDController.i.builderInWorldMainHud.OnCatalogOpen -= CatalogOpened;
     }
 
 

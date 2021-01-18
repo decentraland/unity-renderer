@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1096,8 +1096,8 @@ MonoBehaviour:
   openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 1
-  baseUrlCustom: https://play.decentraland.zone/?
+  baseUrlMode: 0
+  baseUrlCustom: 
   environment: 4
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
@@ -1225,14 +1225,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
-      propertyPath: outlinerMaterial
+      propertyPath: avatarRenderer
       value: 
-      objectReference: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
-    - target: {fileID: 1208871511546216253, guid: ceb04930a6bb25b44a6ad241f62abdf5,
-        type: 3}
-      propertyPath: builderInWorldBridge
-      value: 
-      objectReference: {fileID: 2067631887}
+      objectReference: {fileID: 2021276774}
     - target: {fileID: 1208871511845330199, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderCamera
@@ -1258,11 +1253,6 @@ PrefabInstance:
       propertyPath: mouseCatcher
       value: 
       objectReference: {fileID: 1107221834}
-    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
-        type: 3}
-      propertyPath: builderInWorldBridge
-      value: 
-      objectReference: {fileID: 2067631887}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceb04930a6bb25b44a6ad241f62abdf5, type: 3}
 --- !u!114 &1608366483 stripped
@@ -1340,24 +1330,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d0821bf5c3e3f47ba67e483803236d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2021276774 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1312815038965150261, guid: b0965b55b892d438da492708ea09799c,
+    type: 3}
+  m_PrefabInstance: {fileID: 326638024064006570}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f6940e8f999878409de9cb43a484943, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2038581388 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4563922593988327124, guid: b0965b55b892d438da492708ea09799c,
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2067631887 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3917703040089432743, guid: ceb04930a6bb25b44a6ad241f62abdf5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1515935914}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c96c5543d89960749bdf3025e5fc122b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &326638024064006570
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1634,11 +1624,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Environment
-      objectReference: {fileID: 0}
-    - target: {fileID: 943100645385665135, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_Layer
-      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5619040623964129536, guid: fc76969801e8f44598a72147673a6c17,
         type: 3}
