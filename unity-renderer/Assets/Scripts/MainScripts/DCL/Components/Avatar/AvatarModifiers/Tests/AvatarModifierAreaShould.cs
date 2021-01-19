@@ -31,7 +31,46 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator DisableModifiersOnTeleportedAvatars()
+    public IEnumerator NotApplyModifierIfNoAvatarDetected()
+    {
+        yield return null;
+
+        mockAvatarModifier.DidNotReceiveWithAnyArgs().ApplyModifier(null);
+    }
+
+    [UnityTest]
+    public IEnumerator ApplyModifierWhenDetectingAvatar()
+    {
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+
+        mockAvatarModifier.Received().ApplyModifier(fakeObject);
+    }
+
+    [UnityTest]
+    public IEnumerator BehaveWhenTheModifiedItemIsRemoved()
+    {
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+
+        Object.Destroy(fakeObject);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator RemoveModifiersWhenMovingAway()
+    {
+        var fakeObject = PrepareGameObjectForModifierArea();
+        yield return null;
+
+        fakeObject.transform.position += Vector3.one * 100;
+        yield return null;
+
+        mockAvatarModifier.Received().RemoveModifier(fakeObject);
+    }
+
+    [UnityTest]
+    public IEnumerator RemoveModifiersWhenBeingDestroyed()
     {
         var fakeObject = PrepareGameObjectForModifierArea();
         yield return null;
