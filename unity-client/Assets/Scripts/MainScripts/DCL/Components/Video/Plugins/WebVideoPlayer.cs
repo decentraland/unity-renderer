@@ -21,6 +21,7 @@ namespace DCL.Components.Video.Plugin
         private IntPtr textureNativePtr;
         private bool initialized = false;
         private bool shouldBePlaying = false;
+        private float pausedAtTime = -1;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
@@ -30,11 +31,11 @@ namespace DCL.Components.Video.Plugin
     [DllImport("__Internal")]
     private static extern void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1);
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerPlay(string id);
+    private static extern void WebVideoPlayerPlay(string id, float startTime);
     [DllImport("__Internal")]
     private static extern void WebVideoPlayerPause(string id);
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerVolume(string id, float volume);    
+    private static extern void WebVideoPlayerVolume(string id, float volume);
     [DllImport("__Internal")]
     private static extern int WebVideoPlayerGetHeight(string id);
     [DllImport("__Internal")]
@@ -48,16 +49,16 @@ namespace DCL.Components.Video.Plugin
     [DllImport("__Internal")]
     private static extern string WebVideoPlayerGetError(string id);
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetTime(string id, float second);    
+    private static extern void WebVideoPlayerSetTime(string id, float second);
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetPlaybackRate(string id, float playbackRate);   
+    private static extern void WebVideoPlayerSetPlaybackRate(string id, float playbackRate);
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerSetLoop(string id, bool loop);         
+    private static extern void WebVideoPlayerSetLoop(string id, bool loop);
 #else
         private static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
         private static void WebVideoPlayerRemove(string id) { }
         private static void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1) { }
-        private static void WebVideoPlayerPlay(string id) { }
+        private static void WebVideoPlayerPlay(string id, float startTime) { }
         private static void WebVideoPlayerPause(string id) { }
         private static void WebVideoPlayerVolume(string id, float volume) { }
         private static int WebVideoPlayerGetHeight(string id) { return 0; }
@@ -127,7 +128,9 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
-            WebVideoPlayerPlay(videoPlayerId);
+            WebVideoPlayerPlay(videoPlayerId, pausedAtTime);
+            pausedAtTime = -1;
+
             shouldBePlaying = true;
         }
 
@@ -136,6 +139,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
+            pausedAtTime = WebVideoPlayerGetTime(videoPlayerId);
             WebVideoPlayerPause(videoPlayerId);
             shouldBePlaying = false;
         }
@@ -159,6 +163,7 @@ namespace DCL.Components.Video.Plugin
             if (isError)
                 return;
 
+            pausedAtTime = timeSecs;
             WebVideoPlayerSetTime(videoPlayerId, timeSecs);
         }
 
