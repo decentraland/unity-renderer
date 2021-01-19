@@ -55,13 +55,16 @@ export function* metaSaga(): any {
 function* fetchMessageOfTheDay() {
   const userId = yield select((state) => state.session.userId)
   const url = `https://dclcms.club/api/notifications?address=${userId}`
-  const result = yield call(() =>
-    fetch(url)
-      .then((response) => {
-        return response.json()
-      })
-      .then((data) => (data.length ? data[0] : null))
-  )
+  const result = yield call(async () => {
+    try {
+      const response = await fetch(url)
+      const data = await response.json()
+      return data?.length ? data[0] : null
+    } catch (e) {
+      defaultLogger.error(`Error fetching Message of the day ${e}`)
+      return null
+    }
+  })
   yield put(metaUpdateMessageOfTheDay(result))
 }
 
