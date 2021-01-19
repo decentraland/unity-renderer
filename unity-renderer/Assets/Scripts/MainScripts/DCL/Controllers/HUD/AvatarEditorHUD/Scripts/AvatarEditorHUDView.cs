@@ -324,7 +324,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void OnExitButton()
     {
-        controller.DiscardAndClose();
+        OnCloseActionTriggered?.Invoke();
     }
 
     private void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body)
