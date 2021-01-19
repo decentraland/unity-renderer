@@ -43,7 +43,7 @@ public class AvatarEditorHUDController : IHUD
         view = AvatarEditorHUDView.Create(this);
 
         view.OnToggleActionTriggered += ToggleVisibility;
-        view.OnCloseActionTriggered += Hide;
+        view.OnCloseActionTriggered += DiscardAndClose;
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
         hairColorList = Resources.Load<ColorList>("HairColor");
@@ -452,7 +452,7 @@ public class AvatarEditorHUDController : IHUD
     public void Dispose()
     {
         view.OnToggleActionTriggered -= ToggleVisibility;
-        view.OnCloseActionTriggered -= Hide;
+        view.OnCloseActionTriggered -= DiscardAndClose;
 
         CleanUp();
     }
@@ -510,10 +510,5 @@ public class AvatarEditorHUDController : IHUD
     public void ToggleVisibility()
     {
         SetVisibility(!view.isOpen);
-    }
-
-    public void Hide()
-    {
-        SetVisibility(false);
     }
 }
