@@ -9,7 +9,7 @@ export type Asset = {
   baseUrl: string
 }
 
-const BASE_DOWNLOAD_URL = 'https://content.decentraland.org/contents'
+const BASE_DOWNLOAD_URL = 'https://builder-api.decentraland.org/v1/storage/contents'
 const BASE_ASSET_URL = 'https://builder-api.decentraland.org/v1/assets'
 
 export class AssetManager {
