@@ -1,3 +1,4 @@
+using DCL.SettingsControls;
 using DCL.SettingsPanelHUD.Controls;
 using System.Collections.Generic;
 using UnityEngine;

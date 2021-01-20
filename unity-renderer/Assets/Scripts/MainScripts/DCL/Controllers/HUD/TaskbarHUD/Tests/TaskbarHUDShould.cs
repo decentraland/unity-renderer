@@ -1,5 +1,5 @@
 using DCL.HelpAndSupportHUD;
-using DCL.SettingsHUD;
+using DCL.SettingsPanelHUD;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -17,7 +17,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     private PrivateChatWindowHUDController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
-    private SettingsHUDController settingsHudController;
+    private SettingsPanelHUDController settingsPanelHudController;
     private HelpAndSupportHUDController helpAndSupportHUDController;
     private ExploreHUDController exploreHUDController;
 
@@ -54,7 +54,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
-        settingsHudController?.Dispose();
+        settingsPanelHudController?.Dispose();
         helpAndSupportHUDController?.Dispose();
         exploreHUDController?.Dispose();
 
@@ -91,10 +91,10 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
     [Test]
     public void AddSettingsWindowProperly()
     {
-        settingsHudController = new SettingsHUDController();
-        controller.AddSettingsWindow(settingsHudController);
+        settingsPanelHudController = new SettingsPanelHUDController();
+        controller.AddSettingsWindow(settingsPanelHudController);
 
-        Assert.IsTrue(settingsHudController.view.gameObject.activeSelf, "Settings window is disabled!");
+        Assert.IsTrue(settingsPanelHudController.view.gameObject.activeSelf, "Settings window is disabled!");
     }
 
     [Test]

@@ -17,7 +17,7 @@ import {
   setLoadingWaitTutorial
 } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR, ENABLE_OLD_SETTINGS } from '../config/index'
+import { DEBUG_PM, HAS_INITIAL_POSITION_MARK, NO_MOTD, OPEN_AVATAR_EDITOR } from '../config/index'
 import { signalParcelLoadingStarted, signalRendererInitialized } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { RootStore, StoreContainer } from 'shared/store/rootTypes'
@@ -45,13 +45,12 @@ import { startRealmsReportToRenderer } from 'unity-interface/realmsForRenderer'
 
 const logger = createLogger('website.ts: ')
 
-function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean, useOldSettings: boolean) {
+function configureTaskbarDependentHUD(i: UnityInterface, voiceChatEnabled: boolean) {
   i.ConfigureHUDElement(
     HUDElementID.TASKBAR,
     { active: true, visible: true },
     {
       enableVoiceChat: voiceChatEnabled,
-      enableOldSettings: useOldSettings
     }
   )
   i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: true, visible: true })
@@ -92,7 +91,6 @@ namespace webApp {
   export async function loadUnity({ instancedJS }: InitializeUnityResult) {
     const i = (await instancedJS).unityInterface
     const worldConfig: WorldConfig | undefined = globalThis.globalStore.getState().meta.config.world
-    const useOldSettings = worldConfig ? (worldConfig.enableOldSettings ?? ENABLE_OLD_SETTINGS) : ENABLE_OLD_SETTINGS
     const renderProfile = worldConfig ? (worldConfig.renderProfile ?? RenderProfile.DEFAULT) : RenderProfile.DEFAULT
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
@@ -101,8 +99,7 @@ namespace webApp {
       active: true,
       visible: OPEN_AVATAR_EDITOR
     })
-    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: useOldSettings, visible: false })
-    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: !useOldSettings, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS_PANEL, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.EXPRESSIONS, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.PLAYER_INFO_CARD, {
       active: true,
@@ -130,7 +127,7 @@ namespace webApp {
         configForRenderer.comms.voiceChatEnabled = voiceChatEnabled
         i.SetKernelConfiguration(configForRenderer)
 
-        configureTaskbarDependentHUD(i, voiceChatEnabled, useOldSettings)
+        configureTaskbarDependentHUD(i, voiceChatEnabled)
 
         i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
         i.ConfigureHUDElement(HUDElementID.USERS_AROUND_LIST_HUD, { active: voiceChatEnabled, visible: false })
@@ -153,7 +150,7 @@ namespace webApp {
       })
       .catch((e) => {
         logger.error('error on configuring taskbar & friends hud / tutorial. Trying to default to simple taskbar', e)
-        configureTaskbarDependentHUD(i, false, useOldSettings)
+        configureTaskbarDependentHUD(i, false)
       })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())

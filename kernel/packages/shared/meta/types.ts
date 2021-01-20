@@ -25,7 +25,6 @@ export type WorldConfig = {
   renderProfile?: RenderProfile
   messageOfTheDay?: MessageOfTheDayConfig | null
   messageOfTheDayInit?: boolean
-  enableOldSettings?: boolean
 }
 
 export type MessageOfTheDayConfig = {
