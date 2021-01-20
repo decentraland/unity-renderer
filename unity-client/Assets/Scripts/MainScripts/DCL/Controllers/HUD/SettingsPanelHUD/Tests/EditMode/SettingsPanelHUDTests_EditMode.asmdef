@@ -5,7 +5,8 @@
         "UnityEditor.TestRunner",
         "TestHelpers",
         "SettingsPanelHUD",
-        "ScriptableObjects"
+        "ScriptableObjects",
+        "SettingsControllers"
     ],
     "includePlatforms": [
         "Editor"

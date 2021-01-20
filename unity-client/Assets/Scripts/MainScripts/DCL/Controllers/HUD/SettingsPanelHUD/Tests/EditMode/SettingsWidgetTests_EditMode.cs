@@ -1,3 +1,4 @@
+using DCL.SettingsControls;
 using DCL.SettingsPanelHUD.Controls;
 using DCL.SettingsPanelHUD.Widgets;
 using NSubstitute;

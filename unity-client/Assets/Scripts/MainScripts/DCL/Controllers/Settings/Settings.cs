@@ -11,6 +11,7 @@ namespace DCL
 
         public event Action<SettingsData.QualitySettings> OnQualitySettingsChanged;
         public event Action<SettingsData.GeneralSettings> OnGeneralSettingsChanged;
+        public event Action OnResetAllSettings;
 
         public SettingsData.QualitySettings qualitySettings { get { return currentQualitySettings; } }
         public SettingsData.QualitySettingsData qualitySettingsPresets { get { return qualitySettingsPreset; } }
@@ -96,6 +97,13 @@ namespace DCL
             ApplyGeneralSettings(currentGeneralSettings);
         }
 
+        public void ResetAllSettings()
+        {
+            LoadDefaultSettings();
+            SaveSettings();
+            OnResetAllSettings?.Invoke();
+        }
+
         private SettingsData.GeneralSettings GetDefaultGeneralSettings()
         {
             return new SettingsData.GeneralSettings()
@@ -129,12 +137,18 @@ namespace DCL
 
         public void ApplyQualitySettings(SettingsData.QualitySettings settings)
         {
+            if (settings.Equals(currentQualitySettings))
+                return;
+
             currentQualitySettings = settings;
             OnQualitySettingsChanged?.Invoke(settings);
         }
 
         public void ApplyGeneralSettings(SettingsData.GeneralSettings settings)
         {
+            if (settings.Equals(currentGeneralSettings))
+                return;
+
             currentGeneralSettings = settings;
             OnGeneralSettingsChanged?.Invoke(settings);
             autosettingsEnabled.Set(settings.autoqualityOn);

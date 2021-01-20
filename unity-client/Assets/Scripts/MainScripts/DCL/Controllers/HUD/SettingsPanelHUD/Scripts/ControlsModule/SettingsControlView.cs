@@ -1,3 +1,4 @@
+using DCL.SettingsControls;
 using DCL.SettingsPanelHUD.Common;
 using System.Collections.Generic;
 using TMPro;
@@ -41,7 +42,6 @@ namespace DCL.SettingsPanelHUD.Controls
         [SerializeField] private float controlBackgroundDeactivationAlpha = 0.5f;
 
         protected SettingsControlController settingsControlController;
-        protected bool skipPostApplySettings = false;
 
         private SettingsControlModel controlConfig;
         private Color originalTitleColor;
@@ -49,20 +49,11 @@ namespace DCL.SettingsPanelHUD.Controls
         private Color originalHandlerColor;
         private float originalControlBackgroundAlpha;
 
-        private void OnEnable()
-        {
-            if (settingsControlController == null)
-                return;
-
-            skipPostApplySettings = true;
-            RefreshControl();
-        }
-
         public virtual void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
             this.controlConfig = controlConfig;
             this.settingsControlController = settingsControlController;
-            this.settingsControlController.Initialize(this);
+            this.settingsControlController.Initialize();
             title.text = controlConfig.title;
             betaIndicator.SetActive(controlConfig.isBeta);
             originalTitleColor = title.color;
@@ -82,14 +73,14 @@ namespace DCL.SettingsPanelHUD.Controls
                 OnAnyDeactivationFlagChange(flag.Get(), false);
             }
 
-            CommonSettingsEvents.OnRefreshAllSettings += OnRefreshAllSettings;
-
-            skipPostApplySettings = true;
             RefreshControl();
-            settingsControlController.OnControlChanged(settingsControlController.GetStoredValue());
+
+            Settings.i.OnGeneralSettingsChanged += OnGeneralSettingsChanged;
+            Settings.i.OnQualitySettingsChanged += OnQualitySettingsChanged;
+            Settings.i.OnResetAllSettings += OnResetSettingsControl;
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (controlConfig != null)
             {
@@ -104,7 +95,9 @@ namespace DCL.SettingsPanelHUD.Controls
                 }
             }
 
-            CommonSettingsEvents.OnRefreshAllSettings -= OnRefreshAllSettings;
+            Settings.i.OnGeneralSettingsChanged -= OnGeneralSettingsChanged;
+            Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
+            Settings.i.OnResetAllSettings -= OnResetSettingsControl;
         }
 
         public virtual void RefreshControl()
@@ -117,12 +110,8 @@ namespace DCL.SettingsPanelHUD.Controls
         /// <param name="newValue">Value of the new state. It can be a bool (for toggle controls), a float (for slider controls) or an int (for spin-box controls).</param>
         protected void ApplySetting(object newValue)
         {
-            settingsControlController.OnControlChanged(newValue);
+            settingsControlController.UpdateSetting(newValue);
             settingsControlController.ApplySettings();
-
-            if (!skipPostApplySettings)
-                settingsControlController.PostApplySettings();
-            skipPostApplySettings = false;
         }
 
         private void OnAnyDisableFlagChange(bool current, bool previous)
@@ -165,6 +154,21 @@ namespace DCL.SettingsPanelHUD.Controls
                 SetControlActive(!current);
         }
 
+        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings obj)
+        {
+            RefreshControl();
+        }
+
+        private void OnQualitySettingsChanged(SettingsData.QualitySettings obj)
+        {
+            RefreshControl();
+        }
+
+        private void OnResetSettingsControl()
+        {
+            RefreshControl();
+        }
+
         private void SetEnabled(bool enabled)
         {
             title.color = enabled ? originalTitleColor : titleDeactivationColor;
@@ -187,16 +191,7 @@ namespace DCL.SettingsPanelHUD.Controls
         private void SetControlActive(bool actived)
         {
             gameObject.SetActive(actived);
-            CommonSettingsEvents.RaiseRefreshAllWidgetsSize();
-        }
-
-        private void OnRefreshAllSettings(SettingsControlController sender)
-        {
-            if (sender != settingsControlController)
-            {
-                skipPostApplySettings = true;
-                RefreshControl();
-            }
+            CommonSettingsPanelEvents.RaiseRefreshAllWidgetsSize();
         }
     }
 }

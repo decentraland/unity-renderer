@@ -39,7 +39,7 @@ namespace DCL.SettingsPanelHUD.Widgets
             this.settingsWidgetController = settingsWidgetController;
             this.controlColumns = controlColumns;
 
-            CommonSettingsEvents.OnRefreshAllWidgetsSize += AdjustWidgetHeight;
+            CommonSettingsPanelEvents.OnRefreshAllWidgetsSize += AdjustWidgetHeight;
 
             this.title.text = title;
             CreateControls();
@@ -47,7 +47,7 @@ namespace DCL.SettingsPanelHUD.Widgets
 
         private void OnDestroy()
         {
-            CommonSettingsEvents.OnRefreshAllWidgetsSize -= AdjustWidgetHeight;
+            CommonSettingsPanelEvents.OnRefreshAllWidgetsSize -= AdjustWidgetHeight;
         }
 
         private void CreateControls()

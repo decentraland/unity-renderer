@@ -1,3 +1,4 @@
+using DCL.SettingsControls;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ namespace DCL.SettingsPanelHUD.Controls
         public Slider sliderControl => slider;
 
         private SliderControlModel sliderControlConfig;
+        private SliderSettingsControlController sliderController;
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
@@ -23,15 +25,26 @@ namespace DCL.SettingsPanelHUD.Controls
             slider.minValue = this.sliderControlConfig.sliderMinValue;
             slider.wholeNumbers = this.sliderControlConfig.sliderWholeNumbers;
 
-            base.Initialize(controlConfig, settingsControlController);
+            sliderController = (SliderSettingsControlController)settingsControlController;
+            sliderController.OnIndicatorLabelChange += OverrideIndicatorLabel;
+
+            base.Initialize(controlConfig, sliderController);
             OverrideIndicatorLabel(slider.value.ToString());
-            settingsControlController.OnControlChanged(slider.value);
+            sliderController.UpdateSetting(this.sliderControlConfig.storeValueAsNormalized ? RemapSliderValueTo01(slider.value) : slider.value);
 
             slider.onValueChanged.AddListener(sliderValue =>
             {
                 OverrideIndicatorLabel(sliderValue.ToString());
-                ApplySetting(sliderValue);
+                ApplySetting(this.sliderControlConfig.storeValueAsNormalized ? RemapSliderValueTo01(sliderValue) : sliderValue);
             });
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (sliderController != null)
+                sliderController.OnIndicatorLabelChange -= OverrideIndicatorLabel;
         }
 
         /// <summary>
@@ -45,11 +58,24 @@ namespace DCL.SettingsPanelHUD.Controls
 
         public override void RefreshControl()
         {
-            float newValue = (float)settingsControlController.GetStoredValue();
+            base.RefreshControl();
+
+            float storedValue = (float)sliderController.GetStoredValue();
+            float newValue = sliderControlConfig.storeValueAsNormalized ? RemapNormalizedValueToSlider(storedValue) : storedValue;
             if (slider.value != newValue)
                 slider.value = newValue;
-            else
-                skipPostApplySettings = false;
+        }
+
+        private float RemapSliderValueTo01(float value)
+        {
+            return (value - slider.minValue)
+                / (slider.maxValue - slider.minValue)
+                * (1 - 0) + 0; //(value - from1) / (to1 - from1) * (to2 - from2) + from2
+        }
+
+        private float RemapNormalizedValueToSlider(float value)
+        {
+            return Mathf.Lerp(slider.minValue, slider.maxValue, value);
         }
     }
 }
