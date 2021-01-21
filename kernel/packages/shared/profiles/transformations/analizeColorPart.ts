@@ -1,15 +1,16 @@
+import { ReadOnlyColor4 } from 'decentraland-ecs/src'
 import { convertToRGBObject } from './convertToRGBObject'
-export function analizeColorPart(avatar: any, ...alternativeNames: string[]) {
+export function analizeColorPart(avatar: any, ...alternativeNames: string[]): Optional<ReadOnlyColor4, 'a'> {
   for (let name of alternativeNames) {
     if (!avatar[name]) {
       continue
     }
     if (typeof avatar[name] === 'string') {
       if (avatar[name].length === 7) {
-        return { color: convertToRGBObject(avatar[name]) }
+        return convertToRGBObject(avatar[name])
       }
       if (avatar[name].length === 9) {
-        return { color: convertToRGBObject(avatar[name]) }
+        return convertToRGBObject(avatar[name])
       }
     }
     if (avatar[name]) {
@@ -39,7 +40,9 @@ export function analizeColorPart(avatar: any, ...alternativeNames: string[]) {
   )
 }
 
-export function stripAlpha(colorInput: any & { a: number }) {
+export function stripAlpha(colorInput: Optional<ReadOnlyColor4, 'a'>): Omit<ReadOnlyColor4, 'a'> {
   const { a, ...color } = colorInput
   return color
 }
+
+type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
