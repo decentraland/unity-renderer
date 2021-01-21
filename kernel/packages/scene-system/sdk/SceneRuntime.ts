@@ -231,7 +231,7 @@ export abstract class SceneRuntime extends Script {
       const fullData = sceneData.data as LoadableParcelScene
       const sceneId = fullData.id
 
-      let loadingModules: Record<string, IFuture<void>> = {}
+      const loadingModules: Record<string, IFuture<void>> = {}
 
       const dcl: DecentralandInterface = {
         DEBUG: true,
@@ -426,7 +426,8 @@ export abstract class SceneRuntime extends Script {
         },
 
         loadModule: async (_moduleName) => {
-          loadingModules[_moduleName] = future()
+          const loadingModule: IFuture<void> = future()
+          loadingModules[_moduleName] = loadingModule
 
           try {
             const moduleToLoad = _moduleName.replace(/^@decentraland\//, '')
@@ -452,7 +453,7 @@ export abstract class SceneRuntime extends Script {
               methods: methods.map((name) => ({ name }))
             }
           } finally {
-            loadingModules[_moduleName].resolve()
+            loadingModule.resolve()
           }
         },
         callRpc: async (rpcHandle: string, methodName: string, args: any[]) => {
@@ -519,8 +520,6 @@ export abstract class SceneRuntime extends Script {
             `Timed out loading modules!. The scene ${sceneId} may not work correctly. Modules not loaded: ${modulesNotLoaded}`
           )
         }
-
-        loadingModules = {}
 
         this.events.push(this.initMessagesFinished())
 
