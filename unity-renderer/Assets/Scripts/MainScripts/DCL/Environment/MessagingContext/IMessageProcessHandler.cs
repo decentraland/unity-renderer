@@ -2,7 +2,7 @@
 {
     public interface IMessageProcessHandler
     {
-        bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction);
+        bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction);
         void LoadParcelScenesExecute(string scenePayload);
         void UnloadParcelSceneExecute(string sceneId);
         void UnloadAllScenes(bool includePersistent = false);

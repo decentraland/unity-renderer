@@ -4,7 +4,7 @@ namespace DCL
 {
     public interface IMessageQueueHandler
     {
-        void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message);
-        Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; }
+        void EnqueueSceneMessage(QueuedSceneMessage_Scene message);
+        Queue<QueuedSceneMessage_Scene> sceneMessagesPool { get; }
     }
 }

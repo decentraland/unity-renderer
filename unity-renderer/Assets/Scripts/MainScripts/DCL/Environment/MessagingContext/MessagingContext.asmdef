@@ -1,7 +1,8 @@
 {
-    "name": "CoroutineHelpers",
+    "name": "MessagingContext",
     "references": [
-        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
+        "GUID:132013f160565434195ba5960832b346",
+        "GUID:760a1d365aad58044916992b072cf2a6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

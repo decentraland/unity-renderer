@@ -4,7 +4,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "MainScripts",
-        "Protocol"
+        "Protocol",
+        "QueuedSceneMessage"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

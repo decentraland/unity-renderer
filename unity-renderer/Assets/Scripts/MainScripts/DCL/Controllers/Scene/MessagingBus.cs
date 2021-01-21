@@ -29,52 +29,15 @@ namespace DCL
         public const string OPEN_NFT_DIALOG = "OpenNFTDialog";
     }
 
-    public enum MessagingBusType
-    {
-        NONE,
-        UI,
-        INIT,
-        SYSTEM
-    }
-
     public enum QueueMode
     {
         Reliable,
         Lossy,
     }
 
-
     public class MessagingBus : IDisposable
     {
         public static bool VERBOSE = false;
-
-        public class QueuedSceneMessage
-        {
-            public enum Type
-            {
-                NONE,
-                SCENE_MESSAGE,
-                LOAD_PARCEL,
-                UPDATE_PARCEL,
-                TELEPORT,
-                UNLOAD_SCENES,
-                UNLOAD_PARCEL,
-                SCENE_STARTED
-            }
-
-            public string tag;
-            public Type type;
-            public string sceneId;
-            public string message;
-            public bool isUnreliable;
-            public string unreliableMessageKey;
-        }
-
-        public class QueuedSceneMessage_Scene : QueuedSceneMessage
-        {
-            public string method;
-            public object payload; //PB_SendSceneMessage
-        }
 
         public IMessageProcessHandler handler;
 
@@ -96,7 +59,7 @@ namespace DCL
         public MessagingController owner;
         private MessagingControllersManager manager;
 
-        Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
+        Dictionary<string, LinkedListNode<QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<QueuedSceneMessage>>();
         public int unreliableMessagesReplaced = 0;
 
         public bool enabled;

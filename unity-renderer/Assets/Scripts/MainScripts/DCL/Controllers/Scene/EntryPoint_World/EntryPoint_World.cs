@@ -58,7 +58,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VSSS))]
     internal static void OpenNftDialog(string contactAddress, string comment, string tokenId)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.OpenNftDialog payload = new Protocol.OpenNftDialog
         {
@@ -76,7 +76,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void OpenExternalUrl(string url)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.OpenExternalUrl payload = new Protocol.OpenExternalUrl
         {
@@ -92,7 +92,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void EntityComponentDestroy(string name)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.EntityComponentDestroy payload = new Protocol.EntityComponentDestroy
         {
@@ -109,7 +109,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VSS))]
     internal static void SharedComponentAttach(string id, string name)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.SharedComponentAttach payload = new Protocol.SharedComponentAttach
         {
@@ -127,7 +127,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_Query))]
     internal static void Query(Protocol.QueryPayload payload)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         string queryId = Convert.ToString(payload.raycastPayload.id);
 
@@ -158,7 +158,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VSS))]
     internal static void SharedComponentUpdate(string id, string json)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.SharedComponentUpdate payload =
             new Protocol.SharedComponentUpdate
@@ -176,7 +176,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SharedComponentDispose(string id)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.SharedComponentDispose payload =
             new Protocol.SharedComponentDispose
@@ -193,7 +193,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VIS))]
     internal static void SharedComponentCreate(int classId, string id)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.SharedComponentCreate payload =
             new Protocol.SharedComponentCreate
@@ -211,7 +211,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VIS))]
     internal static void EntityComponentCreateOrUpdate(int classId, string json)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.EntityComponentCreateOrUpdate payload =
             new Protocol.EntityComponentCreateOrUpdate
@@ -230,7 +230,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     internal static void SetEntityParent(string parentId)
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.SetEntityParent payload =
             new Protocol.SetEntityParent
@@ -266,7 +266,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_V))]
     internal static void CreateEntity()
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
 
         Protocol.CreateEntity payload =
             new Protocol.CreateEntity
@@ -283,7 +283,7 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_V))]
     internal static void RemoveEntity()
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
         Protocol.RemoveEntity payload =
             new Protocol.RemoveEntity()
             {
@@ -299,27 +299,27 @@ public class EntryPoint_World
     [MonoPInvokeCallback(typeof(JS_Delegate_V))]
     internal static void SceneReady()
     {
-        MessagingBus.QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
+        QueuedSceneMessage_Scene queuedMessage = GetSceneMessageInstance();
         queuedMessage.method = MessagingTypes.INIT_DONE;
         queuedMessage.payload = new Protocol.SceneReady();
 
         queueHandler.EnqueueSceneMessage(queuedMessage);
     }
 
-    internal static MessagingBus.QueuedSceneMessage_Scene GetSceneMessageInstance()
+    internal static QueuedSceneMessage_Scene GetSceneMessageInstance()
     {
-        MessagingBus.QueuedSceneMessage_Scene message;
+        QueuedSceneMessage_Scene message;
 
         var sceneMessagesPool = queueHandler.sceneMessagesPool;
 
         if (sceneMessagesPool.Count > 0)
             message = sceneMessagesPool.Dequeue();
         else
-            message = new MessagingBus.QueuedSceneMessage_Scene();
+            message = new QueuedSceneMessage_Scene();
 
         message.sceneId = currentSceneId;
         message.tag = currentTag;
-        message.type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE;
+        message.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
 
         return message;
     }
