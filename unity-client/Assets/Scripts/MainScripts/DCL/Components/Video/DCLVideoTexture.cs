@@ -16,6 +16,8 @@ namespace DCL.Components
         internal static bool isTest = false;
 #endif
 
+        private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
+
         [System.Serializable]
         new public class Model
         {
@@ -37,6 +39,9 @@ namespace DCL.Components
         private float distanceVolumeModifier = 1f;
         private bool isPlayStateDirty = false;
         internal bool isVisible = false;
+
+        private bool isPlayerInScene = true;
+        private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL;
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
@@ -84,8 +89,11 @@ namespace DCL.Components
                 texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream);
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
+                CommonScriptableObjects.sceneID.OnChange += OnSceneIDChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
                 Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
+
+                OnSceneIDChanged(CommonScriptableObjects.sceneID.Get(), null);
             }
 
             // NOTE: create texture for testing cause real texture will only be created on web platform
@@ -167,8 +175,13 @@ namespace DCL.Components
                     isPlayStateDirty = false;
                 }
 
-                if (texturePlayer != null && !isTest)
+                if (!isPlayerInScene && currUpdateIntervalTime < OUTOFSCENE_TEX_UPDATE_INTERVAL)
                 {
+                    currUpdateIntervalTime += Time.unscaledDeltaTime;
+                }
+                else if (texturePlayer != null && !isTest)
+                {
+                    currUpdateIntervalTime = 0;
                     texturePlayer.UpdateWebVideoTexture();
                 }
 
@@ -239,6 +252,11 @@ namespace DCL.Components
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
         {
             isPlayStateDirty = true;
+        }
+
+        private void OnSceneIDChanged(string current, string previous)
+        {
+            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
         }
 
         public override void AttachTo(PBRMaterial material)
@@ -333,6 +351,7 @@ namespace DCL.Components
         {
             Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
             if (scene != null) scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)
             {
