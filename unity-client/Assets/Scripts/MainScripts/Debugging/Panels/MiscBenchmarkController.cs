@@ -179,7 +179,9 @@ namespace DCL
                 Dictionary<string, int> pendingMessagesCount = new Dictionary<string, int>();
                 Dictionary<string, int> messagesReplaced = new Dictionary<string, int>();
 
-                using (var controllersIter = Environment.i.messaging.manager.messagingControllers.GetEnumerator())
+                MessagingControllersManager messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
+
+                using (var controllersIter = messagingManager.messagingControllers.GetEnumerator())
                 {
                     while (controllersIter.MoveNext())
                     {

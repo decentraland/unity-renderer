@@ -91,19 +91,19 @@ namespace DCL
             }
         }
 
-        public void ForceEnqueue(MessagingBusType busType, MessagingBus.QueuedSceneMessage queuedMessage)
+        public void ForceEnqueue(MessagingBusType busType, QueuedSceneMessage queuedMessage)
         {
             messagingBuses[busType].Enqueue(queuedMessage);
         }
 
-        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage, out MessagingBusType busType)
+        public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage, out MessagingBusType busType)
         {
             busType = MessagingBusType.NONE;
 
             QueueMode queueMode = QueueMode.Reliable;
 
             // If current scene is the Global Scene, the bus id should be UI
-            if (scene && scene is GlobalScene)
+            if (isUiBus)
                 busType = MessagingBusType.UI;
             else if (currentQueueState == QueueState.Init)
                 busType = MessagingBusType.INIT;

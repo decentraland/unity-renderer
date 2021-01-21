@@ -86,9 +86,9 @@ namespace DCL
             return true;
         }
 
-        public static void DecodeSceneMessage(string sceneId, string method, string tag, PB_SendSceneMessage sendSceneMessage, ref MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public static void DecodeSceneMessage(string sceneId, string method, string tag, PB_SendSceneMessage sendSceneMessage, ref QueuedSceneMessage_Scene queuedMessage)
         {
-            queuedMessage.type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE;
+            queuedMessage.type = QueuedSceneMessage.Type.SCENE_MESSAGE;
             queuedMessage.sceneId = sceneId;
             queuedMessage.method = method;
             queuedMessage.tag = tag;

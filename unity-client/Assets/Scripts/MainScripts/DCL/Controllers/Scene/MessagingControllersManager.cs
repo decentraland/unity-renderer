@@ -1,4 +1,3 @@
-using System;
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,25 +5,6 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IMessagingControllersManager : IDisposable
-    {
-        Dictionary<string, MessagingController> messagingControllers { get; set; }
-        bool hasPendingMessages { get; }
-        bool isRunning { get; }
-        bool paused { get; set; }
-        void Initialize(IMessageProcessHandler messageHandler);
-        void MarkBusesDirty();
-        void PopulateBusesToBeProcessed();
-        bool ContainsController(string sceneId);
-        void AddController(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false);
-        void AddControllerIfNotExists(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false);
-        void RemoveController(string sceneId);
-        void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage);
-        void ForceEnqueueToGlobal(MessagingBusType busId, MessagingBus.QueuedSceneMessage queuedMessage);
-        void SetSceneReady(string sceneId);
-        void RefreshControllerEnabledState(MessagingController controller);
-    }
-
     public class MessagingControllersManager : IMessagingControllersManager
     {
         public static bool VERBOSE = false;
@@ -236,12 +216,12 @@ namespace DCL
             controller.Dispose();
         }
 
-        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage)
         {
-            messagingControllers[queuedMessage.sceneId].Enqueue(scene, queuedMessage, out MessagingBusType busId);
+            messagingControllers[queuedMessage.sceneId].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId);
         }
 
-        public void ForceEnqueueToGlobal(MessagingBusType busId, MessagingBus.QueuedSceneMessage queuedMessage)
+        public void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage)
         {
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage);
         }
@@ -320,7 +300,7 @@ namespace DCL
             return false;
         }
 
-        public void RefreshControllerEnabledState(MessagingController controller)
+        private void RefreshControllerEnabledState(MessagingController controller)
         {
             if (controller == null || !controller.enabled)
                 return;

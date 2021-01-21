@@ -8,13 +8,13 @@ using Assert = UnityEngine.Assertions.Assert;
 
 public class MessageQueueHandler_Mock : IMessageQueueHandler
 {
-    public List<MessagingBus.QueuedSceneMessage_Scene> messagesList = new List<MessagingBus.QueuedSceneMessage_Scene>();
-    public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
+    public List<QueuedSceneMessage_Scene> messagesList = new List<QueuedSceneMessage_Scene>();
+    public Queue<QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<QueuedSceneMessage_Scene>();
 
     private static bool OUTPUT_ASSERT_CODE_ON_CONSOLE = false;
     private int i = 0;
 
-    public void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message)
+    public void EnqueueSceneMessage(QueuedSceneMessage_Scene message)
     {
         messagesList.Add(message);
 
