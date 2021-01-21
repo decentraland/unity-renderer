@@ -8,7 +8,6 @@ import { getOwnerNameFromJsonData, getSceneDescriptionFromJsonData, getThumbnail
 import defaultLogger from '../logger'
 import { lastPlayerPosition } from '../world/positionThings'
 import {
-  districtData,
   fetchDataFromSceneJsonFailure,
   fetchDataFromSceneJsonSuccess,
   marketData,
@@ -49,19 +48,13 @@ declare const window: {
   }
 }
 
-const districts = {
-  id: 'districts',
-  url: 'https://api.decentraland.org/v1/districts',
-  build: districtData
-}
-
 const tiles = {
   id: 'tiles',
   url: 'https://api.decentraland.org/v1/tiles',
   build: marketData
 }
 
-type MarketplaceConfig = typeof districts | typeof tiles
+type MarketplaceConfig = typeof tiles
 
 type CachedMarketplaceTiles = { version: string; data: string }
 
