@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class BaseShape : BaseDisposable
+    public abstract class BaseShape : BaseDisposable, IShape
     {
         [System.Serializable]
         public class Model
