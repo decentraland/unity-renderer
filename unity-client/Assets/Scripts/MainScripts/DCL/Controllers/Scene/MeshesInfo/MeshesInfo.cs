@@ -9,6 +9,7 @@ namespace DCL.Models
     [Serializable]
     public class MeshesInfo
     {
+        public static event Action OnAnyUpdated;
         public event Action OnUpdated;
         public event Action OnCleanup;
 
@@ -27,7 +28,7 @@ namespace DCL.Models
 
         GameObject meshRootGameObjectValue;
 
-        public BaseShape currentShape;
+        public IShape currentShape;
         public Renderer[] renderers;
         public MeshFilter[] meshFilters;
         public List<Collider> colliders = new List<Collider>();
@@ -64,7 +65,7 @@ namespace DCL.Models
                 meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
 
                 RecalculateBounds();
-                Environment.i.platform.cullingController.MarkDirty();
+                OnAnyUpdated?.Invoke();
                 OnUpdated?.Invoke();
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UniversalRenderPipelineAsset = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
@@ -90,6 +91,7 @@ namespace DCL.Rendering
             running = true;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
             CommonScriptableObjects.playerUnityPosition.OnChange += OnPlayerUnityPositionChange;
+            MeshesInfo.OnAnyUpdated += MarkDirty;
             StartInternal();
         }
 
@@ -114,6 +116,7 @@ namespace DCL.Rendering
             running = false;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
             CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerUnityPositionChange;
+            MeshesInfo.OnAnyUpdated -= MarkDirty;
             StopInternal();
         }
 
@@ -141,7 +144,6 @@ namespace DCL.Rendering
                 renderers = objectsTracker.GetRenderers();
             else
                 renderers = objectsTracker.GetSkinnedRenderers();
-
 
 
             for (var i = 0; i < renderers.Length; i++)
