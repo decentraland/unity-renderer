@@ -77,7 +77,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
 }
 
 /**
- * Flattens the object with a color field to avoid having two nested color fields when profile comess messed from server.
+ * Flattens the object with a color field to avoid having two nested color fields when profile comes messed from server.
  *
  * @param objectWithColor object to flatten if need be
  */

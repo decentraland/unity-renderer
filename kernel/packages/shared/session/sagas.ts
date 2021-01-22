@@ -65,7 +65,7 @@ import {
 } from './actions'
 import { ProviderType } from '../ethereum/ProviderType'
 import Html from '../Html'
-import { fetchProfileLocally, getProfileByUserId } from '../profiles/sagas'
+import { fetchProfileLocally, doesProfileExist } from '../profiles/sagas'
 import { generateRandomUserProfile } from '../profiles/generateRandomUserProfile'
 import { unityInterface } from '../../unity-interface/UnityInterface'
 import { getSignUpIdentity, getSignUpProfile } from './selectors'
@@ -151,9 +151,9 @@ function* authenticate(action: AuthenticateAction) {
     return
   }
   const session = yield authorize()
-  let profile = yield getProfileByUserId(session.userId)
+  let profileExists = yield doesProfileExist(session.userId)
 
-  if (profile || isGuestWithProfile(session) || PREVIEW) {
+  if (profileExists || isGuestWithProfile(session) || PREVIEW) {
     return yield signIn(session.userId, session.identity)
   }
   return yield startSignUp(session.userId, session.identity)

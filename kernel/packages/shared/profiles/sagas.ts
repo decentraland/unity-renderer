@@ -1,5 +1,5 @@
 import { Store } from 'redux'
-import { EntityType } from 'dcl-catalyst-commons'
+import { EntityType, Hashing } from 'dcl-catalyst-commons'
 import { ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
 import { call, throttle, put, race, select, take, takeEvery } from 'redux-saga/effects'
 
@@ -72,8 +72,6 @@ import { UNEXPECTED_ERROR } from 'shared/loading/types'
 import { fetchParcelsWithAccess } from './fetchLand'
 import { ParcelsWithAccess } from 'decentraland-ecs/src'
 
-const CID = require('cids')
-const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
 declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
@@ -143,7 +141,7 @@ function* initialProfileLoad() {
       const net: keyof typeof ethereumConfigurations = yield select(getCurrentNetwork)
       const names = yield fetchOwnedENS(ethereumConfigurations[net].names, userId)
 
-      // patch profile to readd missing name
+      // patch profile to re-add missing name
       profile = { ...profile, name: names[0], hasClaimedName: true }
 
       if (names && names.length > 0) {
@@ -192,25 +190,22 @@ function scheduleProfileUpdate(profile: Profile) {
   }).catch((e) => defaultLogger.error(`error while updating profile`, e))
 }
 
-export function* getProfileByUserId(userId: string): any {
+export function* doesProfileExist(userId: string): any {
   try {
     const server = yield select(getProfileDownloadServer)
     const profiles: { avatars: object[] } = yield profileServerRequest(server, userId)
 
-    if (profiles.avatars.length !== 0) {
-      return profiles.avatars[0]
-    }
+    return profiles.avatars.length > 0
   } catch (error) {
     if (error.message !== 'Profile not found') {
       defaultLogger.log(`Error requesting profile for auth check ${userId}, `, error)
     }
   }
-  return null
+  return false
 }
 
 export function* handleFetchProfile(action: ProfileRequestAction): any {
   const userId = action.payload.userId
-  const email = ''
 
   const currentId = yield select(getCurrentUserId)
   let profile: any
@@ -218,7 +213,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   if (WORLD_EXPLORER) {
     try {
       if (action.payload.profileType === ProfileType.LOCAL && currentId !== userId) {
-        const peerProfile: Profile = yield requestLocalProfileToPeers(action.payload.userId)
+        const peerProfile: Profile = yield requestLocalProfileToPeers(userId)
         if (peerProfile) {
           profile = ensureServerFormat(peerProfile)
           profile.hasClaimedName = false // for now, comms profiles can't have claimed names
@@ -261,7 +256,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   }
 
   if (currentId === userId) {
-    profile.email = email
+    profile.email = ''
   }
 
   yield populateFaceIfNecessary(profile, '256')
@@ -321,7 +316,7 @@ function* populateFaceIfNecessary(profile: any, resolution: string) {
       }
 
       if (response.ok) {
-        // only populate image field if resize service responsed correctly
+        // only populate image field if resize service responded correctly
         profile.avatar = { ...profile.avatar, snapshots: { ...profile.avatar?.snapshots, [selector]: faceUrl } }
       }
     } catch (e) {
@@ -340,19 +335,6 @@ export async function profileServerRequest(serverUrl: string, userId: string) {
   } catch (up) {
     throw up
   }
-}
-
-export function* createSignUpProfile(profile: Profile, identity: ExplorerIdentity) {
-  const url: string = yield select(getUpdateProfileServer)
-  const userId = profile.userId
-  // to prevent save a email on profile
-  profile.email = ''
-  return yield modifyAvatar({
-    url,
-    userId,
-    identity,
-    profile
-  })
 }
 
 function* handleRandomAsSuccess(action: ProfileRandomAction): any {
@@ -490,11 +472,6 @@ export function fetchProfileLocally(address: string) {
   }
 }
 
-async function calculateBufferHash(buffer: Buffer): Promise<string> {
-  const hash = await multihashing(buffer, 'sha2-256')
-  return new CID(0, 'dag-pb', hash).toBaseEncodedString()
-}
-
 async function buildSnapshotContent(selector: string, value: string): Promise<[string, string, ContentFile?]> {
   let hash: string
   let contentFile: ContentFile | undefined
@@ -506,7 +483,7 @@ async function buildSnapshotContent(selector: string, value: string): Promise<[s
     const blob = await fetch(value).then((r) => r.blob())
 
     contentFile = await makeContentFile(name, blob)
-    hash = await calculateBufferHash(contentFile.content)
+    hash = await Hashing.calculateHash(contentFile)
   } else if (value.includes('://')) {
     // value is already a URL => use existing hash
     hash = value.split('/').pop()!
@@ -515,7 +492,7 @@ async function buildSnapshotContent(selector: string, value: string): Promise<[s
     const blob = base64ToBlob(value)
 
     contentFile = await makeContentFile(name, blob)
-    hash = await calculateBufferHash(contentFile.content)
+    hash = await Hashing.calculateHash(contentFile)
   }
 
   return [name, hash, contentFile]
