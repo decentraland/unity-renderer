@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseDictionary<TKey, TValue> : ScriptableObject
+public class BaseDictionary_Legacy<TKey, TValue> : ScriptableObject
 {
     public delegate void Added(TKey addedKey, TValue addedValue);
 

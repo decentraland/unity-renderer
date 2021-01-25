@@ -1,13 +1,14 @@
 {
-    "name": "DataStore",
-    "references": [
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
-    ],
+    "name": "MockingUtils",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

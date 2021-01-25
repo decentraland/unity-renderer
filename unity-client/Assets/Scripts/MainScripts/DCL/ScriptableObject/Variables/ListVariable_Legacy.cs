@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ListVariable<T> : ScriptableObject
+public class ListVariable_Legacy<T> : ScriptableObject
 {
     public delegate void Added(T addedValue);
     public delegate void Removed(T removedValue);
