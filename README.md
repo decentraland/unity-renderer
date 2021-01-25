@@ -73,7 +73,7 @@ To see test logs/errors directly in the browser, run:
 
     make watch
 
-Now, navigate to [http://localhost:3000/test](http://localhost:3000/test)
+Now, navigate to [http://localhost:8080/test](http://localhost:8080/test)
 
 ### Kernel Visual tests
 

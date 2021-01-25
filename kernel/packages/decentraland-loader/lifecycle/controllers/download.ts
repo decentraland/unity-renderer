@@ -31,7 +31,7 @@ export class SceneDataDownloadManager {
   constructor(
     public options: {
       contentServer: string
-      metaContentServer: string
+      catalystServer: string
       metaContentService: string
       contentServerBundles: string
       worldConfig: WorldConfig
@@ -39,7 +39,7 @@ export class SceneDataDownloadManager {
     }
   ) {
     this.emptyParcelController = new EmptyParcelController(options)
-    this.catalyst = new CatalystClient(options.metaContentServer, 'EXPLORER')
+    this.catalyst = new CatalystClient(options.catalystServer, 'EXPLORER')
   }
 
   async resolveSceneSceneIds(tiles: string[]): Promise<TileIdPair[]> {

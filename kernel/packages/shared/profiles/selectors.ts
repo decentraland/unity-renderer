@@ -1,10 +1,7 @@
 import { Profile, ProfileStatus, ProfileUserInfo, RootProfileState } from './types'
-import { RootDaoState } from '../dao/types'
 import { Wearable } from 'shared/catalogs/types'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { RootSessionState } from 'shared/session/types'
-
-export const getProfileDownloadServer = (store: RootDaoState) => store.dao.profileServer
 
 export const getProfileStatusAndData = (
   store: RootProfileState,

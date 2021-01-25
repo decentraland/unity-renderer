@@ -1,6 +1,6 @@
 import { CatalystClient } from 'dcl-catalyst-client'
 import { Profile } from './types'
-import { getFetchContentServer, getFetchMetaContentServer } from 'shared/dao/selectors'
+import { getFetchContentServer, getCatalystServer } from 'shared/dao/selectors'
 import { Store } from 'redux'
 import { createFakeName } from './utils/fakeName'
 
@@ -12,7 +12,7 @@ function randomBetween(min: number, max: number) {
 
 export async function generateRandomUserProfile(userId: string): Promise<Profile> {
   const _number = randomBetween(1, 160)
-  const catalystUrl = getFetchMetaContentServer(window.globalStore.getState())
+  const catalystUrl = getCatalystServer(window.globalStore.getState())
   const client = new CatalystClient(catalystUrl, 'EXPLORER')
 
   let profile: any | undefined = undefined

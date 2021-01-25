@@ -11,7 +11,7 @@ export class EmptyParcelController {
   constructor(
     public options: {
       contentServer: string
-      metaContentServer: string
+      catalystServer: string
       metaContentService: string
       contentServerBundles: string
       worldConfig: WorldConfig
