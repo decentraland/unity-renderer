@@ -1,6 +1,6 @@
 import { Store } from 'redux'
 import { EntityType, Hashing } from 'dcl-catalyst-commons'
-import { ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
+import { CatalystClient, ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
 import { call, throttle, put, race, select, take, takeEvery } from 'redux-saga/effects'
 
 import { getServerConfigurations, ALL_WEARABLES, PREVIEW, ethereumConfigurations, RESET_TUTORIAL } from 'config'
@@ -39,14 +39,14 @@ import {
   DeployProfile
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
-import { getProfile, getProfileDownloadServer, hasConnectedWeb3 } from './selectors'
+import { getProfile, hasConnectedWeb3 } from './selectors'
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { buildServerMetadata, ensureServerFormat } from './transformations/profileToServerFormat'
 import { Profile, ContentFile, Avatar, ProfileType } from './types'
 import { ExplorerIdentity } from 'shared/session/types'
 import { Authenticator } from 'dcl-crypto'
-import { getUpdateProfileServer, getResizeService, isResizeServiceUrl } from '../dao/selectors'
+import { getUpdateProfileServer, getResizeService, isResizeServiceUrl, getCatalystServer } from '../dao/selectors'
 import { WORLD_EXPLORER } from '../../config/index'
 import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
 import { getResourcesURL } from '../location'
@@ -192,8 +192,7 @@ function scheduleProfileUpdate(profile: Profile) {
 
 export function* doesProfileExist(userId: string): any {
   try {
-    const server = yield select(getProfileDownloadServer)
-    const profiles: { avatars: object[] } = yield profileServerRequest(server, userId)
+    const profiles: { avatars: object[] } = yield profileServerRequest(userId)
 
     return profiles.avatars.length > 0
   } catch (error) {
@@ -205,22 +204,21 @@ export function* doesProfileExist(userId: string): any {
 }
 
 export function* handleFetchProfile(action: ProfileRequestAction): any {
-  const userId = action.payload.userId
+  const { userId, profileType } = action.payload
 
   const currentId = yield select(getCurrentUserId)
   let profile: any
   let hasConnectedWeb3 = false
   if (WORLD_EXPLORER) {
     try {
-      if (action.payload.profileType === ProfileType.LOCAL && currentId !== userId) {
+      if (profileType === ProfileType.LOCAL && currentId !== userId) {
         const peerProfile: Profile = yield requestLocalProfileToPeers(userId)
         if (peerProfile) {
           profile = ensureServerFormat(peerProfile)
           profile.hasClaimedName = false // for now, comms profiles can't have claimed names
         }
       } else {
-        const serverUrl = yield select(getProfileDownloadServer)
-        const profiles: { avatars: object[] } = yield call(profileServerRequest, serverUrl, userId)
+        const profiles: { avatars: object[] } = yield call(profileServerRequest, userId)
 
         if (profiles.avatars.length !== 0) {
           profile = profiles.avatars[0]
@@ -325,16 +323,10 @@ function* populateFaceIfNecessary(profile: any, resolution: string) {
   }
 }
 
-export async function profileServerRequest(serverUrl: string, userId: string) {
-  try {
-    const request = await fetch(`${serverUrl}/${userId}`)
-    if (!request.ok) {
-      throw new Error('Profile not found')
-    }
-    return await request.json()
-  } catch (up) {
-    throw up
-  }
+export async function profileServerRequest(userId: string) {
+  const catalystUrl = getCatalystServer(globalThis.globalStore.getState())
+  const client = new CatalystClient(catalystUrl, 'EXPLORER')
+  return client.fetchProfile(userId)
 }
 
 function* handleRandomAsSuccess(action: ProfileRandomAction): any {
@@ -536,7 +528,7 @@ async function deploy(
   const preparationData = await (contentFiles.size
     ? DeploymentBuilder.buildEntity(EntityType.PROFILE, [identity.address], contentFiles, metadata)
     : DeploymentBuilder.buildEntityWithoutNewFiles(EntityType.PROFILE, [identity.address], contentHashes, metadata))
-  // sign the entity id fetchMetaContentServer
+  // sign the entity id
   const authChain = Authenticator.signPayload(identity, preparationData.entityId)
   // Build the client
   const catalyst = new ContentClient(url, 'explorer-kernel-profile')

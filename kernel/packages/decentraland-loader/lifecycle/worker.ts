@@ -39,7 +39,7 @@ let downloadManager: SceneDataDownloadManager
     'Lifecycle.initialize',
     (options: {
       contentServer: string
-      metaContentServer: string
+      catalystServer: string
       metaContentService: string
       contentServerBundles: string
       rootUrl: string
@@ -50,7 +50,7 @@ let downloadManager: SceneDataDownloadManager
     }) => {
       downloadManager = new SceneDataDownloadManager({
         contentServer: options.contentServer,
-        metaContentServer: options.metaContentServer,
+        catalystServer: options.catalystServer,
         metaContentService: options.metaContentService,
         contentServerBundles: options.contentServerBundles,
         worldConfig: options.worldConfig,

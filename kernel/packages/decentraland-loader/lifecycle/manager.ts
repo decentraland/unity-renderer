@@ -11,7 +11,7 @@ import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, LOS, PIN_CATALYST } from 'config'
 
 import { ILand } from 'shared/types'
-import { getFetchContentServer, getFetchMetaContentServer, getFetchMetaContentService } from 'shared/dao/selectors'
+import { getFetchContentServer, getCatalystServer, getFetchMetaContentService } from 'shared/dao/selectors'
 import defaultLogger from 'shared/logger'
 import { StoreContainer } from 'shared/store/rootTypes'
 
@@ -115,7 +115,7 @@ export async function initParcelSceneWorker() {
 
   server.notify('Lifecycle.initialize', {
     contentServer: DEBUG ? localServer : getFetchContentServer(state),
-    metaContentServer: DEBUG ? localServer : getFetchMetaContentServer(state),
+    catalystServer: DEBUG ? localServer : getCatalystServer(state),
     metaContentService: DEBUG ? localServer : getFetchMetaContentService(state),
     contentServerBundles: DEBUG || PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/',
     rootUrl: fullRootUrl,
