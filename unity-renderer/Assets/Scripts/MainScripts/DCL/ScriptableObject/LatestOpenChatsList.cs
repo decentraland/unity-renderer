@@ -5,7 +5,7 @@ using UnityEngine;
 /// Stores the latest open chats of our friends.
 /// </summary>
 [CreateAssetMenu(fileName = "LatestOpenChatsList", menuName = "LatestOpenChatsList")]
-public class LatestOpenChatsList : ListVariable<LatestOpenChatsList.Model>
+public class LatestOpenChatsList : ListVariable_Legacy<LatestOpenChatsList.Model>
 {
     [Serializable]
     public class Model
