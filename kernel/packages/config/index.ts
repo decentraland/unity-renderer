@@ -144,6 +144,8 @@ export const TEST_WEARABLES_OVERRIDE = location.search.includes('TEST_WEARABLES'
 
 const META_CONFIG_URL = qs.META_CONFIG_URL
 
+const QUESTS_SERVER_URL = qs.QUESTS_SERVER_URL ?? 'https://quests-api.decentraland.io'
+
 export namespace commConfigurations {
   export const debug = true
   export const commRadius = 4
@@ -283,6 +285,7 @@ export function getServerConfigurations() {
     wearablesApi: `https://${WEARABLE_API_DOMAIN}/${WEARABLE_API_PATH_PREFIX}`,
     explorerConfiguration: `${metaConfigBaseUrl}?t=${new Date().getTime()}`,
     synapseUrl,
+    questsUrl: QUESTS_SERVER_URL,
     fallbackResizeServiceUrl: `${PIN_CATALYST ?? 'https://peer.decentraland.' + notToday}/lambdas/images`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`, // ** TODO - unused, remove - moliva - 03/07/2020
