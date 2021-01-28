@@ -468,7 +468,7 @@ async function buildSnapshotContent(selector: string, value: string): Promise<[s
   let hash: string
   let contentFile: ContentFile | undefined
 
-  const name = `./${selector}.png`
+  const name = `${selector}.png`
 
   if (isResizeServiceUrl(globalThis.globalStore.getState(), value)) {
     // value is coming in a resize service url => generate image & upload content
