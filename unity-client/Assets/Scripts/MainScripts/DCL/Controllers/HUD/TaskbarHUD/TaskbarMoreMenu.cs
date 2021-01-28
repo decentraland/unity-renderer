@@ -55,7 +55,7 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         nightModeButton.onClick.AddListener(() =>
         {
-            RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.halloweenProfile;
+            RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.nightProfile;
             RenderProfileManifest.i.currentProfile.Apply();
             view.moreButton.SetToggleState(false);
         });

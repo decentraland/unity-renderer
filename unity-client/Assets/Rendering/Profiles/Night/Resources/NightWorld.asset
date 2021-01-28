@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11747b2e083ecda479377a27f449d27f, type: 3}
-  m_Name: Halloween World
+  m_Name: NightWorld
   m_EditorClassIdentifier: 
   loadingBlockerPrefab: {fileID: 6457685576576672848, guid: 3239d07ea97818f4db09926a91b880ce,
     type: 3}

@@ -394,7 +394,8 @@ export type Notification = {
 export enum RenderProfile {
   DEFAULT = 0,
   HALLOWEEN = 1,
-  XMAS = 2
+  XMAS = 2,
+  NIGHT = 3
 }
 
 export enum HUDElementID {
