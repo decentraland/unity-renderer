@@ -13,7 +13,8 @@ public class RenderProfileBridge : MonoBehaviour
     {
         DEFAULT,
         HALLOWEEN,
-        XMAS
+        XMAS,
+        NIGHT
     }
 
     [System.Serializable]
@@ -52,10 +53,9 @@ public class RenderProfileBridge : MonoBehaviour
                 newProfile = RenderProfileManifest.i.defaultProfile;
                 break;
             case ID.HALLOWEEN:
-                newProfile = RenderProfileManifest.i.halloweenProfile;
-                break;
             case ID.XMAS:
-                newProfile = RenderProfileManifest.i.halloweenProfile;
+            case ID.NIGHT:
+                newProfile = RenderProfileManifest.i.nightProfile;
                 break;
         }
 

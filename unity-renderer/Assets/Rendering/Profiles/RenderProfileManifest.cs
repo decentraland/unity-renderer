@@ -19,7 +19,7 @@ namespace DCL
         public static RenderProfileManifest i => GetOrLoad(ref instance, "Render Profile Manifest");
 
         public RenderProfileWorld defaultProfile;
-        public RenderProfileWorld halloweenProfile;
+        public RenderProfileWorld nightProfile;
         public RenderProfileWorld testProfile;
 
         private RenderProfileWorld currentProfileValue;
