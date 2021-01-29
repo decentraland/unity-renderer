@@ -1,4 +1,5 @@
 import React from "react";
+import { AuthType } from "../../../utils";
 import { Modal } from "../../common/Modal";
 import { WalletButton, WalletButtonLogo } from "./WalletButton";
 import { Spinner } from "../../common/Spinner";
@@ -7,20 +8,20 @@ import "./WalletSelector.css";
 export interface WalletSelectorProps {
   show: boolean;
   loading: boolean;
-  metamask: boolean;
+  hasWallet: boolean;
   onClick: (provider: string) => void;
   onCancel: () => void;
 }
 
 export const WalletSelector: React.FC<WalletSelectorProps> = ({
   show,
-  metamask,
+  hasWallet,
   loading,
   onClick,
   onCancel,
 }) => {
-  function handleClick(_: React.MouseEvent, provider: WalletButtonLogo) {
-    if (provider === "Metamask" && !metamask) {
+  function handleClick(_: React.MouseEvent, provider: AuthType) {
+    if (provider === AuthType.INJECTED && !hasWallet) {
       return;
     }
     if (onClick) {
@@ -42,8 +43,8 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
           {!loading && (
             <React.Fragment>
               <WalletButton
-                logo="Metamask"
-                active={!!metamask}
+                logo={WalletButtonLogo.METAMASK}
+                active={!!hasWallet}
                 href="https://metamask.io/"
                 onClick={handleClick}
               />

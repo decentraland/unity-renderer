@@ -9,6 +9,7 @@ import { Container } from "../common/Container";
 import { BeginnersGuide } from "./BeginnersGuide";
 import { BigFooter } from "../common/BigFooter";
 import "./LoginContainer.css";
+import { AuthType } from "../../utils";
 
 declare var window: Window & {
   ethereum: any;
@@ -32,8 +33,6 @@ const mapStateToProps = (state: any) => {
     provider: state.session.currentProvider,
     showWalletSelector: params.has("show_wallet"),
     hasWallet: !!window.ethereum,
-    hasMetamask: !!(window.ethereum && window.ethereum.isMetaMask),
-    hasDapper: !!(window.ethereum && window.ethereum.isDapper),
   };
 };
 
@@ -41,7 +40,7 @@ const mapDispatchToProps = (dispatch: any) => ({
   onLogin: (provider: string) =>
     dispatch({ type: "[Authenticate]", payload: { provider } }),
   onGuest: () =>
-    dispatch({ type: "[Authenticate]", payload: { provider: "Guest" } }),
+    dispatch({ type: "[Authenticate]", payload: { provider: AuthType.GUEST } }),
 });
 
 export interface LoginContainerProps {
@@ -51,8 +50,6 @@ export interface LoginContainerProps {
   provider?: string | null;
   showWallet?: boolean;
   hasWallet?: boolean;
-  hasMetamask?: boolean;
-  hasDapper?: boolean;
   onLogin: (provider: string) => void;
   onGuest: () => void;
 }
@@ -62,11 +59,11 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
   const full = loading || props.stage === LoginStage.SIGN_IN;
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
-  const provider = props.hasMetamask
-    ? "Metamask"
-    : props.hasDapper
-    ? "Dapper"
-    : props.provider;
+  const provider = props.hasWallet
+    ? AuthType.INJECTED
+    : props.provider === AuthType.FORTMATIC
+    ? props.provider
+    : null;
   return (
     <React.Fragment>
       {shouldShow && (
@@ -80,7 +77,6 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
               {full && (
                 <EthLogin
                   hasWallet={props.hasWallet}
-                  hasMetamask={props.hasMetamask}
                   loading={loading || props.signing}
                   onLogin={props.onLogin}
                   onGuest={props.onGuest}

@@ -1,9 +1,13 @@
 import React, { useMemo } from "react";
+import { AuthType } from "../../../utils";
 import MetamaskLogo from "../../../images/login/metamask.svg";
 import FortmaticLogo from "../../../images/login/fortmatic.svg";
 import "./WalletButton.css";
 
-export type WalletButtonLogo = "Metamask" | "Fortmatic";
+export enum WalletButtonLogo {
+  METAMASK = "Metamask",
+  FORTMATIC = "Fortmatic",
+}
 
 export interface WalletButtonProps {
   logo: WalletButtonLogo;
@@ -11,7 +15,7 @@ export interface WalletButtonProps {
   href?: string;
   onClick: (
     event: React.MouseEvent<HTMLAnchorElement>,
-    logo: WalletButtonLogo
+    authType: AuthType
   ) => void;
 }
 
@@ -21,6 +25,8 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
   active,
   onClick,
 }) => {
+  const provider =
+    logo === WalletButtonLogo.METAMASK ? AuthType.INJECTED : AuthType.FORTMATIC;
   const src = useMemo(() => {
     switch (logo) {
       case "Fortmatic":
@@ -57,7 +63,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
     }
 
     if (onClick) {
-      onClick(event, logo);
+      onClick(event, provider);
     }
   }
 

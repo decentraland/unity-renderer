@@ -10,7 +10,6 @@ export interface EthLoginProps {
   provider: string | null | undefined;
   showWallet?: boolean;
   hasWallet?: boolean;
-  hasMetamask?: boolean;
   onLogin: (provider: string) => void;
   onGuest: () => void;
 }
@@ -56,7 +55,7 @@ export const EthLogin: React.FC<EthLoginProps> = (props) => {
       </div>
       <WalletSelector
         show={showWallet}
-        metamask={!!props.hasMetamask}
+        hasWallet={!!props.hasWallet}
         loading={props.loading}
         onClick={props.onLogin}
         onCancel={() => setShowWallet(false)}
