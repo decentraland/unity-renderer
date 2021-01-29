@@ -9,3 +9,9 @@ export function filterInvalidNameCharacters(name: string) {
 export function isBadWord(name: string) {
   return kernel.utils.isBadWord(name);
 }
+
+export enum AuthType {
+  GUEST = "guest",
+  INJECTED = "injected",
+  FORTMATIC = "fortmatic",
+}

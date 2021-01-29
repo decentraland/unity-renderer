@@ -40,7 +40,7 @@ export function createWeb3Connector(): Web3Connector {
 
 export async function requestWeb3Provider(type: ProviderType) {
   try {
-    const provider = await web3Connector.connect(type)
+    const { provider } = await web3Connector.connect(type)
     requestManager.setProvider(provider)
     providerFuture.resolve({
       successful: !isGuest(),

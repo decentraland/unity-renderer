@@ -7,7 +7,7 @@ export default {
   args: {
     show: true,
     loading: false,
-    metamask: true,
+    hasWallet: true,
   },
   component: WalletSelector,
   argTypes: {
@@ -28,7 +28,7 @@ Default.args = {
 export const DisabledButton = Default.bind({});
 DisabledButton.args = {
   ...Default.args,
-  metamask: false,
+  hasWallet: false,
 };
 
 export const Loading = Template.bind({});
