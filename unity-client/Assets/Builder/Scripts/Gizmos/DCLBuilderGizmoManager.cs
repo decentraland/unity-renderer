@@ -73,6 +73,11 @@ namespace Builder.Gizmos
             isTransformingObject = false;
         }
 
+        public bool HasAxisHover()
+        {
+            return hoveredAxis != null;
+        }
+
         private void SetAxisHover(DCLBuilderGizmoAxis axis)
         {
             if (hoveredAxis != null && hoveredAxis != axis)

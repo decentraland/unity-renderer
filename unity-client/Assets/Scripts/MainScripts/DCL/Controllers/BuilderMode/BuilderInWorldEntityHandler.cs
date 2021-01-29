@@ -178,6 +178,21 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
         EntityListChanged();
     }
 
+    public bool IsPointerInSelectedEntity()
+    {
+        DCLBuilderInWorldEntity entityInPointer = buildModeController.GetEntityOnPointer();
+        if (entityInPointer == null)
+            return false;
+
+        foreach(DCLBuilderInWorldEntity entity in selectedEntities)
+        {
+            if (entityInPointer == entity)
+                return true;
+        }
+
+        return false;
+    }
+
     void DeleteSelectedEntitiesInput()
     {
         if (selectedEntities.Count > 0)
