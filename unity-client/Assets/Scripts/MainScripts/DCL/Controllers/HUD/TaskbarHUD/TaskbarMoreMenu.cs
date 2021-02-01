@@ -1,32 +1,33 @@
 using DCL;
-using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TaskbarMoreMenu : MonoBehaviour
 {
-    [Header("Menu Animation")] [SerializeField]
-    internal ShowHideAnimator moreMenuAnimator;
+    [Header("Menu Animation")]
+    [SerializeField] internal ShowHideAnimator moreMenuAnimator;
+    [SerializeField] internal float timeBetweenAnimations = 0.01f;
 
-    [Header("Collapse Button Config")] [SerializeField]
-    internal Button collapseBarButton;
-
+    [Header("Collapse Button Config")]
+    [SerializeField] internal TaskbarMoreMenuButton collapseBarButton;
     [SerializeField] internal GameObject collapseIcon;
     [SerializeField] internal GameObject collapseText;
     [SerializeField] internal GameObject expandIcon;
     [SerializeField] internal GameObject expandText;
 
-    [Header("Other Buttons Config")] [SerializeField]
-    internal Button hideUIButton;
-
-    [SerializeField] internal Button controlsButton;
+    [Header("Other Buttons Config")]
+    [SerializeField] internal TaskbarMoreMenuButton hideUIButton;
+    [SerializeField] internal TaskbarMoreMenuButton controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
-    [SerializeField] internal Button helpAndSupportButton;
-    [SerializeField] internal Button tutorialButton;
-    [SerializeField] internal Button dayModeButton;
-    [SerializeField] internal Button nightModeButton;
+    [SerializeField] internal TaskbarMoreMenuButton helpAndSupportButton;
+    [SerializeField] internal TaskbarMoreMenuButton tutorialButton;
+    [SerializeField] internal TaskbarMoreMenuButton dayModeButton;
+    [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
 
     private TaskbarHUDView view;
+    internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
+    internal Coroutine moreMenuAnimationsCoroutine;
 
     public event System.Action<bool> OnMoreMenuOpened;
     public event System.Action OnRestartTutorial;
@@ -43,28 +44,41 @@ public class TaskbarMoreMenu : MonoBehaviour
         helpAndSupportButton.gameObject.SetActive(false);
         tutorialButton.gameObject.SetActive(true);
 
+        SortButtonsAnimations();
+
         RenderProfileManifest.i.OnChangeProfile += OnChangeProfile;
         OnChangeProfile(RenderProfileManifest.i.currentProfile);
 
-        dayModeButton.onClick.AddListener(() =>
+        dayModeButton.mainButton.onClick.AddListener(() =>
         {
             RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.defaultProfile;
             RenderProfileManifest.i.currentProfile.Apply();
             view.moreButton.SetToggleState(false);
         });
 
-        nightModeButton.onClick.AddListener(() =>
+        nightModeButton.mainButton.onClick.AddListener(() =>
         {
             RenderProfileManifest.i.currentProfile = RenderProfileManifest.i.nightProfile;
             RenderProfileManifest.i.currentProfile.Apply();
             view.moreButton.SetToggleState(false);
         });
 
-        collapseBarButton.onClick.AddListener(() => { ToggleCollapseBar(); });
+        collapseBarButton.mainButton.onClick.AddListener(() => { ToggleCollapseBar(); });
 
-        hideUIButton.onClick.AddListener(() => { ToggleHideUI(); });
+        hideUIButton.mainButton.onClick.AddListener(() => { ToggleHideUI(); });
 
-        tutorialButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
+        tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
+    }
+
+    private void SortButtonsAnimations()
+    {
+        sortedButtonsAnimations.Add(helpAndSupportButton);
+        sortedButtonsAnimations.Add(controlsButton);
+        sortedButtonsAnimations.Add(hideUIButton);
+        sortedButtonsAnimations.Add(nightModeButton);
+        sortedButtonsAnimations.Add(dayModeButton);
+        sortedButtonsAnimations.Add(tutorialButton);
+        sortedButtonsAnimations.Add(collapseBarButton);
     }
 
     private void OnChangeProfile(RenderProfileWorld profile)
@@ -73,11 +87,17 @@ public class TaskbarMoreMenu : MonoBehaviour
         {
             dayModeButton.gameObject.SetActive(false);
             nightModeButton.gameObject.SetActive(true);
+
+            if (moreMenuAnimator.isVisible)
+                nightModeButton.PlayAnimation(TaskbarMoreMenuButton.AnimationStatus.Visible);
         }
         else
         {
             dayModeButton.gameObject.SetActive(true);
             nightModeButton.gameObject.SetActive(false);
+
+            if (moreMenuAnimator.isVisible)
+                dayModeButton.PlayAnimation(TaskbarMoreMenuButton.AnimationStatus.Visible);
         }
     }
 
@@ -97,7 +117,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     {
         controlsButton.gameObject.SetActive(true);
 
-        controlsButton.onClick.AddListener(() =>
+        controlsButton.mainButton.onClick.AddListener(() =>
         {
             controlsToggleAction.RaiseOnTriggered();
             view.moreButton.SetToggleState(false);
@@ -108,7 +128,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     {
         helpAndSupportButton.gameObject.SetActive(true);
 
-        helpAndSupportButton.onClick.AddListener(() =>
+        helpAndSupportButton.mainButton.onClick.AddListener(() =>
         {
             view.controller.helpAndSupportHud.SetVisibility(true);
             view.moreButton.SetToggleState(false);
@@ -117,28 +137,48 @@ public class TaskbarMoreMenu : MonoBehaviour
 
     internal void ShowMoreMenu(bool visible, bool instant = false)
     {
+        CoroutineStarter.Stop(moreMenuAnimationsCoroutine);
+        moreMenuAnimationsCoroutine = CoroutineStarter.Start(PlayMoreMenuAnimations(visible, instant));
+        OnMoreMenuOpened?.Invoke(visible);
+    }
+
+    private IEnumerator PlayMoreMenuAnimations(bool visible, bool instant = false)
+    {
         if (visible)
         {
-            if (!moreMenuAnimator.gameObject.activeInHierarchy)
-            {
-                moreMenuAnimator.gameObject.SetActive(true);
-            }
-
             moreMenuAnimator.Show(instant);
+
+            for (int i = 0; i < sortedButtonsAnimations.Count; i++)
+            {
+                if (!sortedButtonsAnimations[i].gameObject.activeInHierarchy ||
+                    sortedButtonsAnimations[i].lastPlayedAnimation == TaskbarMoreMenuButton.AnimationStatus.In)
+                {
+                    continue;
+                }
+
+                sortedButtonsAnimations[i].PlayAnimation(TaskbarMoreMenuButton.AnimationStatus.In);
+                yield return new WaitForSeconds(timeBetweenAnimations);
+            }
         }
         else
         {
-            if (!moreMenuAnimator.gameObject.activeInHierarchy)
+            for (int j = sortedButtonsAnimations.Count - 1; j >= 0; j--)
             {
-                moreMenuAnimator.gameObject.SetActive(false);
-            }
-            else
-            {
-                moreMenuAnimator.Hide(instant);
-            }
-        }
+                if (!sortedButtonsAnimations[j].gameObject.activeInHierarchy ||
+                    sortedButtonsAnimations[j].lastPlayedAnimation == TaskbarMoreMenuButton.AnimationStatus.Out)
+                {
+                    continue;
+                }
 
-        OnMoreMenuOpened?.Invoke(visible);
+                sortedButtonsAnimations[j].PlayAnimation(TaskbarMoreMenuButton.AnimationStatus.Out);
+                yield return new WaitForSeconds(timeBetweenAnimations);
+            }
+
+            if (sortedButtonsAnimations.Count > 0)
+                yield return new WaitForSeconds(sortedButtonsAnimations[0].GetAnimationLenght());
+
+            moreMenuAnimator.Hide(instant);
+        }
     }
 
     internal void ShowTutorialButton(bool visible)
@@ -152,7 +192,6 @@ public class TaskbarMoreMenu : MonoBehaviour
             return;
 
         view.ShowBar(!view.isBarVisible);
-        ShowMoreMenu(false);
 
         collapseIcon.SetActive(view.isBarVisible);
         collapseText.SetActive(view.isBarVisible);
