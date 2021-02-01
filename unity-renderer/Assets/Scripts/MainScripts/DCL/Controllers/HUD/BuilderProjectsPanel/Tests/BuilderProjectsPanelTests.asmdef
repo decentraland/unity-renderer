@@ -1,0 +1,23 @@
+{
+    "name": "BuilderProjectsPanelTests",
+    "references": [
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:64cd69d7e3e2a4a62a0cdc5de451ef12",
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
