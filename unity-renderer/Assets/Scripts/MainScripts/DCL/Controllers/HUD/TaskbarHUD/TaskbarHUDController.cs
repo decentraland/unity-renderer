@@ -199,7 +199,6 @@ public class TaskbarHUDController : IHUD
     private void MouseCatcher_OnMouseLock()
     {
         view.leftWindowContainerAnimator.Hide();
-        ShowMoreMenu(false);
 
         foreach (var btn in view.GetButtonList())
         {
@@ -434,6 +433,7 @@ public class TaskbarHUDController : IHUD
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
 
+            CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
             UnityEngine.Object.Destroy(view.gameObject);
         }
 
@@ -533,11 +533,6 @@ public class TaskbarHUDController : IHUD
     {
         if (!AnyWindowsDifferentThanChatIsOpen())
             worldChatWindowHud.MarkWorldChatMessagesAsRead();
-    }
-
-    public void ShowMoreMenu(bool isActive)
-    {
-        view.moreMenu.ShowMoreMenu(isActive);
     }
 
     public void ShowTutorialOption(bool isActive)
