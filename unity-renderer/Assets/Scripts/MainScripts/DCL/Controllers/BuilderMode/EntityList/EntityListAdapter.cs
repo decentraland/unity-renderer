@@ -13,6 +13,7 @@ public class EntityListAdapter : MonoBehaviour
     public TMP_InputField nameInputField;
     public Image selectedImg, lockImg, showImg;
     public System.Action<BuilderInWorldEntityListController.EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
+    public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
     DCLBuilderInWorldEntity currentEntity;
 
 
@@ -63,16 +64,19 @@ public class EntityListAdapter : MonoBehaviour
     {
         if (this != null)
         {
-            if (string.IsNullOrEmpty(entityToEdit.descriptiveName))
+            if (string.IsNullOrEmpty(entityToEdit.GetDescriptiveName()))
             {
                 nameInputField.text = entityToEdit.rootEntity.entityId;
                 nameTxt.text = entityToEdit.rootEntity.entityId;
             }
             else
             {
-                nameInputField.text = entityToEdit.descriptiveName;
-                nameTxt.text = entityToEdit.descriptiveName;
+                nameInputField.text = entityToEdit.GetDescriptiveName();
+                nameTxt.text = entityToEdit.GetDescriptiveName();
             }
+
+            //NOTE (Adrian): this is done to force the text component to update, otherwise it won't show the text, seems like a bug on textmeshpro to me
+            nameInputField.textComponent.enabled = true;
 
             if (entityToEdit.IsVisible)
                 showImg.color = iconsSelectedColor;
@@ -94,8 +98,7 @@ public class EntityListAdapter : MonoBehaviour
 
     public void Rename(string newName)
     {
-        currentEntity.SetDescriptiveName(newName);
-        OnActionInvoked?.Invoke(BuilderInWorldEntityListController.EntityAction.RENAME, currentEntity, this);
+        OnEntityRename?.Invoke(currentEntity, newName);
     }
 
     void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)

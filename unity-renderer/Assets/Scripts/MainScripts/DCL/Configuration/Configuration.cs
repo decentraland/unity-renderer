@@ -11,6 +11,7 @@ namespace DCL.Configuration
 
         public static int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
         public static int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
+        public static int COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
 
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string FLOOR_CATEGORY = "ground";

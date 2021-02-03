@@ -88,6 +88,17 @@ public class BuilderInWorldNFTController
         }
     }
 
+    public SceneObject GetNFTSceneObjectFromId(string assetId)
+    {
+        foreach (NFTInfo nFTInfo in nftOwner.assets)
+        {
+            if(nFTInfo.assetContract.address == assetId)
+                return NFTInfoToSceneObject(nFTInfo);
+        }
+
+        return null;
+    }
+
     public List<SceneObject> GetNFTsAsSceneObjects()
     {
         List<SceneObject> sceneObjects = new List<SceneObject>();

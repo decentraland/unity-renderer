@@ -191,7 +191,6 @@ Transform:
   - {fileID: 2469348291275968250}
   - {fileID: 1208871512032110246}
   - {fileID: 1208871511405416594}
-  - {fileID: 7866796403669229503}
   - {fileID: 1208871512899340006}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -226,7 +225,7 @@ MonoBehaviour:
   gizmoManager: {fileID: 1208871511615770936}
   actionController: {fileID: 1208871512032110241}
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
-  builderInWorldBridge: {fileID: 3917703040089432743}
+  builderInWorldBridge: {fileID: 0}
   outlinerMaterial: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
   dclBuilderMeshLoadIndicatorController: {fileID: 4453536760248188691}
   meshLoadIndicator: {fileID: 4025507285860166352}
@@ -507,7 +506,7 @@ MonoBehaviour:
   snapDistanceToActivateMovement: 1
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
   actionController: {fileID: 1208871512032110241}
-  builderInWorldBridge: {fileID: 3917703040089432743}
+  builderInWorldBridge: {fileID: 0}
   scaleSpeed: 0.25
   rotationSpeed: 0.5
   distanceFromCameraForNewEntitties: 5
@@ -1609,7 +1608,7 @@ MonoBehaviour:
   snapDistanceToActivateMovement: 1
   builderInWorldEntityHandler: {fileID: 7801740759641975108}
   actionController: {fileID: 1208871512032110241}
-  builderInWorldBridge: {fileID: 3917703040089432743}
+  builderInWorldBridge: {fileID: 0}
   distanceEagleCamera: 20
   freeCameraController: {fileID: 0}
   gizmoManager: {fileID: 1208871511615770936}
@@ -1791,7 +1790,7 @@ Transform:
   - {fileID: 1208871511546216242}
   - {fileID: 1208871512657624398}
   m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1208871513006312414
 GameObject:
@@ -2092,49 +2091,6 @@ Transform:
   m_Father: {fileID: 1208871512657624398}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4346951247361332726
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7866796403669229503}
-  - component: {fileID: 3917703040089432743}
-  m_Layer: 0
-  m_Name: KernelBridge
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7866796403669229503
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4346951247361332726}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3917703040089432743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4346951247361332726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c96c5543d89960749bdf3025e5fc122b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5373867681970374750
 GameObject:
   m_ObjectHideFlags: 0
@@ -2179,11 +2135,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   duplicateOffset: 2
+  msBetweenTransformUpdates: 2000
   outlinerController: {fileID: 1208871511725701524}
-  entityInformationController: {fileID: 0}
   buildModeController: {fileID: 1208871511274338203}
   actionController: {fileID: 1208871512032110241}
-  builderInWorldBridge: {fileID: 3917703040089432743}
+  builderInWorldBridge: {fileID: 0}
   editMaterial: {fileID: 2100000, guid: 92b0ce4a86423dd48b66212090fc7e34, type: 2}
   duplicateCursorTexture: {fileID: 2800000, guid: 422889cd6c61279459cc3c6bfa00ed20,
     type: 3}

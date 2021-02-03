@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -77,21 +77,7 @@ namespace DCL
 
         public Vector3 ConvertSceneToUnityPosition(Vector3 pos, ParcelScene scene = null)
         {
-            if (scene == null)
-            {
-                string sceneId = currentSceneId;
-
-                if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
-                    scene = loadedScenes[currentSceneId];
-                else
-                    return pos;
-            }
-
-            Vector3 sceneRealPosition = scene.gameObject.transform.position;
-            Vector3 sceneFictionPosition = new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y);
-            Vector3 sceneOffset = sceneRealPosition - sceneFictionPosition;
-            Vector3 solvedPosition = pos + sceneOffset;
-            return solvedPosition;
+            return ConvertPointInSceneToUnityPosition(pos, scene);
         }
 
         public Vector3 ConvertScenePositionToUnityPosition(ParcelScene scene = null)

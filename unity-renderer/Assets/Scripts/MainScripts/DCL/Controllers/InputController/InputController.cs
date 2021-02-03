@@ -309,7 +309,8 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.F, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeReset:
-                    InputProcessor.FromKey(action, KeyCode.S, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.R, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftControl });
+                    InputProcessor.FromKey(action, KeyCode.R, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftCommand });
                     break;
                 case DCLAction_Trigger.BuildEditHideSelectedEntities:
                     InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput);
