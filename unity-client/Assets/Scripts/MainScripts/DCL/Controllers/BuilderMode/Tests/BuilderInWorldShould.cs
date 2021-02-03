@@ -126,46 +126,6 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         "Floor should be loaded, is the SceneObject not working anymore?");
     }
 
-    [UnityTest]
-    public IEnumerator EnterExitInEditMode()
-    {
-        BuilderInWorldController builderInWorldControllerPrefab = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
-
-        BuilderInWorldController  builderInWorldController = InstantiateTestGameObject(builderInWorldControllerPrefab.gameObject).GetComponent<BuilderInWorldController>();
-        builderInWorldController.gameObject.SetActive(true);
-        builderInWorldController.SetTestMode();
-
-        //Note (Adrian): Wait 1 frame to call the Start method on the BuilderInWorldController
-        yield return null;
-
-        builderInWorldController.GetComponentInChildren<BuilderInWorldGodMode>(true).SetActivateCamera(false);
-        builderInWorldController.activeFeature = true;
-        builderInWorldController.StartEnterEditMode(false);
-        builderInWorldController.NewSceneReady(scene.sceneData.id);
-        builderInWorldController.sceneToEdit = scene;
-
-        BuilderInWorldTestHelper.CreateTestCatalogLocal();
-        builderInWorldController.CatalogLoaded();
-        CinemachineBrain cinemachineBrain = Resources.FindObjectsOfTypeAll<CinemachineBrain>()[0];
-
-        //Note (Adrian): Cinemachine brain needs 2 frames to setup the IsBlending flag
-        yield return null;
-        yield return null;
-
-        yield return new WaitUntil(() => !cinemachineBrain.IsBlending);
-
-        Assert.IsTrue(builderInWorldController.isEditModeActivated, "Unable to enter in Builder In World");
-
-        builderInWorldController.ExitEditMode();
-        yield return null;
-        yield return null;
-        yield return new WaitUntil(() => !cinemachineBrain.IsBlending);
-
-        Assert.IsFalse(builderInWorldController.isEditModeActivated, "Unable to exit  Builder In World");
-        GameObject.DestroyImmediate(builderInWorldController.gameObject);
-        yield return null;
-    }
-
     protected override IEnumerator TearDown()
     {
         AssetCatalogBridge.ClearCatalog();

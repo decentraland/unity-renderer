@@ -12,6 +12,8 @@ public class SceneObjectDropController
     public void SceneObjectDropped()
     {
         CatalogItemAdapter adapter = catalogGroupListView.GetLastSceneObjectDragged();
+        if (adapter == null)
+            return;
         SceneObject sceneObject = adapter.GetContent();
 
         OnSceneObjectDropped?.Invoke(sceneObject);

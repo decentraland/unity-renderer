@@ -46,7 +46,7 @@ public class AttributeXYZ : MonoBehaviour
 
     public void ChangeXValue(string value)
     {
-        if (!isSelected)
+        if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
         currentValue.x = float.Parse(value);
@@ -55,7 +55,7 @@ public class AttributeXYZ : MonoBehaviour
 
     public void ChangeYValue(string value)
     {
-        if (!isSelected)
+        if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
         currentValue.y = float.Parse(value);
@@ -64,7 +64,7 @@ public class AttributeXYZ : MonoBehaviour
 
     public void ChangeZValue(string value)
     {
-        if (!isSelected)
+        if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
         currentValue.z = float.Parse(value);

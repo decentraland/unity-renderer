@@ -27,12 +27,14 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
             foreach (KeyValuePair<string, List<SceneObject>> assetPackGroup in assetPackGroups)
             {
                 CatalogAssetGroupAdapter adapter = Instantiate(categoryItemAdapterPrefab, contentPanelTransform).GetComponent<CatalogAssetGroupAdapter>();
+
                 adapter.SetContent(assetPackGroup.Key, assetPackGroup.Value);
                 adapter.OnSceneObjectClicked += SceneObjectSelected;
                 adapter.OnSceneObjectFavorite += SceneObjectFavorite;
                 adapter.OnAdapterStartDragging += AdapterStartDragging;
                 adapter.OnAdapterDrag += OnDrag;
                 adapter.OnAdapterEndDrag += OnEndDrag;
+
             }
         }
     }

@@ -95,7 +95,7 @@ public static partial class BuilderInWorldUtils
     public static bool IsWithInSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
     {
         Camera camera = Camera.main;
-        var viewPortBounds = BuilderInWorldUtils.GetViewportBounds(camera, lastClickMousePosition, mousePosition);
+        var viewPortBounds = GetViewportBounds(camera, lastClickMousePosition, mousePosition);
         return viewPortBounds.Contains(camera.WorldToViewportPoint(point));
     }
 
@@ -196,5 +196,31 @@ public static partial class BuilderInWorldUtils
     public static EntityData ConvertJSONToEntityData(string json)
     {
         return JsonConvert.DeserializeObject<EntityData>(json);
+    }
+
+    public static List<DCLBuilderInWorldEntity> FilterEntitiesBySmartItemComponentAndActions(List<DCLBuilderInWorldEntity> entityList)
+    {
+        List<DCLBuilderInWorldEntity> newList = new List<DCLBuilderInWorldEntity>();
+
+        foreach (DCLBuilderInWorldEntity entity in entityList)
+        {
+            if (!entity.HasSmartItemComponent() || !entity.HasSmartItemActions())
+                continue;
+
+            newList.Add(entity);
+        }
+
+        return newList;
+    }
+
+    public static void CopyRectTransform(RectTransform original, RectTransform rectTransformToCopy)
+    {
+        original.anchoredPosition = rectTransformToCopy.anchoredPosition;
+        original.anchorMax = rectTransformToCopy.anchorMax;
+        original.anchorMin = rectTransformToCopy.anchorMin;
+        original.offsetMax = rectTransformToCopy.offsetMax;
+        original.offsetMin = rectTransformToCopy.offsetMin;
+        original.sizeDelta = rectTransformToCopy.sizeDelta;
+        original.pivot = rectTransformToCopy.pivot;
     }
 }

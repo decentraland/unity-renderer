@@ -312,11 +312,14 @@ namespace DCL.Controllers
             }
 
             foreach (KeyValuePair<System.Type, BaseDisposable> component in entity.GetSharedComponents())
-            {
-                SharedComponentAttach(newEntity.entityId, component.Value.id);
+            {                
+                BaseDisposable baseDisposable = SharedComponentCreate(System.Guid.NewGuid().ToString(), component.Value.GetClassId());
+                string jsonModel = Newtonsoft.Json.JsonConvert.SerializeObject(component.Value.GetModel());
+                baseDisposable.UpdateFromJSON(jsonModel);
+                SharedComponentAttach(newEntity.entityId, baseDisposable.id);
             }
 
-            //TODO: (Adrian) Evaluate if all created components should be handle as equals instead of different
+            //NOTE: (Adrian) Evaluate if all created components should be handle as equals instead of different
             foreach (KeyValuePair<string, UUIDComponent> component in entity.uuidComponents)
             {
                 EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.UUID_CALLBACK, component.Value.model);
@@ -595,6 +598,28 @@ namespace DCL.Controllers
                 else
                 {
                     newComponent = EntityUUIDComponentUpdate(entity, type, model);
+                }
+            }
+            else
+            {
+                if (!entity.components.ContainsKey(classId))
+                {
+                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
+
+                    if (newComponent != null)
+                    {
+                        newComponent.scene = this;
+                        newComponent.entity = entity;
+
+                        entity.components.Add(classId, newComponent);
+
+                        newComponent.transform.SetParent(entity.gameObject.transform, false);
+                        newComponent.UpdateFromJSON((string) data);
+                    }
+                }
+                else
+                {
+                    newComponent = EntityComponentUpdate(entity, classId, (string) data);
                 }
             }
 

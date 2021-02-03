@@ -12,6 +12,7 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
 {
     public RawImage thumbnailImg;
     public Image favImg;
+    public GameObject smartItemGO;
     public CanvasGroup canvasGroup;
     public Color offFavoriteColor, onFavoriteColor;
     public GameObject lockedGO;
@@ -26,7 +27,6 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
     string loadedThumbnailURL;
     AssetPromise_Texture loadedThumbnailPromise;
 
-
     public SceneObject GetContent()
     {
         return sceneObject;
@@ -36,8 +36,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
     {
         this.sceneObject = sceneObject;
 
-        if(sceneObject.isFavorite) favImg.color = onFavoriteColor;
-        else favImg.color = offFavoriteColor;
+        if(sceneObject.isFavorite)
+            favImg.color = onFavoriteColor;
+        else
+            favImg.color = offFavoriteColor;
+
+        smartItemGO.SetActive(!string.IsNullOrEmpty(sceneObject.script));
+
         GetThumbnail();
 
         lockedGO.gameObject.SetActive(false);

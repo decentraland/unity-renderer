@@ -88,6 +88,11 @@ public class ActionController : MonoBehaviour
 
     }
 
+    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity)
+    {
+        CreateActionEntityDeleted(new List<DCLBuilderInWorldEntity> { entity });
+    }
+
     public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList)
     {
         BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();

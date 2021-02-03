@@ -21,13 +21,17 @@ public class OutlinerController : MonoBehaviour
 
     public void OutlineEntity(DCLBuilderInWorldEntity entity)
     {
-        if (!entity.rootEntity.meshRootGameObject && entity.rootEntity.renderers.Length <= 0) return;
+        if (!entity.rootEntity.meshRootGameObject && entity.rootEntity.renderers.Length <= 0)
+            return;
 
-        if (entitiesOutlined.Contains(entity)) return;
-
-        entitiesOutlined.Add(entity);
+        if (entitiesOutlined.Contains(entity))
+            return;
+  
         if (entity.IsLocked)
             return;
+
+        entitiesOutlined.Add(entity);
+
         for (int i = 0; i < entity.rootEntity.meshesInfo.renderers.Length; i++)
         {
             entity.rootEntity.meshesInfo.renderers[i].gameObject.layer = BuilderInWorldSettings.SELECTION_LAYER;

@@ -17,7 +17,7 @@ public class ListView<T> : MonoBehaviour
 
     public Transform contentPanelTransform;
 
-    protected List<T> contentList;
+    protected List<T> contentList = new List<T>();
     public void SetContent(List<T> content)
     {
         contentList = content;

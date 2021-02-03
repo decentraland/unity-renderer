@@ -82,6 +82,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         builderInputWrapper.OnMouseDown -= OnMouseDown;
         builderInputWrapper.OnMouseUp -= OnMouseUp;
         builderInputWrapper.OnMouseDrag -= OnMouseDrag;
+
+        if (HUDController.i.builderInWorldMainHud == null)
+            return;
+
+        HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
+        HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
+        HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
+
+
+        HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
+        HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
+        HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
     }
 
     private void Update()
@@ -145,6 +157,42 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
+    public void UpdateSelectionPosition(Vector3 newPosition)
+    {
+        if (selectedEntities.Count != 1)
+            return;
+
+        editionGO.transform.position = DCL.Environment.i.world.state.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
+        UpdateGizmosToSelectedEntities();
+    }
+
+    public void UpdateSelectionRotation(Vector3 rotation)
+    {
+        if (selectedEntities.Count != 1)
+            return;
+
+        editionGO.transform.rotation = Quaternion.Euler(rotation);
+    }
+
+    public void UpdateSelectionScale(Vector3 scale)
+    {
+        if (selectedEntities.Count != 1)
+            return;
+
+        editionGO.transform.localScale = scale;
+    }
+
+    public void UpdateGizmosToSelectedEntities()
+    {
+        List<EditableEntity> editableEntities = new List<EditableEntity>();
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        {
+            editableEntities.Add(entity);
+        }
+
+        gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
+    }
+
     public override void Init(GameObject goToEdit, GameObject undoGo, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
     {
         base.Init(goToEdit, undoGo, snapGO, freeMovementGO, selectedEntities);
@@ -155,6 +203,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction += TranslateMode;
             HUDController.i.builderInWorldMainHud.OnRotateSelectedAction += RotateMode;
             HUDController.i.builderInWorldMainHud.OnScaleSelectedAction += ScaleMode;
+            HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange += UpdateSelectionPosition;
+            HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
+            HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
         }
     }
 
@@ -253,12 +304,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         mousePressed = false;
         freeCameraController.SetCameraCanMove(true);
         List<DCLBuilderInWorldEntity> allEntities = null;
-        if (!isVoxelBoundMultiSelection) allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
-        else allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
+        if (!isVoxelBoundMultiSelection)
+            allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
+        else
+            allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
 
         foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
-            if (entity.isVoxel && !isVoxelBoundMultiSelection) continue;
+            if (entity.isVoxel && !isVoxelBoundMultiSelection)
+                continue;
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
@@ -293,7 +347,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         sceneToEdit = scene;
         voxelController.SetSceneToEdit(scene);
 
-        if(activateCamera)ActivateCamera(scene);
+        if(activateCamera)
+            ActivateCamera(scene);
 
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
             gizmoManager.SetGizmoType("MOVE");

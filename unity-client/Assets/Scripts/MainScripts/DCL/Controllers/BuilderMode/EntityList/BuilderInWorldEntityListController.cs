@@ -13,15 +13,14 @@ public class BuilderInWorldEntityListController : MonoBehaviour
         SELECT = 0,
         LOCK = 1,
         DELETE = 2,
-        SHOW = 3,
-        RENAME = 4
+        SHOW = 3
     }
 
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
     public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
     public event Action<DCLBuilderInWorldEntity> OnEntityLock;
     public event Action<DCLBuilderInWorldEntity> OnEntityChangeVisibility;
-    public event Action<DCLBuilderInWorldEntity> OnEntityRename;
+    public event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
 
     public EntityListView entityListView;
 
@@ -30,11 +29,13 @@ public class BuilderInWorldEntityListController : MonoBehaviour
     private void Awake()
     {
         entityListView.OnActioninvoked += EntityActionInvoked;
+        entityListView.OnEntityRename += EntityRename;
     }
 
     private void OnDestroy()
     {
         entityListView.OnActioninvoked -= EntityActionInvoked;
+        entityListView.OnEntityRename -= EntityRename;
     }
 
     public void OpenEntityList()
@@ -83,15 +84,14 @@ public class BuilderInWorldEntityListController : MonoBehaviour
                 OnEntityDelete?.Invoke(entityToApply);
                 break;
             case EntityAction.SHOW:
-
                 OnEntityChangeVisibility?.Invoke(entityToApply);
-                break;
-            case EntityAction.RENAME:
-
-                OnEntityRename?.Invoke(entityToApply);
-                break;
+                break;         
         }
 
     }
 
+    public void EntityRename(DCLBuilderInWorldEntity entity, string newName)
+    {
+        OnEntityRename?.Invoke(entity, newName);
+    }
 }
