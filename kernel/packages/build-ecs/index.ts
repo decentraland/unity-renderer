@@ -21,6 +21,7 @@ type SceneJson = {
 }
 
 type DecentralandLib = {
+  name?: string
   typings?: string
   main: string
 }
@@ -496,7 +497,7 @@ function getConfiguration(packageJson: PackageJson | null, sceneJson: SceneJson 
           throw new Error(`field "decentralandLibrary" is missing in package.json`)
         }
 
-        libs.push({ main, typings })
+        libs.push({ main, typings, name: libPackageJson.name })
         hasCustomLibraries = true
       } catch (e) {
         console.error(`! Error in library ${libName}: ${e.message}`)
@@ -530,33 +531,36 @@ function getConfiguration(packageJson: PackageJson | null, sceneJson: SceneJson 
     delete tsconfig.options.declarationDir
   }
 
-  function ensurePathsAsterisk(options: any) {
+  function ensurePathsTopLevelNames(options: any, topLevelName: string) {
     options.paths = options.paths || {}
     options.baseUrl = options.baseUrl || '.'
-    if (!options.paths.hasOwnProperty('*')) {
-      options.paths['*'] = []
+    if (!options.paths.hasOwnProperty(topLevelName)) {
+      options.paths[topLevelName] = []
     }
-    return options.paths['*']
+    return options.paths[topLevelName]
   }
 
   if (hasCustomLibraries) {
-    const asterisk = ensurePathsAsterisk(tsconfig.options)
-    const rawAsterisk = ensurePathsAsterisk(tsconfig.raw!.compilerOptions)
-
     let shouldRewriteTsconfig = false
 
     libs.forEach((lib) => {
-      if (lib.typings) {
-        const relativePath = relative(dirname(tsconfigPath), lib.typings)
-        // check if it is in the processed configuration
-        if (!asterisk.includes(relativePath)) {
-          asterisk.push(relativePath)
-        }
-        // check if it is in the raw configuration (tsconfig.json contents)
-        if (!rawAsterisk.includes(relativePath)) {
-          console.warn(`! Warning: ${relativePath} is missing in tsconfig.json paths`)
-          rawAsterisk.push(relativePath)
-          shouldRewriteTsconfig = true
+      if (lib.name) {
+        const tsOptions = ensurePathsTopLevelNames(tsconfig.options, lib.name)
+        const tsRawOptions = ensurePathsTopLevelNames(tsconfig.raw!.compilerOptions, lib.name)
+
+        if (lib.typings) {
+          const relativePath = relative(dirname(tsconfigPath), lib.typings)
+          // check if it is in the processed configuration
+          if (!tsOptions.includes(relativePath)) {
+            tsOptions.push(relativePath)
+            shouldRewriteTsconfig = true
+          }
+          // check if it is in the raw configuration (tsconfig.json contents)
+          if (!tsRawOptions.includes(relativePath)) {
+            console.warn(`! Warning: ${relativePath} is missing in tsconfig.json paths`)
+            tsRawOptions.push(relativePath)
+            shouldRewriteTsconfig = true
+          }
         }
       }
     })
