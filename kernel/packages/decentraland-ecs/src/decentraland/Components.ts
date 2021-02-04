@@ -6,6 +6,9 @@ import { IEvents } from './Types'
 import { ActionButton } from './Input'
 
 /** @public */
+export type TranformConstructorArgs = TransformConstructorArgs
+
+/** @public */
 export type TransformConstructorArgs = {
   position?: Vector3
   rotation?: Quaternion
