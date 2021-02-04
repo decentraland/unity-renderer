@@ -53,15 +53,17 @@ export const Epsilon = 0.000001
 
 /**
  * Constant used to convert from Euler degrees to radians
+ * Math.PI / 180
  * @public
  */
-export const DEG2RAD = Math.PI / 180
+export const DEG2RAD = 0.01745
 
 /**
  * Constant used to convert from radians to Euler degrees
+ * 360 / (Math.PI * 2)
  * @public
  */
-export const RAD2DEG = 360 / (Math.PI * 2)
+export const RAD2DEG = 57.29578
 
 /**
  * Interface for the size containing width and height

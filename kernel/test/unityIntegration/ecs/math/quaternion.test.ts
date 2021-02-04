@@ -2,23 +2,23 @@ import { expect } from 'chai'
 import { Quaternion, Vector3 } from 'decentraland-ecs/src'
 
 const results = {
-  staticAngle01: '90',
-  staticAngle02: '14.8557',
+  staticAngle01: '89.99',
+  staticAngle02: '14.89',
   staticAngle03: '4.99997',
-  staticAngle04: '180',
+  staticAngle04: '179.9',
   staticEuler01: '(0.0, 0.0, 0.0, 1.0)',
   staticEuler02: '(0.5, -0.5, 0.5, 0.5)',
   staticEuler03: '(0.0, 0.9, -0.4, 0.0)',
   staticEuler04: '(0.8, 0.0, 0.6, 0.0)',
   staticEuler05: '(-0.7, 0.2, -0.2, -0.6)',
-  staticFromToRotation01: '(0.0, 0.0, 0.0, 1.0)',
-  staticFromToRotation02: '(0.0, 0.7, 0.0, 0.7)',
-  staticFromToRotation03: '(0.0, 0.0, 0.4, 0.9)',
-  staticFromToRotation04: '(0.4, 0.0, 0.0, 0.9)',
-  staticFromToRotation05: '(0.7, 0.0, -0.7, -0.3)',
-  staticFromToRotation06: '(0.3, -0.2, 0.0, 0.9)',
-  staticFromToRotation07: '(0.1, 0.4, -0.1, 0.9)',
-  staticFromToRotation08: '(0.3, 0.0, -0.3, 0.9)',
+  staticFromToRotation01: '(0.0, 180.0, 0.0)',
+  staticFromToRotation02: '(0.0, 93.9, 0.0)',
+  staticFromToRotation03: '(0.0, 0.0, 44.5)',
+  staticFromToRotation04: '(45.0, 360.0, 360.0)',
+  staticFromToRotation05: '(335.2, 276.2, 152.5)',
+  staticFromToRotation06: '(39.1, 335.6, 352.5)',
+  staticFromToRotation07: '(12.8, 45.1, 351.9)',
+  staticFromToRotation08: '(35.3, 345.0, 315.0)',
   staticRotateTowards01: '(0.1, 0.1, 0.1, 1.0)',
   staticRotateTowards02: '(0.0, 0.1, 0.0, 1.0)',
   staticRotateTowards03: '(0.0, 0.1, -0.1, -1.0)',
@@ -33,16 +33,20 @@ const results = {
   staticSlerp04: '(0.0, 0.3, 0.0, 0.9)',
   eulerAngles01: '(10.0, 10.0, 10.0)',
   eulerAngles02: '(0.0, 90.0, 0.0)',
-  eulerAngles03: '(80.0, 190.0, 220.0)',
-  eulerAngles04: '(0.0, 10.0, 0.0)',
+  eulerAngles03: '(80.0, 190.0, 219.9)',
+  eulerAngles04: '(359.9, 10.0, 360.0)',
   normalized01: '(0.1, 0.1, 0.1, 1.0)',
   normalized02: '(0.0, 0.7, 0.0, 0.7)',
   normalized03: '(-0.7, 0.2, -0.2, -0.6)',
   normalized04: '(0.0, -0.1, 0.0, -1.0)',
-  setFromToRotation01: '(0.0, 0.0, 0.0, 1.0)',
-  setFromToRotation02: '(0.0, 0.7, 0.0, 0.7)',
-  setFromToRotation03: '(0.0, 0.0, 0.4, 0.9)',
-  setFromToRotation04: '(0.4, 0.0, 0.0, 0.9)'
+  setFromToRotation01: '(0.0, 0.0, -0.7, 0.7)',
+  setFromToRotation02: '(0.7, 0.0, 0.0, 0.7)',
+  setFromToRotation03: '(0.5, -0.3, -0.1, 0.8)',
+  setFromToRotation04: '(-0.1, -0.5, -0.3, 0.8)',
+  setFromToRotation05: '(0.0, 1.0, 0.0, 0.0)',
+  setFromToRotation06: '(0.0, 0.0, 0.0, 1.0)',
+  setFromToRotation07: '(-1.0, 0.0, 0.0, 0.0)',
+  setFromToRotation08: '(0.0, 0.0, 0.0, 1.0)'
 }
 
 const normalize = (v: string) => (v === '-0.0' ? '0.0' : v)
@@ -64,7 +68,7 @@ function vector3ToString(vec: Vector3) {
   return `(${x}, ${y}, ${z})`
 }
 
-describe.skip('ECS Quaternion tests', () => {
+describe('ECS Quaternion tests', () => {
   it('Quaternion.Angle', () => {
     expect(
       Quaternion.Angle(Quaternion.Euler(0, 0, 0), Quaternion.Euler(90, 90, 90))
@@ -143,42 +147,44 @@ describe.skip('ECS Quaternion tests', () => {
     )
   })
 
-  it.skip('Quaternion.FromToRotation', () => {
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(0, 0, 0), new Vector3(100, 100, 100)))).to.eq(
+  // These tests check against euler angles since we get a different quaternion result in Unity, but represent the same euler angles rotation.
+  it('Quaternion.FromToRotation', () => {
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(0, 0, 0), new Vector3(100, 100, 100)).eulerAngles)).to.eq(
       results.staticFromToRotation01,
       'staticFromToRotation01'
     )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(-10, -0, 110), new Vector3(4452, 0, 100)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(-10, -0, 110), new Vector3(4452, 0, 100)).eulerAngles)).to.eq(
       results.staticFromToRotation02,
       'staticFromToRotation02'
     )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(1230, 10, 0), new Vector3(100, 100, 0)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(1230, 10, 0), new Vector3(100, 100, 0)).eulerAngles)).to.eq(
       results.staticFromToRotation03,
       'staticFromToRotation03'
     )
 
-    expect(
-      quaternionToString(Quaternion.FromToRotation(new Vector3(0, 123, -123), new Vector3(100, 213123, 100)))
-    ).to.eq(results.staticFromToRotation04, 'staticFromToRotation04')
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(0, 123, -123), new Vector3(100, 213123, 100)).eulerAngles)).to.eq(
+      results.staticFromToRotation04,
+      'staticFromToRotation04'
+    )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(-10, -10, -10), new Vector3(360, -10, 360)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(-10, -10, -10), new Vector3(360, -10, 360)).eulerAngles)).to.eq(
       results.staticFromToRotation05,
       'staticFromToRotation05'
     )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(12, -0, -400), new Vector3(200, 360, -400)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(12, -0, -400), new Vector3(200, 360, -400)).eulerAngles)).to.eq(
       results.staticFromToRotation06,
       'staticFromToRotation06'
     )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(25, 45, 180), new Vector3(127, 0, 90)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(25, 45, 180), new Vector3(127, 0, 90)).eulerAngles)).to.eq(
       results.staticFromToRotation07,
       'staticFromToRotation07'
     )
 
-    expect(quaternionToString(Quaternion.FromToRotation(new Vector3(0, 1, 0), new Vector3(1, 1, 1)))).to.eq(
+    expect(vector3ToString(Quaternion.FromToRotation(new Vector3(0, 1, 0), new Vector3(1, 1, 1)).eulerAngles)).to.eq(
       results.staticFromToRotation08,
       'staticFromToRotation08'
     )
@@ -204,10 +210,46 @@ describe.skip('ECS Quaternion tests', () => {
     expect(quaternionToString(Quaternion.Euler(360, 10, 0).normalized)).to.eq(results.normalized04, 'normalized04')
   })
 
-  it.skip('quaternion.setFromToRotation', () => {
-    const q1 = Quaternion.Euler(10, 10, 10)
-    q1.setFromToRotation(new Vector3(0, 0, 0), new Vector3(100, 100, 100))
-    expect(quaternionToString(q1)).to.eq(results.setFromToRotation01, 'setFromToRotation01')
+  it('quaternion.setFromToRotation', () => {
+    let upVector = Vector3.Up()
+    let quat = Quaternion.Identity
+    quat.setFromToRotation(Vector3.Up(), Vector3.Right(), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation01, 'setFromToRotation01')
+
+    upVector = Vector3.Up()
+    quat = Quaternion.Identity
+    quat.setFromToRotation(Vector3.Up(), Vector3.Forward(), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation02, 'setFromToRotation02')
+
+    upVector = new Vector3(50, 0, -39)
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(38, 56, 23), new Vector3(12, -5, 99), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation03, 'setFromToRotation03')
+
+    upVector = new Vector3(-60, -80, -23)
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(-50, 0.5, 15), new Vector3(-66, 66, -91), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation04, 'setFromToRotation04')
+
+    upVector = Vector3.Up()
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(-1, 0, 0), new Vector3(1, 0, 0), upVector) // Parallel opposite vectors case
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation05, 'setFromToRotation05')
+
+    upVector = Vector3.Up()
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(1, 0, 0), new Vector3(1, 0, 0), upVector) // same vectors case
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation06, 'setFromToRotation06')
+
+    upVector = Vector3.Left()
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(0, 1, 0), new Vector3(0, -1, 0), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation07, 'setFromToRotation07')
+
+    upVector = Vector3.Left()
+    quat = Quaternion.Identity
+    quat.setFromToRotation(new Vector3(0, -1, 0), new Vector3(0, -1, 0), upVector)
+    expect(quaternionToString(quat)).to.eq(results.setFromToRotation08, 'setFromToRotation08')
   })
 
   it('Quaternion.Slerp', () => {

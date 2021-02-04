@@ -5,7 +5,7 @@ const results = {
   rotatedWithQuat01: '(0.7, 0.0, 1.6)',
   rotatedWithQuat02: '(-0.1, -0.9, 0.6)',
   rotatedWithQuat03: '(127.7, 46.0, -30.2)',
-  rotatedWithQuat04: '(-115.4, -138.8, 327.7)'
+  rotatedWithQuat04: '(-115.4, -138.8, 327.8)'
 }
 
 const normalize = (v: string) => (v === '-0.0' ? '0.0' : v)
@@ -18,7 +18,7 @@ function vector3ToString(vec: Vector3) {
   return `(${x}, ${y}, ${z})`
 }
 
-describe.skip('ECS Vector3 tests', () => {
+describe('ECS Vector3 tests', () => {
   it('vector3.rotate', () => {
     expect(vector3ToString(new Vector3(1, 1, 1).rotate(Quaternion.Euler(45, 60, 90)))).to.eq(
       results.rotatedWithQuat01,
