@@ -1,7 +1,8 @@
 import { Matrix } from './Matrix'
 import { Vector3 } from './Vector3'
 import { MathTmp } from './preallocatedVariables'
-import { DEG2RAD, RAD2DEG, Epsilon } from './types'
+import { DEG2RAD, RAD2DEG } from './types'
+import { Scalar } from "./Scalar"
 
 /** @public */
 export type ReadOnlyQuaternion = {
@@ -216,22 +217,23 @@ export class Quaternion {
    * @param result - defines the target quaternion
    */
   public static RotationYawPitchRollToRef(yaw: number, pitch: number, roll: number, result: Quaternion): void {
-    let halfRoll = roll * 0.5
+    // Implemented unity-based calculations from: https://stackoverflow.com/a/56055813
+
     let halfPitch = pitch * 0.5
     let halfYaw = yaw * 0.5
+    let halfRoll = roll * 0.5
 
-    let c1 = Math.cos(halfPitch)
-    let c2 = Math.cos(halfYaw)
-    let c3 = Math.cos(halfRoll)
+    const c1 = Math.cos(halfPitch)
+    const c2 = Math.cos(halfYaw)
+    const c3 = Math.cos(halfRoll)
+    const s1 = Math.sin(halfPitch)
+    const s2 = Math.sin(halfYaw)
+    const s3 = Math.sin(halfRoll)
 
-    let s1 = Math.sin(halfPitch)
-    let s2 = Math.sin(halfYaw)
-    let s3 = Math.sin(halfRoll)
-
-    result.x = s1 * c2 * c3 + c1 * s2 * s3
-    result.y = c1 * s2 * c3 - s1 * c2 * s3
-    result.z = c1 * c2 * s3 + s1 * s2 * c3
-    result.w = c1 * c2 * c3 - s1 * s2 * s3
+    result.x = c2 * s1 * c3 + s2 * c1 * s3
+    result.y = s2 * c1 * c3 - c2 * s1 * s3
+    result.z = c2 * c1 * s3 - s2 * s1 * c3
+    result.w = c2 * c1 * c3 + s2 * s1 * s3
   }
 
   /**
@@ -483,33 +485,25 @@ export class Quaternion {
 
   /**
    * Creates a rotation which rotates from fromDirection to toDirection.
-   * @param from - defines the first Vector
-   * @param to - defines the second Vector
+   * @param from - defines the first direction Vector
+   * @param to - defines the target direction Vector
    */
-  public static FromToRotation(from: Vector3, to: Vector3): Quaternion {
-    const result = new Quaternion()
+  public static FromToRotation(from: Vector3, to: Vector3, up: Vector3 = MathTmp.staticUp): Quaternion {
+    // Unity-based calculations implemented from https://forum.unity.com/threads/quaternion-lookrotation-around-an-axis.608470/#post-4069888
+
     let v0 = from.normalize()
     let v1 = to.normalize()
-    let d = Vector3.Dot(v0, v1)
 
-    if (d > -1 + Epsilon) {
-      let s = Math.sqrt((1 + d) * 2)
-      let invs = 1 / s
-      let c = Vector3.Cross(v0, v1).scaleInPlace(invs)
-      result.set(c.x, c.y, c.z, s * 0.5)
-    } else if (d > 1 - Epsilon) {
-      return new Quaternion(0, 0, 0, 1)
+    const a = Vector3.Cross(v0, v1)
+    const w = Math.sqrt(v0.lengthSquared() * v1.lengthSquared()) + Vector3.Dot(v0, v1)
+    if (a.lengthSquared() < 0.0001) {
+      // the vectors are parallel, check w to find direction
+      // if w is 0 then values are opposite, and we sould rotate 180 degrees around the supplied axis
+      // otherwise the vectors in the same direction and no rotation should occur
+      return (Math.abs(w) < 0.0001) ? new Quaternion(up.x, up.y, up.z, 0).normalized : Quaternion.Identity
     } else {
-      let axis = Vector3.Cross(Vector3.Right(), v0)
-
-      if (axis.lengthSquared() < Epsilon) {
-        axis = Vector3.Cross(Vector3.Forward(), v0)
-      }
-
-      result.set(axis.x, axis.y, axis.z, 0)
+      return new Quaternion(a.x, a.y, a.z, w).normalized
     }
-
-    return result.normalize()
   }
 
   /**
@@ -526,37 +520,54 @@ export class Quaternion {
    * @param up - defines the direction
    */
   public setFromToRotation(from: Vector3, to: Vector3, up: Vector3 = MathTmp.staticUp) {
-    MathTmp.tmpMatrix = Matrix.Zero() // clean up preallocated matrix
-    Matrix.LookAtLHToRef(from, to, up, MathTmp.tmpMatrix)
-    MathTmp.tmpMatrix.invert()
-    Quaternion.FromRotationMatrixToRef(MathTmp.tmpMatrix, this)
+    const result = Quaternion.FromToRotation(from, to, up)
+    this.x = result.x
+    this.y = result.y
+    this.z = result.z
+    this.w = result.w
   }
 
   /**
-   * Gets the euler angle representation of the rotation.
+   * Sets the euler angle representation of the rotation.
    */
   public set eulerAngles(euler: Vector3) {
     this.setEuler(euler.x, euler.y, euler.z)
   }
 
   /**
-   * Sets the euler angle representation of the rotation.
+   * Gets the euler angle representation of the rotation.
+   * Implemented unity-based calculations from: https://stackoverflow.com/a/56055813
    */
   public get eulerAngles() {
     const out = new Vector3()
-    const mat = new Matrix()
-    this.toRotationMatrix(mat)
-    const m = Matrix.GetAsMatrix3x3(mat)
 
-    out.y = RAD2DEG * Math.asin(Math.max(-1, Math.min(1, m[6])))
+    // if the input quaternion is normalized, this is exactly one. Otherwise, this acts as a correction factor for the quaternion's not-normalizedness
+    const unit = (this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w)
 
-    if (Math.abs(m[6]) < 0.99999) {
-      out.x = RAD2DEG * Math.atan2(-m[7], m[8])
-      out.z = RAD2DEG * Math.atan2(-m[3], m[0])
-    } else {
-      out.x = RAD2DEG * Math.atan2(m[5], m[4])
+    // this will have a magnitude of 0.5 or greater if and only if this is a singularity case
+    const test = this.x * this.w - this.y * this.z
+
+    if (test > 0.4995 * unit) { // singularity at north pole
+      out.x = Math.PI / 2
+      out.y = 2 * Math.atan2(this.y, this.x)
       out.z = 0
+    } else if (test < -0.4995 * unit) { // singularity at south pole
+      out.x = -Math.PI / 2
+      out.y = -2 * Math.atan2(this.y, this.x)
+      out.z = 0
+    } else { // no singularity - this is the majority of cases
+      out.x = Math.asin(2 * (this.w * this.x - this.y * this.z))
+      out.y = Math.atan2(2 * this.w * this.y + 2 * this.z * this.x, 1 - 2 * (this.x * this.x + this.y * this.y))
+      out.z = Math.atan2(2 * this.w * this.z + 2 * this.x * this.y, 1 - 2 * (this.z * this.z + this.x * this.x))
     }
+    out.x *= RAD2DEG
+    out.y *= RAD2DEG
+    out.z *= RAD2DEG
+
+    // ensure the degree values are between 0 and 360
+    out.x = Scalar.Repeat(out.x, 360)
+    out.y = Scalar.Repeat(out.y, 360)
+    out.z = Scalar.Repeat(out.z, 360)
 
     return out
   }
