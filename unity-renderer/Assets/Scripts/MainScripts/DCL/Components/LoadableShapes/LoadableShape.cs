@@ -163,12 +163,12 @@ namespace DCL.Components
                 if (loadableShape is LoadWrapper_GLTF gltfLoadWrapper)
                     gltfLoadWrapper.customContentProvider = provider;
 
+                entity.meshesInfo.currentShape = this;
+
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
-                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
-
-                entity.meshesInfo.currentShape = this;
+                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);               
             }
             else
             {
