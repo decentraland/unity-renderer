@@ -1,0 +1,19 @@
+{
+    "name": "FriendsControllerTests",
+    "references": [
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:8d96da0320f084d8b9ece3f20ebe7240",
+        "GUID:ba9b721ce33233c4da7ff4ef30d25b59"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

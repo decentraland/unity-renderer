@@ -1,0 +1,20 @@
+{
+    "name": "ChatControllerTests",
+    "references": [
+        "GUID:eb95615676ca6984687c5ae7774d6309",
+        "GUID:6afcac5154f98e846bbd9f27e454b57a",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

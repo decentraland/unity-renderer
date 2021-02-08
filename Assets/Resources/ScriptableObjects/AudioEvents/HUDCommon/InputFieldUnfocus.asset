@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba51c89dee121ec40ada8e86c01b058e, type: 3}
+  m_Name: InputFieldUnfocus
+  m_EditorClassIdentifier: 
+  loop: 0
+  initialVolume: 0.25
+  initialPitch: 0.7
+  randomPitch: 0
+  cooldownSeconds: 0.1
+  clips:
+    array:
+    - {fileID: 8300000, guid: e134d8c09228ed0448e0458ba8602c43, type: 3}
+  source: {fileID: 0}
+  blockingEvent: {fileID: 11400000, guid: f268d97c1db42cf48b36d2a1163b1bf8, type: 2}

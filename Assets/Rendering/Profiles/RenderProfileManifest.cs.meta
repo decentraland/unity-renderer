@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 35399a8c16fc87e4b9e4af4e5d298d11
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - defaultProfile: {fileID: 11400000, guid: 3d2284fb359e9a6499e91a83d14c05c3, type: 2}
+  - halloweenProfile: {fileID: 11400000, guid: 9c506ae59e150a949a049f29ccf9a4d5, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,17 @@
+{
+    "name": "QuestsHUD",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:555c1f3c6d18648df910b7a1de75b424"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

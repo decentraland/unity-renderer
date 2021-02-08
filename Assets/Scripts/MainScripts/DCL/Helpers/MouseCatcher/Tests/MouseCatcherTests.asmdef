@@ -1,0 +1,17 @@
+{
+    "name": "MouseCatcherTests",
+    "references": [
+        "GUID:858f845923fcab3448cf8b66614b41a1"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

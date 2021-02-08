@@ -1,0 +1,25 @@
+{
+    "name": "UserContextMenuTest",
+    "references": [
+        "GUID:8bf30e5f113c544d88fc302761d180c0",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:ba9b721ce33233c4da7ff4ef30d25b59"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

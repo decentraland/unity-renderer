@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f98fb6f42e8546c082053e07434b8393, type: 3}
+  m_Name: CullingControllerSettingsData
+  m_EditorClassIdentifier: 
+  rendererProfileMin:
+    visibleDistanceThreshold: 30
+    shadowDistanceThreshold: 20
+    emissiveSizeThreshold: 1.5
+    opaqueSizeThreshold: 6
+    shadowRendererSizeThreshold: 10
+    shadowMapProjectionSizeThreshold: 4
+  rendererProfileMax:
+    visibleDistanceThreshold: 25
+    shadowDistanceThreshold: 15
+    emissiveSizeThreshold: 2.5
+    opaqueSizeThreshold: 20
+    shadowRendererSizeThreshold: 20
+    shadowMapProjectionSizeThreshold: 16
+  skinnedRendererProfileMin:
+    visibleDistanceThreshold: 50
+    shadowDistanceThreshold: 40
+    emissiveSizeThreshold: 1.5
+    opaqueSizeThreshold: 6
+    shadowRendererSizeThreshold: 5
+    shadowMapProjectionSizeThreshold: 4
+  skinnedRendererProfileMax:
+    visibleDistanceThreshold: 45
+    shadowDistanceThreshold: 35
+    emissiveSizeThreshold: 2.5
+    opaqueSizeThreshold: 10
+    shadowRendererSizeThreshold: 10
+    shadowMapProjectionSizeThreshold: 8

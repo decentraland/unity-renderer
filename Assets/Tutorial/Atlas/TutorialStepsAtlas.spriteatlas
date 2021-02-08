@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TutorialStepsAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    - serializedVersion: 3
+      m_BuildTarget: Standalone
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: 12
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 1
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 3acab99763c85c14a98d022b27506bbf, type: 3}
+    totalSpriteSurfaceArea: 108313
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 40617d005efa0d94398573c6377b3007, type: 3}
+  - {fileID: 21300000, guid: 560e2f600e5a5cc42a576a19367b9d25, type: 3}
+  - {fileID: 21300000, guid: 93d60842a80d3f4479cccac5f3d83416, type: 3}
+  - {fileID: 21300000, guid: 25f962c307be80748b501db6f219e3ce, type: 3}
+  - {fileID: 21300000, guid: ac67ce14f0fd8b84fb5c86dc9f686ee2, type: 3}
+  - {fileID: 21300000, guid: a7788d44a2b2c2d4ca8d97209868054a, type: 3}
+  - {fileID: 21300000, guid: 255a57b4aa9206d4c8183c07b51d124d, type: 3}
+  - {fileID: 21300000, guid: 79ad71c4cd1d5d84b87480c1528aef78, type: 3}
+  - {fileID: 21300000, guid: 405ec915fe6b3654c93c750770724aa8, type: 3}
+  - {fileID: 21300000, guid: 6c6850a54eb6f994eaa86266a178aff9, type: 3}
+  - {fileID: 21300000, guid: da1986380d1fc9847ba4e76f7c5455d2, type: 3}
+  - {fileID: 21300000, guid: 570f3549d8b3a3f46a24857139e02f4f, type: 3}
+  - {fileID: 21300000, guid: e03ef4a94164f834fadec857abd8aff2, type: 3}
+  - {fileID: 21300000, guid: 46a1752a44d2105418e89c2d3b01c42f, type: 3}
+  - {fileID: 21300000, guid: be1a8a6a9a8c1fd48a1ad4972e642817, type: 3}
+  - {fileID: 21300000, guid: ad7e8f6a6597a6144b42635aaa96b266, type: 3}
+  - {fileID: 21300000, guid: 0b740efa71cf1af4cb650eee498c75fa, type: 3}
+  - {fileID: 21300000, guid: f3b5df6b23cee824ba9f180c13b6b68f, type: 3}
+  - {fileID: 21300000, guid: 9dca5a9bdcb59984690da4020849736d, type: 3}
+  - {fileID: 21300000, guid: 7e3c42fb5cce8234487acc24671aa362, type: 3}
+  - {fileID: 21300000, guid: 73726a2c3e7ef6f4dbe20ef033937386, type: 3}
+  - {fileID: 21300000, guid: 0ee173fc0675b4244a214267a9e88a52, type: 3}
+  - {fileID: 21300000, guid: 9650c09d2b63a334681b488bacd31edb, type: 3}
+  - {fileID: 21300000, guid: c0bd7c8ff51642942b983412d0cfc141, type: 3}
+  - {fileID: 21300000, guid: a3dbe3ef5c0df67498f9ff042108c9df, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - KeyFront
+  - LockUpMiddle
+  - ArrowDown
+  - ArrowUp
+  - KeyShiftFront
+  - KeyShiftMiddle
+  - KeySpaceFront
+  - MouseBody
+  - Circle
+  - KeyShiftBack
+  - KeySkip
+  - MouseLeftClick
+  - LockBody
+  - MagicSpark
+  - KeyMiddle
+  - CameraIcon
+  - LineFx
+  - LockUp
+  - LockUpOpen
+  - ArrowRight
+  - Dot
+  - KeyBack
+  - ContainerShadowBlueRadius20
+  - KeySpaceBack
+  - ArrowLeft
+  m_Tag: TutorialStepsAtlas
+  m_IsVariant: 0
