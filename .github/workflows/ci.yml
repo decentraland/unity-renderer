@@ -1,0 +1,58 @@
+# https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idcontainer
+name: Build pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unity-pipeline:
+    runs-on: ubuntu-latest
+    container:
+      image: decentraland/renderer-build:2019.4
+      env:
+        BUILD_TARGET: WebGL
+        BUILD_PATH: ${{ github.workspace }}/Builds/unity
+        BUILD_NAME: unity
+    steps:
+      - name: update git
+        run: |
+          add-apt-repository ppa:git-core/ppa
+          apt-get update
+          apt-get install -y git git-lfs
+          git lfs install
+
+      - name: checkout with LFS
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: cwd find
+        run: |
+          pwd
+          find .
+
+      # - name: print unity last commit
+      #   run: |
+      #     git log --pretty=tformat:"%h" -n1 . ${PROJECT_PATH}
+
+      # Setup license
+      - name: Setup uniy license
+        run: sh ./ci-setup.sh
+        env:
+          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+
+      # Run Editor tests
+      - name: Run Editor tests
+        if: ${{ always() }}
+        run: sh ./ci-editmode-test.sh
+
+      # Run PlayMode tests
+      - name: Run PlayMode tests
+        if: ${{ always() }}
+        run: sh ./ci-playmode-test.sh
+
+      # Build
+      - name: Build
+        if: ${{ always() }}
+        run: sh ./ci-build.sh

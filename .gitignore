@@ -1,0 +1,48 @@
+
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Library/
+*.cache
+/obj/
+[Bb]uild/
+TestResults/
+Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
+**/CurrentTestImages/
+/AssetBundles/
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
+# ===================================== #
+# Visual Studio / MonoDevelop / Rider   #
+# ===================================== #
+ExportedObj/
+.vs/
+.vscode/
+.idea/
+Assets/Plugins/Editor/JetBrains.meta
+Assets/Plugins/Editor/JetBrains/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.tmproj
+*.dwlt
+Assembly-UnityScript.unityProj
+
+debug.log
+Logs/Packages-Update.log

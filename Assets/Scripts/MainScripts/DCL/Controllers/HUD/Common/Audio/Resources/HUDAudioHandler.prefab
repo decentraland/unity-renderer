@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9163622792995413827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9163622792995413825}
+  - component: {fileID: 9163622792995413830}
+  - component: {fileID: 2155020464021034917}
+  m_Layer: 0
+  m_Name: HUDAudioHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9163622792995413825
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9163622792995413827}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 821.7208, y: 782.1304, z: -1031.3528}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9163622792995413830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9163622792995413827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd2aa437544359c41a883ffdba98307a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}
+  snapshotInWorld: {fileID: 24500006, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}
+  snapshotOutOfWorld: {fileID: 4358285346763417749, guid: 97507d628c02bcf47859b9f108ab1823,
+    type: 2}
+  chatLastCheckedTimestamp: 0
+--- !u!114 &2155020464021034917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9163622792995413827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19e7434f0c30cd34ab81edae8ab53843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioMixerGroup: {fileID: 3522371855724722028, guid: 97507d628c02bcf47859b9f108ab1823,
+    type: 2}
+  spatialBlend: 0
+  overrideDefaults: 0
+  dopplerLevel: 1
+  minDistance: 1
+  maxDistance: 500
+  audioEvents:
+    array:
+    - {fileID: 11400000, guid: 71cd4924b3cdf3f4d816279c52ed046d, type: 2}
+    - {fileID: 11400000, guid: 14fe705a57deb3043b6a95325455a231, type: 2}
+    - {fileID: 11400000, guid: 08643e5253a8cf34a8cf46e2996eac8c, type: 2}
+    - {fileID: 11400000, guid: ce242d5ed573f6b49949ab211edec53c, type: 2}
+    - {fileID: 11400000, guid: 71d95c991cfe14a43b69f63de00cc73e, type: 2}
+    - {fileID: 11400000, guid: a4c3d30fdbdb8ee47be2d2bf069912ac, type: 2}
+    - {fileID: 11400000, guid: 0c4affc1ac57ee441927d65fc7d81bfa, type: 2}
+    - {fileID: 11400000, guid: 3f553522993106949854d6f82fb9af01, type: 2}
+    - {fileID: 11400000, guid: 1ddcfb8a893601e4097bd3c4b7cd6af6, type: 2}
+    - {fileID: 11400000, guid: df6f52d48f6d3114fa97ea3d54972413, type: 2}
+    - {fileID: 11400000, guid: 64d637cf6c4872742b0d0c1e9a545035, type: 2}
+    - {fileID: 11400000, guid: dda0cd5f12ce56a44b8f4d92bb697b33, type: 2}
+    - {fileID: 11400000, guid: 5a76a0bcce41f274798efa8b84687d05, type: 2}
+    - {fileID: 11400000, guid: d80b0fe82f85b33439794f6f4342036f, type: 2}
+    - {fileID: 11400000, guid: 90c4c94d347d260458dad360f064be94, type: 2}
+    - {fileID: 11400000, guid: 7112d44e0eb6ba348aa181889a0e667d, type: 2}
+    - {fileID: 11400000, guid: 0a5289a5d639e444fb5649f8dff2ef1d, type: 2}
+    - {fileID: 11400000, guid: 25e39181b3d937c4996ac8e6e63a7965, type: 2}
+    - {fileID: 11400000, guid: f268d97c1db42cf48b36d2a1163b1bf8, type: 2}
+    - {fileID: 11400000, guid: 92bde48d875863a43a97d5f16550733d, type: 2}
+    - {fileID: 11400000, guid: d308bbe1912d4dd47b07cc7ab83a6c02, type: 2}
+    - {fileID: 11400000, guid: db27311c40b38e84da3c7f3ce06b7681, type: 2}

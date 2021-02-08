@@ -1,0 +1,44 @@
+{
+    "name": "BuilderInWorldTests",
+    "references": [
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:a3853e06fb68dfd4cba6859e619f338f",
+        "GUID:0f686f1bcb4670a4bb2929a41daaf716",
+        "GUID:fc6576239b03d8445ba1a26d4b7b7b5d",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:39ab26aaceb94724999ced1e8a9aa080",
+        "GUID:54b09a4a10c111e46a817873fcea53fe",
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:7976cbc9190edcd4e97c09878faa7d9b",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f",
+        "GUID:858f845923fcab3448cf8b66614b41a1",
+        "GUID:31d8dc012a18a4a6da741a0fd9c390e0",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:d7ced3c8f2800ed40a132e6df054755e",
+        "GUID:85ae2f0b8e8614c42bebf9817fc6f2be",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
