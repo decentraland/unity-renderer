@@ -9,14 +9,14 @@ mkdir -p "$BUILD_PATH"
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
   -quit \
   -batchmode \
+  -logFile "$PROJECT_PATH/build-logs.txt" \
   -projectPath "$PROJECT_PATH" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
   -customBuildPath "$BUILD_PATH" \
   -customBuildOptions AcceptExternalModificationsToPlayer \
-  -executeMethod BuildCommand.PerformBuild \
-  -logFile "$PROJECT_PATH/build-logs.txt"
+  -executeMethod BuildCommand.PerformBuild
 
 UNITY_EXIT_CODE=$?
 
