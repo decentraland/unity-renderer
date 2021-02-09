@@ -29,18 +29,23 @@ const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
 
 export function* metaSaga(): any {
   const config: Partial<MetaConfiguration> = yield call(fetchMetaConfiguration)
-
-  if (FORCE_RENDERING_STYLE) {
-    if (!config.world) {
-      config.world = {} as WorldConfig
-    }
-
-    config.world.renderProfile = FORCE_RENDERING_STYLE
+  const featureFlags: Record<string, boolean> | undefined = yield call(fetchFeatureFlags)
+  const merge: Partial<MetaConfiguration> = {
+    ...config,
+    featureFlags
   }
 
-  yield put(metaConfigurationInitialized(config))
-  yield call(checkExplorerVersion, config)
-  yield call(checkIndexedDB, config)
+  if (FORCE_RENDERING_STYLE) {
+    if (!merge.world) {
+      merge.world = {} as WorldConfig
+    }
+
+    merge.world.renderProfile = FORCE_RENDERING_STYLE
+  }
+
+  yield put(metaConfigurationInitialized(merge))
+  yield call(checkExplorerVersion, merge)
+  yield call(checkIndexedDB, merge)
   if (WORLD_EXPLORER) {
     // No need to fetch the message of the day on preview or builder mode
     const userId = yield select(getUserId)
@@ -97,6 +102,19 @@ function checkExplorerVersion(config: Partial<MetaConfiguration>) {
   if (currentBuildNumber < config.explorer.minBuildNumber) {
     // force client to reload from server
     window.location.reload(true)
+  }
+}
+
+async function fetchFeatureFlags(): Promise<Record<string, boolean> | undefined> {
+  const featureFlagsEndpoint = getServerConfigurations().explorerFeatureFlags
+  try {
+    const response = await fetch(featureFlagsEndpoint)
+    if (response.ok) {
+      const { flags } = await response.json()
+      return flags
+    }
+  } catch (e) {
+    defaultLogger.warn(`Error while fetching feature flags from '${featureFlagsEndpoint}'. Using default config`)
   }
 }
 

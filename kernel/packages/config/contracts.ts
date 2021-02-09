@@ -112,7 +112,9 @@ export const contracts = {
     'MemeDontBuyThis': '0x1a57f6afc902d25792c53b8f19b7e17ef84222d5',
     'ReleaseTheKraken': '0xffc5043d9a00865d089d5eefa5b3d1625aec6763',
     '3LAUBasics': '0xe1ecb4e5130f493551c7d6df96ad19e5b431a0a9',
-    'XmashUp2020': '0xdd9c7bc159dacb19c9f6b9d7e23948c87aa2397f'
+    'XmashUp2020': '0xdd9c7bc159dacb19c9f6b9d7e23948c87aa2397f',
+    'MLLiondance': '0x0b1c6c75d511fae05e7dc696f4cf14129a9c43c9',
+    'AtariLaunch': '0x4c290f486bae507719c562b6b524bdb71a2570c9'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',
