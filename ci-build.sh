@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-cd "$PROJECT_PATH"
+export PROJECT_PATH
+PROJECT_PATH=$(pwd)
+export BUILD_PATH
+BUILD_PATH=$PROJECT_PATH/Builds/unity
 
 source ci-setup.sh
 

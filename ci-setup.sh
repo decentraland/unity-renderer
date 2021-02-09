@@ -21,7 +21,7 @@ else
     -nographics \
     -logFile /dev/stdout \
     -batchmode \
-    -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf
+    -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf || true
 fi
 
 set -x
