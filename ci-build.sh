@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./ci-setup.sh
+source ci-setup.sh
 
 set -x
 
