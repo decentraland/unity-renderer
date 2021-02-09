@@ -14,12 +14,11 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
         -debugCodeOptimization
 
-cat "$PROJECT_PATH/playmode-logs.txt"
-
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-cat "$(pwd)/playmode-results.xml"
+cat "$PROJECT_PATH/playmode-logs.txt"
+cat "$PROJECT_PATH/playmode-results.xml"
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then

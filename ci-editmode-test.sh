@@ -15,10 +15,10 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
         -debugCodeOptimization
 
-cat "$PROJECT_PATH/editmode-logs.txt"
-
 # Catch exit code
 UNITY_EXIT_CODE=$?
+
+cat "$PROJECT_PATH/editmode-logs.txt"
 
 # Print unity log output
 cat "editmode-results.xml"
