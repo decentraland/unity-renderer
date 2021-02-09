@@ -11,7 +11,7 @@ set -x
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
-        -logFile /dev/stdout \
+        -logFile "$PROJECT_PATH/playmode-logs.txt" \
         -projectPath "$PROJECT_PATH" \
         -runTests \
         -testPlatform PlayMode \
@@ -20,6 +20,8 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
         -debugCodeOptimization
+
+cat "$PROJECT_PATH/playmode-logs.txt"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?

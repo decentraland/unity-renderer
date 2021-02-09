@@ -2,8 +2,6 @@
 
 export PROJECT_PATH
 PROJECT_PATH=$(pwd)
-export BUILD_PATH
-BUILD_PATH=$PROJECT_PATH/Builds/unity
 
 source ci-setup.sh
 
@@ -23,7 +21,9 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
   -customBuildPath "$BUILD_PATH" \
   -customBuildOptions AcceptExternalModificationsToPlayer \
   -executeMethod BuildCommand.PerformBuild \
-  -logFile /dev/stdout
+  -logFile "$PROJECT_PATH/build-logs.txt"
+
+cat "$PROJECT_PATH/build-logs.txt"
 
 find "$BUILD_PATH"
 
