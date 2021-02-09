@@ -17,8 +17,8 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -enableCodeCoverage \
         -coverageResultsPath "$UNITY_DIR/CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
-        -debugCodeOptimization \
-        -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf
+        -debugCodeOptimization
+        # -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
