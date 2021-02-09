@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# source ./ci-setup.sh
+
 set -x
 
 echo "Building for $BUILD_TARGET"
@@ -7,7 +9,6 @@ echo "Building for $BUILD_TARGET"
 export UNITY_DIR="$(pwd)"
 export BUILD_PATH="$UNITY_DIR/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
-
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
   -quit \
@@ -19,7 +20,6 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
   -customBuildPath "$BUILD_PATH" \
   -customBuildOptions AcceptExternalModificationsToPlayer \
   -executeMethod BuildCommand.PerformBuild \
-  -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf \
   -logFile /dev/stdout
 
 find "$BUILD_PATH"

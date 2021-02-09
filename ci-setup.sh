@@ -16,7 +16,6 @@ else
   echo "Writing LICENSE to license file /root/.local/share/unity3d/Unity/Unity_lic.ulf"
   echo "$LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
 
-
   ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
     -quit \
     -nographics \

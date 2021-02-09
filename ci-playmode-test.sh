@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source ./ci-setup.sh
+
 set -x
 
 export UNITY_DIR="$(pwd)"

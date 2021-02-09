@@ -27,32 +27,23 @@ jobs:
         with:
           lfs: true
 
-      - name: cwd find
-        run: |
-          pwd
-          find .
-
-      # - name: print unity last commit
-      #   run: |
-      #     git log --pretty=tformat:"%h" -n1 . ${PROJECT_PATH}
-
-      # Setup license
-      - name: Setup uniy license
-        run: sh ./ci-setup.sh
-        env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
-
       # Run Editor tests
       - name: Run Editor tests
         if: ${{ always() }}
+        env:
+          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: sh ./ci-editmode-test.sh
 
-      # Run PlayMode tests
-      - name: Run PlayMode tests
-        if: ${{ always() }}
-        run: sh ./ci-playmode-test.sh
+      # # Run PlayMode tests
+      # - name: Run PlayMode tests
+      #   if: ${{ always() }}
+      #   env:
+      #     UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+      #   run: sh ./ci-playmode-test.sh
 
       # Build
       - name: Build
         if: ${{ always() }}
+        env:
+          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: sh ./ci-build.sh
