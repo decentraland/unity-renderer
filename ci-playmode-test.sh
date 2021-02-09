@@ -27,17 +27,15 @@ fi
 
 set -x
 
-export UNITY_DIR="$(pwd)"
-
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
         -logFile /dev/stdout \
-        -projectPath "$UNITY_DIR" \
+        -projectPath "$PROJECT_PATH" \
         -runTests \
         -testPlatform PlayMode \
-        -testResults "$UNITY_DIR/playmode-results.xml" \
+        -testResults "$PROJECT_PATH/playmode-results.xml" \
         -enableCodeCoverage \
-        -coverageResultsPath "$UNITY_DIR/CodeCoverage" \
+        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
         -debugCodeOptimization
 

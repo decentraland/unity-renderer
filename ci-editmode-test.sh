@@ -1,21 +1,26 @@
 #!/usr/bin/env bash
 
+echo $BUILD_PATH
+ls -lah $BUILD_PATH
+pwd
+ls -lah .
+
+cd $BUILD_PATH
+
 source ci-setup.sh
 
 set -x
 
-export UNITY_DIR="$(pwd)"
-
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
         -logFile /dev/stdout \
-        -projectPath "$UNITY_DIR" \
+        -projectPath "$PROJECT_PATH" \
         -buildTarget "$BUILD_TARGET" \
         -runTests \
         -testPlatform EditMode \
-        -testResults "$UNITY_DIR/editmode-results.xml" \
+        -testResults "$PROJECT_PATH/editmode-results.xml" \
         -enableCodeCoverage \
-        -coverageResultsPath "$UNITY_DIR/CodeCoverage" \
+        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
         -debugCodeOptimization
 

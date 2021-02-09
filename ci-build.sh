@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
+cd "$PROJECT_PATH"
+
 source ci-setup.sh
 
 set -x
 
-echo "Building for $BUILD_TARGET"
-
-export UNITY_DIR="$(pwd)"
-export BUILD_PATH="$UNITY_DIR/Builds/$BUILD_NAME/"
+echo "Building for $BUILD_TARGET at $PROJECT_PATH"
+export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
   -quit \
   -batchmode \
-  -projectPath "$UNITY_DIR" \
+  -projectPath "$PROJECT_PATH" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \

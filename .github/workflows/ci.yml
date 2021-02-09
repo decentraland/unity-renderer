@@ -17,6 +17,7 @@ jobs:
       image: decentraland/renderer-build:2019.4
       env:
         BUILD_TARGET: WebGL
+        PROJECT_PATH: ${{ github.workspace }}
         BUILD_PATH: ${{ github.workspace }}/Builds/unity
         BUILD_NAME: unity
     steps:
