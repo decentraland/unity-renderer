@@ -1,4 +1,4 @@
-import { CommsConfig, MessageOfTheDayConfig, RootMetaState } from './types'
+import { CommsConfig, FeatureFlags, MessageOfTheDayConfig, RootMetaState } from './types'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
 import { getCatalystNodesDefaultURL, VOICE_CHAT_DISABLED_FLAG, WORLD_EXPLORER } from 'config'
 
@@ -35,6 +35,24 @@ export const getMessageOfTheDay = (store: RootMetaState): MessageOfTheDayConfig 
 
 export const isVoiceChatEnabledFor = (store: RootMetaState, userId: string): boolean =>
   WORLD_EXPLORER && !VOICE_CHAT_DISABLED_FLAG
+
+export const isFeatureEnabled = (store: RootMetaState, featureName: FeatureFlags, ifNotSet: boolean): boolean => {
+  const queryParamFlag = toUrlFlag(featureName)
+  if (location.search.includes(`DISABLE_${queryParamFlag}`)) {
+    return false
+  } else if (location.search.includes(`ENABLE_${queryParamFlag}`)) {
+    return true
+  } else {
+    const featureFlag = store.meta.config?.featureFlags?.[`explorer-${featureName}`]
+    return featureFlag ?? ifNotSet
+  }
+}
+
+/** Convert camel case to upper snake case */
+function toUrlFlag(key: string) {
+  const result = key.replace(/([A-Z])/g, ' $1')
+  return result.split(' ').join('_').toUpperCase()
+}
 
 export const getCatalystNodesEndpoint = (store: RootMetaState): string =>
   store.meta.config.servers?.catalystsNodesEndpoint ?? getCatalystNodesDefaultURL()

@@ -18,6 +18,7 @@ export type MetaConfiguration = {
   }
   world: WorldConfig
   comms: CommsConfig
+  featureFlags?: Record<string, boolean>
 }
 
 export type WorldConfig = {
@@ -56,4 +57,8 @@ export type CommsConfig = {
   relaySuspensionDisabled?: boolean
   relaySuspensionInterval?: number
   relaySuspensionDuration?: number
+}
+
+export enum FeatureFlags {
+  WEARABLES_V2 = 'wearables_v2'
 }
