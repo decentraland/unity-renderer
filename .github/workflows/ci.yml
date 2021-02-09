@@ -11,7 +11,32 @@ on:
       - created
 
 jobs:
-  build-and-test:
+  play-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: decentraland/renderer-build:2019.4
+      env:
+        BUILD_TARGET: WebGL
+        BUILD_NAME: unity
+    steps:
+      - name: update git
+        run: |
+          add-apt-repository ppa:git-core/ppa
+          apt-get update
+          apt-get install -y git git-lfs
+          git lfs install
+
+      - name: checkout with LFS
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Run PlayMode tests
+      - name: Run PlayMode tests
+        env:
+          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+        run: bash ./ci-playmode-test.sh
+  editor-tests:
     runs-on: ubuntu-latest
     container:
       image: decentraland/renderer-build:2019.4
@@ -33,21 +58,32 @@ jobs:
 
       # Run Editor tests
       - name: Run Editor tests
-        if: ${{ always() }}
         env:
           UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: bash ./ci-editmode-test.sh
 
-      # Run PlayMode tests
-      - name: Run PlayMode tests
-        if: ${{ always() }}
-        env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
-        run: bash ./ci-playmode-test.sh
+  build-artifacts:
+    runs-on: ubuntu-latest
+    container:
+      image: decentraland/renderer-build:2019.4
+      env:
+        BUILD_TARGET: WebGL
+        BUILD_NAME: unity
+    steps:
+      - name: update git
+        run: |
+          add-apt-repository ppa:git-core/ppa
+          apt-get update
+          apt-get install -y git git-lfs
+          git lfs install
+
+      - name: checkout with LFS
+        uses: actions/checkout@v2
+        with:
+          lfs: true
 
       # Build
       - name: Build
-        if: ${{ always() }}
         env:
           UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: ./ci-build.sh
