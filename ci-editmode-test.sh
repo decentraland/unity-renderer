@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-export PROJECT_PATH
-PROJECT_PATH=$(pwd)
-export BUILD_PATH
-BUILD_PATH=$PROJECT_PATH/Builds/unity
-
 source ci-setup.sh
-
-set -x
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \

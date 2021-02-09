@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+export PROJECT_PATH
+PROJECT_PATH=$(pwd)
+
 set -e
 set -x
 mkdir -p /root/.cache/unity3d

@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-export PROJECT_PATH
-PROJECT_PATH=$(pwd)
-
 source ci-setup.sh
-
-set -x
 
 echo "Building for $BUILD_TARGET at $PROJECT_PATH"
 export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
