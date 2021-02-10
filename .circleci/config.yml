@@ -92,25 +92,42 @@ jobs:
           keys:
             - library-{{ .Branch }}
       - run:
-          name: Run tests
+          name: Run editmode tests
           command: |
-            if [[ -e /tmp/workspace/testlog/log.txt ]]; then
+            if [[ -e /tmp/workspace/editmode-logs.txt ]]; then
                 exit 0
             else
-                bash before-ci.sh
-                bash test-ci.sh
+                bash ci-editmode-test.sh
                 exit $?
             fi;
           no_output_timeout: 30m
+      - store_test_results:
+          path: playmode-results.xml
+      - store_artifacts:
+          name: Store logs
+          path: /tmp/workspace/editmode-logs.txt
+      - run:
+          name: Run playmode tests
+          command: |
+            if [[ -e /tmp/workspace/playmode-logs.txt ]]; then
+                exit 0
+            else
+                bash ci-playmode-test.sh
+                exit $?
+            fi;
+          no_output_timeout: 30m
+      - store_test_results:
+          path: editmode-results.xml
+      - store_artifacts:
+          name: Store logs
+          path: /tmp/workspace/playmode-logs.txt
       - save_cache:
           name: Store test results
           key: unity-tests-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/testlog/log.txt
+            - /tmp/workspace/playmode-logs.txt
+            - /tmp/workspace/editmode-logs.txt
             - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
-      - store_artifacts:
-          name: Store tests result as artifacts
-          path: /tmp/workspace/testlog
       - store_artifacts:
           name: Store visual tests result as artifacts
           path: /tmp/workspace/TestResources/VisualTests/CurrentTestImages
@@ -129,8 +146,7 @@ jobs:
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
-                bash before-ci.sh
-                (./build-ci.sh & echo $! > /tmp/workspace/build.pid &)
+                (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
                 pid=`cat /tmp/workspace/build.pid`
                 while [ -e /proc/$pid -a /proc/$pid/exe ]; do
                     echo "Running Unity Build..."
