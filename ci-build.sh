@@ -1,30 +1,28 @@
 #!/usr/bin/env bash
 
-set -x
+source ci-setup.sh
 
-echo "Building for $BUILD_TARGET"
-
-export UNITY_DIR="$(pwd)"
-export BUILD_PATH="$UNITY_DIR/Builds/$BUILD_NAME/"
+echo "Building for $BUILD_TARGET at $PROJECT_PATH"
+export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
-
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
   -quit \
   -batchmode \
-  -projectPath "$UNITY_DIR" \
+  -logFile "$PROJECT_PATH/build-logs.txt" \
+  -projectPath "$PROJECT_PATH" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
   -customBuildPath "$BUILD_PATH" \
   -customBuildOptions AcceptExternalModificationsToPlayer \
-  -executeMethod BuildCommand.PerformBuild \
-  -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf \
-  -logFile /dev/stdout
-
-find "$BUILD_PATH"
+  -executeMethod BuildCommand.PerformBuild
 
 UNITY_EXIT_CODE=$?
+
+cat "$PROJECT_PATH/build-logs.txt"
+
+find "$BUILD_PATH"
 
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
   echo "Run succeeded, no failures occurred";

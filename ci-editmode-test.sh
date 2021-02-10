@@ -1,25 +1,24 @@
 #!/usr/bin/env bash
 
-set -x
-
-export UNITY_DIR="$(pwd)"
+source ci-setup.sh
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
-        -logFile /dev/stdout \
-        -projectPath "$UNITY_DIR" \
-        -buildTarget "$BUILD_TARGET" \
+        -logFile "$PROJECT_PATH/editmode-logs.txt" \
+        -projectPath "$PROJECT_PATH" \
         -runTests \
         -testPlatform EditMode \
-        -testResults "$UNITY_DIR/editmode-results.xml" \
+        -testResults "$PROJECT_PATH/editmode-results.xml" \
         -enableCodeCoverage \
-        -coverageResultsPath "$UNITY_DIR/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
-        -debugCodeOptimization \
-        -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf
+        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
+        -debugCodeOptimization
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
+
+mkdir -p test-results/editormode
+cp editmode-results.xml test-results/editormode/results.xml || true
 
 # Print unity log output
 cat "editmode-results.xml"
