@@ -176,7 +176,10 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache: *RESTORE_HASHED_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-build-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build WebGL
