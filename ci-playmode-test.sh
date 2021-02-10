@@ -17,7 +17,6 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-cat "$PROJECT_PATH/playmode-logs.txt"
 cat "$PROJECT_PATH/playmode-results.xml"
 
 # Display results
