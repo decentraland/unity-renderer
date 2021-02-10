@@ -11,11 +11,14 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -testResults "$PROJECT_PATH/playmode-results.xml" \
         -enableCodeCoverage \
         -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
+        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
         -debugCodeOptimization
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
+
+mkdir -p test-results/playmode
+cp playmode-results.xml test-results/playmode/results.xml || true
 
 cat "$PROJECT_PATH/playmode-results.xml"
 

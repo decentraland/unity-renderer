@@ -11,11 +11,14 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -testResults "$PROJECT_PATH/editmode-results.xml" \
         -enableCodeCoverage \
         -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
+        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
         -debugCodeOptimization
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
+
+mkdir -p test-results/editormode
+cp editmode-results.xml test-results/editormode/results.xml || true
 
 # Print unity log output
 cat "editmode-results.xml"
