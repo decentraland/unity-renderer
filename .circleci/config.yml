@@ -79,8 +79,6 @@ jobs:
   editmode-tests:
     <<: *working_directory_root
     resource_class: xlarge
-    branches:
-      only: /editmode-branch/
     docker: *unity_image
     steps:
       - <<: *attach_root
@@ -280,7 +278,11 @@ workflows:
           requires:
             - checkout
       - editmode-tests:
-          <<: *all_branches_and_tags
+          # <<: *all_branches_and_tags
+          filters:
+            branches:
+              only:
+                - editmode-branch
           requires:
             - checkout
       - build-unity:
