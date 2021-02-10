@@ -46,7 +46,7 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
             sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/refactored-octo-guagamole.git download
+            ssh git@github.com git-lfs-authenticate decentraland/refactored-octo-guacamole.git download
             git lfs install
       # checkout the actual code
       - checkout
