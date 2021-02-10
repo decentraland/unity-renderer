@@ -221,9 +221,9 @@ jobs:
     steps:
       - <<: *attach_root
       - run:
-          working_directory: &node_workspace /tmp/workspace/browser-interface
+          working_directory: &node_workspace browser-interface
           name: find unity artifacts
-          command: find /tmp/workspace/Builds/unity
+          command: find .
       - run:
           working_directory: *node_workspace
           name: npm clean install
@@ -243,7 +243,7 @@ jobs:
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
-          root: *node_workspace
+          root: *working_directory
           paths:
             - *node_workspace
 
