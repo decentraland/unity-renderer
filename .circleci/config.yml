@@ -104,6 +104,12 @@ jobs:
       - store_artifacts:
           name: Store logs
           path: /tmp/workspace/editmode-logs.txt
+      - store_artifacts:
+          name: Store test results
+          path: /tmp/workspace/editmode-results.xml
+      - store_artifacts:
+          name: Store test coverage
+          path: /tmp/workspace/CodeCoverage
       - store_test_results:
           path: editmode-results.xml
       - save_cache:
@@ -137,14 +143,24 @@ jobs:
           no_output_timeout: 30m
       - store_test_results:
           path: playmode-results.xml
+      - store_test_results:
+          path: /tmp/workspace/CodeCoverage/Report
       - store_artifacts:
           name: Store logs
           path: /tmp/workspace/playmode-logs.txt
+      - store_artifacts:
+          name: Store test results
+          path: /tmp/workspace/playmode-results.xml
+      - store_artifacts:
+          name: Store test coverage
+          path: /tmp/workspace/CodeCoverage
       - save_cache:
           name: Store test results
           key: unity-tests-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/workspace/playmode-logs.txt
+            - /tmp/workspace/playmode-results.xml
+            - /tmp/workspace/CodeCoverage
             - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store visual tests result as artifacts
@@ -160,7 +176,7 @@ jobs:
       - restore_cache: *RESTORE_HASHED_UNITY_FILES
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
-          name: Build decentraland-renderer
+          name: Build WebGL
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
@@ -170,6 +186,7 @@ jobs:
                     echo "Running Unity Build..."
                     sleep 60
                 done
+                cat build-logs.txt
             fi;
       - save_cache:
           name: Store decentraland-renderer build
@@ -183,7 +200,7 @@ jobs:
             - /tmp/workspace/Library
       - store_artifacts:
           name: Store logs
-          path: /tmp/buildlog.txt
+          path: /tmp/build-logs.txt
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
