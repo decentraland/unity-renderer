@@ -72,13 +72,13 @@ jobs:
   #       with:
   #         lfs: true
 
-      # Build
-      - name: Build
-        if: ${{ always() }}
-        env:
-          UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
-        run: ./ci-build.sh
+      # # Build
+      # - name: Build
+      #   if: ${{ always() }}
+      #   env:
+      #     UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+      #   run: ./ci-build.sh
 
-      - name: print logs
-        if: ${{ always() }}
-        run: cat build-logs.txt
+      # - name: print logs
+      #   if: ${{ always() }}
+      #   run: cat build-logs.txt
