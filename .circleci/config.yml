@@ -83,10 +83,10 @@ jobs:
           name: Get the hash of source files
           command: |
             find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.unity -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
-      - restore_cache: &RESTORE_HASHED_UNITY_FILES
+      - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-tests-{{ checksum "../.unitysources-checksum" }}
+            - unity-editmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
@@ -113,8 +113,8 @@ jobs:
       - store_test_results:
           path: editmode-results.xml
       - save_cache:
-          name: Store test results
-          key: unity-tests-{{ checksum "../.unitysources-checksum" }}
+          name: Store test cache
+          key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/workspace/editmode-logs.txt
             - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
@@ -129,7 +129,10 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache: *RESTORE_HASHED_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run playmode tests
@@ -155,8 +158,8 @@ jobs:
           name: Store test coverage
           path: /tmp/workspace/CodeCoverage
       - save_cache:
-          name: Store test results
-          key: unity-tests-{{ checksum "../.unitysources-checksum" }}
+          name: Store test cache
+          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/workspace/playmode-logs.txt
             - /tmp/workspace/playmode-results.xml
