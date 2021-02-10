@@ -6,7 +6,6 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x2
         -batchmode \
         -logFile "$PROJECT_PATH/editmode-logs.txt" \
         -projectPath "$PROJECT_PATH" \
-        -buildTarget "$BUILD_TARGET" \
         -runTests \
         -testPlatform EditMode \
         -testResults "$PROJECT_PATH/editmode-results.xml" \
