@@ -1,0 +1,234 @@
+version: 2.0
+
+references:
+  .working_directory: &working_directory /tmp/workspace
+
+  .attach_root: &attach_root
+    attach_workspace:
+      at: *working_directory
+
+  .image_kernel: &image_kernel
+    - image: circleci/node:14-browsers
+      environment:
+        BUILD_PATH: /tmp/workspace/Builds/unity
+
+  .unity_image: &unity_image
+    - image: decentraland/renderer-build:2019.4
+      environment:
+        BUILD_TARGET: WebGL
+        BUILD_PATH: /tmp/workspace/Builds/unity
+        BUILD_NAME: unity
+
+  .all_branches_and_tags: &all_branches_and_tags
+    filters:
+      branches:
+        only: /(.*)/
+      tags:
+        only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
+
+jobs:
+  checkout:
+    <<: *working_directory
+    docker:
+      - image: circleci/node:14-browsers
+        environment:
+          # avoid automatic download of LFS files
+          GIT_LFS_SKIP_SMUDGE: 1
+    steps:
+      # install lfs
+      - run:
+          name: "Install git-lfs"
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/refactored-octo-guagamole.git download
+            git lfs install
+      # checkout the actual code
+      - checkout
+
+      # restore cached lfs
+      - restore_cache:
+          name: Restore large files from CircleCI cache
+          keys:
+            - git-lfs-{{ .Branch }}
+            - git-lfs-master
+      - run:
+          name: "Download LFS files from GitHub's LFS Storage"
+          command: |
+            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
+      - save_cache:
+          name: Store large files in cache
+          key: git-lfs-{{ .Branch }}
+          paths:
+            - .git/lfs
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - "*"
+
+  run-unity-tests:
+    <<: *working_directory
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: &HASH_UNITY_FILES
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.unity -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+      - restore_cache: &RESTORE_HASHED_UNITY_FILES
+          name: Restore hashed files if they exist
+          keys:
+            - unity-tests-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: &RESTORE_LIBRARY_CACHE
+          name: Restore library if exists
+          keys:
+            - library-{{ .Branch }}
+      - run:
+          name: Run tests
+          command: |
+            if [[ -e /tmp/workspace/testlog/log.txt ]]; then
+                exit 0
+            else
+                bash before-ci.sh
+                bash test-ci.sh
+                exit $?
+            fi;
+          no_output_timeout: 30m
+      - save_cache:
+          name: Store test results
+          key: unity-tests-{{ checksum "../.unitysources-checksum" }}
+          paths:
+            - /tmp/workspace/testlog/log.txt
+            - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
+      - store_artifacts:
+          name: Store tests result as artifacts
+          path: /tmp/workspace/testlog
+      - store_artifacts:
+          name: Store visual tests result as artifacts
+          path: /tmp/workspace/TestResources/VisualTests/CurrentTestImages
+
+  build-unity:
+    <<: *working_directory
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache: *RESTORE_HASHED_UNITY_FILES
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Build decentraland-renderer
+          command: |
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                mkdir -p ${BUILD_PATH}
+                bash before-ci.sh
+                (./build-ci.sh & echo $! > /tmp/workspace/build.pid &)
+                pid=`cat /tmp/workspace/build.pid`
+                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+                    echo "Running Unity Build..."
+                    sleep 60
+                done
+            fi;
+      - save_cache:
+          name: Store decentraland-renderer build
+          key: unity-build-{{ checksum "../.unitysources-checksum" }}
+          paths:
+            - /tmp/workspace/Builds/
+      - save_cache:
+          name: Store library
+          key: library-{{ .Branch }}
+          paths:
+            - /tmp/workspace/Library
+      - store_artifacts:
+          name: Store logs
+          path: /tmp/buildlog.txt
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - Builds
+
+  build-js-interface:
+    <<: *working_directory
+    docker: *image_kernel
+
+    steps:
+      - <<: *attach_root
+      - run:
+          working_directory: &node_workspace /tmp/workspace/browser-interface
+          name: find unity artifacts
+          command: find /tmp/workspace/Builds/unity
+      - run:
+          working_directory: *node_workspace
+          name: npm clean install
+          command: npm ci
+      - run:
+          working_directory: *node_workspace
+          name: npm run build
+          command: npm run build
+      - run:
+          working_directory: *node_workspace
+          name: npm run test
+          command: npm run test
+      - run:
+          working_directory: *node_workspace
+          name: clear dev dependencies
+          command: npm ci --only=production
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *node_workspace
+          paths:
+            - *node_workspace
+
+  publish-renderer:
+    <<: *working_directory
+    docker: *image_kernel
+
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Set up NPM access tokens
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+      - run:
+          working_directory: /tmp/workspace/browser-interface
+          name: npm run publish
+          command: npm run publish
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - checkout:
+          <<: *all_branches_and_tags
+
+      - run-unity-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
+      - build-unity:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
+
+      - build-js-interface:
+          <<: *all_branches_and_tags
+          requires:
+            - build-unity
+
+      - publish-renderer:
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
+          requires:
+            - build-unity
+            - build-js-interface

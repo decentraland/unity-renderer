@@ -34,7 +34,7 @@ jobs:
       # Run Editor tests
       - name: Run Editor tests
         env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+          UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: bash ./ci-editmode-test.sh
 
       - name: print logs
@@ -70,7 +70,7 @@ jobs:
       # Run PlayMode tests
       - name: Run PlayMode tests
         env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+          UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: bash ./ci-playmode-test.sh
 
       - name: print logs
@@ -107,7 +107,7 @@ jobs:
       - name: Build
         if: ${{ always() }}
         env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+          UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
         run: ./ci-build.sh
 
       - name: print logs

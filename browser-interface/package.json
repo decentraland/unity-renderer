@@ -1,0 +1,14 @@
+{
+  "name": "browser-interface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"no build specified\" && exit 0",
+    "test": "echo \"no test specified\" && exit 0",
+    "publish": "echo \"no publish specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0"
+}
