@@ -1,58 +1,84 @@
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idcontainer
-name: Build pipeline
+name: Unity pipeline
 
 on:
   push:
+    branches:
+      - "master"
   pull_request:
+  release:
+    types:
+      - created
 
 jobs:
-  unity-pipeline:
+  linter:
     runs-on: ubuntu-latest
-    container:
-      image: decentraland/renderer-build:2019.4
-      env:
-        BUILD_TARGET: WebGL
-        BUILD_PATH: ${{ github.workspace }}/Builds/unity
-        BUILD_NAME: unity
     steps:
-      - name: update git
-        run: |
-          add-apt-repository ppa:git-core/ppa
-          apt-get update
-          apt-get install -y git git-lfs
-          git lfs install
+      - name: greetings
+        run: echo 'hi'
+  # play-tests:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: decentraland/renderer-build:2019.4
+  #     env:
+  #       BUILD_TARGET: WebGL
+  #       BUILD_NAME: unity
+  #   steps:
+  #     - name: update git
+  #       run: |
+  #         add-apt-repository ppa:git-core/ppa
+  #         apt-get update
+  #         apt-get install -y git git-lfs
+  #         git lfs install
 
-      - name: checkout with LFS
-        uses: actions/checkout@v2
-        with:
-          lfs: true
+  #     - name: checkout with LFS
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
 
-      - name: cwd find
-        run: |
-          pwd
-          find .
+  #     # Run PlayMode tests
+  #     - name: Run PlayMode tests
+  #       env:
+  #         UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+  #       run: bash ./ci-playmode-test.sh
 
-      # - name: print unity last commit
-      #   run: |
-      #     git log --pretty=tformat:"%h" -n1 . ${PROJECT_PATH}
+  #     - name: print logs
+  #       if: ${{ always() }}
+  #       run: cat playmode-logs.txt
 
-      # Setup license
-      - name: Setup uniy license
-        run: sh ./ci-setup.sh
-        env:
-          UNITY_LICENSE_CONTENT_BASE64: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+  #     - name: print test results
+  #       if: ${{ always() }}
+  #       run: |
+  #         cat "playmode-results.xml"
+  #         cat "playmode-results.xml" | grep Passed
 
-      # Run Editor tests
-      - name: Run Editor tests
-        if: ${{ always() }}
-        run: sh ./ci-editmode-test.sh
+  # build-artifacts:
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: decentraland/renderer-build:2019.4
+  #     env:
+  #       BUILD_TARGET: WebGL
+  #       BUILD_NAME: unity
+  #   steps:
+  #     - name: update git
+  #       run: |
+  #         add-apt-repository ppa:git-core/ppa
+  #         apt-get update
+  #         apt-get install -y git git-lfs
+  #         git lfs install
 
-      # Run PlayMode tests
-      - name: Run PlayMode tests
-        if: ${{ always() }}
-        run: sh ./ci-playmode-test.sh
+  #     - name: checkout with LFS
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
 
-      # Build
-      - name: Build
-        if: ${{ always() }}
-        run: sh ./ci-build.sh
+      # # Build
+      # - name: Build
+      #   if: ${{ always() }}
+      #   env:
+      #     UNITY_LICENSE_2019_4: ${{ secrets.UNITY_LICENSE_CONTENT_BASE64 }}
+      #   run: ./ci-build.sh
+
+      # - name: print logs
+      #   if: ${{ always() }}
+      #   run: cat build-logs.txt

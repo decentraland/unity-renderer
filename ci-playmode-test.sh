@@ -1,26 +1,26 @@
-#!/usr/bin/env bash
+#!/usr/bash
 
-set -x
-
-export UNITY_DIR="$(pwd)"
+source ci-setup.sh
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
-        -logFile /dev/stdout \
-        -projectPath "$UNITY_DIR" \
+        -logFile "$PROJECT_PATH/playmode-logs.txt" \
+        -projectPath "$PROJECT_PATH" \
         -runTests \
         -testPlatform PlayMode \
-        -testResults "$UNITY_DIR/playmode-results.xml" \
+        -testResults "$PROJECT_PATH/playmode-results.xml" \
         -enableCodeCoverage \
-        -coverageResultsPath "$UNITY_DIR/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateHtmlReportHistory;generateBadgeReport;assemblyFilters:+Assembly-CSharp" \
-        -manualLicenseFile /root/.local/share/unity3d/Unity/Unity_lic.ulf \
+        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
         -debugCodeOptimization
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-cat "$(pwd)/playmode-results.xml"
+mkdir -p test-results/playmode
+cp playmode-results.xml test-results/playmode/results.xml || true
+
+cat "$PROJECT_PATH/playmode-results.xml"
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
