@@ -73,9 +73,14 @@ jobs:
           paths:
             - "*"
 
+  ############
+  ## THIS IS TEMPORARILY DISABLED AND RUNS ONLY IN THE "editmode-branch" branch
+  ############
   editmode-tests:
     <<: *working_directory_root
     resource_class: xlarge
+    branches:
+      only: /editmode-branch/
     docker: *unity_image
     steps:
       - <<: *attach_root
@@ -223,7 +228,7 @@ jobs:
       - run:
           working_directory: &node_workspace browser-interface
           name: find unity artifacts
-          command: find .
+          command: find /tmp/workspace/Builds/
       - run:
           working_directory: *node_workspace
           name: npm clean install
@@ -297,4 +302,4 @@ workflows:
             - build-unity
             - build-js-interface
             - playmode-tests
-            - editmode-tests
+            # - editmode-tests
