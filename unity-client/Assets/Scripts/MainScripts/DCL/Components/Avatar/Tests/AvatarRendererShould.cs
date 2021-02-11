@@ -15,7 +15,7 @@ namespace AvatarShape_Tests
         private const string BLUE_BANDANA_ID = "dcl://base-avatars/blue_bandana";
 
         private AvatarModel avatarModel;
-        private WearableDictionary catalog;
+        private BaseDictionary<string, WearableItem> catalog;
         private AvatarRenderer avatarRenderer;
 
         [UnitySetUp]
@@ -43,22 +43,22 @@ namespace AvatarShape_Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit("This test depends on the time defined in CatalogController.REQUESTS_TIME_OUT, so it can make the test too slow")]
         public IEnumerator FailGracefullyWhenIdsCannotBeResolved()
         {
-            avatarModel.wearables = new List<string>() {"Scioli_right_arm", "Peron_hands"};
-            avatarModel.bodyShape = "Invalid_id";
+            var wearablePromise1 = CatalogController.RequestWearable("Invalid_id");
+            var wearablePromise2 = CatalogController.RequestWearable("Scioli_right_arm");
+            var wearablePromise3 = CatalogController.RequestWearable("Peron_hands");
 
-            avatarRenderer.SetVisibility(true);
+            yield return wearablePromise1;
+            Assert.AreEqual("The request for the wearable 'Invalid_id' has exceed the set timeout!", wearablePromise1.error);
 
-            bool success = false;
-            avatarRenderer.ApplyModel(avatarModel, () => success = true, null);
-            yield return new DCL.WaitUntil(() => success, 4);
+            yield return wearablePromise2;
+            Assert.AreEqual("The request for the wearable 'Scioli_right_arm' has exceed the set timeout!", wearablePromise2.error);
 
-            LogAssert.Expect(LogType.Error, "Bodyshape Invalid_id not found in catalog");
-            LogAssert.Expect(LogType.Error, "Wearable Scioli_right_arm not found in catalog");
-            LogAssert.Expect(LogType.Error, "Wearable Peron_hands not found in catalog");
-
-            UnityEngine.Assertions.Assert.IsTrue(success);
+            yield return wearablePromise3;
+            Assert.AreEqual("The request for the wearable 'Peron_hands' has exceed the set timeout!", wearablePromise3.error);
         }
 
         [UnityTest]

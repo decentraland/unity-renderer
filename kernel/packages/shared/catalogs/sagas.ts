@@ -1,47 +1,56 @@
-import { call, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { call, put, select, take, takeEvery } from 'redux-saga/effects'
 
 import {
   getServerConfigurations,
   getWearablesSafeURL,
   PIN_CATALYST,
   WSS_ENABLED,
-  TEST_WEARABLES_OVERRIDE
+  TEST_WEARABLES_OVERRIDE,
+  ALL_WEARABLES
 } from 'config'
 
 import defaultLogger from 'shared/logger'
-import { isInitialized } from 'shared/renderer/selectors'
 import { RENDERER_INITIALIZED } from 'shared/renderer/types'
-import { addCatalog, AddCatalogAction, ADD_CATALOG, catalogLoaded, CATALOG_LOADED } from './actions'
-import { baseCatalogsLoaded } from './selectors'
-import { Catalog, Wearable, Collection } from './types'
+import {
+  catalogLoaded,
+  CATALOG_LOADED,
+  WearablesFailure,
+  wearablesFailure,
+  WearablesRequest,
+  WearablesSuccess,
+  wearablesSuccess,
+  WEARABLES_FAILURE,
+  WEARABLES_REQUEST,
+  WEARABLES_SUCCESS
+} from './actions'
+import { baseCatalogsLoaded, getExclusiveCatalog, getPlatformCatalog } from './selectors'
+import { Catalog, Wearable, Collection, WearableId, WearablesRequestFilters } from './types'
 import { WORLD_EXPLORER } from '../../config/index'
 import { getResourcesURL } from '../location'
 import { UnityInterfaceContainer } from 'unity-interface/dcl'
-import { RarityEnum } from '../airdrops/interface'
 import { StoreContainer } from '../store/rootTypes'
 import { retrieve, store } from 'shared/cache'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
+import { ensureRenderer } from 'shared/renderer/sagas'
 
 declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
+export const WRONG_FILTERS_ERROR =
+  'You must set one and only one filter for V1. Also, the only collection name allowed is base-avatars'
 
 /**
- * This saga handles both passports and assets required for the renderer to show the
- * users' inventory and avatar editor.
+ * This saga handles wearable definition fetching.
  *
- * When the renderer is initialized, it will fetch the asset catalog and submit it to the renderer.
+ * When the renderer detects a new wearable, but it doesn't know its definition, then it will create a catalog request.
  *
- * Whenever a passport is requested, it will fetch it and store it locally (see also: `selectors.ts`)
+ * This request will include the ids of the unknown wearables. We will then find the appropriate definition, and return it to the renderer.
  *
- * If a user avatar was not found, it will create a random passport (see: `handleRandomAsSuccess`)
- *
- * Lastly, we handle save requests by submitting both to the avatar legacy server as well as to the profile server.
- *
- * It's *very* important for the renderer to never receive a passport with items that have not been loaded into the catalog.
  */
 export function* catalogsSaga(): any {
   yield takeEvery(RENDERER_INITIALIZED, initialLoad)
 
-  yield takeLatest(ADD_CATALOG, handleAddCatalog)
+  yield takeEvery(WEARABLES_REQUEST, handleWearablesRequest)
+  yield takeEvery(WEARABLES_SUCCESS, handleWearablesSuccess)
+  yield takeEvery(WEARABLES_FAILURE, handleWearablesFailure)
 }
 
 function overrideBaseUrl(wearable: Wearable) {
@@ -52,18 +61,8 @@ function overrideBaseUrl(wearable: Wearable) {
       baseUrlBundles: PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/'
     }
   } else {
-    return wearable ?? {}
+    return wearable
   }
-}
-
-function overrideSwankyRarity(wearable: Wearable) {
-  if ((wearable.rarity as any) === 'swanky') {
-    return {
-      ...wearable,
-      rarity: 'rare' as RarityEnum
-    }
-  }
-  return wearable
 }
 
 function* initialLoad() {
@@ -96,18 +95,14 @@ function* initialLoad() {
           }
         }
       }
-      const catalog = collections!
+      const catalog: Wearable[] = collections!
         .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
+        .filter((wearable) => !!wearable)
         .map(overrideBaseUrl)
-        // TODO - remove once all swankies are removed from service! - moliva - 22/05/2020
-        .map(overrideSwankyRarity)
       const baseAvatars = catalog.filter((_: Wearable) => _.tags && !_.tags.includes('exclusive'))
       const baseExclusive = catalog.filter((_: Wearable) => _.tags && _.tags.includes('exclusive'))
-      if (!(yield select(isInitialized))) {
-        yield take(RENDERER_INITIALIZED)
-      }
-      yield put(addCatalog('base-avatars', baseAvatars))
-      yield put(addCatalog('base-exclusive', baseExclusive))
+      yield put(catalogLoaded('base-avatars', baseAvatars))
+      yield put(catalogLoaded('base-exclusive', baseExclusive))
     } catch (error) {
       defaultLogger.error('[FATAL]: Could not load catalog!', error)
     }
@@ -126,21 +121,88 @@ function* initialLoad() {
     } catch (e) {
       defaultLogger.warn(`Could not load base catalog`)
     }
-    yield put(addCatalog('base-avatars', baseCatalog))
-    yield put(addCatalog('base-exclusive', []))
+    yield put(catalogLoaded('base-avatars', baseCatalog))
+    yield put(catalogLoaded('base-exclusive', []))
   }
 }
 
-export function* handleAddCatalog(action: AddCatalogAction): any {
-  // TODO (eordano, 16/Sep/2019): Validate correct schema
-  if (!action.payload.catalog) {
-    return
+export function* handleWearablesRequest(action: WearablesRequest) {
+  const { filters, context } = action.payload
+
+  const valid = areFiltersValid(filters)
+  if (valid) {
+    try {
+      yield call(ensureBaseCatalogs)
+
+      const platformCatalog = yield select(getPlatformCatalog)
+      const exclusiveCatalog = yield select(getExclusiveCatalog)
+
+      let response: Wearable[]
+      if (filters.wearableIds) {
+        // Filtering by ids
+        response = filters.wearableIds
+          .map((wearableId) =>
+            wearableId.includes(`base-avatars`) ? platformCatalog[wearableId] : exclusiveCatalog[wearableId]
+          )
+          .filter((wearable) => !!wearable)
+      } else if (filters.ownedByUser) {
+        // Only owned wearables
+        if (ALL_WEARABLES) {
+          response = Object.values(exclusiveCatalog)
+        } else {
+          const inventoryItemIds: WearableId[] = yield call(fetchInventoryItemsByAddress, filters.ownedByUser)
+          response = inventoryItemIds.map((id) => exclusiveCatalog[id]).filter((wearable) => !!wearable)
+        }
+      } else if (filters.collectionIds) {
+        // We assume that the only collection name used is base-avatars
+        response = Object.values(platformCatalog)
+      } else {
+        throw new Error('Unknown filter')
+      }
+      yield put(wearablesSuccess(response, context))
+    } catch (error) {
+      yield put(wearablesFailure(context, error.message))
+    }
+  } else {
+    yield put(wearablesFailure(context, WRONG_FILTERS_ERROR))
   }
-  if (!(yield select(isInitialized))) {
-    yield take(RENDERER_INITIALIZED)
+}
+
+export function* handleWearablesSuccess(action: WearablesSuccess) {
+  const { wearables, context } = action.payload
+
+  yield call(ensureRenderer)
+  yield call(sendWearablesCatalog, wearables, context)
+}
+
+export function* handleWearablesFailure(action: WearablesFailure) {
+  const { context, error } = action.payload
+
+  defaultLogger.error(`Failed to fetch wearables for context '${context}'`, error)
+
+  yield call(ensureRenderer)
+  yield call(informRequestFailure, error, context)
+}
+
+function areFiltersValid(filters: WearablesRequestFilters) {
+  let filtersSet = 0
+  let ok = true
+  if (filters.collectionIds) {
+    filtersSet += 1
+    if (filters.collectionIds.some((name) => name !== 'base-avatars')) {
+      ok = false
+    }
   }
-  yield call(sendWearablesCatalog, action.payload.catalog)
-  yield put(catalogLoaded(action.payload.name))
+
+  if (filters.ownedByUser) {
+    filtersSet += 1
+  }
+
+  if (filters.wearableIds) {
+    filtersSet += 1
+  }
+
+  return filtersSet === 1 && ok
 }
 
 async function headCatalog(url: string) {
@@ -151,7 +213,7 @@ async function headCatalog(url: string) {
   return request.headers.get('etag')
 }
 
-export async function fetchCatalog(url: string) {
+async function fetchCatalog(url: string) {
   const request = await fetch(url)
   if (!request.ok) {
     throw new Error('Catalog not found')
@@ -160,12 +222,29 @@ export async function fetchCatalog(url: string) {
   return [await request.json(), etag]
 }
 
-export function sendWearablesCatalog(catalog: Catalog) {
-  globalThis.unityInterface.AddWearablesToCatalog(catalog)
+export function informRequestFailure(error: string, context: string | undefined) {
+  globalThis.unityInterface.WearablesRequestFailed(error, context)
+}
+
+export function sendWearablesCatalog(catalog: Catalog, context: string | undefined) {
+  globalThis.unityInterface.AddWearablesToCatalog(catalog, context)
 }
 
 export function* ensureBaseCatalogs() {
   while (!(yield select(baseCatalogsLoaded))) {
     yield take(CATALOG_LOADED)
   }
+}
+
+export async function fetchInventoryItemsByAddress(address: string): Promise<WearableId[]> {
+  if (!WORLD_EXPLORER) {
+    return []
+  }
+  const result = await fetch(`${getServerConfigurations().wearablesApi}/addresses/${address}/wearables?fields=id`)
+  if (!result.ok) {
+    throw new Error('Unable to fetch inventory for address ' + address)
+  }
+  const inventory: { id: string }[] = await result.json()
+
+  return inventory.map((wearable) => wearable.id)
 }

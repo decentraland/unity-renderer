@@ -8,10 +8,8 @@ export interface Profile {
   email: string
   avatar: Avatar
   ethAddress: string
-  inventory: WearableId[]
   blocked?: string[]
   muted?: string[]
-  snapshots?: Snapshots
   version: number
   tutorialStep: number
   interests?: string[]
@@ -45,9 +43,6 @@ export type ProfileUserInfo =
 export type ProfileState = {
   userInfo: {
     [key: string]: ProfileUserInfo
-  }
-  userInventory: {
-    [key: string]: { status: 'loading' } | { status: 'error'; data: any } | { status: 'ok'; data: WearableId[] }
   }
 }
 

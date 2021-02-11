@@ -21,7 +21,7 @@ export function ensureServerFormat(profile: Profile): ServerFormatProfile {
   if (!avatar.bodyShape || !isValidBodyShape(avatar.bodyShape)) {
     throw new Error('Invalid BodyShape! Received: ' + JSON.stringify(avatar))
   }
-  const { inventory, userId, hasClaimedName, ...serverFormat } = {
+  const { userId, hasClaimedName, ...serverFormat } = {
     ...profile,
     avatar: {
       bodyShape: avatar.bodyShape,

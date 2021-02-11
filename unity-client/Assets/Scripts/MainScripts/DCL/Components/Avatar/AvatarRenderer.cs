@@ -31,6 +31,7 @@ namespace DCL
         internal bool isLoading = false;
 
         private Coroutine loadCoroutine;
+        private List<string> wearablesInUse = new List<string>();
 
         private void Awake()
         {
@@ -110,6 +111,9 @@ namespace DCL
             isLoading = false;
             OnFailEvent = null;
             OnSuccessEvent = null;
+
+            CatalogController.RemoveWearablesInUse(wearablesInUse);
+            wearablesInUse.Clear();
         }
 
         void CleanUpUnusedItems()
@@ -153,23 +157,52 @@ namespace DCL
             yield return new WaitUntil(() => gameObject.activeSelf);
 
             WearableItem resolvedBody = null;
-            if(!string.IsNullOrEmpty(model.bodyShape) && !CatalogController.wearableCatalog.TryGetValue(model.bodyShape, out resolvedBody))
+            Helpers.Promise<WearableItem> avatarBodyPromise = null;
+            if (!string.IsNullOrEmpty(model.bodyShape))
             {
-                Debug.LogError($"Bodyshape {model.bodyShape} not found in catalog");
+                avatarBodyPromise = CatalogController.RequestWearable(model.bodyShape);
             }
 
             List<WearableItem> resolvedWearables = new List<WearableItem>();
+            List<Helpers.Promise<WearableItem>> avatarWearablePromises = new List<Helpers.Promise<WearableItem>>();
             if (model.wearables != null)
             {
                 for (int i = 0; i < model.wearables.Count; i++)
                 {
-                    if (!CatalogController.wearableCatalog.TryGetValue(model.wearables[i], out WearableItem item))
-                    {
-                        Debug.LogError($"Wearable {model.wearables[i]} not found in catalog");
-                        continue;
-                    }
+                    avatarWearablePromises.Add(CatalogController.RequestWearable(model.wearables[i]));
+                }
+            }
 
-                    resolvedWearables.Add(item);
+            // In this point, all the requests related to the avatar's wearables have been collected and sent to the CatalogController to be sent to kernel as a unique request.
+            // From here we wait for the response of the requested wearables and process them.
+
+            if (avatarBodyPromise != null)
+            {
+                yield return avatarBodyPromise;
+
+                if (!string.IsNullOrEmpty(avatarBodyPromise.error))
+                {
+                    Debug.LogError(avatarBodyPromise.error);
+                }
+                else
+                {
+                    resolvedBody = avatarBodyPromise.value;
+                    wearablesInUse.Add(avatarBodyPromise.value.id);
+                }
+            }
+
+            foreach (var avatarWearablePromise in avatarWearablePromises)
+            {
+                yield return avatarWearablePromise;
+
+                if (!string.IsNullOrEmpty(avatarWearablePromise.error))
+                {
+                    Debug.LogError(avatarWearablePromise.error);
+                }
+                else
+                {
+                    resolvedWearables.Add(avatarWearablePromise.value);
+                    wearablesInUse.Add(avatarWearablePromise.value.id);
                 }
             }
 
@@ -179,7 +212,6 @@ namespace DCL
                 this.OnSuccessEvent?.Invoke();
                 yield break;
             }
-
 
             bool bodyIsDirty = false;
             if (bodyShapeController != null && bodyShapeController.id != model?.bodyShape)

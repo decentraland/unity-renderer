@@ -38,7 +38,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 
     void OnSelectWearable(string wearableId)
     {
-        var wearable = CatalogController.wearableCatalog.Get(wearableId);
+        CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
         wearableIsSameAsPrevious = (wearable == lastSelectedWearable);
         if (wearableIsSameAsPrevious) return;
 

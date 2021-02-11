@@ -12,7 +12,7 @@ namespace AvatarEditorHUD_Tests
     {
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
-        private WearableDictionary catalog;
+        private BaseDictionary<string, WearableItem> catalog;
 
         protected override bool justSceneSetUp => true;
 
@@ -125,6 +125,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase("dcl://halloween_2019/sad_clown_upper_body")]
         public void Add_Exclusives_ToCollectibles(string wearableId)
         {
+            userProfile.SetInventory(new[] { wearableId });
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -133,8 +134,7 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                },
-                inventory = new[] {wearableId}
+                }
             }, false);
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
@@ -176,6 +176,7 @@ namespace AvatarEditorHUD_Tests
         public void NotShowAmmountIfOnlyOneItemIsPossesed()
         {
             var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.SetInventory(new[] { wearableId });
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -184,8 +185,7 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                },
-                inventory = new[] {wearableId}
+                }
             }, false);
 
             Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
@@ -199,6 +199,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmount(int amount)
         {
             var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -207,8 +208,7 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                },
-                inventory = Enumerable.Repeat(wearableId, amount).ToArray()
+                }
             }, false);
 
             var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId];
@@ -225,6 +225,7 @@ namespace AvatarEditorHUD_Tests
         public void ShowAndUpdateAmountInCollectibleTab(int amount)
         {
             var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -233,8 +234,7 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                },
-                inventory = Enumerable.Repeat(wearableId, amount).ToArray()
+                }
             }, false);
 
             var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId];
@@ -263,6 +263,7 @@ namespace AvatarEditorHUD_Tests
                 i18n = new[] {new i18n() {code = "en", text = "Dummy Item"}}
             };
 
+            userProfile.SetInventory(new[] { dummyItem.id });
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
@@ -271,8 +272,7 @@ namespace AvatarEditorHUD_Tests
                 {
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                },
-                inventory = new[] {dummyItem.id}
+                }
             }, false);
 
             catalog.Remove(dummyItem.id);

@@ -1,7 +1,6 @@
 import { action } from 'typesafe-actions'
 import { Profile, ProfileType } from './types'
 import { ProfileForRenderer } from '../../decentraland-ecs/src/decentraland/Types'
-import { WearableId } from 'shared/catalogs/types'
 
 // Profile fetching
 
@@ -54,22 +53,6 @@ export const PROFILE_SAVED_NOT_DEPLOYED = 'Profile not deployed'
 export const profileSavedNotDeployed = (userId: string, version: number, profile: Profile) =>
   action(PROFILE_SAVED_NOT_DEPLOYED, { userId, version, profile })
 export type ProfileSavedNotDeployed = ReturnType<typeof profileSavedNotDeployed>
-
-// Inventory
-
-export const INVENTORY_REQUEST = '[Request] Inventory fetch'
-export const inventoryRequest = (userId: string, ethAddress: string) =>
-  action(INVENTORY_REQUEST, { userId, ethAddress })
-export type InventoryRequest = ReturnType<typeof inventoryRequest>
-
-export const INVENTORY_SUCCESS = '[Success] Inventory fetch'
-export const inventorySuccess = (userId: string, inventory: WearableId[]) =>
-  action(INVENTORY_SUCCESS, { userId, inventory })
-export type InventorySuccess = ReturnType<typeof inventorySuccess>
-
-export const INVENTORY_FAILURE = '[Failure] Inventory fetch'
-export const inventoryFailure = (userId: string, error: any) => action(INVENTORY_FAILURE, { userId, error })
-export type InventoryFailure = ReturnType<typeof inventoryFailure>
 
 export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
 export const addedProfileToCatalog = (userId: string, profile: ProfileForRenderer) =>

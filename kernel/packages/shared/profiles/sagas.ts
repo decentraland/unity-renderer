@@ -1,20 +1,12 @@
 import { Store } from 'redux'
 import { EntityType, Hashing } from 'dcl-catalyst-commons'
 import { CatalystClient, ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
-import { call, throttle, put, race, select, take, takeEvery } from 'redux-saga/effects'
+import { call, throttle, put, select, takeEvery } from 'redux-saga/effects'
 
-import { getServerConfigurations, ALL_WEARABLES, PREVIEW, ethereumConfigurations, RESET_TUTORIAL } from 'config'
+import { getServerConfigurations, PREVIEW, ethereumConfigurations, RESET_TUTORIAL, ALL_WEARABLES } from 'config'
 
 import defaultLogger from 'shared/logger'
 import {
-  inventoryFailure,
-  InventoryRequest,
-  inventoryRequest,
-  inventorySuccess,
-  INVENTORY_FAILURE,
-  INVENTORY_REQUEST,
-  INVENTORY_SUCCESS,
-  InventorySuccess,
   PROFILE_REQUEST,
   PROFILE_SUCCESS,
   PROFILE_RANDOM,
@@ -61,23 +53,19 @@ import { RootState } from 'shared/store/rootTypes'
 import { requestLocalProfileToPeers, updateCommsUser } from 'shared/comms'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
 import { ensureRenderer } from 'shared/renderer/sagas'
-import { ensureBaseCatalogs } from 'shared/catalogs/sagas'
-import { getExclusiveCatalog } from 'shared/catalogs/selectors'
+import { ensureBaseCatalogs, fetchInventoryItemsByAddress } from 'shared/catalogs/sagas'
 import { base64ToBlob } from 'atomicHelpers/base64ToBlob'
-import { Wearable } from 'shared/catalogs/types'
 import { LocalProfilesRepository } from './LocalProfilesRepository'
 import { getProfileType } from './getProfileType'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { UNEXPECTED_ERROR } from 'shared/loading/types'
 import { fetchParcelsWithAccess } from './fetchLand'
 import { ParcelsWithAccess } from 'decentraland-ecs/src'
+import { WearableId } from 'shared/types'
 
 const toBuffer = require('blob-to-buffer')
 
 declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
-
-const isActionFor = (type: string, userId: string) => (action: any) =>
-  action.type === type && action.payload.userId === userId
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
   action.type + action.payload.userId
@@ -110,8 +98,6 @@ export function* profileSaga(): any {
   yield takeLatestByUserId(PROFILE_RANDOM, handleRandomAsSuccess)
 
   yield takeLatestByUserId(SAVE_PROFILE_REQUEST, handleSaveAvatar)
-
-  yield takeLatestByUserId(INVENTORY_REQUEST, handleFetchInventory)
 
   yield takeLatestByUserId(LOCAL_PROFILE_RECEIVED, handleLocalProfile)
 
@@ -260,26 +246,20 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   yield populateFaceIfNecessary(profile, '256')
   yield populateFaceIfNecessary(profile, '128')
 
+  const passport: Profile = yield call(processServerProfile, userId, profile)
+
   if (!ALL_WEARABLES && WORLD_EXPLORER) {
-    yield put(inventoryRequest(userId, userId))
-    const inventoryResult = yield race({
-      success: take(isActionFor(INVENTORY_SUCCESS, userId)),
-      failure: take(isActionFor(INVENTORY_FAILURE, userId))
-    })
-    if (inventoryResult.failure) {
-      defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
-    } else {
-      profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(dropIndexFromExclusives)
+    try {
+      const inventory: WearableId[] = yield call(fetchInventoryItemsByAddress, userId)
+      passport.avatar.wearables = passport.avatar.wearables.filter(
+        (wearableId) => wearableId.startsWith('dcl://base-avatars') || inventory.includes(wearableId)
+      )
+    } catch (e) {
+      defaultLogger.error(`Failed to fetch inventory to filter owned wearables`)
     }
   }
 
-  const passport = yield call(processServerProfile, userId, profile)
-
   yield put(profileSuccess(userId, passport, hasConnectedWeb3))
-}
-
-function dropIndexFromExclusives(exclusive: string) {
-  return exclusive.split('/').slice(0, 4).join('/')
 }
 
 function lastSegment(url: string) {
@@ -356,19 +336,12 @@ function* submitProfileToRenderer(action: ProfileSuccessAction): any {
       face256: snapshots.face256 || snapshots.face
     }
   }
-  if ((yield select(getCurrentUserId)) === action.payload.userId) {
-    yield call(ensureRenderer)
-    yield call(ensureBaseCatalogs)
-    // FIXIT - need to have this duplicated here, as the inventory won't be used if not - moliva - 17/12/2019
-    if (ALL_WEARABLES) {
-      profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
-    }
 
+  yield call(ensureRenderer)
+  yield call(ensureBaseCatalogs)
+  if ((yield select(getCurrentUserId)) === action.payload.userId) {
     yield call(sendLoadProfile, profile)
   } else {
-    yield call(ensureRenderer)
-    yield call(ensureBaseCatalogs)
-
     const forRenderer = profileToRendererFormat(profile)
     forRenderer.hasConnectedWeb3 = action.payload.hasConnectedWeb3
 
@@ -385,28 +358,6 @@ function* sendLoadProfile(profile: Profile) {
   const parcels: ParcelsWithAccess = !identity.hasConnectedWeb3 ? [] : yield fetchParcelsWithAccess(identity.address)
   const rendererFormat = profileToRendererFormat(profile, { identity, parcels })
   globalThis.unityInterface.LoadProfile(rendererFormat)
-}
-
-function* handleFetchInventory(action: InventoryRequest) {
-  try {
-    const inventoryItems = yield call(fetchInventoryItemsByAddress, action.payload.userId)
-    yield put(inventorySuccess(action.payload.userId, inventoryItems))
-  } catch (error) {
-    yield put(inventoryFailure(action.payload.userId, error))
-  }
-}
-
-export async function fetchInventoryItemsByAddress(address: string) {
-  if (!WORLD_EXPLORER) {
-    return []
-  }
-  const result = await fetch(`${getServerConfigurations().wearablesApi}/addresses/${address}/wearables?fields=id`)
-  if (!result.ok) {
-    throw new Error('Unable to fetch inventory for address ' + address)
-  }
-  const inventory: { id: string }[] = await result.json()
-
-  return inventory.map((wearable) => wearable.id)
 }
 
 function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {

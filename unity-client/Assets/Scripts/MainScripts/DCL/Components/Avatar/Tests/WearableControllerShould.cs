@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Components;
@@ -13,7 +13,7 @@ namespace AvatarShape_Tests
     {
         private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
 
-        private WearableDictionary catalog;
+        private BaseDictionary<string, WearableItem> catalog;
         private Transform wearableHolder;
         private List<WearableController> toCleanUp = new List<WearableController>();
 
@@ -31,7 +31,8 @@ namespace AvatarShape_Tests
         public IEnumerator LoadSuccessfully()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
+            catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wearableItem);
+            WearableController wearable = new WearableController(wearableItem);
             toCleanUp.Add(wearable);
 
             //Act
@@ -86,7 +87,8 @@ namespace AvatarShape_Tests
             {
                 skinnedMeshRenderer.bones[i] = CreateTestGameObject($"_rootBone_{i}").transform;
             }
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
+            catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -107,7 +109,8 @@ namespace AvatarShape_Tests
         public IEnumerator UpdateVisibilityProperly_True()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
+            catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);
@@ -125,7 +128,8 @@ namespace AvatarShape_Tests
         public IEnumerator UpdateVisibilityProperly_False()
         {
             //Arrange
-            WearableController wearable = new WearableController(catalog.GetOrDefault(SUNGLASSES_ID));
+            catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
+            WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
             wearable.Load(WearableLiterals.BodyShapes.FEMALE, wearableHolder, null, null);
             yield return new WaitUntil(() => wearable.isReady);

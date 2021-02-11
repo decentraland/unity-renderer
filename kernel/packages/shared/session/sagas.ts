@@ -172,7 +172,6 @@ function* startSignUp(userId: string, identity: ExplorerIdentity) {
   profile.ethAddress = identity.rawAddress
   profile.unclaimedName = '' // clean here to allow user complete in passport step
   profile.hasClaimedName = false
-  profile.inventory = []
   profile.version = 0
 
   yield put(signUpSetIdentity(userId, identity))
@@ -299,7 +298,6 @@ function* signUp() {
   profile.userId = session.userId
   profile.ethAddress = session.identity.rawAddress
   profile.version = 0
-  profile.inventory = []
   profile.hasClaimedName = false
   if (profile.email) {
     identifyEmail(profile.email, isGuest() ? undefined : profile.userId)

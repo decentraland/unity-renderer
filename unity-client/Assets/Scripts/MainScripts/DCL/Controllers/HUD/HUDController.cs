@@ -89,7 +89,7 @@ public class HUDController : MonoBehaviour
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
-    private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
+    private BaseDictionary<string, WearableItem> wearableCatalog => CatalogController.wearableCatalog;
 
     private void ShowAvatarEditor()
     {

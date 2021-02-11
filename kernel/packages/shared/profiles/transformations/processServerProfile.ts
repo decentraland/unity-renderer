@@ -1,7 +1,5 @@
 import { Profile } from '../types'
-import { WearableId } from 'shared/catalogs/types'
 import { colorString } from './colorString'
-import { ALL_WEARABLES } from 'config'
 import { filterInvalidNameCharacters } from '../utils/names'
 import { createFakeName } from '../utils/fakeName'
 
@@ -20,14 +18,6 @@ export const deprecatedWearables = [
 export function dropDeprecatedWearables(wearableId: string): boolean {
   return deprecatedWearables.indexOf(wearableId) === -1
 }
-export function noExclusiveMismatches(inventory: WearableId[]) {
-  return function (wearableId: WearableId) {
-    if (ALL_WEARABLES) {
-      return true
-    }
-    return wearableId.startsWith('dcl://base-avatars') || inventory.indexOf(wearableId) !== -1
-  }
-}
 
 export function calculateDisplayName(userId: string, profile: any): string {
   if (profile && profile.name && profile.hasClaimedName) {
@@ -42,10 +32,7 @@ export function calculateDisplayName(userId: string, profile: any): string {
 }
 export function processServerProfile(userId: string, receivedProfile: any): Profile {
   const name = calculateDisplayName(userId, receivedProfile)
-  const wearables = receivedProfile.avatar.wearables
-    .map(fixWearableIds)
-    .filter(dropDeprecatedWearables)
-    .filter(noExclusiveMismatches(receivedProfile.inventory))
+  const wearables = receivedProfile.avatar.wearables.map(fixWearableIds).filter(dropDeprecatedWearables)
   const snapshots = receivedProfile.avatar ? receivedProfile.avatar.snapshots : {}
   const eyeColor = flattenColorIfNecessary(receivedProfile.avatar.eyes.color)
   const hairColor = flattenColorIfNecessary(receivedProfile.avatar.hair.color)
@@ -67,7 +54,6 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       wearables,
       snapshots
     },
-    inventory: receivedProfile.inventory || [],
     blocked: receivedProfile.blocked,
     muted: receivedProfile.muted,
     tutorialStep: receivedProfile.tutorialStep || 0,

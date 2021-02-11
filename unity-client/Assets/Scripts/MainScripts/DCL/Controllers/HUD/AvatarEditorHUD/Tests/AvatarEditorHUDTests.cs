@@ -19,7 +19,7 @@ namespace AvatarEditorHUD_Tests
     {
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
-        private WearableDictionary catalog;
+        private BaseDictionary<string, WearableItem> catalog;
 
         protected override bool justSceneSetUp => true;
 
