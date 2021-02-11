@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -35,8 +36,20 @@ public class UserProfileController : MonoBehaviour
         }
 
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
-        ownUserProfile.UpdateData(model);
-        userProfilesCatalog.Add(model.userId, ownUserProfile);
+
+        CatalogController.RequestBaseWearables()
+            .Then((baseWearables) =>
+            {
+                CatalogController.RequestOwnedWearables(model.userId)
+                    .Then((ownedWearables) =>
+                    {
+                        ownUserProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                        ownUserProfile.UpdateData(model);
+                        userProfilesCatalog.Add(model.userId, ownUserProfile);
+                    })
+                    .Catch((error) => Debug.LogError(error));
+            })
+            .Catch((error) => Debug.LogError(error));
     }
 
     public void AddUserProfileToCatalog(string payload)

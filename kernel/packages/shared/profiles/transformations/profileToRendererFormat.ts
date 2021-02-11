@@ -17,7 +17,7 @@ export function profileToRendererFormat(
   return {
     ...profileDefaults,
     ...profile,
-    snapshots: prepareSnapshots(snapshots ?? profile.snapshots),
+    snapshots: prepareSnapshots(snapshots),
     hasConnectedWeb3: options?.identity ? options.identity.hasConnectedWeb3 : false,
     avatar: {
       ...rendererAvatar,

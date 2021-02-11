@@ -421,7 +421,6 @@ export type ProfileForRenderer = {
   description: string
   email: string
   avatar: AvatarForRenderer
-  inventory: WearableId[]
   snapshots: {
     face: string
     body: string

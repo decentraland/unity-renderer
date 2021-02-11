@@ -147,7 +147,10 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
             tags = new string[] { },
             category = WearableLiterals.Categories.UPPER_BODY
         };
+
+        CatalogController.wearableCatalog.Remove(rarity);
         CatalogController.wearableCatalog.Add(rarity, wearable);
+
         return wearable;
     }
 }

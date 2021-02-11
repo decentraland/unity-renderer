@@ -386,11 +386,11 @@ namespace DCL
                             case "SetBuilderConfiguration":
                                 GetBuilderBridge()?.SetBuilderConfiguration(msg.payload);
                                 break;
-                            case "AddWearableToCatalog":
-                                CatalogController.i?.AddWearableToCatalog(msg.payload);
-                                break;
                             case "AddWearablesToCatalog":
                                 CatalogController.i?.AddWearablesToCatalog(msg.payload);
+                                break;
+                            case "WearablesRequestFailed":
+                                CatalogController.i?.WearablesRequestFailed(msg.payload);
                                 break;
                             case "RemoveWearablesFromCatalog":
                                 CatalogController.i?.RemoveWearablesFromCatalog(msg.payload);
