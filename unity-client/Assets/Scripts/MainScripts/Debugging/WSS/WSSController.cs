@@ -156,7 +156,7 @@ namespace DCL
             }
 
 #if UNITY_EDITOR
-            DCL.DataStore.debugConfig.isWssDebugMode = true;
+            DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");

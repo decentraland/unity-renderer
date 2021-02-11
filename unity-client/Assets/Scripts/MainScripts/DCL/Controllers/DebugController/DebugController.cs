@@ -17,7 +17,7 @@ namespace DCL
 
     public class DebugController : IDebugController
     {
-        private DebugConfig debugConfig => DataStore.debugConfig;
+        private DebugConfig debugConfig => DataStore.i.debugConfig;
 
         public DebugView debugView;
 

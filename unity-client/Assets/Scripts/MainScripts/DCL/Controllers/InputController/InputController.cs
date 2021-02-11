@@ -180,7 +180,8 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.U, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.CloseWindow:
-                    if (allUIHidden || DataStore.isSignUpFlow.Get()) break;
+                    if (allUIHidden || DataStore.i.isSignUpFlow.Get())
+                        break;
                     InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.OpenExpressions:
