@@ -61,7 +61,7 @@ namespace DCL.Controllers
 
         void OnRendererStateChange(bool newValue, bool oldValue)
         {
-            if (newValue && DataStore.debugConfig.isDebugMode)
+            if (newValue && DataStore.i.debugConfig.isDebugMode)
                 SetEnabled(false);
         }
 

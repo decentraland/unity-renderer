@@ -307,7 +307,7 @@ public class HUDController : MonoBehaviour
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.AddBuilderInWorldWindow(builderInWorldInititalHud);
-                        
+
 
                         if (!string.IsNullOrEmpty(extraPayload))
                         {
@@ -486,7 +486,7 @@ public class HUDController : MonoBehaviour
     {
         if (avatarEditorHud != null)
         {
-            DataStore.isSignUpFlow.Set(true);
+            DataStore.i.isSignUpFlow.Set(true);
             ShowAvatarEditor();
         }
     }

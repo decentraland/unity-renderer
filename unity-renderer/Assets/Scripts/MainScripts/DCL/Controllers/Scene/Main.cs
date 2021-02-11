@@ -32,10 +32,10 @@ namespace DCL
 
             i = this;
 
-            DataStore.debugConfig.soloScene = debugConfig.soloScene;
-            DataStore.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
-            DataStore.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
-            DataStore.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+            DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
+            DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
+            DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
+            DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {

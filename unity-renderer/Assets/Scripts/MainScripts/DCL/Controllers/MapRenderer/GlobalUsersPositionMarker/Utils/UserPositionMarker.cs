@@ -35,13 +35,13 @@ namespace DCL
         {
             if (active)
             {
-                OnRealmChanged(DataStore.playerRealm.Get(), null);
-                DataStore.playerRealm.OnChange -= OnRealmChanged;
-                DataStore.playerRealm.OnChange += OnRealmChanged;
+                OnRealmChanged(DataStore.i.playerRealm.Get(), null);
+                DataStore.i.playerRealm.OnChange -= OnRealmChanged;
+                DataStore.i.playerRealm.OnChange += OnRealmChanged;
             }
             else
             {
-                DataStore.playerRealm.OnChange -= OnRealmChanged;
+                DataStore.i.playerRealm.OnChange -= OnRealmChanged;
             }
 
             markerObject.gameObject.SetActive(active);
@@ -49,7 +49,7 @@ namespace DCL
 
         public void Dispose()
         {
-            DataStore.playerRealm.OnChange -= OnRealmChanged;
+            DataStore.i.playerRealm.OnChange -= OnRealmChanged;
             GameObject.Destroy(markerObject.gameObject);
         }
 
