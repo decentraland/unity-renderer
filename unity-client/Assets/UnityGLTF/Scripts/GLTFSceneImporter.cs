@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 #if !WINDOWS_UWP
@@ -1131,8 +1132,6 @@ namespace UnityGLTF
 
             for (var ci = 0; ci < channelCount; ++ci)
             {
-                var name = propertyNames[ci];
-
                 // For cubic spline interpolation, the inTangents and outTangents are already explicitly defined.
                 // For the rest, set them appropriately.
                 if (mode != InterpolationType.CUBICSPLINE)
@@ -1141,12 +1140,33 @@ namespace UnityGLTF
                         SetTangentMode(keyframes[ci], i, mode);
                 }
 
-                var optimizedKeyframes = optimizeKeyframes ? OptimizeKeyFrames(keyframes[ci]) : keyframes[ci];
+                if (!optimizeKeyframes)
+                {
+                    // copy all key frames data to animation curve and add it to the clip
+                    AnimationCurve curve = new AnimationCurve(keyframes[ci]);
+                    clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
+                }
+            }
 
-                // copy all key frames data to animation curve and add it to the clip
-                AnimationCurve curve = new AnimationCurve(optimizedKeyframes);
+            if (optimizeKeyframes)
+            {
+                for (var ci = 0; ci < channelCount; ++ci)
+                {
+                    keyframes[ci] = OptimizeKeyFrames(keyframes[ci]);
+                }
 
-                clip.SetCurve(relativePath, curveType, propertyNames[ci], curve);
+                // Setting the curves by the keyframe length order fixes weird index overrun issue:
+                // https://forum.unity.com/threads/animationutility-seteditorcurve-cant-add-curve-with-one-keyfram.247372/
+                var orderedKeyframes = keyframes.OrderBy(x => { return x.Length; }).ToArray();
+
+                foreach (var keyframeCollection in orderedKeyframes)
+                {
+                    int index = Array.IndexOf(keyframes, keyframeCollection);
+
+                    // copy all key frames data to animation curve and add it to the clip
+                    AnimationCurve curve = new AnimationCurve(keyframeCollection);
+                    clip.SetCurve(relativePath, curveType, propertyNames[index], curve);
+                }
             }
         }
 
