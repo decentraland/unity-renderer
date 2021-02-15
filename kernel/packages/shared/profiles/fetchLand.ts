@@ -55,7 +55,7 @@ const getLandQuery = () => `
     }
     updateOperator
     size
-    parcels {
+    parcels(first: 1000) {
       x
       y
       tokenId
@@ -210,7 +210,7 @@ async function fetchLand(_address: string): Promise<Land[]> {
     lands.push(fromEstate(estate, LandRole.OWNER))
   }
 
-  // parcels and estats that I operate
+  // parcels and estates that I operate
   for (const parcel of data.updateOperatorParcels) {
     lands.push(fromParcel(parcel, LandRole.OPERATOR))
   }
