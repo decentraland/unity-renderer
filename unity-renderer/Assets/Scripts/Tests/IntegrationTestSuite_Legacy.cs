@@ -15,13 +15,13 @@ using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 using DCL.Tutorial;
 using NSubstitute;
+using UnityEditor;
 
 public class IntegrationTestSuite_Legacy
 {
-    private const bool DEBUG_PAUSE_ON_INTEGRITY_FAIL = false;
     protected virtual string TEST_SCENE_NAME => "MainTest";
 
-    protected Component[] startingSceneComponents = null;
+
     protected bool sceneInitialized = false;
     protected ISceneController sceneController;
     protected ParcelScene scene;
@@ -36,6 +36,8 @@ public class IntegrationTestSuite_Legacy
     protected virtual bool justSceneSetUp => false;
     protected virtual bool enableSceneIntegrityChecker => true;
 
+    protected TestSceneIntegrityChecker testSceneIntegrityChecker;
+
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
@@ -49,6 +51,14 @@ public class IntegrationTestSuite_Legacy
 
         runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
 
+        testSceneIntegrityChecker = new TestSceneIntegrityChecker();
+
+        //NOTE(Brian): integrity checker is disabled in batch mode to make it run faster in CI
+        if (Application.isBatchMode || !enableSceneIntegrityChecker)
+        {
+            testSceneIntegrityChecker.enabled = false;
+        }
+
         if (justSceneSetUp)
         {
             RenderProfileManifest.i.Initialize();
@@ -57,7 +67,7 @@ public class IntegrationTestSuite_Legacy
 
             SetUp_TestScene();
             SetUp_Renderer();
-            yield return SetUp_SceneIntegrityChecker();
+            yield return testSceneIntegrityChecker.SaveSceneSnapshot();
             yield return null;
             //TODO(Brian): Remove when the init layer is ready
             Environment.i.platform.cullingController.Stop();
@@ -73,8 +83,7 @@ public class IntegrationTestSuite_Legacy
         SetUp_Camera();
         yield return SetUp_CharacterController();
         SetUp_Renderer();
-        yield return SetUp_SceneIntegrityChecker();
-
+        yield return testSceneIntegrityChecker.SaveSceneSnapshot();
         yield return null;
         //TODO(Brian): Remove when the init layer is ready
         Environment.i.platform.cullingController.Stop();
@@ -105,7 +114,7 @@ public class IntegrationTestSuite_Legacy
         if (MapRenderer.i != null)
             MapRenderer.i.Cleanup();
 
-        yield return TearDown_SceneIntegrityChecker();
+        yield return testSceneIntegrityChecker?.TestSceneSnapshot();
     }
 
     protected void TearDown_PromiseKeepers()
@@ -250,72 +259,6 @@ public class IntegrationTestSuite_Legacy
         instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue);
     }
 
-    protected IEnumerator SetUp_SceneIntegrityChecker()
-    {
-        if (!enableSceneIntegrityChecker)
-            yield break;
-
-        //NOTE(Brian): to make it run faster in CI
-        if (Application.isBatchMode)
-            yield break;
-
-        yield return null;
-        startingSceneComponents = Object.FindObjectsOfType<Component>();
-    }
-
-    protected IEnumerator TearDown_SceneIntegrityChecker()
-    {
-        if (!enableSceneIntegrityChecker)
-            yield break;
-
-        //NOTE(Brian): to make it run faster in CI
-        if (Application.isBatchMode)
-            yield break;
-
-        if (startingSceneComponents == null)
-        {
-            Debug.LogError("SceneIntegrityChecker fail. TearDown called without SetUp or SetUp_SceneIntegrityChecker?");
-            yield break;
-        }
-
-        //NOTE(Brian): If any Destroy() calls are pending, this will flush them.
-        yield return null;
-
-        Component[] objects = Object.FindObjectsOfType<Component>();
-
-        List<Component> newObjects = new List<Component>();
-
-        foreach (var o in objects)
-        {
-            if (o.ToString().Contains("MainCamera"))
-                continue;
-
-            if (!startingSceneComponents.Contains(o))
-            {
-                newObjects.Add(o);
-            }
-        }
-
-        if (newObjects.Count > 0)
-        {
-            Debug.LogError("Dangling components detected!. Look your TearDown code, you missed to destroy objects after the tests?.");
-
-            //NOTE(Brian): Can't use asserts here because Unity Editor hangs for some reason.
-            foreach (var o in newObjects)
-            {
-                if (DEBUG_PAUSE_ON_INTEGRITY_FAIL && !Application.isBatchMode)
-                    Debug.LogError($"Component - {o} (Click to highlight)", o.gameObject);
-                else
-                    Debug.LogError($"Component - {o}", o.gameObject);
-            }
-
-            if (DEBUG_PAUSE_ON_INTEGRITY_FAIL && !Application.isBatchMode)
-            {
-                Debug.Break();
-                yield return null;
-            }
-        }
-    }
 
     protected GameObject CreateTestGameObject(string name)
     {
