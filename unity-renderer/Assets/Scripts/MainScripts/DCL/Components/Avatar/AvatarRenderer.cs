@@ -156,11 +156,18 @@ namespace DCL
         {
             yield return new WaitUntil(() => gameObject.activeSelf);
 
+            bool loadSoftFailed = false;
+
             WearableItem resolvedBody = null;
             Helpers.Promise<WearableItem> avatarBodyPromise = null;
             if (!string.IsNullOrEmpty(model.bodyShape))
             {
                 avatarBodyPromise = CatalogController.RequestWearable(model.bodyShape);
+            }
+            else
+            {
+                OnFailEvent?.Invoke();
+                yield break;
             }
 
             List<WearableItem> resolvedWearables = new List<WearableItem>();
@@ -183,6 +190,7 @@ namespace DCL
                 if (!string.IsNullOrEmpty(avatarBodyPromise.error))
                 {
                     Debug.LogError(avatarBodyPromise.error);
+                    loadSoftFailed = true;
                 }
                 else
                 {
@@ -198,6 +206,7 @@ namespace DCL
                 if (!string.IsNullOrEmpty(avatarWearablePromise.error))
                 {
                     Debug.LogError(avatarWearablePromise.error);
+                    loadSoftFailed = true;
                 }
                 else
                 {
@@ -311,7 +320,14 @@ namespace DCL
             SetWearableBones();
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
 
-            OnSuccessEvent?.Invoke();
+            if (loadSoftFailed)
+            {
+                OnFailEvent?.Invoke();
+            }
+            else
+            {
+                OnSuccessEvent?.Invoke();
+            }
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
