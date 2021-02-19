@@ -117,6 +117,8 @@ public class CharacterPreviewController : MonoBehaviour
 
     private IEnumerator TakeSnapshots_Routine(OnSnapshotsReady callback)
     {
+        DCL.Environment.i.platform.cullingController.Stop();
+
         var current = camera.targetTexture;
         camera.targetTexture = null;
         var avatarAnimator = avatarRenderer.gameObject.GetComponent<AvatarAnimatorLegacy>();
@@ -136,6 +138,8 @@ public class CharacterPreviewController : MonoBehaviour
         SetFocus(CameraFocus.DefaultEditing, false);
 
         camera.targetTexture = current;
+
+        DCL.Environment.i.platform.cullingController.Start();
         callback?.Invoke(face, face128, face256, body);
     }
 
