@@ -14,5 +14,12 @@ namespace DCL
         public readonly BaseVariable<bool> isSignUpFlow = new BaseVariable<bool>();
         public readonly BaseDictionary<string, WearableItem> wearables = new BaseDictionary<string, WearableItem>();
         public readonly BaseDictionary<string, Item> items = new BaseDictionary<string, Item>();
+        public readonly BuilderInWorld builderInWorld = new BuilderInWorld();
+
+        public class BuilderInWorld
+        {
+            public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
+            public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
+        }
     }
 }

@@ -1079,7 +1079,7 @@ MonoBehaviour:
   m_CaptionImage: {fileID: 0}
   m_ItemText: {fileID: 6645906770740741698}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: -1
   m_Options:
     m_Options:
     - m_Text: Reset Action
@@ -1994,7 +1994,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityDropDown: {fileID: 9125676000891055594}
   actionDropDown: {fileID: 5203340576988586646}
-  addActionBtn: {fileID: 0}
+  optionsDropDown: {fileID: 6516142293551376863}
   smartItemListView: {fileID: 4922164096762811872}
 --- !u!114 &234509542720662296
 MonoBehaviour:
@@ -2173,24 +2173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bb8e66d2e79cb34dbfc207bcb7b6b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  booleanParameterPrefab: {fileID: 6866863043876845377, guid: 4e55c5ed31e078b4c80819f66ff514eb,
-    type: 3}
-  textParameterPrefab: {fileID: 3026826537206251190, guid: cb6e9d43022534b418cb78ddf60d8977,
-    type: 3}
-  textAreaParameterPrefab: {fileID: 3254720241412119212, guid: 6a2c8b794950db54399edc134f5c8202,
-    type: 3}
-  floatParameterPrefab: {fileID: 8279802535829898670, guid: ff8380dc7ea8bc549b96f61aaa87e2e1,
-    type: 3}
-  integerParameterPrefab: {fileID: 56668412748947390, guid: 395b9863bc5b92e43b9f99ed08c85a91,
-    type: 3}
-  sliderParameterPrefab: {fileID: 1103546152096958597, guid: 7f7bd6c271cdf2d4caf5c4189e149597,
-    type: 3}
-  optionsParameterPrefab: {fileID: 682230381734531628, guid: 45c54d0e90d2cf543b3f8e5045cff1bf,
-    type: 3}
-  entityParameterPrefab: {fileID: 2344330198329497464, guid: 3dd94c9c629f87c40b273a6c5b72f4c0,
-    type: 3}
-  actionParameterPrefab: {fileID: 5537947226021487233, guid: 31fe38b29c8471048885b38b6e4cbda3,
-    type: 3}
+  factory: {fileID: 11400000, guid: f24951b6d94323844b6b4ff4fa173e3c, type: 2}
 --- !u!114 &3874799089907610714
 MonoBehaviour:
   m_ObjectHideFlags: 0

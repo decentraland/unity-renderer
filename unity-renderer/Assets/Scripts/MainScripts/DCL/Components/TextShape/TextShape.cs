@@ -73,23 +73,7 @@ namespace DCL.Components
 
             model = Utils.SafeFromJson<Model>(newJson);
 
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-
-            // NOTE: previously width and height weren't working (setting sizeDelta before anchors and offset result in
-            // sizeDelta being reset to 0,0)
-            // to fix textWrapping and avoid backwards compatibility issues as result of the size being properly set (like text alignment)
-            // we only set it if textWrapping is enabled.
-            if (model.textWrapping)
-            {
-                rectTransform.sizeDelta = new Vector2(model.width, model.height);
-            }
-            else
-            {
-                rectTransform.sizeDelta = Vector2.zero;
-            }
+            PrepareRectTransform();
 
             yield return ApplyModelChanges(scene, text, model);
         }
@@ -194,6 +178,39 @@ namespace DCL.Components
                         default:
                             return TextAlignmentOptions.Center;
                     }
+            }
+        }
+
+        public override void SetModel(object model)
+        {
+            this.model = (Model)model;
+            PrepareRectTransform();
+            ApplyCurrentModel();
+        }
+
+        private void ApplyCurrentModel()
+        {
+            ApplyModelChanges(scene, text, model);
+        }
+
+        private void PrepareRectTransform()
+        {
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+
+            // NOTE: previously width and height weren't working (setting sizeDelta before anchors and offset result in
+            // sizeDelta being reset to 0,0)
+            // to fix textWrapping and avoid backwards compatibility issues as result of the size being properly set (like text alignment)
+            // we only set it if textWrapping is enabled.
+            if (model.textWrapping)
+            {
+                rectTransform.sizeDelta = new Vector2(model.width, model.height);
+            }
+            else
+            {
+                rectTransform.sizeDelta = Vector2.zero;
             }
         }
     }

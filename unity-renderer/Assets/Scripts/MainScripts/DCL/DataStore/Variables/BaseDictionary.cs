@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
 {
@@ -68,4 +69,6 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
     public bool ContainsValue(TValue value) => dictionary.ContainsValue(value);
 
     public int Count() => dictionary.Count;
+
+    public List<TValue> GetValues() => dictionary.Values.ToList();
 }

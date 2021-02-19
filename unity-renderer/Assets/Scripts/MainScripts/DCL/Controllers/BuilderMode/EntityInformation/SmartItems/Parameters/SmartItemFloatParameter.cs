@@ -1,4 +1,5 @@
 using DCL.Components;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,18 +9,24 @@ public class SmartItemFloatParameter : SmartItemUIParameterAdapter
 {
     public TMP_InputField textParameterInputField;
 
-    const string parameterType = "float";
-
-    public override void SetParameter(SmartItemParameter parameter)
+    private void Start()
     {
-        base.SetParameter(parameter);
+        textParameterInputField.onEndEdit.AddListener(OnValueChange);
+    }
 
-        if (parameter.type != parameterType)
-            return;
+    public override void SetInfo()
+    {
+        base.SetInfo();
 
         textParameterInputField.gameObject.SetActive(true);
         
         textParameterInputField.contentType = TMP_InputField.ContentType.DecimalNumber;
-        textParameterInputField.text = (string) parameter.@default;
+        textParameterInputField.text = GetParameterValue().ToString();
+    }
+
+    public void OnValueChange(string text)
+    {
+        if(float.TryParse(text,out float result))
+            SetParameterValue(result);
     }
 }

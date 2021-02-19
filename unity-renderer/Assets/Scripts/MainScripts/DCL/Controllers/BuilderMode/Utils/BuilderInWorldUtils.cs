@@ -10,12 +10,14 @@ using Newtonsoft.Json.Linq;
 using DCL.Configuration;
 using static ProtocolV2;
 using Environment = DCL.Environment;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public static partial class BuilderInWorldUtils
 {
-    public static SceneObject CreateFloorSceneObject()
+    public static CatalogItem CreateFloorSceneObject()
     {
-        SceneObject floorSceneObject = new SceneObject();
+        CatalogItem floorSceneObject = new CatalogItem();
         floorSceneObject.id = BuilderInWorldSettings.FLOOR_ID;
 
         floorSceneObject.model = BuilderInWorldSettings.FLOOR_MODEL;

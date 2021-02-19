@@ -13,17 +13,17 @@ public class CatalogAssetPackAdapter : MonoBehaviour
     public RawImage packImg;
     public Texture collectiblesSprite;
 
-    public event Action<SceneAssetPack> OnSceneAssetPackClick;
-    SceneAssetPack sceneAssetPack;
+    public event Action<CatalogItemPack> OnCatalogItemPackClick;
+    CatalogItemPack catalogItemPack;
 
     string loadedThumbnailURL;
     AssetPromise_Texture loadedThumbnailPromise;
-    public void SetContent(SceneAssetPack sceneAssetPack)
+    public void SetContent(CatalogItemPack catalogItemPack)
     {
-        this.sceneAssetPack = sceneAssetPack;
-        titleTxt.text = this.sceneAssetPack.title;
+        this.catalogItemPack = catalogItemPack;
+        titleTxt.text = this.catalogItemPack.title;
 
-        if (sceneAssetPack.id != BuilderInWorldSettings.ASSETS_COLLECTIBLES)
+        if (catalogItemPack.id != BuilderInWorldSettings.ASSETS_COLLECTIBLES)
         {
             GetThumbnail();
         }
@@ -36,12 +36,12 @@ public class CatalogAssetPackAdapter : MonoBehaviour
 
     private void GetThumbnail()
     {
-        var url = sceneAssetPack?.ComposeThumbnailUrl();
+        var url = catalogItemPack?.GetThumbnailUrl();
 
         if (url == loadedThumbnailURL)
             return;
 
-        if (sceneAssetPack == null || string.IsNullOrEmpty(url))
+        if (catalogItemPack == null || string.IsNullOrEmpty(url))
             return;
 
         string newLoadedThumbnailURL = url;
@@ -70,6 +70,6 @@ public class CatalogAssetPackAdapter : MonoBehaviour
 
     public void SceneAssetPackClick()
     {
-        OnSceneAssetPackClick?.Invoke(sceneAssetPack);
+        OnCatalogItemPackClick?.Invoke(catalogItemPack);
     }
 }

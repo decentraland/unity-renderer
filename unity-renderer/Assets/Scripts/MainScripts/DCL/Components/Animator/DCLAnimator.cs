@@ -1,4 +1,4 @@
-﻿using DCL.Models;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -62,10 +62,7 @@ namespace DCL.Components
             if (newJson == "{}")
                 return null;
 
-            entity.OnShapeUpdated -= OnComponentUpdated;
-            entity.OnShapeUpdated += OnComponentUpdated;
-
-            UpdateAnimationState();
+            ApplyCurrentModel();
 
             return null;
         }
@@ -177,6 +174,20 @@ namespace DCL.Components
             }
 
             return null;
+        }
+
+        public override void SetModel(object model)
+        {
+            this.model = (Model)model;
+            ApplyCurrentModel();
+        }
+
+        private void ApplyCurrentModel()
+        {
+            entity.OnShapeUpdated -= OnComponentUpdated;
+            entity.OnShapeUpdated += OnComponentUpdated;
+
+            UpdateAnimationState();
         }
     }
 }

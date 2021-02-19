@@ -520,7 +520,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void TranslateMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("MOVE");
             if (selectedEntities.Count > 0)
@@ -532,7 +532,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void RotateMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("ROTATE");
             if (selectedEntities.Count > 0)
@@ -544,7 +544,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void ScaleMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("SCALE");
             if (selectedEntities.Count > 0)

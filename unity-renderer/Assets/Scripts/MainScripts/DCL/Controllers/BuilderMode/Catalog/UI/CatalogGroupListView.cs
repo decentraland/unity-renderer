@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject>>>
+public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem>>>
 {
     public Canvas generalCanvas;
     public CatalogAssetGroupAdapter categoryItemAdapterPrefab;
-    public System.Action<SceneObject> OnSceneObjectClicked;
-    public System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
+    public System.Action<CatalogItem> OnCatalogItemClicked;
+    public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
 
     public event System.Action OnResumeInput;
     public event System.Action OnStopInput;
@@ -22,15 +23,15 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
 
         if (contentList == null) return;
 
-        foreach (Dictionary<string, List<SceneObject>> assetPackGroups in contentList)
+        foreach (Dictionary<string, List<CatalogItem>> assetPackGroups in contentList)
         {
-            foreach (KeyValuePair<string, List<SceneObject>> assetPackGroup in assetPackGroups)
+            foreach (KeyValuePair<string, List<CatalogItem>> assetPackGroup in assetPackGroups)
             {
                 CatalogAssetGroupAdapter adapter = Instantiate(categoryItemAdapterPrefab, contentPanelTransform).GetComponent<CatalogAssetGroupAdapter>();
 
                 adapter.SetContent(assetPackGroup.Key, assetPackGroup.Value);
-                adapter.OnSceneObjectClicked += SceneObjectSelected;
-                adapter.OnSceneObjectFavorite += SceneObjectFavorite;
+                adapter.OnCatalogItemClicked += CatalogItemSelected;
+                adapter.OnCatalogItemFavorite += CatalogItemFavorite;
                 adapter.OnAdapterStartDragging += AdapterStartDragging;
                 adapter.OnAdapterDrag += OnDrag;
                 adapter.OnAdapterEndDrag += OnEndDrag;
@@ -44,7 +45,7 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
         draggedObject.transform.position = data.position;
     }
 
-    void AdapterStartDragging(SceneObject sceneObjectClicked, CatalogItemAdapter adapter, BaseEventData data)
+    void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
     {
         PointerEventData eventData = data as PointerEventData;
 
@@ -67,19 +68,19 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<SceneObject
         Destroy(draggedObject);
     }
 
-    public CatalogItemAdapter GetLastSceneObjectDragged()
+    public CatalogItemAdapter GetLastCatalogItemDragged()
     {
         return catalogItemAdapterDragged;
     }
 
-    void SceneObjectSelected(SceneObject sceneObject)
+    void CatalogItemSelected(CatalogItem sceneObject)
     {
-        OnSceneObjectClicked?.Invoke(sceneObject);
+        OnCatalogItemClicked?.Invoke(sceneObject);
     }
 
-    void SceneObjectFavorite(SceneObject sceneObject,CatalogItemAdapter adapter)
+    void CatalogItemFavorite(CatalogItem sceneObject,CatalogItemAdapter adapter)
     {
-        OnSceneObjectFavorite?.Invoke(sceneObject, adapter);
+        OnCatalogItemFavorite?.Invoke(sceneObject, adapter);
     }
 
 

@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
@@ -102,6 +102,11 @@ namespace DCL
         private void CameraPositionChanged(Vector3 current, Vector3 previous)
         {
             ChangeOrientation();
+        }
+
+        public override void SetModel(object model)
+        {
+            this.model = (Model)model;
         }
     }
 }

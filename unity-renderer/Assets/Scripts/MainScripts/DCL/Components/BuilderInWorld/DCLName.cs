@@ -55,7 +55,7 @@ public class DCLName : BaseDisposable
     public override IEnumerator ApplyChanges(string newJson)
     {
         ApplyNewValue(newJson);
-        return null;
+        yield break;
     }
 
     void ApplyNewValue(string newJson)

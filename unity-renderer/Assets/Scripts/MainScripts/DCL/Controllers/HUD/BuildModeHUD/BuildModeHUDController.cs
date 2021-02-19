@@ -22,13 +22,14 @@ public class BuildModeHUDController : IHUD
     public event Action OnPublishAction;
     public event Action OnLogoutAction;
 
-    public event Action<SceneObject> OnSceneObjectSelected;
+    public event Action<CatalogItem> OnCatalogItemSelected;
 
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
     public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
     public event Action<DCLBuilderInWorldEntity> OnEntityLock;
     public event Action<DCLBuilderInWorldEntity> OnEntityChangeVisibility;
     public event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    public event Action<DCLBuilderInWorldEntity> OnEntitySmartItemComponentUpdate;
 
     public event Action<Vector3> OnSelectedObjectPositionChange;
     public event Action<Vector3> OnSelectedObjectRotationChange;
@@ -42,7 +43,7 @@ public class BuildModeHUDController : IHUD
 
     BuilderInWorldEntityListController buildModeEntityListController;
     EntityInformationController entityInformationController;
-    SceneObjectDropController sceneObjectDropController;
+    CatalogItemDropController catalogItemDropController;
 
     bool areExtraButtonsVisible = false,isControlsVisible = false, isEntityListVisible = false, isSceneLimitInfoVisibile = false,isCatalogOpen = false;
 
@@ -53,7 +54,7 @@ public class BuildModeHUDController : IHUD
         view.name = "_BuildModeHUD";
         view.gameObject.SetActive(false);
 
-        sceneObjectDropController = new SceneObjectDropController();
+        catalogItemDropController = new CatalogItemDropController();
 
         buildModeEntityListController = view.GetComponentInChildren<BuilderInWorldEntityListController>();
         buildModeEntityListController = view.entityListController;
@@ -63,8 +64,10 @@ public class BuildModeHUDController : IHUD
         entityInformationController.OnRotationChange += (x) => OnSelectedObjectRotationChange?.Invoke(x);
         entityInformationController.OnScaleChange += (x) => OnSelectedObjectScaleChange?.Invoke(x);
         entityInformationController.OnNameChange += (entity, newName) => OnEntityRename?.Invoke(entity, newName);
-        sceneObjectDropController.catalogGroupListView = view.catalogGroupListView;
-        sceneObjectDropController.catalogGroupListView = view.catalogGroupListView;
+        entityInformationController.OnSmartItemComponentUpdate += (entity) => OnEntitySmartItemComponentUpdate?.Invoke(entity);
+
+        catalogItemDropController.catalogGroupListView = view.catalogGroupListView;
+        catalogItemDropController.catalogGroupListView = view.catalogGroupListView;
 
         buildModeEntityListController.OnEntityClick += (x) => OnEntityClick(x);
         buildModeEntityListController.OnEntityDelete += (x) => OnEntityDelete(x);
@@ -74,7 +77,7 @@ public class BuildModeHUDController : IHUD
 
         buildModeEntityListController.CloseList();
 
-        view.OnSceneObjectDrop += () => sceneObjectDropController.SceneObjectDropped();
+        view.OnCatalogItemDrop += () => catalogItemDropController.CatalogitemDropped();
         view.OnChangeModeAction += () => OnChangeModeAction?.Invoke();
         view.OnExtraBtnsClick += ChangeVisibilityOfExtraBtns;
         view.OnControlsVisibilityAction += ChangeVisibilityOfControls;
@@ -91,8 +94,8 @@ public class BuildModeHUDController : IHUD
         view.OnDuplicateSelectionAction += () => OnDuplicateSelectedAction?.Invoke();
         view.OnDeleteSelectionAction += () => OnDeleteSelectedAction?.Invoke();
 
-        sceneObjectDropController.OnSceneObjectDropped += SceneObjectSelected;
-        view.OnSceneObjectSelected += SceneObjectSelected;
+        catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
+        view.OnCatalogItemSelected += CatalogItemSelected;
         view.OnStopInput += () => OnStopInput?.Invoke();
         view.OnResumeInput += () => OnResumeInput?.Invoke();
 
@@ -136,9 +139,9 @@ public class BuildModeHUDController : IHUD
         view.RefreshCatalogContent();
     }
 
-    void SceneObjectSelected(SceneObject sceneObject)
+    void CatalogItemSelected(CatalogItem catalogItem)
     {
-        OnSceneObjectSelected?.Invoke(sceneObject);
+        OnCatalogItemSelected?.Invoke(catalogItem);
         SetVisibilityOfCatalog(false);
     }
 

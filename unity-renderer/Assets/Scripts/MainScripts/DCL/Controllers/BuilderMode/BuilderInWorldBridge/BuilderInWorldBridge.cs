@@ -27,6 +27,20 @@ public class BuilderInWorldBridge : MonoBehaviour
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
 
+    public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    {
+        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>(); 
+        if (smartItemComponent == null)
+           return;
+
+
+        entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
+        entitySingleComponentPayload.componentId = (int)CLASS_ID_COMPONENT.SMART_ITEM;
+
+        entitySingleComponentPayload.data = smartItemComponent.model.values;
+
+        ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
 
     public void PublishSceneResult(string payload)
     {

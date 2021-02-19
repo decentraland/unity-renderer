@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Models
@@ -180,6 +181,25 @@ namespace DCL.Models
             }
         }
 
+        /// <summary>
+        /// This function is designed to get interfaces implemented by diverse components, If you want to get the component itselft please use TryGetBaseComponent or TryGetSharedComponent
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T TryGetComponent<T>() where T : class
+        {
+            //Note (Adrian): If you are going to call this function frequently, please refactor it to avoid using LinQ for perfomance reasons.
+            T component = components.Values.FirstOrDefault(x => x is T) as T;
+            if (component != null)
+                return component;
+
+            component = sharedComponents.Values.FirstOrDefault(x => x is T) as T;
+            if (component != null)
+                return component;
+
+            return null;
+        }
+
         public bool TryGetBaseComponent(CLASS_ID_COMPONENT componentId, out BaseComponent component)
         {
             return components.TryGetValue(componentId, out component);
@@ -187,7 +207,7 @@ namespace DCL.Models
 
         public bool TryGetSharedComponent(CLASS_ID componentId, out BaseDisposable component)
         {
-            foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in GetSharedComponents())
+            foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in sharedComponents)
             {
                 if (keyValuePairBaseDisposable.Value.GetClassId() == (int) componentId)
                 {

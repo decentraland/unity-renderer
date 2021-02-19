@@ -9,6 +9,10 @@ using UnityEngine;
 public class AssetCatalogBridge : MonoBehaviour
 {
     public static bool VERBOSE = false;
+
+    public static System.Action<SceneObject> OnSceneObjectAdded;
+    public static System.Action<SceneAssetPack> OnSceneAssetPackAdded;
+
     public static AssetCatalogBridge i { get; private set; }
 
     private static SceneAssetPackDictionary sceneAssetPackCatalogValue;
@@ -44,28 +48,12 @@ public class AssetCatalogBridge : MonoBehaviour
         i = this;
     }
 
-    public static ContentProvider GetContentProviderForAssetIdInSceneAsetPackCatalog(string assetId)
-    {
-        foreach (SceneAssetPack assetPack in sceneAssetPackCatalog.GetValues())
-        {
-            foreach (SceneObject sceneObject in assetPack.assets)
-            {
-                if (sceneObject.id == assetId)
-                {
-                    return CreateContentProviderForSceneObject(sceneObject);
-                }
-            }
-        }
-        return null;
-    }
-
     public static ContentProvider GetContentProviderForAssetIdInSceneObjectCatalog(string assetId)
     {
-        ContentProvider contentProvider = null;
-        if (sceneObjectCatalog.ContainsKey(assetId))        
-            contentProvider = CreateContentProviderForSceneObject(sceneObjectCatalog.Get(assetId));
-        
-        return contentProvider;
+        if (sceneObjectCatalogValue.TryGetValue(assetId, out SceneObject sceneObject))
+            return CreateContentProviderForSceneObject(sceneObject);
+
+        return null;
     }
 
     static ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
@@ -84,18 +72,10 @@ public class AssetCatalogBridge : MonoBehaviour
         return contentProvider;
     }
 
-    public static SceneObject GetSceneObjectById(string id)
+    public static SceneObject GetSceneObjectById(string assetId)
     {
-        foreach (SceneAssetPack assetPack in sceneAssetPackCatalog.GetValues())
-        {
-            foreach (SceneObject sceneObject in assetPack.assets)
-            {
-                if (sceneObject.id == id)
-                {
-                    return sceneObject;
-                }
-            }
-        }
+        if (sceneObjectCatalogValue.TryGetValue(assetId, out SceneObject sceneObject))
+            return sceneObject;
         return null;
     }
 
@@ -117,27 +97,38 @@ public class AssetCatalogBridge : MonoBehaviour
     public static void ClearCatalog()
     {
         sceneObjectCatalog.Clear();
+        sceneAssetPackCatalog.Clear();
     }
 
     public static void AddSceneObjectToCatalog(SceneObject sceneObject)
     {
+        if (sceneObjectCatalog.ContainsKey(sceneObject.id))
+            return;
+
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);
+        OnSceneObjectAdded?.Invoke(sceneObject);
     }
 
     public static void AddSceneAssetPackToCatalog(SceneAssetPack sceneAssetPack)
     {
+        if (sceneAssetPackCatalog.ContainsKey(sceneAssetPack.id))
+            return;
+
+        foreach(SceneObject sceneObject in sceneAssetPack.assets)
+        {
+            AddSceneObjectToCatalog(sceneObject);
+        }
+
         sceneAssetPackCatalog.Add(sceneAssetPack.id, sceneAssetPack);
+        OnSceneAssetPackAdded?.Invoke(sceneAssetPack);
     }
 
     public void AddSceneAssetPackToCatalog(JObject payload)
     {
+        if (VERBOSE)
+            Debug.Log("add sceneAssetPack: " + payload);
 
         SceneAssetPack sceneAssetPack = JsonConvert.DeserializeObject<SceneAssetPack>(payload.ToString());
-
-        if (VERBOSE)
-            Debug.Log("add sceneObject: " + payload);
-
-
-        sceneAssetPackCatalog.Add(sceneAssetPack.id, sceneAssetPack);
+        AddSceneAssetPackToCatalog(sceneAssetPack);
     }
 }
