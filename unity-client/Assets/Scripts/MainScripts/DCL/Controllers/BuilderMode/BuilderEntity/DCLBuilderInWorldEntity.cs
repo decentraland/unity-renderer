@@ -67,7 +67,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool isVoxel { get; set; } = false;
 
-    SceneObject associatedSceneObject;
+    CatalogItem associatedCatalogItem;
+
     public bool isFloor { get; set; } = false;
     public bool isNFT { get; set; } = false;
 
@@ -102,37 +103,19 @@ public class DCLBuilderInWorldEntity : EditableEntity
         }
     }
 
-    public bool HasSmartItemComponent()
+    public CatalogItem GetCatalogItemAssociated()
     {
-        return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
-    }
+        if (associatedCatalogItem != null)
+            return associatedCatalogItem;
 
-    public bool HasSmartItemActions()
-    {
-        if (!rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent component))
-            return false;
+        IAssetCatalogReferenceHolder catalogHolder = rootEntity.TryGetComponent<IAssetCatalogReferenceHolder>();
+        if (catalogHolder == null)
+            return null;
 
-        return ((SmartItemComponent)component).HasActions();
-    }
+        string assetId = catalogHolder.GetAssetId();
 
-    public SceneObject GetSceneObjectAssociated()
-    {
-        if (associatedSceneObject != null)
-            return associatedSceneObject;
-
-        if(rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out BaseDisposable gltfShapeComponent))
-        {
-            string assetId = ((GLTFShape)gltfShapeComponent).model.assetId;
-            associatedSceneObject = AssetCatalogBridge.GetSceneObjectById(assetId);
-            return associatedSceneObject;
-        }
-
-        if (rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out BaseDisposable nftShapeComponent))
-        {
-            string assetId = ((NFTShape)nftShapeComponent).model.assetId;
-            associatedSceneObject = BuilderInWorldNFTController.i.GetNFTSceneObjectFromId(assetId);
-            return associatedSceneObject;
-        }
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+            return associatedCatalogItem;
 
         return null;
     }
@@ -213,6 +196,32 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     #region Components
 
+    #region SmartItem
+
+    public bool HasSmartItemComponent()
+    {
+        return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
+    }
+
+    public bool HasSmartItemActions()
+    {
+        return GetCatalogItemAssociated().HasActions();
+    }
+
+    public SmartItemParameter[] GetSmartItemParameters()
+    {
+        return GetCatalogItemAssociated().parameters;
+    }
+
+    public SmartItemAction[] GetSmartItemActions()
+    {
+        return GetCatalogItemAssociated().actions;
+    }
+
+    #endregion
+
+    #region Locked
+
     public bool GetIsLockedValue()
     {
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
@@ -246,6 +255,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
         }
     }
 
+    #endregion
+
+    #region DescriptiveName
+
     public void SetDescriptiveName(string newName)
     {
 
@@ -271,6 +284,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         return "";
     }
+
+    #endregion
+
     #endregion
 
     void ShapeInit()
@@ -282,8 +298,10 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         CreateCollidersForEntity(rootEntity);
 
-        if (isFloor) IsLocked = true;
-        if (IsEntityAVoxel()) SetEntityAsVoxel();
+        if (isFloor)
+            IsLocked = true;
+        if (IsEntityAVoxel())
+            SetEntityAsVoxel();
         if(isNFT)
         {
             foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
@@ -480,9 +498,12 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     bool IsEntityAVoxel()
     {
-        if (rootEntity.meshesInfo?.currentShape == null) return false;
-        if (rootEntity.meshesInfo.renderers?.Length <= 0) return false;
-        if (rootEntity.meshesInfo.mergedBounds.size != Vector3.one) return false;
+        if (rootEntity.meshesInfo?.currentShape == null)
+            return false;
+        if (rootEntity.meshesInfo.renderers?.Length <= 0)
+            return false;
+        if (rootEntity.meshesInfo.mergedBounds.size != Vector3.one)
+            return false;
         return true;
     }
 }

@@ -1,3 +1,4 @@
+using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 public class ActionsListView : ListView<SmartItemActionEvent>
 {
     public SmartItemActionEventAdapter adapter;
-
+    public System.Action<SmartItemActionable> OnActionableRemove;
 
     public override void AddAdapters()
     {
@@ -14,6 +15,7 @@ public class ActionsListView : ListView<SmartItemActionEvent>
         foreach (SmartItemActionEvent actionEvent in contentList)
         {
             SmartItemActionEventAdapter adapter = Instantiate(this.adapter, contentPanelTransform).GetComponent<SmartItemActionEventAdapter>();
+            adapter.OnActionableRemove += RemoveActionable;
             adapter.SetContent(actionEvent);
         }
     }
@@ -23,16 +25,26 @@ public class ActionsListView : ListView<SmartItemActionEvent>
         for (int i = 0; i < contentPanelTransform.transform.childCount; i++)
         {
             SmartItemActionEventAdapter toRemove = contentPanelTransform.transform.GetChild(i).gameObject.GetComponent<SmartItemActionEventAdapter>();
-            Destroy(toRemove.gameObject);
+            RemoveAdapter(toRemove);
         }
     }
 
-    public void AddActionEventAdapter(List<DCLBuilderInWorldEntity> entityList)
+    private void RemoveAdapter(SmartItemActionEventAdapter adapter)
     {
-        SmartItemActionEvent actionEvent = new SmartItemActionEvent();
-        actionEvent.entityList = entityList;
+        adapter.OnActionableRemove -= RemoveActionable;
+        Destroy(adapter.gameObject);
+    }
 
+    public void AddActionEventAdapter(SmartItemActionEvent actionEvent)
+    {
         contentList.Add(actionEvent);
         RefreshDisplay();
+    }
+
+    private void RemoveActionable(SmartItemActionEventAdapter actionable)
+    {
+        contentList.Remove(actionable.GetContent());
+        OnActionableRemove?.Invoke(actionable.GetContent().smartItemActionable);
+        RemoveAdapter(actionable);
     }
 }

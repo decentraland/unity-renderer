@@ -178,9 +178,9 @@ public class ActionController : MonoBehaviour
                 
                 break;
             case ActionType.CHANGE_FLOOR:
-                string sceneObjectToApply = (string)value;
+                string catalogItemToApply = (string)value;
                
-                SceneObject floorObject = JsonConvert.DeserializeObject<SceneObject>(sceneObjectToApply);
+                CatalogItem floorObject = JsonConvert.DeserializeObject<CatalogItem>(catalogItemToApply);
                 builderInWorldEntityHandler.DeleteFloorEntities();
                 builderInWorldController.CreateFloor(floorObject);
                 break;

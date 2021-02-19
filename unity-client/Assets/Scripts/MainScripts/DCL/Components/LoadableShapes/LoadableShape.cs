@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace DCL.Components
 {
-    public class LoadableShape : BaseShape
+    public class LoadableShape : BaseShape,IAssetCatalogReferenceHolder
     {
         [System.Serializable]
         public new class Model : BaseShape.Model
@@ -74,6 +74,11 @@ namespace DCL.Components
         public override bool HasCollisions()
         {
             return model.withCollisions;
+        }
+
+        public string GetAssetId()
+        {
+            return model.assetId;
         }
     }
 
@@ -148,7 +153,7 @@ namespace DCL.Components
             ContentProvider provider = null;
 
             if (!string.IsNullOrEmpty(model.assetId))
-                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(model.assetId);
+                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(model.assetId);
 
             if (provider == null)
                 provider = scene.contentProvider;

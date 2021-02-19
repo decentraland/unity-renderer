@@ -17,52 +17,50 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
     public Color offFavoriteColor, onFavoriteColor;
     public GameObject lockedGO;
 
-    public System.Action<SceneObject> OnSceneObjectClicked;
-    public System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
-    public System.Action<SceneObject, CatalogItemAdapter,BaseEventData> OnAdapterStartDrag;
+    public System.Action<CatalogItem> OnCatalogItemClicked;
+    public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
+    public System.Action<CatalogItem, CatalogItemAdapter,BaseEventData> OnAdapterStartDrag;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
 
-    SceneObject sceneObject;
+    CatalogItem catalogItem;
 
     string loadedThumbnailURL;
     AssetPromise_Texture loadedThumbnailPromise;
 
-    public SceneObject GetContent()
+
+    public CatalogItem GetContent()
     {
-        return sceneObject;
+        return catalogItem;
     }
 
-    public void SetContent(SceneObject sceneObject)
+    public void SetContent(CatalogItem catalogItem)
     {
-        this.sceneObject = sceneObject;
+        this.catalogItem = catalogItem;
 
-        if(sceneObject.isFavorite)
+        if(catalogItem.IsFavorite())
             favImg.color = onFavoriteColor;
         else
             favImg.color = offFavoriteColor;
 
-        smartItemGO.SetActive(!string.IsNullOrEmpty(sceneObject.script));
+        smartItemGO.SetActive(catalogItem.IsSmartItem());
 
         GetThumbnail();
 
         lockedGO.gameObject.SetActive(false);
 
-        if (sceneObject.asset_pack_id == BuilderInWorldSettings.ASSETS_COLLECTIBLES && BuilderInWorldNFTController.i.IsNFTInUse(sceneObject.id))
+        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
             lockedGO.gameObject.SetActive(true);
     }
 
     private void GetThumbnail()
     {
-        var url = sceneObject?.GetComposedThumbnailUrl();
+        var url = catalogItem?.GetThumbnailUrl();
 
         if (url == loadedThumbnailURL)
             return;
 
-        if (sceneObject == null || string.IsNullOrEmpty(url))
+        if (catalogItem == null || string.IsNullOrEmpty(url))
             return;
-
-        if (string.Equals(sceneObject.asset_pack_id, BuilderInWorldSettings.ASSETS_COLLECTIBLES))
-            url = sceneObject.thumbnail;
 
         string newLoadedThumbnailURL = url;
         var newLoadedThumbnailPromise =  new AssetPromise_Texture(url);
@@ -96,19 +94,19 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
 
     public void AdapterStartDragging(BaseEventData baseEventData)
     {
-        OnAdapterStartDrag?.Invoke(sceneObject,this, baseEventData);
+        OnAdapterStartDrag?.Invoke(catalogItem,this, baseEventData);
     }
 
     public void FavoriteIconClicked()
     {
         
-        OnSceneObjectFavorite?.Invoke(sceneObject, this);
+        OnCatalogItemFavorite?.Invoke(catalogItem, this);
     }
 
     public void SceneObjectClicked()
     {
        if (!lockedGO.gameObject.activeSelf)
-            OnSceneObjectClicked?.Invoke(sceneObject);
+            OnCatalogItemClicked?.Invoke(catalogItem);
     }
 
     public void SetThumbnail(Asset_Texture texture)

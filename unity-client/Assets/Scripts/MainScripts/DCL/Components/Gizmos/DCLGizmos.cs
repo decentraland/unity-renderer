@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using DCL.Helpers;
 
 namespace DCL.Components
@@ -35,6 +35,11 @@ namespace DCL.Components
         {
             model = Utils.SafeFromJson<Model>(newJson);
             yield return null;
+        }
+
+        public override void SetModel(object model)
+        {
+            this.model = (Model)model;
         }
     }
 }

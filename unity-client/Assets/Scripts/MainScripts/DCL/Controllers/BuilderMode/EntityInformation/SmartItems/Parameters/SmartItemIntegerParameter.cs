@@ -1,4 +1,5 @@
 using DCL.Components;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,18 +9,23 @@ public class SmartItemIntegerParameter : SmartItemUIParameterAdapter
 {
     public TMP_InputField textParameterInputField;
 
-    const string parameterType = "integer";
-
-    public override void SetParameter(SmartItemParameter parameter)
+    private void Start()
     {
-        base.SetParameter(parameter);
+        textParameterInputField.onEndEdit.AddListener(OnValueChange);
+    }
 
-        if (parameter.type != parameterType)
-            return;
+    public override void SetInfo()
+    {
+        base.SetInfo();
 
         textParameterInputField.gameObject.SetActive(true);
 
         textParameterInputField.contentType = TMP_InputField.ContentType.IntegerNumber;
-        textParameterInputField.text = (string) parameter.@default;
+        textParameterInputField.text = GetParameterValue().ToString();
+    }
+
+    public void OnValueChange(string text)
+    {
+        SetParameterValue(Convert.ToInt32(text));
     }
 }

@@ -68,16 +68,27 @@ namespace DCL
             return model;
         }
 
+        public override void SetModel(object model)
+        {
+            this.model = (Model)model;
+            ApplyCurrentModel();
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
+            ApplyCurrentModel();
+
+            return null;
+        }
+
+        private void ApplyCurrentModel()
+        {
             if (!string.IsNullOrEmpty(model.uuid))
             {
                 Setup(scene, entity, model);
             }
-
-            return null;
         }
     }
 }

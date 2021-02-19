@@ -143,7 +143,6 @@ namespace DCL
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
         }
 
-
         private void OnEntityTransformChanged(DCLTransform.Model updatedModel)
         {
             lastAvatarPosition = updatedModel.position;
@@ -188,6 +187,13 @@ namespace DCL
 
             avatarUserInfo.userId = model.id;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
+        }
+
+        public override void SetModel(object model)
+        {
+            this.model = (AvatarModel)model;
+
+            //TODO (Adrian): This should handle the change of the model. This will required a major refactor so if you really need it, feel free to implement it!
         }
     }
 }
