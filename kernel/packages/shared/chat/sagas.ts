@@ -339,7 +339,7 @@ function initChatCommands() {
         messageType: ChatMessageType.SYSTEM,
         sender: 'Decentraland',
         timestamp: Date.now(),
-        body: `You start ${expressionExplainer[expression]}`
+        body: expressionExplainer[expression]
       }
     }
   )
