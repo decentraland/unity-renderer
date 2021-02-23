@@ -9,7 +9,7 @@ internal class SceneCardView : MonoBehaviour
 {
     public static event Action<ISceneData> OnJumpInPressed;
     public static event Action<ISceneData> OnEditorPressed;
-    public static event Action<ISceneData> OnContextMenuPressed;
+    public static event Action<ISceneData, SceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
     [Space]
@@ -28,12 +28,14 @@ internal class SceneCardView : MonoBehaviour
 
     [SerializeField] internal Button jumpInButton;
     [SerializeField] internal Button editorButton;
-    [SerializeField] private Button contextMenuButton;
+    [SerializeField] internal Button contextMenuButton;
     [Space]
 
     [SerializeField] internal GameObject roleOwnerGO;
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
+
+    public SceneSearchInfo searchInfo { get; } = new SceneSearchInfo();
 
     internal ISceneData sceneData;
     private AssetPromise_Texture thumbnailPromise;
@@ -42,7 +44,7 @@ internal class SceneCardView : MonoBehaviour
     {
         jumpInButton.onClick.AddListener(()=> OnJumpInPressed?.Invoke(sceneData));
         editorButton.onClick.AddListener(()=> OnEditorPressed?.Invoke(sceneData));
-        contextMenuButton.onClick.AddListener(()=> OnContextMenuPressed?.Invoke(sceneData));
+        contextMenuButton.onClick.AddListener(()=> OnContextMenuPressed?.Invoke(sceneData, this));
     }
 
     public void Setup(ISceneData sceneData)
@@ -54,10 +56,14 @@ internal class SceneCardView : MonoBehaviour
         SetSize(sceneData.size);
         SetDeployed(sceneData.isDeployed);
         SetUserRole(sceneData.isOwner, sceneData.isOperator, sceneData.isContributor);
+        searchInfo.id = sceneData.id;
     }
 
     public void SetParent(Transform parent)
     {
+        if (transform.parent == parent)
+            return;
+
         transform.SetParent(parent);
         transform.ResetLocalTRS();
     }
@@ -65,6 +71,7 @@ internal class SceneCardView : MonoBehaviour
     public void SetName(string name)
     {
         sceneName.text = name;
+        searchInfo.SetName(name);
     }
 
     public void SetCoords(Vector2Int coords)
@@ -75,6 +82,7 @@ internal class SceneCardView : MonoBehaviour
     public void SetSize(Vector2Int size)
     {
         sizeText.text = $"{size.x},{size.y}m";
+        searchInfo.SetSize(size);
     }
 
     public void SetThumbnail(string thumbnailUrl)
@@ -115,6 +123,7 @@ internal class SceneCardView : MonoBehaviour
         roleOwnerGO.SetActive(false);
         roleOperatorGO.SetActive(false);
         roleContributorGO.SetActive(false);
+        searchInfo.SetRole(isOwner, isOperator, isContributor);
 
         if (isOwner)
         {
