@@ -105,7 +105,7 @@ jobs:
             - unity-tests-{{ checksum "../.unitysources-checksum" }}
       - restore_cache:
           name: Restore library if exists
-          keys: 
+          keys:
             - library-{{ .Branch }}
       - run:
           name: Run tests
@@ -152,7 +152,7 @@ jobs:
             - unity-build-{{ checksum "../.unitysources-checksum" }}
       - restore_cache:
           name: Restore library if exists
-          keys: 
+          keys:
             - library-{{ .Branch }}
       - run:
           name: Build decentraland-renderer

@@ -57,6 +57,8 @@ public class BaseCollection<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
     public T ElementAt(int index) => list[index];
     public int Count() => list.Count;
 
+    public bool Contains(T element) => list.Contains(element);
+
     public virtual bool Equals(IEnumerable<T> other)
     {
         return EqualityComparer<IEnumerable<T>>.Default.Equals(list, other);

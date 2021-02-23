@@ -138,6 +138,8 @@ export const FORCE_RENDERING_STYLE = qs.FORCE_RENDERING_STYLE
 
 export const TEST_WEARABLES_OVERRIDE = location.search.includes('TEST_WEARABLES')
 
+export const QUESTS_ENABLED = location.search.includes('QUESTS_ENABLED')
+
 const META_CONFIG_URL = qs.META_CONFIG_URL
 
 const QUESTS_SERVER_URL = qs.QUESTS_SERVER_URL ?? 'https://quests-api.decentraland.io'

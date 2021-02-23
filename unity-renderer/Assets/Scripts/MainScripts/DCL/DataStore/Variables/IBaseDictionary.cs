@@ -17,6 +17,7 @@ public interface IBaseDictionary<TKey, TValue>
     bool Remove(TKey key);
     bool ContainsKey(TKey key);
     bool ContainsValue(TValue value);
+    void Clear();
 
     int Count();
 }

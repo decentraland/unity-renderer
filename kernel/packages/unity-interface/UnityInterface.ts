@@ -27,6 +27,7 @@ import { setDelightedSurveyEnabled } from './delightedSurvey'
 import { renderStateObservable } from '../shared/world/worldState'
 import { DeploymentResult } from '../shared/apis/SceneStateStorageController/types'
 import { ReportRendererInterfaceError } from 'shared/loading/ReportFatalError'
+import { QuestForRenderer } from 'dcl-ecs-quests/src/types'
 
 const MINIMAP_CHUNK_SIZE = 100
 
@@ -430,6 +431,18 @@ export class UnityInterface {
 
   public SendPublishSceneResult(result: DeploymentResult) {
     this.SendMessageToUnity('Main', 'PublishSceneResult', JSON.stringify(result))
+  }
+
+  // *********************************************************************************
+  // ************** Quests messages **************
+  // *********************************************************************************
+
+  InitQuestsInfo(rendererQuests: QuestForRenderer[]) {
+    this.SendMessageToUnity('Main', 'InitializeQuests', JSON.stringify(rendererQuests))
+  }
+
+  UpdateQuestProgress(rendererQuest: QuestForRenderer) {
+    this.SendMessageToUnity('Main', 'UpdateQuestProgress', JSON.stringify(rendererQuest))
   }
 
   // *********************************************************************************

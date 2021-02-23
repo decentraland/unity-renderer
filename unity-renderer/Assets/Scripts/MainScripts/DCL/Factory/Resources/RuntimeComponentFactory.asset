@@ -63,3 +63,8 @@ MonoBehaviour:
       type: 3}
     usePool: 0
     prewarmCount: 0
+  - classId: 1417815519
+    prefab: {fileID: 3670775501202994215, guid: f589e48f50bdb62448125e6b626e703f,
+      type: 3}
+    usePool: 0
+    prewarmCount: 0
