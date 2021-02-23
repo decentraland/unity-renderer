@@ -6,22 +6,22 @@ namespace DCL.Helpers
 {
     public class RaycastHandler : IRaycastHandler
     {
-        private void SetHitInfo(ref HitInfo hitInfo, RaycastHit hit)
+        private void SetHitInfo(ref HitInfo hitInfo, RaycastHit hit, ParcelScene scene)
         {
-            hitInfo.point = Environment.i.world.state.ConvertUnityToScenePosition(hit.point);
+            hitInfo.point = Environment.i.world.state.ConvertUnityToScenePosition(hit.point, scene);
             hitInfo.distance = hit.distance;
             hitInfo.normal = hit.normal;
             hitInfo.collider = hit.collider;
         }
 
-        private bool Raycast(Ray ray, out HitInfo hitInfo, float distance, LayerMask layerMask)
+        private bool Raycast(Ray ray, out HitInfo hitInfo, float distance, LayerMask layerMask, ParcelScene scene)
         {
             RaycastHit hit;
             hitInfo = new HitInfo();
 
             if (Physics.Raycast(ray, out hit, distance, layerMask))
             {
-                SetHitInfo(ref hitInfo, hit);
+                SetHitInfo(ref hitInfo, hit, scene);
                 return true;
             }
 
@@ -35,7 +35,7 @@ namespace DCL.Helpers
             raycastInfo.ray = ray;
             raycastInfo.hitInfo = new RaycastHitInfo();
 
-            if (Raycast(raycastInfo.ray, out raycastInfo.hitInfo.hit, distance, layerMaskTarget))
+            if (Raycast(raycastInfo.ray, out raycastInfo.hitInfo.hit, distance, layerMaskTarget, scene))
             {
                 SetRaycastInfoData(ref raycastInfo.hitInfo, scene);
             }
@@ -59,7 +59,7 @@ namespace DCL.Helpers
                 {
                     raycastInfo.hitInfo[i] = new RaycastHitInfo();
                     raycastInfo.hitInfo[i].hit = new HitInfo();
-                    SetHitInfo(ref raycastInfo.hitInfo[i].hit, result[i]);
+                    SetHitInfo(ref raycastInfo.hitInfo[i].hit, result[i], scene);
                     SetRaycastInfoData(ref raycastInfo.hitInfo[i], scene);
                 }
             }
@@ -76,7 +76,7 @@ namespace DCL.Helpers
                 return;
 
             if (scene != null)
-                hitInfo.isValid = info.scene == scene;
+                hitInfo.isValid = (info.scene == scene) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
             else if (scene == null && Environment.i.world.state.IsCharacterInsideScene(info.scene))
                 hitInfo.isValid = true;
         }

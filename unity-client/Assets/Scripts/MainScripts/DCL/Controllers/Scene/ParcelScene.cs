@@ -35,6 +35,9 @@ namespace DCL.Controllers
         public bool isPersistent = false;
 
         [System.NonSerialized]
+        public string sceneName;
+
+        [System.NonSerialized]
         public bool unloadWithDistance = true;
 
         bool isEditModeActive = false;
@@ -1153,19 +1156,20 @@ namespace DCL.Controllers
 
         public string GetStateString()
         {
+            string baseState = isPersistent ? "global-scene" : "scene";
             switch (sceneLifecycleHandler.state)
             {
                 case SceneLifecycleHandler.State.NOT_READY:
-                    return $"scene:{prettyName} - not ready...";
+                    return $"{baseState}:{prettyName} - not ready...";
                 case SceneLifecycleHandler.State.WAITING_FOR_INIT_MESSAGES:
-                    return $"scene:{prettyName} - waiting for init messages...";
+                    return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
                     if (disposableComponents != null && disposableComponents.Count > 0)
-                        return $"scene:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count}";
+                        return $"{baseState}:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count}";
                     else
-                        return $"scene:{prettyName} - no components. waiting...";
+                        return $"{baseState}:{prettyName} - no components. waiting...";
                 case SceneLifecycleHandler.State.READY:
-                    return $"scene:{prettyName} - ready!";
+                    return $"{baseState}:{prettyName} - ready!";
             }
 
             return $"scene:{prettyName} - no state?";

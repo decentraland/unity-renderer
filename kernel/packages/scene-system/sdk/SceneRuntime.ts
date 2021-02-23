@@ -165,10 +165,10 @@ export abstract class SceneRuntime extends Script {
       const mappingName = bootstrapData.main
       const mapping = bootstrapData.mappings.find(($) => $.file === mappingName)
       const url = resolveMapping(mapping && mapping.hash, mappingName, bootstrapData.baseUrl)
-      const html = await fetch(url)
+      const codeRequest = await fetch(url)
 
-      if (html.ok) {
-        return [bootstrapData, await html.text()] as const
+      if (codeRequest.ok) {
+        return [bootstrapData, await codeRequest.text()] as const
       } else {
         throw new Error(`SDK: Error while loading ${url} (${mappingName} -> ${mapping})`)
       }

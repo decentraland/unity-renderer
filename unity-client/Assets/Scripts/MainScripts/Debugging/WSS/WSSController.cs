@@ -296,8 +296,8 @@ namespace DCL
                             case "Reset":
                                 DCL.Environment.i.world.sceneController.UnloadAllScenesQueued();
                                 break;
-                            case "CreateUIScene":
-                                DCL.Environment.i.world.sceneController.CreateUIScene(msg.payload);
+                            case "CreateGlobalScene":
+                                DCL.Environment.i.world.sceneController.CreateGlobalScene(msg.payload);
                                 break;
                             case "BuilderReady":
                                 Main.i.BuilderReady();

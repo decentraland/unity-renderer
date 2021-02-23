@@ -26,14 +26,14 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator CreateUIScene()
+        public IEnumerator CreateGlobalScene()
         {
             // Position character inside parcel (0,0)
             TestHelpers.SetCharacterPosition(Vector3.zero);
 
-            string sceneGameObjectNamePrefix = "UI Scene - ";
-            string sceneId = "Test UI Scene";
-            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() {id = sceneId}));
+            string sceneGameObjectNamePrefix = "Global Scene - ";
+            string sceneId = "Test Global Scene";
+            sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId}));
 
             GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
@@ -59,9 +59,9 @@ namespace Tests
 
             sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
-            Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
+            Assert.IsTrue(sceneGo != null, "scene game object not found! GlobalScenes must not be unloaded by distance!");
             Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId] != null,
-                "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
+                "Scene not in loaded dictionary when far! GlobalScenes must not be unloaded by distance!");
         }
 
         [Test]

@@ -195,13 +195,13 @@ public class IntegrationTestSuite_Legacy
         sceneController.prewarmEntitiesPool = false;
     }
 
-    private void SetUp_UIScene()
+    private void SetUp_GlobalScene()
     {
         string globalSceneId = "global-scene";
 
-        sceneController.CreateUIScene(
+        sceneController.CreateGlobalScene(
             JsonConvert.SerializeObject(
-                new CreateUISceneMessage
+                new CreateGlobalSceneMessage
                 {
                     id = globalSceneId,
                     baseUrl = "",
@@ -235,7 +235,7 @@ public class IntegrationTestSuite_Legacy
 
         if (spawnUIScene)
         {
-            SetUp_UIScene();
+            SetUp_GlobalScene();
         }
     }
 
