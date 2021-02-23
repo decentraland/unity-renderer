@@ -16,4 +16,5 @@ public interface IBaseCollection<T>
     void RemoveAt(int index);
     T ElementAt(int index);
     int Count();
+    bool Contains(T element);
 }

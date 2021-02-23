@@ -9,6 +9,9 @@ public class BaseVariable<T> : IBaseVariable<T>, IEquatable<T>
 
     protected T value;
 
+    public BaseVariable() { value = default; }
+    public BaseVariable(T defaultValue) { value = defaultValue; }
+
     public T Get()
     {
         return value;

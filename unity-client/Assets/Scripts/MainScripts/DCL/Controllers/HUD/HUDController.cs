@@ -1,5 +1,9 @@
 using DCL;
 using DCL.HelpAndSupportHUD;
+using DCL.Huds.QuestsNotifications;
+using DCL.Huds.QuestsPanel;
+using DCL.Huds.QuestsTracker;
+using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
 using UnityEngine;
@@ -86,6 +90,10 @@ public class HUDController : MonoBehaviour
 
     public BuilderInWorldInititalHUDController builderInWorldInititalHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_INITIAL) as BuilderInWorldInititalHUDController;
 
+    public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
+    public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
+    public QuestsNotificationsHUDController questsNotificationsHUD => GetHUDElement(HUDElementID.QUESTS_NOTIFICATIONS) as QuestsNotificationsHUDController;
+
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -163,7 +171,10 @@ public class HUDController : MonoBehaviour
         GRAPHIC_CARD_WARNING = 23,
         BUILDER_IN_WORLD_MAIN = 24,
         BUILDER_IN_WORLD_INITIAL = 25,
-        COUNT = 26
+        QUESTS_PANEL = 26,
+        QUESTS_TRACKER = 27,
+        QUESTS_NOTIFICATIONS = 28,
+        COUNT = 29
     }
 
     [System.Serializable]
@@ -321,6 +332,7 @@ public class HUDController : MonoBehaviour
                             {
                                 taskbarHud.OnAddVoiceChat();
                             }
+                            taskbarHud.SetQuestsPanelStatus(config.enableQuestPanel);
                         }
 
                         taskbarHud.AddSettingsWindow(settingsPanelHud);
@@ -383,6 +395,18 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.BUILDER_IN_WORLD_INITIAL:
                 CreateHudElement<BuilderInWorldInititalHUDController>(configuration, hudElementId);
+                break;
+            case HUDElementID.QUESTS_PANEL:
+                CreateHudElement<QuestsPanelHUDController>(configuration, hudElementId);
+                questsPanelHUD.Initialize(QuestsController.i);
+                break;
+            case HUDElementID.QUESTS_TRACKER:
+                CreateHudElement<QuestsTrackerHUDController>(configuration, hudElementId);
+                questsTrackerHUD.Initialize(QuestsController.i);
+                break;
+            case HUDElementID.QUESTS_NOTIFICATIONS:
+                CreateHudElement<QuestsNotificationsHUDController>(configuration, hudElementId);
+                questsNotificationsHUD.Initialize(QuestsController.i);
                 break;
         }
 

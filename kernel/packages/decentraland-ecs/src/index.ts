@@ -17,8 +17,8 @@ import { DecentralandSynchronizationSystem } from './decentraland/Implementation
 import { Engine } from './ecs/Engine'
 import { Entity } from './ecs/Entity'
 
-const entity = new Entity('scene');
-(entity as any).uuid = '0'
+const entity = new Entity('scene')
+;(entity as any).uuid = '0'
 
 // Initialize engine
 /** @public */

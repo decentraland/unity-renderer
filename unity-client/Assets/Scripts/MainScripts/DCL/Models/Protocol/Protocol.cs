@@ -18,7 +18,8 @@ namespace DCL.Models
         BILLBOARD = 32,
         SMART_ITEM = 204,
         AUDIO_STREAM = 202,
-        AVATAR_MODIFIER_AREA = 205
+        AVATAR_MODIFIER_AREA = 205,
+        QUEST_TRACKING_INFORMATION = 1417815519 // This corresponds with dcl-ecs-quests
     }
 
     public enum CLASS_ID
@@ -79,7 +80,7 @@ namespace DCL.Models
 
             public static CreateEntity FromPB(PB_CreateEntity pbPayload)
             {
-                return new CreateEntity() {entityId = pbPayload.Id};
+                return new CreateEntity() { entityId = pbPayload.Id };
             }
         }
 
@@ -90,7 +91,7 @@ namespace DCL.Models
 
             public static RemoveEntity FromPB(PB_RemoveEntity pbPayload)
             {
-                return new RemoveEntity() {entityId = pbPayload.Id};
+                return new RemoveEntity() { entityId = pbPayload.Id };
             }
         }
 
@@ -102,7 +103,7 @@ namespace DCL.Models
 
             public static SetEntityParent FromPB(PB_SetEntityParent pbPayload)
             {
-                return new SetEntityParent() {entityId = pbPayload.EntityId, parentId = pbPayload.ParentId};
+                return new SetEntityParent() { entityId = pbPayload.EntityId, parentId = pbPayload.ParentId };
             }
         }
 
@@ -115,7 +116,7 @@ namespace DCL.Models
 
             public static EntityComponentCreateOrUpdate FromPB(PB_UpdateEntityComponent pbPayload)
             {
-                return new EntityComponentCreateOrUpdate() {entityId = pbPayload.EntityId, classId = pbPayload.ClassId, json = pbPayload.Data};
+                return new EntityComponentCreateOrUpdate() { entityId = pbPayload.EntityId, classId = pbPayload.ClassId, json = pbPayload.Data };
             }
         }
 
@@ -127,7 +128,7 @@ namespace DCL.Models
 
             public static EntityComponentDestroy FromPB(PB_ComponentRemoved pbPayload)
             {
-                return new EntityComponentDestroy() {entityId = pbPayload.EntityId, name = pbPayload.Name};
+                return new EntityComponentDestroy() { entityId = pbPayload.EntityId, name = pbPayload.Name };
             }
         }
 
@@ -140,7 +141,7 @@ namespace DCL.Models
 
             public static SharedComponentAttach FromPB(PB_AttachEntityComponent pbPayload)
             {
-                return new SharedComponentAttach() {entityId = pbPayload.EntityId, id = pbPayload.Id, name = pbPayload.Name};
+                return new SharedComponentAttach() { entityId = pbPayload.EntityId, id = pbPayload.Id, name = pbPayload.Name };
             }
         }
 
@@ -153,7 +154,7 @@ namespace DCL.Models
 
             public static SharedComponentCreate FromPB(PB_ComponentCreated pbPayload)
             {
-                return new SharedComponentCreate() {id = pbPayload.Id, classId = pbPayload.Classid, name = pbPayload.Name};
+                return new SharedComponentCreate() { id = pbPayload.Id, classId = pbPayload.Classid, name = pbPayload.Name };
             }
         }
 
@@ -164,7 +165,7 @@ namespace DCL.Models
 
             public static SharedComponentDispose FromPB(PB_ComponentDisposed pbPayload)
             {
-                return new SharedComponentDispose() {id = pbPayload.Id};
+                return new SharedComponentDispose() { id = pbPayload.Id };
             }
         }
 
@@ -176,7 +177,7 @@ namespace DCL.Models
 
             public static SharedComponentUpdate FromPB(PB_ComponentUpdated pbPayload)
             {
-                return new SharedComponentUpdate() {componentId = pbPayload.Id, json = pbPayload.Json};
+                return new SharedComponentUpdate() { componentId = pbPayload.Id, json = pbPayload.Json };
             }
         }
 
@@ -203,7 +204,7 @@ namespace DCL.Models
 
             public static OpenExternalUrl FromPB(PB_OpenExternalUrl pbPayload)
             {
-                return new OpenExternalUrl() {url = pbPayload.Url};
+                return new OpenExternalUrl() { url = pbPayload.Url };
             }
         }
 
@@ -216,7 +217,7 @@ namespace DCL.Models
 
             public static OpenNftDialog FromPB(PB_OpenNFTDialog pbPayload)
             {
-                return new OpenNftDialog() {contactAddress = pbPayload.AssetContractAddress, comment = pbPayload.Comment, tokenId = pbPayload.TokenId};
+                return new OpenNftDialog() { contactAddress = pbPayload.AssetContractAddress, comment = pbPayload.Comment, tokenId = pbPayload.TokenId };
             }
         }
 
@@ -290,8 +291,8 @@ namespace DCL.Models
         }
     }
 
-//-----------------------------------------------------
-// Raycast
+    //-----------------------------------------------------
+    // Raycast
     [System.Serializable]
     public class Ray
     {

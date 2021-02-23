@@ -14,6 +14,7 @@ import { friendsSaga } from '../friends/sagas'
 import { commsSaga } from '../comms/sagas'
 import { socialSaga } from '../social/sagas'
 import { catalogsSaga } from '../catalogs/sagas'
+import { questsSaga } from 'shared/quests/sagas'
 
 export function createRootSaga() {
   return function* rootSaga() {
@@ -32,5 +33,6 @@ export function createRootSaga() {
     yield fork(metricSaga)
     yield fork(loadingSaga)
     yield fork(socialSaga)
+    yield fork(questsSaga)
   }
 }

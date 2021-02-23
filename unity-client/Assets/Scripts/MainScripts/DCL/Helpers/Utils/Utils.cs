@@ -511,7 +511,7 @@ namespace DCL.Helpers
             Cursor.lockState = CursorLockMode.Locked;
             lockedInFrame = Time.frameCount;
 
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);
         }
 
         public static void UnlockCursor()
@@ -534,7 +534,7 @@ namespace DCL.Helpers
 #endif
             Cursor.lockState = CursorLockMode.None;
 
-            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current?.SetSelectedGameObject(null);
         }
 
         #region BROWSER_ONLY

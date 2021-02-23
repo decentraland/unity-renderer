@@ -1,0 +1,189 @@
+[
+  {
+    "id": "quest0",
+    "name": "Halloween",
+    "description": "Solve a mystery. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "thumbnail_entry": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "thumbnail_banner": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "status": "not_started",
+    "sections": [
+      {
+        "id": "section0",
+        "name": "Day 1",
+        "progress": 1,
+        "tasks": [
+          {
+            "id": "task0",
+            "name": "Find Kiki",
+            "type": "single",
+            "coordinates" : "0,0",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          },
+          {
+            "id": "task1",
+            "name": "Collect pumpkins",
+            "type": "count",
+            "coordinates" : "0,0",
+            "progress": 1,
+            "payload": "{ \"start\": 0, \"end\": 10, \"current\": 10 }"
+          }
+        ]
+      },
+      {
+        "id": "section1",
+        "name": "Day 2",
+        "progress": 0.33,
+        "tasks": [
+          {
+            "id": "task2",
+            "name": "Find the old lady",
+            "type": "single",
+            "coordinates" : "0,0",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          },
+          {
+            "id": "task3",
+            "name": "Enter the house",
+            "type": "single",
+            "progress": 0,
+            "payload": "{ \"isDone\": false }"
+          },
+          {
+            "id": "task4",
+            "name": "Collect something fishy",
+            "type": "count",
+            "progress": 0,
+            "payload": "{ \"start\": 0, \"end\": 10, \"current\": 2 }"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quest1",
+    "name": "Spring",
+    "description": "Do something silly. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "thumbnail_entry": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "thumbnail_banner": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "status": "not_started",
+    "sections": [
+      {
+        "id": "section2",
+        "name": "Week 1",
+        "progress": 1,
+        "tasks": [
+          {
+            "id": "task5",
+            "name": "Jump High",
+            "type": "single",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          }
+        ]
+      },
+      {
+        "id": "section3",
+        "name": "week 2",
+        "progress": 0.8,
+        "tasks": [
+          {
+            "id": "task6",
+            "name": "Sneeze",
+            "type": "single",
+            "coordinates" : "0,0",
+            "progress": 0.8,
+            "payload": "{ \"isDone\": false }"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quest2",
+    "name": "Other quest but completed",
+    "description": "Do Nothing because it's done. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "thumbnail_entry": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "thumbnail_banner": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "status": "completed",
+    "sections": [
+      {
+        "id": "section4",
+        "name": "Day 1",
+        "progress": 1,
+        "tasks": [
+          {
+            "id": "task7",
+            "name": "Find Kiki",
+            "type": "single",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          },
+          {
+            "id": "task8",
+            "name": "Collect pumpkins",
+            "type": "count",
+            "progress": 1,
+            "payload": "{ \"start\": 0, \"end\": 10, \"current\": 10 }"
+          }
+        ]
+      },
+      {
+        "id": "section5",
+        "name": "Day 2",
+        "progress": 1,
+        "tasks": [
+          {
+            "id": "task9",
+            "name": "Find the old lady",
+            "type": "single",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          },
+          {
+            "id": "task10",
+            "name": "Enter the house",
+            "type": "single",
+            "progress": 1,
+            "payload": "{ \"isDone\": false }"
+          },
+          {
+            "id": "task11",
+            "name": "Collect something fishy",
+            "type": "count",
+            "progress": 1,
+            "payload": "{ \"start\": 0, \"end\": 10, \"current\": 10 }"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "quest3",
+    "name": "You Shouldnt see this because its blocked",
+    "description": "Do Nothing because it's done. \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \nUt enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "thumbnail_entry": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "thumbnail_banner": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Jack-o%27-Lantern_2003-10-31.jpg",
+    "status": "blocked",
+    "sections": [
+      {
+        "id": "quest3section1",
+        "name": "Day 1",
+        "progress": 1,
+        "tasks": [
+          {
+            "id": "quest3section1task1",
+            "name": "Find Kiki",
+            "type": "single",
+            "progress": 1,
+            "payload": "{ \"isDone\": true }"
+          }
+        ]
+      }
+    ]
+  }
+]
