@@ -15,7 +15,9 @@ namespace DCL.Components
             public string texture;
 
             // value that defines if a pixel is visible or invisible (no transparency gradients)
-            [Range(0f, 1f)] public float alphaTest = 0.5f;
+            [Range(0f, 1f)]
+            public float alphaTest = 0.5f;
+
             public bool castShadows = true;
         }
 
@@ -29,7 +31,7 @@ namespace DCL.Components
         private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
         private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
 
-        public BasicMaterial(ParcelScene scene) : base(scene)
+        public BasicMaterial(IParcelScene scene) : base(scene)
         {
             material = new Material(Utils.EnsureResourcesMaterial("Materials/BasicShapeMaterial"));
 
@@ -39,7 +41,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.BASIC_MATERIAL;
+            return (int) CLASS_ID.BASIC_MATERIAL;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)

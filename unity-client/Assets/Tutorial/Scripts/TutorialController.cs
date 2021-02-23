@@ -482,7 +482,7 @@ namespace DCL.Tutorial
                 if (tutorialPath == TutorialPath.FromUserThatAlreadyDidTheTutorial &&
                     runningStep is TutorialStep_Tooltip)
                 {
-                    ((TutorialStep_Tooltip)runningStep).OverrideSetMaxTimeToHide(true);
+                    ((TutorialStep_Tooltip) runningStep).OverrideSetMaxTimeToHide(true);
                 }
 
                 runningStep.OnStepStart();
@@ -568,11 +568,13 @@ namespace DCL.Tutorial
         private bool IsPlayerInsideGenesisPlaza()
         {
             IWorldState worldState = Environment.i.world.state;
+
             if (worldState == null || worldState.currentSceneId == null)
                 return false;
 
             Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
-            ParcelScene currentScene = worldState.loadedScenes[worldState.currentSceneId];
+
+            IParcelScene currentScene = worldState.loadedScenes[worldState.currentSceneId];
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;

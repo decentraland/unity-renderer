@@ -161,7 +161,7 @@ public class IntegrationTestSuite_Legacy
 
     public void SetUp_TestScene()
     {
-        scene = sceneController.CreateTestScene();
+        scene = sceneController.CreateTestScene() as ParcelScene;
     }
 
     public virtual IEnumerator SetUp_CharacterController()

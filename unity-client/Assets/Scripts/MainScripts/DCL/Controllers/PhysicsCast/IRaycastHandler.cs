@@ -31,7 +31,7 @@ namespace DCL.Helpers
 
     public interface IRaycastHandler
     {
-        RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene);
-        RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene);
+        RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, IParcelScene scene);
+        RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, IParcelScene scene);
     }
 }

@@ -15,7 +15,7 @@ namespace DCL.Components
             public bool visible = true;
         }
 
-        public BaseShape(ParcelScene scene) : base(scene)
+        public BaseShape(IParcelScene scene) : base(scene)
         {
         }
 

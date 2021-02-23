@@ -7,8 +7,8 @@ using DCL.SettingsPanelHUD;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DCL.Controllers;
 using System.Collections.Generic;
+using DCL.Controllers;
 
 public class TaskbarHUDController : IHUD
 {
@@ -39,10 +39,25 @@ public class TaskbarHUDController : IHUD
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
-    public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
-    public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
-    public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
-    public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
+    public RectTransform tutorialTooltipReference
+    {
+        get => view.moreTooltipReference;
+    }
+
+    public RectTransform exploreTooltipReference
+    {
+        get => view.exploreTooltipReference;
+    }
+
+    public RectTransform socialTooltipReference
+    {
+        get => view.socialTooltipReference;
+    }
+
+    public TaskbarMoreMenu moreMenu
+    {
+        get => view.moreMenu;
+    }
 
     public void Initialize(
         IMouseCatcher mouseCatcher,
@@ -111,7 +126,7 @@ public class TaskbarHUDController : IHUD
             this.sceneController.OnNewPortableExperienceSceneAdded += SceneController_OnNewPortableExperienceSceneAdded;
             this.sceneController.OnNewPortableExperienceSceneRemoved += SceneController_OnNewPortableExperienceSceneRemoved;
 
-            List<GlobalScene> activePortableExperiences = worldState.GetActivePortableExperienceScenes();
+            List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
             for (int i = 0; i < activePortableExperiences.Count; i++)
             {
                 SceneController_OnNewPortableExperienceSceneAdded(activePortableExperiences[i]);
@@ -439,10 +454,7 @@ public class TaskbarHUDController : IHUD
 
         helpAndSupportHud = controller;
         view.OnAddHelpAndSupportWindow();
-        helpAndSupportHud.view.OnClose += () =>
-        {
-            MarkWorldChatAsReadIfOtherWindowIsOpen();
-        };
+        helpAndSupportHud.view.OnClose += () => { MarkWorldChatAsReadIfOtherWindowIsOpen(); };
     }
 
     public void OnAddVoiceChat()

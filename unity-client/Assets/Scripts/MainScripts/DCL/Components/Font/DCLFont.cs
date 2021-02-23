@@ -25,17 +25,17 @@ namespace DCL.Components
 
         public TMP_FontAsset fontAsset { private set; get; }
 
-        public DCLFont(DCL.Controllers.ParcelScene scene) : base(scene)
+        public DCLFont(IParcelScene scene) : base(scene)
         {
             model = new Model();
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.FONT;
+            return (int) CLASS_ID.FONT;
         }
 
-        public static IEnumerator SetFontFromComponent(ParcelScene scene, string componentId, TMP_Text text)
+        public static IEnumerator SetFontFromComponent(IParcelScene scene, string componentId, TMP_Text text)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))
             {

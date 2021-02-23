@@ -54,7 +54,7 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public UIShape(ParcelScene scene) : base(scene)
+        public UIShape(IParcelScene scene) : base(scene)
         {
         }
 
@@ -163,7 +163,7 @@ namespace DCL.Components
         public Model model = new Model();
         public UIShape parentUIComponent { get; protected set; }
 
-        public UIShape(ParcelScene scene) : base(scene)
+        public UIShape(IParcelScene scene) : base(scene)
         {
         }
 
@@ -208,12 +208,12 @@ namespace DCL.Components
                 }
                 else
                 {
-                    parentUIComponent = scene.uiScreenSpace as UIShape;
+                    parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
                 }
             }
             else
             {
-                parentUIComponent = scene.uiScreenSpace as UIShape;
+                parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
             }
 
             uiGameObject =
@@ -358,7 +358,7 @@ namespace DCL.Components
             }
             else
             {
-                parentUIComponent = scene.uiScreenSpace as UIShape;
+                parentUIComponent = scene.GetSharedComponent<UIScreenSpace>();
             }
 
             targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);

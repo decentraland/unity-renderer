@@ -18,14 +18,14 @@ namespace DCL.Components
         public bool isExternalURL { get; private set; }
         public bool isStream { get; private set; }
 
-        public DCLVideoClip(ParcelScene scene) : base(scene)
+        public DCLVideoClip(IParcelScene scene) : base(scene)
         {
             model = new Model();
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.VIDEO_CLIP;
+            return (int) CLASS_ID.VIDEO_CLIP;
         }
 
         public override object GetModel()
@@ -37,7 +37,7 @@ namespace DCL.Components
         {
             model = Utils.SafeFromJson<Model>(newJson);
             isExternalURL = model.url.StartsWith("http://") || model.url.StartsWith("https://");
-            isStream = !new[] { ".mp4", ".ogg", ".mov", ".webm" }.Any(x => model.url.EndsWith(x));
+            isStream = !new[] {".mp4", ".ogg", ".mov", ".webm"}.Any(x => model.url.EndsWith(x));
             yield break;
         }
 

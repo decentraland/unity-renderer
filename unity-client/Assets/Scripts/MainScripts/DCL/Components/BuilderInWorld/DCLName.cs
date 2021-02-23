@@ -21,14 +21,14 @@ public class DCLName : BaseDisposable
 
     public Model model;
 
-    public DCLName(ParcelScene scene) : base(scene)
+    public DCLName(IParcelScene scene) : base(scene)
     {
         model = new Model();
     }
 
     public override int GetClassId()
     {
-        return (int)CLASS_ID.NAME;
+        return (int) CLASS_ID.NAME;
     }
 
     public override object GetModel()
@@ -77,7 +77,7 @@ public class DCLName : BaseDisposable
                 if (oldValue != null)
                     decentralandEntity.gameObject.name.Replace(oldValue, "");
 
-                decentralandEntity.gameObject.name += $"-{model.value}"; 
+                decentralandEntity.gameObject.name += $"-{model.value}";
             }
 #endif
         }

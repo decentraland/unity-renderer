@@ -28,13 +28,13 @@ namespace DCL.Components
 
         DCLTexture dclTexture = null;
 
-        public UIImage(ParcelScene scene) : base(scene)
+        public UIImage(IParcelScene scene) : base(scene)
         {
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_IMAGE_SHAPE;
+            return (int) CLASS_ID.UI_IMAGE_SHAPE;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -59,7 +59,7 @@ namespace DCL.Components
                 {
                     if (fetchRoutine != null)
                     {
-                        scene.StopCoroutine(fetchRoutine);
+                        CoroutineStarter.Stop(fetchRoutine);
                         fetchRoutine = null;
                     }
 
@@ -74,7 +74,7 @@ namespace DCL.Components
                         ConfigureUVRect(parentRecTransform);
                     });
 
-                    fetchRoutine = scene.StartCoroutine(fetchIEnum);
+                    fetchRoutine = CoroutineStarter.Start(fetchIEnum);
                 }
             }
             else
@@ -123,6 +123,12 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            if (fetchRoutine != null)
+            {
+                CoroutineStarter.Stop(fetchRoutine);
+                fetchRoutine = null;
+            }
+
             dclTexture?.DetachFrom(this);
 
             if (referencesContainer != null)

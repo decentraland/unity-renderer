@@ -12,7 +12,8 @@ namespace DCL.Components
         [System.Serializable]
         public class Model
         {
-            [Range(0f, 1f)] public float alphaTest = 0.5f;
+            [Range(0f, 1f)]
+            public float alphaTest = 0.5f;
 
             public Color albedoColor = Color.white;
             public string albedoTexture;
@@ -34,7 +35,8 @@ namespace DCL.Components
             public string refractionTexture;
             public bool castShadows = true;
 
-            [Range(0, 4)] public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
+            [Range(0, 4)]
+            public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
         }
 
         enum TransparencyMode
@@ -58,7 +60,7 @@ namespace DCL.Components
         DCLTexture emissiveDCLTexture = null;
         DCLTexture bumpDCLTexture = null;
 
-        public PBRMaterial(ParcelScene scene) : base(scene)
+        public PBRMaterial(IParcelScene scene) : base(scene)
         {
             model = new Model();
 
@@ -70,7 +72,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.PBR_MATERIAL;
+            return (int) CLASS_ID.PBR_MATERIAL;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)

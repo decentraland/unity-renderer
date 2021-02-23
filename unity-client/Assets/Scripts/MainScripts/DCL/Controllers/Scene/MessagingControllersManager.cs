@@ -70,7 +70,7 @@ namespace DCL
         {
             IWorldState worldState = Environment.i.world.state;
             string currentSceneId = worldState.currentSceneId;
-            List<ParcelScene> scenesSortedByDistance = worldState.scenesSortedByDistance;
+            List<IParcelScene> scenesSortedByDistance = worldState.scenesSortedByDistance;
 
             int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
             // may change after a yield return

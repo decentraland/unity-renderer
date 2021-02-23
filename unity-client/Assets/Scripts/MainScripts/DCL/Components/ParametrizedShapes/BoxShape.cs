@@ -12,14 +12,16 @@ namespace DCL.Components
         {
         }
 
-        public BoxShape(ParcelScene scene) : base(scene) { }
+        public BoxShape(IParcelScene scene) : base(scene)
+        {
+        }
 
         public static Mesh cubeMesh = null;
         private static int cubeMeshRefCount = 0;
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.BOX_SHAPE;
+            return (int) CLASS_ID.BOX_SHAPE;
         }
 
         public override Mesh GenerateGeometry()

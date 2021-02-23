@@ -6,7 +6,7 @@ namespace DCL.Components
     public struct ColliderInfo
     {
         public DecentralandEntity entity;
-        public ParcelScene scene;
+        public IParcelScene scene;
         public string meshName;
     }
 }

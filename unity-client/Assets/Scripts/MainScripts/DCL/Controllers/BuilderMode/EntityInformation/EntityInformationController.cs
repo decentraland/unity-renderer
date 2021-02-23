@@ -14,14 +14,16 @@ public class EntityInformationController : MonoBehaviour
 {
     [Header("Sprites")]
     public Sprite openMenuSprite;
+
     public Sprite closeMenuSprite;
 
     [Header("Prefab references")]
     public TextMeshProUGUI titleTxt;
+
     public TextMeshProUGUI entityLimitsLeftTxt;
     public TextMeshProUGUI entityLimitsRightTxt;
     public TMP_InputField nameIF;
-    public RawImage entitytTumbailImg; 
+    public RawImage entitytTumbailImg;
     public AttributeXYZ positionAttribute;
     public AttributeXYZ rotationAttribute;
     public AttributeXYZ scaleAttribute;
@@ -103,8 +105,8 @@ public class EntityInformationController : MonoBehaviour
     }
 
     public void ChangeEntityName(string newName)
-    {      
-        OnNameChange?.Invoke(currentEntity,newName);
+    {
+        OnNameChange?.Invoke(currentEntity, newName);
     }
 
     public void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene)
@@ -184,7 +186,7 @@ public class EntityInformationController : MonoBehaviour
     {
         if (entity.gameObject != null)
         {
-            Vector3 positionConverted = DCL.Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
+            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
             Vector3 currentRotation = entity.gameObject.transform.rotation.eulerAngles;
             Vector3 currentScale = entity.gameObject.transform.localScale;
 
@@ -199,7 +201,6 @@ public class EntityInformationController : MonoBehaviour
             positionAttribute.SetValues(positionConverted);
             rotationAttribute.SetValues(currentRotation);
             scaleAttribute.SetValues(currentScale);
-            
         }
     }
 
@@ -220,8 +221,8 @@ public class EntityInformationController : MonoBehaviour
                            $"MATERIALS: {catalogItem.metrics.materials}\n" +
                            $"GEOMETRIES: {catalogItem.metrics.meshes}";
 
-         entityLimitsLeftTxt.text = leftText;
-         entityLimitsRightTxt.text = rightText;
+        entityLimitsLeftTxt.text = leftText;
+        entityLimitsRightTxt.text = rightText;
     }
 
 

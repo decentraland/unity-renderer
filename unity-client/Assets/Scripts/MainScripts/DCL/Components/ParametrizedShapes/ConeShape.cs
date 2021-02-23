@@ -19,11 +19,13 @@ namespace DCL.Components
             public float arc = 360f;
         }
 
-        public ConeShape(ParcelScene scene) : base(scene) { }
+        public ConeShape(IParcelScene scene) : base(scene)
+        {
+        }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.CONE_SHAPE;
+            return (int) CLASS_ID.CONE_SHAPE;
         }
 
         public override Mesh GenerateGeometry()
@@ -38,12 +40,12 @@ namespace DCL.Components
             Model newConeModel = newModel as Model;
 
             return newConeModel.radius != model.radius
-                    || newConeModel.radiusTop != model.radiusTop
-                    || newConeModel.radiusBottom != model.radiusBottom
-                    || newConeModel.segmentsHeight != model.segmentsHeight
-                    || newConeModel.segmentsRadial != model.segmentsRadial
-                    || newConeModel.openEnded != model.openEnded
-                    || newConeModel.arc != model.arc;
+                   || newConeModel.radiusTop != model.radiusTop
+                   || newConeModel.radiusBottom != model.radiusBottom
+                   || newConeModel.segmentsHeight != model.segmentsHeight
+                   || newConeModel.segmentsRadial != model.segmentsRadial
+                   || newConeModel.openEnded != model.openEnded
+                   || newConeModel.arc != model.arc;
         }
     }
 }

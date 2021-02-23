@@ -8,27 +8,22 @@ namespace DCL
     public interface IWorldState : ISceneHandler
     {
         HashSet<string> readyScenes { get; set; }
-        Dictionary<string, ParcelScene> loadedScenes { get; set; }
-        List<ParcelScene> scenesSortedByDistance { get; set; }
+        Dictionary<string, IParcelScene> loadedScenes { get; set; }
+        List<IParcelScene> scenesSortedByDistance { get; set; }
         List<string> globalSceneIds { get; set; }
         string currentSceneId { get; set; }
         void Initialize();
-        string TryToGetSceneCoordsID(string id);
-        bool TryGetScene(string id, out ParcelScene scene);
-        Vector3 ConvertUnityToScenePosition(Vector3 pos, ParcelScene scene = null);
-        Vector3 ConvertSceneToUnityPosition(Vector3 pos, ParcelScene scene = null);
-        bool IsCharacterInsideScene(ParcelScene scene);
-        Vector3 ConvertScenePositionToUnityPosition(ParcelScene scene);
-        Vector3 ConvertPointInSceneToUnityPosition(Vector3 pos, Vector2Int scenePoint);
-        List<GlobalScene> GetActivePortableExperienceScenes();
-        List<string> GetActivePortableExperienceIds();
+        bool TryGetScene(string id, out IParcelScene scene);
+        bool TryGetScene<T>(string id, out T scene) where T : class, IParcelScene;
+        IParcelScene GetScene(string id);
+        bool Contains(string id);
     }
 
     public class WorldState : IWorldState
     {
         public HashSet<string> readyScenes { get; set; } = new HashSet<string>();
-        public Dictionary<string, ParcelScene> loadedScenes { get; set; } = new Dictionary<string, ParcelScene>();
-        public List<ParcelScene> scenesSortedByDistance { get; set; } = new List<ParcelScene>();
+        public Dictionary<string, IParcelScene> loadedScenes { get; set; } = new Dictionary<string, IParcelScene>();
+        public List<IParcelScene> scenesSortedByDistance { get; set; } = new List<IParcelScene>();
 
         public List<string> globalSceneIds { get; set; }
         public string currentSceneId { get; set; }
@@ -38,19 +33,27 @@ namespace DCL
             globalSceneIds = new List<string>();
             currentSceneId = null;
             readyScenes = new HashSet<string>();
-            loadedScenes = new Dictionary<string, ParcelScene>();
-            scenesSortedByDistance = new List<ParcelScene>();
+            loadedScenes = new Dictionary<string, IParcelScene>();
+            scenesSortedByDistance = new List<IParcelScene>();
         }
 
-        public string TryToGetSceneCoordsID(string id)
+        public IParcelScene GetScene(string id)
         {
-            if (loadedScenes.ContainsKey(id))
-                return loadedScenes[id].sceneData.basePosition.ToString();
+            if (!Contains(id))
+                return null;
 
-            return id;
+            return loadedScenes[id];
         }
 
-        public bool TryGetScene(string id, out ParcelScene scene)
+        public bool Contains(string id)
+        {
+            if (string.IsNullOrEmpty(id) || !loadedScenes.ContainsKey(id))
+                return false;
+
+            return true;
+        }
+
+        public bool TryGetScene(string id, out IParcelScene scene)
         {
             scene = null;
 
@@ -61,59 +64,19 @@ namespace DCL
             return true;
         }
 
-        public Vector3 ConvertUnityToScenePosition(Vector3 pos, ParcelScene scene = null)
+        public bool TryGetScene<T>(string id, out T scene)
+            where T : class, IParcelScene
         {
+            scene = default(T);
+            bool result = TryGetScene(id, out IParcelScene baseScene);
+
+            if (result)
+                scene = baseScene as T;
+
             if (scene == null)
-            {
-                string sceneId = currentSceneId;
+                result = false;
 
-                if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
-                    scene = loadedScenes[currentSceneId];
-                else
-                    return pos;
-            }
-
-            Vector3 worldPosition = PositionUtils.UnityToWorldPosition(pos);
-            return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
-        }
-
-        public Vector3 ConvertSceneToUnityPosition(Vector3 pos, ParcelScene scene = null)
-        {
-            return ConvertPointInSceneToUnityPosition(pos, scene);
-        }
-
-        public Vector3 ConvertScenePositionToUnityPosition(ParcelScene scene = null)
-        {
-            return ConvertPointInSceneToUnityPosition(Vector3.zero, scene);
-        }
-
-        public Vector3 ConvertPointInSceneToUnityPosition(Vector3 pos, ParcelScene scene = null)
-        {
-            if (scene == null)
-            {
-                IWorldState worldState = Environment.i.world.state;
-                string sceneId = worldState.currentSceneId;
-
-                if (!string.IsNullOrEmpty(sceneId) && worldState.loadedScenes.ContainsKey(sceneId))
-                    scene = worldState.loadedScenes[worldState.currentSceneId];
-                else
-                    return pos;
-            }
-
-            return ConvertPointInSceneToUnityPosition(pos, new Vector2Int(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y));
-        }
-
-        public Vector3 ConvertPointInSceneToUnityPosition(Vector3 pos, Vector2Int scenePoint)
-        {
-            Vector3 scenePosition = Utils.GridToWorldPosition(scenePoint.x, scenePoint.y) + pos;
-            Vector3 worldPosition = PositionUtils.WorldToUnityPosition(scenePosition);
-
-            return worldPosition;
-        }
-
-        public bool IsCharacterInsideScene(ParcelScene scene)
-        {
-            return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
+            return result;
         }
 
         public HashSet<Vector2Int> GetAllLoadedScenesCoords()
@@ -123,50 +86,14 @@ namespace DCL
             // Create fast (hashset) collection of loaded parcels coords
             foreach (var element in loadedScenes)
             {
-                if (!element.Value.sceneLifecycleHandler.isReady) continue;
+                ParcelScene scene = element.Value as ParcelScene;
 
-                allLoadedParcelCoords.UnionWith(element.Value.parcels);
+                if (!scene.sceneLifecycleHandler.isReady) continue;
+
+                allLoadedParcelCoords.UnionWith(scene.parcels);
             }
 
             return allLoadedParcelCoords;
-        }
-
-        public List<GlobalScene> GetActivePortableExperienceScenes()
-        {
-            List<GlobalScene> activePortableExperienceScenes = new List<GlobalScene>();
-
-            foreach (var globalSceneId in globalSceneIds)
-            {
-                if (loadedScenes.TryGetValue(globalSceneId, out ParcelScene scene))
-                {
-                    GlobalScene peScene = scene as GlobalScene;
-                    if (peScene.isPortableExperience)
-                    {
-                        activePortableExperienceScenes.Add(peScene);
-                    }
-                }
-            }
-
-            return activePortableExperienceScenes;
-        }
-
-        public List<string> GetActivePortableExperienceIds()
-        {
-            List<string> currentSceneAndPortableExperiencesIds = new List<string>();
-
-            foreach (var globalSceneId in globalSceneIds)
-            {
-                if (loadedScenes.TryGetValue(globalSceneId, out ParcelScene scene))
-                {
-                    GlobalScene peScene = scene as GlobalScene;
-                    if (peScene.isPortableExperience)
-                    {
-                        currentSceneAndPortableExperiencesIds.Add(globalSceneId);
-                    }
-                }
-            }
-
-            return currentSceneAndPortableExperiencesIds;
         }
     }
 }

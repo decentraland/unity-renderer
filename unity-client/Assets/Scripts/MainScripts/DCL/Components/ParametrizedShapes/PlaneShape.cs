@@ -15,13 +15,13 @@ namespace DCL.Components
             public float height = 1f; // Plane
         }
 
-        public PlaneShape(ParcelScene scene) : base(scene)
+        public PlaneShape(IParcelScene scene) : base(scene)
         {
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.PLANE_SHAPE;
+            return (int) CLASS_ID.PLANE_SHAPE;
         }
 
         public override Mesh GenerateGeometry()
