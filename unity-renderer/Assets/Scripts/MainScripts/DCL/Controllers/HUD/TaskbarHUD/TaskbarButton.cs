@@ -16,6 +16,7 @@ public class TaskbarButton : MonoBehaviour
 
     public void Initialize()
     {
+        toggleButton.onClick.RemoveAllListeners();
         toggleButton.onClick.AddListener(OnToggleButtonClick);
         SetToggleState(false, useCallback: false);
     }

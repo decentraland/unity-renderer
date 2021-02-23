@@ -121,7 +121,7 @@ type Event =
   | 'Reset'
   | 'DeactivateRendering'
   | 'SetDebug'
-  | 'CreateUIScene'
+  | 'CreateGlobalScene'
   | 'ConfigureMinimapHUD'
   | 'ConfigureAvatarHUD'
   | 'ConfigureAvatarEditorHUD'
@@ -164,7 +164,7 @@ wss.on('connection', function connection(ws, req) {
     switch (data.type) {
       case 'Reset':
       case 'SetDebug':
-      case 'CreateUIScene':
+      case 'CreateGlobalScene':
       case 'ConfigureMinimapHUD':
       case 'ConfigureAvatarHUD':
       case 'ConfigureNotificationHUD':

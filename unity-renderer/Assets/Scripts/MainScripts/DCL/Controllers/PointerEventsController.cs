@@ -267,17 +267,18 @@ namespace DCL
 
         private void ProcessButtonUp(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, LayerMask pointerEventLayer, int globalLayer)
         {
+            IWorldState worldState = Environment.i.world.state;
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
             // Raycast for global pointer events
-            RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, null);
+            RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[worldState.currentSceneId]);
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
             if (pointerUpEvent != null)
             {
                 // Raycast for pointer event components
-                RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, null);
+                RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);
 
                 bool isOnClickComponentBlocked = IsBlockingOnClick(raycastInfoPointerEventLayer.hitInfo, raycastGlobalLayerHitInfo);
                 bool isSameEntityThatWasPressed = AreCollidersFromSameEntity(raycastInfoPointerEventLayer.hitInfo, lastPointerDownEventHitInfo);
@@ -291,39 +292,30 @@ namespace DCL
                 pointerUpEvent = null;
             }
 
-            string sceneId = Environment.i.world.state.currentSceneId;
+            ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, worldState.currentSceneId);
 
-            if (useRaycast && raycastGlobalLayerHitInfo.isValid)
+            // Raycast for global pointer events (for each PE scene)
+            List<string> currentPortableExperienceIds = worldState.GetActivePortableExperienceIds();
+            for (int i = 0; i < currentPortableExperienceIds.Count; i++)
             {
-                CollidersManager.i.GetColliderInfo(raycastGlobalLayerHitInfo.hit.collider, out ColliderInfo colliderInfo);
+                raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[currentPortableExperienceIds[i]]);
+                raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
-                WebInterface.ReportGlobalPointerUpEvent(
-                    buttonId,
-                    raycastInfoGlobalLayer.ray,
-                    raycastGlobalLayerHitInfo.hit.point,
-                    raycastGlobalLayerHitInfo.hit.normal,
-                    raycastGlobalLayerHitInfo.hit.distance,
-                    sceneId,
-                    colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
-                    colliderInfo.meshName,
-                    isHitInfoValid: true);
-            }
-            else
-            {
-                WebInterface.ReportGlobalPointerUpEvent(buttonId, raycastInfoGlobalLayer.ray, Vector3.zero, Vector3.zero, 0, sceneId);
+                ReportGlobalPointerUpEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentPortableExperienceIds[i]);
             }
         }
 
         private void ProcessButtonDown(WebInterface.ACTION_BUTTON buttonId, bool useRaycast, LayerMask pointerEventLayer, int globalLayer)
         {
+            IWorldState worldState = Environment.i.world.state;
             RaycastHitInfo raycastGlobalLayerHitInfo;
             Ray ray = GetRayFromCamera();
 
             // Raycast for pointer event components
-            RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, null);
+            RaycastResultInfo raycastInfoPointerEventLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, worldState.loadedScenes[worldState.currentSceneId]);
 
             // Raycast for global pointer events
-            RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, null);
+            RaycastResultInfo raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[worldState.currentSceneId]);
             raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
 
             bool isOnClickComponentBlocked = IsBlockingOnClick(raycastInfoPointerEventLayer.hitInfo, raycastGlobalLayerHitInfo);
@@ -353,8 +345,54 @@ namespace DCL
                 lastPointerDownEventHitInfo = raycastInfoPointerEventLayer.hitInfo;
             }
 
-            string sceneId = Environment.i.world.state.currentSceneId;
+            ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, worldState.currentSceneId);
 
+            // Raycast for global pointer events (for each PE scene)
+            List<string> currentPortableExperienceIds = worldState.GetActivePortableExperienceIds();
+            for (int i = 0; i < currentPortableExperienceIds.Count; i++)
+            {
+                raycastInfoGlobalLayer = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, worldState.loadedScenes[currentPortableExperienceIds[i]]);
+                raycastGlobalLayerHitInfo = raycastInfoGlobalLayer.hitInfo;
+
+                ReportGlobalPointerDownEvent(buttonId, useRaycast, raycastGlobalLayerHitInfo, raycastInfoGlobalLayer, currentPortableExperienceIds[i]);
+            }
+        }
+
+        private void ReportGlobalPointerUpEvent(
+            WebInterface.ACTION_BUTTON buttonId,
+            bool useRaycast,
+            RaycastHitInfo raycastGlobalLayerHitInfo,
+            RaycastResultInfo raycastInfoGlobalLayer,
+            string sceneId)
+        {
+            if (useRaycast && raycastGlobalLayerHitInfo.isValid)
+            {
+                CollidersManager.i.GetColliderInfo(raycastGlobalLayerHitInfo.hit.collider, out ColliderInfo colliderInfo);
+
+                WebInterface.ReportGlobalPointerUpEvent(
+                    buttonId,
+                    raycastInfoGlobalLayer.ray,
+                    raycastGlobalLayerHitInfo.hit.point,
+                    raycastGlobalLayerHitInfo.hit.normal,
+                    raycastGlobalLayerHitInfo.hit.distance,
+                    sceneId,
+                    colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                    colliderInfo.meshName,
+                    isHitInfoValid: true);
+            }
+            else
+            {
+                WebInterface.ReportGlobalPointerUpEvent(buttonId, raycastInfoGlobalLayer.ray, Vector3.zero, Vector3.zero, 0, sceneId);
+            }
+        }
+
+        private void ReportGlobalPointerDownEvent(
+            WebInterface.ACTION_BUTTON buttonId,
+            bool useRaycast,
+            RaycastHitInfo raycastGlobalLayerHitInfo,
+            RaycastResultInfo raycastInfoGlobalLayer,
+            string sceneId)
+        {
             if (useRaycast && raycastGlobalLayerHitInfo.isValid)
             {
                 CollidersManager.i.GetColliderInfo(raycastGlobalLayerHitInfo.hit.collider, out ColliderInfo colliderInfo);

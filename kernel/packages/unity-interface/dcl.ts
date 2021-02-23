@@ -1,11 +1,15 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, NO_ASSET_BUNDLES, PREVIEW, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from 'config'
-import { aborted } from 'shared/loading/ReportFatalError'
 import {
-  loadingScenes,
-  setLoadingScreen,
-  teleportTriggered
-} from 'shared/loading/types'
+  DEBUG,
+  EDITOR,
+  ENGINE_DEBUG_PANEL,
+  NO_ASSET_BUNDLES,
+  PREVIEW,
+  SCENE_DEBUG_PANEL,
+  SHOW_FPS_COUNTER
+} from 'config'
+import { aborted } from 'shared/loading/ReportFatalError'
+import { loadingScenes, setLoadingScreen, teleportTriggered } from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
 import { ILand, LoadableParcelScene, MappingsResponse, SceneJsonData } from 'shared/types'
 import {
@@ -21,7 +25,6 @@ import { renderStateObservable } from 'shared/world/worldState'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 import { UnityParcelScene } from './UnityParcelScene'
-
 import { loginCompleted } from 'shared/ethereum/provider'
 import { UnityInterface, unityInterface } from './UnityInterface'
 import { BrowserInterface, browserInterface } from './BrowserInterface'
@@ -118,7 +121,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   }
 
   if (!EDITOR) {
-    await startGlobalScene(unityInterface)
+    await startGlobalScene(unityInterface, 'dcl-gs-avatars', 'Avatars', hudWorkerUrl)
   }
 
   return {
@@ -134,14 +137,17 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   }
 }
 
-export async function startGlobalScene(unityInterface: UnityInterface) {
-  const sceneId = 'dcl-ui-scene'
-
+export async function startGlobalScene(
+  unityInterface: UnityInterface,
+  cid: string,
+  title: string,
+  fileContentUrl: string
+) {
   const scene = new UnityScene({
-    sceneId,
-    name: 'ui',
+    sceneId: cid,
+    name: title,
     baseUrl: location.origin,
-    main: hudWorkerUrl,
+    main: fileContentUrl,
     useFPSThrottling: false,
     data: {},
     mappings: []
@@ -151,7 +157,13 @@ export async function startGlobalScene(unityInterface: UnityInterface) {
 
   await ensureUiApis(worker)
 
-  unityInterface.CreateUIScene({ id: getParcelSceneID(scene), baseUrl: scene.data.baseUrl })
+  unityInterface.CreateGlobalScene({
+    id: getParcelSceneID(scene),
+    name: scene.data.name,
+    baseUrl: scene.data.baseUrl,
+    isPortableExperience: false,
+    contents: []
+  })
 }
 
 export async function startUnitySceneWorkers() {
@@ -194,7 +206,7 @@ export async function startUnitySceneWorkers() {
 // Builder functions
 let currentLoadedScene: SceneWorker | null
 
-export async function loadPreviewScene(ws?: string) {
+export async function loadPreviewScene(ws?: string): Promise<ILand> {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
   let lastId: string | null = null

@@ -45,12 +45,14 @@ namespace DCL
         void LoadParcelScenes(string decentralandSceneJSON);
         void UpdateParcelScenes(string decentralandSceneJSON);
         void UnloadAllScenesQueued();
-        void CreateUIScene(string json);
+        void CreateGlobalScene(string json);
         void IsolateScene(ParcelScene sceneToActive);
         void ReIntegrateIsolatedScene();
         event Action OnSortScenes;
         event Action<ParcelScene, string> OnOpenExternalUrlRequest;
         event Action<ParcelScene> OnNewSceneAdded;
+        event Action<GlobalScene> OnNewPortableExperienceSceneAdded;
+        event Action<string> OnNewPortableExperienceSceneRemoved;
         event SceneController.OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
     }
 
@@ -585,7 +587,7 @@ namespace DCL
 
                     characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
 
-                    if (scene.sceneData.id != worldState.globalSceneId && characterIsInsideScene)
+                    if (!worldState.globalSceneIds.Contains(scene.sceneData.id) && characterIsInsideScene)
                     {
                         worldState.currentSceneId = scene.sceneData.id;
                         break;
@@ -723,6 +725,16 @@ namespace DCL
             Environment.i.messaging.manager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
 
             Environment.i.messaging.manager.RemoveController(sceneKey);
+
+            IWorldState worldState = Environment.i.world.state;
+            if (worldState.loadedScenes.ContainsKey(sceneKey))
+            {
+                ParcelScene sceneToUnload = worldState.loadedScenes[sceneKey];
+                sceneToUnload.isPersistent = false;
+
+                if (sceneToUnload is GlobalScene globalScene && globalScene.isPortableExperience)
+                    OnNewPortableExperienceSceneRemoved?.Invoke(sceneKey);
+            }
         }
 
         public void UnloadParcelSceneExecute(string sceneId)
@@ -739,6 +751,7 @@ namespace DCL
             var scene = worldState.loadedScenes[sceneId];
 
             worldState.loadedScenes.Remove(sceneId);
+            worldState.globalSceneIds.Remove(sceneId);
 
             // Remove the scene id from the msg. priorities list
             worldState.scenesSortedByDistance.Remove(scene);
@@ -816,7 +829,7 @@ namespace DCL
             Environment.i.messaging.manager.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
 
-        public void CreateUIScene(string json)
+        public void CreateGlobalScene(string json)
         {
 #if UNITY_EDITOR
             DebugConfig debugConfig = DataStore.i.debugConfig;
@@ -824,41 +837,50 @@ namespace DCL
             if (debugConfig.soloScene && debugConfig.ignoreGlobalScenes)
                 return;
 #endif
-            CreateUISceneMessage uiScene = Utils.SafeFromJson<CreateUISceneMessage>(json);
+            CreateGlobalSceneMessage globalScene = Utils.SafeFromJson<CreateGlobalSceneMessage>(json);
 
-            string uiSceneId = uiScene.id;
+            string newGlobalSceneId = globalScene.id;
 
             IWorldState worldState = Environment.i.world.state;
 
-            if (worldState.loadedScenes.ContainsKey(uiSceneId))
+            if (worldState.loadedScenes.ContainsKey(newGlobalSceneId))
                 return;
 
-            var newGameObject = new GameObject("UI Scene - " + uiSceneId);
+            var newGameObject = new GameObject("Global Scene - " + newGlobalSceneId);
 
             var newScene = newGameObject.AddComponent<GlobalScene>();
             newScene.ownerController = this;
             newScene.unloadWithDistance = false;
             newScene.isPersistent = true;
+            newScene.sceneName = globalScene.name;
+            newScene.isPortableExperience = globalScene.isPortableExperience;
 
             LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
             {
-                id = uiSceneId,
+                id = newGlobalSceneId,
                 basePosition = new Vector2Int(0, 0),
-                baseUrl = uiScene.baseUrl
+                baseUrl = globalScene.baseUrl,
+                contents = globalScene.contents
             };
 
             newScene.SetData(data);
 
-            worldState.loadedScenes.Add(uiSceneId, newScene);
+            if (!string.IsNullOrEmpty(globalScene.icon))
+                newScene.iconUrl = newScene.contentProvider.GetContentsUrl(globalScene.icon);
+
+            worldState.loadedScenes.Add(newGlobalSceneId, newScene);
             OnNewSceneAdded?.Invoke(newScene);
 
-            worldState.globalSceneId = uiSceneId;
+            if (newScene.isPortableExperience)
+                OnNewPortableExperienceSceneAdded?.Invoke(newScene);
 
-            Environment.i.messaging.manager.AddControllerIfNotExists(this, worldState.globalSceneId, isGlobal: true);
+            worldState.globalSceneIds.Add(newGlobalSceneId);
+
+            Environment.i.messaging.manager.AddControllerIfNotExists(this, newGlobalSceneId, isGlobal: true);
 
             if (VERBOSE)
             {
-                Debug.Log($"Creating UI scene {uiSceneId}");
+                Debug.Log($"Creating Global scene {newGlobalSceneId}");
             }
         }
 
@@ -896,6 +918,8 @@ namespace DCL
         public event Action OnSortScenes;
         public event Action<ParcelScene, string> OnOpenExternalUrlRequest;
         public event Action<ParcelScene> OnNewSceneAdded;
+        public event Action<GlobalScene> OnNewPortableExperienceSceneAdded;
+        public event Action<string> OnNewPortableExperienceSceneRemoved;
 
         public delegate void OnOpenNFTDialogDelegate(string assetContractAddress, string tokenId, string comment);
 

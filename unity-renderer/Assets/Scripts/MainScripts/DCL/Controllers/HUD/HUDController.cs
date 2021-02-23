@@ -303,7 +303,12 @@ public class HUDController : MonoBehaviour
 
                     if (taskbarHud != null)
                     {
-                        taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i, FriendsController.i);
+                        taskbarHud.Initialize(
+                            InitialSceneReferences.i?.mouseCatcher,
+                            ChatController.i,
+                            FriendsController.i,
+                            Environment.i.world.sceneController,
+                            Environment.i.world.state);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.AddBuilderInWorldWindow(builderInWorldInititalHud);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -107,9 +107,9 @@ namespace DCL
             Environment.i.world.sceneController.UnloadScene(sceneId);
         }
 
-        public void CreateUIScene(string payload)
+        public void CreateGlobalScene(string payload)
         {
-            Environment.i.world.sceneController.CreateUIScene(payload);
+            Environment.i.world.sceneController.CreateGlobalScene(payload);
         }
 
         public void UpdateParcelScenes(string payload)
