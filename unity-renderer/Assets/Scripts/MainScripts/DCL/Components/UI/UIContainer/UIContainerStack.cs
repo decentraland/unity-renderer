@@ -33,13 +33,13 @@ namespace DCL.Components
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
-        public UIContainerStack(ParcelScene scene) : base(scene)
+        public UIContainerStack(IParcelScene scene) : base(scene)
         {
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_CONTAINER_STACK;
+            return (int) CLASS_ID.UI_CONTAINER_STACK;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)

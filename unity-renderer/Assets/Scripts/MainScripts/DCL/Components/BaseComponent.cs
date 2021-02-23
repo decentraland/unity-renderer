@@ -49,8 +49,7 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        [NonSerialized]
-        public ParcelScene scene;
+        public IParcelScene scene;
 
         [NonSerialized]
         public DecentralandEntity entity;

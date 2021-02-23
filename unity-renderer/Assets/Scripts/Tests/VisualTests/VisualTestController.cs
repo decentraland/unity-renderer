@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 
 public class VisualTestController : MonoBehaviour
@@ -46,7 +47,7 @@ public class VisualTestController : MonoBehaviour
 
         yield return null;
 
-        var scene = Environment.i.world.state.loadedScenes["0,0"];
+        var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
         string textureUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png";
 
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),

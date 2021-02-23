@@ -12,13 +12,13 @@ namespace DCL.Components
         {
         }
 
-        public SphereShape(ParcelScene scene) : base(scene)
+        public SphereShape(IParcelScene scene) : base(scene)
         {
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.SPHERE_SHAPE;
+            return (int) CLASS_ID.SPHERE_SHAPE;
         }
 
         public static Mesh mesh = null;
@@ -30,6 +30,7 @@ namespace DCL.Components
             {
                 mesh = PrimitiveMeshBuilder.BuildSphere(1f);
             }
+
             meshUses++;
 
             return mesh;

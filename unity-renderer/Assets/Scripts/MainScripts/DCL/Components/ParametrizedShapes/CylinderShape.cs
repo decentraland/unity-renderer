@@ -19,11 +19,13 @@ namespace DCL.Components
             public float arc = 360f;
         }
 
-        public CylinderShape(ParcelScene scene) : base(scene) { }
+        public CylinderShape(IParcelScene scene) : base(scene)
+        {
+        }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.CYLINDER_SHAPE;
+            return (int) CLASS_ID.CYLINDER_SHAPE;
         }
 
         public override Mesh GenerateGeometry()
@@ -33,17 +35,17 @@ namespace DCL.Components
 
         protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
         {
-            if(currentMesh == null) return true;
+            if (currentMesh == null) return true;
 
             Model newCylinderModel = newModel as Model;
 
-            return  newCylinderModel.radius != model.radius
-                    || newCylinderModel.radiusTop != model.radiusTop
-                    || newCylinderModel.radiusBottom != model.radiusBottom
-                    || newCylinderModel.segmentsHeight != model.segmentsHeight
-                    || newCylinderModel.segmentsRadial != model.segmentsRadial
-                    || newCylinderModel.openEnded != model.openEnded
-                    || newCylinderModel.arc != model.arc;
+            return newCylinderModel.radius != model.radius
+                   || newCylinderModel.radiusTop != model.radiusTop
+                   || newCylinderModel.radiusBottom != model.radiusBottom
+                   || newCylinderModel.segmentsHeight != model.segmentsHeight
+                   || newCylinderModel.segmentsRadial != model.segmentsRadial
+                   || newCylinderModel.openEnded != model.openEnded
+                   || newCylinderModel.arc != model.arc;
         }
     }
 }

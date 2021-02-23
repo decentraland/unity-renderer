@@ -27,7 +27,7 @@ namespace DCL
 
         public Model model = new Model();
 
-        public virtual void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
+        public virtual void Setup(IParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
         }
 

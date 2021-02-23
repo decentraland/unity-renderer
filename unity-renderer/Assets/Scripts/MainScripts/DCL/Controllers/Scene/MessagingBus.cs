@@ -305,7 +305,7 @@ namespace DCL
 
         private void LogMessage(QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
-            string finalTag = Environment.i.world.state.TryToGetSceneCoordsID(bus.debugTag);
+            string finalTag = WorldStateUtils.TryToGetSceneCoordsID(bus.debugTag);
 
             if (logType)
             {

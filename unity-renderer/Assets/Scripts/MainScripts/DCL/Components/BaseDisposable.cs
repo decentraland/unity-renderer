@@ -2,6 +2,7 @@ using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL.Components
@@ -10,6 +11,7 @@ namespace DCL.Components
     {
         public virtual string componentName => GetType().Name;
         public string id;
+        public IParcelScene scene { get; protected set; }
 
         public abstract int GetClassId();
 
@@ -25,7 +27,6 @@ namespace DCL.Components
 
         private string oldSerialization = null;
 
-        public DCL.Controllers.ParcelScene scene { get; }
         public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
 
@@ -34,7 +35,7 @@ namespace DCL.Components
             updateHandler.ApplyChangesIfModified(json);
         }
 
-        public BaseDisposable(DCL.Controllers.ParcelScene scene)
+        public BaseDisposable(IParcelScene scene)
         {
             this.scene = scene;
             updateHandler = CreateUpdateHandler();
@@ -102,11 +103,6 @@ namespace DCL.Components
         public abstract object GetModel();
 
         public abstract IEnumerator ApplyChanges(string newJson);
-
-        public MonoBehaviour GetCoroutineOwner()
-        {
-            return scene;
-        }
 
         public virtual ComponentUpdateHandler CreateUpdateHandler()
         {

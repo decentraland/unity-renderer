@@ -29,7 +29,7 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText(ParcelScene scene) : base(scene)
+        public UIInputText(IParcelScene scene) : base(scene)
         {
         }
 

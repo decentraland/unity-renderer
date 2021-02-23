@@ -5,6 +5,7 @@ using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -43,7 +44,7 @@ public class IntegrationTestController : MonoBehaviour
 
         yield return new WaitForAllMessagesProcessed();
 
-        var scene = Environment.i.world.state.loadedScenes[sceneName];
+        ParcelScene scene = Environment.i.world.state.GetScene(sceneName) as ParcelScene;
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
@@ -78,7 +79,7 @@ public class IntegrationTestController : MonoBehaviour
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject == null, "meshGameObject must be null");
 
         // 1st message
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        TestHelpers.CreateAndSetShape(scene as ParcelScene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         {
             scene.EntityComponentCreateOrUpdate(
@@ -105,7 +106,7 @@ public class IntegrationTestController : MonoBehaviour
 
     public IEnumerator Verify()
     {
-        var scene = Environment.i.world.state.loadedScenes[sceneName];
+        var scene = Environment.i.world.state.GetScene(sceneName) as ParcelScene;
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);

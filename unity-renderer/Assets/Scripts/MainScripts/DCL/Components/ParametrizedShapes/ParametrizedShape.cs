@@ -25,7 +25,7 @@ namespace DCL.Components
 
         public Mesh currentMesh { get; protected set; }
 
-        public ParametrizedShape(ParcelScene scene) : base(scene)
+        public ParametrizedShape(IParcelScene scene) : base(scene)
         {
             OnAttach += OnShapeAttached;
             OnDetach += OnShapeDetached;

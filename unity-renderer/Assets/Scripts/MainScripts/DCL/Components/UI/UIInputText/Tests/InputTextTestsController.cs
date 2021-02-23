@@ -17,7 +17,7 @@ namespace DCL
 
             yield return new WaitForSeconds(0.01f);
 
-            scene = sceneController.CreateTestScene();
+            scene = sceneController.CreateTestScene() as ParcelScene;
 
             yield return new WaitForSeconds(0.01f);
 

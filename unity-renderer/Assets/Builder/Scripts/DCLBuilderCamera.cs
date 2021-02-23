@@ -7,11 +7,11 @@ namespace Builder
 {
     public class DCLBuilderCamera : MonoBehaviour
     {
-
         public static System.Action<Camera, float> OnCameraZoomChanged;
 
         [Header("References")]
         public Transform pitchPivot;
+
         public Transform yawPivot;
         public Transform rootPivot;
         public Camera builderCamera;
@@ -19,17 +19,24 @@ namespace Builder
         [Space()]
         [Header("Input Settings")]
         public float rotationSpeed = 5f;
+
         [Header("Pitch")]
         public float pitchAmount = 10f;
+
         public float pitchAngleMin = 0f;
         public float pitchAngleMax = 89f;
+
         [Header("Yaw")]
         public float yawAmount = 10f;
+
         [Header("Pan")]
         public float panSpeed = 5f;
+
         public float panAmount = 0.2f;
+
         [Header("Zoom")]
         public float zoomSpeed = 15f;
+
         public float zoomAmount = 5f;
 
         private float pitchCurrent = 0;
@@ -73,6 +80,7 @@ namespace Builder
             {
                 yawCurrent = yawTarget;
             }
+
             yawPivot.localRotation = Quaternion.Euler(0, yawCurrent, 0);
 
             pitchCurrent += (pitchTarget - pitchCurrent) * Time.deltaTime * rotationSpeed;
@@ -80,6 +88,7 @@ namespace Builder
             {
                 pitchCurrent = pitchTarget;
             }
+
             pitchPivot.localRotation = Quaternion.Euler(pitchCurrent, 0, 0);
 
             float zoomPrev = zoomCurrent;
@@ -93,6 +102,7 @@ namespace Builder
                 panCurrent = panCurrent + panOffset.normalized * sqDist * panSpeed * Time.deltaTime;
                 rootPivot.localPosition = panCurrent;
             }
+
             if (zoomPrev != zoomCurrent)
             {
                 OnCameraZoomChanged?.Invoke(builderCamera, zoomCurrent);
@@ -116,6 +126,7 @@ namespace Builder
                 DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
                 DCLBuilderConfig.OnConfigChanged += OnConfigChanged;
             }
+
             isGameObjectActive = true;
         }
 
@@ -243,7 +254,7 @@ namespace Builder
             return !isObjectBeingDrag;
         }
 
-        private void CalcSceneBoundaries(ParcelScene scene)
+        private void CalcSceneBoundaries(IParcelScene scene)
         {
             sceneBoundaryMin = Vector2.zero;
             sceneBoundaryMax = Vector2.zero;

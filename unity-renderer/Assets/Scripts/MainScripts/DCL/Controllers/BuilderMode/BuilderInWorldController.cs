@@ -247,7 +247,7 @@ public class BuilderInWorldController : MonoBehaviour
         multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
-        if(HUDController.i.builderInWorldInititalHud != null)
+        if (HUDController.i.builderInWorldInititalHud != null)
             HUDController.i.builderInWorldInititalHud.OnEnterEditMode -= TryStartEnterEditMode;
 
         if (HUDController.i.builderInWorldMainHud != null)
@@ -275,7 +275,6 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
 
         CleanItems();
-
     }
 
     private void Update()
@@ -292,7 +291,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (checkerInsideSceneOptimizationCounter >= 60)
         {
-
             if (!sceneToEdit.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
                 ExitEditMode();
             checkerInsideSceneOptimizationCounter = 0;
@@ -302,7 +300,7 @@ public class BuilderInWorldController : MonoBehaviour
             checkerInsideSceneOptimizationCounter++;
         }
 
-        if(checkerSceneLimitsOptimizationCounter >= 10)
+        if (checkerSceneLimitsOptimizationCounter >= 10)
         {
             checkerSceneLimitsOptimizationCounter = 0;
             CheckPublishConditions();
@@ -322,13 +320,13 @@ public class BuilderInWorldController : MonoBehaviour
     {
         bool canPublishScene = true;
 
-        if(!sceneToEdit.metricsController.IsInsideTheLimits())
+        if (!sceneToEdit.metricsController.IsInsideTheLimits())
         {
             HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(false);
             return;
         }
 
-        if(!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
+        if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
         {
             HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(false);
             return;
@@ -363,8 +361,8 @@ public class BuilderInWorldController : MonoBehaviour
     public void CatalogLoaded()
     {
         catalogAdded = true;
-        if(HUDController.i.builderInWorldMainHud != null)
-           HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
         StartEnterEditMode();
     }
 
@@ -515,8 +513,8 @@ public class BuilderInWorldController : MonoBehaviour
         Environment.i.world.sceneController.UpdateParcelScenesExecute(data);
 
 
-        DCLName name = (DCLName)sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
-        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit)sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
+        DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
+        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
 
         DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, currentActiveMode.GetCreatedEntityPoint(), editionGO.transform.position);
         entity.isFloor = isFloor;
@@ -658,14 +656,15 @@ public class BuilderInWorldController : MonoBehaviour
                     HUDController.i.builderInWorldMainHud.ActivateFirstPersonModeUI();
                     HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(false);
                 }
+
                 cursorGO.SetActive(true);
                 break;
             case EditModeState.Editor:
                 cursorGO.SetActive(false);
                 currentActiveMode = editorMode;
                 isAdvancedModeActive = true;
-                if(HUDController.i.builderInWorldMainHud != null)
-                   HUDController.i.builderInWorldMainHud.ActivateGodModeUI();
+                if (HUDController.i.builderInWorldMainHud != null)
+                    HUDController.i.builderInWorldMainHud.ActivateGodModeUI();
 
                 avatarRenderer.SetAvatarVisibility(false);
                 break;
@@ -921,7 +920,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         FindSceneToEdit();
 
-        if(!UserHasPermissionOnParcelScene(sceneToEdit))
+        if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
             Notification.Model notificationModel = new Notification.Model();
             notificationModel.message = "You don't have permissions to operate this land";
@@ -984,7 +983,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
- 
 
         ActivateBuilderInWorldCamera();
         if (IsNewScene())
@@ -1052,12 +1050,12 @@ public class BuilderInWorldController : MonoBehaviour
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = CreateSceneObject(floorSceneObject,false,true);
+            DCLBuilderInWorldEntity decentralandEntity = CreateSceneObject(floorSceneObject, false, true);
             decentralandEntity.rootEntity.OnShapeUpdated += OnFloorLoaded;
-            decentralandEntity.transform.position = Environment.i.world.state.ConvertPointInSceneToUnityPosition(initialPosition, parcel);
+            decentralandEntity.transform.position = WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel);
             dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
 
-            GameObject floorPlaceHolder =  Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
+            GameObject floorPlaceHolder = Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
             floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
             builderInWorldBridge.EntityTransformReport(decentralandEntity.rootEntity, sceneToEdit);
         }

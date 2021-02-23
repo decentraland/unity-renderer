@@ -16,11 +16,13 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
 {
     [Header("Design variables")]
     public float duplicateOffset = 2f;
+
     public float msBetweenTransformUpdates = 2000;
 
 
     [Header("Prefab References")]
     public OutlinerController outlinerController;
+
     public BuilderInWorldController buildModeController;
     public ActionController actionController;
     public BuilderInWorldBridge builderInWorldBridge;
@@ -33,6 +35,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
     [Header("InputActions")]
     [SerializeField]
     internal InputAction_Trigger hideSelectedEntitiesAction;
+
     [SerializeField]
     internal InputAction_Trigger showAllEntitiesAction;
 
@@ -160,7 +163,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
         if (entityInPointer == null)
             return false;
 
-        foreach(DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             if (entityInPointer == entity)
                 return true;
@@ -185,10 +188,11 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
     {
         DeselectEntities();
 
-        foreach(DCLBuilderInWorldEntity entity in convertedEntities.Values)
+        foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
             entity.Delete();
         }
+
         convertedEntities.Clear();
     }
 
@@ -315,7 +319,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
     {
         foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
-           if (!entity.IsVisible)
+            if (!entity.IsVisible)
                 entity.ToggleShowStatus();
         }
     }
@@ -353,7 +357,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
             HUDController.i.builderInWorldMainHud.ShowEntityInformation();
             HUDController.i.builderInWorldMainHud.EntityInformationSetEntity(entityEditable, sceneToEdit);
         }
- 
+
         outlinerController.CancelAllOutlines();
         return true;
     }
@@ -471,7 +475,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
 
         if (data.nftComponent != null)
         {
-            NFTShape nftShape = (NFTShape)sceneToEdit.SharedComponentCreate(data.nftComponent.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
+            NFTShape nftShape = (NFTShape) sceneToEdit.SharedComponentCreate(data.nftComponent.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
             nftShape.model = new NFTShape.Model();
             nftShape.model.color = data.nftComponent.color.ToColor();
             nftShape.model.src = data.nftComponent.src;
@@ -489,7 +493,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
     {
         DecentralandEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
 
-        DCLTransform.model.position = Environment.i.world.state.ConvertUnityToScenePosition(entryPoint, parcelScene);
+        DCLTransform.model.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
         Vector3 pointToLookAt = Camera.main.transform.position;
         pointToLookAt.y = editionGOPosition.y;
@@ -571,7 +575,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
             {
                 entityNameList.Add(entityName);
             }
-          
+
             return entityToEdit;
         }
         else
@@ -605,13 +609,14 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
     {
         List<DCLBuilderInWorldEntity> entitiesToDelete = new List<DCLBuilderInWorldEntity>();
 
-        foreach(DCLBuilderInWorldEntity entity in convertedEntities.Values)
+        foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
-            if(entity.isFloor)
+            if (entity.isFloor)
             {
                 entitiesToDelete.Add(entity);
             }
         }
+
         foreach (DCLBuilderInWorldEntity entity in entitiesToDelete)
             DeleteEntity(entity);
     }
@@ -719,7 +724,7 @@ public class BuilderInWorldEntityHandler : MonoBehaviour
         builderInWorldBridge.UpdateSmartItemComponent(entityToUpdate, sceneToEdit);
     }
 
-    public void SetEntityName(DCLBuilderInWorldEntity entityToApply,string newName)
+    public void SetEntityName(DCLBuilderInWorldEntity entityToApply, string newName)
     {
         string currentName = entityToApply.GetDescriptiveName();
 

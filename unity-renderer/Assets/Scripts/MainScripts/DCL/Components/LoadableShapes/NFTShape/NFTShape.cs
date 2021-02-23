@@ -16,13 +16,13 @@ namespace DCL.Components
 
         public override string componentName => "NFT Shape";
 
-        public NFTShape(ParcelScene scene) : base(scene)
+        public NFTShape(IParcelScene scene) : base(scene)
         {
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.NFT_SHAPE;
+            return (int) CLASS_ID.NFT_SHAPE;
         }
 
         protected override void AttachShape(DecentralandEntity entity)

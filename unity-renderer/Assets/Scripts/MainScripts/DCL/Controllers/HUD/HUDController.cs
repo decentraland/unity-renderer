@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsNotifications;
@@ -219,6 +220,7 @@ public class HUDController : MonoBehaviour
                 {
                     profileHud?.AddBackpackWindow(avatarEditorHud);
                 }
+
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement<NotificationHUDController>(configuration, hudElementId);
@@ -230,6 +232,7 @@ public class HUDController : MonoBehaviour
                 {
                     avatarEditorHud.Initialize(ownUserProfile, wearableCatalog);
                 }
+
                 break;
             case HUDElementID.SETTINGS_PANEL:
                 CreateHudElement<SettingsPanelHUDController>(configuration, hudElementId);
@@ -318,8 +321,8 @@ public class HUDController : MonoBehaviour
                             InitialSceneReferences.i?.mouseCatcher,
                             ChatController.i,
                             FriendsController.i,
-                            Environment.i.world.sceneController,
-                            Environment.i.world.state);
+                            DCL.Environment.i.world.sceneController,
+                            DCL.Environment.i.world.state);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.AddBuilderInWorldWindow(builderInWorldInititalHud);
@@ -366,6 +369,7 @@ public class HUDController : MonoBehaviour
                 {
                     CreateHudElement<EmailPromptHUDController>(configuration, hudElementId);
                 }
+
                 emailPromptHud?.SetEnable(configuration.active);
                 break;
             case HUDElementID.EXPLORE_HUD:
@@ -375,6 +379,7 @@ public class HUDController : MonoBehaviour
                     exploreHud.Initialize(FriendsController.i);
                     taskbarHud?.AddExploreWindow(exploreHud);
                 }
+
                 break;
             case HUDElementID.HELP_AND_SUPPORT_HUD:
                 CreateHudElement<HelpAndSupportHUDController>(configuration, hudElementId);
@@ -386,6 +391,7 @@ public class HUDController : MonoBehaviour
                 {
                     minimapHud?.AddUsersAroundIndicator(usersAroundListHud);
                 }
+
                 break;
             case HUDElementID.GRAPHIC_CARD_WARNING:
                 CreateHudElement<GraphicCardWarningHUDController>(configuration, hudElementId);
@@ -554,7 +560,6 @@ public class HUDController : MonoBehaviour
 
         hudElements.Clear();
     }
-
 
 
     public IHUD GetHUDElement(HUDElementID id)

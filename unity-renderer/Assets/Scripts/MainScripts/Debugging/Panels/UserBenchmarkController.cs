@@ -152,7 +152,12 @@ namespace DCL
             {
                 var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
 
-                var activeScene = Environment.i.world.state.loadedScenes.Values.FirstOrDefault(x => x.sceneData.parcels != null && x.sceneData.parcels.Any(y => y == currentPos));
+                IWorldState worldState = Environment.i.world.state;
+
+                ParcelScene activeScene = worldState.loadedScenes.Values.FirstOrDefault(
+                    x => x.sceneData.parcels != null
+                         && x.sceneData.parcels.Any(y => y == currentPos)) as ParcelScene;
+
                 if (activeScene != null && activeScene.metricsController != null)
                 {
                     var metrics = activeScene.metricsController.GetModel();

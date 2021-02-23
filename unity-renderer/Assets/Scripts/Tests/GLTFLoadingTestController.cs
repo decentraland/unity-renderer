@@ -2,6 +2,7 @@
 using DCL.Helpers;
 using System;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityGLTF;
@@ -23,7 +24,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);
 
-        var scene = Environment.i.world.state.loadedScenes["0,0"];
+        var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
 
         // FULL GLB
         TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),

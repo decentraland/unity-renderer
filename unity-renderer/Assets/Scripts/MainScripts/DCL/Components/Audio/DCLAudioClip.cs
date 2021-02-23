@@ -35,7 +35,7 @@ namespace DCL.Components
         public LoadState loadingState { get; private set; }
         public event Action<DCLAudioClip> OnLoadingFinished;
 
-        public DCLAudioClip(ParcelScene scene) : base(scene)
+        public DCLAudioClip(IParcelScene scene) : base(scene)
         {
             model = new Model();
 
@@ -44,7 +44,7 @@ namespace DCL.Components
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.AUDIO_CLIP;
+            return (int) CLASS_ID.AUDIO_CLIP;
         }
 
         void OnComplete(AudioClip clip)
@@ -111,7 +111,7 @@ namespace DCL.Components
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
-            if(isDisposed)
+            if (isDisposed)
                 yield break;
 
             model = Utils.SafeFromJson<Model>(newJson);
