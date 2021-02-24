@@ -93,8 +93,10 @@ namespace DCL.Huds.QuestsPanel
 
         public void Dispose()
         {
+            view.Dispose();
             toggleQuestsPanel.OnTriggered -= OnToggleActionTriggered;
-            questsController.OnQuestProgressed -= OnQuestProgressed;
+            if (questsController != null)
+                questsController.OnQuestProgressed -= OnQuestProgressed;
             quests.OnAdded -= OnQuestAdded;
             quests.OnRemoved -= OnQuestRemoved;
             quests.OnSet -= OnQuestSet;

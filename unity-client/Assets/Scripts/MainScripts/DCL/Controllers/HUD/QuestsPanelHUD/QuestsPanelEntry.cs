@@ -126,6 +126,11 @@ namespace DCL.Huds.QuestsPanel
 
         private void OnDestroy()
         {
+            if (thumbnailPromise != null)
+            {
+                thumbnailPromise.ClearEvents();
+                AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
+            }
             pinnedQuests.OnAdded -= OnUnpinnedQuest;
             pinnedQuests.OnRemoved -= OnPinnedQuests;
         }

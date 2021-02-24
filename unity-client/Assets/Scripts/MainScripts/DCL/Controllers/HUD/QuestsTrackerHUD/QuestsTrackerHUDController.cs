@@ -83,7 +83,9 @@ namespace DCL.Huds.QuestsTracker
 
         public void Dispose()
         {
-            questsController.OnQuestProgressed -= OnQuestProgressed;
+            view.Dispose();
+            if (questsController != null)
+                questsController.OnQuestProgressed -= OnQuestProgressed;
             pinnedQuests.OnAdded -= OnPinnedQuest;
             pinnedQuests.OnRemoved -= OnUnpinnedQuest;
             pinnedQuests.OnSet -= OnPinnedQuestsSet;

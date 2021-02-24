@@ -56,9 +56,13 @@ namespace DCL.Huds.QuestsNotifications
 
         public void Dispose()
         {
-            questsController.OnSectionCompleted -= OnSectionCompleted;
-            questsController.OnSectionUnlocked -= OnSectionUnlocked;
-            questsController.OnQuestCompleted -= OnQuestCompleted;
+            if (questsController != null)
+            {
+                view?.Dispose();
+                questsController.OnSectionCompleted -= OnSectionCompleted;
+                questsController.OnSectionUnlocked -= OnSectionUnlocked;
+                questsController.OnQuestCompleted -= OnQuestCompleted;
+            }
         }
 
         internal virtual IQuestsNotificationsHUDView CreateView() => QuestsNotificationsHUDView.Create();

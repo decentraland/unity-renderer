@@ -10,6 +10,7 @@ namespace DCL.Huds.QuestsNotifications
         void ShowSectionUnlocked(QuestSection section);
         void ShowQuestCompleted(QuestModel quest);
         void SetVisibility(bool visible);
+        void Dispose();
     }
 
     public class QuestsNotificationsHUDView : MonoBehaviour, IQuestsNotificationsHUDView
@@ -63,6 +64,10 @@ namespace DCL.Huds.QuestsNotifications
         public void SetVisibility(bool visible)
         {
             gameObject.SetActive(visible);
+        }
+        public void Dispose()
+        {
+            Destroy(gameObject);
         }
 
         private IEnumerator ProcessSectionsNotificationQueue()

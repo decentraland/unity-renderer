@@ -39,9 +39,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
         QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, null, CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
-        mockQuestController.DidNotReceiveWithAnyArgs().UpdateQuestProgress("");
         mockQuestController.DidNotReceiveWithAnyArgs().UpdateQuestProgress(new QuestModel());
-        mockQuestController.DidNotReceiveWithAnyArgs().InitializeQuests("");
         mockQuestController.DidNotReceiveWithAnyArgs().InitializeQuests(new List<QuestModel>());
     }
 

@@ -149,5 +149,14 @@ namespace DCL.Huds.QuestsPanel
                 rectTransform.ForceUpdateLayout();
             }
         }
+
+        private void OnDestroy()
+        {
+            if (thumbnailPromise != null)
+            {
+                thumbnailPromise.ClearEvents();
+                AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
+            }
+        }
     }
 }

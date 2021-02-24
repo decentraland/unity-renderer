@@ -438,11 +438,11 @@ export class UnityInterface {
   // *********************************************************************************
 
   InitQuestsInfo(rendererQuests: QuestForRenderer[]) {
-    this.SendMessageToUnity('Main', 'InitializeQuests', JSON.stringify(rendererQuests))
+    this.SendMessageToUnity('Bridges', 'InitializeQuests', JSON.stringify(rendererQuests))
   }
 
   UpdateQuestProgress(rendererQuest: QuestForRenderer) {
-    this.SendMessageToUnity('Main', 'UpdateQuestProgress', JSON.stringify(rendererQuest))
+    this.SendMessageToUnity('Bridges', 'UpdateQuestProgress', JSON.stringify(rendererQuest))
   }
 
   // *********************************************************************************

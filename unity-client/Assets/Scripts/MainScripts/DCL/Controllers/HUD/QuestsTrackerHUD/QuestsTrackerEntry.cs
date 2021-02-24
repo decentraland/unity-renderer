@@ -127,5 +127,14 @@ namespace DCL.Huds.QuestsTracker
         {
             pinQuestToggle.SetIsOnWithoutNotify(isPinned);
         }
+
+        private void OnDestroy()
+        {
+            if (iconPromise != null)
+            {
+                iconPromise.ClearEvents();
+                AssetPromiseKeeper_Texture.i.Forget(iconPromise);
+            }
+        }
     }
 }
