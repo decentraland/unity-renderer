@@ -15,6 +15,7 @@ namespace DCL.Huds.QuestsTracker
         void UnpinQuest(string questId);
         void ClearEntries();
         void SetVisibility(bool visibility);
+        void Dispose();
     }
 
     public class QuestsTrackerHUDView : MonoBehaviour, IQuestsTrackerHUDView
@@ -43,7 +44,8 @@ namespace DCL.Huds.QuestsTracker
 
         private void Awake()
         {
-            StartCoroutine(DispatchEntriesRoutine());
+            StartCoroutine(AddEntriesRoutine());
+            StartCoroutine(RemoveEntriesRoutine());
         }
 
         public void UpdateQuest(string questId)
@@ -124,13 +126,6 @@ namespace DCL.Huds.QuestsTracker
                 layoutRebuildRequested = false;
                 Utils.ForceRebuildLayoutImmediate(questsContainer);
             }
-
-            for (int i = 0; i < ENTRIES_PER_FRAME && questsToBeAdded.Count > 0; i++)
-            {
-                string questId = questsToBeAdded.First();
-                questsToBeAdded.RemoveAt(0);
-                AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
-            }
         }
 
         internal void RefreshLastUpdateTime(string questId, bool isPinned)
@@ -158,7 +153,26 @@ namespace DCL.Huds.QuestsTracker
             gameObject.SetActive(visibility);
         }
 
-        private IEnumerator DispatchEntriesRoutine()
+        public void Dispose()
+        {
+            Destroy(gameObject);
+        }
+
+        private IEnumerator AddEntriesRoutine()
+        {
+            while (true)
+            {
+                for (int i = 0; i < ENTRIES_PER_FRAME && questsToBeAdded.Count > 0; i++)
+                {
+                    string questId = questsToBeAdded.First();
+                    questsToBeAdded.RemoveAt(0);
+                    AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
+                }
+                yield return null;
+            }
+        }
+
+        private IEnumerator RemoveEntriesRoutine()
         {
             while (true)
             {

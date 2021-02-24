@@ -404,15 +404,18 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement<QuestsPanelHUDController>(configuration, hudElementId);
-                questsPanelHUD.Initialize(QuestsController.i);
+                if(configuration.active)
+                    questsPanelHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.QUESTS_TRACKER:
                 CreateHudElement<QuestsTrackerHUDController>(configuration, hudElementId);
-                questsTrackerHUD.Initialize(QuestsController.i);
+                if(configuration.active)
+                    questsTrackerHUD.Initialize(QuestsController.i);
                 break;
             case HUDElementID.QUESTS_NOTIFICATIONS:
                 CreateHudElement<QuestsNotificationsHUDController>(configuration, hudElementId);
-                questsNotificationsHUD.Initialize(QuestsController.i);
+                if(configuration.active)
+                    questsNotificationsHUD.Initialize(QuestsController.i);
                 break;
         }
 

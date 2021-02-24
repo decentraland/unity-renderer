@@ -12,6 +12,7 @@ namespace DCL.Huds.QuestsPanel
         void ClearQuests();
         void SetVisibility(bool active);
         bool isVisible { get; }
+        void Dispose();
     }
 
     public class QuestsPanelHUDView : MonoBehaviour, IQuestsPanelHUDView
@@ -131,5 +132,10 @@ namespace DCL.Huds.QuestsPanel
         }
 
         public bool isVisible => gameObject.activeSelf;
+
+        public void Dispose()
+        {
+            Destroy(gameObject);
+        }
     }
 }

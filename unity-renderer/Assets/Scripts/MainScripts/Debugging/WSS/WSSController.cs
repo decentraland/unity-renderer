@@ -482,6 +482,8 @@ namespace DCL
                                 break;
                             case "SetKernelConfiguration":
                             case "UpdateRealmsInfo":
+                            case "InitializeQuests":
+                            case "UpdateQuestProgress":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "SetDisableAssetBundles":
@@ -490,12 +492,6 @@ namespace DCL
                                 break;
                             case "PublishSceneResult":
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
-                                break;
-                            case "InitializeQuests":
-                                DCL.QuestsController.QuestsController.i.InitializeQuests(msg.payload);
-                                break;
-                            case "UpdateQuestProgress":
-                                DCL.QuestsController.QuestsController.i.UpdateQuestProgress(msg.payload);
                                 break;
                             default:
                                 Debug.Log(
