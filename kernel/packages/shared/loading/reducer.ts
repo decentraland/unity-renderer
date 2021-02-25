@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux'
 import { SCENE_FAIL, SCENE_LOAD, SCENE_START, UPDATE_STATUS_MESSAGE } from './actions'
 import {
-  ERROR_MESSAGE,
+  FATAL_ERROR,
   ExecutionLifecycleEvent,
   ExecutionLifecycleEventsList,
   EXPERIENCE_STARTED,
@@ -90,7 +90,7 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   if (action.type === SET_LOADING_WAIT_TUTORIAL) {
     return { ...state, waitingTutorial: action.payload.waiting }
   }
-  if (action.type === ERROR_MESSAGE) {
+  if (action.type === FATAL_ERROR) {
     return { ...state, error: action.payload.type }
   }
   if (action.type === SET_ERROR_TLD) {

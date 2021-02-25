@@ -1,8 +1,6 @@
 import { setLoadingScreenVisible } from 'unity-interface/dcl'
 
 import { disconnect, sendToMordor } from 'shared/comms'
-import { bringDownClientAndShowError } from 'shared/loading/ReportFatalError'
-import { NEW_LOGIN } from 'shared/loading/types'
 import { RootState, StoreContainer } from 'shared/store/rootTypes'
 
 import { getCurrentIdentity, hasWallet as hasWalletSelector } from './selectors'
@@ -99,12 +97,6 @@ export class Session {
 
   async redirectToSignUp() {
     window.location.search += '&show_wallet=1'
-  }
-
-  disable() {
-    bringDownClientAndShowError(NEW_LOGIN)
-    sendToMordor()
-    disconnect()
   }
 }
 

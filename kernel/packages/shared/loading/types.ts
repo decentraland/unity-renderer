@@ -91,8 +91,8 @@ export const NEW_LOGIN = 'New login'
 export const newLogin = () => action(NEW_LOGIN)
 export const NETWORK_MISMATCH = 'Network mismatch'
 export const networkMismatch = () => action(NETWORK_MISMATCH)
-export const ERROR_MESSAGE = 'report error'
-export const errorMessage = (type: string) => action(ERROR_MESSAGE, { type })
+export const FATAL_ERROR = 'fatal error'
+export const fatalError = (type: string) => action(FATAL_ERROR, { type })
 export const SET_ERROR_TLD = 'TLD network error'
 export const setTLDError = (values: any) => action(SET_ERROR_TLD, values)
 

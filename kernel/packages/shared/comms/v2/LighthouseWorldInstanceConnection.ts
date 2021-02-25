@@ -15,7 +15,7 @@ import { Position, positionHash } from '../interface/utils'
 import defaultLogger, { createLogger } from 'shared/logger'
 import { PeerMessageTypes, PeerMessageType } from 'decentraland-katalyst-peer/src/messageTypes'
 import { Peer as PeerType } from 'decentraland-katalyst-peer/src/Peer'
-import { PacketCallback } from 'decentraland-katalyst-peer/src/types'
+import { PacketCallback, PeerConfig } from 'decentraland-katalyst-peer/src/types'
 import {
   ChatData,
   CommsMessage,
@@ -104,7 +104,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     private peerId: string,
     private realm: Realm,
     private lighthouseUrl: string,
-    private peerConfig: any,
+    private peerConfig: PeerConfig,
     private statusHandler: (status: CommsStatus) => void
   ) {
     // This assignment is to "definetly initialize" peer
@@ -290,11 +290,9 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     if (this.peerConfig.statusHandler) {
       logger.warn(`Overriding peer config status handler from client!`)
     }
-    this.peerConfig.statusHandler = (status: string) => {
-      if (status === 'reconnection-error') {
-        this.statusHandler({ status, connectedPeers: this.connectedPeersCount() })
-      }
-    }
+
+    this.peerConfig.statusHandler = (status) =>
+      this.statusHandler({ status, connectedPeers: this.connectedPeersCount() })
 
     // We require a version greater than 0.1 to not send an ID
     const idToUse = compareVersions('0.1', this.realm.lighthouseVersion) === -1 ? undefined : this.peerId

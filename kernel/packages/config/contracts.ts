@@ -114,7 +114,9 @@ export const contracts = {
     '3LAUBasics': '0xe1ecb4e5130f493551c7d6df96ad19e5b431a0a9',
     'XmashUp2020': '0xdd9c7bc159dacb19c9f6b9d7e23948c87aa2397f',
     'MLLiondance': '0x0b1c6c75d511fae05e7dc696f4cf14129a9c43c9',
-    'AtariLaunch': '0x4c290f486bae507719c562b6b524bdb71a2570c9'
+    'AtariLaunch': '0x4c290f486bae507719c562b6b524bdb71a2570c9',
+    'ERC20Predicate': '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
+    'RootChainManagerProxy': '0xA0c68C638235ee32657e8f720a23ceC1bFc77C77'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',
@@ -131,5 +133,17 @@ export const contracts = {
     'MANAMiniMeToken': '0xfb2712a1246f712b889692c7ce55fec25c06bc33',
     'LANDMiniMeToken': '0x576c4577aAd561EA79acbd49215a0cC1473BfCCA',
     'EstateMiniMeToken': '0x2b98C125733035cDE09d311F988845808EE270E6'
+  },
+  'goerli': {
+    'MANAToken': '0xe7fDae84ACaba2A5Ba817B6E6D8A2d415DBFEdbe',
+    'ERC20Predicate': '0xdD6596F2029e6233DEFfaCa316e6A95217d4Dc34',
+    'RootChainManagerProxy': '0xbbd7cbfa79faee899eaf900f13c9065bf03b1a74'
+  },
+  'matic': {
+    'MANAToken': '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4'
+  },
+  'mumbai': {
+    'MetaTxForwarder': '0xBF6755A83C0dCDBB2933A96EA778E00b717d7004',
+    'MANAToken': '0x882Da5967c435eA5cC6b09150d55E8304B838f45'
   }
 }
