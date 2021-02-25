@@ -35,7 +35,7 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
         Vector3 camTarget = Vector3.zero;
 
-        VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
 
         yield return new WaitForAllMessagesProcessed();
 

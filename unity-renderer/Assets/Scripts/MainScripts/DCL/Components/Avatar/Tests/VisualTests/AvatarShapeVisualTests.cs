@@ -34,7 +34,7 @@ namespace Tests
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
 
-            VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
+            VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
 
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
@@ -67,7 +67,7 @@ namespace Tests
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
 
-            VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
+            VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
 
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
