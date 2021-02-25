@@ -2,7 +2,7 @@ declare var window: Window & { Rollbar: any }
 import { action } from 'typesafe-actions'
 import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
-  errorMessage,
+  fatalError,
   ExecutionLifecycleEvent,
   ExecutionLifecycleEventsList,
   MOBILE_NOT_SUPPORTED,
@@ -45,7 +45,7 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
       : event === NETWORK_MISMATCH
       ? 'networkmismatch'
       : 'fatal'
-  globalThis.globalStore && globalThis.globalStore.dispatch(errorMessage(targetError))
+  globalThis.globalStore && globalThis.globalStore.dispatch(fatalError(targetError))
   Html.showErrorModal(targetError)
   aborted = true
 }

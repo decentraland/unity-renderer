@@ -147,11 +147,6 @@ export type ProfileResponse = {
 
 export type BusMessage = ChatMessage
 
-export class IdTakenError extends Error {
-  constructor(message: string) {
-    super(message)
-  }
-}
 export class ConnectionEstablishmentError extends Error {
   constructor(message: string) {
     super(message)

@@ -38,7 +38,6 @@ import {
   BusMessage,
   AvatarMessageType,
   ConnectionEstablishmentError,
-  IdTakenError,
   UnknownCommsModeError,
   VoiceFragment,
   ProfileRequest,
@@ -872,6 +871,8 @@ function subscribeToRealmChange(store: Store<RootState>) {
   )
 }
 
+let idTaken = false
+
 export async function connect(userId: string) {
   try {
     const user = getStoredSession(userId)
@@ -886,6 +887,9 @@ export async function connect(userId: string) {
     let connection: WorldInstanceConnection
 
     const [version, mode] = parseCommsMode(COMMS)
+
+    idTaken = false
+
     switch (version) {
       case 'v1': {
         let commsBroker: IBrokerConnection
@@ -979,6 +983,11 @@ export async function connect(userId: string) {
                 handleReconnectionError()
                 break
               }
+              case 'id-taken': {
+                idTaken = true
+                handleIdTaken()
+                break
+              }
             }
           }
         )
@@ -1003,13 +1012,8 @@ export async function connect(userId: string) {
           await startCommunications(context!)
         } catch (e) {
           disconnect()
-          if (e instanceof IdTakenError) {
-            ReportFatalError(NEW_LOGIN)
-          } else {
-            // not a comms issue per se => rethrow error
-            defaultLogger.error(`error while trying to establish communications `, e)
-            ReportFatalError(UNEXPECTED_ERROR)
-          }
+          defaultLogger.error(`error while trying to establish communications `, e)
+          ReportFatalError(UNEXPECTED_ERROR)
         }
       })
     }
@@ -1017,11 +1021,7 @@ export async function connect(userId: string) {
     return context
   } catch (e) {
     defaultLogger.error(e)
-    if (e instanceof IdTakenError) {
-      throw e
-    } else {
-      throw new ConnectionEstablishmentError(e.message)
-    }
+    throw new ConnectionEstablishmentError(e.message)
   }
 }
 
@@ -1029,16 +1029,13 @@ export async function startCommunications(context: Context) {
   const maxAttemps = 5
   for (let i = 1; ; ++i) {
     try {
+      if (idTaken) break
       logger.info(`Attempt number ${i}...`)
       await doStartCommunications(context)
 
       break
     } catch (e) {
-      if (e instanceof IdTakenError) {
-        disconnect()
-        ReportFatalError(NEW_LOGIN)
-        throw e
-      } else if (e instanceof ConnectionEstablishmentError) {
+      if (e instanceof ConnectionEstablishmentError) {
         if (i >= maxAttemps) {
           // max number of attemps reached => rethrow error
           logger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
@@ -1184,11 +1181,7 @@ async function doStartCommunications(context: Context) {
       ;(globalThis as any).__DEBUG_VOICE_COMMUNICATOR = voiceCommunicator
     }
   } catch (e) {
-    if (e.message && e.message.includes('is taken')) {
-      throw new IdTakenError(e.message)
-    } else {
-      throw new ConnectionEstablishmentError(e.message)
-    }
+    throw new ConnectionEstablishmentError(e.message)
   }
 }
 
@@ -1210,6 +1203,11 @@ function handleReconnectionError() {
   notifyStatusThroughChat(notificationMessage)
 
   store.dispatch(setCatalystRealm(otherRealm))
+}
+
+function handleIdTaken() {
+  disconnect()
+  ReportFatalError(NEW_LOGIN)
 }
 
 function handleFullLayer() {

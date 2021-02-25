@@ -2,7 +2,7 @@ import { put, takeEvery, select, call, takeLatest } from 'redux-saga/effects'
 
 import { STATIC_WORLD } from 'config'
 
-import { establishingComms } from 'shared/loading/types'
+import { establishingComms, FATAL_ERROR } from 'shared/loading/types'
 import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { setWorldContext } from 'shared/protocol/actions'
@@ -15,6 +15,7 @@ import { createLogger } from 'shared/logger'
 
 import {
   connect,
+  disconnect,
   updatePeerVoicePlaying,
   updateVoiceCommunicatorMute,
   updateVoiceCommunicatorVolume,
@@ -62,6 +63,12 @@ export function* commsSaga() {
     yield takeEvery(SET_VOICE_MUTE, updateVoiceChatMute)
     yield listenToWhetherSceneSupportsVoiceChat()
   }
+
+  yield takeEvery(FATAL_ERROR, bringDownComms)
+}
+
+function* bringDownComms() {
+  disconnect()
 }
 
 function* listenToWhetherSceneSupportsVoiceChat() {
