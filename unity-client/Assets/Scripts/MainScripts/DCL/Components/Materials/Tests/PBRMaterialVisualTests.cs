@@ -28,7 +28,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
         DCLTexture texture = TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/alphaTexture.png");
         yield return texture.routine;
         Vector3 camTarget = new Vector3(5, 2, 5);
-        VisualTestHelpers.RepositionVisualTestsCamera( camTarget - new Vector3(2, -1, 2), camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget - new Vector3(2, -1, 2), camTarget);
 
         PBRMaterial matPBR = TestHelpers.CreateEntityWithPBRMaterial(scene, new PBRMaterial.Model
         {

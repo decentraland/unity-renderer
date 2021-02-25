@@ -103,9 +103,9 @@ public class VisualTestController : MonoBehaviour
 
     IEnumerator TakeSnapshots()
     {
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_1.png", new Vector3(10f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_2.png", new Vector3(0f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_3.png", new Vector3(-10f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_4.png", new Vector3(0f, 10f, -10f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_1.png", new Vector3(10f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_2.png", new Vector3(0f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_3.png", new Vector3(-10f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_4.png", new Vector3(0f, 10f, -10f), Vector3.zero);
     }
 }

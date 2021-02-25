@@ -35,7 +35,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(0f, 2f, 5f);
         Vector3 camTarget = new Vector3(7.5f, 0f, 10f);
 
-        VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
         yield return new WaitForAllMessagesProcessed();
 
         yield return VisualTestHelpers.TakeSnapshot();
@@ -67,7 +67,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
         Vector3 camPos = new Vector3(0f, 2f, 5f);
         Vector3 camTarget = new Vector3(7.5f, 0f, 10f);
 
-        VisualTestHelpers.RepositionVisualTestsCamera(camPos, camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camPos, camTarget);
         yield return new WaitForAllMessagesProcessed();
 
         yield return VisualTestHelpers.TakeSnapshot();
