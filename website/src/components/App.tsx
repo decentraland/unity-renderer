@@ -10,8 +10,7 @@ import "./App.css";
 const mapStateToProps = (state: any) => {
   return {
     error: !!state.loading.error,
-    sound:
-      !state?.session?.loginStage || state?.session?.loginStage !== "completed",
+    sound: state.loading.showLoadingScreen,
   };
 };
 
