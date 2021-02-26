@@ -9,8 +9,8 @@ public class ActionController : MonoBehaviour
 {
     public static bool VERBOSE = false;
 
-    public BuilderInWorldController builderInWorldController;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    public BIWFloorHandler biwFloorHandler;
 
     public System.Action OnUndo, OnRedo;
 
@@ -20,7 +20,7 @@ public class ActionController : MonoBehaviour
     int currentUndoStepIndex = 0;
     int currentRedoStepIndex = 0;
 
-    public void ResetActionList()
+    public void Clear()
     {
         actionsMade.Clear();
         currentUndoStepIndex = 0;
@@ -182,7 +182,7 @@ public class ActionController : MonoBehaviour
                
                 CatalogItem floorObject = JsonConvert.DeserializeObject<CatalogItem>(catalogItemToApply);
                 builderInWorldEntityHandler.DeleteFloorEntities();
-                builderInWorldController.CreateFloor(floorObject);
+                biwFloorHandler.CreateFloor(floorObject);
                 break;
         }
     }

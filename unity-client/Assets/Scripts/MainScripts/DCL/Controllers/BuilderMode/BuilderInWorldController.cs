@@ -23,32 +23,9 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
-    public enum EditModeState
-    {
-        Inactive = 0,
-        FirstPerson = 1,
-        Editor = 2
-    }
-
     [Header("Activation of Feature")]
     public bool activeFeature = false;
     public bool bypassLandOwnershipCheck = false;
-
-    [Header("Design variables")]
-    public float scaleSpeed = 0.25f;
-
-    public float rotationSpeed = 0.5f;
-    public float msBetweenInputInteraction = 200;
-
-    public float distanceLimitToSelectObjects = 50;
-
-    [Header("Snap variables")]
-    public float snapFactor = 1f;
-
-    public float snapRotationDegresFactor = 15f;
-    public float snapScaleFactor = 0.5f;
-
-    public float snapDistanceToActivateMovement = 10f;
 
     [Header("Scene References")]
     public GameObject cameraParentGO;
@@ -58,93 +35,38 @@ public class BuilderInWorldController : MonoBehaviour
     public PlayerAvatarController avatarRenderer;
 
     [Header("Prefab References")]
-    public OutlinerController outlinerController;
-
-    public BuilderInWorldInputWrapper builderInputWrapper;
-    public DCLBuilderGizmoManager gizmoManager;
-    public ActionController actionController;
+    public BIWOutlinerController outlinerController;
+    public BIWInputHandler bIWInputHandler;
+    public BIWPublishController biwPublishController;
+    public BIWCreatorController biwCreatorController;
+    public BIWModeController biwModeController;
+    public BIWFloorHandler biwFloorHandler;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    public ActionController actionController;
     public BuilderInWorldBridge builderInWorldBridge;
-    public Material outlinerMaterial;
-    public DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
-    public DCLBuilderMeshLoadIndicator meshLoadIndicator;
-    public GameObject floorPrefab;
 
     [Header("Build Modes")]
-    public BuilderInWorldFirstPersonMode firstPersonMode;
-
     public BuilderInWorldGodMode editorMode;
-
-    [Header("Build References")]
-    public int builderRendererIndex = 1;
-
     public LayerMask layerToRaycast;
 
-    [Header("InputActions")]
-    [SerializeField]
-    internal InputAction_Trigger editModeChangeInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleCreateLastSceneObjectInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleRedoActionInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleUndoActionInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleSnapModeInputAction;
-
-    [SerializeField]
-    internal InputAction_Hold multiSelectionInputAction;
-
-    //Note(Adrian): This is for tutorial purposes
-    public Action OnSceneObjectPlaced;
-
-    BuilderInWorldMode currentActiveMode;
+    private ParcelScene sceneToEdit;
 
     [HideInInspector]
-    public ParcelScene sceneToEdit;
+    public bool isBuilderInWorldActivated = false;
 
-    [HideInInspector]
-    public bool isEditModeActivated = false,
-        isSnapActive = true,
-        isMultiSelectionActive = false,
-        isAdvancedModeActive = true,
-        isOutlineCheckActive = true;
+    private GameObject editionGO;
+    private GameObject undoGO;
+    private GameObject snapGO;
+    private GameObject freeMovementGO;
 
+    private int checkerInsideSceneOptimizationCounter = 0;
 
-    GameObject editionGO;
-    GameObject undoGO, snapGO, freeMovementGO;
+    private string sceneToEditId;
 
-    float nexTimeToReceiveInput;
+    private const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    int outlinerOptimizationCounter = 0, checkerInsideSceneOptimizationCounter = 0;
-    int checkerSceneLimitsOptimizationCounter = 0;
-
-    string sceneToEditId;
-
-    CatalogItem lastCatalogItemCreated;
-    CatalogItem lastFloorCalalogItemUsed;
-
-    const float RAYCAST_MAX_DISTANCE = 10000f;
-
-    InputAction_Hold.Started multiSelectionStartDelegate;
-    InputAction_Hold.Finished multiSelectionFinishedDelegate;
-
-    InputAction_Trigger.Triggered createLastSceneObjectDelegate;
-    InputAction_Trigger.Triggered redoDelegate;
-    InputAction_Trigger.Triggered undoDelegate;
-    InputAction_Trigger.Triggered snapModeDelegate;
-
-    EditModeState currentEditModeState = EditModeState.Inactive;
-
-    bool catalogAdded = false;
-    bool sceneReady = false;
-    bool isTestMode = false;
-
-    Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
+    private bool catalogAdded = false;
+    private bool sceneReady = false;
 
     private void Awake()
     {
@@ -156,6 +78,92 @@ public class BuilderInWorldController : MonoBehaviour
         KernelConfig.i.EnsureConfigInitialized().Then(config => activeFeature = config.features.enableBuilderInWorld);
         KernelConfig.i.OnChange += OnKernelConfigChanged;
 
+        InitGameObjects();
+
+        HUDConfiguration hudConfig = new HUDConfiguration();
+        hudConfig.active = true;
+        hudConfig.visible = false;
+        HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
+        HUDController.i.CreateHudElement<BuilderInWorldInititalHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_INITIAL);
+
+        HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
+        HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
+        HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
+
+        InitControllers();
+
+        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
+
+        ExternalCallsController.i.GetContentAsString(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+        BuilderInWorldNFTController.i.Initialize();
+        BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+    }
+
+    private void OnDestroy()
+    {
+        KernelConfig.i.OnChange -= OnKernelConfigChanged;
+
+        if (HUDController.i.builderInWorldInititalHud != null)
+            HUDController.i.builderInWorldInititalHud.OnEnterEditMode -= TryStartEnterEditMode;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
+            HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
+        }
+
+        BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+        CleanItems();
+    }
+
+    private void Update()
+    {
+        if (!isBuilderInWorldActivated) return;
+
+        if (checkerInsideSceneOptimizationCounter >= 60)
+        {
+            if (!sceneToEdit.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+                ExitEditMode();
+            checkerInsideSceneOptimizationCounter = 0;
+        }
+        else
+        {
+            checkerInsideSceneOptimizationCounter++;
+        }
+    }
+
+    private void OnNFTUsageChange()
+    {
+        HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
+        HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
+    }
+
+    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+    {
+        EnableFeature(current.features.enableBuilderInWorld);
+    }
+
+    private void EnableFeature(bool enable)
+    {
+        activeFeature = enable;
+    }
+
+    private void CatalogReceived(string catalogJson)
+    {
+        AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
+        CatalogLoaded();
+    }
+
+    public void CatalogLoaded()
+    {
+        catalogAdded = true;
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
+        StartEditMode();
+    }
+
+    public void InitGameObjects()
+    {
         if (snapGO == null)
             snapGO = new GameObject("SnapGameObject");
 
@@ -176,578 +184,22 @@ public class BuilderInWorldController : MonoBehaviour
             undoGO = new GameObject("UndoGameObject");
             undoGO.transform.SetParent(transform);
         }
+    }
 
-        HUDConfiguration hudConfig = new HUDConfiguration();
-        hudConfig.active = true;
-        hudConfig.visible = false;
-        HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
-        HUDController.i.CreateHudElement<BuilderInWorldInititalHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_INITIAL);
-
-        editModeChangeInputAction.OnTriggered += OnEditModeChangeAction;
-
-        createLastSceneObjectDelegate = (action) => CreateLastSceneObject();
-        redoDelegate = (action) => RedoAction();
-        undoDelegate = (action) => UndoAction();
-        snapModeDelegate = (action) => ChangeSnapMode();
-
-        toggleCreateLastSceneObjectInputAction.OnTriggered += createLastSceneObjectDelegate;
-        toggleRedoActionInputAction.OnTriggered += redoDelegate;
-        toggleUndoActionInputAction.OnTriggered += undoDelegate;
-        toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
-
-        multiSelectionStartDelegate = (action) => StartMultiSelection();
-        multiSelectionFinishedDelegate = (action) => EndMultiSelection();
-
-        multiSelectionInputAction.OnStarted += multiSelectionStartDelegate;
-        multiSelectionInputAction.OnFinished += multiSelectionFinishedDelegate;
-
-        HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
-        HUDController.i.builderInWorldMainHud.OnStopInput += StopInput;
-        HUDController.i.builderInWorldMainHud.OnResumeInput += ResumeInput;
-
-
-        HUDController.i.builderInWorldMainHud.OnChangeModeAction += ChangeAdvanceMode;
-        HUDController.i.builderInWorldMainHud.OnResetAction += ResetScaleAndRotation;
-
-        HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
-        HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
-        HUDController.i.builderInWorldMainHud.OnPublishAction += PublishScene;
-        HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
-
-        BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
-
-        builderInputWrapper.OnMouseClick += MouseClick;
-
+    public void InitControllers()
+    {
         builderInWorldEntityHandler.Init();
-        InitEditModes();
-
-
-        CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-
-
-        if (!isTestMode)
-        {
-            ExternalCallsController.i.GetContentAsString(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
-            BuilderInWorldNFTController.i.Initialize();
-        }
-
-        meshLoadIndicator.SetCamera(Camera.main);
+        biwModeController.Init(editionGO, undoGO, snapGO, freeMovementGO);
+        biwPublishController.Init();
+        biwCreatorController.Init();
+        outlinerController.Init();
+        biwFloorHandler.Init();
+        bIWInputHandler.Init();
     }
 
-    private void OnDestroy()
-    {
-        KernelConfig.i.OnChange -= OnKernelConfigChanged;
-        editModeChangeInputAction.OnTriggered -= OnEditModeChangeAction;
-
-        toggleCreateLastSceneObjectInputAction.OnTriggered -= createLastSceneObjectDelegate;
-        toggleRedoActionInputAction.OnTriggered -= redoDelegate;
-        toggleUndoActionInputAction.OnTriggered -= undoDelegate;
-        toggleSnapModeInputAction.OnTriggered -= snapModeDelegate;
-
-        multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
-        multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
-
-        if (HUDController.i.builderInWorldInititalHud != null)
-            HUDController.i.builderInWorldInititalHud.OnEnterEditMode -= TryStartEnterEditMode;
-
-        if (HUDController.i.builderInWorldMainHud != null)
-        {
-            HUDController.i.builderInWorldMainHud.OnStopInput -= StopInput;
-            HUDController.i.builderInWorldMainHud.OnResumeInput -= ResumeInput;
-
-            HUDController.i.builderInWorldMainHud.OnChangeModeAction -= ChangeAdvanceMode;
-            HUDController.i.builderInWorldMainHud.OnResetAction -= ResetScaleAndRotation;
-
-            HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
-            HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
-            HUDController.i.builderInWorldMainHud.OnPublishAction -= PublishScene;
-            HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
-        }
-
-
-        builderInputWrapper.OnMouseClick -= MouseClick;
-
-        firstPersonMode.OnInputDone -= InputDone;
-        editorMode.OnInputDone -= InputDone;
-
-        firstPersonMode.OnActionGenerated -= actionController.AddAction;
-        editorMode.OnActionGenerated -= actionController.AddAction;
-        BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
-
-        CleanItems();
-    }
-
-    private void Update()
-    {
-        if (!isEditModeActivated) return;
-
-        if (Time.timeSinceLevelLoad >= nexTimeToReceiveInput)
-        {
-            if (Utils.isCursorLocked || isAdvancedModeActive)
-                CheckEditModeInput();
-            if (currentActiveMode != null)
-                currentActiveMode.CheckInput();
-        }
-
-        if (checkerInsideSceneOptimizationCounter >= 60)
-        {
-            if (!sceneToEdit.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
-                ExitEditMode();
-            checkerInsideSceneOptimizationCounter = 0;
-        }
-        else
-        {
-            checkerInsideSceneOptimizationCounter++;
-        }
-
-        if (checkerSceneLimitsOptimizationCounter >= 10)
-        {
-            checkerSceneLimitsOptimizationCounter = 0;
-            CheckPublishConditions();
-        }
-        else
-        {
-            checkerSceneLimitsOptimizationCounter++;
-        }
-    }
-
-    public void SetTestMode()
-    {
-        isTestMode = true;
-    }
-
-    void CheckPublishConditions()
-    {
-        bool canPublishScene = true;
-
-        if (!sceneToEdit.metricsController.IsInsideTheLimits())
-        {
-            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(false);
-            return;
-        }
-
-        if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
-        {
-            HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(false);
-            return;
-        }
-
-
-        HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(canPublishScene);
-    }
-
-    void OnNFTUsageChange()
-    {
-        HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
-        HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
-    }
-
-    void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-    {
-        EnableFeature(current.features.enableBuilderInWorld);
-    }
-
-    void EnableFeature(bool enable)
-    {
-        activeFeature = enable;
-    }
-
-    void CatalogReceived(string catalogJson)
-    {
-        AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
-        CatalogLoaded();
-    }
-
-    public void CatalogLoaded()
-    {
-        catalogAdded = true;
-        if (HUDController.i.builderInWorldMainHud != null)
-            HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
-        StartEnterEditMode();
-    }
-
-    void StopInput()
-    {
-        builderInputWrapper.StopInput();
-    }
-
-    void ResumeInput()
-    {
-        builderInputWrapper.ResumeInput();
-    }
-
-    void InitEditModes()
-    {
-        firstPersonMode.Init(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
-        editorMode.Init(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
-
-        firstPersonMode.OnInputDone += InputDone;
-        editorMode.OnInputDone += InputDone;
-
-        firstPersonMode.OnActionGenerated += actionController.AddAction;
-        editorMode.OnActionGenerated += actionController.AddAction;
-    }
-
-    void StartTutorial()
+    private void StartTutorial()
     {
         TutorialController.i.SetBuilderInWorldTutorialEnabled();
-    }
-
-    void MouseClick(int buttonID, Vector3 position)
-    {
-        if (!isEditModeActivated) return;
-
-        if (Time.timeSinceLevelLoad >= nexTimeToReceiveInput)
-        {
-            if (Utils.isCursorLocked || isAdvancedModeActive)
-            {
-                if (buttonID == 0)
-                {
-                    MouseClickDetected();
-                    InputDone();
-                    return;
-                }
-
-                CheckOutline();
-            }
-        }
-    }
-
-    bool IsInsideTheLimits(CatalogItem sceneObject)
-    {
-        if (HUDController.i.builderInWorldMainHud == null)
-            return false;
-
-        SceneMetricsController.Model limits = sceneToEdit.metricsController.GetLimits();
-        SceneMetricsController.Model usage = sceneToEdit.metricsController.GetModel();
-
-        if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        if (limits.entities < usage.entities + sceneObject.metrics.entities)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        if (limits.materials < usage.materials + sceneObject.metrics.materials)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        if (limits.meshes < usage.meshes + sceneObject.metrics.meshes)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        if (limits.textures < usage.textures + sceneObject.metrics.textures)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        if (limits.triangles < usage.triangles + sceneObject.metrics.triangles)
-        {
-            HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
-            return false;
-        }
-
-        return true;
-    }
-
-    void OnCatalogItemSelected(CatalogItem sceneObject)
-    {
-        if (IsCatalogItemFloor(sceneObject))
-        {
-            builderInWorldEntityHandler.DeleteFloorEntities();
-            CatalogItem lastFloor = lastFloorCalalogItemUsed;
-
-            CreateFloor(sceneObject);
-
-            BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-
-            buildAction.CreateChangeFloorAction(lastFloor, sceneObject);
-            actionController.AddAction(buildAction);
-        }
-        else
-        {
-            CreateSceneObject(sceneObject);
-        }
-    }
-
-    DCLBuilderInWorldEntity CreateSceneObject(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false)
-    {
-        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id)) return null;
-
-        IsInsideTheLimits(catalogItem);
-
-        //Note (Adrian): This is a workaround until the mapping is handle by kernel
-
-        LoadParcelScenesMessage.UnityParcelScene data = sceneToEdit.sceneData;
-        data.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
-
-        foreach (KeyValuePair<string, string> content in catalogItem.contents)
-        {
-            ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
-            mappingPair.file = content.Key;
-            mappingPair.hash = content.Value;
-            bool found = false;
-            foreach (ContentServerUtils.MappingPair mappingPairToCheck in data.contents)
-            {
-                if (mappingPairToCheck.file == mappingPair.file)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-                data.contents.Add(mappingPair);
-        }
-
-        Environment.i.world.sceneController.UpdateParcelScenesExecute(data);
-
-
-        DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
-        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
-
-        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, currentActiveMode.GetCreatedEntityPoint(), editionGO.transform.position);
-        entity.isFloor = isFloor;
-
-        if (entity.isFloor)
-            entityLocked.SetIsLocked(true);
-        else
-            entityLocked.SetIsLocked(false);
-
-        if (catalogItem.IsNFT())
-        {
-            NFTShape nftShape = (NFTShape)sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
-            nftShape.model = new NFTShape.Model();
-            nftShape.model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
-            nftShape.model.src = catalogItem.model;
-            nftShape.model.assetId = catalogItem.id;
-
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, nftShape.id);
-        }
-        else
-        {
-            GLTFShape mesh = (GLTFShape)sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
-            mesh.model = new LoadableShape.Model();
-            mesh.model.src = catalogItem.model;
-            mesh.model.assetId = catalogItem.id;
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, mesh.id);
-        }
-
-        sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
-        sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, entityLocked.id);
-
-        builderInWorldEntityHandler.SetEntityName(entity, catalogItem.name);
-  
-        if(catalogItem.IsSmartItem())
-        {
-            SmartItemComponent.Model model = new SmartItemComponent.Model();
-            model.values = new Dictionary<object, object>();
-
-            string jsonModel = JsonUtility.ToJson(model);
-
-            //Note (Adrian): This shouldn't work this way, we should have a function to create the component from Model directly
-            sceneToEdit.EntityComponentCreateOrUpdateFromUnity(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
-
-            //Note (Adrian): We can't wait to set the component 1 frame, so we set it
-            if(entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent))
-                 ((SmartItemComponent)baseComponent).SetModel(model);
-        }
-
-        if (catalogItem.IsVoxel())
-            entity.isVoxel = true;
-
-        if (autoSelect)
-        {
-            builderInWorldEntityHandler.DeselectEntities();
-            builderInWorldEntityHandler.Select(entity.rootEntity);
-        }
-
-        entity.gameObject.transform.eulerAngles = Vector3.zero;
-
-        currentActiveMode.CreatedEntity(entity);
-        if (!isAdvancedModeActive)
-            Utils.LockCursor();
-        lastCatalogItemCreated = catalogItem;
-
-        builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
-        InputDone();
-        OnSceneObjectPlaced?.Invoke();
-
-        return entity;
-    }
-
-    void CreateLastSceneObject()
-    {
-        if (lastCatalogItemCreated != null)
-        {
-            if (builderInWorldEntityHandler.IsAnyEntitySelected())
-                builderInWorldEntityHandler.DeselectEntities();
-            OnCatalogItemSelected(lastCatalogItemCreated);
-            InputDone();
-        }
-    }
-
-    void ChangeSnapMode()
-    {
-        SetSnapActive(!isSnapActive);
-        InputDone();
-    }
-
-    void RedoAction()
-    {
-        actionController.TryToRedoAction();
-        InputDone();
-    }
-
-    void UndoAction()
-    {
-        InputDone();
-
-        if (currentActiveMode.ShouldCancelUndoAction())
-            return;
-
-        actionController.TryToUndoAction();
-    }
-
-    void CheckEditModeInput()
-    {
-        if (!builderInWorldEntityHandler.IsAnyEntitySelected() || isMultiSelectionActive)
-        {
-            CheckOutline();
-        }
-
-        if (builderInWorldEntityHandler.IsAnyEntitySelected())
-        {
-            currentActiveMode.CheckInputSelectedEntities();
-        }
-    }
-
-    public void ChangeAdvanceMode()
-    {
-        SetAdvanceMode(!isAdvancedModeActive);
-        InputDone();
-    }
-
-    public void SetBuildMode(EditModeState state)
-    {
-        if (currentActiveMode != null)
-            currentActiveMode.Deactivate();
-        isAdvancedModeActive = false;
-
-        currentActiveMode = null;
-        switch (state)
-        {
-            case EditModeState.Inactive:
-                break;
-            case EditModeState.FirstPerson:
-                currentActiveMode = firstPersonMode;
-                if (HUDController.i.builderInWorldMainHud != null)
-                {
-                    HUDController.i.builderInWorldMainHud.ActivateFirstPersonModeUI();
-                    HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(false);
-                }
-
-                cursorGO.SetActive(true);
-                break;
-            case EditModeState.Editor:
-                cursorGO.SetActive(false);
-                currentActiveMode = editorMode;
-                isAdvancedModeActive = true;
-                if (HUDController.i.builderInWorldMainHud != null)
-                    HUDController.i.builderInWorldMainHud.ActivateGodModeUI();
-
-                avatarRenderer.SetAvatarVisibility(false);
-                break;
-        }
-
-        currentEditModeState = state;
-
-        if (currentActiveMode != null)
-        {
-            currentActiveMode.Activate(sceneToEdit);
-            currentActiveMode.SetSnapActive(isSnapActive);
-            builderInWorldEntityHandler.SetActiveMode(currentActiveMode);
-        }
-    }
-
-    public void SetAdvanceMode(bool advanceModeActive)
-    {
-        if (!advanceModeActive)
-        {
-            SetBuildMode(EditModeState.FirstPerson);
-        }
-        else
-        {
-            SetBuildMode(EditModeState.Editor);
-        }
-    }
-
-    void StartMultiSelection()
-    {
-        isMultiSelectionActive = true;
-        builderInWorldEntityHandler.SetMultiSelectionActive(isMultiSelectionActive);
-        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-        currentActiveMode.StartMultiSelection();
-    }
-
-    void EndMultiSelection()
-    {
-        isMultiSelectionActive = false;
-        builderInWorldEntityHandler.SetMultiSelectionActive(isMultiSelectionActive);
-        currentActiveMode.EndMultiSelection();
-        outlinerController.CancelUnselectedOutlines();
-    }
-
-    private void CheckOutline()
-    {
-        if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
-        {
-            if (!BuilderInWorldUtils.IsPointerOverUIElement())
-            {
-                DCLBuilderInWorldEntity entity = GetEntityOnPointer();
-                if (!isMultiSelectionActive)
-                    outlinerController.CancelAllOutlines();
-                else
-                    outlinerController.CancelUnselectedOutlines();
-
-                if (entity != null && !entity.IsSelected)
-                    outlinerController.OutlineEntity(entity);
-            }
-
-            outlinerOptimizationCounter = 0;
-        }
-        else outlinerOptimizationCounter++;
-    }
-
-    public void UndoEditionGOLastStep()
-    {
-        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
-    }
-
-    public void ResetScaleAndRotation()
-    {
-        currentActiveMode.ResetScaleAndRotation();
-    }
-
-    public void SetOutlineCheckActive(bool isActive)
-    {
-        isOutlineCheckActive = isActive;
-    }
-
-    public void SetSnapActive(bool isActive)
-    {
-        isSnapActive = isActive;
-        currentActiveMode.SetSnapActive(isActive);
     }
 
     public void CleanItems()
@@ -768,11 +220,8 @@ public class BuilderInWorldController : MonoBehaviour
             DCLBuilderOutline outliner = Camera.main.GetComponent<DCLBuilderOutline>();
             Destroy(outliner);
         }
-    }
 
-    void InputDone()
-    {
-        nexTimeToReceiveInput = Time.timeSinceLevelLoad + msBetweenInputInteraction / 1000;
+        biwFloorHandler?.Clean();
     }
 
     [ContextMenu("Activate feature")]
@@ -782,48 +231,22 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
     }
 
-    private void OnEditModeChangeAction(DCLAction_Trigger action)
+    public void ChangeFeatureActivationState()
     {
-        if (activeFeature)
-        {
-            if (isEditModeActivated)
-            {
-                ExitEditMode();
-            }
-            else
-            {
-                TryStartEnterEditMode();
-            }
-        }
-    }
+        if (!activeFeature)
+            return;
 
-    void MouseClickDetected()
-    {
-        DCLBuilderInWorldEntity entityToSelect = GetEntityOnPointer();
-        if (entityToSelect != null)
-        {
-            builderInWorldEntityHandler.EntityClicked(entityToSelect);
-        }
-        else if (!isMultiSelectionActive)
-        {
-            builderInWorldEntityHandler.DeselectEntities();
-        }
+        if (isBuilderInWorldActivated)
+            ExitEditMode();
+        else
+            TryStartEnterEditMode();
     }
 
     public DCLBuilderInWorldEntity GetEntityOnPointer()
     {
         RaycastHit hit;
-        UnityEngine.Ray ray;
-        float distanceToSelect = distanceLimitToSelectObjects;
-        if (!isAdvancedModeActive)
-        {
-            ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        }
-        else
-        {
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            distanceToSelect = 9999;
-        }
+        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(biwModeController.GetMousePosition());
+        float distanceToSelect = biwModeController.GetMaxDistanceToSelectEntities();
 
         if (Physics.Raycast(ray, out hit, distanceToSelect, layerToRaycast))
         {
@@ -834,7 +257,6 @@ public class BuilderInWorldController : MonoBehaviour
                 return builderInWorldEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
             }
         }
-
         return null;
     }
 
@@ -842,7 +264,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         RaycastHit[] hits;
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        ;
 
         float currentDistance = 9999;
         VoxelEntityHit voxelEntityHit = null;
@@ -871,7 +292,6 @@ public class BuilderInWorldController : MonoBehaviour
                 }
             }
         }
-
         return voxelEntityHit;
     }
 
@@ -886,7 +306,7 @@ public class BuilderInWorldController : MonoBehaviour
         CheckEnterEditMode();
     }
 
-    bool UserHasPermissionOnParcelScene(ParcelScene scene)
+    private bool UserHasPermissionOnParcelScene(ParcelScene scene)
     {
         if (bypassLandOwnershipCheck)
             return true;
@@ -903,7 +323,7 @@ public class BuilderInWorldController : MonoBehaviour
         return false;
     }
 
-    void CheckEnterEditMode()
+    private void CheckEnterEditMode()
     {
         if (catalogAdded && sceneReady) EnterEditMode();
     }
@@ -929,14 +349,15 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             editorMode.ActivateCamera(sceneToEdit);
 
         if (catalogAdded)
-            StartEnterEditMode();
+            StartEditMode();
     }
 
-    void StartEnterEditMode()
+    private void StartEditMode()
     {
         if (sceneToEdit == null)
             return;
@@ -955,7 +376,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
-
         inputController.isInputActive = true;
         inputController.isBuildModeActivate = true;
 
@@ -972,23 +392,17 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
         }
 
-        if (currentActiveMode == null)
-            SetBuildMode(EditModeState.Editor);
-
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
-        builderInputWrapper.gameObject.SetActive(true);
-        builderInWorldEntityHandler.EnterEditMode(sceneToEdit);
 
+        StartBiwControllers();
         Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
-
-        ActivateBuilderInWorldCamera();
         if (IsNewScene())
             SetupNewScene();
 
-        isEditModeActivated = true;
+        isBuilderInWorldActivated = true;
     }
 
     public void ExitEditMode()
@@ -1006,11 +420,10 @@ public class BuilderInWorldController : MonoBehaviour
         builderInWorldEntityHandler.ExitFromEditMode();
 
         sceneToEdit.SetEditMode(false);
-        SetBuildMode(EditModeState.Inactive);
-
+        biwModeController.ExitEditMode();
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
-        builderInputWrapper.gameObject.SetActive(false);
+
         builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
 
         avatarRenderer.SetAvatarVisibility(true);
@@ -1022,14 +435,31 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
+        ExitBiwControllers();
 
-        DeactivateBuilderInWorldCamera();
-        isEditModeActivated = false;
+        isBuilderInWorldActivated = false;
     }
 
-    public bool IsCatalogItemFloor(CatalogItem floorSceneObject)
+    public void StartBiwControllers()
     {
-        return string.Equals(floorSceneObject.category, BuilderInWorldSettings.FLOOR_CATEGORY);
+        biwModeController.EnterEditMode(sceneToEdit);
+        builderInWorldEntityHandler.EnterEditMode(sceneToEdit);
+        biwFloorHandler.EnterEditMode(sceneToEdit);
+        biwCreatorController.EnterEditMode(sceneToEdit);
+        biwPublishController.EnterEditMode(sceneToEdit);
+        bIWInputHandler.EnterEditMode(sceneToEdit);
+        outlinerController.EnterEditMode(sceneToEdit);
+    }
+
+    public void ExitBiwControllers()
+    {
+        biwModeController.ExitEditMode();
+        builderInWorldEntityHandler.ExitEditMode();
+        biwFloorHandler.ExitEditMode();
+        biwCreatorController.ExitEditMode();
+        biwPublishController.ExitEditMode();
+        bIWInputHandler.ExitEditMode();
+        outlinerController.ExitEditMode();
     }
 
     public bool IsNewScene()
@@ -1039,79 +469,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void SetupNewScene()
     {
-        CatalogItem floorSceneObject = BuilderInWorldUtils.CreateFloorSceneObject();
-        CreateFloor(floorSceneObject);
-    }
-
-    public void CreateFloor(CatalogItem floorSceneObject)
-    {
-        Vector3 initialPosition = new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
-        Vector2Int[] parcelsPoints = sceneToEdit.sceneData.parcels;
-
-        foreach (Vector2Int parcel in parcelsPoints)
-        {
-            DCLBuilderInWorldEntity decentralandEntity = CreateSceneObject(floorSceneObject, false, true);
-            decentralandEntity.rootEntity.OnShapeUpdated += OnFloorLoaded;
-            decentralandEntity.transform.position = WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel);
-            dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
-
-            GameObject floorPlaceHolder = Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
-            floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
-            builderInWorldBridge.EntityTransformReport(decentralandEntity.rootEntity, sceneToEdit);
-        }
-
-        builderInWorldEntityHandler.DeselectEntities();
-
-        lastFloorCalalogItemUsed = floorSceneObject;
-    }
-
-    void OnFloorLoaded(DecentralandEntity entity)
-    {
-        entity.OnShapeUpdated -= OnFloorLoaded;
-        dclBuilderMeshLoadIndicatorController.HideIndicator(entity.entityId);
-
-        GameObject floorPlaceHolder = floorPlaceHolderDict[entity.entityId];
-        floorPlaceHolderDict.Remove(entity.entityId);
-        Destroy(floorPlaceHolder);
-    }
-
-
-    public void ActivateBuilderInWorldCamera()
-    {
-        Camera camera = Camera.main;
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
-
-        if (outliner == null)
-        {
-            outliner = camera.gameObject.AddComponent(typeof(DCLBuilderOutline)) as DCLBuilderOutline;
-            outliner.SetOutlineMaterial(outlinerMaterial);
-        }
-        else
-        {
-            outliner.enabled = true;
-        }
-
-        outliner.Activate();
-
-        UniversalAdditionalCameraData additionalCameraData = camera.transform.GetComponent<UniversalAdditionalCameraData>();
-        additionalCameraData.SetRenderer(builderRendererIndex);
-    }
-
-    public void DeactivateBuilderInWorldCamera()
-    {
-        Camera camera = Camera.main;
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
-        if (outliner != null)
-        {
-            outliner.enabled = false;
-            outliner.Deactivate();
-        }
-
-        outliner.enabled = false;
-        outliner.Deactivate();
-
-        UniversalAdditionalCameraData additionalCameraData = camera.transform.GetComponent<UniversalAdditionalCameraData>();
-        additionalCameraData.SetRenderer(0);
+        biwFloorHandler.CreateDefaultFloor();
     }
 
     void ExitAfterCharacterTeleport(DCLCharacterPosition position)
@@ -1119,23 +477,17 @@ public class BuilderInWorldController : MonoBehaviour
         ExitEditMode();
     }
 
-    void FindSceneToEdit()
+    public void FindSceneToEdit()
     {
         foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
             if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
             {
                 if (sceneToEdit != null && sceneToEdit != scene)
-                    actionController.ResetActionList();
+                    actionController.Clear();
                 sceneToEdit = scene;
                 break;
             }
         }
-    }
-
-    void PublishScene()
-    {
-        builderInWorldBridge.PublishScene(sceneToEdit);
-        HUDController.i.builderInWorldMainHud.PublishStart();
     }
 }

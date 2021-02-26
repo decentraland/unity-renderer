@@ -8,11 +8,12 @@ public class TutorialStep_PutSceneObject : TutorialStep
     [SerializeField] AudioEvent audioEventSuccess;
     bool sceneObjectSet = false;
 
-    BuilderInWorldController builderInWorldController;
+    BIWCreatorController builderInWorldController;
+
     public override void OnStepStart()
     {
         base.OnStepStart();
-        builderInWorldController = FindObjectOfType<BuilderInWorldController>();
+        builderInWorldController = FindObjectOfType<BIWCreatorController>();
         builderInWorldController.OnSceneObjectPlaced += SceneObjectSelected;
     }
 
@@ -22,7 +23,6 @@ public class TutorialStep_PutSceneObject : TutorialStep
 
         builderInWorldController.OnSceneObjectPlaced -= SceneObjectSelected;
     }
-
 
     void SceneObjectSelected()
     {

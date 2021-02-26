@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BuilderInWorldMode : MonoBehaviour
 {
+    [Header("Design variables")]
+    public float maxDistanceToSelectEntities = 50;
 
     [Header("Snap variables")]
     public float snapFactor = 1f;
@@ -64,6 +66,11 @@ public class BuilderInWorldMode : MonoBehaviour
     {
         isMultiSelectionActive = true;
 
+    }
+
+    public virtual Vector3 GetPointerPosition()
+    {
+        return Input.mousePosition;
     }
 
     public virtual void EndMultiSelection()

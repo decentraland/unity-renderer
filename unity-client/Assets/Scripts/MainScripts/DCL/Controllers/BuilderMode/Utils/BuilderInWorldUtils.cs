@@ -12,6 +12,7 @@ using static ProtocolV2;
 using Environment = DCL.Environment;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL.Controllers;
 
 public static partial class BuilderInWorldUtils
 {
@@ -199,6 +200,21 @@ public static partial class BuilderInWorldUtils
     public static EntityData ConvertJSONToEntityData(string json)
     {
         return JsonConvert.DeserializeObject<EntityData>(json);
+    }
+
+    public static List<DCLBuilderInWorldEntity> RemoveGroundEntities(List<DCLBuilderInWorldEntity> entityList)
+    {
+        List<DCLBuilderInWorldEntity> newList = new List<DCLBuilderInWorldEntity>();
+
+        foreach (DCLBuilderInWorldEntity entity in entityList)
+        {
+            if (entity.isFloor)
+                continue;
+
+            newList.Add(entity);
+        }
+
+        return newList;
     }
 
     public static List<DCLBuilderInWorldEntity> FilterEntitiesBySmartItemComponentAndActions(List<DCLBuilderInWorldEntity> entityList)

@@ -9,18 +9,25 @@ using UnityEngine;
 public static class BIWCatalogManager
 {
     public static bool VERBOSE = false;
-    private static bool INIT = false;
+    private static bool IS_INIT = false;
 
     public static void Init()
     {
-        if (!INIT)
+        if (!IS_INIT)
         {
-            INIT = true;
-
             BuilderInWorldNFTController.i.OnNftsFetched += ConvertCollectiblesPack;
             AssetCatalogBridge.OnSceneObjectAdded += AddSceneObject;
             AssetCatalogBridge.OnSceneAssetPackAdded += AddSceneAssetPack;
+            IS_INIT = true;
         }
+    }
+
+    public static void Dispose()
+    {
+        BuilderInWorldNFTController.i.OnNftsFetched -= ConvertCollectiblesPack;
+        AssetCatalogBridge.OnSceneObjectAdded -= AddSceneObject;
+        AssetCatalogBridge.OnSceneAssetPackAdded -= AddSceneAssetPack;
+        IS_INIT = false;
     }
 
     public static void ClearCatalog()
@@ -74,7 +81,7 @@ public static class BIWCatalogManager
         return assetPackDic.Values.ToList();
     }
 
-    private static void AddSceneObject(SceneObject sceneObject)
+    public static void AddSceneObject(SceneObject sceneObject)
     {
         if (DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(sceneObject.id))
             return;
@@ -83,7 +90,7 @@ public static class BIWCatalogManager
         DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
     }
 
-    private static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
+    public static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
     {
         if (DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(sceneAssetPack.id))
             return;
@@ -92,7 +99,7 @@ public static class BIWCatalogManager
         DataStore.i.builderInWorld.catalogItemPackDict.Add(catalogItemPack.id, catalogItemPack);
     }
 
-    private static void ConvertCollectiblesPack(List<NFTInfo> nftList)
+    public static void ConvertCollectiblesPack(List<NFTInfo> nftList)
     {
         if (nftList == null)
             return;
@@ -129,7 +136,7 @@ public static class BIWCatalogManager
         }
     }
 
-    private static CatalogItemPack CreateCatalogItemPack(SceneAssetPack sceneAssetPack)
+    public static CatalogItemPack CreateCatalogItemPack(SceneAssetPack sceneAssetPack)
     {
         CatalogItemPack catalogItemPack = new CatalogItemPack();
 
@@ -148,7 +155,7 @@ public static class BIWCatalogManager
         return catalogItemPack;
     }
 
-    private static CatalogItem CreateCatalogItem(SceneObject sceneObject)
+    public static CatalogItem CreateCatalogItem(SceneObject sceneObject)
     {
         CatalogItem catalogItem = new CatalogItem();
         catalogItem.id = sceneObject.id;
@@ -180,7 +187,7 @@ public static class BIWCatalogManager
         return catalogItem;
     }
 
-    private static CatalogItem CreateCatalogItem(NFTInfo nFTInfo)
+    public static CatalogItem CreateCatalogItem(NFTInfo nFTInfo)
     {
         CatalogItem catalogItem = new CatalogItem();
         catalogItem.itemType = CatalogItem.ItemType.NFT;

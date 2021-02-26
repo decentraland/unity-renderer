@@ -6,7 +6,7 @@ public class QuickBarController
 {
     public event System.Action<CatalogItem> OnCatalogItemSelected;
 
-    CatalogItem[] quickBarShortcutsCatalogItems = new CatalogItem[AMOUNT_OF_QUICK_SLOTS];
+    private CatalogItem[] quickBarShortcutsCatalogItems = new CatalogItem[AMOUNT_OF_QUICK_SLOTS];
 
     const int AMOUNT_OF_QUICK_SLOTS = 9;
 
@@ -15,10 +15,20 @@ public class QuickBarController
         view.OnQuickBarAdd += SetQuickBarShortcut;
     }
 
-    public void QuickBarObjectSelected(int index)
+    public int GetSlotsCount()
+    {
+        return AMOUNT_OF_QUICK_SLOTS;
+    }
+
+    public CatalogItem QuickBarObjectSelected(int index)
     {
         if (quickBarShortcutsCatalogItems.Length > index && quickBarShortcutsCatalogItems[index] != null)
+        {
             OnCatalogItemSelected?.Invoke(quickBarShortcutsCatalogItems[index]);
+            return quickBarShortcutsCatalogItems[index];
+        }
+
+        return null;
     }
 
     void SetQuickBarShortcut(CatalogItem catalogItem, int index)

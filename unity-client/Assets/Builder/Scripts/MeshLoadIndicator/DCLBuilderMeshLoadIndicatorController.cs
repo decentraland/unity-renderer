@@ -76,6 +76,9 @@ namespace Builder.MeshLoadIndicator
         {
             DCLBuilderMeshLoadIndicator ret;
 
+            if (indicatorsAvailable == null)
+                return null;
+
             if (indicatorsAvailable.Count > 0)
             {
                 ret = indicatorsAvailable.Dequeue();
