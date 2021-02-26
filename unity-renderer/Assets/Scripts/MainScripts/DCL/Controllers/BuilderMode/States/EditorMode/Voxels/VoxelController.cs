@@ -12,7 +12,7 @@ public class VoxelController : MonoBehaviour
     public BuilderInWorldInputWrapper builderInputWrapper;
     public BuilderInWorldController buildModeController;
     public BuilderInWorldGodMode buildEditorMode;
-    public OutlinerController outlinerController;
+    public BIWOutlinerController outlinerController;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public FreeCameraMovement freeCameraMovement;
     public ActionController actionController;
@@ -127,7 +127,7 @@ public class VoxelController : MonoBehaviour
                 builderInWorldEntityHandler.SelectEntity(voxelEntity);
             }
         }
-        buildModeController.SetOutlineCheckActive(true);
+        outlinerController.SetOutlineCheckActive(true);
         outlinerController.CancelAllOutlines();
     }
 

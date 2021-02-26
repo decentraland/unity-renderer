@@ -12,15 +12,15 @@ public class BuilderInWorldNFTController
     public event System.Action OnNFTUsageChange;
     public event System.Action<List<NFTInfo>> OnNftsFetched;
 
-    NFTOwner nftOwner;
+    private NFTOwner nftOwner;
 
-    Coroutine fechNftsCoroutine;
+    private Coroutine fechNftsCoroutine;
 
-    static BuilderInWorldNFTController instance;
+    private static BuilderInWorldNFTController instance;
 
-    List<NFTInfo> nftsAlreadyInUse = new List<NFTInfo>();
+    private List<NFTInfo> nftsAlreadyInUse = new List<NFTInfo>();
 
-    bool desactivateNFT = false;
+    private bool desactivateNFT = false;
 
     public static BuilderInWorldNFTController i
     {
@@ -74,6 +74,11 @@ public class BuilderInWorldNFTController
         }
     }
 
+    public List<NFTInfo> GetNfts()
+    {
+        return nftOwner.assets;
+    }
+
     public void UseNFT(string id)
     {
         if (desactivateNFT)
@@ -90,13 +95,21 @@ public class BuilderInWorldNFTController
         }
     }
 
-    void FetchNftsFromOwner()
+    private void FetchNftsFromOwner()
     {
         if (fechNftsCoroutine != null) CoroutineStarter.Stop(fechNftsCoroutine);
         fechNftsCoroutine = CoroutineStarter.Start(FetchNfts());
     }
 
-    IEnumerator FetchNfts()
+    public void NftsFeteched(NFTOwner nftOwner)
+    {
+        this.nftOwner = nftOwner;
+        string json = JsonUtility.ToJson(nftOwner);
+        desactivateNFT = false;
+        OnNftsFetched?.Invoke(this.nftOwner.assets);
+    }
+
+    private IEnumerator FetchNfts()
     {
         UserProfile userProfile = UserProfile.GetOwnUserProfile();
 
@@ -104,9 +117,7 @@ public class BuilderInWorldNFTController
 
         yield return NFTHelper.FetchNFTsFromOwner(userId, (nftOwner) =>
         {
-            this.nftOwner = nftOwner;
-            desactivateNFT = false;
-            OnNftsFetched?.Invoke(nftOwner.assets);
+            NftsFeteched(nftOwner);
         },
         (error) =>
         {

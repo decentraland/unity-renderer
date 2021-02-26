@@ -7,6 +7,7 @@ using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,14 +15,6 @@ using UnityEngine.TestTools;
 
 public class BuilderInWorldShould : IntegrationTestSuite_Legacy
 {
-
-    protected override IEnumerator SetUp()
-    {
-        yield return base.SetUp();
-        string entityId = "mockUpEntity";
-        TestHelpers.CreateSceneEntity(scene, entityId);
-    }
-
     [Test]
     public void GroundRaycast()
     {
@@ -75,6 +68,99 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         VoxelController voxelController = godMode.GetComponent<VoxelController>();
 
         Assert.IsNotNull(voxelController.freeCameraMovement, "Camera reference on the builder-in-world voxel controller are null, check them all!");
+    }
+
+    [Test]
+    public void BuilderInWorldEntityComponents()
+    {
+        string entityId = "1";
+        TestHelpers.CreateSceneEntity(scene, entityId);
+
+        DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[entityId].gameObject);
+        biwEntity.Init(scene.entities[entityId], null);
+
+        Assert.IsTrue(biwEntity.entityUniqueId == scene.sceneData.id + scene.entities[entityId].entityId, "Entity id is not created correctly, this can lead to weird behaviour");
+
+        SmartItemComponent.Model model = new SmartItemComponent.Model();
+        string jsonModel = JsonUtility.ToJson(model);
+        scene.EntityComponentCreateOrUpdateFromUnity(entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
+
+        Assert.IsTrue(biwEntity.HasSmartItemComponent());
+
+        DCLName name = (DCLName)scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
+        scene.SharedComponentAttach(biwEntity.rootEntity.entityId, name.id);
+
+        DCLName dclName = biwEntity.rootEntity.TryGetComponent<DCLName>();
+        Assert.IsNotNull(dclName);
+
+        string newName = "TestingName";
+        dclName.ForceSetNewName(newName);
+        Assert.AreEqual(newName, biwEntity.GetDescriptiveName());
+
+
+        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit)scene.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
+        scene.SharedComponentAttach(biwEntity.rootEntity.entityId, entityLocked.id);
+
+        DCLLockedOnEdit dclLockedOnEdit = biwEntity.rootEntity.TryGetComponent<DCLLockedOnEdit>();
+        Assert.IsNotNull(dclLockedOnEdit);
+
+        bool isLocked = true;
+        dclLockedOnEdit.SetIsLocked(isLocked);
+        Assert.AreEqual(biwEntity.IsLocked,isLocked);
+    }
+
+    [Test]
+    public void SmartItemComponent()
+    {
+        SmartItemComponent.Model model = new SmartItemComponent.Model();
+
+        string testFloatKey = "TestFloat";
+        float testFloat = 20f;
+
+        string intKey = "Speed";
+        int testInt = 10;
+
+        string stringKey = "TextExample";
+        string testString = "unit test example";
+
+        string onClickKey = "OnClick";
+
+
+        Dictionary<object, object> onClickDict = new Dictionary<object, object>();
+        onClickDict.Add(testFloatKey, testFloat);
+
+        model.values = new Dictionary<object, object>();
+        model.values.Add(intKey, testInt);
+        model.values.Add(testFloatKey, testFloat);
+        model.values.Add(stringKey, testString);
+        model.values.Add(onClickKey, onClickDict);
+
+        string jsonModel = JsonUtility.ToJson(model);
+
+        string entityId = "1";
+
+        TestHelpers.CreateSceneEntity(scene, entityId);
+        SmartItemComponent smartItemComponent = null;
+        //Note (Adrian): This shouldn't work this way, we should have a function to create the component from Model directly
+        scene.EntityComponentCreateOrUpdateFromUnity(entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
+
+        if (scene.entities[entityId].TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent))
+        {
+            //Note (Adrian): We can't wait to set the component 1 frame in production, so we set it like production
+            smartItemComponent = ((SmartItemComponent)baseComponent);
+            smartItemComponent.SetModel(model);
+        }
+        else
+        {
+            Assert.Fail("Smart Compoenent not found");
+        }
+
+        Assert.AreEqual(testInt, smartItemComponent.model.values[intKey]);
+        Assert.AreEqual(testFloat, smartItemComponent.model.values[testFloatKey]);
+        Assert.AreEqual(testString, smartItemComponent.model.values[stringKey]);
+
+        Dictionary<object, object> onClickDictFromComponent = (Dictionary<object, object>)smartItemComponent.model.values[onClickKey];
+        Assert.AreEqual(testFloat, onClickDictFromComponent[testFloatKey]);
     }
 
     protected override IEnumerator TearDown()

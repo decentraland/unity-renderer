@@ -90,6 +90,11 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     }
 
+    public override Vector3 GetPointerPosition()
+    {
+        return new Vector3(Screen.width / 2, Screen.height / 2, 0);
+    }
+
     public void OnMouseClick(int buttonId, Vector3 mouseposition)
     {
         if (!isModeActive) return;

@@ -24,12 +24,17 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         {
             CatalogItemAdapter adapter = Instantiate(catalogItemAdapterPrefab, categoryContentGO.transform).GetComponent<CatalogItemAdapter>();
             adapter.SetContent(catalogItem);
-            adapter.OnCatalogItemClicked += CatalogItemClicked;
-            adapter.OnCatalogItemFavorite += CatalogItemFavorite;
-            adapter.OnAdapterStartDrag += AdapterStartDragging;
-            adapter.OnAdapterDrag += OnDrag;
-            adapter.OnAdapterEndDrag += OnEndDrag;
+            AddAdapter(adapter);
         }
+    }
+
+    public void AddAdapter(CatalogItemAdapter adapter)
+    {
+        adapter.OnCatalogItemClicked += CatalogItemClicked;
+        adapter.OnCatalogItemFavorite += CatalogItemFavorite;
+        adapter.OnAdapterStartDrag += AdapterStartDragging;
+        adapter.OnAdapterDrag += OnDrag;
+        adapter.OnAdapterEndDrag += OnEndDrag;
     }
 
     public void RemoveAdapters()

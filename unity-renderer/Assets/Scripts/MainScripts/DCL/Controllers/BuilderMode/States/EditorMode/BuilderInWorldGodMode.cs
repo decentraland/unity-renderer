@@ -22,7 +22,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public DCLBuilderGizmoManager gizmoManager;
     public VoxelController voxelController;
     public BuilderInWorldInputWrapper builderInputWrapper;
-    public OutlinerController outlinerController;
+    public BIWOutlinerController outlinerController;
     public BuilderInWorldController buildModeController;
     public CameraController cameraController;
     public Transform lookAtT;
@@ -262,7 +262,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         lastMousePosition = position;
         mousePressed = true;
         freeCameraController.SetCameraCanMove(false);
-        buildModeController.SetOutlineCheckActive(false);
+        outlinerController.SetOutlineCheckActive(false);
     }
 
     void StarDraggingSelectedEntities()
@@ -322,7 +322,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             }
         }
 
-        buildModeController.SetOutlineCheckActive(true);
+        outlinerController.SetOutlineCheckActive(true);
         outlinerController.CancelAllOutlines();
     }
 

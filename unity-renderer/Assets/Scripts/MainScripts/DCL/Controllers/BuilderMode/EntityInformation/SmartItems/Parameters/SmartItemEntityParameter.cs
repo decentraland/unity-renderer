@@ -4,12 +4,16 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityListHandler
 {
     public TMP_Dropdown dropDown;
 
-    List<DCLBuilderInWorldEntity> entitiesList;
+    private List<DCLBuilderInWorldEntity> entitiesList;
+
+    private Dictionary<DCLBuilderInWorldEntity, Sprite> entitySpriteDict = new Dictionary<DCLBuilderInWorldEntity, Sprite>();
+    private Dictionary<string, DCLBuilderInWorldEntity> entityPromiseKeeperDict = new Dictionary<string, DCLBuilderInWorldEntity>();
 
     private void Start()
     {
@@ -26,6 +30,10 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         base.SetInfo();
 
         GenerateDropdownContent();
+        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        {
+            GetThumbnail(entity);
+        }
     }
 
     void GenerateDropdownContent()
@@ -33,17 +41,18 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         dropDown.ClearOptions();
 
         dropDown.options = new List<TMP_Dropdown.OptionData>();
-
-        var item = new TMP_Dropdown.OptionData();
-     
-
-        List<string> optionsLabelList = new List<string>();
+      
+        List<TMP_Dropdown.OptionData> optionsList = new List<TMP_Dropdown.OptionData>();
         foreach (DCLBuilderInWorldEntity entity in entitiesList)
         {
-            optionsLabelList.Add(entity.GetDescriptiveName());
+            var item = new TMP_Dropdown.OptionData();
+            item.text = entity.GetDescriptiveName();
+            if (entitySpriteDict.ContainsKey(entity))
+                item.image = entitySpriteDict[entity];
+            optionsList.Add(item);
         }
 
-        dropDown.AddOptions(optionsLabelList);
+        dropDown.AddOptions(optionsList);
 
 
         string value = (string)GetParameterValue();
@@ -65,7 +74,9 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         string newLoadedThumbnailURL = url;
         var newLoadedThumbnailPromise = new AssetPromise_Texture(url);
 
-
+        string promiseId = newLoadedThumbnailPromise.GetId().ToString();
+        if (!entityPromiseKeeperDict.ContainsKey(promiseId))
+            entityPromiseKeeperDict.Add(promiseId, entity);
         newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
         newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
 
@@ -74,7 +85,13 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
 
     public void SetThumbnail(Asset_Texture texture)
     {
-        //TODO: Implement the Image of the entity for the dropdown
+        if (!entityPromiseKeeperDict.ContainsKey(texture.id.ToString()))
+            return;
+
+        Vector2 pivot = new Vector2(0.5f, 0.5f);
+        Sprite spriteToUse = Sprite.Create(texture.texture, new Rect(0, 0, texture.width, texture.height), pivot);
+        entitySpriteDict.Add(entityPromiseKeeperDict[texture.id.ToString()], spriteToUse);
+        GenerateDropdownContent();
     }
 
     private void OnValueChange(int currentIndex)

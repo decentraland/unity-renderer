@@ -29,7 +29,7 @@ public class SmartItemListView : MonoBehaviour
 
     public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
     {
-        this.entitiesList = entitiesList;
+        this.entitiesList = BuilderInWorldUtils.RemoveGroundEntities(entitiesList);
     }
 
     void InstantiateParameter(SmartItemParameter parameter, Dictionary<object, object> smartItemValues, SmartItemUIParameterAdapter parameterAdapterPrefab)

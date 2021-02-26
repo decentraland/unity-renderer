@@ -31,6 +31,6 @@ public class FavoritesController
             catalogItem.SetFavorite(false);
         }
 
-        adapter.SetFavorite(catalogItem.IsFavorite());
+        adapter?.SetFavorite(catalogItem.IsFavorite());
     }
 }

@@ -14,8 +14,8 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
     public event System.Action OnResumeInput;
     public event System.Action OnStopInput;
 
-    GameObject draggedObject;
-    CatalogItemAdapter catalogItemAdapterDragged;
+    private GameObject draggedObject;
+    private CatalogItemAdapter catalogItemAdapterDragged;
 
     public override void AddAdapters()
     {
@@ -28,24 +28,27 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
             foreach (KeyValuePair<string, List<CatalogItem>> assetPackGroup in assetPackGroups)
             {
                 CatalogAssetGroupAdapter adapter = Instantiate(categoryItemAdapterPrefab, contentPanelTransform).GetComponent<CatalogAssetGroupAdapter>();
-
                 adapter.SetContent(assetPackGroup.Key, assetPackGroup.Value);
-                adapter.OnCatalogItemClicked += CatalogItemSelected;
-                adapter.OnCatalogItemFavorite += CatalogItemFavorite;
-                adapter.OnAdapterStartDragging += AdapterStartDragging;
-                adapter.OnAdapterDrag += OnDrag;
-                adapter.OnAdapterEndDrag += OnEndDrag;
-
+                AddAdapter(adapter);
             }
         }
     }
 
-    void OnDrag(PointerEventData data)
+    public void AddAdapter(CatalogAssetGroupAdapter adapter)
+    {   
+        adapter.OnCatalogItemClicked += CatalogItemSelected;
+        adapter.OnCatalogItemFavorite += CatalogItemFavorite;
+        adapter.OnAdapterStartDragging += AdapterStartDragging;
+        adapter.OnAdapterDrag += OnDrag;
+        adapter.OnAdapterEndDrag += OnEndDrag;
+    }
+
+    private void OnDrag(PointerEventData data)
     {
         draggedObject.transform.position = data.position;
     }
 
-    void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
+    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
     {
         PointerEventData eventData = data as PointerEventData;
 
@@ -62,7 +65,7 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
         OnStopInput?.Invoke();
     }
 
-    void OnEndDrag(PointerEventData data)
+    private void OnEndDrag(PointerEventData data)
     {
         OnResumeInput?.Invoke();
         Destroy(draggedObject);
@@ -73,12 +76,12 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
         return catalogItemAdapterDragged;
     }
 
-    void CatalogItemSelected(CatalogItem sceneObject)
+    private void CatalogItemSelected(CatalogItem sceneObject)
     {
         OnCatalogItemClicked?.Invoke(sceneObject);
     }
 
-    void CatalogItemFavorite(CatalogItem sceneObject,CatalogItemAdapter adapter)
+    private void CatalogItemFavorite(CatalogItem sceneObject,CatalogItemAdapter adapter)
     {
         OnCatalogItemFavorite?.Invoke(sceneObject, adapter);
     }

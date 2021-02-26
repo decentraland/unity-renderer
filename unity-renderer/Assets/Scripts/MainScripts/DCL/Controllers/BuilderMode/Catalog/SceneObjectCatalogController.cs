@@ -153,7 +153,7 @@ public class SceneObjectCatalogController : MonoBehaviour
         lastFilterName = currentSearchInput;
     }
 
-    void FilterAssets(string nameToFilter)
+    public List<Dictionary<string, List<CatalogItem>>> FilterAssets(string nameToFilter)
     {
         filterObjects.Clear();
         foreach (CatalogItemPack assetPack in BIWCatalogManager.GetCatalogItemPackList())
@@ -179,9 +179,10 @@ public class SceneObjectCatalogController : MonoBehaviour
                 }
             }
         }
+        return filterObjects;
     }
 
-    void AddNewSceneObjectCategoryToFilter(CatalogItem catalogItem)
+    private void AddNewSceneObjectCategoryToFilter(CatalogItem catalogItem)
     {
         Dictionary<string, List<CatalogItem>> groupedCatalogItems = new Dictionary<string, List<CatalogItem>>();
         groupedCatalogItems.Add(catalogItem.category, new List<CatalogItem>() { catalogItem });
@@ -190,7 +191,7 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     #endregion
 
-    void QuickBarInput(int quickBarSlot)
+    private void QuickBarInput(int quickBarSlot)
     {
         quickBarController.QuickBarObjectSelected(quickBarSlot);
     }

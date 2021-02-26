@@ -177,6 +177,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             }
         }
 
+        associatedCatalogItem = null;
         DCL.Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(rootEntity);
         OnDelete?.Invoke(this);
     }
@@ -357,7 +358,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     void SaveOriginalMaterialAndSetEditMaterials()
     {
-        if (rootEntity.meshesInfo.renderers == null && rootEntity.meshesInfo.renderers.Length < 1) return;
+        if (rootEntity.meshesInfo == null ||
+            rootEntity.meshesInfo.renderers == null ||
+            rootEntity.meshesInfo.renderers.Length < 1) return;
 
         if (isNFT) return;
 
@@ -471,7 +474,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             collidersGameObjectDictionary.Add(entity.scene.sceneData.id + entity.entityId, colliderList);
     }
 
-    bool IsEntityNFT()
+    public bool IsEntityNFT()
     {
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
         {

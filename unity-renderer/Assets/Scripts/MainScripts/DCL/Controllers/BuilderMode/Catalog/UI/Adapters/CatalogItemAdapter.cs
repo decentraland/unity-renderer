@@ -22,11 +22,10 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
     public System.Action<CatalogItem, CatalogItemAdapter,BaseEventData> OnAdapterStartDrag;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
 
-    CatalogItem catalogItem;
+    private CatalogItem catalogItem;
 
-    string loadedThumbnailURL;
-    AssetPromise_Texture loadedThumbnailPromise;
-
+    private string loadedThumbnailURL;
+    private AssetPromise_Texture loadedThumbnailPromise;
 
     public CatalogItem GetContent()
     {
