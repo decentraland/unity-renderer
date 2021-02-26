@@ -1,6 +1,11 @@
 # Coding Guidelines
 
-### Unity Project Code Style
+## Typescript
+
+TBD
+
+## C# / Unity
+
 Maintaining a common code style will boost our productivity by reducing the amount of noise in Code Reviews and allowing new members to on-board faster.
 When working with the Unity Project these guidelines (to be documented) must be followed and to ease the process we have a pre-commit hook to deal with it automatically.
 The repo `https://github.com/decentraland/reshaper-pre-commit-hook` contains both the installing bash script and the pre-commit hook itself.
