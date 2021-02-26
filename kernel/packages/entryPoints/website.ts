@@ -92,7 +92,7 @@ namespace webApp {
   export async function loadUnity({ instancedJS }: InitializeUnityResult) {
     const i = (await instancedJS).unityInterface
     const worldConfig: WorldConfig | undefined = globalThis.globalStore.getState().meta.config.world
-    const renderProfile = worldConfig ? (worldConfig.renderProfile ?? RenderProfile.DEFAULT) : RenderProfile.DEFAULT
+    const renderProfile = worldConfig ? worldConfig.renderProfile ?? RenderProfile.DEFAULT : RenderProfile.DEFAULT
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
@@ -206,6 +206,12 @@ namespace webApp {
       }
 
       console['error'](error)
+      if (error.message && error.message.includes('The error you provided does not contain a stack trace')) {
+        // This error is something that react causes only on development, with unhandled promises and strange errors with no stack trace (i.e, matrix errors).
+        // Some libraries (i.e, matrix client) don't handle promises well and we shouldn't crash the explorer because of that
+        return
+      }
+
       ReportFatalError(error.message)
     }
     return true

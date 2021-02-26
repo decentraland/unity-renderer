@@ -140,10 +140,12 @@ export const contracts = {
     'RootChainManagerProxy': '0xbbd7cbfa79faee899eaf900f13c9065bf03b1a74'
   },
   'matic': {
-    'MANAToken': '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4'
+    'MANAToken': '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
+    'ChildChainManagerProxy': '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa'
   },
   'mumbai': {
     'MetaTxForwarder': '0xBF6755A83C0dCDBB2933A96EA778E00b717d7004',
-    'MANAToken': '0x882Da5967c435eA5cC6b09150d55E8304B838f45'
+    'MANAToken': '0x882Da5967c435eA5cC6b09150d55E8304B838f45',
+    'ChildChainManagerProxy': '0xb5505a6d998549090530911180f38aC5130101c6'
   }
 }
