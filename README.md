@@ -5,8 +5,8 @@ This is the [decentraland explorer](https://play.decentraland.org) official repo
 ## Before you start
 
 1. [Contribution Guidelines](.github/CONTRIBUTING.md)
-2. [Coding Guidelines](unity-client/style-guidelines.md)
-3. Code Review Standards
+2. [Coding Guidelines](docs/style-guidelines.md)
+3. [Code Review Standards](docs/code-review-standards.md)
 
 # Running the Explorer
 
