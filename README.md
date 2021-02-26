@@ -103,7 +103,7 @@ If you get the "missing xcrun" error when trying to run the `make watch` command
 
 ## Testing your branch using automated builds
 
-When any commit is pushed to `master`, a build is generated and deployed to:
+When any commit is pushed to a branch on the server, a build is generated and deployed to:
     
     https://play.decentraland.zone/branch/<branch-name>/index.html
 
