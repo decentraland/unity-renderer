@@ -1,27 +1,33 @@
 ## How to debug with local test parcels and preview scenes
 
-### Test Scenes
+### Running Test Scenes
 
-You can build the test scenes which are used by entering kernel with the `debug` mode:
+You can test and debug components and SDK functionalities with many test-scenes located at `kernel/public/test-scenes/`, running the client in `debug` mode.
 
-    make test-scenes
+1. Start the regular kernel server in a terminal at '/kernel' and leave it watching for changes
 
-If you want to run the client in `debug` mode, append the following query parameter to the URL:
+    `make watch`
+
+2. In **another terminal** in '/kernel' run the following command to build the test scenes and keep watching changes on them (changes will be visible when refreshing the browser):
+
+    `make watch-only-test-scenes`
+
+Note that the test-scenes building may take a while (10 mins or more).
+
+3. To run the client in `debug` mode, append the following query parameter to the URL:
 
     http://localhost:3000/?DEBUG_MODE
 
-To spawn in a specific set of coordinates append the following query paramter:
+4. To spawn at the specific coordinates of a test scene append the position query paramter:
 
-    http://localhost:3000/?DEBUG_MODE&position=10,10
+    http://localhost:3000/?DEBUG_MODE&position=-100,100
 
+NOTE(optional): If you don't need to modify the test-scenes and just build them once, you may only run once `make test-scenes` (it takes a while) and that'd be it.
 
+### Creating New Test Scenes
+It is possible to define new scenes inside this repo for testing purposes. To do so, create a new folder in `kernel/public/test-scenes`. There are several conventions to be followed regarding the name of these folders and the positions of the parcels, these can be found in the [README](https://github.com/decentraland/client/blob/master/public/test-scenes/README.md) file.
 
-If you want the test scenes to be updated dynamically after the first build, you should run `make watch-only-test-scenes` in another terminal and keep it watching for changes.
-
-### Creating new test scenes
-It is possible to define new scenes inside this repo for testing purposes. To do so, create a new folder in `public/test-scenes`. There are several conventions to be followed regarding the name of these folders and the positions of the parcels, these can be found in the [README](https://github.com/decentraland/client/blob/master/public/test-scenes/README.md) file.
-
-To edit and make sure that `make watch` is rebuilding the scene when you are hacking on a new feature of the kernel, make sure to modify `targets/scenes/basic-scenes.json` and point to the scene you're working on.
+To be able to see the changes made on a test scene (by reloading the browser), without needing to rebuild all the scenes, you should have another terminal running `make watch-only-test-scenes` and that'll keep watching for changes in the test scenes.
 
 ### Preview Mode Scenes
 
