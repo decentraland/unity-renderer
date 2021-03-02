@@ -21,7 +21,8 @@ export function ensureServerFormat(profile: Profile): ServerFormatProfile {
   if (!avatar.bodyShape || !isValidBodyShape(avatar.bodyShape)) {
     throw new Error('Invalid BodyShape! Received: ' + JSON.stringify(avatar))
   }
-  const { userId, hasClaimedName, ...serverFormat } = {
+
+  return {
     ...profile,
     avatar: {
       bodyShape: avatar.bodyShape,
@@ -32,7 +33,6 @@ export function ensureServerFormat(profile: Profile): ServerFormatProfile {
       wearables: avatar.wearables
     }
   }
-  return serverFormat
 }
 
 export function buildServerMetadata(profile: Profile) {
@@ -41,7 +41,7 @@ export function buildServerMetadata(profile: Profile) {
   return metadata
 }
 
-type ServerFormatProfile = Omit<Profile, 'inventory' | 'userId' | 'hasClaimedName' | 'avatar'> & {
+type ServerFormatProfile = Omit<Profile, 'avatar'> & {
   avatar: ServerProfileAvatar
 }
 

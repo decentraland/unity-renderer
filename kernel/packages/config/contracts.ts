@@ -116,7 +116,8 @@ export const contracts = {
     'MLLiondance': '0x0b1c6c75d511fae05e7dc696f4cf14129a9c43c9',
     'AtariLaunch': '0x4c290f486bae507719c562b6b524bdb71a2570c9',
     'ERC20Predicate': '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
-    'RootChainManagerProxy': '0xA0c68C638235ee32657e8f720a23ceC1bFc77C77'
+    'RootChainManagerProxy': '0xA0c68C638235ee32657e8f720a23ceC1bFc77C77',
+    'RootChainProxy': '0x86E4Dc95c7FBdBf52e33D563BbDB00823894C287'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',
@@ -137,7 +138,8 @@ export const contracts = {
   'goerli': {
     'MANAToken': '0xe7fDae84ACaba2A5Ba817B6E6D8A2d415DBFEdbe',
     'ERC20Predicate': '0xdD6596F2029e6233DEFfaCa316e6A95217d4Dc34',
-    'RootChainManagerProxy': '0xbbd7cbfa79faee899eaf900f13c9065bf03b1a74'
+    'RootChainManagerProxy': '0xbbd7cbfa79faee899eaf900f13c9065bf03b1a74',
+    'RootChainProxy': '0x2890ba17efe978480615e330ecb65333b880928e'
   },
   'matic': {
     'MANAToken': '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
