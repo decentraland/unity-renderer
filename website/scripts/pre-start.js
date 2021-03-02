@@ -6,6 +6,10 @@ const path = require("path");
 let files = [
   { origin: "/static/default-profile", dest: "./public/default-profile" },
   { origin: "/static/dist/website.js", dest: "./public/website.js" },
+  { origin: "/static/dist/0.js", dest: "./public/0.js" },
+  { origin: "/static/dist/1.js", dest: "./public/1.js" },
+  { origin: "/static/dist/2.js", dest: "./public/2.js" },
+  { origin: "/static/dist/3.js", dest: "./public/3.js" },
   { origin: "/static/loader", dest: "./public/loader" },
   { origin: "/static/systems", dest: "./public/systems" },
   { origin: "/static/unity", dest: "./public/unity" },
@@ -13,18 +17,18 @@ let files = [
 ];
 
 console.log("\nREFRESH KERNEL FILES\n");
-const kernelPath = path.resolve( __dirname + "/../../kernel");
+const kernelPath = path.resolve(__dirname + "/../../kernel");
 files
   .map((p) => ({
-    dest: path.resolve( __dirname + "/../" + p.dest),
+    dest: path.resolve(__dirname + "/../" + p.dest),
     origin: path.resolve(kernelPath + "/" + p.origin),
   }))
   .map((p) => {
     if (fs.existsSync(p.dest)) {
       console.log("removing old version of ", path.basename(p.dest));
-      const lstat = fs.lstatSync(p.dest)
+      const lstat = fs.lstatSync(p.dest);
       if (lstat.isDirectory()) {
-        fs.rmdirSync(p.dest, { recursive:true } );
+        fs.rmdirSync(p.dest, { recursive: true });
       } else {
         fs.unlinkSync(p.dest);
       }
@@ -33,7 +37,7 @@ files
   })
   .map(({ origin, dest, type }) => {
     console.log(`linking ${origin} -> ${dest}`);
-    fs.symlinkSync(origin, dest, 'junction');
+    fs.symlinkSync(origin, dest, "junction");
   });
 
 console.log("\nREPLACE KERNEL VERSION\n");

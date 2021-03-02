@@ -1,4 +1,5 @@
 import { setLoadingScreenVisible } from 'unity-interface/dcl'
+import { ProviderType } from 'decentraland-connect'
 
 import { disconnect, sendToMordor } from 'shared/comms'
 import { RootState, StoreContainer } from 'shared/store/rootTypes'
@@ -12,7 +13,6 @@ import {
   saveToLocalStorage
 } from 'atomicHelpers/localStorage'
 import { StoredSession } from './types'
-import { ProviderType } from '../ethereum/ProviderType'
 
 declare const globalThis: StoreContainer
 
@@ -58,7 +58,7 @@ export const getLastSessionWithoutWallet: () => StoredSession | null = () => {
   }
 }
 
-export const getLastSessionByProvider = (provider: ProviderType): StoredSession | null => {
+export const getLastSessionByProvider = (provider: ProviderType | null): StoredSession | null => {
   const sessions: StoredSession[] = getKeysFromLocalStorage()
     .filter((k) => k.indexOf(SESSION_KEY_PREFIX) === 0)
     .map((id) => getFromLocalStorage(id))

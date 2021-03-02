@@ -2,12 +2,11 @@ import { Eth } from 'web3x/eth'
 import { WebSocketProvider } from 'eth-connect'
 import { LegacyProviderAdapter } from 'web3x/providers'
 import { ETHEREUM_NETWORK, ethereumConfigurations } from '../../config'
-import { ProviderType } from './ProviderType'
 import { getNetworkFromTLDOrWeb3 } from 'atomicHelpers/getNetworkFromTLDOrWeb3'
-import { ChainId, connection, ConnectionResponse } from 'decentraland-connect'
+import { ChainId, connection, ConnectionResponse, ProviderType } from 'decentraland-connect'
 
-export class Web3Connector {
-  private type: ProviderType | undefined
+export class EthereumConnector {
+  private type: ProviderType | null = null
   private result: ConnectionResponse | undefined
   private readonly network: ETHEREUM_NETWORK
 
@@ -25,37 +24,66 @@ export class Web3Connector {
   }
 
   getChainId(): ChainId {
-    return this.network === ETHEREUM_NETWORK.MAINNET ? ChainId.MAINNET : ChainId.ROPSTEN
+    return this.network === ETHEREUM_NETWORK.MAINNET ? ChainId.ETHEREUM_MAINNET : ChainId.ETHEREUM_ROPSTEN
   }
 
-  async connect(type: ProviderType) {
+  async restoreConnection() {
+    try {
+      this.result = await connection.tryPreviousConnection()
+      this.type = connection.getConnectionData()!.providerType
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
+  async connect(type: ProviderType | null) {
     this.type = type
-    if (type === ProviderType.GUEST) {
+    if (type === null) {
       this.result = {
         chainId: this.getChainId(),
         account: null,
-        provider: Web3Connector.createWeb3xWebsocketProvider()
+        provider: EthereumConnector.createWeb3xWebsocketProvider()
       }
+
       return this.result
     }
-    this.result = await connection.connect(type as any, this.getChainId())
+
+    this.result = await connection.connect(type, this.getChainId())
     return this.result
   }
 
-  isType(type: ProviderType) {
+  isConnected() {
+    return !!this.result
+  }
+
+  async disconnect() {
+    await connection.disconnect()
+    this.type = null
+    this.result = undefined
+  }
+
+  isType(type: ProviderType | null) {
     return this.type === type
   }
 
-  createEth(provider: any = false): Eth | undefined {
+  isGuest() {
+    return this.type === null
+  }
+
+  createEth(provider: any = false): Eth | null {
     if (provider) {
       return new Eth(provider)
     }
-    if (!this.result || this.isType(ProviderType.GUEST)) {
-      return undefined
+
+    if (!this.result || this.isGuest()) {
+      return null
     }
+
     if (this.isType(ProviderType.INJECTED)) {
       return new Eth(new LegacyProviderAdapter((window as any).ethereum))
     }
+
     return new Eth(this.result.provider)
   }
 }

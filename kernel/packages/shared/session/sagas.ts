@@ -10,13 +10,13 @@ import { createLogger } from 'shared/logger'
 import { initializeReferral, referUser } from 'shared/referral'
 import {
   createEth,
-  createWeb3Connector,
+  getEthConnector,
   getProviderType,
   getUserEthAccountIfAvailable,
   isGuest,
   isSessionExpired,
   loginCompleted,
-  requestWeb3Provider
+  requestProvider as requestEthProvider
 } from 'shared/ethereum/provider'
 import { setLocalInformationForComms } from 'shared/comms/peers'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
@@ -28,6 +28,7 @@ import {
 } from 'shared/loading/types'
 import { identifyEmail, identifyUser, queueTrackingEvent } from 'shared/analytics'
 import { checkTldVsWeb3Network, getAppNetwork } from 'shared/web3'
+import { connection, ProviderType } from 'decentraland-connect'
 
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 
@@ -61,9 +62,9 @@ import {
   toggleWalletPrompt,
   UPDATE_TOS,
   updateTOS,
-  userAuthentified
+  userAuthentified,
+  authenticate as authenticateAction
 } from './actions'
-import { ProviderType } from '../ethereum/ProviderType'
 import Html from '../Html'
 import { fetchProfileLocally, doesProfileExist } from '../profiles/sagas'
 import { generateRandomUserProfile } from '../profiles/generateRandomUserProfile'
@@ -114,45 +115,67 @@ function* scheduleAwaitingSignaturePrompt() {
 
 function* initSession() {
   yield ensureRealmInitialized()
-  yield createWeb3Connector()
+  yield checkConnector()
   if (ENABLE_WEB3) {
-    Html.showEthLogin()
     yield checkPreviousSession()
+    Html.showEthLogin()
   } else {
     yield previewAutoSignIn()
   }
+
   yield put(changeLoginStage(LoginStage.SIGN_IN))
+
+  if (ENABLE_WEB3) {
+    const connecetor = getEthConnector()
+    if (connecetor.isConnected()) {
+      yield put(authenticateAction(connecetor.getType()))
+      return
+    }
+  }
+
   Html.bindLoginEvent()
 }
 
+function* checkConnector() {
+  const connecetor = getEthConnector()
+  yield call(() => connecetor.restoreConnection())
+}
+
 function* checkPreviousSession() {
+  const connecetor = getEthConnector()
   const session = getLastSessionWithoutWallet()
   if (!isSessionExpired(session) && session) {
     const identity = session.identity
-    if (identity?.provider && identity.provider !== ProviderType.GUEST) {
+    if (identity && identity.provider) {
       yield put(signInSetCurrentProvider(identity.provider))
     }
   } else {
+
+    try {
+      yield call(() => connecetor.disconnect())
+    } catch (e) {
+      logger.error(e)
+    }
+
     removeStoredSession(session?.userId)
   }
 }
 
 function* previewAutoSignIn() {
-  yield requestProvider(ProviderType.GUEST)
+  yield requestProvider(null)
   const session = yield authorize()
   yield signIn(session.userId, session.identity)
 }
 
 function* authenticate(action: AuthenticateAction) {
   yield put(signInSigning(true))
-  const provider = yield requestProvider(action.payload.provider as ProviderType)
+  const provider = yield requestProvider(action.payload.provider)
   if (!provider) {
     yield put(signInSigning(false))
     return
   }
   const session = yield authorize()
   let profileExists = yield doesProfileExist(session.userId)
-
   if (profileExists || isGuestWithProfile(session) || PREVIEW) {
     return yield signIn(session.userId, session.identity)
   }
@@ -197,8 +220,8 @@ function* showAvatarEditor() {
   Html.switchGameContainer(true)
 }
 
-function* requestProvider(providerType: ProviderType) {
-  const provider = yield requestWeb3Provider(providerType)
+function* requestProvider(providerType: ProviderType | null) {
+  const provider = yield requestEthProvider(providerType)
   if (provider) {
     if (WORLD_EXPLORER && (yield checkTldVsWeb3Network())) {
       throw new Error('Network mismatch')
@@ -217,7 +240,7 @@ function* authorize() {
       let userData
 
       if (isGuest()) {
-        userData = getLastSessionByProvider(ProviderType.GUEST)
+        userData = getLastSessionByProvider(null)
       } else {
         const ethAddress = yield getUserEthAccountIfAvailable(true)
         const address = ethAddress.toLocaleLowerCase()
@@ -337,7 +360,7 @@ async function createAuthIdentity(): Promise<ExplorerIdentity> {
 
   let address
   let signer
-  let provider: ProviderType | undefined
+  let provider: ProviderType | null
   let hasConnectedWeb3 = false
 
   if (ENABLE_WEB3 && !isGuest()) {
@@ -366,7 +389,7 @@ async function createAuthIdentity(): Promise<ExplorerIdentity> {
   } else {
     const account: Account = Account.create()
 
-    provider = ProviderType.GUEST
+    provider = null
     address = account.address.toJSON()
     signer = async (message: string) => account.sign(message).signature
 
@@ -381,6 +404,7 @@ async function createAuthIdentity(): Promise<ExplorerIdentity> {
 }
 
 function* logout() {
+  connection.disconnect()
   Session.current.logout().catch((e) => logger.error('error while logging out', e))
 }
 

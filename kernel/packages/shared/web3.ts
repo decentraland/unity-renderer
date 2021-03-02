@@ -9,11 +9,11 @@ import { defaultLogger } from './logger'
 import { CatalystNode, GraphResponse } from './types'
 import { retry } from '../atomicHelpers/retry'
 import { NETWORK_MISMATCH, setTLDError } from './loading/types'
-import Html from './Html'
 import { ReportFatalError } from './loading/ReportFatalError'
 import { StoreContainer } from './store/rootTypes'
 import { getNetworkFromTLDOrWeb3 } from 'atomicHelpers/getNetworkFromTLDOrWeb3'
 import { Fetcher } from 'dcl-catalyst-commons'
+import Html from './Html'
 
 declare const globalThis: StoreContainer
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ProviderType } from "decentraland-connect/dist/types"
 import { WalletSelector } from "./wallet/WalletSelector";
 import { LoginHeader } from "./LoginHeader";
 import { Spinner } from "../common/Spinner";
@@ -7,27 +8,26 @@ import "./EthLogin.css";
 
 export interface EthLoginProps {
   loading: boolean;
-  provider: string | null | undefined;
-  showWallet?: boolean;
-  hasWallet?: boolean;
-  onLogin: (provider: string) => void;
-  onGuest: () => void;
+  availableProviders: ProviderType[];
+  onLogin: (provider: ProviderType | null) => void;
 }
 
 export const EthLogin: React.FC<EthLoginProps> = (props) => {
-  const [showWallet, setShowWallet] = useState(props.showWallet || false);
-  const isLoading = props.loading || showWallet;
+  const [showWalletSelector, setShowWalletSelector] = useState(false);
+  const hasWallet = !!(props.availableProviders && props.availableProviders.includes(ProviderType.INJECTED))
+  const isLoading = props.loading || showWalletSelector;
 
   function handlePlay() {
-    if (props.provider) {
-      return props.onLogin(props.provider);
+    if (props.onLogin && hasWallet) {
+      return props.onLogin(ProviderType.INJECTED);
+    } else {
+      setShowWalletSelector(true);
     }
-    setShowWallet(true);
   }
 
   function handlePlayAsGuest() {
-    if (props.onGuest) {
-      props.onGuest();
+    if (props.onLogin) {
+      props.onLogin(null);
     }
   }
 
@@ -42,7 +42,7 @@ export const EthLogin: React.FC<EthLoginProps> = (props) => {
             <button className="eth-login-confirm-button" onClick={handlePlay}>
               Play
             </button>
-            {!props.hasWallet && (
+            {!hasWallet && (
               <button
                 className="eth-login-guest-button"
                 onClick={handlePlayAsGuest}
@@ -54,11 +54,11 @@ export const EthLogin: React.FC<EthLoginProps> = (props) => {
         )}
       </div>
       <WalletSelector
-        show={showWallet}
-        hasWallet={!!props.hasWallet}
+        open={showWalletSelector}
         loading={props.loading}
-        onClick={props.onLogin}
-        onCancel={() => setShowWallet(false)}
+        onLogin={props.onLogin}
+        availableProviders={props.availableProviders}
+        onCancel={() => setShowWalletSelector(false)}
       />
     </div>
   );

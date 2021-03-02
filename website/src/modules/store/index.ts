@@ -1,4 +1,4 @@
-import { Kernel } from "../components/types";
+import { Kernel } from "../../components/types";
 
 const kernel = (window as Kernel).webApp;
 export const getKernelStore = () => {

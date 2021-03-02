@@ -20,17 +20,9 @@ h2.walletSelectorTitle {
 .walletButtonContainer {
   display: flex;
   flex-flow: row;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   min-width: 400px;
   min-height: 170px;
-}
-
-.walletButtonContainer .linkMetamask {
-  text-decoration: none;
-  color: black;
-}
-
-.walletButtonContainer .walletButton:first-child {
-  margin-right: 0;
 }

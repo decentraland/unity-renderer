@@ -1,4 +1,5 @@
 import { action } from 'typesafe-actions'
+import { ProviderType } from 'decentraland-connect'
 
 import { ETHEREUM_NETWORK } from 'config'
 
@@ -10,7 +11,7 @@ export const initSession = () => action(INIT_SESSION)
 export type InitSession = ReturnType<typeof initSession>
 
 export const AUTHENTICATE = '[Authenticate]'
-export const authenticate = (provider: string) => action(AUTHENTICATE, { provider })
+export const authenticate = (provider: ProviderType | null) => action(AUTHENTICATE, { provider })
 export type AuthenticateAction = ReturnType<typeof authenticate>
 
 export const SIGNUP = '[SIGNUP]'

@@ -1,86 +1,99 @@
-import React, { useMemo } from "react";
-import { AuthType } from "../../../utils";
+import React from "react";
+import { ProviderType } from "decentraland-connect";
 import MetamaskLogo from "../../../images/login/metamask.svg";
+import DapperLogo from "../../../images/login/dapper.png";
+import SamsungBlockchainWalletLogo from "../../../images/login/samsung-blockchain-wallet.svg";
 import FortmaticLogo from "../../../images/login/fortmatic.svg";
+import WalletConnect from "../../../images/login/wallet-connect.svg";
 import "./WalletButton.css";
 
 export enum WalletButtonLogo {
   METAMASK = "Metamask",
+  DAPPER = "Dapper",
   FORTMATIC = "Fortmatic",
+  WALLET_CONNECT = "WalletConnect",
+  SAMSUNG_BLOCKCHAIN_WALLET = "SamsungBlockChainWallet",
+}
+
+const options = {
+  title: {
+    [WalletButtonLogo.METAMASK]: 'Metamask',
+    [WalletButtonLogo.DAPPER]: 'Dapper',
+    [WalletButtonLogo.FORTMATIC]: 'Fortmatic',
+    [WalletButtonLogo.WALLET_CONNECT]: 'Wallet Connect',
+    [WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET]: 'Samsung Wallet'
+  },
+
+  img: {
+    [WalletButtonLogo.METAMASK]: MetamaskLogo,
+    [WalletButtonLogo.DAPPER]: DapperLogo,
+    [WalletButtonLogo.FORTMATIC]: FortmaticLogo,
+    [WalletButtonLogo.WALLET_CONNECT]: WalletConnect,
+    [WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET]: SamsungBlockchainWalletLogo
+  },
+
+  target: {
+    [WalletButtonLogo.METAMASK]: 'https://metamask.io/',
+    [WalletButtonLogo.DAPPER]: 'https://www.meetdapper.com/',
+    [WalletButtonLogo.FORTMATIC]: 'https://fortmatic.com/',
+    [WalletButtonLogo.WALLET_CONNECT]: 'https://walletconnect.org/',
+    [WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET]: 'https://www.samsung.com/global/galaxy/apps/samsung-blockchain/'
+  },
+
+  provider: {
+    [WalletButtonLogo.METAMASK]: ProviderType.INJECTED,
+    [WalletButtonLogo.DAPPER]: ProviderType.INJECTED,
+    [WalletButtonLogo.FORTMATIC]: ProviderType.FORTMATIC,
+    [WalletButtonLogo.WALLET_CONNECT]: ProviderType.WALLET_CONNECT,
+    [WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET]: ProviderType.INJECTED
+  },
+
+  description: {
+    [WalletButtonLogo.METAMASK]: "Using your browser account",
+    [WalletButtonLogo.DAPPER]: "Using your browser account",
+    [WalletButtonLogo.FORTMATIC]: "Using your email account",
+    [WalletButtonLogo.WALLET_CONNECT]: "Using your mobile account",
+    [WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET]: "Using your mobile account"
+  }
 }
 
 export interface WalletButtonProps {
-  logo: WalletButtonLogo;
+  type: WalletButtonLogo;
   active?: boolean;
-  href?: string;
-  onClick: (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    authType: AuthType
-  ) => void;
+  onClick: (providerType: ProviderType) => void;
 }
 
 export const WalletButton: React.FC<WalletButtonProps> = ({
-  logo,
-  href,
+  type,
   active,
   onClick,
 }) => {
-  const provider =
-    logo === WalletButtonLogo.METAMASK ? AuthType.INJECTED : AuthType.FORTMATIC;
-  const src = useMemo(() => {
-    switch (logo) {
-      case "Fortmatic":
-        return <img alt={logo} src={FortmaticLogo} className="fortmatic" />;
-      case "Metamask":
-      default:
-        return <img alt={logo} src={MetamaskLogo} className="metamask" />;
-    }
-  }, [logo]);
-
-  const title = useMemo(() => {
-    switch (logo) {
-      case "Fortmatic":
-        return "Fortmatic";
-      case "Metamask":
-      default:
-        return "Metamask";
-    }
-  }, [logo]);
-
-  const description = useMemo(() => {
-    switch (logo) {
-      case "Fortmatic":
-        return "Using your email account";
-      case "Metamask":
-      default:
-        return "Using a browser extension";
-    }
-  }, [logo]);
 
   function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
     if (active !== false) {
       event.preventDefault();
-    }
-
-    if (onClick) {
-      onClick(event, provider);
+      if (onClick) {
+        onClick(options.provider[type]);
+      }
     }
   }
 
   return (
     <a
-      className="walletButton"
-      href={href || "/"}
+      className={`walletButton ${active ? 'active' : 'inactive'}`}
+      href={options.target[type]}
       onClick={handleClick}
-      target={href && "_blank"}
+      target="_blank"
       rel="noopener noreferrer"
     >
-      <div className="walletImage">{src}</div>
+      <div className="walletImage">
+        <img alt={type} src={options.img[type]} className={type} />;
+      </div>
       <div className="walletTitle">
-        <h3>{title}</h3>
+        <h3>{options.title[type]}</h3>
       </div>
       <div className="walletDescription">
-        <p>{description}</p>
+        <p>{options.description[type]}</p>
       </div>
     </a>
   );
