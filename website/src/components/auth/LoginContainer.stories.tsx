@@ -30,24 +30,22 @@ const Template: Story<LoginContainerProps & { state: any }> = ({
   </Provider>
 );
 
-export const LoadingState = Template.bind({});
-LoadingState.args = {
-  ...Template.args,
-};
+// export const LoadingState = Template.bind({});
+// LoadingState.args = {
+//   ...Template.args,
+// };
 
-export const play = Template.bind({});
-play.args = {
-  ...Template.args,
-  stage: LoginStage.SIGN_IN,
-  hasWallet: true,
-};
+// export const play = Template.bind({});
+// play.args = {
+//   ...Template.args,
+//   stage: LoginStage.SIGN_IN,
+// };
 
-export const playAsGuest = Template.bind({});
-playAsGuest.args = {
-  ...Template.args,
-  stage: LoginStage.SIGN_IN,
-  hasWallet: false,
-};
+// export const playAsGuest = Template.bind({});
+// playAsGuest.args = {
+//   ...Template.args,
+//   stage: LoginStage.SIGN_IN,
+// };
 
 export const passport = Template.bind({});
 passport.args = {

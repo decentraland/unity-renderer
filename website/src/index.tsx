@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { getKernelStore } from "./store";
+import { getKernelStore } from "./modules/store";
 import App from "./components/App";
 
 let INITIAL_RENDER = true

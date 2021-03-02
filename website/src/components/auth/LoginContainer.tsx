@@ -1,19 +1,16 @@
 import React from "react";
+import { connect } from "react-redux";
+import { connection } from "decentraland-connect/dist/index"
+import { ProviderType } from "decentraland-connect/dist/types"
 import { Navbar } from "../common/Navbar";
 import { EthLogin } from "./EthLogin";
 import { EthConnectAdvice } from "./EthConnectAdvice";
 import { EthSignAdvice } from "./EthSignAdvice";
-import { connect } from "react-redux";
 import SignUpContainer from "./SignUpContainer";
 import { Container } from "../common/Container";
 import { BeginnersGuide } from "./BeginnersGuide";
 import { BigFooter } from "../common/BigFooter";
 import "./LoginContainer.css";
-import { AuthType } from "../../utils";
-
-declare var window: Window & {
-  ethereum: any;
-};
 
 export enum LoginStage {
   LOADING = "loading",
@@ -25,22 +22,26 @@ export enum LoginStage {
 }
 
 const mapStateToProps = (state: any) => {
-  const params = new URLSearchParams(window.location.search);
+  // test all connectors
+  const enableProviders = new Set([
+    ProviderType.INJECTED, // Ready
+    // ProviderType.FORTMATIC, // Ready
+    // ProviderType.WALLET_CONNECT, // Missing configuration
+  ])
+  const availableProviders = connection.getAvailableProviders()
+    .filter(provider => enableProviders.has(provider))
   return {
     stage: state.session.loginStage,
     signing: state.session.signing,
     subStage: state.session.signup.stage,
     provider: state.session.currentProvider,
-    showWalletSelector: params.has("show_wallet"),
-    hasWallet: !!window.ethereum,
+    availableProviders,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-  onLogin: (provider: string) =>
-    dispatch({ type: "[Authenticate]", payload: { provider } }),
-  onGuest: () =>
-    dispatch({ type: "[Authenticate]", payload: { provider: AuthType.GUEST } }),
+  onLogin: (provider: ProviderType | null) =>
+    dispatch({ type: "[Authenticate]", payload: { provider } })
 });
 
 export interface LoginContainerProps {
@@ -48,10 +49,8 @@ export interface LoginContainerProps {
   signing: boolean;
   subStage: string;
   provider?: string | null;
-  showWallet?: boolean;
-  hasWallet?: boolean;
-  onLogin: (provider: string) => void;
-  onGuest: () => void;
+  availableProviders: ProviderType[];
+  onLogin: (provider: ProviderType | null) => void;
 }
 
 export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
@@ -59,11 +58,7 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
   const full = loading || props.stage === LoginStage.SIGN_IN;
   const shouldShow =
     LoginStage.COMPLETED !== props.stage && props.subStage !== "avatar";
-  const provider = props.hasWallet
-    ? AuthType.INJECTED
-    : props.provider === AuthType.FORTMATIC
-    ? props.provider
-    : null;
+
   return (
     <React.Fragment>
       {shouldShow && (
@@ -76,12 +71,9 @@ export const LoginContainer: React.FC<LoginContainerProps> = (props) => {
             <Container className="eth-login-popup">
               {full && (
                 <EthLogin
-                  hasWallet={props.hasWallet}
                   loading={loading || props.signing}
+                  availableProviders={props.availableProviders}
                   onLogin={props.onLogin}
-                  onGuest={props.onGuest}
-                  provider={provider}
-                  showWallet={props.showWallet}
                 />
               )}
               {props.stage === LoginStage.CONNECT_ADVICE && (

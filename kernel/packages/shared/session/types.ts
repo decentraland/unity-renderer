@@ -1,8 +1,8 @@
 import { AuthIdentity } from 'dcl-crypto'
+import { ProviderType } from 'decentraland-connect'
 
 import { ETHEREUM_NETWORK } from 'config'
 import { Profile } from '../profiles/types'
-import { ProviderType } from '../ethereum/ProviderType'
 
 export type RootSessionState = {
   session: SessionState
@@ -11,7 +11,7 @@ export type RootSessionState = {
 export type ExplorerIdentity = AuthIdentity & {
   address: string // contains the lowercased address that will be used for the userId
   rawAddress: string // contains the real ethereum address of the current user
-  provider?: ProviderType
+  provider?: ProviderType | null
   hasConnectedWeb3: boolean
 }
 

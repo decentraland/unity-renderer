@@ -3,20 +3,20 @@ import { future } from 'fp-future'
 import { defaultLogger } from 'shared/logger'
 import { Account } from 'web3x/account'
 import { Eth } from 'web3x/eth'
-import { Web3Connector } from './Web3Connector'
-import { ProviderType } from './ProviderType'
+import { ProviderType } from 'decentraland-connect'
+import { EthereumConnector } from './EthereumConnector'
 import { LegacyProviderAdapter } from 'web3x/providers'
 import { EDITOR } from 'config'
 
-let web3Connector: Web3Connector
+let ethConnector: EthereumConnector
 export const providerFuture = future()
 export const requestManager = new RequestManager((window as any).ethereum ?? null)
 
 export const loginCompleted = future<void>()
-;(window as any).loginCompleted = loginCompleted
+  ; (window as any).loginCompleted = loginCompleted
 
 export function createEth(provider: any = null) {
-  return web3Connector.createEth(provider)
+  return ethConnector.createEth(provider)
 }
 
 // This function creates a Web3x eth object without the need of having initiated sign in / sign up. Used when requesting the catalysts
@@ -27,20 +27,20 @@ export function createEthWhenNotConnectedToWeb3(): Eth {
     return new Eth(new LegacyProviderAdapter((window as any).ethereum))
   } else {
     // If not, we use infura
-    return new Eth(Web3Connector.createWeb3xWebsocketProvider())
+    return new Eth(EthereumConnector.createWeb3xWebsocketProvider())
   }
 }
 
-export function createWeb3Connector(): Web3Connector {
-  if (!web3Connector) {
-    web3Connector = new Web3Connector()
+export function getEthConnector(): EthereumConnector {
+  if (!ethConnector) {
+    ethConnector = new EthereumConnector()
   }
-  return web3Connector
+  return ethConnector
 }
 
-export async function requestWeb3Provider(type: ProviderType) {
+export async function requestProvider(type: ProviderType | null) {
   try {
-    const { provider } = await web3Connector.connect(type)
+    const { provider } = await ethConnector.connect(type)
     requestManager.setProvider(provider)
     providerFuture.resolve({
       successful: !isGuest(),
@@ -56,16 +56,16 @@ export async function requestWeb3Provider(type: ProviderType) {
 }
 
 export function isGuest(): boolean {
-  return web3Connector.isType(ProviderType.GUEST)
+  return ethConnector.isGuest()
 }
 
 export function getProviderType() {
-  return web3Connector.getType()
+  return ethConnector.getType()
 }
 
-export async function awaitWeb3Approval(): Promise<void> {
+export async function awaitApproval(): Promise<void> {
   if (EDITOR) {
-    await requestWeb3Provider(ProviderType.GUEST)
+    await requestProvider(null)
   }
   return providerFuture
 }

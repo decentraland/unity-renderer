@@ -7,15 +7,15 @@
   box-shadow: 0px 5px 0px #cacfe2;
   border-radius: 15px;
   padding: 0 11px 12px;
+  margin: 5px;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
   box-sizing: content-box;
 }
 
-.walletButton.disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+.walletButton.inactive {
+  filter: grayscale(1);
 }
 
 .walletImage {
@@ -25,13 +25,28 @@
   height: 90px;
 }
 
-.walletButton .walletImage img.metamask {
+.walletButton .walletImage img.Metamask {
   width: 50px;
   height: auto;
 }
 
-.walletButton .walletImage img.fortmatic {
+.walletButton .walletImage img.Dapper {
+  width: 90px;
+  height: auto;
+}
+
+.walletButton .walletImage img.SamsungBlockChainWallet {
+  width: 70px;
+  height: auto;
+}
+
+.walletButton .walletImage img.Fortmatic {
   width: 46px;
+  height: auto;
+}
+
+.walletButton .walletImage img.WalletConnect {
+  width: 90px;
   height: auto;
 }
 

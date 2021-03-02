@@ -1,10 +1,10 @@
 import { loadingTips } from './loading/types'
 import { future, IFuture } from 'fp-future'
+import { ProviderType } from 'decentraland-connect'
 import { authenticate, updateTOS } from './session/actions'
 import { StoreContainer } from './store/rootTypes'
 import { LoadingState } from './loading/reducer'
 import { ENABLE_WEB3, PREVIEW } from '../config'
-import { ProviderType } from "./ethereum/ProviderType"
 
 declare const globalThis: StoreContainer
 const isReact = !!(window as any).reactVersion
@@ -133,10 +133,12 @@ export default class Html {
 
   static bindLoginEvent() {
     if (isReact) return
-    const button = document.getElementById('eth-login-confirm-button')
-    button!.onclick = () => {
-      globalThis.globalStore && globalThis.globalStore.dispatch(authenticate(window.ethereum ? ProviderType.INJECTED : ProviderType.GUEST))
-    }
+    const button = document.getElementById('eth-login-confirm-button')!
+    button.addEventListener('click', () => {
+      if (globalThis.globalStore) {
+        globalThis.globalStore.dispatch(authenticate(window.ethereum ? ProviderType.INJECTED : null))
+      }
+    })
   }
 
   static updateTLDInfo(tld: string, web3Net: string, tldNet: string) {

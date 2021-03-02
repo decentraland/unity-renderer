@@ -5,7 +5,7 @@ import { defaultLogger } from 'shared/logger'
 import { RPCSendableMessage } from 'shared/types'
 import { getERC20 } from './ERC20'
 import { getERC721 } from './ERC721'
-import { requestManager, getUserAccount as getUserAccountPrime, awaitWeb3Approval } from './provider'
+import { requestManager, getUserAccount as getUserAccountPrime, awaitApproval } from './provider'
 
 export interface MessageDict {
   [key: string]: string
@@ -47,7 +47,7 @@ function isWhitelistedRPC(msg: RPCSendableMessage) {
 }
 
 export async function getUserAccount(): Promise<string | undefined> {
-  await awaitWeb3Approval()
+  await awaitApproval()
   return getUserAccountPrime()
 }
 
