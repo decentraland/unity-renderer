@@ -86,7 +86,7 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
                 : searchResult;
         }
 
-        if (searchSortChanged || searchStringChanged)
+        if ((searchSortChanged || searchStringChanged) && currentResult != null)
         {
             SearchHelper.Sort(currentSortingType, currentResult, isDescendingSortOrder);
         }
