@@ -12,7 +12,7 @@ public class CatalogController : MonoBehaviour
     private const string BASE_WEARABLES_CONTEXT = "BaseWearables";
     private const int FRAMES_TO_CHECK_FOR_SENDING_PENDING_REQUESTS = 1;
     private const float TIME_TO_CHECK_FOR_UNUSED_WEARABLES = 10f;
-    private const float REQUESTS_TIME_OUT = 5f;
+    private const float REQUESTS_TIME_OUT = 5 * 60;
 
     public static CatalogController i { get; private set; }
 
