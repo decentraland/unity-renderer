@@ -12,7 +12,7 @@ import {
 let x = 1
 let z = 1
 
-for (let i = 0; i < 22; i++) {
+for (let i = 0; i < 23; i++) {
   createNFT('ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536', i, x, z)
 
   x += 2
