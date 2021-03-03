@@ -394,7 +394,8 @@ export enum PictureFrameStyle {
   Wood_Slim,
   Wood_Wide,
   Wood_Twigs,
-  Canvas
+  Canvas,
+  None
 }
 
 /** @public */
