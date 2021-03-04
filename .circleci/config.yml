@@ -6,7 +6,7 @@ parameters:
     type: string
 
 references:
-  .working_directory: &working_directory <<parameters.unitydir>>
+  .working_directory: &working_directory << parameters.unitydir >>
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
