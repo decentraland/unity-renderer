@@ -18,11 +18,7 @@ export const EthLogin: React.FC<EthLoginProps> = (props) => {
   const isLoading = props.loading || showWalletSelector;
 
   function handlePlay() {
-    if (props.onLogin && hasWallet) {
-      return props.onLogin(ProviderType.INJECTED);
-    } else {
-      setShowWalletSelector(true);
-    }
+    setShowWalletSelector(true);
   }
 
   function handlePlayAsGuest() {
