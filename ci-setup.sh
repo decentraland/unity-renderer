@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export PROJECT_PATH
-PROJECT_PATH=$(pwd)
+PROJECT_PATH=$(pwd)/unity-renderer
 
 set -e
 set -x
