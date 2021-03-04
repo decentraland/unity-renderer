@@ -15,6 +15,7 @@ MonoBehaviour:
   rendererProfileMin:
     visibleDistanceThreshold: 30
     shadowDistanceThreshold: 20
+    maxShadowDistanceForAvatars: 15
     emissiveSizeThreshold: 1.5
     opaqueSizeThreshold: 6
     shadowRendererSizeThreshold: 10
@@ -22,6 +23,7 @@ MonoBehaviour:
   rendererProfileMax:
     visibleDistanceThreshold: 25
     shadowDistanceThreshold: 15
+    maxShadowDistanceForAvatars: 15
     emissiveSizeThreshold: 2.5
     opaqueSizeThreshold: 20
     shadowRendererSizeThreshold: 20
@@ -29,6 +31,7 @@ MonoBehaviour:
   skinnedRendererProfileMin:
     visibleDistanceThreshold: 50
     shadowDistanceThreshold: 40
+    maxShadowDistanceForAvatars: 15
     emissiveSizeThreshold: 1.5
     opaqueSizeThreshold: 6
     shadowRendererSizeThreshold: 5
@@ -36,6 +39,7 @@ MonoBehaviour:
   skinnedRendererProfileMax:
     visibleDistanceThreshold: 45
     shadowDistanceThreshold: 35
+    maxShadowDistanceForAvatars: 15
     emissiveSizeThreshold: 2.5
     opaqueSizeThreshold: 10
     shadowRendererSizeThreshold: 10

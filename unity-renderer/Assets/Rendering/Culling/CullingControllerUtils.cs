@@ -64,6 +64,12 @@ namespace DCL.Rendering
             return shouldHaveShadow;
         }
 
+
+        internal static bool TestAvatarShadowRule(CullingControllerProfile profile, float avatarDistance)
+        {
+            return avatarDistance < profile.maxShadowDistanceForAvatars;
+        }
+
         /// <summary>
         /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
         /// </summary>
