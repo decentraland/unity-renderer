@@ -87,19 +87,17 @@ public class NFTShapeLoaderController : MonoBehaviour
         InitializePerlinNoise();
     }
 
-    void Update()
-    {
-        hqTextureHandler?.Update();
-    }
+    void Update() { hqTextureHandler?.Update(); }
 
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
     {
-        if (string.IsNullOrEmpty(url) || (!loadEvenIfAlreadyLoaded && alreadyLoadedAsset)) return;
+        if (string.IsNullOrEmpty(url) || (!loadEvenIfAlreadyLoaded && alreadyLoadedAsset))
+            return;
 
         UpdateBackgroundColor(backgroundColor);
 
         // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
-        var regexMatches = Regex.Matches(url, "(?<protocol>[^:]+)://(?<registry>[^/]+)(?:/(?<asset>.+))?");
+        var regexMatches = Regex.Matches(url, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
         if (regexMatches.Count == 0)
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The accepted format is 'ethereum://ContractAddress/TokenID'");
@@ -233,7 +231,8 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     void SetFrameImage(ITexture newAsset, bool resizeFrameMesh = false)
     {
-        if (newAsset == null) return;
+        if (newAsset == null)
+            return;
 
         UpdateTexture(newAsset.texture);
 
@@ -241,8 +240,10 @@ public class NFTShapeLoaderController : MonoBehaviour
         {
             float w, h;
             w = h = 0.5f;
-            if (newAsset.width > newAsset.height) h *= newAsset.height / (float)newAsset.width;
-            else if (newAsset.width < newAsset.height) w *= newAsset.width / (float)newAsset.height;
+            if (newAsset.width > newAsset.height)
+                h *= newAsset.height / (float)newAsset.width;
+            else if (newAsset.width < newAsset.height)
+                w *= newAsset.width / (float)newAsset.height;
             Vector3 newScale = new Vector3(w, h, 1f);
 
             meshRenderer.transform.localScale = newScale;
