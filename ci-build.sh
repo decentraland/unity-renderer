@@ -2,7 +2,10 @@
 
 source ci-setup.sh
 
+set +x 2> /dev/null
 echo "Building for $BUILD_TARGET at $PROJECT_PATH"
+set -x
+
 export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
 
@@ -24,6 +27,8 @@ cat "$PROJECT_PATH/build-logs.txt"
 
 find "$BUILD_PATH"
 
+set +x 2> /dev/null
+
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
   echo "Run succeeded, no failures occurred";
 elif [ $UNITY_EXIT_CODE -eq 2 ]; then
@@ -39,5 +44,7 @@ ls -la "$BUILD_PATH"
 if [ -n "$(ls -A "$BUILD_PATH")" ]; then
   echo "directory BUILD_PATH $BUILD_PATH is empty"
 fi
+
+set -x
 
 exit $UNITY_EXIT_CODE;
