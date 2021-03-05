@@ -1884,7 +1884,6 @@ exports[`Storyshots Explorer/auth/WalletButton Dapper Button 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -1919,7 +1918,6 @@ exports[`Storyshots Explorer/auth/WalletButton Dapper Button Disabled 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -1954,7 +1952,6 @@ exports[`Storyshots Explorer/auth/WalletButton Fortmatic Button 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -1989,7 +1986,6 @@ exports[`Storyshots Explorer/auth/WalletButton Fortmatic Button Disabled 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2024,7 +2020,6 @@ exports[`Storyshots Explorer/auth/WalletButton Metamask Button 1`] = `
       className="Metamask"
       src="metamask.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2059,7 +2054,6 @@ exports[`Storyshots Explorer/auth/WalletButton Metamask Button Disabled 1`] = `
       className="Metamask"
       src="metamask.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2094,7 +2088,6 @@ exports[`Storyshots Explorer/auth/WalletButton Samsung Button 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2129,7 +2122,6 @@ exports[`Storyshots Explorer/auth/WalletButton Samsung Button Disabled 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2164,7 +2156,6 @@ exports[`Storyshots Explorer/auth/WalletButton Wallet Connect Button 1`] = `
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"
@@ -2199,7 +2190,6 @@ exports[`Storyshots Explorer/auth/WalletButton Wallet Connect Button Disabled 1`
       className="Fortmatic"
       src="fortmatic.svg"
     />
-    ;
   </div>
   <div
     className="walletTitle"

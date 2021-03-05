@@ -37,7 +37,7 @@ export const WalletSelector: React.FC<WalletSelectorProps> = ({
       if (isCucumberProvider()) {
         result.push(WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET)
       } else if (isDapperProvider()) {
-        result.push(WalletButtonLogo.SAMSUNG_BLOCKCHAIN_WALLET)
+        result.push(WalletButtonLogo.DAPPER)
       }
     }
 

@@ -87,7 +87,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
       rel="noopener noreferrer"
     >
       <div className="walletImage">
-        <img alt={type} src={options.img[type]} className={type} />;
+        <img alt={type} src={options.img[type]} className={type} />
       </div>
       <div className="walletTitle">
         <h3>{options.title[type]}</h3>
