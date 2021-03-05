@@ -18,8 +18,8 @@ export const ErrorComms: React.FC = () => (
           or a temporary problem with our coordinator server. <br />
           <br />
           Please try again later, or reach out to us at{" "}
-          <a href="mailto:developers@decentraland.org">
-            developers@decentraland.org
+          <a href="mailto:hello@decentraland.org">
+            hello@decentraland.org
           </a>
           .<br />
           <br />
