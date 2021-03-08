@@ -29,7 +29,7 @@ This is the recommended path for artists.
 
 ### Steps
 
-1. Download and install Unity 2019.4.0f1
+1. Download and install Unity 2019.4.19f1
 2. Open the scene named `InitialScene`
 3. Within the scene, select the `WSSController` GameObject.
 4. On `WSSController` inspector, make sure that `Base url mode` is set to `Custom` 

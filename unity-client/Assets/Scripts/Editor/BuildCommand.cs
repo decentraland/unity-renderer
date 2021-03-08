@@ -107,7 +107,7 @@ static class BuildCommand
             return defaultValue;
         }
 
-        return (TEnum)Enum.Parse(typeof(TEnum), strEnumValue);
+        return (TEnum) Enum.Parse(typeof(TEnum), strEnumValue);
     }
 
     static string getEnv(string key, bool secret = false, bool verbose = true)
@@ -146,8 +146,6 @@ static class BuildCommand
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
 
         BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
-        Console.WriteLine(":: Build complete");
-        Console.WriteLine(":: Applied Retina fix");
         Console.WriteLine(":: Done with build process");
     }
 }
