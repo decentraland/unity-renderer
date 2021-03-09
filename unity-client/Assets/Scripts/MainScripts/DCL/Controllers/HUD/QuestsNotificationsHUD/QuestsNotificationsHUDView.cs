@@ -15,14 +15,15 @@ namespace DCL.Huds.QuestsNotifications
 
     public class QuestsNotificationsHUDView : MonoBehaviour, IQuestsNotificationsHUDView
     {
-        internal static float NOTIFICATIONS_SEPARATION {get; set;} = 0.5f;
-        internal static float SECTION_NOTIFICATION_DURATION {get; set;} = 1.5f;
+        internal static float NOTIFICATIONS_SEPARATION { get; set; } = 0.5f;
+        internal static float SECTION_NOTIFICATION_DURATION { get; set; } = 1.5f;
 
         internal readonly Queue<GameObject> notificationsQueue = new Queue<GameObject>();
 
         [SerializeField] private GameObject sectionCompletedPrefab;
         [SerializeField] private GameObject sectionUnlockedPrefab;
         [SerializeField] private GameObject questCompletedPrefab;
+        private bool isDestroyed = false;
 
         internal static QuestsNotificationsHUDView Create()
         {
@@ -33,10 +34,7 @@ namespace DCL.Huds.QuestsNotifications
             return view;
         }
 
-        private void Awake()
-        {
-            StartCoroutine(ProcessSectionsNotificationQueue());
-        }
+        private void Awake() { StartCoroutine(ProcessSectionsNotificationQueue()); }
 
         public void ShowSectionCompleted(QuestSection section)
         {
@@ -61,14 +59,14 @@ namespace DCL.Huds.QuestsNotifications
             questNotification.gameObject.SetActive(false);
             notificationsQueue.Enqueue(questNotification.gameObject);
         }
-        public void SetVisibility(bool visible)
-        {
-            gameObject.SetActive(visible);
-        }
+        public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
         public void Dispose()
         {
-            Destroy(gameObject);
+            if (!isDestroyed)
+                Destroy(gameObject);
         }
+
+        private void OnDestroy() { isDestroyed = true; }
 
         private IEnumerator ProcessSectionsNotificationQueue()
         {

@@ -31,6 +31,7 @@ namespace DCL.Huds.QuestsTracker
         internal  readonly Dictionary<string, DateTime> lastUpdateTimestamp = new Dictionary<string, DateTime>();
         internal  readonly List<string> questsToBeAdded = new List<string>();
         private bool layoutRebuildRequested;
+        private bool isDestroyed = false;
 
         public static QuestsTrackerHUDView Create()
         {
@@ -148,15 +149,15 @@ namespace DCL.Huds.QuestsTracker
             currentEntries.Clear();
         }
 
-        public void SetVisibility(bool visibility)
-        {
-            gameObject.SetActive(visibility);
-        }
+        public void SetVisibility(bool visibility) { gameObject.SetActive(visibility); }
 
         public void Dispose()
         {
-            Destroy(gameObject);
+            if (!isDestroyed)
+                Destroy(gameObject);
         }
+
+        private void OnDestroy() { isDestroyed = true; }
 
         private IEnumerator AddEntriesRoutine()
         {
