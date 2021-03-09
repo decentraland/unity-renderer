@@ -5,7 +5,7 @@ source ci-setup.sh
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
         -batchmode \
         -logFile "$PROJECT_PATH/playmode-logs.txt" \
-        -projectPath "$PROJECT_PATH" \
+        -projectPath . \
         -runTests \
         -testPlatform PlayMode \
         -testResults "$PROJECT_PATH/playmode-results.xml" \

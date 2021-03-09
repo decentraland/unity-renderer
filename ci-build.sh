@@ -4,16 +4,16 @@ source ci-setup.sh
 
 set +x 2> /dev/null
 echo "Building for $BUILD_TARGET at $PROJECT_PATH"
-set -x
 
 export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
+set -x
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
   -quit \
   -batchmode \
   -logFile "$PROJECT_PATH/build-logs.txt" \
-  -projectPath "$PROJECT_PATH" \
+  -projectPath . \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
