@@ -484,6 +484,7 @@ namespace DCL
                             case "UpdateRealmsInfo":
                             case "InitializeQuests":
                             case "UpdateQuestProgress":
+                            case "SetENSOwnerQueryResult":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "SetDisableAssetBundles":
