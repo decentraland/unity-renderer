@@ -1,7 +1,7 @@
 version: 2.0
 
 references:
-  .working_directory: &working_directory /tmp/workspace
+  .working_directory: &working_directory /tmp/workspace/unity-renderer
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
@@ -13,13 +13,13 @@ references:
   .image_kernel: &image_kernel
     - image: circleci/node:14-browsers
       environment:
-        BUILD_PATH: /tmp/workspace/Builds/unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
 
   .unity_image: &unity_image
     - image: decentraland/renderer-build:2019.4
       environment:
         BUILD_TARGET: WebGL
-        BUILD_PATH: /tmp/workspace/Builds/unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
         BUILD_NAME: unity
 
   .all_branches_and_tags: &all_branches_and_tags
@@ -106,25 +106,25 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           name: Store logs
-          path: /tmp/workspace/editmode-logs.txt
+          path: /tmp/workspace/unity-renderer/editmode-logs.txt
       - store_artifacts:
           name: Store test results
-          path: /tmp/workspace/editmode-results.xml
+          path: /tmp/workspace/unity-renderer/editmode-results.xml
       - store_artifacts:
           name: Store test coverage
-          path: /tmp/workspace/CodeCoverage
+          path: /tmp/workspace/unity-renderer/CodeCoverage
       - store_test_results:
           path: test-results
       - save_cache:
           name: Store test cache
           key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/test-results
-            - /tmp/workspace/editmode-logs.txt
-            - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
+            - /tmp/workspace/unity-renderer/test-results
+            - /tmp/workspace/unity-renderer/editmode-logs.txt
+            - /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store visual tests result as artifacts
-          path: /tmp/workspace/TestResources/VisualTests/CurrentTestImages
+          path: /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages
 
   playmode-tests:
     <<: *working_directory_root
@@ -151,28 +151,28 @@ jobs:
       - store_test_results:
           path: test-results
       - store_test_results:
-          path: /tmp/workspace/CodeCoverage
+          path: /tmp/workspace/unity-renderer/CodeCoverage
       - store_artifacts:
           name: Store logs
-          path: /tmp/workspace/playmode-logs.txt
+          path: /tmp/workspace/unity-renderer/playmode-logs.txt
       - store_artifacts:
           name: Store test results
-          path: /tmp/workspace/playmode-results.xml
+          path: /tmp/workspace/unity-renderer/playmode-results.xml
       - store_artifacts:
           name: Store test coverage
-          path: /tmp/workspace/CodeCoverage
+          path: /tmp/workspace/unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
           key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/test-results
-            - /tmp/workspace/playmode-logs.txt
-            - /tmp/workspace/playmode-results.xml
-            - /tmp/workspace/CodeCoverage
-            - /tmp/workspace/TestResources/VisualTests/CurrentTestImages/*.png
+            - /tmp/workspace/unity-renderer/test-results
+            - /tmp/workspace/unity-renderer/playmode-logs.txt
+            - /tmp/workspace/unity-renderer/playmode-results.xml
+            - /tmp/workspace/unity-renderer/CodeCoverage
+            - /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store visual tests result as artifacts
-          path: /tmp/workspace/TestResources/VisualTests/CurrentTestImages
+          path: /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages
 
   build-unity:
     <<: *working_directory_root
@@ -187,7 +187,7 @@ jobs:
             - unity-build-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
-          name: Build WebGL
+          name: Build Unity Project
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
@@ -203,12 +203,12 @@ jobs:
           name: Store decentraland-renderer build
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/Builds/
+            - /tmp/workspace/unity-renderer/Builds/
       - save_cache:
           name: Store library
           key: library-{{ .Branch }}
           paths:
-            - /tmp/workspace/Library
+            - /tmp/workspace/unity-renderer/Library
       - store_artifacts:
           name: Store logs
           path: /tmp/build-logs.txt
@@ -228,7 +228,7 @@ jobs:
       - run:
           working_directory: &node_workspace browser-interface
           name: find unity artifacts
-          command: find /tmp/workspace/Builds/
+          command: find /tmp/workspace/unity-renderer/Builds/
       - run:
           working_directory: *node_workspace
           name: npm clean install
