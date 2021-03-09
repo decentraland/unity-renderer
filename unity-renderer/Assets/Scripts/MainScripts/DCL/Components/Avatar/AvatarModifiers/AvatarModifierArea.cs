@@ -6,20 +6,24 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
+using DCL.Models;
 
 public class AvatarModifierArea : BaseComponent
 {
     [Serializable]
-    public class Model
+    public class Model : BaseModel
     {
         // TODO: Change to TriggerArea and handle deserialization with subclasses
         public BoxTriggerArea area;
         public string[] modifiers;
-
+        
+        public override BaseModel GetDataFromJSON(string json)
+        {
+            return Utils.SafeFromJson<Model>(json);
+        }
     }
 
-    [HideInInspector]
-    public Model model = new Model();
+    private Model cachedModel = new Model();
 
     private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
@@ -34,14 +38,10 @@ public class AvatarModifierArea : BaseComponent
             { "HIDE_AVATARS", new HideAvatarsModifier() },
             { "DISABLE_PASSPORTS", new DisablePassportModifier() }
         };
+        model = new Model();
     }
 
-    public override object GetModel()
-    {
-        return model;
-    }
-
-    public override IEnumerator ApplyChanges(string newJson)
+    public override IEnumerator ApplyChanges(BaseModel newModel)
     {
 
         // Clean up
@@ -49,11 +49,9 @@ public class AvatarModifierArea : BaseComponent
         OnAvatarEnter = null;
         OnAvatarExit = null;
 
-        // Update
-        model = Utils.SafeFromJson<Model>(newJson);
         ApplyCurrentModel();
 
-        yield break;
+        return null;
     }
 
     private void OnDestroy()
@@ -71,7 +69,7 @@ public class AvatarModifierArea : BaseComponent
 
     private void Update()
     {
-        if (model?.area == null)
+        if (cachedModel?.area == null)
         {
             return;
         }
@@ -122,7 +120,7 @@ public class AvatarModifierArea : BaseComponent
 
         Vector3 center = entity.gameObject.transform.position;
         Quaternion rotation = entity.gameObject.transform.rotation;
-        return model.area.DetectAvatars(center, rotation);
+        return cachedModel.area?.DetectAvatars(center, rotation);
     }
 
     private void RemoveAllModifiers()
@@ -132,7 +130,7 @@ public class AvatarModifierArea : BaseComponent
 
     private void RemoveAllModifiers(HashSet<GameObject> avatars)
     {
-        if (model?.area == null)
+        if (cachedModel?.area == null)
         {
             return;
         }
@@ -146,23 +144,13 @@ public class AvatarModifierArea : BaseComponent
         }
     }
 
-    public override void SetModel(object model)
-    {
-        RemoveAllModifiers();
-        OnAvatarEnter = null;
-        OnAvatarExit = null;
-
-        this.model = (Model)model;
-
-        ApplyCurrentModel();
-    }
-
     private void ApplyCurrentModel()
     {
-        if (model.modifiers != null)
+        cachedModel = (Model)this.model;
+        if (cachedModel.modifiers != null)
         {
             // Add all listeners
-            foreach (string modifierKey in model.modifiers)
+            foreach (string modifierKey in cachedModel.modifiers)
             {
                 if (!modifiers.TryGetValue(modifierKey, out AvatarModifier modifier))
                     continue;
@@ -171,5 +159,10 @@ public class AvatarModifierArea : BaseComponent
                 OnAvatarExit += modifier.RemoveModifier;
             }
         }
+    }
+
+    public override int GetClassId()
+    {
+        return (int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA;
     }
 }

@@ -19,7 +19,7 @@ namespace DCL.Components
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
 
         [System.Serializable]
-        new public class Model
+        new public class Model : BaseModel
         {
             public string videoClipId;
             public bool playing = false;
@@ -29,9 +29,12 @@ namespace DCL.Components
             public float seek = -1;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
+            
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
-
-        new protected internal Model model;
 
         internal WebVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
@@ -50,7 +53,7 @@ namespace DCL.Components
             model = new Model();
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
@@ -59,7 +62,7 @@ namespace DCL.Components
             if (isDisposed)
                 yield break;
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            var model = (Model) newModel;
 
             unitySamplingMode = model.samplingMode;
 
@@ -151,6 +154,11 @@ namespace DCL.Components
                 texturePlayer.SetPlaybackRate(model.playbackRate);
                 texturePlayer.SetLoop(model.loop);
             }
+        }
+
+        public float GetVolume()
+        {
+            return ((Model)model).volume;
         }
 
         private bool HasTexturePropertiesChanged()
@@ -463,7 +471,7 @@ namespace DCL.Components
 
             bool MaterialInfo.IsVisible()
             {
-                if (!shape.model.visible) return false;
+                if (!((UIShape.Model)shape.GetModel()).visible) return false;
                 return IsParentVisible(shape);
             }
 

@@ -75,13 +75,13 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         BoxShape boxShapeComponent = (BoxShape) scene.GetSharedComponent(componentId);
 
         // 2. Check configured values
-        Assert.IsTrue(boxShapeComponent.model.withCollisions);
+        Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
 
         // 3. Update component with missing values
         scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
 
         // 4. Check defaulted values
-        Assert.IsTrue(boxShapeComponent.model.withCollisions);
+        Assert.IsTrue(boxShapeComponent.GetModel().withCollisions);
         yield break;
     }
 
@@ -327,7 +327,8 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         }
 
         // Act: Update withCollision
-        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model {withCollisions = withCollision}));
+        shapeComponent.UpdateFromModel(new BoxShape.Model {withCollisions = withCollision});
+        yield return shapeComponent.routine;
 
         // Assert:
         foreach (DecentralandEntity entity in entities)
@@ -359,7 +360,8 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         }
 
         // Act: Update visible
-        yield return shapeComponent.ApplyChanges(JsonUtility.ToJson(new BaseShape.Model {visible = visible}));
+        shapeComponent.UpdateFromModel(new BoxShape.Model {visible = visible, withCollisions = true, isPointerBlocker = true});
+        yield return shapeComponent.routine;
 
         // Assert:
         foreach (DecentralandEntity entity in entities)

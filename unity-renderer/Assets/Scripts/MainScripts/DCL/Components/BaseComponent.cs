@@ -12,10 +12,13 @@ namespace DCL.Components
         Coroutine routine { get; }
         string componentName { get; }
         void UpdateFromJSON(string json);
-        IEnumerator ApplyChanges(string newJson);
+        void UpdateFromModel(BaseModel model);
+        IEnumerator ApplyChanges(BaseModel model);
         void RaiseOnAppliedChanges();
         ComponentUpdateHandler CreateUpdateHandler();
         bool IsValid();
+        BaseModel GetModel();
+        int GetClassId();
     }
 
     /// <summary>
@@ -58,27 +61,32 @@ namespace DCL.Components
 
         public string componentName => "BaseComponent";
 
+        protected BaseModel model;
+
         public void RaiseOnAppliedChanges()
         {
         }
 
-        public void UpdateFromJSON(string json)
+        public virtual void UpdateFromJSON(string json)
         {
-            updateHandler.ApplyChangesIfModified(json);
+            UpdateFromModel(model.GetDataFromJSON(json));
         }
+
+        public virtual void UpdateFromModel(BaseModel newModel)
+        {
+            model = newModel;
+            updateHandler.ApplyChangesIfModified(model);
+        }
+
+        public abstract IEnumerator ApplyChanges(BaseModel model);
 
         void OnEnable()
         {
             if (updateHandler == null)
                 updateHandler = CreateUpdateHandler();
-
-            updateHandler.ApplyChangesIfModified(updateHandler.oldSerialization ?? "{}");
         }
 
-        public abstract object GetModel();
-        public abstract void SetModel(object model);
-
-        public abstract IEnumerator ApplyChanges(string newJson);
+        public virtual BaseModel GetModel() => model;
 
         public virtual ComponentUpdateHandler CreateUpdateHandler()
         {
@@ -105,5 +113,7 @@ namespace DCL.Components
             if (updateHandler == null)
                 updateHandler = CreateUpdateHandler();
         }
+
+        public abstract int GetClassId();
     }
 }

@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,11 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public override string referencesContainerPrefabName => "UIImage";
@@ -30,6 +36,7 @@ namespace DCL.Components
 
         public UIImage(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -48,7 +55,7 @@ namespace DCL.Components
 
         Coroutine fetchRoutine;
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
 

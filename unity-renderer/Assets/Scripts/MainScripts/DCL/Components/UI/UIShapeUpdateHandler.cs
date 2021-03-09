@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 
 namespace DCL.Components
 {
@@ -13,11 +13,11 @@ namespace DCL.Components
             uiShapeOwner = owner as UIShape<ReferencesContainerType, ModelType>;
         }
 
-        public override IEnumerator ApplyChangesWrapper(string newJson)
+        public override IEnumerator ApplyChangesWrapper(BaseModel newModel)
         {
-            uiShapeOwner.PreApplyChanges(newJson);
+            uiShapeOwner.PreApplyChanges(newModel);
 
-            var enumerator = base.ApplyChangesWrapper(newJson);
+            var enumerator = base.ApplyChangesWrapper(newModel);
 
             if (enumerator != null)
             {

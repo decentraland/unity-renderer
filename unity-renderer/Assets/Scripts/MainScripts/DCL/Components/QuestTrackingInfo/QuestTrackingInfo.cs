@@ -1,44 +1,48 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 using DCL.QuestsController;
 using System.Collections;
+using DCL.Models;
 using UnityEngine;
 
 public class QuestTrackingInfo : BaseComponent
 {
-    private QuestModel model;
     private static IQuestsController questsController => QuestsController.i;
 
-    public override object GetModel()
-    {
-        return model;
-    }
+    private QuestModel cachedModel;
 
-    public override void SetModel(object newModel)
+    private void Awake() { model = new QuestModel(); }
+
+    new public QuestModel GetModel() { return cachedModel; }
+
+    public override void UpdateFromModel(BaseModel newModel)
     {
-        if(!(newModel is QuestModel quest))
+        if(newModel == null)
+            return;
+        
+        base.UpdateFromModel(newModel);
+        if (!(newModel is QuestModel quest))
             return;
 
-        if (model != null)
-            questsController.RemoveQuest(model);
+        cachedModel = (QuestModel) this.model;
+        if (cachedModel != null)
+            questsController.RemoveQuest(cachedModel);
 
-        model = quest;
-        if(model != null)
-            questsController.UpdateQuestProgress(quest);
+        cachedModel = quest;
+        if (cachedModel != null)
+            questsController.UpdateQuestProgress(cachedModel);
     }
 
-    public override IEnumerator ApplyChanges(string newJson)
+    public override int GetClassId()
     {
-        if (newJson == "{}")
-        {
-            ApplyChanges(null);
-            yield break;
-        }
-        SetModel(JsonUtility.FromJson<QuestModel>(newJson));
+        return (int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION;
     }
+
+    public override IEnumerator ApplyChanges(BaseModel newJson) { yield break; }
 
     private void OnDestroy()
     {
-        if (model != null)
-            questsController.RemoveQuest(model);
+        if (cachedModel != null)
+            questsController.RemoveQuest(cachedModel);
     }
 }

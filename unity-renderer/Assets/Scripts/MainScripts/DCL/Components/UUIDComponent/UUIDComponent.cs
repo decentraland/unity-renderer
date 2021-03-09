@@ -3,6 +3,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -19,13 +20,21 @@ namespace DCL
     public class UUIDComponent : BaseComponent
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string type;
             public string uuid;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json); 
+            }
         }
 
-        public Model model = new Model();
+        private void Awake()
+        {
+            model = new Model();
+        }
 
         public virtual void Setup(IParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
@@ -63,32 +72,19 @@ namespace DCL
             }
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            return model;
-        }
-
-        public override void SetModel(object model)
-        {
-            this.model = (Model)model;
-            ApplyCurrentModel();
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Utils.SafeFromJson<Model>(newJson);
-
-            ApplyCurrentModel();
-
-            return null;
-        }
-
-        private void ApplyCurrentModel()
-        {
+            Model model = (Model) newModel;
             if (!string.IsNullOrEmpty(model.uuid))
             {
                 Setup(scene, entity, model);
             }
+            return null;
+        }
+
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.UUID_CALLBACK;
         }
     }
 }

@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,12 +17,18 @@ namespace DCL.Components
             public Color color = Color.clear;
             public bool adaptWidth = false;
             public bool adaptHeight = false;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public override string referencesContainerPrefabName => "UIContainerRect";
 
         public UIContainerRect(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -39,7 +46,7 @@ namespace DCL.Components
         {
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
 

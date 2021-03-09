@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,12 +14,15 @@ namespace DCL.Components
         const string RESOURCE_FONT_FOLDER = "Fonts & Materials";
 
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string src;
-        }
 
-        public Model model;
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json); 
+            }
+        }
 
         public bool loaded { private set; get; } = false;
         public bool error { private set; get; } = false;
@@ -61,14 +65,9 @@ namespace DCL.Components
             }
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model = (Model) newModel;
 
             if (string.IsNullOrEmpty(model.src))
             {

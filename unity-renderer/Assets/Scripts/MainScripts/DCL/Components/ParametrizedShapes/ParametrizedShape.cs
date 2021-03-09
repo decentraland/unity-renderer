@@ -8,7 +8,6 @@ namespace DCL.Components
 {
     public abstract class ParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
     {
-        public T model = new T();
         bool visibilityDirty = false;
         bool collisionsDirty = false;
 
@@ -24,6 +23,8 @@ namespace DCL.Components
         }
 
         public Mesh currentMesh { get; protected set; }
+        private Model previousModel;
+        private Model cachedModel;
 
         public ParametrizedShape(IParcelScene scene) : base(scene)
         {
@@ -31,8 +32,16 @@ namespace DCL.Components
             OnDetach += OnShapeDetached;
         }
 
-        void UpdateRenderer(DecentralandEntity entity)
+        public override void UpdateFromModel(BaseModel newModel)
         {
+            cachedModel = (Model)newModel;
+            base.UpdateFromModel(newModel);
+        }
+
+        void UpdateRenderer(DecentralandEntity entity, Model model = null)
+        {
+            if(model == null)
+                model = (T) this.model;
             if (visibilityDirty)
             {
                 ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
@@ -106,18 +115,16 @@ namespace DCL.Components
             entity.meshesInfo.CleanReferences();
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel newModelRaw)
         {
-            return model;
-        }
+            var newModel = (T)newModelRaw;
 
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            var newModel = Utils.SafeFromJson<T>(newJson);
-            visibilityDirty = newModel.visible != model.visible;
-            collisionsDirty = newModel.withCollisions != model.withCollisions || newModel.isPointerBlocker != model.isPointerBlocker;
+            if (previousModel != null)
+            {
+                visibilityDirty = newModel.visible != previousModel.visible;
+                collisionsDirty = newModel.withCollisions != previousModel.withCollisions || newModel.isPointerBlocker != previousModel.isPointerBlocker;
+            }
             bool shouldGenerateMesh = ShouldGenerateNewMesh(newModel);
-            model = newModel;
 
             //NOTE(Brian): Only generate meshes here if they already are attached to something.
             //             Otherwise, the mesh will be created on the OnShapeAttached.
@@ -138,13 +145,13 @@ namespace DCL.Components
                         collisionsDirty = cachedCollisionDirty;
 
                         var entity = iterator.Current;
-                        UpdateRenderer(entity);
+                        UpdateRenderer(entity,newModel);
 
                         entity.OnShapeUpdated?.Invoke(entity);
                     }
                 }
             }
-
+            previousModel = newModel;
             return null;
         }
 
@@ -157,12 +164,12 @@ namespace DCL.Components
 
         public override bool IsVisible()
         {
-            return model.visible;
+            return cachedModel.visible;
         }
 
         public override bool HasCollisions()
         {
-            return model.withCollisions;
+            return cachedModel.withCollisions;
         }
 
         protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel)
