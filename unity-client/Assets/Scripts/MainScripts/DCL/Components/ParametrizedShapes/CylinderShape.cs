@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System;
 using UnityEngine;
 
 namespace DCL.Components
@@ -17,10 +18,16 @@ namespace DCL.Components
             public bool openEnded = false;
             public float? radius;
             public float arc = 360f;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public CylinderShape(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -30,6 +37,7 @@ namespace DCL.Components
 
         public override Mesh GenerateGeometry()
         {
+            var model = (Model)this.model;
             return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
         }
 
@@ -38,14 +46,14 @@ namespace DCL.Components
             if (currentMesh == null) return true;
 
             Model newCylinderModel = newModel as Model;
-
-            return newCylinderModel.radius != model.radius
-                   || newCylinderModel.radiusTop != model.radiusTop
-                   || newCylinderModel.radiusBottom != model.radiusBottom
-                   || newCylinderModel.segmentsHeight != model.segmentsHeight
-                   || newCylinderModel.segmentsRadial != model.segmentsRadial
-                   || newCylinderModel.openEnded != model.openEnded
-                   || newCylinderModel.arc != model.arc;
+            var model = (Model)this.model;
+            return  newCylinderModel.radius != model.radius
+                    || newCylinderModel.radiusTop != model.radiusTop
+                    || newCylinderModel.radiusBottom != model.radiusBottom
+                    || newCylinderModel.segmentsHeight != model.segmentsHeight
+                    || newCylinderModel.segmentsRadial != model.segmentsRadial
+                    || newCylinderModel.openEnded != model.openEnded
+                    || newCylinderModel.arc != model.arc;
         }
     }
 }

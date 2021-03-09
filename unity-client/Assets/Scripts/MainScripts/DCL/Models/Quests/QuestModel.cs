@@ -1,4 +1,5 @@
 using System.Linq;
+using DCL.Helpers;
 
 public static class QuestLiterals
 {
@@ -13,7 +14,7 @@ public static class QuestLiterals
 }
 
 [System.Serializable]
-public class QuestModel
+public class QuestModel : BaseModel
 {
     public string id;
     public string name;
@@ -33,4 +34,6 @@ public class QuestModel
     public bool canBePinned => !isCompleted && status != QuestLiterals.Status.BLOCKED;
     public bool isCompleted => status == QuestLiterals.Status.COMPLETED;
     public float progress => sections.Average(x => x.progress);
+
+    public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<QuestModel>(json); }
 }

@@ -10,7 +10,7 @@ namespace DCL.Components
     public class PBRMaterial : BaseDisposable
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             [Range(0f, 1f)]
             public float alphaTest = 0.5f;
@@ -35,8 +35,13 @@ namespace DCL.Components
             public string refractionTexture;
             public bool castShadows = true;
 
-            [Range(0, 4)]
+            [Range(0, 4)] 
             public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         enum TransparencyMode
@@ -48,7 +53,6 @@ namespace DCL.Components
             AUTO
         }
 
-        public Model model = new Model();
         public Material material { get; set; }
         private string currentMaterialResourcesFilename;
 
@@ -70,6 +74,11 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
+        new public Model GetModel()
+        {
+            return (Model)model;
+        }
+
         public override int GetClassId()
         {
             return (int) CLASS_ID.PBR_MATERIAL;
@@ -86,14 +95,9 @@ namespace DCL.Components
             base.AttachTo(entity);
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model = (Model) newModel;
 
             LoadMaterial(PBR_MATERIAL_NAME);
 
@@ -133,6 +137,8 @@ namespace DCL.Components
 
         private void SetupTransparencyMode()
         {
+            Model model = (Model)this.model;
+
             // Reset shader keywords
             material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
             material.DisableKeyword("_ALPHABLEND_ON"); // Fade Transparency
@@ -231,6 +237,7 @@ namespace DCL.Components
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
             if (meshRenderer == null)
                 return;
+            Model model = (Model)this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
             if (meshRenderer.sharedMaterial != material)

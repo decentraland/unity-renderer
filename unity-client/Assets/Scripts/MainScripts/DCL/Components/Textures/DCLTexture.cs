@@ -5,18 +5,24 @@ using System;
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace DCL
 {
     public class DCLTexture : BaseDisposable
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string src;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
             public bool hasAlpha = false;
+            
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public enum BabylonWrapMode
@@ -26,7 +32,6 @@ namespace DCL
             MIRROR
         }
 
-        protected Model model;
         AssetPromise_Texture texturePromise = null;
 
         public TextureWrapMode unityWrap;
@@ -41,6 +46,7 @@ namespace DCL
 
         public DCLTexture(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public static IEnumerator FetchFromComponent(IParcelScene scene, string componentId,
@@ -71,12 +77,7 @@ namespace DCL
             OnFinish.Invoke(textureComponent);
         }
 
-        public override object GetModel()
-        {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
@@ -85,7 +86,7 @@ namespace DCL
             if (isDisposed)
                 yield break;
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model = (Model) newModel;
 
             unitySamplingMode = model.samplingMode;
 

@@ -168,6 +168,15 @@ namespace DCL.Helpers
             );
         }
 
+        public static Coroutine SharedComponentUpdate<T>(T component, BaseModel model)
+            where T : BaseDisposable
+        {
+            ParcelScene scene = component.scene as ParcelScene;
+            scene.SharedComponentUpdate(component.id, model);
+
+            return component.routine;
+        }
+        
         public static Coroutine SharedComponentUpdate<T, K>(T component, K model = null)
             where T : BaseDisposable
             where K : class, new()

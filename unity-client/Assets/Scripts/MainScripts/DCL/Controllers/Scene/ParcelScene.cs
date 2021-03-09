@@ -346,7 +346,7 @@ namespace DCL.Controllers
             //NOTE: (Adrian) Evaluate if all created components should be handle as equals instead of different
             foreach (KeyValuePair<string, UUIDComponent> component in entity.uuidComponents)
             {
-                EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.UUID_CALLBACK, component.Value.model);
+                EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.UUID_CALLBACK, component.Value.GetModel());
             }
 
             return newEntity;
@@ -1104,6 +1104,28 @@ namespace DCL.Controllers
 
             if (newComponent != null && newComponent.isRoutineRunning)
                 yieldInstruction = newComponent.yieldInstruction;
+        }
+        
+        public BaseDisposable SharedComponentUpdate(string id, BaseModel model)
+        {
+            if (disposableComponents.TryGetValue(id, out BaseDisposable disposableComponent))
+            {
+                disposableComponent.UpdateFromModel(model);
+                return disposableComponent;
+            }
+            else
+            {
+                if (gameObject == null)
+                {
+                    Debug.LogError($"Unknown disposableComponent {id} -- scene has been destroyed?");
+                }
+                else
+                {
+                    Debug.LogError($"Unknown disposableComponent {id}", gameObject);
+                }
+            }
+
+            return null;
         }
 
         public BaseDisposable SharedComponentUpdate(string id, string json)

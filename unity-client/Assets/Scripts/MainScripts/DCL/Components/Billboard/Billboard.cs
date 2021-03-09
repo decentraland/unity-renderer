@@ -2,52 +2,54 @@ using DCL.Components;
 using System.Collections;
 using DCL.Helpers;
 using UnityEngine;
+using DCL.Models;
 
 namespace DCL
 {
     public class Billboard : BaseComponent
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public bool x = true;
             public bool y = true;
             public bool z = true;
-        }
 
-        public Model model = new Model();
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
+        }
 
         Transform entityTransform;
         Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
         Vector3 lastPosition;
 
-        public override object GetModel()
+        private void Awake()
         {
-            return model;
+            model = new Model();
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             cameraPosition.OnChange -= CameraPositionChanged;
             cameraPosition.OnChange += CameraPositionChanged;
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model = (Model)newModel;
 
             ChangeOrientation();
 
+
             if (entityTransform == null)
             {
-                //NOTE(Zak): We have to wait one frame because if not the entity will be null. (I'm Brian, but Zak wrote the code so read this in his voice)
-                yield return null;
-
-                if (entity == null || entity.gameObject == null)
-                {
-                    Debug.LogWarning("It seems skipping a frame didnt work, entity/GO is still null");
-                    yield break;
-                }
-
+                yield return new WaitUntil(() => entity.gameObject != null);
                 entityTransform = entity.gameObject.transform;
             }
+        }
+
+        new public Model GetModel()
+        {
+            return (Model)model;
         }
 
         public void OnDestroy()
@@ -61,6 +63,7 @@ namespace DCL
             //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
             //             We must find a more performant way to handle this, until that time, this is the approach.
 
+            if (entityTransform == null) return;
             if (transform.position == lastPosition) return;
 
             lastPosition = transform.position;
@@ -73,6 +76,7 @@ namespace DCL
             bool hasTextShape = entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.TEXT_SHAPE);
             Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
 
+            Model model = (Model) this.model;
             // Note (Zak): This check is here to avoid normalizing twice if not needed
             if (!(model.x && model.y && model.z))
             {
@@ -93,7 +97,6 @@ namespace DCL
         {
             if (entityTransform == null)
                 return;
-
             Vector3 lookAtVector = GetLookAtVector();
             if(lookAtVector != Vector3.zero)
                 entityTransform.forward = lookAtVector;
@@ -104,9 +107,9 @@ namespace DCL
             ChangeOrientation();
         }
 
-        public override void SetModel(object model)
+        public override int GetClassId()
         {
-            this.model = (Model)model;
+            return (int) CLASS_ID_COMPONENT.BILLBOARD;
         }
     }
 }

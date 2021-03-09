@@ -18,9 +18,9 @@ namespace Tests
         {
             yield return CreateComponent(x: false, y: true, z: false);
 
-            Assert.IsFalse(billboard.model.x, "Wrong model data! x should be false.");
-            Assert.IsTrue(billboard.model.y, "Wrong model data! y should be true.");
-            Assert.IsFalse(billboard.model.z, "Wrong model data! z should be false");
+            Assert.IsFalse(billboard.GetModel().x, "Wrong model data! x should be false.");
+            Assert.IsTrue(billboard.GetModel().y, "Wrong model data! y should be true.");
+            Assert.IsFalse(billboard.GetModel().z, "Wrong model data! z should be false");
 
             yield return null;
 
@@ -34,11 +34,12 @@ namespace Tests
 
             yield return CreateComponent(x: true, y: true, z: true);
 
-            yield return null;
+            yield return billboard.routine;
 
             Transform entityTransform = scene.entities[entityId].gameObject.transform;
-            Vector3 lookAt = GetLookAtVector(billboard.model, entityTransform);
+            Vector3 lookAt = GetLookAtVector(billboard.GetModel(), entityTransform);
 
+            yield return null;
             Assert.AreApproximatelyEqual(lookAt.x, entityTransform.forward.x, "billboard entity forward vector should be the same as the calculated one");
             Assert.AreApproximatelyEqual(lookAt.y, entityTransform.forward.y, "billboard entity forward vector should be the same as the calculated one");
             Assert.AreApproximatelyEqual(lookAt.z, entityTransform.forward.z, "billboard entity forward vector should be the same as the calculated one");
@@ -77,11 +78,11 @@ namespace Tests
 
             yield return CreateComponent(x: true, y: true, z: true);
 
-            yield return null;
+            yield return billboard.routine;
 
             var entity = scene.entities[entityId];
             Transform entityTransform = entity.gameObject.transform;
-            Vector3 lookAt = GetLookAtVector(billboard.model, entityTransform);
+            Vector3 lookAt = GetLookAtVector(billboard.GetModel(), entityTransform);
 
             Assert.AreApproximatelyEqual(lookAt.x, entityTransform.forward.x, "billboard entity forward vector should be the same as the calculated one");
             Assert.AreApproximatelyEqual(lookAt.y, entityTransform.forward.y, "billboard entity forward vector should be the same as the calculated one");

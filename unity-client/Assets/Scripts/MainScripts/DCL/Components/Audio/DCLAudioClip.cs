@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -10,7 +11,7 @@ namespace DCL.Components
     public class DCLAudioClip : BaseDisposable
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string url;
             public bool loop = false;
@@ -18,9 +19,13 @@ namespace DCL.Components
 
             [Range(0f, 1f)]
             public double volume = 1f;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
-        public Model model;
         public AudioClip audioClip;
         private bool isDisposed = false;
 
@@ -42,6 +47,12 @@ namespace DCL.Components
             loadingState = LoadState.IDLE;
         }
 
+        public double volume => ((Model)model).volume;
+
+        public bool isLoop => ((Model)model).loop;
+        
+        public bool shouldTryLoad => ((Model)model).shouldTryToLoad;
+        
         public override int GetClassId()
         {
             return (int) CLASS_ID.AUDIO_CLIP;
@@ -81,7 +92,7 @@ namespace DCL.Components
                 && loadingState != LoadState.LOADING_COMPLETED)
             {
                 loadingState = LoadState.LOADING_IN_PROGRESS;
-
+                Model model = (Model) this.model;
                 if (scene.contentProvider.HasContentsUrl(model.url))
                 {
                     yield return Utils.FetchAudioClip(scene.contentProvider.GetContentsUrl(model.url),
@@ -100,12 +111,7 @@ namespace DCL.Components
             }
         }
 
-        public override object GetModel()
-        {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
@@ -114,7 +120,7 @@ namespace DCL.Components
             if (isDisposed)
                 yield break;
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model =  (Model) newModel;
 
             if (!string.IsNullOrEmpty(model.url))
             {

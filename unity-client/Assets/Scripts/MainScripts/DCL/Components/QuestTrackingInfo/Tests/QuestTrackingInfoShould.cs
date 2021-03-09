@@ -47,13 +47,13 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator AddQuests()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, null, CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
             id = "questId"
         };
-        questTrackingInfo.SetModel(quest);
+        questTrackingInfo.UpdateFromModel(quest);
         mockQuestController.Received().UpdateQuestProgress(quest);
     }
 
@@ -61,19 +61,19 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator RemovePreviousQuest()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, null, CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
             id = "questId"
         };
-        questTrackingInfo.SetModel(quest);
+        questTrackingInfo.UpdateFromModel(quest);
 
         QuestModel quest2 = new QuestModel
         {
             id = "questId2"
         };
-        questTrackingInfo.SetModel(quest2);
+        questTrackingInfo.UpdateFromModel(quest2);
 
         mockQuestController.Received().RemoveQuest(quest);
     }
@@ -82,13 +82,13 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator RemovePreviousQuestOnDestroy()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, null, CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
             id = "questId"
         };
-        questTrackingInfo.SetModel(quest);
+        questTrackingInfo.UpdateFromModel(quest);
         TestHelpers.RemoveSceneEntity(scene, entity);
 
         yield return null; // Needed for Unity to call OnDestroy

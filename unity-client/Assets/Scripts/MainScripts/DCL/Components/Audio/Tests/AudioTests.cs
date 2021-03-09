@@ -106,9 +106,9 @@ namespace Tests
             yield return audioClip.routine;
 
             // 2. Check configured values
-            Assert.IsTrue(audioClip.model.loop);
-            Assert.IsFalse(audioClip.model.shouldTryToLoad);
-            Assert.AreEqual(0.8f, audioClip.model.volume);
+            Assert.IsTrue(audioClip.isLoop);
+            Assert.IsFalse(audioClip.shouldTryLoad);
+            Assert.AreEqual(0.8f, audioClip.volume);
 
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
@@ -118,9 +118,9 @@ namespace Tests
             yield return audioClip.routine;
 
             // 4. Check defaulted values
-            Assert.IsFalse(audioClip.model.loop);
-            Assert.IsTrue(audioClip.model.shouldTryToLoad);
-            Assert.AreEqual(1f, audioClip.model.volume);
+            Assert.IsFalse(audioClip.isLoop);
+            Assert.IsTrue(audioClip.shouldTryLoad);
+            Assert.AreEqual(1f, audioClip.volume);
         }
 
         [UnityTest]
@@ -208,7 +208,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Check the volume
-            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.model.volume);
+            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.Volume);
         }
 
         [UnityTest]
@@ -260,7 +260,33 @@ namespace Tests
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
 
             // Check the volume
-            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.model.volume);
+            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.Volume);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioStreamComponentCreation()
+        {
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            DCLAudioStream.Model model = new DCLAudioStream.Model()
+            {
+                url = "https://audio.dcl.guru/radio/8110/radio.mp3",
+                playing = false,
+                volume = 1f
+            };
+            DCLAudioStream component = TestHelpers.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity,model );
+            
+            yield return component.routine;
+            Assert.IsFalse(component.GetModel().playing);
+
+            model.playing = true;
+            component.UpdateFromModel(model);
+            yield return component.routine;
+            Assert.IsTrue(component.GetModel().playing);
+            
+            model.playing = false;
+            component.UpdateFromModel(model);
+            yield return component.routine; 
+            Assert.IsFalse(component.GetModel().playing);
         }
 
         [Test]

@@ -153,7 +153,7 @@ public class BIWCreatorController : BIWController
 
         //Note (Adrian): We can't wait to set the component 1 frame, so we set it
         if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent))
-            ((SmartItemComponent)baseComponent).SetModel(model);
+            ((SmartItemComponent)baseComponent).UpdateFromModel(model);
     }
 
     private void AddEntityNameComponent(CatalogItem catalogItem, DCLBuilderInWorldEntity entity)

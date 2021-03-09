@@ -82,7 +82,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(biwEntity.entityUniqueId == scene.sceneData.id + scene.entities[entityId].entityId, "Entity id is not created correctly, this can lead to weird behaviour");
 
         SmartItemComponent.Model model = new SmartItemComponent.Model();
-        string jsonModel = JsonUtility.ToJson(model);
+        string jsonModel = JsonConvert.SerializeObject(model);
         scene.EntityComponentCreateOrUpdateFromUnity(entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
 
         Assert.IsTrue(biwEntity.HasSmartItemComponent());
@@ -94,7 +94,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         Assert.IsNotNull(dclName);
 
         string newName = "TestingName";
-        dclName.ForceSetNewName(newName);
+        dclName.SetNewName(newName);
         Assert.AreEqual(newName, biwEntity.GetDescriptiveName());
 
 
@@ -148,18 +148,18 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         {
             //Note (Adrian): We can't wait to set the component 1 frame in production, so we set it like production
             smartItemComponent = ((SmartItemComponent)baseComponent);
-            smartItemComponent.SetModel(model);
+            smartItemComponent.UpdateFromModel(model);
         }
         else
         {
             Assert.Fail("Smart Compoenent not found");
         }
 
-        Assert.AreEqual(testInt, smartItemComponent.model.values[intKey]);
-        Assert.AreEqual(testFloat, smartItemComponent.model.values[testFloatKey]);
-        Assert.AreEqual(testString, smartItemComponent.model.values[stringKey]);
+        Assert.AreEqual(testInt, smartItemComponent.GetValues()[intKey]);
+        Assert.AreEqual(testFloat, smartItemComponent.GetValues()[testFloatKey]);
+        Assert.AreEqual(testString, smartItemComponent.GetValues()[stringKey]);
 
-        Dictionary<object, object> onClickDictFromComponent = (Dictionary<object, object>)smartItemComponent.model.values[onClickKey];
+        Dictionary<object, object> onClickDictFromComponent = (Dictionary<object, object>)smartItemComponent.GetValues()[onClickKey];
         Assert.AreEqual(testFloat, onClickDictFromComponent[testFloatKey]);
     }
 

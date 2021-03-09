@@ -26,8 +26,7 @@ namespace DCL
 
         private StringVariable currentPlayerInfoCardId;
 
-        private string currentSerialization = "";
-        public AvatarModel model = new AvatarModel();
+        private AvatarModel oldModel = new AvatarModel();
 
         public bool everythingIsLoaded;
 
@@ -37,12 +36,15 @@ namespace DCL
 
         private void Awake()
         {
+            model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
         }
 
         private void PlayerClicked()
         {
-            currentPlayerInfoCardId.Set(model?.id);
+            if (model == null)
+                return;
+            currentPlayerInfoCardId.Set(((AvatarModel)model).id);
         }
 
         public void OnDestroy()
@@ -53,23 +55,11 @@ namespace DCL
                 poolableObject.pool.RemoveFromPool(poolableObject);
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
-            if (newJson == "{}")
-                yield break;
-
-            if (currentSerialization == newJson)
-                yield break;
-
             DisablePassport();
 
-            model = Utils.SafeFromJson<AvatarModel>(newJson);
+            var model = (AvatarModel) newModel;
 
             everythingIsLoaded = false;
 
@@ -147,6 +137,7 @@ namespace DCL
         {
             lastAvatarPosition = updatedModel.position;
 
+            var model = (AvatarModel) this.model;
             avatarUserInfo.userId = model.id;
             avatarUserInfo.userName = model.name;
             avatarUserInfo.worldPosition = updatedModel.position;
@@ -159,7 +150,7 @@ namespace DCL
 
             everythingIsLoaded = false;
             initializedPosition = false;
-            currentSerialization = "";
+            oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
             avatarName.SetName(String.Empty);
@@ -185,15 +176,15 @@ namespace DCL
                 entity = null;
             }
 
-            avatarUserInfo.userId = model.id;
+            var model = (AvatarModel)this.model;
+            if(model != null)
+                avatarUserInfo.userId = model.id;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }
 
-        public override void SetModel(object model)
+        public override int GetClassId()
         {
-            this.model = (AvatarModel)model;
-
-            //TODO (Adrian): This should handle the change of the model. This will required a major refactor so if you really need it, feel free to implement it!
+            return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE;
         }
     }
 }

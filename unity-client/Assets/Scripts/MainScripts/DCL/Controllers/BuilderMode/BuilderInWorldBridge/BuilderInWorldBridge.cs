@@ -37,7 +37,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int)CLASS_ID_COMPONENT.SMART_ITEM;
 
-        entitySingleComponentPayload.data = smartItemComponent.model.values;
+        entitySingleComponentPayload.data = smartItemComponent.GetValues();
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
