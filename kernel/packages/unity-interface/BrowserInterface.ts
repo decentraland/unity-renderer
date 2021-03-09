@@ -29,7 +29,7 @@ import { sendMessage } from 'shared/chat/actions'
 import { updateFriendship, updateUserData } from 'shared/friends/actions'
 import { candidatesFetched, catalystRealmConnected, changeRealm } from 'shared/dao'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
-import { fetchOwner, getAppNetwork } from 'shared/web3'
+import { fetchENSOwner, getAppNetwork } from 'shared/web3'
 import { updateStatusMessage } from 'shared/loading/actions'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 import { setAudioStream } from './audioStream'
@@ -52,6 +52,7 @@ import { isGuest } from '../shared/ethereum/provider'
 import { killPortableExperienceScene } from './portableExperiencesUtils'
 import { wearablesRequest } from 'shared/catalogs/actions'
 import { WearablesRequestFilters } from 'shared/catalogs/types'
+import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 
 declare const DCL: any
 
@@ -358,7 +359,7 @@ export class BrowserInterface {
     if (!found) {
       // if user profile was not found on server -> no connected web3, check if it's a claimed name
       const net = await getAppNetwork()
-      const address = await fetchOwner(ethereumConfigurations[net].names, userId)
+      const address = await fetchENSOwner(ethereumConfigurations[net].names, userId)
       if (address) {
         // if an address was found for the name -> set as user id & add that instead
         userId = address
@@ -375,6 +376,19 @@ export class BrowserInterface {
 
     globalThis.globalStore.dispatch(updateUserData(userId.toLowerCase(), toSocialId(userId)))
     globalThis.globalStore.dispatch(updateFriendship(action, userId.toLowerCase(), false))
+  }
+
+  public SearchENSOwner(data: { name: string; maxResults?: number }) {
+    const profilesPromise = fetchENSOwnerProfile(data.name, data.maxResults)
+
+    profilesPromise
+      .then((profiles) => {
+        unityInterface.SetENSOwnerQueryResult(data.name, profiles)
+      })
+      .catch((error) => {
+        unityInterface.SetENSOwnerQueryResult(data.name, undefined)
+        defaultLogger.error(error)
+      })
   }
 
   public async JumpIn(data: WorldPosition) {

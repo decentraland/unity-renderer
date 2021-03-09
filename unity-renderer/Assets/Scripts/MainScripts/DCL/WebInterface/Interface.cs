@@ -564,6 +564,13 @@ namespace DCL.Interface
             public string context;
         }
 
+        [System.Serializable]
+        public class SearchENSOwnerPayload
+        {
+            public string name;
+            public int maxResults;
+        }
+
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
@@ -645,6 +652,7 @@ namespace DCL.Interface
         private static StringPayload stringPayload = new StringPayload();
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
+        private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1206,6 +1214,14 @@ namespace DCL.Interface
             requestWearablesPayload.context = context;
 
             SendMessage("RequestWearables", requestWearablesPayload);
+        }
+
+        public static void SearchENSOwner(string name, int maxResults)
+        {
+            searchEnsOwnerPayload.name = name;
+            searchEnsOwnerPayload.maxResults = maxResults;
+            
+            SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
     }
 }
