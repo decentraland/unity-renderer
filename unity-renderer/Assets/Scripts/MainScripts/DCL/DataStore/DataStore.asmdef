@@ -1,0 +1,18 @@
+{
+    "name": "DataStore",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:4623a7b5e6ee6e24c833abc6c810140f",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:81a6b1347b86bfe4aa02ed089ff533c1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

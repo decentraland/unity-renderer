@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7226cd70aa85de140a0a5e3ceecbe4b3, type: 3}
+  m_Name: ListItemAppear
+  m_EditorClassIdentifier: 
+  loop: 0
+  volume: 1
+  initialPitch: 1
+  randomPitch: 0
+  cooldownSeconds: 0.02
+  clips:
+    array:
+    - {fileID: 8300000, guid: 5c19d7d76099d3248b1e70a573008365, type: 3}
+  source: {fileID: 0}
+  pitchIncrement: 0.15

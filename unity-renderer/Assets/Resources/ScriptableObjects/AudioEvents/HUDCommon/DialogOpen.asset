@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba51c89dee121ec40ada8e86c01b058e, type: 3}
+  m_Name: DialogOpen
+  m_EditorClassIdentifier: 
+  loop: 0
+  volume: 1
+  initialPitch: 1
+  randomPitch: 0
+  cooldownSeconds: 0.01
+  clips:
+    array:
+    - {fileID: 8300000, guid: 20a27736f2c55ee44bb4ca65bed56e4b, type: 3}
+  source: {fileID: 0}
+  blockingEvent: {fileID: 11400000, guid: 64d637cf6c4872742b0d0c1e9a545035, type: 2}

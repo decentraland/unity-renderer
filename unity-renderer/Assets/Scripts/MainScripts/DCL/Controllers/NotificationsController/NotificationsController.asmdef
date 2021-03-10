@@ -1,0 +1,19 @@
+{
+    "name": "NotificationsController",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:f1da3a87177414c899cd25121a9d74d9",
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:0e967802b778d404eac1ca5ea340e290"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
