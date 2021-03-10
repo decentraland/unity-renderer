@@ -3,9 +3,8 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using Tests;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class BIWCatalogShould
@@ -16,7 +15,7 @@ public class BIWCatalogShould
     protected IEnumerator SetUp()
     {
         BIWCatalogManager.Init();
-        gameObjectToUse = new GameObject();
+        gameObjectToUse = new GameObject("_TestObject");
         gameObjectToUse.AddComponent<AssetCatalogBridge>();
         yield return null;
     }
@@ -38,8 +37,8 @@ public class BIWCatalogShould
             }
         }
 
-        SceneObjectCatalogController sceneObjectCatalogController = Utils.GetOrCreateComponent<SceneObjectCatalogController>(gameObjectToUse);
-        List<Dictionary<string, List<CatalogItem>>>  result = sceneObjectCatalogController.FilterAssets(nameToFilter);
+        SceneCatalogController sceneCatalogController = new SceneCatalogController();
+        List<Dictionary<string, List<CatalogItem>>>  result = sceneCatalogController.FilterAssets(nameToFilter);
 
         CatalogItem filteredItem =  result[0].Values.ToList()[0][0];
 
@@ -55,29 +54,31 @@ public class BIWCatalogShould
         CatalogItemAdapter adapter = BuilderInWorldTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
-        CatalogAssetGroupAdapter groupAdatper = new CatalogAssetGroupAdapter();
+        CatalogAssetGroupAdapter groupAdatper = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
         groupAdatper.AddAdapter(adapter);
 
-        CatalogGroupListView catalogGroupListView = new CatalogGroupListView();
+        CatalogGroupListView catalogGroupListView = new GameObject("_CatalogGroupListView").AddComponent<CatalogGroupListView>();
         catalogGroupListView.AddAdapter(groupAdatper);
         catalogGroupListView.generalCanvas = Utils.GetOrCreateComponent<Canvas>(gameObjectToUse);
+        SceneCatalogView sceneCatalogView = SceneCatalogView.Create();
+        sceneCatalogView.catalogGroupListView = catalogGroupListView;
+        SceneCatalogController sceneCatalogController = new SceneCatalogController();
 
-        QuickBarView quickBarView = new QuickBarView();
+        QuickBarView quickBarView = QuickBarView.Create();
 
-        quickBarView.catalogGroupListView = catalogGroupListView;
-
-        QuickBarController quickBarController = new QuickBarController(quickBarView);
+        QuickBarController quickBarController = new QuickBarController();
+        sceneCatalogController.Initialize(sceneCatalogView, quickBarController);
+        quickBarController.Initialize(quickBarView, sceneCatalogController);
         int slots = quickBarController.GetSlotsCount();
         quickBarView.shortcutsImgs = new QuickBarSlot[slots];
 
         for (int i = 0; i < slots; i++)
         {
-            quickBarView.SetIndexToDrop(i);
+            quickBarController.SetIndexToDrop(i);
             adapter.AdapterStartDragging(null);
-            quickBarView.SceneObjectDropped(null);
+            quickBarController.SceneObjectDropped(null);
             Assert.AreEqual(item, quickBarController.QuickBarObjectSelected(i));
         }
-
     }
 
     [Test]
@@ -87,7 +88,7 @@ public class BIWCatalogShould
 
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        FavoritesController favoritesController = new FavoritesController(new CatalogGroupListView());
+        FavoritesController favoritesController = new FavoritesController(new GameObject("_FavoritesController").AddComponent<CatalogGroupListView>());
         favoritesController.ToggleFavoriteState(item, null);
         Assert.IsTrue(item.IsFavorite());
 

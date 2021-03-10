@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -124,9 +124,13 @@ namespace DCL
         {
             var worldState = Environment.i.world.state;
             string currentSceneId = worldState.currentSceneId;
+            
+            if (string.IsNullOrEmpty(currentSceneId))
+                return null;
+
             bool foundCurrentScene = worldState.loadedScenes.TryGetValue(currentSceneId, out IParcelScene scene);
 
-            if (string.IsNullOrEmpty(currentSceneId) || !foundCurrentScene)
+            if (!foundCurrentScene)
                 return null;
 
             return scene;

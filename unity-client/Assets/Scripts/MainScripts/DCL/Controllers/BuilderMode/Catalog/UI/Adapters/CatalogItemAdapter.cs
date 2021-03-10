@@ -36,10 +36,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
     {
         this.catalogItem = catalogItem;
 
-        if(catalogItem.IsFavorite())
-            favImg.color = onFavoriteColor;
-        else
-            favImg.color = offFavoriteColor;
+        if (favImg != null)
+        {
+            if (catalogItem.IsFavorite())
+                favImg.color = onFavoriteColor;
+            else
+                favImg.color = offFavoriteColor;
+        }
 
         smartItemGO.SetActive(catalogItem.IsSmartItem());
 

@@ -108,6 +108,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
         if (associatedCatalogItem != null)
             return associatedCatalogItem;
 
+        if (rootEntity == null)
+            return null;
+
         IAssetCatalogReferenceHolder catalogHolder = rootEntity.TryGetComponent<IAssetCatalogReferenceHolder>();
         if (catalogHolder == null)
             return null;
@@ -201,6 +204,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool HasSmartItemComponent()
     {
+        if (rootEntity == null)
+            return false;
+
         return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
     }
 
@@ -281,7 +287,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public string GetDescriptiveName()
     {
-        if (rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out BaseDisposable nameComponent))
+        if (rootEntity!= null && rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out BaseDisposable nameComponent))
         {
             return ((DCLName.Model) nameComponent.GetModel()).value;
         }
