@@ -1,0 +1,26 @@
+{
+    "name": "BuilderEntity",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:39ab26aaceb94724999ced1e8a9aa080",
+        "GUID:4623a7b5e6ee6e24c833abc6c810140f",
+        "GUID:6f636cfa5fcd2374ba9fef1a6d0b60f6",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:85ae2f0b8e8614c42bebf9817fc6f2be",
+        "GUID:bb6e4d6fc48a2cf4191076e3407fc249",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

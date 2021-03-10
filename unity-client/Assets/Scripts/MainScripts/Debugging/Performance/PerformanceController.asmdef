@@ -1,0 +1,18 @@
+{
+    "name": "PerformanceController",
+    "references": [
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:301149363e31a4bdaa1943465a825c8e",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0273df7e46923e64e9218373070ef8a1, type: 3}
+  m_Name: FemaleAnimations
+  m_EditorClassIdentifier: 
+  value:
+  - clip: {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
+    id: Fall
+  - clip: {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
+    id: Idle
+  - clip: {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
+    id: Jump
+  - clip: {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
+    id: Run
+  - clip: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+    id: Walk
+  - clip: {fileID: 7400000, guid: 544b36ccadf87a144afb72046e48bc03, type: 2}
+    id: wave
+  - clip: {fileID: 7400000, guid: f11b8366219e6df4a9eee9498a8ace47, type: 2}
+    id: fistpump
+  - clip: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
+    id: robot
+  - clip: {fileID: 7400000, guid: c77bc5c02a2e048fcb89ea929cd40b01, type: 2}
+    id: raiseHand
+  - clip: {fileID: 7400000, guid: a9e42f25626414f52bac71a3fbae289e, type: 2}
+    id: clap
+  - clip: {fileID: 7400000, guid: ce6c0aea0eee24c19a690a636036111d, type: 2}
+    id: money
+  - clip: {fileID: 7400000, guid: d83509ddd9d384358a7ad3c186542046, type: 2}
+    id: kiss
+  - clip: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
+    id: hammer
+  - clip: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
+    id: tik
+  - clip: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
+    id: tektonik
