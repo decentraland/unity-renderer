@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Helpers;
 using DCL.Components;
 using DCL.Models;
@@ -231,7 +231,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
 
             // Check the volume
-            Assert.AreEqual(videoTexture.model.volume, videoTexture.texturePlayer.volume);
+            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
         }
 
         [UnityTest]
@@ -302,7 +302,7 @@ namespace Tests
             yield return null;
 
             // Check the volume
-            Assert.AreEqual(videoTexture.model.volume, videoTexture.texturePlayer.volume);
+            Assert.AreEqual(videoTexture.GetVolume(), videoTexture.texturePlayer.volume);
         }
 
         static DCLVideoClip CreateDCLVideoClip(ParcelScene scn, string url)

@@ -1,4 +1,5 @@
 using DCL.Components;
+using DCL.Configuration;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,6 @@ using UnityEngine;
 [System.Serializable]
 public class SceneObject
 {
-
     [System.Serializable]
     public class ObjectMetrics
     {
@@ -18,7 +18,6 @@ public class SceneObject
         public int triangles;
         public int entities;
     }
-
 
     public string id;
     public string asset_pack_id;
@@ -40,7 +39,7 @@ public class SceneObject
     public string script;
     public bool isFavorite = false;
 
-    string baseUrl = "https://builder-api.decentraland.org/v1/storage/contents/";
+    private string baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
 
     public string GetComposedThumbnailUrl()
     {
@@ -59,8 +58,6 @@ public class SceneObject
 
     public bool IsSmartItem()
     {
-        //NOTE (Adrian): this force the desactivation of smart item for the first version of the builder in world
-        return false;
         return !string.IsNullOrEmpty(script);
     }
 }

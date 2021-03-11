@@ -19,7 +19,7 @@ public class WearableController
     public string category => wearable.category;
 
     public GameObject assetContainer => loader?.loadedAsset;
-    public bool isReady => loader != null && loader.isFinished;
+    public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
     protected Renderer[] assetRenderers;
 
@@ -49,6 +49,13 @@ public class WearableController
         boneRetargetingDirty = true;
 
         var representation = wearable.GetRepresentation(bodyShapeId);
+
+        if (representation == null)
+        {
+            onFail?.Invoke(this);
+            return;
+        }
+
         var provider = wearable.GetContentProvider(bodyShapeId);
 
         loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles);

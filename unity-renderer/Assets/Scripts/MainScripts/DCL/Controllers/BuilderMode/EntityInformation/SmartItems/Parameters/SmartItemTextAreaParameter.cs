@@ -8,18 +8,23 @@ public class SmartItemTextAreaParameter : SmartItemUIParameterAdapter
 {
     public TMP_InputField textParameterInputField;
 
-    const string parameterType = "textarea";
-
-    public override void SetParameter(SmartItemParameter parameter)
+    private void Start()
     {
-        base.SetParameter(parameter);
+        textParameterInputField.onEndEdit.AddListener(OnValueChange);
+    }
 
-        if (parameter.type != parameterType)
-            return;
+    public override void SetInfo()
+    {
+        base.SetInfo();
 
         textParameterInputField.gameObject.SetActive(true);
 
         textParameterInputField.contentType = TMP_InputField.ContentType.Standard;
-        textParameterInputField.text = (string)  parameter.@default;
+        textParameterInputField.SetTextWithoutNotify((string)GetParameterValue());
+    }
+
+    public void OnValueChange(string text)
+    {
+        SetParameterValue(text);
     }
 }

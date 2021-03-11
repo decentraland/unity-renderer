@@ -14,14 +14,16 @@ public class EntityInformationController : MonoBehaviour
 {
     [Header("Sprites")]
     public Sprite openMenuSprite;
+
     public Sprite closeMenuSprite;
 
     [Header("Prefab references")]
     public TextMeshProUGUI titleTxt;
+
     public TextMeshProUGUI entityLimitsLeftTxt;
     public TextMeshProUGUI entityLimitsRightTxt;
     public TMP_InputField nameIF;
-    public RawImage entitytTumbailImg; 
+    public RawImage entitytTumbailImg;
     public AttributeXYZ positionAttribute;
     public AttributeXYZ rotationAttribute;
     public AttributeXYZ scaleAttribute;
@@ -37,19 +39,20 @@ public class EntityInformationController : MonoBehaviour
     public event Action<Vector3> OnScaleChange;
 
     public event Action<DCLBuilderInWorldEntity, string> OnNameChange;
+    public event Action<DCLBuilderInWorldEntity> OnSmartItemComponentUpdate;
 
-    DCLBuilderInWorldEntity currentEntity;
-    ParcelScene parcelScene;
+    private DCLBuilderInWorldEntity currentEntity;
+    private ParcelScene parcelScene;
 
-    bool isEnable = false;
-    bool isChangingName = false;
+    private bool isEnable = false;
+    private bool isChangingName = false;
 
-    int framesBetweenUpdate = 5;
-    int framesCount = 0;
+    private const int FRAMES_BETWEEN_UPDATES = 5;
+    private int framesCount = 0;
 
-    string loadedThumbnailURL;
+    private string loadedThumbnailURL;
 
-    AssetPromise_Texture loadedThumbnailPromise;
+    private AssetPromise_Texture loadedThumbnailPromise;
 
     private void Start()
     {
@@ -66,7 +69,7 @@ public class EntityInformationController : MonoBehaviour
         if (currentEntity == null)
             return;
 
-        if (framesCount >= framesBetweenUpdate)
+        if (framesCount >= FRAMES_BETWEEN_UPDATES)
         {
             UpdateInfo(currentEntity);
             framesCount = 0;
@@ -102,14 +105,17 @@ public class EntityInformationController : MonoBehaviour
     }
 
     public void ChangeEntityName(string newName)
-    {      
-        OnNameChange?.Invoke(currentEntity,newName);
+    {
+        OnNameChange?.Invoke(currentEntity, newName);
     }
 
     public void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene)
     {
-        if (currentEntity != null)
+        EntityDeselected();
+        if (currentEntity != null)       
             entity.onStatusUpdate -= UpdateEntityName;
+            
+
 
         currentEntity = entity;
         currentEntity.onStatusUpdate += UpdateEntityName;
@@ -118,8 +124,8 @@ public class EntityInformationController : MonoBehaviour
 
         if (entity.HasSmartItemComponent())
         {
-            entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent);
-            smartItemListView.SetSmartItemParameters((SmartItemComponent) baseComponent);
+            if(entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent))
+                smartItemListView.SetSmartItemParameters(entity.GetSmartItemParameters(), ((SmartItemComponent) baseComponent).GetValues());
         }
         else
         {
@@ -128,7 +134,7 @@ public class EntityInformationController : MonoBehaviour
 
         entitytTumbailImg.enabled = false;
 
-        SceneObject entitySceneObject = entity.GetSceneObjectAssociated();
+        CatalogItem entitySceneObject = entity.GetCatalogItemAssociated();
 
         GetThumbnail(entitySceneObject);
 
@@ -147,6 +153,22 @@ public class EntityInformationController : MonoBehaviour
     {
         gameObject.SetActive(false);
         isEnable = false;
+
+        if (currentEntity != null)
+            EntityDeselected();
+        currentEntity = null;
+    }
+
+    public void EntityDeselected()
+    {
+        if (currentEntity == null)
+            return;
+
+        if (currentEntity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent component))
+        {
+            SmartItemComponent smartItemComponent = (SmartItemComponent)component;
+            OnSmartItemComponentUpdate?.Invoke(currentEntity);
+        }
     }
 
     public void UpdateEntityName(DCLBuilderInWorldEntity entity)
@@ -162,7 +184,7 @@ public class EntityInformationController : MonoBehaviour
     {
         if (entity.gameObject != null)
         {
-            Vector3 positionConverted = DCL.Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
+            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
             Vector3 currentRotation = entity.gameObject.transform.rotation.eulerAngles;
             Vector3 currentScale = entity.gameObject.transform.localScale;
 
@@ -177,29 +199,28 @@ public class EntityInformationController : MonoBehaviour
             positionAttribute.SetValues(positionConverted);
             rotationAttribute.SetValues(currentRotation);
             scaleAttribute.SetValues(currentScale);
-            
         }
     }
 
-    void UpdateLimitsInformation(SceneObject sceneObject)
+    void UpdateLimitsInformation(CatalogItem catalogItem)
     {
-        if (sceneObject == null)
+        if (catalogItem == null)
         {
             entityLimitsLeftTxt.text = "";
             entityLimitsRightTxt.text = "";
             return;
         }
 
-        string leftText = $"ENTITIES: {sceneObject.metrics.entities}\n"+ 
-                          $"BODIES: {sceneObject.metrics.bodies}\n" + 
-                          $"TRIS: {sceneObject.metrics.triangles}";
+        string leftText = $"ENTITIES: {catalogItem.metrics.entities}\n"+ 
+                          $"BODIES: {catalogItem.metrics.bodies}\n" + 
+                          $"TRIS: {catalogItem.metrics.triangles}";
 
-        string rightText = $"TEXTURES: {sceneObject.metrics.textures}\n" +
-                           $"MATERIALS: {sceneObject.metrics.materials}\n" +
-                           $"GEOMETRIES: {sceneObject.metrics.meshes}";
+        string rightText = $"TEXTURES: {catalogItem.metrics.textures}\n" +
+                           $"MATERIALS: {catalogItem.metrics.materials}\n" +
+                           $"GEOMETRIES: {catalogItem.metrics.meshes}";
 
-         entityLimitsLeftTxt.text = leftText;
-         entityLimitsRightTxt.text = rightText;
+        entityLimitsLeftTxt.text = leftText;
+        entityLimitsRightTxt.text = rightText;
     }
 
 
@@ -208,15 +229,12 @@ public class EntityInformationController : MonoBehaviour
         return (t - (Mathf.Floor(t / length) * length));
     }
 
-    private void GetThumbnail(SceneObject sceneObject)
+    private void GetThumbnail(CatalogItem catalogItem)
     {
-        var url = sceneObject?.GetComposedThumbnailUrl();
+        var url = catalogItem.thumbnailURL;
 
-        if (sceneObject == null || string.IsNullOrEmpty(url))
+        if (catalogItem == null || string.IsNullOrEmpty(url))
             return;
-
-        if (string.Equals(sceneObject.asset_pack_id, BuilderInWorldSettings.ASSETS_COLLECTIBLES))
-            url = sceneObject.thumbnail;
 
         string newLoadedThumbnailURL = url;
         var newLoadedThumbnailPromise = new AssetPromise_Texture(url);

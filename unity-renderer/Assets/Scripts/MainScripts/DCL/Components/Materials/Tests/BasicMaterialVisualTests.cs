@@ -26,7 +26,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowFalseShouldWork");
 
         Vector3 camTarget = new Vector3(5, 1, 5);
-        VisualTestHelpers.RepositionVisualTestsCamera( camTarget + new Vector3(5, 1, 5), camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
         BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {
@@ -58,7 +58,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowTrueShouldWork");
 
         Vector3 camTarget = new Vector3(5, 1, 5);
-        VisualTestHelpers.RepositionVisualTestsCamera( camTarget + new Vector3(5, 1, 5), camTarget);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget + new Vector3(5, 1, 5), camTarget);
 
         BasicMaterial basicMaterialComponent = TestHelpers.CreateEntityWithBasicMaterial(scene, new BasicMaterial.Model
         {

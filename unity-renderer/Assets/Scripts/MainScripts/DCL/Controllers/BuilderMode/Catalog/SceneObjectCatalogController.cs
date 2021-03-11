@@ -16,8 +16,8 @@ using UnityEngine.UI;
 public class SceneObjectCatalogController : MonoBehaviour 
 {
     public event System.Action<string> OnResultReceived;
-    public event System.Action<SceneObject> OnSceneObjectSelected;
-    public event System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
+    public event System.Action<CatalogItem> OnCatalogItemSelected;
+    public event System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
 
     [Header("Prefab References")]
     public TextMeshProUGUI catalogTitleTxt;
@@ -51,18 +51,18 @@ public class SceneObjectCatalogController : MonoBehaviour
     public RectTransform searchBarMaxSizeRT;
     public RectTransform assetPackMaxSizeRT;
 
-    List<Dictionary<string, List<SceneObject>>> filterObjects = new List<Dictionary<string, List<SceneObject>>>();
-    List<SceneAssetPack> categoryList;
+    private List<Dictionary<string, List<CatalogItem>>> filterObjects = new List<Dictionary<string, List<CatalogItem>>>();
 
-    string lastFilterName = "";
-    bool catalogInitializaed = false, isShowingAssetPacks = false, isFavoriteFilterActive = false;
+    private string lastFilterName = "";
+    private bool isShowingAssetPacks = false;
+    private bool isFavoriteFilterActive = false;
 
-    bool isCatalogExpanded = false;
+    private bool isCatalogExpanded = false;
 
-    bool isFilterByAssetPacks = true;
+    private bool isFilterByAssetPacks = true;
 
-    const string favoriteName = "Favorites";
-    QuickBarController quickBarController;
+    private const string FAVORITE_NAME = "Favorites";
+    private QuickBarController quickBarController;
 
     private void Start()
     {
@@ -70,26 +70,25 @@ public class SceneObjectCatalogController : MonoBehaviour
         favoritesController = new FavoritesController(catalogGroupListView);
 
         quickBarView.OnQuickBarShortcutSelected += QuickBarInput;
-        catalogAssetPackListView.OnSceneAssetPackClick += OnScenePackSelected;
-        catalogGroupListView.OnSceneObjectClicked += SceneObjectSelected;
+        catalogAssetPackListView.OnCatalogPackClick += OnCatalogItemPackSelected;
+        catalogGroupListView.OnCatalogItemClicked += CatalogItemSelected;
         searchInputField.onValueChanged.AddListener(OnSearchInputChanged);
 
      
-        quickBarController.OnSceneObjectSelected += SceneObjectSelected;
+        quickBarController.OnCatalogItemSelected += CatalogItemSelected;
 
         categoryToggle.onValueChanged.AddListener(CategoryFilter);
         favoritesToggle.onValueChanged.AddListener(FavoritesFilter);
         assetPackToggle.onValueChanged.AddListener(AssetsPackFilter);
-
     }
 
     private void OnDestroy()
     {
         quickBarView.OnQuickBarShortcutSelected -= QuickBarInput;
-        catalogAssetPackListView.OnSceneAssetPackClick -= OnScenePackSelected;
-        catalogGroupListView.OnSceneObjectClicked -= SceneObjectSelected;
+        catalogAssetPackListView.OnCatalogPackClick -= OnCatalogItemPackSelected;
+        catalogGroupListView.OnCatalogItemClicked -= CatalogItemSelected;
         if(quickBarController != null)
-            quickBarController.OnSceneObjectSelected -= SceneObjectSelected;
+            quickBarController.OnCatalogItemSelected -= CatalogItemSelected;
     }
 
     public void AssetsPackFilter(bool isOn)
@@ -154,44 +153,45 @@ public class SceneObjectCatalogController : MonoBehaviour
         lastFilterName = currentSearchInput;
     }
 
-    void FilterAssets(string nameToFilter)
+    public List<Dictionary<string, List<CatalogItem>>> FilterAssets(string nameToFilter)
     {
         filterObjects.Clear();
-        foreach (SceneAssetPack assetPack in AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList())
+        foreach (CatalogItemPack assetPack in BIWCatalogManager.GetCatalogItemPackList())
         {
-            foreach (SceneObject sceneObject in assetPack.assets)
+            foreach (CatalogItem catalogItem in assetPack.assets)
             {
-                if (sceneObject.category.Contains(nameToFilter) || sceneObject.tags.Contains(nameToFilter) || sceneObject.name.Contains(nameToFilter))
+                if (catalogItem.category.Contains(nameToFilter) || catalogItem.tags.Contains(nameToFilter) || catalogItem.name.Contains(nameToFilter))
                 {
                     bool foundCategory = false;
-                    foreach (Dictionary<string, List<SceneObject>> groupedSceneObjects in filterObjects)
+                    foreach (Dictionary<string, List<CatalogItem>> groupedSceneObjects in filterObjects)
                     {
-                        if (groupedSceneObjects.ContainsKey(sceneObject.category))
+                        if (groupedSceneObjects.ContainsKey(catalogItem.category))
                         {
                             foundCategory = true;
-                            if (!groupedSceneObjects[sceneObject.category].Contains(sceneObject))
-                                groupedSceneObjects[sceneObject.category].Add(sceneObject);
+                            if (!groupedSceneObjects[catalogItem.category].Contains(catalogItem))
+                                groupedSceneObjects[catalogItem.category].Add(catalogItem);
                         }
                     }
                     if (!foundCategory)
                     {
-                        AddNewSceneObjectCategoryToFilter(sceneObject);
+                        AddNewSceneObjectCategoryToFilter(catalogItem);
                     }
                 }
             }
         }
+        return filterObjects;
     }
 
-    void AddNewSceneObjectCategoryToFilter(SceneObject sceneObject)
+    private void AddNewSceneObjectCategoryToFilter(CatalogItem catalogItem)
     {
-        Dictionary<string, List<SceneObject>> groupedSceneObjects = new Dictionary<string, List<SceneObject>>();
-        groupedSceneObjects.Add(sceneObject.category, new List<SceneObject>() { sceneObject });
-        filterObjects.Add(groupedSceneObjects);
+        Dictionary<string, List<CatalogItem>> groupedCatalogItems = new Dictionary<string, List<CatalogItem>>();
+        groupedCatalogItems.Add(catalogItem.category, new List<CatalogItem>() { catalogItem });
+        filterObjects.Add(groupedCatalogItems);
     }
 
     #endregion
 
-    void QuickBarInput(int quickBarSlot)
+    private void QuickBarInput(int quickBarSlot)
     {
         quickBarController.QuickBarObjectSelected(quickBarSlot);
     }
@@ -210,50 +210,47 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     void ShowFavorites()
     {
-        catalogTitleTxt.text = favoriteName;
+        catalogTitleTxt.text = FAVORITE_NAME;
         ShowCatalogContent();
 
-        List<Dictionary<string, List<SceneObject>>> favorites = new List<Dictionary<string, List<SceneObject>>>();
-        Dictionary<string, List<SceneObject>> groupedSceneObjects = new Dictionary<string, List<SceneObject>>();
-        groupedSceneObjects.Add(favoriteName, favoritesController.GetFavorites());
-        favorites.Add(groupedSceneObjects);
+        List<Dictionary<string, List<CatalogItem>>> favorites = new List<Dictionary<string, List<CatalogItem>>>();
+        Dictionary<string, List<CatalogItem>> groupedCategoryItems = new Dictionary<string, List<CatalogItem>>();
+        groupedCategoryItems.Add(FAVORITE_NAME, favoritesController.GetFavorites());
+        favorites.Add(groupedCategoryItems);
 
         catalogGroupListView.SetContent(favorites);
     }
     
-    void SceneObjectSelected(SceneObject sceneObject)
+    void CatalogItemSelected(CatalogItem catalogItem)
     {
-        OnSceneObjectSelected?.Invoke(sceneObject);
+        OnCatalogItemSelected?.Invoke(catalogItem);
     }
 
-    void OnScenePackSelected(SceneAssetPack sceneAssetPack)
+    void OnCatalogItemPackSelected(CatalogItemPack catalogItemPack)
     {
         ShowCatalogContent();
 
-        SetAssetPackInListView(sceneAssetPack);
+        SetCatalogAssetPackInListView(catalogItemPack);
     }
 
-    void SetAssetPackInListView(SceneAssetPack sceneAssetPack)
+    void SetCatalogAssetPackInListView(CatalogItemPack catalogItemPack)
     {
-        catalogTitleTxt.text = sceneAssetPack.title;
-        Dictionary<string, List<SceneObject>> groupedSceneObjects = new Dictionary<string, List<SceneObject>>();
+        catalogTitleTxt.text = catalogItemPack.title;
+        Dictionary<string, List<CatalogItem>> groupedCatalogItem = new Dictionary<string, List<CatalogItem>>();
 
-
-        foreach (SceneObject sceneObject in sceneAssetPack.assets)
+        foreach (CatalogItem sceneObject in catalogItemPack.assets)
         {
-            string titleToUse = sceneObject.category;
-            if (!isFilterByAssetPacks)
-                  titleToUse = sceneObject.titleToShow;
+            string titleToUse = sceneObject.categoryName;
 
-            if (!groupedSceneObjects.ContainsKey(titleToUse))
+            if (!groupedCatalogItem.ContainsKey(titleToUse))
             {          
-                groupedSceneObjects.Add(titleToUse, GetAssetsListByCategory(titleToUse, sceneAssetPack, isFilterByAssetPacks));
+                groupedCatalogItem.Add(titleToUse, GetAssetsListByCategory(titleToUse, catalogItemPack));
             }
         }
 
-        List<Dictionary<string, List<SceneObject>>> contentList = new List<Dictionary<string, List<SceneObject>>>
+        List<Dictionary<string, List<CatalogItem>>> contentList = new List<Dictionary<string, List<CatalogItem>>>
         {
-            groupedSceneObjects
+            groupedCatalogItem
         };
 
         catalogGroupListView.SetContent(contentList);
@@ -281,57 +278,10 @@ public class SceneObjectCatalogController : MonoBehaviour
         return gameObject.activeSelf;
     }
 
-    void FilterCategories()
-    {
-        categoryList = new List<SceneAssetPack>();
-        var assetPacks = AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList();
-
-        Dictionary<string, SceneAssetPack> assetPackDic = new Dictionary<string, SceneAssetPack>();
-
-        foreach(SceneAssetPack assetPack in assetPacks)
-        {
-            foreach(SceneObject sceneObject in assetPack.assets)
-            {
-                if (!assetPackDic.ContainsKey(sceneObject.category))
-                {
-                    SceneAssetPack categoryAssetPack = new SceneAssetPack();
-                    categoryAssetPack.thumbnail = sceneObject.category;
-                    categoryAssetPack.title = sceneObject.category;
-                    categoryAssetPack.assets = new List<SceneObject>();
-                    sceneObject.titleToShow = assetPack.title;
-                    categoryAssetPack.assets.Add(sceneObject);
-
-                    if(!string.IsNullOrEmpty(categoryAssetPack.title))
-                    {
-                        if (categoryAssetPack.title.Length == 1)
-                            categoryAssetPack.title = categoryAssetPack.title.ToUpper();
-                        else
-                            categoryAssetPack.title =  char.ToUpper(categoryAssetPack.title[0]) + categoryAssetPack.title.Substring(1);
-                    }
-
-                    assetPackDic.Add(sceneObject.category, categoryAssetPack);
-                    continue;
-                }
-                else
-                {
-                    sceneObject.titleToShow = assetPack.title;
-                    assetPackDic[sceneObject.category].assets.Add(sceneObject);
-                }
-            }
-        }
-
-        categoryList = assetPackDic.Values.ToList();
-    }
-
     public void ShowCategories()
     {
-        if(categoryList == null)
-        {
-            FilterCategories();
-        }
-
         catalogAssetPackListView.SetCategoryStyle();
-        catalogAssetPackListView.SetContent(categoryList);
+        catalogAssetPackListView.SetContent(BIWCatalogManager.GetCatalogItemPacksFilteredByCategories());
         isShowingAssetPacks = true;
         catalogTitleTxt.text = BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE;
         catalogAssetPackListView.gameObject.SetActive(true);
@@ -341,7 +291,7 @@ public class SceneObjectCatalogController : MonoBehaviour
     public void ShowAssetsPacks()
     {
         catalogAssetPackListView.SetAssetPackStyle();
-        catalogAssetPackListView.SetContent(AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList());
+        catalogAssetPackListView.SetContent(BIWCatalogManager.GetCatalogItemPackList());
         isShowingAssetPacks = true;
         catalogTitleTxt.text = BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE;
         RefreshCatalog();
@@ -377,38 +327,20 @@ public class SceneObjectCatalogController : MonoBehaviour
 
     public void RefreshCatalog()
     {
-        catalogAssetPackListView.SetContent(GetContentForCatalog());
+        catalogAssetPackListView.SetContent(BIWCatalogManager.GetCatalogItemPackList());
     }
 
-    List<SceneAssetPack> GetContentForCatalog()
+    List<CatalogItem> GetAssetsListByCategory(string category, CatalogItemPack sceneAssetPack)
     {
-        List<SceneAssetPack> catalogList =  AssetCatalogBridge.sceneAssetPackCatalog.GetValues().ToList();
-        catalogList.Add(GetCollectiblesAssetPack());
-        return catalogList;
-    }
+        List<CatalogItem> catalogItemList = new List<CatalogItem>();
 
-    SceneAssetPack GetCollectiblesAssetPack()
-    {
-        SceneAssetPack sceneAssetPack = new SceneAssetPack();
-        sceneAssetPack.id = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
-        sceneAssetPack.title = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
-
-        sceneAssetPack.assets = BuilderInWorldNFTController.i.GetNFTsAsSceneObjects();      
-        return sceneAssetPack;
-    }
-
-    List<SceneObject> GetAssetsListByCategory(string category, SceneAssetPack sceneAssetPack, bool useCategory)
-    {
-        List<SceneObject> sceneObjectsList = new List<SceneObject>();
-
-        foreach (SceneObject sceneObject in sceneAssetPack.assets)
+        foreach (CatalogItem catalogItem in sceneAssetPack.assets)
         {
-            if ((category == sceneObject.category && useCategory) ||
-                (category == sceneObject.titleToShow && !useCategory))
-                sceneObjectsList.Add(sceneObject);
+            if (category == catalogItem.categoryName)
+                catalogItemList.Add(catalogItem);
         }
 
-        return sceneObjectsList;
+        return catalogItemList;
     }
 
     IEnumerator CloseCatalogAfterOneFrame()

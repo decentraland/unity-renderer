@@ -370,10 +370,10 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         yield return PBRMaterialComponent.routine;
 
         // 2. Check configured values
-        Assert.AreEqual(color1, PBRMaterialComponent.model.albedoColor);
-        Assert.AreEqual(0.3f, PBRMaterialComponent.model.metallic);
-        Assert.AreEqual(0.1f, PBRMaterialComponent.model.directIntensity);
-        Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
+        Assert.AreEqual(color1, PBRMaterialComponent.GetModel().albedoColor);
+        Assert.AreEqual(0.3f, PBRMaterialComponent.GetModel().metallic);
+        Assert.AreEqual(0.1f, PBRMaterialComponent.GetModel().directIntensity);
+        Assert.AreEqual(3f, PBRMaterialComponent.GetModel().specularIntensity);
 
         // 3. Update component with missing values
         scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
@@ -381,10 +381,10 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         yield return PBRMaterialComponent.routine;
 
         // 4. Check defaulted values
-        Assert.AreEqual(Color.white, PBRMaterialComponent.model.albedoColor);
-        Assert.AreEqual(0.5f, PBRMaterialComponent.model.metallic);
-        Assert.AreEqual(1, PBRMaterialComponent.model.directIntensity);
-        Assert.AreEqual(1f, PBRMaterialComponent.model.specularIntensity);
+        Assert.AreEqual(Color.white, PBRMaterialComponent.GetModel().albedoColor);
+        Assert.AreEqual(0.5f, PBRMaterialComponent.GetModel().metallic);
+        Assert.AreEqual(1, PBRMaterialComponent.GetModel().directIntensity);
+        Assert.AreEqual(1f, PBRMaterialComponent.GetModel().specularIntensity);
     }
 
     [UnityTest]

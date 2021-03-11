@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -32,10 +32,10 @@ namespace DCL
 
             i = this;
 
-            DataStore.debugConfig.soloScene = debugConfig.soloScene;
-            DataStore.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
-            DataStore.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
-            DataStore.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
+            DataStore.i.debugConfig.soloScene = debugConfig.soloScene;
+            DataStore.i.debugConfig.soloSceneCoords = debugConfig.soloSceneCoords;
+            DataStore.i.debugConfig.ignoreGlobalScenes = debugConfig.ignoreGlobalScenes;
+            DataStore.i.debugConfig.msgStepByStep = debugConfig.msgStepByStep;
 
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
             {
@@ -107,9 +107,9 @@ namespace DCL
             Environment.i.world.sceneController.UnloadScene(sceneId);
         }
 
-        public void CreateUIScene(string payload)
+        public void CreateGlobalScene(string payload)
         {
-            Environment.i.world.sceneController.CreateUIScene(payload);
+            Environment.i.world.sceneController.CreateGlobalScene(payload);
         }
 
         public void UpdateParcelScenes(string payload)

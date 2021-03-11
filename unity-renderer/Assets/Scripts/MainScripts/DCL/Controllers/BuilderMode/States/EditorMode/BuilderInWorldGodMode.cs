@@ -22,7 +22,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public DCLBuilderGizmoManager gizmoManager;
     public VoxelController voxelController;
     public BuilderInWorldInputWrapper builderInputWrapper;
-    public OutlinerController outlinerController;
+    public BIWOutlinerController outlinerController;
     public BuilderInWorldController buildModeController;
     public CameraController cameraController;
     public Transform lookAtT;
@@ -162,7 +162,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
-        editionGO.transform.position = DCL.Environment.i.world.state.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
+        editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
     }
 
@@ -220,7 +220,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             selectedEntities.Count <= 0)
             return;
 
-        if(!isDraggingStarted)
+        if (!isDraggingStarted)
             StarDraggingSelectedEntities();
 
         if (canDragSelectedEntities)
@@ -231,7 +231,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             editionGO.transform.position += direction;
             dragStartedPoint = currentPoint;
         }
-
     }
 
     private void OnMouseUp(int buttonID, Vector3 position)
@@ -263,7 +262,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         lastMousePosition = position;
         mousePressed = true;
         freeCameraController.SetCameraCanMove(false);
-        buildModeController.SetOutlineCheckActive(false);
+        outlinerController.SetOutlineCheckActive(false);
     }
 
     void StarDraggingSelectedEntities()
@@ -286,10 +285,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void EndDraggingSelectedEntities()
     {
-        if(wasGizmosActive)
+        if (wasGizmosActive)
         {
             gizmoManager.ShowGizmo();
         }
+
         wasGizmosActive = false;
 
         freeCameraController.SetCameraCanMove(true);
@@ -322,7 +322,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             }
         }
 
-        buildModeController.SetOutlineCheckActive(true);
+        outlinerController.SetOutlineCheckActive(true);
         outlinerController.CancelAllOutlines();
     }
 
@@ -347,7 +347,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         sceneToEdit = scene;
         voxelController.SetSceneToEdit(scene);
 
-        if(activateCamera)
+        if (activateCamera)
             ActivateCamera(scene);
 
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
@@ -413,7 +413,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         base.CreatedEntity(createdEntity);
 
-        if(!createdEntity.isFloor)
+        if (!createdEntity.isFloor)
             isPlacingNewObject = true;
 
         gizmoManager.HideGizmo();
@@ -520,7 +520,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void TranslateMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("MOVE");
             if (selectedEntities.Count > 0)
@@ -532,7 +532,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void RotateMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("ROTATE");
             if (selectedEntities.Count > 0)
@@ -544,7 +544,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void ScaleMode()
     {
-        if (isModeActive)
+        if (isModeActive && !isPlacingNewObject)
         {
             gizmoManager.SetGizmoType("SCALE");
             if (selectedEntities.Count > 0)
@@ -624,6 +624,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             if (vector.x > maxX) maxX = vector.x;
             if (vector.y > maxY) maxY = vector.y;
         }
+
         float centerX = totalX / parcelScene.sceneData.parcels.Length;
         float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
 
@@ -631,10 +632,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         position.y = totalY;
         position.z = centerZ;
 
-        position = Environment.i.world.state.ConvertScenePositionToUnityPosition(parcelScene);
+        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
 
-        position.x += ParcelSettings.PARCEL_SIZE / 2 ;
-        position.z += ParcelSettings.PARCEL_SIZE / 2 ;
+        position.x += ParcelSettings.PARCEL_SIZE / 2;
+        position.z += ParcelSettings.PARCEL_SIZE / 2;
 
         return position;
     }

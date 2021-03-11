@@ -30,7 +30,7 @@ Transform:
   m_Children:
   - {fileID: 8349600464820682797}
   m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4453536760248188691
 MonoBehaviour:
@@ -45,6 +45,66 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseIndicator: {fileID: 4025507285860166352}
+--- !u!1 &845198831313857159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2383308837978366415}
+  - component: {fileID: 6563051222090226857}
+  m_Layer: 0
+  m_Name: InputHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2383308837978366415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845198831313857159}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6563051222090226857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 845198831313857159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 772524078f323eb4eaa7f6f15a571ba1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  msBetweenInputInteraction: 200
+  builderInWorldController: {fileID: 1208871511274338203}
+  actionController: {fileID: 1208871512032110241}
+  biwModeController: {fileID: 4364144288841107711}
+  builderInputWrapper: {fileID: 1208871511405416592}
+  outlinerController: {fileID: 4993453681677180110}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
+  editModeChangeInputAction: {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960,
+    type: 2}
+  toggleRedoActionInputAction: {fileID: 11400000, guid: 04b9b1db1e772b84ba73426304948e60,
+    type: 2}
+  toggleUndoActionInputAction: {fileID: 11400000, guid: 4cee9aa16106c7d44900a13123280dac,
+    type: 2}
+  toggleSnapModeInputAction: {fileID: 11400000, guid: 9069f92e06a1094478a137f5274d1ab6,
+    type: 2}
+  multiSelectionInputAction: {fileID: 11400000, guid: 5c1dc0623e14bc3439b6f58922b177ba,
+    type: 2}
 --- !u!1 &1208871511180322530
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,9 +247,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3815261039525738060}
-  - {fileID: 1208871511725701525}
   - {fileID: 2469348291275968250}
-  - {fileID: 1208871512032110246}
   - {fileID: 1208871511405416594}
   - {fileID: 1208871512899340006}
   m_Father: {fileID: 0}
@@ -207,54 +265,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce9f3e99bfa1950438d79c75c333a17b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeFeature: 1
-  scaleSpeed: 0.05
-  rotationSpeed: 1.25
-  msBetweenInputInteraction: 200
-  distanceLimitToSelectObjects: 50
-  snapFactor: 1
-  snapRotationDegresFactor: 30
-  snapScaleFactor: 0.25
-  snapDistanceToActivateMovement: 1
+  activeFeature: 0
+  bypassLandOwnershipCheck: 0
   cameraParentGO: {fileID: 0}
   cursorGO: {fileID: 0}
   inputController: {fileID: 0}
   avatarRenderer: {fileID: 0}
-  outlinerController: {fileID: 1208871511725701524}
-  builderInputWrapper: {fileID: 1208871511405416592}
-  gizmoManager: {fileID: 1208871511615770936}
+  outlinerController: {fileID: 4993453681677180110}
+  bIWInputHandler: {fileID: 6563051222090226857}
+  biwPublishController: {fileID: 8821150653254988965}
+  biwCreatorController: {fileID: 2072020105617305708}
+  biwModeController: {fileID: 4364144288841107711}
+  biwFloorHandler: {fileID: 1205861337032038080}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
   actionController: {fileID: 1208871512032110241}
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
   builderInWorldBridge: {fileID: 0}
-  outlinerMaterial: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
-  dclBuilderMeshLoadIndicatorController: {fileID: 4453536760248188691}
-  meshLoadIndicator: {fileID: 4025507285860166352}
-  floorPrefab: {fileID: 3848538323447533592, guid: ea1dee13f58202f409bb86c92a202112,
-    type: 3}
-  firstPersonMode: {fileID: 1208871511546216253}
   editorMode: {fileID: 1208871512657624393}
-  builderRendererIndex: 1
   layerToRaycast:
     serializedVersion: 2
     m_Bits: 16384
-  editModeChangeInputAction: {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960,
-    type: 2}
-  toggleCreateLastSceneObjectInputAction: {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e,
-    type: 2}
-  toggleRedoActionInputAction: {fileID: 11400000, guid: 04b9b1db1e772b84ba73426304948e60,
-    type: 2}
-  toggleUndoActionInputAction: {fileID: 11400000, guid: 4cee9aa16106c7d44900a13123280dac,
-    type: 2}
-  toggleSnapModeInputAction: {fileID: 11400000, guid: 9069f92e06a1094478a137f5274d1ab6,
-    type: 2}
-  multiSelectionInputAction: {fileID: 11400000, guid: 5c1dc0623e14bc3439b6f58922b177ba,
-    type: 2}
-  sceneToEdit: {fileID: 0}
-  isEditModeActivated: 0
-  isSnapActive: 1
-  isMultiSelectionActive: 0
-  isAdvancedModeActive: 1
-  isOutlineCheckActive: 1
+  isBuilderInWorldActivated: 0
 --- !u!1 &1208871511283293828
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +394,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1208871511405416592
 MonoBehaviour:
@@ -500,11 +530,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2af637224d652ff40bb5fc50a399b070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDistanceToSelectEntities: 15
   snapFactor: 1
   snapRotationDegresFactor: 30
   snapScaleFactor: 0.25
   snapDistanceToActivateMovement: 1
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
   actionController: {fileID: 1208871512032110241}
   builderInWorldBridge: {fileID: 0}
   scaleSpeed: 0.25
@@ -683,50 +714,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.5, z: 2.8}
   m_Center: {x: 0, y: 0, z: 1.7}
---- !u!1 &1208871511725701514
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1208871511725701525}
-  - component: {fileID: 1208871511725701524}
-  m_Layer: 0
-  m_Name: OutlinerController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1208871511725701525
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208871511725701514}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1208871511725701524
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208871511725701514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8bc39fa9c95b3f45afae1ed751b3303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4, type: 2}
 --- !u!1 &1208871511799072618
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,12 +992,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208871512032110247}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 3
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1208871512032110241
 MonoBehaviour:
@@ -1024,8 +1011,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b96042e804882648915f5b4d1daa70b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  builderInWorldController: {fileID: 1208871511274338203}
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
+  biwFloorHandler: {fileID: 1205861337032038080}
 --- !u!1 &1208871512097731729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1602,11 +1589,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479b86093c625a641b028d46e304e1cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDistanceToSelectEntities: 9999
   snapFactor: 1
   snapRotationDegresFactor: 0.5
   snapScaleFactor: 0.5
   snapDistanceToActivateMovement: 1
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
   actionController: {fileID: 1208871512032110241}
   builderInWorldBridge: {fileID: 0}
   distanceEagleCamera: 20
@@ -1614,7 +1602,7 @@ MonoBehaviour:
   gizmoManager: {fileID: 1208871511615770936}
   voxelController: {fileID: 1208871512657624392}
   builderInputWrapper: {fileID: 1208871511405416592}
-  outlinerController: {fileID: 1208871511725701524}
+  outlinerController: {fileID: 4993453681677180110}
   buildModeController: {fileID: 1208871511274338203}
   cameraController: {fileID: 0}
   lookAtT: {fileID: 1208871513090114763}
@@ -1643,8 +1631,8 @@ MonoBehaviour:
   builderInputWrapper: {fileID: 1208871511405416592}
   buildModeController: {fileID: 1208871511274338203}
   buildEditorMode: {fileID: 1208871512657624393}
-  outlinerController: {fileID: 1208871511725701524}
-  builderInWorldEntityHandler: {fileID: 7801740759641975108}
+  outlinerController: {fileID: 4993453681677180110}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
   freeCameraMovement: {fileID: 0}
   actionController: {fileID: 1208871512032110241}
   groundLayer:
@@ -1790,7 +1778,7 @@ Transform:
   - {fileID: 1208871511546216242}
   - {fileID: 1208871512657624398}
   m_Father: {fileID: 1208871511274338202}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1208871513006312414
 GameObject:
@@ -2091,6 +2079,154 @@ Transform:
   m_Father: {fileID: 1208871512657624398}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2982904884276659583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1890139895197789809}
+  - component: {fileID: 4364144288841107711}
+  m_Layer: 0
+  m_Name: ModeController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1890139895197789809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2982904884276659583}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4364144288841107711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2982904884276659583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e11da1303cf0068408b61de1acb4f347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cursorGO: {fileID: 0}
+  avatarRenderer: {fileID: 0}
+  actionController: {fileID: 1208871512032110241}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
+  firstPersonMode: {fileID: 1208871511546216253}
+  editorMode: {fileID: 1208871512657624393}
+  toggleSnapModeInputAction: {fileID: 11400000, guid: 9069f92e06a1094478a137f5274d1ab6,
+    type: 2}
+--- !u!1 &4484572557727523750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8110404537460107720}
+  - component: {fileID: 2072020105617305708}
+  m_Layer: 0
+  m_Name: CreatorController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8110404537460107720
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484572557727523750}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2072020105617305708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484572557727523750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d9cc0526a987be489ee7f8e156b3a92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biwModeController: {fileID: 4364144288841107711}
+  biwFloorHandler: {fileID: 1205861337032038080}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
+  toggleCreateLastSceneObjectInputAction: {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e,
+    type: 2}
+--- !u!1 &4590602730705578794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7525513927146590247}
+  - component: {fileID: 4993453681677180110}
+  m_Layer: 0
+  m_Name: OutlinerController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7525513927146590247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4590602730705578794}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4993453681677180110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4590602730705578794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8bc39fa9c95b3f45afae1ed751b3303, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  builderRendererIndex: 1
+  outlineMaterial: {fileID: 2100000, guid: 92b0ce4a86423dd48b66212090fc7e34, type: 2}
+  cameraOutlinerMaterial: {fileID: 2100000, guid: 2bf8916261b5ffc46b4ba519ff75ede4,
+    type: 2}
+  builderInWorldController: {fileID: 1208871511274338203}
+  biwInputHandler: {fileID: 6563051222090226857}
 --- !u!1 &5373867681970374750
 GameObject:
   m_ObjectHideFlags: 0
@@ -2100,9 +2236,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3815261039525738060}
-  - component: {fileID: 7801740759641975108}
   m_Layer: 0
-  m_Name: EntityController
+  m_Name: Controllers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2118,35 +2253,63 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 2696208425860961888}
+  - {fileID: 7093862290941255610}
+  - {fileID: 1208871512032110246}
+  - {fileID: 1890139895197789809}
+  - {fileID: 8110404537460107720}
+  - {fileID: 2851376582841154354}
+  - {fileID: 2383308837978366415}
+  - {fileID: 7525513927146590247}
   m_Father: {fileID: 1208871511274338202}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7801740759641975108
+--- !u!1 &6535961781310414062
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2851376582841154354}
+  - component: {fileID: 8821150653254988965}
+  m_Layer: 0
+  m_Name: PublishController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2851376582841154354
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6535961781310414062}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8821150653254988965
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5373867681970374750}
+  m_GameObject: {fileID: 6535961781310414062}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277da019a2f2a3e4284a74984580a806, type: 3}
+  m_Script: {fileID: 11500000, guid: 514b9309ea090774d876c6d2b5ed547d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duplicateOffset: 2
-  msBetweenTransformUpdates: 2000
-  outlinerController: {fileID: 1208871511725701524}
-  buildModeController: {fileID: 1208871511274338203}
-  actionController: {fileID: 1208871512032110241}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
   builderInWorldBridge: {fileID: 0}
-  editMaterial: {fileID: 2100000, guid: 92b0ce4a86423dd48b66212090fc7e34, type: 2}
-  duplicateCursorTexture: {fileID: 2800000, guid: 422889cd6c61279459cc3c6bfa00ed20,
-    type: 3}
-  hideSelectedEntitiesAction: {fileID: 11400000, guid: a9f9f5fb4f1639d4b8461c2838cfae56,
-    type: 2}
-  showAllEntitiesAction: {fileID: 11400000, guid: f0a0f94cc4fd01c4e82210e0de670a65,
-    type: 2}
 --- !u!1 &7515311309793266013
 GameObject:
   m_ObjectHideFlags: 0
@@ -2290,3 +2453,112 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   builderCamera: {fileID: 0}
+--- !u!1 &7897560743775820156
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2696208425860961888}
+  - component: {fileID: 1676156629805984034}
+  m_Layer: 0
+  m_Name: EntityHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2696208425860961888
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7897560743775820156}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1676156629805984034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7897560743775820156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277da019a2f2a3e4284a74984580a806, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duplicateOffset: 2
+  msBetweenTransformUpdates: 2000
+  outlinerController: {fileID: 4993453681677180110}
+  buildModeController: {fileID: 1208871511274338203}
+  biwModeController: {fileID: 4364144288841107711}
+  actionController: {fileID: 1208871512032110241}
+  builderInWorldBridge: {fileID: 0}
+  editMaterial: {fileID: 2100000, guid: 92b0ce4a86423dd48b66212090fc7e34, type: 2}
+  duplicateCursorTexture: {fileID: 2800000, guid: 422889cd6c61279459cc3c6bfa00ed20,
+    type: 3}
+  hideSelectedEntitiesAction: {fileID: 11400000, guid: a9f9f5fb4f1639d4b8461c2838cfae56,
+    type: 2}
+  showAllEntitiesAction: {fileID: 11400000, guid: f0a0f94cc4fd01c4e82210e0de670a65,
+    type: 2}
+--- !u!1 &9182266190398338556
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7093862290941255610}
+  - component: {fileID: 1205861337032038080}
+  m_Layer: 0
+  m_Name: FloorHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7093862290941255610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182266190398338556}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3815261039525738060}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1205861337032038080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9182266190398338556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaf470ec8f3ccaa45b055d5d6ce0381c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionController: {fileID: 1208871512032110241}
+  builderInWorldEntityHandler: {fileID: 1676156629805984034}
+  dclBuilderMeshLoadIndicatorController: {fileID: 4453536760248188691}
+  meshLoadIndicator: {fileID: 4025507285860166352}
+  builderInWorldBridge: {fileID: 0}
+  biwCreatorController: {fileID: 2072020105617305708}
+  builderInWorldController: {fileID: 1208871511274338203}
+  floorPrefab: {fileID: 3848538323447533592, guid: ea1dee13f58202f409bb86c92a202112,
+    type: 3}

@@ -20,6 +20,8 @@ namespace Tests
 
             // Assert
             Assert.IsNotNull(controller.view);
+
+            controller.Dispose();
         }
 
         // TODO(Santi): Check with Brian how to adapt this test to the new async flow of the WelcomeHUD
@@ -42,6 +44,8 @@ namespace Tests
             // Assert
             controller.Received().OnConfirmPressed(buttonIndexToPress);
             mockView.Received().SetVisible(false);
+
+            controller.Dispose();
         }
 
         [Test]
@@ -49,12 +53,12 @@ namespace Tests
         {
             // Arrange
             WelcomeHUDController controller = Substitute.ForPartsOf<WelcomeHUDController>();
-            controller.Initialize( new MessageOfTheDayConfig
+            controller.Initialize(new MessageOfTheDayConfig
             {
-                buttons = new []
+                buttons = new[]
                 {
-                    new MessageOfTheDayConfig.Button{action = "action0"},
-                    new MessageOfTheDayConfig.Button{action = "action1"}
+                    new MessageOfTheDayConfig.Button {action = "action0"},
+                    new MessageOfTheDayConfig.Button {action = "action1"}
                 }
             });
 
@@ -63,6 +67,8 @@ namespace Tests
 
             // Assert
             controller.Received().SendAction("action1");
+
+            controller.Dispose();
         }
 
         [Test]
@@ -70,7 +76,7 @@ namespace Tests
         {
             // Arrange
             WelcomeHUDController controller = Substitute.ForPartsOf<WelcomeHUDController>();
-            controller.Initialize( new MessageOfTheDayConfig { buttons = new MessageOfTheDayConfig.Button[0] });
+            controller.Initialize(new MessageOfTheDayConfig {buttons = new MessageOfTheDayConfig.Button[0]});
 
             // Act
             controller.OnConfirmPressed(-1);
@@ -78,6 +84,8 @@ namespace Tests
 
             // Assert
             controller.DidNotReceiveWithAnyArgs().SendAction(default);
+
+            controller.Dispose();
         }
     }
 
@@ -118,10 +126,10 @@ namespace Tests
             view.Initialize(null, null,
                 new MessageOfTheDayConfig
                 {
-                    buttons = new []
+                    buttons = new[]
                     {
-                        new MessageOfTheDayConfig.Button{ caption = "button0", tint = Color.green},
-                        new MessageOfTheDayConfig.Button{ caption = "button1", tint = Color.blue},
+                        new MessageOfTheDayConfig.Button {caption = "button0", tint = Color.green},
+                        new MessageOfTheDayConfig.Button {caption = "button1", tint = Color.blue},
                     }
                 });
 
@@ -133,7 +141,7 @@ namespace Tests
 
         protected override IEnumerator TearDown()
         {
-            if(view != null && view.gameObject != null)
+            if (view != null && view.gameObject != null)
                 Object.Destroy(view.gameObject);
             yield return base.TearDown();
         }

@@ -10,16 +10,23 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : BaseShape.Model
         {
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
-        public BoxShape(ParcelScene scene) : base(scene) { }
+        public BoxShape(IParcelScene scene) : base(scene)
+        {
+            model = new Model();
+        }
 
         public static Mesh cubeMesh = null;
         private static int cubeMeshRefCount = 0;
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.BOX_SHAPE;
+            return (int) CLASS_ID.BOX_SHAPE;
         }
 
         public override Mesh GenerateGeometry()

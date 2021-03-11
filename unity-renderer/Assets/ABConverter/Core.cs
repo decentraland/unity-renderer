@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using NUnit.Framework;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -49,7 +49,7 @@ namespace DCL.ABConverter
 
             private float startTime;
             private int totalAssets;
-            private int skippedAssets;
+            public int skippedAssets;
 
             private Environment env;
             private static Logger log = new Logger("ABConverter.Core");
@@ -82,10 +82,7 @@ namespace DCL.ABConverter
             /// <param name="OnFinish">End callback with the proper ErrorCode</param>
             public void Convert(ContentServerUtils.MappingPair[] rawContents, Action<ErrorCodes> OnFinish = null)
             {
-                if (OnFinish == null)
-                    OnFinish = CleanAndExit;
-                else
-                    OnFinish += CleanAndExit;
+                OnFinish += CleanAndExit;
 
                 startTime = Time.realtimeSinceStartup;
 
@@ -137,20 +134,17 @@ namespace DCL.ABConverter
 
                                 state.lastErrorCode = ErrorCodes.SUCCESS;
                                 state.step = State.Step.FINISHED;
-                                OnFinish?.Invoke(state.lastErrorCode);
                             }
                             else
                             {
                                 state.lastErrorCode = ErrorCodes.ASSET_BUNDLE_BUILD_FAIL;
                                 state.step = State.Step.FINISHED;
-                                OnFinish?.Invoke(state.lastErrorCode);
                             }
                         }
                         else
                         {
                             state.lastErrorCode = ErrorCodes.SUCCESS;
                             state.step = State.Step.FINISHED;
-                            OnFinish?.Invoke(state.lastErrorCode);
                         }
                     }
                     catch (Exception e)
@@ -158,14 +152,20 @@ namespace DCL.ABConverter
                         log.Error(e.Message + "\n" + e.StackTrace);
                         state.lastErrorCode = ErrorCodes.UNDEFINED;
                         state.step = State.Step.FINISHED;
-                        OnFinish?.Invoke(state.lastErrorCode);
                         EditorApplication.update -= UpdateLoop;
                     }
+
+                    EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets(
+                        env: env,
+                        OnFinish: (skippedAssetsCount) =>
+                        {
+                            this.skippedAssets = skippedAssetsCount;
+                            OnFinish?.Invoke(state.lastErrorCode);
+                        }));
                 }
 
                 EditorApplication.update += UpdateLoop;
             }
-
 
             /// <summary>
             /// Dump all assets and tag them for asset bundle building.
@@ -529,7 +529,7 @@ namespace DCL.ABConverter
             private void CleanAndExit(ErrorCodes errorCode)
             {
                 float conversionTime = Time.realtimeSinceStartup - startTime;
-                logBuffer = $"Conversion finished!. error code = {errorCode}";
+                logBuffer = $"Conversion finished!. last error code = {errorCode}";
 
                 logBuffer += "\n";
                 logBuffer += $"Converted {totalAssets - skippedAssets} of {totalAssets}. (Skipped {skippedAssets})\n";

@@ -48,10 +48,10 @@ public class BuildModeHUDView : MonoBehaviour
     public event Action OnChangeModeAction,OnExtraBtnsClick,OnEntityListChangeVisibilityAction,OnSceneLimitInfoControllerChangeVisibilityAction, OnSceneCatalogControllerChangeVisibilityAction;
     public event Action<bool> OnSceneLimitInfoChangeVisibility;
 
-    public event Action<SceneObject> OnSceneObjectSelected;
+    public event Action<CatalogItem> OnCatalogItemSelected;
     public event Action OnStopInput, OnResumeInput,OnTutorialAction,OnPublishAction;
     public event Action OnLogoutAction;
-    public event Action OnSceneObjectDrop;
+    public event Action OnCatalogItemDrop;
 
     private void Awake()
     {
@@ -96,7 +96,7 @@ public class BuildModeHUDView : MonoBehaviour
         duplicateBtn.onClick.AddListener(() => OnDuplicateSelectionAction?.Invoke());
         deleteBtn.onClick.AddListener(() => OnDeleteSelectionAction?.Invoke());
 
-        sceneObjectCatalogController.OnSceneObjectSelected += (x) => OnSceneObjectSelected?.Invoke(x);
+        sceneObjectCatalogController.OnCatalogItemSelected += (x) => OnCatalogItemSelected?.Invoke(x);
         catalogGroupListView.OnResumeInput += () => OnResumeInput?.Invoke();
         catalogGroupListView.OnStopInput += () => OnStopInput?.Invoke();
 
@@ -154,7 +154,7 @@ public class BuildModeHUDView : MonoBehaviour
 
     public void SceneObjectDroppedInView()
     {
-        OnSceneObjectDrop?.Invoke();
+        OnCatalogItemDrop?.Invoke();
     }
 
     public void SetVisibilityOfCatalog(bool isVisible)

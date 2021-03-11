@@ -31,7 +31,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            scene = Environment.i.world.sceneController.CreateTestScene();
+            scene = Environment.i.world.sceneController.CreateTestScene() as ParcelScene;
         }
 
         [UnityTest]

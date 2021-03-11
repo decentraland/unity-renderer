@@ -26,28 +26,28 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator CreateUIScene()
+        public IEnumerator CreateGlobalScene()
         {
             // Position character inside parcel (0,0)
             TestHelpers.SetCharacterPosition(Vector3.zero);
 
-            string sceneGameObjectNamePrefix = "UI Scene - ";
-            string sceneId = "Test UI Scene";
-            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() {id = sceneId}));
+            string sceneGameObjectNamePrefix = "Global Scene - ";
+            string sceneId = "Test Global Scene";
+            sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId}));
 
             GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
-            GlobalScene scene = Environment.i.world.state.loadedScenes[sceneId] as GlobalScene;
+            GlobalScene globalScene = Environment.i.world.state.loadedScenes[sceneId] as GlobalScene;
 
-            Assert.IsTrue(scene != null, "Scene isn't a GlobalScene?");
+            Assert.IsTrue(globalScene != null, "Scene isn't a GlobalScene?");
             Assert.IsTrue(sceneGo != null, "scene game object not found!");
             Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
-            Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId].unloadWithDistance == false,
+            Assert.IsTrue(globalScene.unloadWithDistance == false,
                 "Scene will unload when far!");
 
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
+            Assert.IsTrue(globalScene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
                 "IsInsideSceneBoundaries() should always return true.");
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
+            Assert.IsTrue(globalScene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
                 "IsInsideSceneBoundaries() should always return true.");
 
             yield return null;
@@ -59,9 +59,9 @@ namespace Tests
 
             sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
-            Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
+            Assert.IsTrue(sceneGo != null, "scene game object not found! GlobalScenes must not be unloaded by distance!");
             Assert.IsTrue(Environment.i.world.state.loadedScenes[sceneId] != null,
-                "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
+                "Scene not in loaded dictionary when far! GlobalScenes must not be unloaded by distance!");
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace Tests
             string loadedSceneID = "0,0";
             Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID));
 
-            var scene = Environment.i.world.state.loadedScenes[loadedSceneID];
+            ParcelScene scene = Environment.i.world.state.loadedScenes[loadedSceneID] as ParcelScene;
 
             var coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
             {
@@ -214,11 +214,11 @@ namespace Tests
 
             Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID));
 
+            var loadedScene = Environment.i.world.state.loadedScenes[loadedSceneID] as ParcelScene;
             // Add 1 entity to the loaded scene
-            TestHelpers.CreateSceneEntity(Environment.i.world.state.loadedScenes[loadedSceneID], "6");
+            TestHelpers.CreateSceneEntity(loadedScene, "6");
 
-            var sceneRootGameObject = Environment.i.world.state.loadedScenes[loadedSceneID];
-            var sceneEntities = Environment.i.world.state.loadedScenes[loadedSceneID].entities;
+            var sceneEntities = loadedScene.entities;
 
             sceneController.UnloadScene(loadedSceneID);
 
@@ -227,7 +227,7 @@ namespace Tests
 
             Assert.IsTrue(Environment.i.world.state.loadedScenes.ContainsKey(loadedSceneID) == false);
 
-            Assert.IsTrue(sceneRootGameObject == null, "Scene root gameobject reference is not getting destroyed.");
+            Assert.IsTrue(loadedScene == null, "Scene root gameobject reference is not getting destroyed.");
 
             foreach (var entity in sceneEntities)
             {
@@ -262,7 +262,7 @@ namespace Tests
 
             foreach (var kvp in Environment.i.world.state.loadedScenes)
             {
-                referenceCheck.Add(kvp.Value);
+                referenceCheck.Add(kvp.Value as ParcelScene);
             }
 
             Assert.AreEqual(12, Environment.i.world.state.loadedScenes.Count);
@@ -299,13 +299,13 @@ namespace Tests
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
-            Assert.AreEqual(3, theScene.transform.childCount);
+            Assert.AreEqual(3, theScene.GetSceneTransform().childCount);
 
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+            Assert.IsTrue(theScene.GetSceneTransform().GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
                 DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
+            Assert.IsTrue(theScene.GetSceneTransform().GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
                 DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+            Assert.IsTrue(theScene.GetSceneTransform().GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
                 DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT,
                 ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
         }
@@ -322,7 +322,7 @@ namespace Tests
 
             Assert.AreEqual(2, Environment.i.world.state.loadedScenes.Count);
 
-            var theScene = Environment.i.world.state.loadedScenes["xxx"];
+            var theScene = Environment.i.world.state.loadedScenes["xxx"] as ParcelScene;
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);

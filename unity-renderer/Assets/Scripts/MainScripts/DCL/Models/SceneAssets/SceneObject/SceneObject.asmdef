@@ -1,7 +1,9 @@
 {
     "name": "SceneObject",
     "references": [
-        "GUID:bb6e4d6fc48a2cf4191076e3407fc249"
+        "GUID:bb6e4d6fc48a2cf4191076e3407fc249",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:91b3e67997f21408dae5a247c35f91ad"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

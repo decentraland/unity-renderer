@@ -54,16 +54,19 @@ namespace DCL.Helpers.NFT
         }
     }
 
+    [System.Serializable]
     public struct PaymentTokenInfo
     {
         public string symbol;
     }
 
+    [System.Serializable]
     public struct MarketInfo
     {
         public string name;
     }
 
+    [System.Serializable]
     public struct AssetContract
     {
         public string address;

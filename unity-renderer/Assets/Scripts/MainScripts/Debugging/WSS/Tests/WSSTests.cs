@@ -5,27 +5,22 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
+using Environment = DCL.Environment;
 
 namespace Tests
 {
     [Explicit]
-    public class WSSTests : IntegrationTestSuite_Legacy
+    public class WSSTests : IntegrationTestSuite
     {
         protected override IEnumerator SetUp()
         {
-            yield break;
-        }
-
-        protected override IEnumerator TearDown()
-        {
+            Environment.SetupWithBuilders();
             yield break;
         }
 
         [UnityTest]
         public IEnumerator BasicConnectionTest()
         {
-            yield return InitScene();
-
             GameObject wssControllerGO = new GameObject("WSS Controller");
 
             WSSController wssController = wssControllerGO.AddComponent<WSSController>();
@@ -35,7 +30,7 @@ namespace Tests
 
             Assert.IsTrue(wssController.isServerReady);
 
-            using (WebSocketSharp.WebSocket ws = new WebSocket("ws://localhost:5000/dcl"))
+            using (WebSocket ws = new WebSocket("ws://localhost:5000/dcl"))
             {
                 try
                 {

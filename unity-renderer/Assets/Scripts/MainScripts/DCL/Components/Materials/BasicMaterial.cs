@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -10,16 +11,22 @@ namespace DCL.Components
     public class BasicMaterial : BaseDisposable
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string texture;
 
             // value that defines if a pixel is visible or invisible (no transparency gradients)
-            [Range(0f, 1f)] public float alphaTest = 0.5f;
+            [Range(0f, 1f)]
+            public float alphaTest = 0.5f;
+
             public bool castShadows = true;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json); 
+            }
         }
 
-        public Model model = new Model();
         public Material material;
 
         private DCLTexture dclTexture = null;
@@ -29,17 +36,23 @@ namespace DCL.Components
         private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
         private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
 
-        public BasicMaterial(ParcelScene scene) : base(scene)
+        public BasicMaterial(IParcelScene scene) : base(scene)
         {
             material = new Material(Utils.EnsureResourcesMaterial("Materials/BasicShapeMaterial"));
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
+            model = new Model();
+        }
+
+        new public Model GetModel()
+        {
+            return (Model)model;
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.BASIC_MATERIAL;
+            return (int) CLASS_ID.BASIC_MATERIAL;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -51,12 +64,7 @@ namespace DCL.Components
             base.AttachTo(entity);
         }
 
-        public override object GetModel()
-        {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             if (material == null)
             {
@@ -67,7 +75,7 @@ namespace DCL.Components
             material.name = "BasicMaterial_" + id;
 #endif
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            Model model = (Model) newModel;
 
             if (!string.IsNullOrEmpty(model.texture))
             {
@@ -122,6 +130,8 @@ namespace DCL.Components
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
             if (meshRenderer == null)
                 return;
+
+            Model model = (Model) this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
             if (meshRenderer.sharedMaterial != material)

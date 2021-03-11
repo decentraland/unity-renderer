@@ -2,9 +2,10 @@
     "name": "AvatarModel",
     "references": [
         "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
-        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -12,5 +13,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
