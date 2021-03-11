@@ -19,7 +19,6 @@ public class BuilderInWorldMode : MonoBehaviour
     [Header("Prefab references")]
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public ActionController actionController;
-    public BuilderInWorldBridge builderInWorldBridge;
 
     public event System.Action OnInputDone;
     public event System.Action<BuildInWorldCompleteAction> OnActionGenerated;
@@ -55,6 +54,7 @@ public class BuilderInWorldMode : MonoBehaviour
     {
         gameObject.SetActive(false);
         isModeActive = false;
+        builderInWorldEntityHandler.DeselectEntities();
     }
 
     public virtual void SetSnapActive(bool isActive)

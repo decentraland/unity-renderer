@@ -190,12 +190,6 @@ public class BuilderInWorldEntityHandler : BIWController
         if (selectedEntities.Count <= 0)
             return;
 
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
-        {
-            if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
-                return;
-        }
-
         DuplicateSelectedEntities();
     }
 
@@ -236,15 +230,7 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         if (!selectedEntities.Contains(entity))
             return;
-
-        if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
-        {
-            DestroyLastCreatedEntities();
-        }
-
-        DCL.Environment.i.world.sceneBoundsChecker.EvaluateEntityPosition(entity.rootEntity);
-        DCL.Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(entity.rootEntity);
-
+        
         entity.Deselect();
 
         outlinerController.CancelEntityOutline(entity);

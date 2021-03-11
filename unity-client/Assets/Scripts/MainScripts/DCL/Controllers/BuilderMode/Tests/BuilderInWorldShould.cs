@@ -26,12 +26,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         Vector3 toPosition = Vector3.zero;
         Vector3 direction = toPosition - fromPosition;
 
-        bool groundLayerFound = false;
-
-        if (Physics.Raycast(fromPosition,direction, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, godMode.groundLayer))
-        {
-            groundLayerFound = true;
-        }
+        bool groundLayerFound = Physics.Raycast(fromPosition,direction, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, godMode.groundLayer);
 
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
@@ -47,8 +42,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
     public void SceneReferences()
     {
         BuilderInWorldController builderInWorldController = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
-
-        Assert.IsNotNull(builderInWorldController.avatarRenderer,"References on the builder-in-world prefab are null, check them all!");
+        
         Assert.IsNotNull(builderInWorldController.cursorGO, "References on the builder-in-world prefab are null, check them all!");
         Assert.IsNotNull(builderInWorldController.inputController, "References on the builder-in-world prefab are null, check them all!");
         Assert.IsNotNull(builderInWorldController.cameraParentGO, "References on the builder-in-world prefab are null, check them all!");
@@ -56,7 +50,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
 
         BuilderInWorldGodMode godMode = builderInWorldController.GetComponentInChildren<BuilderInWorldGodMode>();
 
-
+        Assert.IsNotNull(godMode.avatarRenderer,"References on the builder-in-world prefab are null, check them all!");
         Assert.IsNotNull(godMode.mouseCatcher, "References on the builder-in-world god mode are null, check them all!");
         Assert.IsNotNull(godMode.cameraController, "References on the builder-in-world god mode are null, check them all!");
         Assert.IsNotNull(godMode.freeCameraController, "References on the builder-in-world god mode are null, check them all!");

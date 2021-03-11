@@ -1173,6 +1173,11 @@ PrefabInstance:
       propertyPath: mouseCatcher
       value: 
       objectReference: {fileID: 657147616}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: avatarRenderer
+      value: 
+      objectReference: {fileID: 689415105}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceb04930a6bb25b44a6ad241f62abdf5, type: 3}
 --- !u!114 &1183867544 stripped

@@ -8,12 +8,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BIWCreatorController : BIWController
 {
+    [Header("Prefab references")]
     public BIWModeController biwModeController;
     public BIWFloorHandler biwFloorHandler;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+
+    [FormerlySerializedAs("loadingGO")]
+    [Header("Project references")]
+    public GameObject loadingObjectPrefab;
 
     [SerializeField]
     internal InputAction_Trigger toggleCreateLastSceneObjectInputAction;
@@ -27,6 +33,8 @@ public class BIWCreatorController : BIWController
 
     private InputAction_Trigger.Triggered createLastSceneObjectDelegate;
 
+    private readonly Dictionary<string, GameObject> loadingGameObjects = new Dictionary<string, GameObject>();
+
     private void Start()
     {
         createLastSceneObjectDelegate = (action) => CreateLastSceneObject();
@@ -38,6 +46,16 @@ public class BIWCreatorController : BIWController
         toggleCreateLastSceneObjectInputAction.OnTriggered -= createLastSceneObjectDelegate;
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
+        Clean();
+    }
+    
+    public void Clean()
+    {
+        foreach (GameObject gameObject in loadingGameObjects.Values)
+        {
+            GameObject.Destroy(gameObject);
+        }
+        loadingGameObjects.Clear();
     }
 
     public override void Init()
@@ -109,6 +127,7 @@ public class BIWCreatorController : BIWController
         entity.isFloor = isFloor;
 
         AddShape(catalogItem, entity);
+        
         AddEntityNameComponent(catalogItem, entity);
 
         AddLockedComponent(entity);
@@ -138,6 +157,26 @@ public class BIWCreatorController : BIWController
         OnSceneObjectPlaced?.Invoke();
         return entity;
     }
+
+    #region LoadingObjects
+    
+    private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
+    {
+        entity.rootEntity.OnShapeUpdated += OnRealShapeLoaded;
+        GameObject loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform);
+        loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
+    }
+    
+    private void OnRealShapeLoaded(DecentralandEntity entity)
+    {
+        entity.OnShapeUpdated -= OnRealShapeLoaded;
+
+        GameObject loadingPlaceHolder = loadingGameObjects[entity.entityId];
+        loadingGameObjects.Remove(entity.entityId);
+        GameObject.Destroy(loadingPlaceHolder);
+    }
+    
+    #endregion
 
     #region Add Components
 
@@ -194,6 +233,7 @@ public class BIWCreatorController : BIWController
             mesh.model.assetId = catalogItem.id;
             sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, mesh.id);
         }
+        CreateLoadingObject(entity);
     }
 
     #endregion

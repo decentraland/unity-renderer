@@ -19,7 +19,8 @@ namespace DCL.Configuration
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
-
+        
+        public const int RETRY_AMOUNTS = 3;
 
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";

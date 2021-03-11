@@ -1,3 +1,4 @@
+using System;
 using Builder.MeshLoadIndicator;
 using DCL;
 using DCL.Configuration;
@@ -22,11 +23,16 @@ public class BIWFloorHandler : BIWController
     public GameObject floorPrefab;
 
     private CatalogItem lastFloorCalalogItemUsed;
-    private Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
+    private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
 
     private void Start()
     {
         meshLoadIndicator.SetCamera(Camera.main);
+    }
+
+    private void OnDestroy()
+    {
+        Clean();
     }
 
     public void Clean()
@@ -35,6 +41,7 @@ public class BIWFloorHandler : BIWController
         {
             GameObject.Destroy(gameObject);
         }
+        floorPlaceHolderDict.Clear();
     }
 
     public void ChangeFloor(CatalogItem newFloorObject)

@@ -2,6 +2,7 @@ using DCL;
 using DCL.Components;
 using DCL.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,10 +14,77 @@ using Environment = DCL.Environment;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Controllers;
+using UnityEngine.Networking;
 using UnityEngine.Events;
 
 public static partial class BuilderInWorldUtils
 {
+    public static Vector3 SnapFilterEulerAngles(Vector3 vectorToFilter, float degrees)
+    {
+        vectorToFilter.x = ClosestNumber(vectorToFilter.x, degrees);
+        vectorToFilter.y = ClosestNumber(vectorToFilter.y, degrees);
+        vectorToFilter.z = ClosestNumber(vectorToFilter.z, degrees);
+
+        return vectorToFilter;
+    }
+    
+    static float ClosestNumber(float n, float m) 
+    { 
+        // find the quotient 
+        int q = Mathf.RoundToInt(n / m); 
+  
+        // 1st possible closest number 
+        float n1 = m * q;
+        
+        // 2nd possible closest number 
+        float n2 = (n * m) > 0 ? (m * (q + 1)) : (m * (q - 1)); 
+  
+        // if true, then n1 is the required closest number 
+        if (Math.Abs(n - n1) < Math.Abs(n - n2)) 
+            return n1; 
+  
+        // else n2 is the required closest number 
+        return n2; 
+    } 
+    
+    public static Vector3 CalculateUnityMiddlePoint(ParcelScene parcelScene)
+    {
+        Vector3 position;
+
+        float totalX = 0f;
+        float totalY = 0f;
+        float totalZ = 0f;
+
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+
+        foreach (Vector2Int vector in parcelScene.sceneData.parcels)
+        {
+            totalX += vector.x;
+            totalZ += vector.y;
+            if (vector.x < minX) minX = vector.x;
+            if (vector.y < minY) minY = vector.y;
+            if (vector.x > maxX) maxX = vector.x;
+            if (vector.y > maxY) maxY = vector.y;
+        }
+
+        float centerX = totalX / parcelScene.sceneData.parcels.Length;
+        float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
+
+        position.x = centerX;
+        position.y = totalY;
+        position.z = centerZ;
+
+        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
+
+        position.x += ParcelSettings.PARCEL_SIZE / 2;
+        position.z += ParcelSettings.PARCEL_SIZE / 2;
+
+        return position;
+    }
+    
     public static CatalogItem CreateFloorSceneObject()
     {
         CatalogItem floorSceneObject = new CatalogItem();
@@ -242,6 +310,45 @@ public static partial class BuilderInWorldUtils
         original.offsetMin = rectTransformToCopy.offsetMin;
         original.sizeDelta = rectTransformToCopy.sizeDelta;
         original.pivot = rectTransformToCopy.pivot;
+    }
+    
+    public static IEnumerator MakeGetCall(string url, Action<string> functionToCall)
+    {
+        UnityWebRequest www = UnityWebRequest.Get(url);
+        UnityWebRequestAsyncOperation www2 = www.SendWebRequest();
+
+        bool retry = true;
+        int retryCont = 0;
+        while (retry)
+        {
+            retry = false;
+            while (!www2.isDone)
+            {
+                yield return null;
+            }
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+                if (retryCont < BuilderInWorldSettings.RETRY_AMOUNTS)
+                {
+                    retry = true;
+                    retryCont++;
+                }
+                else
+                {
+                    yield break;
+                }
+            }
+            else
+            {
+                if (functionToCall != null)
+                {
+                    byte[] byteArray = www.downloadHandler.data;
+                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                    functionToCall?.Invoke(result);
+                }
+            }
+        }
     }
 
     public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)

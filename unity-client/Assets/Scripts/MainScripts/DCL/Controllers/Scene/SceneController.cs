@@ -532,7 +532,7 @@ namespace DCL
 
         public void ActivateBuilderInWorldEditScene()
         {
-            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
+            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_BIW());
         }
 
         public void DeactivateBuilderInWorldEditScene()

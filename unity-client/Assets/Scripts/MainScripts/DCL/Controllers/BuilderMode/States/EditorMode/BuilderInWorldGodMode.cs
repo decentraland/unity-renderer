@@ -15,26 +15,27 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+    public float snapDragFactor = 5f;
 
     [Header("Scenes References")]
     public FreeCameraMovement freeCameraController;
-
+    public CameraController cameraController;
+    public Transform lookAtT;
+    public MouseCatcher mouseCatcher;
+    public PlayerAvatarController avatarRenderer;
+    
+    [Header("Prefab References")]
     public DCLBuilderGizmoManager gizmoManager;
     public VoxelController voxelController;
     public BuilderInWorldInputWrapper builderInputWrapper;
     public BIWOutlinerController outlinerController;
-    public BuilderInWorldController buildModeController;
-    public CameraController cameraController;
-    public Transform lookAtT;
-    public MouseCatcher mouseCatcher;
-
+    
     [Header("InputActions")]
     [SerializeField]
     internal InputAction_Trigger focusOnSelectedEntitiesInputAction;
 
     [SerializeField]
     internal InputAction_Hold squareMultiSelectionInputAction;
-
 
     ParcelScene sceneToEdit;
 
@@ -209,11 +210,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    public void SetActivateCamera(bool shouldActivate)
-    {
-        activateCamera = shouldActivate;
-    }
-
     private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
         if (buttonId != 0 ||
@@ -225,10 +221,22 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (canDragSelectedEntities)
         {
+            Vector3 destination;
             Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
-            Vector3 direction = currentPoint - dragStartedPoint;
 
-            editionGO.transform.position += direction;
+
+            if (isSnapActive)
+            {
+                currentPoint.x = Mathf.Round(currentPoint.x/snapDragFactor)*snapDragFactor;
+                currentPoint.z = Mathf.Round(currentPoint.z/snapDragFactor)*snapDragFactor;
+                destination = currentPoint;
+            }
+            else
+            {
+                destination = currentPoint - dragStartedPoint + editionGO.transform.position;
+            }
+
+            editionGO.transform.position = destination;
             dragStartedPoint = currentPoint;
         }
     }
@@ -253,7 +261,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         dragStartedPoint = GetFloorPointAtMouse(position);
 
-        if (!squareMultiSelectionButtonPressed)
+        if (!squareMultiSelectionButtonPressed || isPlacingNewObject)
             return;
 
         isDoingSquareMultiSelection = true;
@@ -285,7 +293,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void EndDraggingSelectedEntities()
     {
-        if (wasGizmosActive)
+        if (wasGizmosActive && !isPlacingNewObject)
         {
             gizmoManager.ShowGizmo();
         }
@@ -298,7 +306,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         canDragSelectedEntities = false;
     }
 
-    public void EndBoundMultiSelection()
+    private void EndBoundMultiSelection()
     {
         isDoingSquareMultiSelection = false;
         mousePressed = false;
@@ -359,6 +367,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         RenderSettings.fog = false;
         gizmoManager.HideGizmo();
         editionGO.transform.SetParent(null);
+        avatarRenderer.SetAvatarVisibility(false);
     }
 
     public void ActivateCamera(ParcelScene parcelScene)
@@ -393,6 +402,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         gizmoManager.HideGizmo();
         RenderSettings.fog = true;
+        avatarRenderer.SetAvatarVisibility(true);
     }
 
     public override void StartMultiSelection()
@@ -457,9 +467,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.EntityDeselected(entityDeselected);
         if (selectedEntities.Count <= 0)
             gizmoManager.HideGizmo();
-
-        if (isPlacingNewObject && !entityDeselected.HasShape())
-            builderInWorldEntityHandler.DeleteEntity(entityDeselected);
 
         isPlacingNewObject = false;
         DesactivateVoxelMode();
@@ -597,47 +604,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void SetLookAtObject(ParcelScene parcelScene)
     {
-        Vector3 middlePoint = CalculatePointToLookAt(parcelScene);
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
 
         lookAtT.position = middlePoint;
-    }
-
-    Vector3 CalculatePointToLookAt(ParcelScene parcelScene)
-    {
-        Vector3 position;
-
-        float totalX = 0f;
-        float totalY = 0f;
-        float totalZ = 0f;
-
-        int minX = int.MaxValue;
-        int minY = int.MaxValue;
-        int maxX = int.MinValue;
-        int maxY = int.MinValue;
-
-        foreach (Vector2Int vector in parcelScene.sceneData.parcels)
-        {
-            totalX += vector.x;
-            totalZ += vector.y;
-            if (vector.x < minX) minX = vector.x;
-            if (vector.y < minY) minY = vector.y;
-            if (vector.x > maxX) maxX = vector.x;
-            if (vector.y > maxY) maxY = vector.y;
-        }
-
-        float centerX = totalX / parcelScene.sceneData.parcels.Length;
-        float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
-
-        position.x = centerX;
-        position.y = totalY;
-        position.z = centerZ;
-
-        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
-
-        position.x += ParcelSettings.PARCEL_SIZE / 2;
-        position.z += ParcelSettings.PARCEL_SIZE / 2;
-
-        return position;
     }
 
     void SetEditObjectAtMouse()
@@ -647,7 +616,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, groundLayer))
         {
-            editionGO.transform.position = hit.point;
+            Vector3 destination = hit.point;
+            if (isSnapActive)
+            {
+                destination.x = Mathf.Round(destination.x / snapDragFactor) * snapDragFactor;
+                destination.z = Mathf.Round(destination.z / snapDragFactor) * snapDragFactor;
+            }
+            
+            editionGO.transform.position = destination;
+            
             if (selectedEntities.Count > 0 && selectedEntities[0].isNFT) editionGO.transform.position += Vector3.up * 2f;
         }
     }

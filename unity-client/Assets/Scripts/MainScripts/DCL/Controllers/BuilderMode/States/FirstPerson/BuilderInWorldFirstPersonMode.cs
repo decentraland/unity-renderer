@@ -19,15 +19,15 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     [SerializeField] internal InputAction_Hold rotationHold;
 
 
-    Quaternion initialRotation;
+    private Quaternion initialRotation;
 
-    float currentScaleAdded, currentYRotationAdded;
+    private float currentScaleAdded, currentYRotationAdded;
 
-    bool snapObjectAlreadyMoved = false,shouldRotate = false;
-    Transform originalParentGOEdit;
+    private bool snapObjectAlreadyMoved = false,shouldRotate = false;
+    private Transform originalParentGOEdit;
 
-    InputAction_Hold.Started rotationHoldStartDelegate;
-    InputAction_Hold.Finished rotationHoldFinishedDelegate;
+    private InputAction_Hold.Started rotationHoldStartDelegate;
+    private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
     private void Start()
     {
@@ -54,9 +54,8 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         {
             if (snapObjectAlreadyMoved)
             {
-
                 Vector3 objectPosition = snapGO.transform.position;
-                Vector3 eulerRotation = snapGO.transform.rotation.eulerAngles;
+                Vector3 eulerRotation =  snapGO.transform.rotation.eulerAngles;
 
                 float currentSnapFactor = snapFactor;
 
@@ -68,17 +67,14 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
                 Quaternion destinationRotation = Quaternion.AngleAxis(currentYRotationAdded, Vector3.up);
                 editionGO.transform.rotation = initialRotation * destinationRotation;
                 editionGO.transform.position = objectPosition;
-
             }
             else if (Vector3.Distance(snapGO.transform.position, editionGO.transform.position) >= snapDistanceToActivateMovement)
             {
                 BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
-
-
+                
                 snapObjectAlreadyMoved = true;
                 SetEditObjectParent();
             }
-
         }
         else
         {
@@ -306,6 +302,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         currentYRotationAdded += angleToRotate;
         editionGO.transform.Rotate(Vector3.up, angleToRotate);
         snapGO.transform.Rotate(Vector3.up, angleToRotate);
+        snapGO.transform.rotation = Quaternion.Euler(BuilderInWorldUtils.SnapFilterEulerAngles(snapGO.transform.rotation.eulerAngles, snapRotationDegresFactor));
     }
 
     void ScaleSelection(float scaleFactor)
