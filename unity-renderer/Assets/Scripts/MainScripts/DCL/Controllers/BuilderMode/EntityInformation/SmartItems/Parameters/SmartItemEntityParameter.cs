@@ -4,30 +4,36 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class SmartItemEntityParameter : SmartItemUIParameterAdapter
+public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityListHandler
 {
     public TMP_Dropdown dropDown;
 
-    const string parameterType = "entity";
+    private List<DCLBuilderInWorldEntity> entitiesList;
 
-    List<DCLBuilderInWorldEntity> entitiesList;
+    private Dictionary<DCLBuilderInWorldEntity, Sprite> entitySpriteDict = new Dictionary<DCLBuilderInWorldEntity, Sprite>();
+    private Dictionary<string, DCLBuilderInWorldEntity> entityPromiseKeeperDict = new Dictionary<string, DCLBuilderInWorldEntity>();
 
-    public override void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
+    private void Start()
     {
-        base.SetEntityList(entitiesList);
+        dropDown.onValueChanged.AddListener(OnValueChange);
+    }
 
+    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
+    {
         this.entitiesList = entitiesList;
     }
 
-    public override void SetParameter(SmartItemParameter parameter)
+    public override void SetInfo()
     {
-        base.SetParameter(parameter);
-
-        if (parameter.type != parameterType)
-            return;
+        base.SetInfo();
 
         GenerateDropdownContent();
+        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        {
+            GetThumbnail(entity);
+        }
     }
 
     void GenerateDropdownContent()
@@ -35,22 +41,32 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter
         dropDown.ClearOptions();
 
         dropDown.options = new List<TMP_Dropdown.OptionData>();
-
-        var item = new TMP_Dropdown.OptionData();
-     
-
-        List<string> optionsLabelList = new List<string>();
+      
+        List<TMP_Dropdown.OptionData> optionsList = new List<TMP_Dropdown.OptionData>();
         foreach (DCLBuilderInWorldEntity entity in entitiesList)
         {
-            optionsLabelList.Add(entity.GetDescriptiveName());
+            var item = new TMP_Dropdown.OptionData();
+            item.text = entity.GetDescriptiveName();
+            if (entitySpriteDict.ContainsKey(entity))
+                item.image = entitySpriteDict[entity];
+            optionsList.Add(item);
         }
 
-        dropDown.AddOptions(optionsLabelList);
+        dropDown.AddOptions(optionsList);
+
+
+        string value = (string)GetParameterValue();
+
+        for (int i = 0; i < entitiesList.Count; i++)
+        {
+            if (entitiesList[i].rootEntity.entityId == value)
+                dropDown.SetValueWithoutNotify(i);
+        }
     }
 
     private void GetThumbnail(DCLBuilderInWorldEntity entity)
     {
-        var url = entity.GetSceneObjectAssociated()?.GetComposedThumbnailUrl();
+        var url = entity.GetCatalogItemAssociated()?.thumbnailURL;
 
         if (string.IsNullOrEmpty(url))
             return;
@@ -58,7 +74,9 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter
         string newLoadedThumbnailURL = url;
         var newLoadedThumbnailPromise = new AssetPromise_Texture(url);
 
-
+        string promiseId = newLoadedThumbnailPromise.GetId().ToString();
+        if (!entityPromiseKeeperDict.ContainsKey(promiseId))
+            entityPromiseKeeperDict.Add(promiseId, entity);
         newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
         newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
 
@@ -67,6 +85,21 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter
 
     public void SetThumbnail(Asset_Texture texture)
     {
-        //TODO: Implement the Image of the entity for the dropdown
+        if (!entityPromiseKeeperDict.ContainsKey(texture.id.ToString()))
+            return;
+
+        Vector2 pivot = new Vector2(0.5f, 0.5f);
+        Sprite spriteToUse = Sprite.Create(texture.texture, new Rect(0, 0, texture.width, texture.height), pivot);
+        entitySpriteDict.Add(entityPromiseKeeperDict[texture.id.ToString()], spriteToUse);
+        GenerateDropdownContent();
+    }
+
+    private void OnValueChange(int currentIndex)
+    {
+        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        {
+            if (entity.GetDescriptiveName() == dropDown.options[currentIndex].text)
+                SetParameterValue(entity.rootEntity.entityId);
+        }
     }
 }

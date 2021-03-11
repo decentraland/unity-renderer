@@ -118,6 +118,7 @@ namespace DCL.Rendering
             CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerUnityPositionChange;
             MeshesInfo.OnAnyUpdated -= MarkDirty;
             StopInternal();
+            ResetObjects();
         }
 
         public void StopInternal()
@@ -160,6 +161,7 @@ namespace DCL.Rendering
                     continue;
 
                 bool rendererIsInIgnoreLayer = ((1 << r.gameObject.layer) & settings.ignoredLayersMask) != 0;
+
                 if (rendererIsInIgnoreLayer)
                 {
                     SetCullingForRenderer(r, true, true);
@@ -188,7 +190,21 @@ namespace DCL.Rendering
                 bool shouldBeVisible = TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
                 bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
-                SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
+                if (r is SkinnedMeshRenderer skr)
+                {
+                    Material mat = skr.sharedMaterial;
+                    bool isAvatarRenderer = false;
+
+                    if (mat != null && mat.shader != null)
+                        isAvatarRenderer = mat.shader.name == "DCL/Toon Shader";
+
+                    if (isAvatarRenderer)
+                    {
+                        shouldHaveShadow &= TestAvatarShadowRule(profile, distance);
+                    }
+
+                    skr.updateWhenOffscreen = TestSkinnedRendererOffscreenRule(settings, distance);
+                }
 
                 if (OnDataReport != null)
                 {
@@ -199,10 +215,7 @@ namespace DCL.Rendering
                         shadowlessRenderers.Add(r);
                 }
 
-                if (r is SkinnedMeshRenderer skr)
-                {
-                    skr.updateWhenOffscreen = TestSkinnedRendererOffscreenRule(settings, distance);
-                }
+                SetCullingForRenderer(r, shouldBeVisible, shouldHaveShadow);
 #if UNITY_EDITOR
                 DrawDebugGizmos(shouldBeVisible, bounds, boundingPoint);
 #endif
@@ -330,17 +343,17 @@ namespace DCL.Rendering
             var renderers = objectsTracker.GetRenderers();
             var animations = objectsTracker.GetAnimations();
 
-            for (var i = 0; i < skinnedRenderers.Length; i++)
+            for (var i = 0; i < skinnedRenderers?.Length; i++)
             {
                 skinnedRenderers[i].updateWhenOffscreen = true;
             }
 
-            for (var i = 0; i < animations.Length; i++)
+            for (var i = 0; i < animations?.Length; i++)
             {
                 animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
             }
 
-            for (var i = 0; i < renderers.Length; i++)
+            for (var i = 0; i < renderers?.Length; i++)
             {
                 renderers[i].forceRenderingOff = false;
             }

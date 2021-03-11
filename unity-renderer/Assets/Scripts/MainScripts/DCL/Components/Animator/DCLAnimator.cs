@@ -1,15 +1,16 @@
-﻿using DCL.Models;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
+using DCL.Controllers;
 
 namespace DCL.Components
 {
     public class DCLAnimator : BaseComponent
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             [System.Serializable]
             public class DCLAnimationState
@@ -33,9 +34,12 @@ namespace DCL.Components
             }
 
             public DCLAnimationState[] states;
-        }
 
-        public Model model = new Model();
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
+        }
 
         [System.NonSerialized]
         public Animation animComponent = null;
@@ -44,30 +48,29 @@ namespace DCL.Components
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
+        private void Awake()
+        {
+            model = new Model();
+        }
+
         private void OnDestroy()
         {
             entity.OnShapeUpdated -= OnComponentUpdated;
         }
 
-        public override object GetModel()
+        public override IEnumerator ApplyChanges(BaseModel model)
         {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Utils.SafeFromJson<Model>(newJson);
-
-            //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
-            if (newJson == "{}")
-                return null;
-
             entity.OnShapeUpdated -= OnComponentUpdated;
             entity.OnShapeUpdated += OnComponentUpdated;
 
             UpdateAnimationState();
 
             return null;
+        }
+
+        new public Model GetModel()
+        {
+            return (Model)model;
         }
 
         private void OnComponentUpdated(DecentralandEntity e)
@@ -111,6 +114,8 @@ namespace DCL.Components
 
             if (clipNameToClip.Count == 0 || animComponent == null)
                 return;
+
+            Model model = (Model)this.model;
 
             if (model.states == null || model.states.Length == 0)
                 return;
@@ -168,6 +173,8 @@ namespace DCL.Components
 
         public Model.DCLAnimationState GetStateByString(string stateName)
         {
+            Model model = (Model)this.model;
+
             for (var i = 0; i < model.states.Length; i++)
             {
                 if (model.states[i].name == stateName)
@@ -177,6 +184,11 @@ namespace DCL.Components
             }
 
             return null;
+        }
+
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.ANIMATOR;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace DCL.Components
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
 
         [System.Serializable]
-        new public class Model
+        new public class Model : BaseModel
         {
             public string videoClipId;
             public bool playing = false;
@@ -29,9 +29,12 @@ namespace DCL.Components
             public float seek = -1;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
+            
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
-
-        new protected internal Model model;
 
         internal WebVideoPlayer texturePlayer;
         private Coroutine texturePlayerUpdateRoutine;
@@ -45,21 +48,21 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture(ParcelScene scene) : base(scene)
+        public DCLVideoTexture(IParcelScene scene) : base(scene)
         {
             model = new Model();
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
             //If the scene creates and destroy the component before our renderer has been turned on bad things happen!
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
-            if(isDisposed)
+            if (isDisposed)
                 yield break;
 
-            model = Utils.SafeFromJson<Model>(newJson);
+            var model = (Model) newModel;
 
             unitySamplingMode = model.samplingMode;
 
@@ -79,6 +82,7 @@ namespace DCL.Components
             if (texturePlayer == null)
             {
                 DCLVideoClip dclVideoClip = scene.GetSharedComponent(model.videoClipId) as DCLVideoClip;
+
                 if (dclVideoClip == null)
                 {
                     Debug.LogError("Wrong video clip type when playing VideoTexture!!");
@@ -150,6 +154,11 @@ namespace DCL.Components
                 texturePlayer.SetPlaybackRate(model.playbackRate);
                 texturePlayer.SetLoop(model.loop);
             }
+        }
+
+        public float GetVolume()
+        {
+            return ((Model)model).volume;
         }
 
         private bool HasTexturePropertiesChanged()
@@ -246,7 +255,7 @@ namespace DCL.Components
             if (scene == null) return false;
             if (string.IsNullOrEmpty(currentSceneId)) return false;
 
-            return scene.sceneData.id == currentSceneId;
+            return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
         }
 
         private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
@@ -462,7 +471,7 @@ namespace DCL.Components
 
             bool MaterialInfo.IsVisible()
             {
-                if (!shape.model.visible) return false;
+                if (!((UIShape.Model)shape.GetModel()).visible) return false;
                 return IsParentVisible(shape);
             }
 

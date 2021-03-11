@@ -5,10 +5,14 @@ using UnityEngine;
 namespace DCL.Models
 {
     [Serializable]
-    public struct CreateUISceneMessage
+    public struct CreateGlobalSceneMessage
     {
         public string id;
+        public string name;
         public string baseUrl;
+        public List<ContentServerUtils.MappingPair> contents;
+        public string icon;
+        public bool isPortableExperience;
     }
 
     [Serializable]

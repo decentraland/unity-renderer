@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CatalogAssetPackListView : ListView<SceneAssetPack>
+public class CatalogAssetPackListView : ListView<CatalogItemPack>
 {
     public GameObject categoryListView;
     public GameObject assetPackListView;
@@ -10,7 +10,7 @@ public class CatalogAssetPackListView : ListView<SceneAssetPack>
     public Transform categoryContentTransform;
     public CatalogAssetPackAdapter categoryAssetPackItemAdapterPrefab;
     public CatalogAssetPackAdapter catalogAssetPackItemAdapterPrefab;
-    public System.Action<SceneAssetPack> OnSceneAssetPackClick;
+    public System.Action<CatalogItemPack> OnCatalogPackClick;
 
 
     bool useAssetPackStyle = true;
@@ -38,11 +38,11 @@ public class CatalogAssetPackListView : ListView<SceneAssetPack>
         if (contentPanelTransform == null)
             return;
 
-        foreach (SceneAssetPack sceneAssetPack in contentList)
+        foreach (CatalogItemPack catalogItemPack in contentList)
         {
             CatalogAssetPackAdapter adapter = Instantiate(prefabToUse, transformToUse).GetComponent<CatalogAssetPackAdapter>();
-            adapter.SetContent(sceneAssetPack);
-            adapter.OnSceneAssetPackClick += SceneAssetPackClick;
+            adapter.SetContent(catalogItemPack);
+            adapter.OnCatalogItemPackClick += SceneAssetPackClick;
         }
     }
 
@@ -69,8 +69,8 @@ public class CatalogAssetPackListView : ListView<SceneAssetPack>
         useAssetPackStyle = true;
     }
 
-    void SceneAssetPackClick(SceneAssetPack sceneAssetPack)
+    void SceneAssetPackClick(CatalogItemPack sceneAssetPack)
     {
-        OnSceneAssetPackClick?.Invoke(sceneAssetPack);
+        OnCatalogPackClick?.Invoke(sceneAssetPack);
     }
 }

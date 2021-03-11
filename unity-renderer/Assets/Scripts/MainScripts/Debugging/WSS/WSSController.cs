@@ -138,7 +138,9 @@ namespace DCL
         public bool allWearables = false;
         public bool testWearables = false;
         public bool enableTutorial = false;
+        public bool builderInWorld = false;
         public bool soloScene = true;
+        public bool questsEnabled = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
 
@@ -156,7 +158,7 @@ namespace DCL
             }
 
 #if UNITY_EDITOR
-            DCL.DataStore.debugConfig.isWssDebugMode = true;
+            DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
@@ -213,6 +215,16 @@ namespace DCL
                 if (soloScene)
                 {
                     debugString += "LOS=0&";
+                }
+
+                if (builderInWorld)
+                {
+                    debugString += "ENABLE_BUILDER_IN_WORLD&";
+                }
+
+                if (questsEnabled)
+                {
+                    debugString += "QUESTS_ENABLED&";
                 }
 
                 string debugPanelString = "";
@@ -290,8 +302,8 @@ namespace DCL
                             case "Reset":
                                 DCL.Environment.i.world.sceneController.UnloadAllScenesQueued();
                                 break;
-                            case "CreateUIScene":
-                                DCL.Environment.i.world.sceneController.CreateUIScene(msg.payload);
+                            case "CreateGlobalScene":
+                                DCL.Environment.i.world.sceneController.CreateGlobalScene(msg.payload);
                                 break;
                             case "BuilderReady":
                                 Main.i.BuilderReady();
@@ -386,11 +398,11 @@ namespace DCL
                             case "SetBuilderConfiguration":
                                 GetBuilderBridge()?.SetBuilderConfiguration(msg.payload);
                                 break;
-                            case "AddWearableToCatalog":
-                                CatalogController.i?.AddWearableToCatalog(msg.payload);
-                                break;
                             case "AddWearablesToCatalog":
                                 CatalogController.i?.AddWearablesToCatalog(msg.payload);
+                                break;
+                            case "WearablesRequestFailed":
+                                CatalogController.i?.WearablesRequestFailed(msg.payload);
                                 break;
                             case "RemoveWearablesFromCatalog":
                                 CatalogController.i?.RemoveWearablesFromCatalog(msg.payload);
@@ -470,6 +482,9 @@ namespace DCL
                                 break;
                             case "SetKernelConfiguration":
                             case "UpdateRealmsInfo":
+                            case "InitializeQuests":
+                            case "UpdateQuestProgress":
+                            case "SetENSOwnerQueryResult":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "SetDisableAssetBundles":

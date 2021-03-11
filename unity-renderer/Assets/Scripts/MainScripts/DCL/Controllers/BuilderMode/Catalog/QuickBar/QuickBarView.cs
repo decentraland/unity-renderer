@@ -12,7 +12,7 @@ public class QuickBarView : MonoBehaviour
 
 
     public event System.Action<int> OnQuickBarShortcutSelected;
-    public event System.Action<SceneObject, int> OnQuickBarAdd;
+    public event System.Action<CatalogItem, int> OnQuickBarAdd;
 
     [SerializeField] internal InputAction_Trigger quickBar1InputAction;
     [SerializeField] internal InputAction_Trigger quickBar2InputAction;
@@ -61,25 +61,25 @@ public class QuickBarView : MonoBehaviour
 
     public void SceneObjectDropped(BaseEventData data)
     {
-        CatalogItemAdapter adapter = catalogGroupListView.GetLastSceneObjectDragged();
-        SceneObject sceneObject = adapter.GetContent();
+        CatalogItemAdapter adapter = catalogGroupListView.GetLastCatalogItemDragged();
+        CatalogItem catalogItem = adapter.GetContent();
 
-        Texture texture = null;
         if (adapter.thumbnailImg.enabled)
         {
-            texture = adapter.thumbnailImg.texture;
-            SetQuickBarShortcut(sceneObject, lastIndexDroped, texture);
+            Texture texture = adapter.thumbnailImg.texture;
+            SetQuickBarShortcut(catalogItem, lastIndexDroped, texture);
         }
     }
 
-    void SetQuickBarShortcut(SceneObject sceneObject, int index, Texture texture)
+    private void SetQuickBarShortcut(CatalogItem catalogItem, int index, Texture texture)
     {
-        OnQuickBarAdd?.Invoke(sceneObject, index);
+        OnQuickBarAdd?.Invoke(catalogItem, index);
      
         if (index >= shortcutsImgs.Length)
             return;
 
-        shortcutsImgs[index].SetTexture(texture);
+        if(shortcutsImgs[index] != null && texture != null)
+            shortcutsImgs[index].SetTexture(texture);
     }
 
     public void QuickBarInput(int quickBarSlot)

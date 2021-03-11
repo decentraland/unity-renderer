@@ -326,7 +326,7 @@ namespace Builder
                 using (var iterator = worldState.loadedScenes.GetEnumerator())
                 {
                     iterator.MoveNext();
-                    loadedScene = iterator.Current.Value;
+                    loadedScene = iterator.Current.Value as ParcelScene;
                 }
             }
 

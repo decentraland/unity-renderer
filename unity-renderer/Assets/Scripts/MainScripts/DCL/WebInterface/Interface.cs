@@ -543,6 +543,34 @@ namespace DCL.Interface
             public string value;
         }
 
+        [System.Serializable]
+        public class KillPortableExperiencePayload
+        {
+            public string portableExperienceId;
+        }
+
+        [System.Serializable]
+        public class WearablesRequestFiltersPayload
+        {
+            public string ownedByUser;
+            public string[] wearableIds;
+            public string[] collectionIds;
+        }
+
+        [System.Serializable]
+        public class RequestWearablesPayload
+        {
+            public WearablesRequestFiltersPayload filters;
+            public string context;
+        }
+
+        [System.Serializable]
+        public class SearchENSOwnerPayload
+        {
+            public string name;
+            public int maxResults;
+        }
+
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
@@ -622,6 +650,9 @@ namespace DCL.Interface
         private static StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
         private static CloseUserAvatarPayload closeUserAvatarPayload = new CloseUserAvatarPayload();
         private static StringPayload stringPayload = new StringPayload();
+        private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
+        private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
+        private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -1159,6 +1190,38 @@ namespace DCL.Interface
         {
             closeUserAvatarPayload.isSignUpFlow = isSignUpFlow;
             SendMessage("CloseUserAvatar", closeUserAvatarPayload);
+        }
+
+        public static void KillPortableExperience(string portableExperienceId)
+        {
+            killPortableExperiencePayload.portableExperienceId = portableExperienceId;
+            SendMessage("KillPortableExperience", killPortableExperiencePayload);
+        }
+
+        public static void RequestWearables(
+            string ownedByUser,
+            string[] wearableIds,
+            string[] collectionIds,
+            string context)
+        {
+            requestWearablesPayload.filters = new WearablesRequestFiltersPayload
+            {
+                ownedByUser = ownedByUser,
+                wearableIds = wearableIds,
+                collectionIds = collectionIds
+            };
+
+            requestWearablesPayload.context = context;
+
+            SendMessage("RequestWearables", requestWearablesPayload);
+        }
+
+        public static void SearchENSOwner(string name, int maxResults)
+        {
+            searchEnsOwnerPayload.name = name;
+            searchEnsOwnerPayload.maxResults = maxResults;
+            
+            SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
     }
 }

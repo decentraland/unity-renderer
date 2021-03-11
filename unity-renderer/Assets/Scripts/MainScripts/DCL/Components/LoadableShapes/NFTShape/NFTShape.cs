@@ -12,17 +12,23 @@ namespace DCL.Components
         {
             public Color color = new Color(0.6404918f, 0.611472f, 0.8584906f); // "light purple" default, same as in explorer
             public int style = 0;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public override string componentName => "NFT Shape";
 
-        public NFTShape(ParcelScene scene) : base(scene)
+        public NFTShape(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.NFT_SHAPE;
+            return (int) CLASS_ID.NFT_SHAPE;
         }
 
         protected override void AttachShape(DecentralandEntity entity)

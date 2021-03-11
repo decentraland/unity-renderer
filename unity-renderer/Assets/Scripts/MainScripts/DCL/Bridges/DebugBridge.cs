@@ -1,5 +1,6 @@
 ﻿using System;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -40,10 +41,11 @@ namespace DCL
             bool prevLogValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
 
-            foreach (var scene in DCL.Environment.i.world.state.loadedScenes)
+            foreach (var kvp in DCL.Environment.i.world.state.loadedScenes)
             {
-                Debug.Log("Dumping state for scene: " + scene.Value.sceneData.id);
-                scene.Value.GetWaitingComponentsDebugInfo();
+                ParcelScene scene = kvp.Value as ParcelScene;
+                Debug.Log("Dumping state for scene: " + kvp.Value.sceneData.id);
+                scene.GetWaitingComponentsDebugInfo();
             }
 
             Debug.unityLogger.logEnabled = prevLogValue;

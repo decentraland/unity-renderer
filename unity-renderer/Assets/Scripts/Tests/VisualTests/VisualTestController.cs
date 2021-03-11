@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Helpers;
 using System.Collections;
+using DCL.Controllers;
 using UnityEngine;
 
 public class VisualTestController : MonoBehaviour
@@ -46,7 +47,7 @@ public class VisualTestController : MonoBehaviour
 
         yield return null;
 
-        var scene = Environment.i.world.state.loadedScenes["0,0"];
+        var scene = Environment.i.world.state.loadedScenes["0,0"] as ParcelScene;
         string textureUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png";
 
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),
@@ -102,9 +103,9 @@ public class VisualTestController : MonoBehaviour
 
     IEnumerator TakeSnapshots()
     {
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_1.png", new Vector3(10f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_2.png", new Vector3(0f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_3.png", new Vector3(-10f, 10f, 0f), Vector3.zero);
-        yield return VisualTestHelpers.TakeSnapshot("snapshot_4.png", new Vector3(0f, 10f, -10f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_1.png", new Vector3(10f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_2.png", new Vector3(0f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_3.png", new Vector3(-10f, 10f, 0f), Vector3.zero);
+        yield return VisualTestHelpers.TakeSnapshotOrTest("snapshot_4.png", new Vector3(0f, 10f, -10f), Vector3.zero);
     }
 }

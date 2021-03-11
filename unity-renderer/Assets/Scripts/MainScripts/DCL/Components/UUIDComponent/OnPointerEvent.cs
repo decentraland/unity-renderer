@@ -23,7 +23,7 @@ namespace DCL.Components
 
         public OnPointerEventColliders pointerEventColliders { get; private set; }
 
-        public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
+        public override void Setup(IParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
             if (entity == null) return;
 

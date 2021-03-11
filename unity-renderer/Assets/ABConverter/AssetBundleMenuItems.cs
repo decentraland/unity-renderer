@@ -1,11 +1,20 @@
+using System;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using DCL.ABConverter;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityGLTF;
 using static DCL.ContentServerUtils;
+using Utils = DCL.Helpers.Utils;
+
+namespace DCL.ABConverter
+{
+}
 
 namespace DCL
 {
@@ -92,10 +101,24 @@ namespace DCL
             builder.Convert(avatarItemList);
         }
 
+
+        [MenuItem("Decentraland/Start Visual Tests")]
+        public static void StartVisualTests()
+        {
+            EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets());
+
+        }
+
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Zone -110,-110")]
         public static void DumpZoneArea()
         {
             ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
+        }
+
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Tominoya Casino")]
+        public static void DumpTominoyaCasino()
+        {
+            ABConverter.Client.DumpArea(new Vector2Int(-119, 135), new Vector2Int(1, 1));
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]

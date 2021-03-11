@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Color = UnityEngine.Color;
@@ -25,12 +26,18 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public string OnChanged;
+            
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public override string referencesContainerPrefabName => "UIScrollRect";
 
-        public UIScrollRect(ParcelScene scene) : base(scene)
+        public UIScrollRect(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -82,7 +89,7 @@ namespace DCL.Components
         }
 
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             UIScrollRectRefContainer rc = referencesContainer;
 

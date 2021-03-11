@@ -13,7 +13,7 @@ namespace DCL.Helpers
         public static string baselineImagesPath =
             Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
 
-        private static bool generateBaseline = false;
+        public static bool generateBaseline = false;
         public static string currentTestName;
         public static int snapshotIndex;
 
@@ -27,29 +27,22 @@ namespace DCL.Helpers
         /// <summary>
         /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
         /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
-        /// 
+        ///
         /// Snapshot name will be generated dinamically using the name set in InitVisualTestsScene() and an static counter.
         /// </summary>
         /// <param name="shotPosition">camera will be placed here.</param>
         /// <param name="shotTarget">camera will point towards here.</param>
         public static IEnumerator TakeSnapshot(Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
-            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", shotPosition, shotTarget);
+            yield return TakeSnapshotOrTest(currentTestName + "_" + snapshotIndex + ".png", shotPosition, shotTarget);
             snapshotIndex++;
         }
 
-        /// <summary>
-        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
-        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
-        /// </summary>
-        /// <param name="snapshotName">name used for saving the visual test file</param>
-        /// <param name="shotPosition">camera will be placed here.</param>
-        /// <param name="shotTarget">camera will point towards here.</param>
-        public static IEnumerator TakeSnapshot(string snapshotName, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        public static IEnumerator TakeSnapshot(string snapshotName, Camera camera, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
             if (shotPosition.HasValue || shotTarget.HasValue)
             {
-                RepositionVisualTestsCamera(shotPosition, shotTarget);
+                RepositionVisualTestsCamera(camera, shotPosition, shotTarget);
             }
 
             yield return null;
@@ -60,18 +53,44 @@ namespace DCL.Helpers
 
             if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
             {
-                yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera,
+                yield return TakeSnapshot(baselineImagesPath, snapshotName, camera,
                     snapshotsWidth, snapshotsHeight);
             }
             else
             {
-                yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
-
-                float ratio =
-                    ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
-                Assert.IsTrue(ratio > TestSettings.VISUAL_TESTS_APPROVED_AFFINITY,
-                    $"{snapshotName} has {ratio}% affinity, the minimum is {TestSettings.VISUAL_TESTS_APPROVED_AFFINITY}%. A diff image has been generated. Check it out at {testImagesPath}");
+                yield return TakeSnapshot(testImagesPath, snapshotName, camera, snapshotsWidth, snapshotsHeight);
             }
+        }
+
+        /// <summary>
+        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
+        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
+        /// </summary>
+        /// <param name="snapshotName">name used for saving the visual test file</param>
+        /// <param name="shotPosition">camera will be placed here.</param>
+        /// <param name="shotTarget">camera will point towards here.</param>
+        public static IEnumerator TakeSnapshotOrTest(string snapshotName, Vector3? shotPosition = null, Vector3? shotTarget = null)
+        {
+            yield return TakeSnapshot(snapshotName, VisualTestController.i.camera, shotPosition, shotTarget);
+
+            TestSnapshot(baselineImagesPath + snapshotName, testImagesPath + snapshotName, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY);
+        }
+
+        public static bool TestSnapshot(string baselineImagePathWithFilename, string testImagePathWithFilename, float ratio, bool assert = true)
+        {
+            if (generateBaseline || !File.Exists(baselineImagePathWithFilename))
+                return false;
+
+            float ratioResult =
+                ComputeImageAffinityPercentage(baselineImagePathWithFilename, testImagePathWithFilename);
+
+            if (assert)
+            {
+                Assert.IsTrue(ratioResult > ratio,
+            $"{Path.GetFileName(baselineImagePathWithFilename)} has {ratioResult}% affinity, the minimum is {ratio}%. A diff image has been generated. Check it out at {testImagesPath}");
+            }
+
+            return ratioResult > ratio;
         }
 
         /// <summary>
@@ -291,9 +310,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static void RepositionVisualTestsCamera(Vector3? position = null, Vector3? target = null)
+        public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null)
         {
-            RepositionVisualTestsCamera(VisualTestController.i.camera.transform, position, target);
+            RepositionVisualTestsCamera(camera.transform, position, target);
         }
     }
 }

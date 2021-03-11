@@ -2,23 +2,29 @@ using DCL.Helpers;
 using System.Collections;
 using DCL.Controllers;
 using UnityEngine;
+using DCL.Models;
+using System.Collections.Generic;
 
 namespace DCL.Components
 {
     public class DCLAudioSource : BaseComponent, IOutOfSceneBoundariesHandler
     {
         [System.Serializable]
-        public class Model
+        public class Model : BaseModel
         {
             public string audioClipId;
-            public bool playing;
+            public bool playing = false;
             public float volume = 1f;
             public bool loop = false;
             public float pitch = 1f;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public float playTime => audioSource.time;
-        public Model model;
         internal AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
@@ -27,6 +33,7 @@ namespace DCL.Components
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
+            model = new Model();
         }
 
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
@@ -39,12 +46,9 @@ namespace DCL.Components
             lastDCLAudioClip = dclAudioClip;
         }
 
-        public override object GetModel()
-        {
-            return model;
-        }
+        public double Volume => ((Model)model).volume;
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel baseModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
@@ -52,8 +56,6 @@ namespace DCL.Components
             //TODO: Analyze if we can catch this upstream and stop the IEnumerator
             if (isDestroyed)
                 yield break;
-
-            model = Utils.SafeFromJson<Model>(newJson);
 
             CommonScriptableObjects.sceneID.OnChange -= OnCurrentSceneChanged;
             CommonScriptableObjects.sceneID.OnChange += OnCurrentSceneChanged;
@@ -70,7 +72,9 @@ namespace DCL.Components
                 Debug.LogWarning("AudioSource is null!.");
                 return;
             }
-
+            
+            Model model = (Model) this.model;
+            audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? model.volume : 0f;
             audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
@@ -113,7 +117,13 @@ namespace DCL.Components
         {
             if (audioSource != null)
             {
-                audioSource.volume = (scene.sceneData.id == currentSceneId) ? model.volume : 0f;
+                Model model = (Model)this.model;
+                float volume = 0;
+                if ((scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience))
+                {
+                    volume = model.volume;
+                }
+                audioSource.volume = volume;
             }
         }
 
@@ -152,12 +162,17 @@ namespace DCL.Components
             {
                 audioSource.clip = clip.audioClip;
             }
-
+            Model model = (Model)this.model;
             if (audioSource.enabled && model.playing && !audioSource.isPlaying)
             {
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
             }
+        }
+
+        public override int GetClassId()
+        {
+            return (int) CLASS_ID_COMPONENT.AUDIO_SOURCE;
         }
     }
 }

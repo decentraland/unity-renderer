@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -9,16 +9,20 @@ using System.Collections.Generic;
 
 namespace DCL.Components
 {
-    public class LoadableShape : BaseShape
+    public class LoadableShape : BaseShape,IAssetCatalogReferenceHolder
     {
         [System.Serializable]
         public new class Model : BaseShape.Model
         {
             public string src;
             public string assetId;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
-        public Model model = new Model();
         protected Model previousModel = new Model();
 
         protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
@@ -47,8 +51,9 @@ namespace DCL.Components
             return result as T;
         }
 
-        public LoadableShape(ParcelScene scene) : base(scene)
+        public LoadableShape(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -56,24 +61,27 @@ namespace DCL.Components
             return -1;
         }
 
-        public override object GetModel()
-        {
-            return model;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             return null;
         }
 
         public override bool IsVisible()
         {
+            Model model = (Model)this.model;
             return model.visible;
         }
 
         public override bool HasCollisions()
         {
+            Model model = (Model)this.model;
             return model.withCollisions;
+        }
+
+        public string GetAssetId()
+        {
+            Model model = (Model)this.model;
+            return model.assetId;
         }
     }
 
@@ -81,11 +89,11 @@ namespace DCL.Components
         where LoadWrapperType : LoadWrapper, new()
         where LoadWrapperModelType : LoadableShape.Model, new()
     {
-
         private bool isLoaded = false;
         private bool failed = false;
         private event Action<BaseDisposable> OnReadyCallbacks;
         public System.Action<DecentralandEntity> OnEntityShapeUpdated;
+
         new public LoadWrapperModelType model
         {
             get
@@ -110,21 +118,28 @@ namespace DCL.Components
             set { base.previousModel = value; }
         }
 
-        public LoadableShape(ParcelScene scene) : base(scene)
+        public LoadableShape(IParcelScene scene) : base(scene)
         {
             OnDetach += DetachShape;
             OnAttach += AttachShape;
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            previousModel = model;
-            model = Utils.SafeFromJson<LoadWrapperModelType>(newJson);
+           
+            LoadWrapperModelType model = (LoadWrapperModelType) newModel;
 
-            bool updateVisibility = previousModel.visible != model.visible;
-            bool updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
-            bool triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
-                                     (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
+            bool updateVisibility = true;
+            bool updateCollisions = true;
+            bool triggerAttachment = true;
+
+            if (previousModel != null)
+            {
+                updateVisibility = previousModel.visible != model.visible;
+                updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
+                triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
+                                         (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
+            }
 
             foreach (var entity in attachedEntities)
             {
@@ -139,7 +154,7 @@ namespace DCL.Components
 
                 entity.OnShapeUpdated?.Invoke(entity);
             }
-
+            previousModel = model;
             return null;
         }
 
@@ -148,7 +163,7 @@ namespace DCL.Components
             ContentProvider provider = null;
 
             if (!string.IsNullOrEmpty(model.assetId))
-                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(model.assetId);
+                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(model.assetId);
 
             if (provider == null)
                 provider = scene.contentProvider;
@@ -168,7 +183,7 @@ namespace DCL.Components
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
-                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);               
+                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
             {
@@ -237,7 +252,7 @@ namespace DCL.Components
 
             entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
 
-            var model = (entity.meshesInfo.currentShape as LoadableShape).model;
+            var model = (Model) (entity.meshesInfo.currentShape as LoadableShape).GetModel();
             ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
 
             ConfigureColliders(entity);

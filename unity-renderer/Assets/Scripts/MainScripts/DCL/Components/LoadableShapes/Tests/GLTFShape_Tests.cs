@@ -73,7 +73,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
 
         LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF)gltfShape;
-        ContentProvider customContentProvider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneAsetPackCatalog(mockupAssetId);
+        ContentProvider customContentProvider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
         Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
         Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
         Assert.AreEqual(mockupValue, gltfWrapper.customContentProvider.contents[0].hash);

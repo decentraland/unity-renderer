@@ -8,35 +8,37 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
 {
     public TextMeshProUGUI categoryTxt;
     public GameObject categoryContentGO;
-    public System.Action<SceneObject> OnSceneObjectClicked;
-    public System.Action<SceneObject, CatalogItemAdapter> OnSceneObjectFavorite;
-    public System.Action<SceneObject, CatalogItemAdapter, BaseEventData> OnAdapterStartDragging;
+    public System.Action<CatalogItem> OnCatalogItemClicked;
+    public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
+    public System.Action<CatalogItem, CatalogItemAdapter, BaseEventData> OnAdapterStartDragging;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
-
 
     [Header("Prefab References")]
     public GameObject catalogItemAdapterPrefab;
 
-
-    public void SetContent(string category, List<SceneObject> sceneObjectsList)
+    public void SetContent(string category, List<CatalogItem> catalogItemList)
     {
         categoryTxt.text = category.ToUpper();
         RemoveAdapters();
-        foreach (SceneObject sceneObject in sceneObjectsList)
+        foreach (CatalogItem catalogItem in catalogItemList)
         {
             CatalogItemAdapter adapter = Instantiate(catalogItemAdapterPrefab, categoryContentGO.transform).GetComponent<CatalogItemAdapter>();
-            adapter.SetContent(sceneObject);
-            adapter.OnSceneObjectClicked += SceneObjectClicked;
-            adapter.OnSceneObjectFavorite += SceneObjectFavorite;
-            adapter.OnAdapterStartDrag += AdapterStartDragging;
-            adapter.OnAdapterDrag += OnDrag;
-            adapter.OnAdapterEndDrag += OnEndDrag;
+            adapter.SetContent(catalogItem);
+            AddAdapter(adapter);
         }
+    }
+
+    public void AddAdapter(CatalogItemAdapter adapter)
+    {
+        adapter.OnCatalogItemClicked += CatalogItemClicked;
+        adapter.OnCatalogItemFavorite += CatalogItemFavorite;
+        adapter.OnAdapterStartDrag += AdapterStartDragging;
+        adapter.OnAdapterDrag += OnDrag;
+        adapter.OnAdapterEndDrag += OnEndDrag;
     }
 
     public void RemoveAdapters()
     {
-
         for (int i = 0; i < categoryContentGO.transform.childCount; i++)
         {
             GameObject toRemove = categoryContentGO.transform.GetChild(i).gameObject;
@@ -44,29 +46,28 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         }
     }
 
-
-    void OnDrag(PointerEventData eventData)
+    private void OnDrag(PointerEventData eventData)
     {
         OnAdapterDrag?.Invoke(eventData);
     }
 
-    void OnEndDrag(PointerEventData eventData)
+    private void OnEndDrag(PointerEventData eventData)
     {
         OnAdapterEndDrag?.Invoke(eventData);
     }
 
-    void SceneObjectClicked(SceneObject sceneObjectClicked)
+    private void CatalogItemClicked(CatalogItem catalogItemClicked)
     {
-        OnSceneObjectClicked?.Invoke(sceneObjectClicked);
+        OnCatalogItemClicked?.Invoke(catalogItemClicked);
     }
 
-    void SceneObjectFavorite(SceneObject sceneObjectClicked, CatalogItemAdapter adapter)
+    private void CatalogItemFavorite(CatalogItem catalogItemClicked, CatalogItemAdapter adapter)
     {
-        OnSceneObjectFavorite?.Invoke(sceneObjectClicked, adapter);
+        OnCatalogItemFavorite?.Invoke(catalogItemClicked, adapter);
     }
 
-    void AdapterStartDragging(SceneObject sceneObjectClicked, CatalogItemAdapter adapter, BaseEventData data)
+    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
     {
-        OnAdapterStartDragging?.Invoke(sceneObjectClicked, adapter, data);
+        OnAdapterStartDragging?.Invoke(catalogItemClicked, adapter, data);
     }
 }

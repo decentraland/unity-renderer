@@ -78,7 +78,7 @@ public class FacialFeatureController
         var representation = wearableItem.GetRepresentation(bodyShape.bodyShapeId);
 
         string mainTextureHash = representation?.contents?.FirstOrDefault(x => x.file == representation?.mainFile)?.hash;
-        if(mainTextureHash == null)
+        if (mainTextureHash == null)
             mainTextureHash = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
         string maskhash = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
@@ -122,7 +122,7 @@ public class FacialFeatureController
     public static FacialFeatureController CreateDefaultFacialFeature(string bodyShape, string category, Material material)
     {
         string defaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, category);
-        WearableItem wearable = CatalogController.wearableCatalog.GetOrDefault(defaultId);
+        CatalogController.wearableCatalog.TryGetValue(defaultId, out WearableItem wearable);
         if (wearable == null)
         {
             Debug.LogError($"Couldn't resolve wearable {defaultId}");

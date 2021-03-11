@@ -2,6 +2,8 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DCL.Components
@@ -12,12 +14,26 @@ namespace DCL.Components
         new public class Model : UIShape.Model
         {
             public TextShape.Model textModel;
+
+            public Model()
+            {
+                textModel = new TextShape.Model();
+            }
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                Model model = Utils.SafeFromJson<Model>(json);
+                textModel = (TextShape.Model) textModel.GetDataFromJSON(json);
+                model.textModel = textModel;
+                return model;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIText";
 
-        public UIText(ParcelScene scene) : base(scene)
+        public UIText(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -34,12 +50,9 @@ namespace DCL.Components
         {
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            if (!scene.isTestScene)
-            {
-                model.textModel = Utils.SafeFromJson<TextShape.Model>(newJson);
-            }
+            model = (Model) newModel;
 
             yield return TextShape.ApplyModelChanges(scene, referencesContainer.text, model.textModel);
 

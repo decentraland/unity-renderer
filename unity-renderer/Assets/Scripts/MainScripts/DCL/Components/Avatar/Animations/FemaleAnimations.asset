@@ -37,3 +37,9 @@ MonoBehaviour:
     id: money
   - clip: {fileID: 7400000, guid: d83509ddd9d384358a7ad3c186542046, type: 2}
     id: kiss
+  - clip: {fileID: 7400000, guid: b58d42ab2f4af3a419f43ce183c48f70, type: 2}
+    id: hammer
+  - clip: {fileID: 7400000, guid: 155565c20994e334ea44df2fc77b9097, type: 2}
+    id: tik
+  - clip: {fileID: 7400000, guid: 642c7f952a6a39145a3e15f25654f8d5, type: 2}
+    id: tektonik

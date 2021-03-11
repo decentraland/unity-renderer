@@ -1,47 +1,42 @@
 using System.Collections;
+using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
+using Newtonsoft.Json;
 
 namespace DCL.Components
 {
     public class SmartItemComponent : BaseComponent
     {
-        public class Model
+        public class Model : BaseModel
         {
-            public SmartItemAction[] actions;
-            public SmartItemParameter[] parameters;
+            public Dictionary<object, object> values = new Dictionary<object, object>();
+            
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return JsonConvert.DeserializeObject<Model>(json);
+            }
         }
 
-        public Model model;
-
-        public override object GetModel()
+        private void Awake()
         {
-            return model;
+            model = new Model();
         }
 
-        public bool HasActions()
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            if (model.actions.Length > 0)
-                return true;
-
-            return false;
+            yield break;
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override int GetClassId()
         {
-            UpdateModel(newJson);
-            yield return null;
+            return (int) CLASS_ID_COMPONENT.SMART_ITEM;
         }
 
-        public void ForceUpdate(string json)
+        public Dictionary<object, object> GetValues()
         {
-            UpdateModel(json);
-        }
-
-        void UpdateModel(string json)
-        {
-            Model newModel = Utils.SafeFromJson<Model>(json);
-            model = newModel;
+            return ((Model)model).values;
         }
     }
 }

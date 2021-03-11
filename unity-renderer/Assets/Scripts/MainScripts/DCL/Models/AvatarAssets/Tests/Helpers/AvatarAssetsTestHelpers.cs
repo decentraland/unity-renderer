@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class AvatarAssetsTestHelpers
 {
-    public static WearableDictionary CreateTestCatalogLocal()
+    public static BaseDictionary<string, WearableItem> CreateTestCatalogLocal()
     {
         List<WearableItemDummy> wearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
         foreach (var wearableItem in wearables)
@@ -25,7 +25,11 @@ public static class AvatarAssetsTestHelpers
         }
 
         CatalogController.wearableCatalog.Clear();
-        CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
+        var dummyWereables = wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray();
+        foreach (var item in dummyWereables)
+        {
+            CatalogController.wearableCatalog.Add(item.Key, item.Value);
+        }
 
         return CatalogController.wearableCatalog;
     }

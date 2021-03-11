@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,19 +23,25 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                return Utils.SafeFromJson<Model>(json);
+            }
         }
 
         public override string referencesContainerPrefabName => "UIImage";
 
         DCLTexture dclTexture = null;
 
-        public UIImage(ParcelScene scene) : base(scene)
+        public UIImage(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
         {
-            return (int)CLASS_ID.UI_IMAGE_SHAPE;
+            return (int) CLASS_ID.UI_IMAGE_SHAPE;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -48,7 +55,7 @@ namespace DCL.Components
 
         Coroutine fetchRoutine;
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
@@ -59,7 +66,7 @@ namespace DCL.Components
                 {
                     if (fetchRoutine != null)
                     {
-                        scene.StopCoroutine(fetchRoutine);
+                        CoroutineStarter.Stop(fetchRoutine);
                         fetchRoutine = null;
                     }
 
@@ -74,7 +81,7 @@ namespace DCL.Components
                         ConfigureUVRect(parentRecTransform);
                     });
 
-                    fetchRoutine = scene.StartCoroutine(fetchIEnum);
+                    fetchRoutine = CoroutineStarter.Start(fetchIEnum);
                 }
             }
             else
@@ -123,6 +130,12 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            if (fetchRoutine != null)
+            {
+                CoroutineStarter.Stop(fetchRoutine);
+                fetchRoutine = null;
+            }
+
             dclTexture?.DetachFrom(this);
 
             if (referencesContainer != null)

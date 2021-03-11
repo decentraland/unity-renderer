@@ -21,6 +21,13 @@ namespace DCL.Components
             public string onChanged;
             public string onFocus;
             public string onBlur;
+
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                Model model = Utils.SafeFromJson<Model>(json);
+                model.textModel = Utils.SafeFromJson<TextShape.Model>(json);
+                return model;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIInputText";
@@ -29,8 +36,9 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText(ParcelScene scene) : base(scene)
+        public UIInputText(IParcelScene scene) : base(scene)
         {
+            model = new Model();
         }
 
         public override int GetClassId()
@@ -48,15 +56,12 @@ namespace DCL.Components
         {
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
-            if (!scene.isTestScene)
-            {
-                model.textModel = Utils.SafeFromJson<TextShape.Model>(newJson);
-            }
-
+            model = (Model) newModel;
+            
             inputField.textViewport = referencesContainer.rectTransform;
 
             UnsuscribeFromEvents();

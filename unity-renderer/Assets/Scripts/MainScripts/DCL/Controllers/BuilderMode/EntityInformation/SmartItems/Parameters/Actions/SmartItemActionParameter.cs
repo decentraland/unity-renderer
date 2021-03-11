@@ -1,48 +1,97 @@
 using DCL;
 using DCL.Components;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SmartItemActionParameter : SmartItemUIParameterAdapter
+public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityListHandler
 {
     public ActionsListView actionsListView;
     public Button addActionBtn;
 
-    const string PARAMETER_TYPE = "actions";
-
-    List<DCLBuilderInWorldEntity> entitiesList;
+    private List<DCLBuilderInWorldEntity> alreadyFilterList;
 
     private void Start()
     {
-        addActionBtn.onClick.AddListener(AddEventAction);
+        addActionBtn.onClick.AddListener(CreateEventAction);
+        actionsListView.OnActionableRemove += RemoveActionable;
     }
 
-    public override void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
+    private void RemoveActionable(SmartItemActionable actionable)
     {
-        base.SetEntityList(entitiesList);
-
-        this.entitiesList = entitiesList;
-    }
-
-    public override void SetParameter(SmartItemParameter parameter)
-    {
-        base.SetParameter(parameter);
-
-        if (parameter.type != PARAMETER_TYPE)
+        var actionsGeneric = GetParameterValue();
+        if (actionsGeneric == null || !(actionsGeneric is List<SmartItemActionable>))
             return;
 
-        //TODO include the functionality of the parameter
+        SmartItemActionable actionableToRemove = null;
+        List<SmartItemActionable> actions = (List<SmartItemActionable>)actionsGeneric;
+        foreach(SmartItemActionable actionableItem in actions)
+        {
+            if (actionable.actionableId == actionableItem.actionableId)
+                actionableToRemove = actionableItem;
+        }
+        actions.Remove(actionableToRemove);
+
+        SetParameterValue(actions);
     }
 
-
-    public void AddEventAction()
+    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
     {
-        List<DCLBuilderInWorldEntity> alreadyFilterList = BuilderInWorldUtils.FilterEntitiesBySmartItemComponentAndActions(entitiesList);
-        if(alreadyFilterList.Count > 0)
-            actionsListView.AddActionEventAdapter(entitiesList);
+        this.alreadyFilterList = entitiesList; 
     }
 
+    public override void SetInfo()
+    {
+        base.SetInfo();
+
+        KEY_NAME = currentParameter.id;
+
+        var actionsGeneric = GetParameterValue();
+        if (actionsGeneric == null || !(actionsGeneric is List<SmartItemActionable>))
+            return;
+        List<SmartItemActionable> actions = (List<SmartItemActionable>)actionsGeneric;
+
+        foreach (SmartItemActionable smartItemAction in actions)
+        {
+            AddEventAction(smartItemAction);
+        }
+    }
+
+    public void AddEventAction(SmartItemActionable action)
+    {
+        if (alreadyFilterList.Count <= 0)
+            return;
+
+        SmartItemActionEvent actionEvent = new SmartItemActionEvent();
+        actionEvent.entityList = alreadyFilterList;
+        actionEvent.smartItemActionable = action;
+
+        if (currentValues.ContainsKey(action.actionableId))
+            actionEvent.values = (Dictionary<object, object>) currentValues[action.actionableId];
+        else
+            actionEvent.values = new Dictionary<object, object>();
+
+        actionsListView.AddActionEventAdapter(actionEvent);     
+    }
+
+    public void CreateEventAction()
+    {
+        var actionsGeneric = GetParameterValue();
+
+        List<SmartItemActionable> actions;
+
+        if (actionsGeneric != null && (actionsGeneric is List<SmartItemActionable>))
+            actions = (List<SmartItemActionable>)actionsGeneric;
+        else
+            actions = new List<SmartItemActionable>();
+
+        SmartItemActionable action = new SmartItemActionable();
+        action.actionableId = Guid.NewGuid().ToString();
+        actions.Add(action);     
+        AddEventAction(action);
+        SetParameterValue(actions);
+    }
 }

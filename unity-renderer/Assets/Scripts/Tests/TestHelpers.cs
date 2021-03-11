@@ -132,9 +132,10 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            CLASS_ID_COMPONENT classId = component.scene.ownerController.componentFactory.GetIdForType<T>();
+            CLASS_ID_COMPONENT classId = Environment.i.world.sceneController.componentFactory.GetIdForType<T>();
 
-            component.scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
+            ParcelScene scene = component.scene as ParcelScene;
+            scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
 
             return component.routine;
         }
@@ -167,6 +168,15 @@ namespace DCL.Helpers
             );
         }
 
+        public static Coroutine SharedComponentUpdate<T>(T component, BaseModel model)
+            where T : BaseDisposable
+        {
+            ParcelScene scene = component.scene as ParcelScene;
+            scene.SharedComponentUpdate(component.id, model);
+
+            return component.routine;
+        }
+        
         public static Coroutine SharedComponentUpdate<T, K>(T component, K model = null)
             where T : BaseDisposable
             where K : class, new()
@@ -176,7 +186,8 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            component.scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(model));
+            ParcelScene scene = component.scene as ParcelScene;
+            scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(model));
 
             return component.routine;
         }
@@ -205,12 +216,14 @@ namespace DCL.Helpers
 
         public static void SharedComponentDispose(BaseDisposable component)
         {
-            component.scene.SharedComponentDispose(component.id);
+            ParcelScene scene = component.scene as ParcelScene;
+            scene.SharedComponentDispose(component.id);
         }
 
         public static void SharedComponentAttach(BaseDisposable component, DecentralandEntity entity)
         {
-            entity.scene.SharedComponentAttach(
+            ParcelScene scene = entity.scene as ParcelScene;
+            scene.SharedComponentAttach(
                 entity.entityId,
                 component.id
             );
@@ -541,7 +554,7 @@ namespace DCL.Helpers
 
         public static IEnumerator CreateAudioSourceWithClipForEntity(DecentralandEntity entity)
         {
-            yield return LoadAudioClip(entity.scene,
+            yield return LoadAudioClip(entity.scene as ParcelScene,
                 audioClipId: "audioClipTest",
                 url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
                 loop: true,
@@ -549,7 +562,7 @@ namespace DCL.Helpers
                 volume: 1f,
                 waitForLoading: true);
 
-            yield return CreateAudioSource(entity.scene,
+            yield return CreateAudioSource(entity.scene as ParcelScene,
                 entityId: entity.entityId,
                 audioClipId: "audioClipTest",
                 playing: true);
@@ -880,7 +893,10 @@ namespace DCL.Helpers
                 type = OnClick.NAME,
                 uuid = "onClick"
             };
-            var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(entity.scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            ParcelScene scene = entity.scene as ParcelScene;
+            
+            var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             yield return onClickComponent.routine;
 
             Collider onPointerEventCollider;
@@ -896,7 +912,7 @@ namespace DCL.Helpers
                 Assert.IsTrue(onPointerEventCollider.enabled == renderers[i].enabled);
             }
 
-            entity.scene.EntityComponentRemove(
+            scene.EntityComponentRemove(
                 entity.entityId,
                 onClickComponent.name
             );

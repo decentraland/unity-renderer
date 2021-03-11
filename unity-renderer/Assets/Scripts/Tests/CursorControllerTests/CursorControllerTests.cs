@@ -149,7 +149,9 @@ namespace Tests
             TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
                 new
                 {
-                    visible = false
+                    visible = false,
+                    withCollisions = false,
+                    isPointerBlocker = false
                 }));
 
             yield return null;

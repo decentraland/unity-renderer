@@ -49,7 +49,7 @@ public class BuildInWorldCompleteAction
         OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo);
     }
 
-    public void CreateChangeFloorAction(SceneObject oldFloor,SceneObject newFloor)
+    public void CreateChangeFloorAction(CatalogItem oldFloor, CatalogItem newFloor)
     {
         BuilderInWorldEntityAction action = new BuilderInWorldEntityAction(JsonConvert.SerializeObject(oldFloor), JsonConvert.SerializeObject(newFloor));
         List<BuilderInWorldEntityAction> list = new List<BuilderInWorldEntityAction>();

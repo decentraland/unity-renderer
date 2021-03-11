@@ -8,20 +8,23 @@ public class SmartItemBooleanParameterAdapter : SmartItemUIParameterAdapter
 {
     public Toggle boolParameterToggle;
 
-    const string parameterType = "boolean";
-
-    public override void SetParameter(SmartItemParameter parameter)
+    private void Start()
     {
-        base.SetParameter(parameter);
+        boolParameterToggle.onValueChanged.AddListener(OnValueChange);
+    }
 
-        if (parameter.type != parameterType)
-            return;
+    public override void SetInfo()
+    {
+        base.SetInfo();
 
         boolParameterToggle.gameObject.SetActive(true);
 
-        bool defaultParameter = false;
-        bool.TryParse(parameter.@default, out defaultParameter);
+        if(bool.TryParse(GetParameterValue().ToString(), out bool defaultParameter))
+            boolParameterToggle.isOn = defaultParameter;
+    }
 
-        boolParameterToggle.isOn = defaultParameter;
+    public void OnValueChange(bool value)
+    {
+        SetParameterValue(value);
     }
 }

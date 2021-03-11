@@ -2,6 +2,7 @@ using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL.Components
@@ -10,9 +11,9 @@ namespace DCL.Components
     {
         public virtual string componentName => GetType().Name;
         public string id;
+        public IParcelScene scene { get; protected set; }
 
         public abstract int GetClassId();
-
 
         ComponentUpdateHandler updateHandler;
         public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
@@ -23,18 +24,22 @@ namespace DCL.Components
         public event System.Action<DecentralandEntity> OnDetach;
         public event Action<BaseDisposable> OnAppliedChanges;
 
-        private string oldSerialization = null;
-
-        public DCL.Controllers.ParcelScene scene { get; }
         public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
+        protected BaseModel model;
 
-        public void UpdateFromJSON(string json)
+        public virtual void UpdateFromJSON(string json)
         {
-            updateHandler.ApplyChangesIfModified(json);
+            UpdateFromModel(model.GetDataFromJSON(json));
         }
 
-        public BaseDisposable(DCL.Controllers.ParcelScene scene)
+        public virtual void UpdateFromModel(BaseModel newModel)
+        {
+            model = newModel;
+            updateHandler.ApplyChangesIfModified(model);
+        }
+
+        public BaseDisposable(IParcelScene scene)
         {
             this.scene = scene;
             updateHandler = CreateUpdateHandler();
@@ -44,7 +49,6 @@ namespace DCL.Components
         {
             OnAppliedChanges?.Invoke(this);
         }
-
 
         public virtual void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
@@ -99,14 +103,9 @@ namespace DCL.Components
             DetachFromEveryEntity();
         }
 
-        public abstract object GetModel();
+        public virtual BaseModel GetModel() => model;
 
-        public abstract IEnumerator ApplyChanges(string newJson);
-
-        public MonoBehaviour GetCoroutineOwner()
-        {
-            return scene;
-        }
+        public abstract IEnumerator ApplyChanges(BaseModel model);
 
         public virtual ComponentUpdateHandler CreateUpdateHandler()
         {

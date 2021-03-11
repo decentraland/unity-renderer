@@ -12,21 +12,49 @@ public class SmartItemUIParameterAdapter : MonoBehaviour
     public TextMeshProUGUI labelTxt;
     public Action<SmartItemParameter> OnParameterChange;
 
-    SmartItemParameter currentParameter;
+    protected SmartItemParameter currentParameter;
 
-    public virtual void SetEntityList(List<DCLBuilderInWorldEntity> entityList)
-    {
-        //TODO: Implement Smart Item action
-    }
+    protected string KEY_NAME;
 
-    public virtual void SetParameter(SmartItemParameter parameter)
+    protected Dictionary<object, object> currentValues;
+
+    public virtual void SetParameter(SmartItemParameter parameter, Dictionary<object, object> values)
     {
         currentParameter = parameter;
         labelTxt.text = parameter.label;
+        KEY_NAME = parameter.label;
+        currentValues = values;
+        SetInfo();
+    }
+
+    public virtual void SetInfo()
+    {
+
     }
 
     public virtual void ChangeParameter()
     {
         OnParameterChange?.Invoke(currentParameter);
+    }
+
+    protected virtual void SetParameterValue(object value)
+    {
+        if (currentValues.ContainsKey(KEY_NAME))        
+            currentValues[KEY_NAME] = value;
+        
+        else       
+            currentValues.Add(KEY_NAME, value);
+        
+    }
+
+    protected virtual object GetParameterValue()
+    {
+        if (currentValues.ContainsKey(KEY_NAME))
+            return currentValues[KEY_NAME];
+
+        if (!string.IsNullOrEmpty(currentParameter.@default))
+            return currentParameter.@default;
+        
+        return null;
     }
 }

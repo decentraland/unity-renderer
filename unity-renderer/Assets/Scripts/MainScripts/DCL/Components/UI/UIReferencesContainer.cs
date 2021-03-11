@@ -27,7 +27,7 @@ namespace DCL.Components
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            UIShape.Model ownerModel = owner.model;
+            UIShape.Model ownerModel = (UIShape.Model) owner.GetModel();
 
             if (VERBOSE)
             {

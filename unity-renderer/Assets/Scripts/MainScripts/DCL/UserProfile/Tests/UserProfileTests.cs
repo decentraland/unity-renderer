@@ -102,11 +102,12 @@ namespace Tests
         {
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
             var model = new UserProfileModel();
-            model.inventory = new string[amount];
+            var inventory = new string[amount];
             for (int i = 0; i < amount; i++)
             {
-                model.inventory[i] = "nft";
+                inventory[i] = "nft";
             }
+            userProfile.SetInventory(inventory);
             userProfile.UpdateData(model);
 
             Assert.AreEqual(amount, userProfile.GetItemAmount("nft"));

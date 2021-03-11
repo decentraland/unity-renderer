@@ -7,6 +7,8 @@ using DCL.SettingsPanelHUD;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
+using DCL.Controllers;
 
 public class TaskbarHUDController : IHUD
 {
@@ -14,6 +16,7 @@ public class TaskbarHUDController : IHUD
     public struct Configuration
     {
         public bool enableVoiceChat;
+        public bool enableQuestPanel;
     }
 
     public TaskbarHUDView view;
@@ -31,20 +34,45 @@ public class TaskbarHUDController : IHUD
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
     private InputAction_Trigger toggleWorldChatTrigger;
+    private ISceneController sceneController;
+    private IWorldState worldState;
 
     public event System.Action OnAnyTaskbarButtonClicked;
 
-    public RectTransform tutorialTooltipReference { get => view.moreTooltipReference; }
-    public RectTransform exploreTooltipReference { get => view.exploreTooltipReference; }
-    public RectTransform socialTooltipReference { get => view.socialTooltipReference; }
-    public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
+    public RectTransform tutorialTooltipReference
+    {
+        get => view.moreTooltipReference;
+    }
 
-    public void Initialize(IMouseCatcher mouseCatcher, IChatController chatController, IFriendsController friendsController)
+    public RectTransform exploreTooltipReference
+    {
+        get => view.exploreTooltipReference;
+    }
+
+    public RectTransform socialTooltipReference
+    {
+        get => view.socialTooltipReference;
+    }
+
+    public TaskbarMoreMenu moreMenu
+    {
+        get => view.moreMenu;
+    }
+
+    public void Initialize(
+        IMouseCatcher mouseCatcher,
+        IChatController chatController,
+        IFriendsController friendsController,
+        ISceneController sceneController,
+        IWorldState worldState)
     {
         this.mouseCatcher = mouseCatcher;
         this.chatController = chatController;
 
         view = TaskbarHUDView.Create(this, chatController, friendsController);
+
+        this.sceneController = sceneController;
+        this.worldState = worldState;
 
         if (mouseCatcher != null)
         {
@@ -69,6 +97,8 @@ public class TaskbarHUDController : IHUD
         view.OnBuilderInWorldToggleOn += View_OnBuilderInWorldToggleOn;
         view.OnExploreToggleOff += View_OnExploreToggleOff;
         view.OnExploreToggleOn += View_OnExploreToggleOn;
+        view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
+        view.OnQuestPanelToggled += View_OnQuestPanelToggled;
 
         toggleFriendsTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
         toggleFriendsTrigger.OnTriggered -= ToggleFriendsTrigger_OnTriggered;
@@ -82,15 +112,34 @@ public class TaskbarHUDController : IHUD
         toggleWorldChatTrigger.OnTriggered -= ToggleWorldChatTrigger_OnTriggered;
         toggleWorldChatTrigger.OnTriggered += ToggleWorldChatTrigger_OnTriggered;
 
+        DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
+        DataStore.i.HUDs.questsPanelVisible.OnChange += OnToggleQuestsPanelTriggered;
+
         if (chatController != null)
         {
             chatController.OnAddMessage -= OnAddMessage;
             chatController.OnAddMessage += OnAddMessage;
         }
 
+        if (this.sceneController != null && this.worldState != null)
+        {
+            this.sceneController.OnNewPortableExperienceSceneAdded += SceneController_OnNewPortableExperienceSceneAdded;
+            this.sceneController.OnNewPortableExperienceSceneRemoved += SceneController_OnNewPortableExperienceSceneRemoved;
+
+            List<GlobalScene> activePortableExperiences = WorldStateUtils.GetActivePortableExperienceScenes();
+            for (int i = 0; i < activePortableExperiences.Count; i++)
+            {
+                SceneController_OnNewPortableExperienceSceneAdded(activePortableExperiences[i]);
+            }
+        }
+
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
+    }
+    private void View_OnQuestPanelToggled(bool value)
+    {
+        DataStore.i.HUDs.questsPanelVisible.Set(value);
     }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj)
@@ -119,6 +168,21 @@ public class TaskbarHUDController : IHUD
     private void ToggleWorldChatTrigger_OnTriggered(DCLAction_Trigger action)
     {
         OnWorldChatToggleInputPress();
+    }
+
+    private void OnToggleQuestsPanelTriggered(bool current, bool previous)
+    {
+        bool anyInputFieldIsSelected = EventSystem.current != null &&
+                                       EventSystem.current.currentSelectedGameObject != null &&
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
+                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+
+        if (anyInputFieldIsSelected)
+            return;
+
+        view.questPanelButton.SetToggleState(current, false);
+        if(current)
+            view.SelectButton(view.questPanelButton);
     }
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
@@ -214,6 +278,11 @@ public class TaskbarHUDController : IHUD
     public void SetBuilderInWorldStatus(bool isActive)
     {
         view.SetBuilderInWorldStatus(isActive);
+    }
+
+    public void SetQuestsPanelStatus(bool isActive)
+    {
+        view.SetQuestsPanelStatus(isActive);
     }
 
     public void AddWorldChatWindow(WorldChatWindowHUDController controller)
@@ -385,10 +454,7 @@ public class TaskbarHUDController : IHUD
 
         helpAndSupportHud = controller;
         view.OnAddHelpAndSupportWindow();
-        helpAndSupportHud.view.OnClose += () =>
-        {
-            MarkWorldChatAsReadIfOtherWindowIsOpen();
-        };
+        helpAndSupportHud.view.OnClose += () => { MarkWorldChatAsReadIfOtherWindowIsOpen(); };
     }
 
     public void OnAddVoiceChat()
@@ -432,6 +498,7 @@ public class TaskbarHUDController : IHUD
             view.OnBuilderInWorldToggleOn -= View_OnBuilderInWorldToggleOn;
             view.OnExploreToggleOff -= View_OnExploreToggleOff;
             view.OnExploreToggleOn -= View_OnExploreToggleOn;
+            view.OnQuestPanelToggled -= View_OnQuestPanelToggled;
 
             CoroutineStarter.Stop(view.moreMenu.moreMenuAnimationsCoroutine);
             UnityEngine.Object.Destroy(view.gameObject);
@@ -454,6 +521,14 @@ public class TaskbarHUDController : IHUD
 
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
+
+        if (sceneController != null)
+        {
+            sceneController.OnNewPortableExperienceSceneAdded -= SceneController_OnNewPortableExperienceSceneAdded;
+            sceneController.OnNewPortableExperienceSceneRemoved -= SceneController_OnNewPortableExperienceSceneRemoved;
+        }
+
+        DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
     }
 
     public void SetVisibility(bool visible)
@@ -539,5 +614,23 @@ public class TaskbarHUDController : IHUD
     {
         if (view != null && view.moreMenu != null)
             view.moreMenu.ShowTutorialButton(isActive);
+    }
+
+    private void SceneController_OnNewPortableExperienceSceneAdded(GlobalScene newPortableExperienceScene)
+    {
+        view.AddPortableExperienceElement(
+            newPortableExperienceScene.sceneData.id,
+            newPortableExperienceScene.sceneName,
+            newPortableExperienceScene.iconUrl);
+    }
+
+    private void SceneController_OnNewPortableExperienceSceneRemoved(string portableExperienceSceneIdToRemove)
+    {
+        view.RemovePortableExperienceElement(portableExperienceSceneIdToRemove);
+    }
+
+    public void KillPortableExperience(string portableExperienceSceneIdToKill)
+    {
+        WebInterface.KillPortableExperience(portableExperienceSceneIdToKill);
     }
 }

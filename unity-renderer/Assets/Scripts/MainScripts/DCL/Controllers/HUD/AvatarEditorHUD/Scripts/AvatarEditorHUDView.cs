@@ -319,7 +319,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     private void OnDoneButton()
     {
         doneButton.interactable = false;
-        characterPreviewController.TakeSnapshots(OnSnapshotsReady);
+        characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
     private void OnExitButton()
@@ -332,6 +332,12 @@ public class AvatarEditorHUDView : MonoBehaviour
         doneButton.interactable = true;
         controller.SaveAvatar(face, face128, face256, body);
 
+        characterPreviewController.ResetRenderersLayer();
+    }
+
+    private void OnSnapshotsFailed()
+    {
+        doneButton.interactable = true;
         characterPreviewController.ResetRenderersLayer();
     }
 

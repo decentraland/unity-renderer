@@ -4,33 +4,43 @@ using UnityEngine;
 
 public class QuickBarController 
 {
-    public event System.Action<SceneObject> OnSceneObjectSelected;
+    public event System.Action<CatalogItem> OnCatalogItemSelected;
 
-    SceneObject[] quickBarShortcutsSceneObjects = new SceneObject[amountOQuickBarfSlots];
+    private CatalogItem[] quickBarShortcutsCatalogItems = new CatalogItem[AMOUNT_OF_QUICK_SLOTS];
 
-    const int amountOQuickBarfSlots = 9;
+    const int AMOUNT_OF_QUICK_SLOTS = 9;
 
     public QuickBarController(QuickBarView view)
     { 
         view.OnQuickBarAdd += SetQuickBarShortcut;
     }
 
-    public void QuickBarObjectSelected(int index)
+    public int GetSlotsCount()
     {
-        if (quickBarShortcutsSceneObjects.Length > index && quickBarShortcutsSceneObjects[index] != null)
-            OnSceneObjectSelected?.Invoke(quickBarShortcutsSceneObjects[index]);
+        return AMOUNT_OF_QUICK_SLOTS;
     }
 
-    void SetQuickBarShortcut(SceneObject sceneObject, int index)
+    public CatalogItem QuickBarObjectSelected(int index)
     {
-        quickBarShortcutsSceneObjects[index] = sceneObject;
+        if (quickBarShortcutsCatalogItems.Length > index && quickBarShortcutsCatalogItems[index] != null)
+        {
+            OnCatalogItemSelected?.Invoke(quickBarShortcutsCatalogItems[index]);
+            return quickBarShortcutsCatalogItems[index];
+        }
+
+        return null;
+    }
+
+    void SetQuickBarShortcut(CatalogItem catalogItem, int index)
+    {
+        quickBarShortcutsCatalogItems[index] = catalogItem;
     }
 
     int FindEmptyShortcutSlot()
     {
-        for (int i = 0; i < quickBarShortcutsSceneObjects.Length; i++)
+        for (int i = 0; i < quickBarShortcutsCatalogItems.Length; i++)
         {
-            if (quickBarShortcutsSceneObjects[i] == null)
+            if (quickBarShortcutsCatalogItems[i] == null)
                 return i;
         }
         return -1;

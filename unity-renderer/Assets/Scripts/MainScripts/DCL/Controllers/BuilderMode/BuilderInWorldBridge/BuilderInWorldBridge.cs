@@ -27,6 +27,20 @@ public class BuilderInWorldBridge : MonoBehaviour
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
 
+    public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    {
+        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>(); 
+        if (smartItemComponent == null)
+           return;
+
+
+        entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
+        entitySingleComponentPayload.componentId = (int)CLASS_ID_COMPONENT.SMART_ITEM;
+
+        entitySingleComponentPayload.data = smartItemComponent.GetValues();
+
+        ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
 
     public void PublishSceneResult(string payload)
     {
@@ -50,14 +64,14 @@ public class BuilderInWorldBridge : MonoBehaviour
     public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
-        entitySingleComponentPayload.componentId = (int)CLASS_ID.LOCKED_ON_EDIT;
+        entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
 
 
         foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int)CLASS_ID.LOCKED_ON_EDIT)
+            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
             {
-                entitySingleComponentPayload.data = ((DCLLockedOnEdit)keyValuePairBaseDisposable.Value).GetModel();
+                entitySingleComponentPayload.data = ((DCLLockedOnEdit) keyValuePairBaseDisposable.Value).GetModel();
             }
         }
 
@@ -112,7 +126,7 @@ public class BuilderInWorldBridge : MonoBehaviour
             {
                 TransformComponent entityComponentModel = new TransformComponent();
 
-                entityComponentModel.position = Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+                entityComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
                 entityComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
                 entityComponentModel.scale = entity.gameObject.transform.localScale;
 
@@ -161,7 +175,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.TRANSFORM;
 
-        entityTransformComponentModel.position = Environment.i.world.state.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
+        entityTransformComponentModel.position = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, scene);
         entityTransformComponentModel.rotation = new QuaternionRepresentation(entity.gameObject.transform.rotation);
         entityTransformComponentModel.scale = entity.gameObject.transform.localScale;
 
