@@ -16,7 +16,7 @@ references:
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
 
   .unity_image: &unity_image
-    - image: decentraland/renderer-build:2019.4
+    - image: decentraland/renderer-build:2019-4-19f1
       environment:
         BUILD_TARGET: WebGL
         BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
@@ -46,7 +46,7 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
             sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/refactored-octo-guacamole.git download
+            ssh git@github.com git-lfs-authenticate decentraland/unity-renderer.git download
             git lfs install
       # checkout the actual code
       - checkout
