@@ -32,6 +32,7 @@ export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
       .then((parcelIdentity) => {
         parcelIdentity.land = this.data.data.land!
         parcelIdentity.cid = worker.getSceneId()
+        parcelIdentity.isPortableExperience = false
       })
       .catch((e) => this.logger.error('Error initializing system ParcelIdentity', e))
   }
@@ -60,6 +61,7 @@ export class UnityPortableExperienceScene extends UnityScene<LoadablePortableExp
       .getAPIInstance(ParcelIdentity)
       .then((parcelIdentity) => {
         parcelIdentity.cid = worker.getSceneId()
+        parcelIdentity.isPortableExperience = true
       })
       .catch((e) => this.logger.error('Error initializing system ParcelIdentity', e))
   }

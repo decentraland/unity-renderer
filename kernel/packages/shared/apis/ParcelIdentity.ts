@@ -10,6 +10,7 @@ export interface IParcelIdentity {
 export class ParcelIdentity extends ExposableAPI implements IParcelIdentity {
   land!: ILand
   cid!: string
+  isPortableExperience: boolean = false
 
   /**
    * Returns the coordinates and the definition of a parcel

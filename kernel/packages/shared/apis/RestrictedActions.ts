@@ -29,7 +29,7 @@ export class RestrictedActions extends ExposableAPI {
       return
     }
 
-    const base = parseParcelPosition(this.getSceneData().scene.base)
+    const base = parseParcelPosition(this.parcelIdentity.isPortableExperience ? "0,0" : this.getSceneData().scene.base)
     const basePosition = new Vector3()
     gridToWorld(base.x, base.y, basePosition)
 
@@ -83,13 +83,17 @@ export class RestrictedActions extends ExposableAPI {
   }
 
   private hasPermission(permission: Permission) {
+    if (this.parcelIdentity.isPortableExperience) {
+      return true
+    }
+
     const json = this.getSceneData()
     const list = json.requiredPermissions || []
     return list.indexOf(permission) !== -1
   }
 
   private isPositionValid(position: Vector3) {
-    return isWorldPositionInsideParcels(this.getSceneData().scene.parcels, position)
+    return this.parcelIdentity.isPortableExperience || isWorldPositionInsideParcels(this.getSceneData().scene.parcels, position)
   }
 }
 
