@@ -54,17 +54,6 @@ MonoBehaviour:
   avatarCollider: {fileID: 7755590202629118220}
   avatarMovementController: {fileID: 122622683908687435}
   onPointerDown: {fileID: 3865137627712764486}
-  model:
-    id: 
-    name: 
-    bodyShape: 
-    skinColor: {r: 0, g: 0, b: 0, a: 0}
-    hairColor: {r: 0, g: 0, b: 0, a: 0}
-    eyeColor: {r: 0, g: 0, b: 0, a: 0}
-    wearables: []
-    expressionTriggerId: 
-    expressionTriggerTimestamp: -1
-    talking: 0
   everythingIsLoaded: 0
 --- !u!114 &122622683908687435
 MonoBehaviour:
@@ -142,6 +131,9 @@ MonoBehaviour:
   eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
+  useFx: 1
+  fxSpawnPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
+    type: 3}
 --- !u!114 &6790643881566083082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,9 +211,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c895124a3dad9421bbeaf89ace0a198c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model:
-    type: onPointerDown
-    uuid: pointerDown
   collider: {fileID: 1314168606903342224}
 --- !u!65 &1314168606903342224
 BoxCollider:
