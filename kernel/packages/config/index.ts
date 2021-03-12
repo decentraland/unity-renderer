@@ -45,12 +45,30 @@ export namespace parcelLimits {
   export const minParcelX = -150
   export const minParcelZ = -150
 
-  export const minLandCoordinateX = -150
-  export const minLandCoordinateY = -150
-  export const maxLandCoordinateX = 150
-  export const maxLandCoordinateY = 150
-}
+  export const validWorldRanges = [
+    {
+      x: { from: -150, to: 150 },
+      y: { from: -150, to: 150 }
+    },
+    {
+      x: { from: 62, to: 163 },
+      y: { from: 151, to: 158 }
+    },
+    {
+      x: { from: 151, to: 162 },
+      y: { from: 144, to: 150 }
+    },
+    {
+      x: { from: 151, to: 163 },
+      y: { from: 59, to: 143 }
+    }
+  ]
 
+  export const descriptiveValidWorldRanges = validWorldRanges
+    .map(range => `(X from ${range.x.from} to ${range.x.to}, and Y from ${range.y.from} to ${range.y.to})`)
+    .join(' or ')
+
+}
 export namespace playerConfigurations {
   export const gravity = -0.2
   export const height = 1.6
