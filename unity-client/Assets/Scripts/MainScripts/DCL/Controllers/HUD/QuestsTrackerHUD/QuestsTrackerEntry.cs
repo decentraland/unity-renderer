@@ -44,7 +44,7 @@ namespace DCL.Huds.QuestsTracker
             questTitle.text = quest.name;
             SetIcon(quest.icon);
             QuestSection currentSection = quest.sections.First(x => x.progress < 1f);
-            sectionTitle.text = $"{currentSection.name} - {currentSection.progress * 100}%";
+            sectionTitle.text = $"{currentSection.name} - {(currentSection.progress * 100):0.0}%";
             progress.fillAmount = currentSection.progress;
 
             CleanUpTasksList();
@@ -80,10 +80,7 @@ namespace DCL.Huds.QuestsTracker
             AssetPromiseKeeper_Texture.i.Keep(iconPromise);
         }
 
-        private void OnIconReady(Asset_Texture assetTexture)
-        {
-            iconImage.texture = assetTexture.texture;
-        }
+        private void OnIconReady(Asset_Texture assetTexture) { iconImage.texture = assetTexture.texture; }
 
         internal void CleanUpTasksList()
         {
@@ -123,10 +120,7 @@ namespace DCL.Huds.QuestsTracker
             }
         }
 
-        public void SetPinStatus(bool isPinned)
-        {
-            pinQuestToggle.SetIsOnWithoutNotify(isPinned);
-        }
+        public void SetPinStatus(bool isPinned) { pinQuestToggle.SetIsOnWithoutNotify(isPinned); }
 
         private void OnDestroy()
         {

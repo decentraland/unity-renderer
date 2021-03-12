@@ -30,10 +30,11 @@ namespace DCL.Huds.QuestsPanel
         private static BaseCollection<string> pinnedQuests => DataStore.i.Quests.pinnedQuests;
 
         private Action jumpInDelegate;
+        public Vector3 readMorePosition => readMoreButton.transform.position;
 
         private void Awake()
         {
-            jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke();});
+            jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); });
             readMoreButton.onClick.AddListener(() => readMoreDelegate?.Invoke());
             pinQuestToggle.onValueChanged.AddListener(OnPinToggleValueChanged);
             pinnedQuests.OnAdded += OnPinnedQuests;
@@ -119,10 +120,7 @@ namespace DCL.Huds.QuestsPanel
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
 
-        private void OnThumbnailReady(Asset_Texture assetTexture)
-        {
-            thumbnailImage.texture = assetTexture.texture;
-        }
+        private void OnThumbnailReady(Asset_Texture assetTexture) { thumbnailImage.texture = assetTexture.texture; }
 
         private void OnDestroy()
         {

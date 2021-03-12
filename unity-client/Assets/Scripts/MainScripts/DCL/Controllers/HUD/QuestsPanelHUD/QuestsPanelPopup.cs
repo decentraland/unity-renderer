@@ -16,6 +16,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] internal Button closeButton;
         [SerializeField] internal Toggle pinQuestToggle;
         [SerializeField] internal RawImage thumbnailImage;
+        [SerializeField] internal Button closePopupAreaButton;
 
         private AssetPromise_Texture thumbnailPromise;
         private bool forceRebuildLayout = false;
@@ -34,6 +35,8 @@ namespace DCL.Huds.QuestsPanel
             pinQuestToggle.onValueChanged.AddListener(OnPinToggleValueChanged);
             baseCollection.OnAdded += OnPinnedQuests;
             baseCollection.OnRemoved += OnUnpinnedQuest;
+
+            closePopupAreaButton.onClick.AddListener(Close);
         }
 
         public void Populate(QuestModel newQuest)
@@ -100,15 +103,9 @@ namespace DCL.Huds.QuestsPanel
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
 
-        private void OnThumbnailReady(Asset_Texture assetTexture)
-        {
-            thumbnailImage.texture = assetTexture.texture;
-        }
+        private void OnThumbnailReady(Asset_Texture assetTexture) { thumbnailImage.texture = assetTexture.texture; }
 
-        internal void CreateSection()
-        {
-            sections.Add(Instantiate(sectionPrefab, sectionsContainer).GetComponent<QuestsPanelSection>());
-        }
+        internal void CreateSection() { sections.Add(Instantiate(sectionPrefab, sectionsContainer).GetComponent<QuestsPanelSection>()); }
 
         internal void PrepareSections(int sectionsAmount)
         {
@@ -117,7 +114,7 @@ namespace DCL.Huds.QuestsPanel
 
             if (sections.Count < sectionsAmount)
             {
-                while(sections.Count < sectionsAmount)
+                while (sections.Count < sectionsAmount)
                     CreateSection();
             }
             else
@@ -131,15 +128,9 @@ namespace DCL.Huds.QuestsPanel
             }
         }
 
-        public void Show()
-        {
-            gameObject.SetActive(true);
-        }
+        public void Show() { gameObject.SetActive(true); }
 
-        public void Close()
-        {
-            gameObject.SetActive(false);
-        }
+        public void Close() { gameObject.SetActive(false); }
 
         private void Update()
         {

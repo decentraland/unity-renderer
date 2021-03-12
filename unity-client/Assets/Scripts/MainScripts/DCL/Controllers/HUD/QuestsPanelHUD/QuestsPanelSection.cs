@@ -6,12 +6,14 @@ namespace DCL.Huds.QuestsPanel
     public class QuestsPanelSection : MonoBehaviour
     {
         [SerializeField] internal TextMeshProUGUI sectionName;
+        [SerializeField] internal RectTransform titleContainer;
         [SerializeField] internal RectTransform tasksContainer;
         [SerializeField] internal QuestsPanelTaskFactory factory;
 
         public void Populate(QuestSection section)
         {
             CleanUpTasksList();
+            titleContainer.gameObject.SetActive(!string.IsNullOrEmpty(section.name));
             sectionName.text = section.name;
             foreach (QuestTask task in section.tasks)
             {
@@ -34,7 +36,7 @@ namespace DCL.Huds.QuestsPanel
 
         internal void CleanUpTasksList()
         {
-            for(int i = tasksContainer.childCount - 1; i >= 0; i--)
+            for (int i = tasksContainer.childCount - 1; i >= 0; i--)
                 Destroy(tasksContainer.GetChild(i).gameObject);
         }
     }

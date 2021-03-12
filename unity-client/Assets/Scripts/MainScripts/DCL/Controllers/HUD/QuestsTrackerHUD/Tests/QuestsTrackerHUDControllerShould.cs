@@ -117,10 +117,7 @@ namespace Tests.QuestsTrackerHUD
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            DataStore.Clear();
-        }
+        public void TearDown() { DataStore.Clear(); }
     }
 
     public class QuestsTrackerHUDViewShould
@@ -281,14 +278,14 @@ namespace Tests.QuestsTrackerHUD
             yield return null; //wait for all the instantiation/destruction of items to be done by unity
 
             Assert.AreEqual( "questName", hudView.currentEntries[MOCK_QUEST_ID].questTitle.text);
-            Assert.AreEqual( $"sectionName1 - 0%", hudView.currentEntries[MOCK_QUEST_ID].sectionTitle.text);
+            Assert.AreEqual( $"sectionName1 - {0:0.0}%", hudView.currentEntries[MOCK_QUEST_ID].sectionTitle.text);
             Assert.AreEqual( 0, hudView.currentEntries[MOCK_QUEST_ID].progress.fillAmount);
             Assert.AreEqual( 1, hudView.currentEntries[MOCK_QUEST_ID].tasksContainer.childCount);
 
             var taskEntry = hudView.currentEntries[MOCK_QUEST_ID].tasksContainer.GetComponentInChildren<QuestsTrackerTask>();
             Assert.NotNull(taskEntry);
-            Assert.AreEqual("task1" ,taskEntry.taskTitle.text);
-            Assert.AreEqual("0/1" ,taskEntry.progressText.text);
+            Assert.AreEqual("task1" , taskEntry.taskTitle.text);
+            Assert.AreEqual("0/1" , taskEntry.progressText.text);
         }
 
         [UnityTest]
@@ -310,7 +307,7 @@ namespace Tests.QuestsTrackerHUD
                             id = $"task{i}",
                             name = $"task{i}",
                             type = "numeric",
-                            payload = JsonUtility.ToJson(new TaskPayload_Numeric {start = 10, current = 15, end = 20})
+                            payload = JsonUtility.ToJson(new TaskPayload_Numeric { start = 10, current = 15, end = 20 })
                         }
                     }
                 };
@@ -322,20 +319,17 @@ namespace Tests.QuestsTrackerHUD
             yield return null; //wait for all the instantiation/destruction of items to be done by unity
 
             Assert.AreEqual( "questName", hudView.currentEntries[MOCK_QUEST_ID].questTitle.text);
-            Assert.AreEqual( $"sectionName1 - 0%", hudView.currentEntries[MOCK_QUEST_ID].sectionTitle.text);
+            Assert.AreEqual( $"sectionName1 - {0:0.0}%", hudView.currentEntries[MOCK_QUEST_ID].sectionTitle.text);
             Assert.AreEqual( 0, hudView.currentEntries[MOCK_QUEST_ID].progress.fillAmount);
             Assert.AreEqual( 1, hudView.currentEntries[MOCK_QUEST_ID].tasksContainer.childCount);
 
             var taskEntry = hudView.currentEntries[MOCK_QUEST_ID].tasksContainer.GetComponentInChildren<QuestsTrackerTask>();
             Assert.NotNull(taskEntry);
-            Assert.AreEqual("task1" ,taskEntry.taskTitle.text);
-            Assert.AreEqual("15/20" ,taskEntry.progressText.text);
+            Assert.AreEqual("task1" , taskEntry.taskTitle.text);
+            Assert.AreEqual("15/20" , taskEntry.progressText.text);
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(hudView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }
