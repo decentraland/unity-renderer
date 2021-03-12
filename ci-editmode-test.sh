@@ -2,7 +2,7 @@
 
 source ci-setup.sh
 
--xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
+xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
         -batchmode \
         -logFile "$PROJECT_PATH/playmode-logs.txt" \
         -runTests \
