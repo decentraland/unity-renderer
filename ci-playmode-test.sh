@@ -3,15 +3,12 @@
 source ci-setup.sh
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
+        -projectPath $(pwd) \
         -batchmode \
-        -logFile "playmode-logs.txt" \
+        -logFile "$PROJECT_PATH/playmode-logs.txt" \
         -runTests \
         -testPlatform PlayMode \
-        -testResults "playmode-results.xml" \
-        -enableCodeCoverage \
-        -coverageResultsPath "CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
-        -debugCodeOptimization
+        -testResults "$PROJECT_PATH/playmode-results.xml" \
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
@@ -19,9 +16,7 @@ UNITY_EXIT_CODE=$?
 mkdir -p test-results/playmode
 cp playmode-results.xml test-results/playmode/results.xml || true
 
-cat "playmode-results.xml"
-
-set +x 2> /dev/null
+cat "$PROJECT_PATH/playmode-results.xml"
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
@@ -34,5 +29,4 @@ else
   echo "Unexpected exit code $UNITY_EXIT_CODE";
 fi
 
-set -x
 exit $UNITY_EXIT_CODE
