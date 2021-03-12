@@ -1,4 +1,4 @@
-#!/usr/bash
+#!/usr/bin/env bash
 
 source ci-setup.sh
 
