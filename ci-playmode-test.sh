@@ -4,12 +4,12 @@ source ci-setup.sh
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
         -batchmode \
-        -logFile "$PROJECT_PATH/playmode-logs.txt" \
+        -logFile "playmode-logs.txt" \
         -runTests \
         -testPlatform PlayMode \
-        -testResults "$PROJECT_PATH/playmode-results.xml" \
+        -testResults "playmode-results.xml" \
         -enableCodeCoverage \
-        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+        -coverageResultsPath "CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
         -debugCodeOptimization
 
@@ -19,7 +19,7 @@ UNITY_EXIT_CODE=$?
 mkdir -p test-results/playmode
 cp playmode-results.xml test-results/playmode/results.xml || true
 
-cat "$PROJECT_PATH/playmode-results.xml"
+cat "playmode-results.xml"
 
 set +x 2> /dev/null
 
