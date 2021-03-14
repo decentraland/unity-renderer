@@ -71,7 +71,7 @@
     "fs-extra": "^5.0.0",
     "git-rev-sync": "^1.12.0",
     "lint-staged": "^7.0.5",
-    "madge": "^3.4.4",
+    "madge": "^4.0.1",
     "md5-file": "^4.0.0",
     "mkdirp": "^0.5.1",
     "mocha": "^5.1.1",
