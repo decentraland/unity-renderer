@@ -1,10 +1,8 @@
 using DCL;
 using DCL.Configuration;
 using DCL.Helpers.NFT;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public static class BIWCatalogManager
 {
@@ -38,7 +36,17 @@ public static class BIWCatalogManager
 
     public static List<CatalogItemPack> GetCatalogItemPackList()
     {
-        return DataStore.i.builderInWorld.catalogItemPackDict.GetValues();
+        var assetPacks = DataStore.i.builderInWorld.catalogItemPackDict.GetValues();
+
+        foreach (CatalogItemPack catalogAssetPack in assetPacks)
+        {
+            foreach (CatalogItem catalogItem in catalogAssetPack.assets)
+            {
+                catalogItem.categoryName = catalogItem.category;
+            }
+        }
+
+        return assetPacks;
     }
 
     public static List<CatalogItemPack> GetCatalogItemPacksFilteredByCategories()
@@ -129,7 +137,7 @@ public static class BIWCatalogManager
         foreach (NFTInfo info in nftList)
         {
             CatalogItem catalogItem = CreateCatalogItem(info);
-            if(!DataStore.i.builderInWorld.catalogItemDict.ContainsKey(catalogItem.id))
+            if (!DataStore.i.builderInWorld.catalogItemDict.ContainsKey(catalogItem.id))
                 DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
 
             collectiblesItemPack.assets.Add(catalogItem);
