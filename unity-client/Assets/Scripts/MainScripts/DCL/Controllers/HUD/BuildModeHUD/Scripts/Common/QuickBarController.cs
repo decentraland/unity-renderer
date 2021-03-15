@@ -12,8 +12,10 @@ public interface IQuickBarController
     int GetSlotsCount();
     CatalogItem QuickBarObjectSelected(int index);
     void SetIndexToDrop(int index);
-    void SceneObjectDropped(BaseEventData data);
+    void SceneObjectDroppedFromQuickBar(int fromQuickBarIndex, int toQuickBarIndex, Texture texture);
+    void SceneObjectDroppedFromCatalog(BaseEventData data);
     void QuickBarInput(int quickBarSlot);
+    void CancelDragging();
 }
 
 public class QuickBarController : IQuickBarController
@@ -36,22 +38,23 @@ public class QuickBarController : IQuickBarController
 
         quickBarView.OnQuickBarObjectSelected += OnQuickBarObjectSelected;
         quickBarView.OnSetIndexToDrop += SetIndexToDrop;
-        quickBarView.OnSceneObjectDropped += SceneObjectDropped;
+        quickBarView.OnSceneObjectDroppedFromQuickBar += SceneObjectDroppedFromQuickBar;
+        quickBarView.OnSceneObjectDroppedFromCatalog += SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered += QuickBarInput;
+        sceneCatalogController.OnStopInput += CancelDragging;
     }
 
     public void Dispose()
     {
         quickBarView.OnQuickBarObjectSelected -= OnQuickBarObjectSelected;
         quickBarView.OnSetIndexToDrop -= SetIndexToDrop;
-        quickBarView.OnSceneObjectDropped -= SceneObjectDropped;
+        quickBarView.OnSceneObjectDroppedFromQuickBar -= SceneObjectDroppedFromQuickBar;
+        quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
+        sceneCatalogController.OnStopInput -= CancelDragging;
     }
 
-    public int GetSlotsCount()
-    {
-        return AMOUNT_OF_QUICK_SLOTS;
-    }
+    public int GetSlotsCount() { return AMOUNT_OF_QUICK_SLOTS; }
 
     public CatalogItem QuickBarObjectSelected(int index)
     {
@@ -64,17 +67,17 @@ public class QuickBarController : IQuickBarController
         return null;
     }
 
-    private void OnQuickBarObjectSelected(int obj)
+    private void OnQuickBarObjectSelected(int obj) { QuickBarObjectSelected(obj); }
+
+    public void SetIndexToDrop(int index) { lastIndexDroped = index; }
+
+    public void SceneObjectDroppedFromQuickBar(int fromQuickBarIndex, int toQuickBarIndex, Texture texture)
     {
-        QuickBarObjectSelected(obj);
+        SetQuickBarShortcut(quickBarShortcutsCatalogItems[fromQuickBarIndex], toQuickBarIndex, texture);
+        RemoveQuickBarShortcut(fromQuickBarIndex);
     }
 
-    public void SetIndexToDrop(int index)
-    {
-        lastIndexDroped = index;
-    }
-
-    public void SceneObjectDropped(BaseEventData data)
+    public void SceneObjectDroppedFromCatalog(BaseEventData data)
     {
         CatalogItemAdapter adapter = sceneCatalogController.GetLastCatalogItemDragged();
 
@@ -88,14 +91,19 @@ public class QuickBarController : IQuickBarController
         }
     }
 
+    private void RemoveQuickBarShortcut(int index)
+    {
+        quickBarShortcutsCatalogItems[index] = null;
+        quickBarView.SetShortcutAsEmpty(index);
+    }
+
     private void SetQuickBarShortcut(CatalogItem catalogItem, int index, Texture texture)
     {
         quickBarShortcutsCatalogItems[index] = catalogItem;
         quickBarView.SetTextureToShortcut(index, texture);
     }
 
-    public void QuickBarInput(int quickBarSlot)
-    {
-        OnQuickBarShortcutSelected?.Invoke(quickBarSlot);
-    }
+    public void QuickBarInput(int quickBarSlot) { OnQuickBarShortcutSelected?.Invoke(quickBarSlot); }
+
+    public void CancelDragging() { quickBarView.CancelCurrentDragging(); }
 }

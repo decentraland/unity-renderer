@@ -76,7 +76,7 @@ public class BIWCatalogShould
         {
             quickBarController.SetIndexToDrop(i);
             adapter.AdapterStartDragging(null);
-            quickBarController.SceneObjectDropped(null);
+            quickBarController.SceneObjectDroppedFromCatalog(null);
             Assert.AreEqual(item, quickBarController.QuickBarObjectSelected(i));
         }
     }
