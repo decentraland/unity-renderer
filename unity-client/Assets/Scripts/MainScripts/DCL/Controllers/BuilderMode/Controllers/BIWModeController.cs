@@ -35,7 +35,6 @@ public class BIWModeController : BIWController
     private BuilderInWorldMode currentActiveMode;
 
     private bool isSnapActive = true;
-    private bool isAdvancedModeActive = true;
 
     private InputAction_Trigger.Triggered snapModeDelegate;
     private GameObject editionGO;
@@ -86,14 +85,14 @@ public class BIWModeController : BIWController
         }
     }
 
-    public bool IsGodModeActive()
-    {
-        return currentEditModeState == EditModeState.GodMode;
-    }
+    public bool IsGodModeActive() { return currentEditModeState == EditModeState.GodMode; }
 
     public Vector3 GetCurrentEditionPosition()
     {
-        return editionGO.transform.position;
+        if (editionGO != null)
+            return editionGO.transform.position;
+        else
+            return Vector3.zero;
     }
 
     public void UndoEditionGOLastStep()
@@ -119,55 +118,27 @@ public class BIWModeController : BIWController
 
     public BuilderInWorldMode GetCurrentMode() => currentActiveMode;
 
-    private void InputDone()
-    {
-        OnInputDone?.Invoke();
-    }
+    public EditModeState GetCurrentStateMode() => currentEditModeState;
 
-    public void StartMultiSelection()
-    {
-        currentActiveMode.StartMultiSelection();
-    }
+    private void InputDone() { OnInputDone?.Invoke(); }
 
-    public void EndMultiSelection()
-    {
-        currentActiveMode.EndMultiSelection();
-    }
+    public void StartMultiSelection() { currentActiveMode.StartMultiSelection(); }
 
-    public void ResetScaleAndRotation()
-    {
-        currentActiveMode.ResetScaleAndRotation();
-    }
+    public void EndMultiSelection() { currentActiveMode.EndMultiSelection(); }
 
-    public void CheckInput()
-    {
-        currentActiveMode?.CheckInput();
-    }
+    public void ResetScaleAndRotation() { currentActiveMode.ResetScaleAndRotation(); }
 
-    public void CheckInputSelectedEntities()
-    {
-        currentActiveMode.CheckInputSelectedEntities();
-    }
+    public void CheckInput() { currentActiveMode?.CheckInput(); }
 
-    public bool ShouldCancelUndoAction()
-    {
-        return currentActiveMode.ShouldCancelUndoAction();
-    }
+    public void CheckInputSelectedEntities() { currentActiveMode.CheckInputSelectedEntities(); }
 
-    public void CreatedEntity(DCLBuilderInWorldEntity entity)
-    {
-        currentActiveMode?.CreatedEntity(entity);
-    }
+    public bool ShouldCancelUndoAction() { return currentActiveMode.ShouldCancelUndoAction(); }
 
-    public float GetMaxDistanceToSelectEntities()
-    {
-        return currentActiveMode.maxDistanceToSelectEntities;
-    }
+    public void CreatedEntity(DCLBuilderInWorldEntity entity) { currentActiveMode?.CreatedEntity(entity); }
 
-    public Vector3 GetMousePosition()
-    {
-        return currentActiveMode.GetPointerPosition();
-    }
+    public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
+
+    public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 
     public Vector3 GetModeCreationEntryPoint()
     {
@@ -190,13 +161,7 @@ public class BIWModeController : BIWController
 
     public void ChangeAdvanceMode()
     {
-        SetAdvanceMode(!isAdvancedModeActive);
-        InputDone();
-    }
-
-    public void SetAdvanceMode(bool advanceModeActive)
-    {
-        if (!advanceModeActive)
+        if (currentEditModeState == EditModeState.GodMode)
         {
             SetBuildMode(EditModeState.FirstPerson);
         }
@@ -204,13 +169,13 @@ public class BIWModeController : BIWController
         {
             SetBuildMode(EditModeState.GodMode);
         }
+        InputDone();
     }
 
     public void SetBuildMode(EditModeState state)
     {
         if (currentActiveMode != null)
             currentActiveMode.Deactivate();
-        isAdvancedModeActive = false;
 
         currentActiveMode = null;
         switch (state)
@@ -219,23 +184,14 @@ public class BIWModeController : BIWController
                 break;
             case EditModeState.FirstPerson:
                 currentActiveMode = firstPersonMode;
-                if (HUDController.i.builderInWorldMainHud != null)
-                {
-                    HUDController.i.builderInWorldMainHud.ActivateFirstPersonModeUI();
-                    HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(false);
-                }
-                if(cursorGO != null)
-                   cursorGO.SetActive(true);
+
+                if (cursorGO != null)
+                    cursorGO.SetActive(true);
                 break;
             case EditModeState.GodMode:
                 if (cursorGO != null)
                     cursorGO.SetActive(false);
                 currentActiveMode = editorMode;
-                isAdvancedModeActive = true;
-                if (HUDController.i.builderInWorldMainHud != null)
-                    HUDController.i.builderInWorldMainHud.ActivateGodModeUI();
-
-                avatarRenderer?.SetAvatarVisibility(false);
                 break;
         }
 

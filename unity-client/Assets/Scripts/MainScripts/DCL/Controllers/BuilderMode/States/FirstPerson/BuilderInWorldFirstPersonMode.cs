@@ -18,12 +18,11 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold rotationHold;
 
-
     private Quaternion initialRotation;
 
     private float currentScaleAdded, currentYRotationAdded;
 
-    private bool snapObjectAlreadyMoved = false,shouldRotate = false;
+    private bool snapObjectAlreadyMoved = false, shouldRotate = false;
     private Transform originalParentGOEdit;
 
     private InputAction_Hold.Started rotationHoldStartDelegate;
@@ -48,7 +47,8 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     void LateUpdate()
     {
-        if (selectedEntities.Count <= 0 || isMultiSelectionActive) return;
+        if (selectedEntities.Count == 0 || isMultiSelectionActive)
+            return;
 
         if (isSnapActive)
         {
@@ -71,7 +71,6 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
             else if (Vector3.Distance(snapGO.transform.position, editionGO.transform.position) >= snapDistanceToActivateMovement)
             {
                 BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
-                
                 snapObjectAlreadyMoved = true;
                 SetEditObjectParent();
             }
@@ -86,22 +85,22 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     }
 
-    public override Vector3 GetPointerPosition()
-    {
-        return new Vector3(Screen.width / 2, Screen.height / 2, 0);
-    }
+    public override Vector3 GetPointerPosition() { return new Vector3(Screen.width / 2, Screen.height / 2, 0); }
 
     public void OnMouseClick(int buttonId, Vector3 mouseposition)
     {
-        if (!isModeActive) return;
-        if (buttonId != 1) return;
-        if (selectedEntities.Count <= 0) return;
+        if (!isModeActive)
+            return;
+        if (buttonId != 1)
+            return;
+        if (selectedEntities.Count <= 0)
+            return;
 
         UndoSelection();
     }
 
     public override bool ShouldCancelUndoAction()
-    {      
+    {
         if (builderInWorldEntityHandler.GetSelectedEntityList().Count >= 1)
         {
             UndoSelection();
@@ -119,7 +118,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     public override void SetDuplicationOffset(float offset)
     {
         base.SetDuplicationOffset(offset);
-        if(isSnapActive)
+        if (isSnapActive)
             editionGO.transform.position += Vector3.right * offset;
     }
 
@@ -138,6 +137,11 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         base.Activate(scene);
         SetEditObjectParent();
         freeMovementGO.transform.SetParent(Camera.main.transform);
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.ActivateFirstPersonModeUI();
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(false);
+        }
     }
 
     public override void StartMultiSelection()
@@ -193,7 +197,8 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     public override void CheckInputSelectedEntities()
     {
         base.CheckInputSelectedEntities();
-        if (selectedEntities.Count <= 0) return;
+        if (selectedEntities.Count == 0)
+            return;
 
         if (isModeActive && shouldRotate)
         {
@@ -235,14 +240,12 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     }
 
-    public override Vector3 GetCreatedEntityPoint()
-    {
-        return Camera.main.transform.position + Camera.main.transform.forward * distanceFromCameraForNewEntitties;
-    }
+    public override Vector3 GetCreatedEntityPoint() { return Camera.main.transform.position + Camera.main.transform.forward * distanceFromCameraForNewEntitties; }
 
     void SetObjectIfSnapOrNot()
     {
-        if (isMultiSelectionActive) return;
+        if (isMultiSelectionActive)
+            return;
 
         if (!isSnapActive)
         {
@@ -281,7 +284,8 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
             else
             {
                 worldPositionStays = true;
-                parentToAsign = freeMovementGO.transform;
+                if (freeMovementGO != null)
+                    parentToAsign = freeMovementGO.transform;
             }
 
         }
@@ -294,7 +298,8 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
             worldPositionStays = true;
         }
 
-        editionGO.transform.SetParent(parentToAsign, worldPositionStays);
+        if (editionGO != null)
+            editionGO.transform.SetParent(parentToAsign, worldPositionStays);
     }
 
     void RotateSelection(float angleToRotate)

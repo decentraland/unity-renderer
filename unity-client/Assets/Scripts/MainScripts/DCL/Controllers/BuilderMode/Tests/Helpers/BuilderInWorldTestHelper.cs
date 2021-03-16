@@ -4,11 +4,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL.Components;
+using DCL.Controllers;
+using DCL.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class BuilderInWorldTestHelper 
+public static class BuilderInWorldTestHelper
 {
+    public static DCLBuilderInWorldEntity CreateSmartItemEntity(BuilderInWorldEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
+    {
+        if (model == null)
+            model = new SmartItemComponent.Model();
+
+        string jsonModel = JsonUtility.ToJson(model);
+
+        DCLBuilderInWorldEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+
+        //Note (Adrian): This shouldn't work this way, we should have a function to create the component from Model directly
+        scene.EntityComponentCreateOrUpdateFromUnity(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
+
+        return entity;
+    }
+
     public static CatalogItemAdapter CreateCatalogItemAdapter(GameObject gameObject)
     {
         CatalogItemAdapter adapter = Utils.GetOrCreateComponent<CatalogItemAdapter>(gameObject);
@@ -42,7 +60,7 @@ public static class BuilderInWorldTestHelper
         AssetCatalogBridge.ClearCatalog();
         string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/sceneObjectCatalog.json";
 
-        if(File.Exists(jsonPath))
+        if (File.Exists(jsonPath))
         {
             string jsonValue = File.ReadAllText(jsonPath);
             AssetCatalogBridge.i.AddFullSceneObjectCatalog(jsonValue);
@@ -50,7 +68,7 @@ public static class BuilderInWorldTestHelper
     }
 
     public static void CreateNFT()
-    {     
+    {
         string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/nftAsset.json";
 
         if (File.Exists(jsonPath))

@@ -15,7 +15,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
 
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
-        
+
         // Trigger the initial camera set
         OnCameraModeChange(CommonScriptableObjects.cameraMode, CommonScriptableObjects.cameraMode);
     }
@@ -26,10 +26,7 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
     }
 
-    private void UpdateForward(Vector3 newForward, Vector3 prev)
-    {       
-        transform.forward = newForward;
-    }   
+    private void UpdateForward(Vector3 newForward, Vector3 prev) { transform.forward = newForward; }
 
     private void OnCameraModeChange(CameraMode.ModeId newMode, CameraMode.ModeId prev)
     {
@@ -38,9 +35,13 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
             CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
             transform.forward = transform.parent.forward;
         }
+        else if (newMode == CameraMode.ModeId.BuildingToolGodMode)
+        {
+            CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
+        }
         else
         {
             CommonScriptableObjects.cameraForward.OnChange += UpdateForward;
         }
-    }    
+    }
 }

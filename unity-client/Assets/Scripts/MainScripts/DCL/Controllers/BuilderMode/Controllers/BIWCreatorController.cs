@@ -12,6 +12,9 @@ using UnityEngine.Serialization;
 
 public class BIWCreatorController : BIWController
 {
+    [Header("Design Variables")]
+    public float secondsToTimeOut = 10f;
+
     [Header("Prefab references")]
     public BIWModeController biwModeController;
     public BIWFloorHandler biwFloorHandler;
@@ -37,7 +40,7 @@ public class BIWCreatorController : BIWController
 
     private void Start()
     {
-        createLastSceneObjectDelegate = (action) => CreateLastSceneObject();
+        createLastSceneObjectDelegate = (action) => CreateLastCatalogItem();
         toggleCreateLastSceneObjectInputAction.OnTriggered += createLastSceneObjectDelegate;
     }
 
@@ -48,7 +51,7 @@ public class BIWCreatorController : BIWController
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
         Clean();
     }
-    
+
     public void Clean()
     {
         foreach (GameObject gameObject in loadingGameObjects.Values)
@@ -111,7 +114,7 @@ public class BIWCreatorController : BIWController
         return true;
     }
 
-    public DCLBuilderInWorldEntity CreateSceneObject(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false)
+    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false)
     {
         if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
             return null;
@@ -121,13 +124,14 @@ public class BIWCreatorController : BIWController
         //Note (Adrian): This is a workaround until the mapping is handle by kernel
         AddSceneMappings(catalogItem);
 
-        Vector3 startPoint = biwModeController.GetModeCreationEntryPoint();
+        Vector3 startPosition = biwModeController.GetModeCreationEntryPoint();
+        Vector3 editionPosition = biwModeController.GetCurrentEditionPosition();
 
-        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPoint, biwModeController.GetCurrentEditionPosition());
+        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition);
         entity.isFloor = isFloor;
 
         AddShape(catalogItem, entity);
-        
+
         AddEntityNameComponent(catalogItem, entity);
 
         AddLockedComponent(entity);
@@ -159,23 +163,39 @@ public class BIWCreatorController : BIWController
     }
 
     #region LoadingObjects
-    
+
+    public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
+
     private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
         entity.rootEntity.OnShapeUpdated += OnRealShapeLoaded;
         GameObject loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform);
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
+        CoroutineStarter.Start(LoadingObjectTimeout(entity.rootEntity.entityId));
     }
-    
+
     private void OnRealShapeLoaded(DecentralandEntity entity)
     {
         entity.OnShapeUpdated -= OnRealShapeLoaded;
 
-        GameObject loadingPlaceHolder = loadingGameObjects[entity.entityId];
-        loadingGameObjects.Remove(entity.entityId);
+        RemoveLoadingObject(entity.entityId);
+    }
+
+    private void RemoveLoadingObject(string entityId)
+    {
+        if (!loadingGameObjects.ContainsKey(entityId))
+            return;
+        GameObject loadingPlaceHolder = loadingGameObjects[entityId];
+        loadingGameObjects.Remove(entityId);
         GameObject.Destroy(loadingPlaceHolder);
     }
-    
+
+    private IEnumerator LoadingObjectTimeout(string entityId)
+    {
+        yield return new WaitForSeconds(secondsToTimeOut);
+        RemoveLoadingObject(entityId);
+    }
+
     #endregion
 
     #region Add Components
@@ -264,7 +284,7 @@ public class BIWCreatorController : BIWController
         DCL.Environment.i.world.sceneController.UpdateParcelScenesExecute(data);
     }
 
-    private void CreateLastSceneObject()
+    public void CreateLastCatalogItem()
     {
         if (lastCatalogItemCreated != null)
         {
@@ -283,7 +303,7 @@ public class BIWCreatorController : BIWController
         }
         else
         {
-            CreateSceneObject(catalogItem);
+            CreateCatalogItem(catalogItem);
         }
     }
 }
