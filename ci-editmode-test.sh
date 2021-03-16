@@ -4,10 +4,10 @@ source ci-setup.sh
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
         -batchmode \
-        -logFile "$PROJECT_PATH/playmode-logs.txt" \
+        -logFile "$PROJECT_PATH/editmode-logs.txt" \
         -runTests \
         -testPlatform EditMode \
-        -testResults "$PROJECT_PATH/playmode-results.xml" \
+        -testResults "$PROJECT_PATH/editmode-results.xml" \
         -enableCodeCoverage \
         -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
         -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
