@@ -26,7 +26,7 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIContainerRect";
 
-        public UIContainerRect(IParcelScene scene) : base(scene)
+        public UIContainerRect()
         {
             model = new Model();
         }

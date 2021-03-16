@@ -26,7 +26,7 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public string OnChanged;
-            
+
             public override BaseModel GetDataFromJSON(string json)
             {
                 return Utils.SafeFromJson<Model>(json);
@@ -35,7 +35,7 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIScrollRect";
 
-        public UIScrollRect(IParcelScene scene) : base(scene)
+        public UIScrollRect()
         {
             model = new Model();
         }

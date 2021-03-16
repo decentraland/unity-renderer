@@ -23,7 +23,7 @@ public class BIWNftsShould : IntegrationTestSuite
         (
             sceneController: new SceneController(),
             state: new WorldState(),
-            componentFactory: RuntimeComponentFactory.Create(),
+            componentFactory: new RuntimeComponentFactory(),
             sceneBoundsChecker: new SceneBoundsChecker()
         );
     }
@@ -58,7 +58,6 @@ public class BIWNftsShould : IntegrationTestSuite
         CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
 
-
         DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[ENTITY_ID].gameObject);
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
@@ -79,7 +78,6 @@ public class BIWNftsShould : IntegrationTestSuite
 
     protected override IEnumerator TearDown()
     {
-
         BIWCatalogManager.ClearCatalog();
         BuilderInWorldNFTController.i.ClearNFTs();
         yield return base.TearDown();

@@ -24,7 +24,7 @@ public class DCLVisibleOnEdit : BaseDisposable
         }
     }
 
-    public DCLVisibleOnEdit(IParcelScene scene) : base(scene)
+    public DCLVisibleOnEdit()
     {
         model = new Model();
     }

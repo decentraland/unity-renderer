@@ -31,7 +31,7 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIText";
 
-        public UIText(IParcelScene scene) : base(scene)
+        public UIText()
         {
             model = new Model();
         }

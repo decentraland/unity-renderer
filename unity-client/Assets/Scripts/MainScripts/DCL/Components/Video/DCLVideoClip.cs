@@ -16,14 +16,14 @@ namespace DCL.Components
 
             public override BaseModel GetDataFromJSON(string json)
             {
-               return Utils.SafeFromJson<Model>(json); 
+                return Utils.SafeFromJson<Model>(json);
             }
         }
 
         public bool isExternalURL { get; private set; }
         public bool isStream { get; private set; }
 
-        public DCLVideoClip(IParcelScene scene) : base(scene)
+        public DCLVideoClip()
         {
             model = new Model();
         }

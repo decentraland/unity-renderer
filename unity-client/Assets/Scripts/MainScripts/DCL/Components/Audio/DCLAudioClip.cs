@@ -40,19 +40,19 @@ namespace DCL.Components
         public LoadState loadingState { get; private set; }
         public event Action<DCLAudioClip> OnLoadingFinished;
 
-        public DCLAudioClip(IParcelScene scene) : base(scene)
+        public DCLAudioClip()
         {
             model = new Model();
 
             loadingState = LoadState.IDLE;
         }
 
-        public double volume => ((Model)model).volume;
+        public double volume => ((Model) model).volume;
 
-        public bool isLoop => ((Model)model).loop;
-        
-        public bool shouldTryLoad => ((Model)model).shouldTryToLoad;
-        
+        public bool isLoop => ((Model) model).loop;
+
+        public bool shouldTryLoad => ((Model) model).shouldTryToLoad;
+
         public override int GetClassId()
         {
             return (int) CLASS_ID.AUDIO_CLIP;
@@ -120,7 +120,7 @@ namespace DCL.Components
             if (isDisposed)
                 yield break;
 
-            Model model =  (Model) newModel;
+            Model model = (Model) newModel;
 
             if (!string.IsNullOrEmpty(model.url))
             {

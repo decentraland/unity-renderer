@@ -11,7 +11,7 @@ namespace DCL.Components
     {
         public virtual string componentName => GetType().Name;
         public string id;
-        public IParcelScene scene { get; protected set; }
+        public IParcelScene scene { get; set; }
 
         public abstract int GetClassId();
 
@@ -39,9 +39,8 @@ namespace DCL.Components
             updateHandler.ApplyChangesIfModified(model);
         }
 
-        public BaseDisposable(IParcelScene scene)
+        public BaseDisposable()
         {
-            this.scene = scene;
             updateHandler = CreateUpdateHandler();
         }
 

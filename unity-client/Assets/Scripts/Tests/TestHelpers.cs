@@ -98,8 +98,12 @@ namespace DCL.Helpers
             where T : BaseComponent
             where K : new()
         {
+            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
+            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            int inferredId = (int) poolableFactory.GetIdForType<T>();
+
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
-                ? (int) scene.ownerController.componentFactory.GetIdForType<T>()
+                ? (int) inferredId
                 : (int) classId;
 
             string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
@@ -132,7 +136,11 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            CLASS_ID_COMPONENT classId = Environment.i.world.sceneController.componentFactory.GetIdForType<T>();
+            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
+            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            int inferredId = (int) poolableFactory.GetIdForType<T>();
+
+            CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT) inferredId;
 
             ParcelScene scene = component.scene as ParcelScene;
             scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
@@ -176,7 +184,7 @@ namespace DCL.Helpers
 
             return component.routine;
         }
-        
+
         public static Coroutine SharedComponentUpdate<T, K>(T component, K model = null)
             where T : BaseDisposable
             where K : class, new()
@@ -711,7 +719,9 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            int id = (int) scene.ownerController.componentFactory.GetIdForType<TComponent>();
+            var factory = Environment.i.world.componentFactory as RuntimeComponentFactory;
+            IPoolableComponentFactory poolableFactory = factory.poolableComponentFactory;
+            int id = (int) poolableFactory.GetIdForType<TComponent>();
 
             scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT) id, "{}");
 
@@ -895,7 +905,7 @@ namespace DCL.Helpers
             };
 
             ParcelScene scene = entity.scene as ParcelScene;
-            
+
             var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             yield return onClickComponent.routine;
 

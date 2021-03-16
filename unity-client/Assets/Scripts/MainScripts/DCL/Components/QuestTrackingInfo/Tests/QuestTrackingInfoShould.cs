@@ -20,7 +20,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
         (
             sceneController: new SceneController(),
             state: new WorldState(),
-            componentFactory: RuntimeComponentFactory.Create()
+            componentFactory: new RuntimeComponentFactory()
         );
     }
 
@@ -47,7 +47,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator AddQuests()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
@@ -61,7 +61,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator RemovePreviousQuest()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
@@ -82,7 +82,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     public IEnumerator RemovePreviousQuestOnDestroy()
     {
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {

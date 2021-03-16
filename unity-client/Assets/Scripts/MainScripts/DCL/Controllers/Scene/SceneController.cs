@@ -19,8 +19,7 @@ namespace DCL
         bool deferredMessagesDecoding { get; set; }
         bool prewarmSceneMessagesPool { get; set; }
         bool prewarmEntitiesPool { get; set; }
-        IRuntimeComponentFactory componentFactory { get; }
-        void Initialize(IRuntimeComponentFactory componentFactory);
+        void Initialize();
         void Start();
         void Dispose();
         void Update();
@@ -60,19 +59,16 @@ namespace DCL
     {
         public static bool VERBOSE = false;
 
-        public IRuntimeComponentFactory componentFactory { get; private set; }
-
         public bool enabled { get; set; } = true;
 
         private Coroutine deferredDecodingCoroutine;
 
-        public void Initialize(IRuntimeComponentFactory componentFactory)
+        public void Initialize()
         {
             sceneSortDirty = true;
             positionDirty = true;
             lastSortFrame = 0;
             enabled = true;
-            this.componentFactory = componentFactory;
 
             Environment.i.platform.debugController.OnDebugModeSet += OnDebugModeSet;
 
@@ -121,8 +117,6 @@ namespace DCL
                 EnsureEntityPool();
             }
 
-            componentFactory.PrewarmPools();
-
             // Warmup some shader variants
             Resources.Load<ShaderVariantCollection>("ShaderVariantCollections/shaderVariants-selected").WarmUp();
         }
@@ -133,7 +127,9 @@ namespace DCL
             PoolManager.i.OnGet -= Environment.i.platform.cullingController.objectsTracker.MarkDirty;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             Environment.i.platform.debugController.OnDebugModeSet -= OnDebugModeSet;
+
             UnloadAllScenes(includePersistent: true);
+
             if (deferredDecodingCoroutine != null)
                 CoroutineStarter.Stop(deferredDecodingCoroutine);
         }

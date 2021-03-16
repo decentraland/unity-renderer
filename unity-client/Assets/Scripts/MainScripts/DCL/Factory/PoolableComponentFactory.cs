@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IRuntimeComponentFactory
+    public interface IPoolableComponentFactory
     {
         void EnsureFactoryDictionary();
         CLASS_ID_COMPONENT GetIdForType<T>() where T : Component;
@@ -16,7 +16,7 @@ namespace DCL
             where ItemType : IPoolableObjectContainer;
     }
 
-    public class RuntimeComponentFactory : ScriptableObject, IRuntimeComponentFactory
+    public class PoolableComponentFactory : ScriptableObject, IPoolableComponentFactory
     {
         [System.Serializable]
         public class Item
@@ -34,9 +34,9 @@ namespace DCL
 
         Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
-        public static RuntimeComponentFactory Create()
+        public static PoolableComponentFactory Create()
         {
-            return Resources.Load("RuntimeComponentFactory") as RuntimeComponentFactory;
+            return Resources.Load("RuntimeComponentFactory") as PoolableComponentFactory;
         }
 
         public void EnsureFactoryDictionary()

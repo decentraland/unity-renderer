@@ -20,7 +20,7 @@ namespace DCL.Components
             }
         }
 
-        public PlaneShape(IParcelScene scene) : base(scene)
+        public PlaneShape()
         {
             model = new Model();
         }

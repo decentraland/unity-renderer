@@ -35,7 +35,7 @@ namespace DCL.Components
             public string refractionTexture;
             public bool castShadows = true;
 
-            [Range(0, 4)] 
+            [Range(0, 4)]
             public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
 
             public override BaseModel GetDataFromJSON(string json)
@@ -64,7 +64,7 @@ namespace DCL.Components
         DCLTexture emissiveDCLTexture = null;
         DCLTexture bumpDCLTexture = null;
 
-        public PBRMaterial(IParcelScene scene) : base(scene)
+        public PBRMaterial()
         {
             model = new Model();
 
@@ -76,7 +76,7 @@ namespace DCL.Components
 
         new public Model GetModel()
         {
-            return (Model)model;
+            return (Model) model;
         }
 
         public override int GetClassId()
@@ -137,7 +137,7 @@ namespace DCL.Components
 
         private void SetupTransparencyMode()
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
 
             // Reset shader keywords
             material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
@@ -237,7 +237,7 @@ namespace DCL.Components
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
             if (meshRenderer == null)
                 return;
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
 
             meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
             if (meshRenderer.sharedMaterial != material)

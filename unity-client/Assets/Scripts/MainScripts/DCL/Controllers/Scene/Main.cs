@@ -15,7 +15,7 @@ namespace DCL
     {
         public static Main i { get; private set; }
 
-        public RuntimeComponentFactory componentFactory;
+        public PoolableComponentFactory componentFactory;
 
         public DebugConfig debugConfig;
 
@@ -65,7 +65,7 @@ namespace DCL
                 pointerEventsController: new PointerEventsController(),
                 sceneBoundsChecker: new SceneBoundsChecker(),
                 blockersController: new WorldBlockersController(),
-                componentFactory: componentFactory);
+                componentFactory: new RuntimeComponentFactory(componentFactory));
         }
 
         private void Start()

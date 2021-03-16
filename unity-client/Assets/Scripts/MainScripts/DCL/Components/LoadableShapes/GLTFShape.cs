@@ -7,7 +7,7 @@ namespace DCL.Components
     {
         public override string componentName => "GLTF Shape";
 
-        public GLTFShape(IParcelScene scene) : base(scene)
+        public GLTFShape()
         {
         }
 

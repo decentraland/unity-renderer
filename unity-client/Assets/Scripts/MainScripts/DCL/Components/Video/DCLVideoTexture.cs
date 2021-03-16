@@ -29,7 +29,7 @@ namespace DCL.Components
             public float seek = -1;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
-            
+
             public override BaseModel GetDataFromJSON(string json)
             {
                 return Utils.SafeFromJson<Model>(json);
@@ -48,7 +48,7 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture(IParcelScene scene) : base(scene)
+        public DCLVideoTexture()
         {
             model = new Model();
         }
@@ -158,7 +158,7 @@ namespace DCL.Components
 
         public float GetVolume()
         {
-            return ((Model)model).volume;
+            return ((Model) model).volume;
         }
 
         private bool HasTexturePropertiesChanged()
@@ -471,7 +471,7 @@ namespace DCL.Components
 
             bool MaterialInfo.IsVisible()
             {
-                if (!((UIShape.Model)shape.GetModel()).visible) return false;
+                if (!((UIShape.Model) shape.GetModel()).visible) return false;
                 return IsParentVisible(shape);
             }
 

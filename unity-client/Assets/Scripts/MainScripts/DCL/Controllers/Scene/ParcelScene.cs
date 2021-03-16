@@ -565,8 +565,6 @@ namespace DCL.Controllers
             }
 
             BaseComponent newComponent = null;
-            IRuntimeComponentFactory factory = ownerController.componentFactory;
-            Assert.IsNotNull(factory, "Factory is null?");
 
             if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
             {
@@ -578,30 +576,15 @@ namespace DCL.Controllers
                 }
 
                 OnPointerEvent.Model model = (OnPointerEvent.Model) data;
-
                 type = model.type;
 
                 if (!entity.uuidComponents.ContainsKey(type))
                 {
-                    //NOTE(Brian): We have to contain it in a gameObject or it will be pooled with the components attached.
-                    var go = new GameObject("UUID Component");
-                    go.transform.SetParent(entity.gameObject.transform, false);
-
-                    switch (type)
-                    {
-                        case OnClick.NAME:
-                            newComponent = go.GetOrCreateComponent<OnClick>();
-                            break;
-                        case OnPointerDown.NAME:
-                            newComponent = go.GetOrCreateComponent<OnPointerDown>();
-                            break;
-                        case OnPointerUp.NAME:
-                            newComponent = go.GetOrCreateComponent<OnPointerUp>();
-                            break;
-                    }
+                    newComponent = Environment.i.world.componentFactory.CreateComponent((int) classId, model) as BaseComponent;
 
                     if (newComponent != null)
                     {
+                        newComponent.transform.SetParent(entity.gameObject.transform, false);
                         UUIDComponent uuidComponent = newComponent as UUIDComponent;
 
                         if (uuidComponent != null)
@@ -628,7 +611,7 @@ namespace DCL.Controllers
             {
                 if (!entity.components.ContainsKey(classId))
                 {
-                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
+                    newComponent = Environment.i.world.componentFactory.CreateComponent((int) classId, null) as BaseComponent;
 
                     if (newComponent != null)
                     {
@@ -693,8 +676,6 @@ namespace DCL.Controllers
             }
 
             BaseComponent newComponent = null;
-            IRuntimeComponentFactory factory = ownerController.componentFactory;
-            Assert.IsNotNull(factory, "Factory is null?");
 
             // HACK: (Zak) will be removed when we separate each
             // uuid component as a different class id
@@ -708,25 +689,12 @@ namespace DCL.Controllers
 
                 if (!entity.uuidComponents.ContainsKey(type))
                 {
-                    //NOTE(Brian): We have to contain it in a gameObject or it will be pooled with the components attached.
-                    var go = new GameObject("UUID Component");
-                    go.transform.SetParent(entity.gameObject.transform, false);
-
-                    switch (type)
-                    {
-                        case OnClick.NAME:
-                            newComponent = go.GetOrCreateComponent<OnClick>();
-                            break;
-                        case OnPointerDown.NAME:
-                            newComponent = go.GetOrCreateComponent<OnPointerDown>();
-                            break;
-                        case OnPointerUp.NAME:
-                            newComponent = go.GetOrCreateComponent<OnPointerUp>();
-                            break;
-                    }
+                    newComponent = Environment.i.world.componentFactory.CreateComponent((int) classId, model) as BaseComponent;
 
                     if (newComponent != null)
                     {
+                        newComponent.gameObject.transform.SetParent(entity.gameObject.transform, false);
+
                         UUIDComponent uuidComponent = newComponent as UUIDComponent;
 
                         if (uuidComponent != null)
@@ -753,7 +721,8 @@ namespace DCL.Controllers
             {
                 if (!entity.components.ContainsKey(classId))
                 {
-                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
+                    var factory = Environment.i.world.componentFactory;
+                    newComponent = factory.CreateComponent((int) classId, null) as BaseComponent;
 
                     if (newComponent != null)
                     {
@@ -832,183 +801,25 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentCreate(string id, int classId)
         {
-            BaseDisposable disposableComponent;
+            if (disposableComponents.TryGetValue(id, out BaseDisposable component))
+                return component;
 
-            if (disposableComponents.TryGetValue(id, out disposableComponent))
+            if (classId == (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE || classId == (int) CLASS_ID.UI_FULLSCREEN_SHAPE)
             {
-                return disposableComponent;
+                if (GetSharedComponent<UIScreenSpace>() != null)
+                    return null;
             }
 
-            BaseDisposable newComponent = null;
+            var factory = Environment.i.world.componentFactory;
+            BaseDisposable newComponent = factory.CreateComponent(classId, null) as BaseDisposable;
 
-            switch ((CLASS_ID) classId)
-            {
-                case CLASS_ID.BOX_SHAPE:
-                {
-                    newComponent = new BoxShape(this);
-                    break;
-                }
+            if (newComponent == null)
+                return null;
 
-                case CLASS_ID.SPHERE_SHAPE:
-                {
-                    newComponent = new SphereShape(this);
-                    break;
-                }
-
-                case CLASS_ID.CONE_SHAPE:
-                {
-                    newComponent = new ConeShape(this);
-                    break;
-                }
-
-                case CLASS_ID.CYLINDER_SHAPE:
-                {
-                    newComponent = new CylinderShape(this);
-                    break;
-                }
-
-                case CLASS_ID.PLANE_SHAPE:
-                {
-                    newComponent = new PlaneShape(this);
-                    break;
-                }
-
-                case CLASS_ID.GLTF_SHAPE:
-                {
-                    newComponent = new GLTFShape(this);
-                    break;
-                }
-
-                case CLASS_ID.NFT_SHAPE:
-                {
-                    newComponent = new NFTShape(this);
-                    break;
-                }
-
-                case CLASS_ID.OBJ_SHAPE:
-                {
-                    newComponent = new OBJShape(this);
-                    break;
-                }
-
-                case CLASS_ID.BASIC_MATERIAL:
-                {
-                    newComponent = new BasicMaterial(this);
-                    break;
-                }
-
-                case CLASS_ID.PBR_MATERIAL:
-                {
-                    newComponent = new PBRMaterial(this);
-                    break;
-                }
-
-                case CLASS_ID.AUDIO_CLIP:
-                {
-                    newComponent = new DCLAudioClip(this);
-                    break;
-                }
-
-                case CLASS_ID.TEXTURE:
-                {
-                    newComponent = new DCLTexture(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_INPUT_TEXT_SHAPE:
-                {
-                    newComponent = new UIInputText(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_FULLSCREEN_SHAPE:
-                case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
-                {
-                    if (GetSharedComponent<UIScreenSpace>() == null)
-                    {
-                        newComponent = new UIScreenSpace(this);
-                    }
-
-                    break;
-                }
-
-                case CLASS_ID.UI_CONTAINER_RECT:
-                {
-                    newComponent = new UIContainerRect(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_SLIDER_SHAPE:
-                {
-                    newComponent = new UIScrollRect(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_CONTAINER_STACK:
-                {
-                    newComponent = new UIContainerStack(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_IMAGE_SHAPE:
-                {
-                    newComponent = new UIImage(this);
-                    break;
-                }
-
-                case CLASS_ID.UI_TEXT_SHAPE:
-                {
-                    newComponent = new UIText(this);
-                    break;
-                }
-
-                case CLASS_ID.VIDEO_CLIP:
-                {
-                    newComponent = new DCLVideoClip(this);
-                    break;
-                }
-
-                case CLASS_ID.VIDEO_TEXTURE:
-                {
-                    newComponent = new DCLVideoTexture(this);
-                    break;
-                }
-
-                case CLASS_ID.FONT:
-                {
-                    newComponent = new DCLFont(this);
-                    break;
-                }
-
-                case CLASS_ID.NAME:
-                {
-                    newComponent = new DCLName(this);
-                    break;
-                }
-
-                case CLASS_ID.LOCKED_ON_EDIT:
-                {
-                    newComponent = new DCLLockedOnEdit(this);
-                    break;
-                }
-
-                case CLASS_ID.VISIBLE_ON_EDIT:
-                {
-                    newComponent = new DCLVisibleOnEdit(this);
-                    break;
-                }
-
-                default:
-                    Debug.LogError($"Unknown classId");
-                    break;
-            }
-
-            if (newComponent != null)
-            {
-                newComponent.id = id;
-                disposableComponents.Add(id, newComponent);
-                OnAddSharedComponent?.Invoke(id, newComponent);
-            }
+            newComponent.scene = this;
+            newComponent.id = id;
+            disposableComponents.Add(id, newComponent);
+            OnAddSharedComponent?.Invoke(id, newComponent);
 
             return newComponent;
         }
@@ -1105,7 +916,7 @@ namespace DCL.Controllers
             if (newComponent != null && newComponent.isRoutineRunning)
                 yieldInstruction = newComponent.yieldInstruction;
         }
-        
+
         public BaseDisposable SharedComponentUpdate(string id, BaseModel model)
         {
             if (disposableComponents.TryGetValue(id, out BaseDisposable disposableComponent))

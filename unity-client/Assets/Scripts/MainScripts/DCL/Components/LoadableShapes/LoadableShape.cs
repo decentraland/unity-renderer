@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace DCL.Components
 {
-    public class LoadableShape : BaseShape,IAssetCatalogReferenceHolder
+    public class LoadableShape : BaseShape, IAssetCatalogReferenceHolder
     {
         [System.Serializable]
         public new class Model : BaseShape.Model
@@ -51,7 +51,7 @@ namespace DCL.Components
             return result as T;
         }
 
-        public LoadableShape(IParcelScene scene) : base(scene)
+        public LoadableShape()
         {
             model = new Model();
         }
@@ -68,19 +68,19 @@ namespace DCL.Components
 
         public override bool IsVisible()
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             return model.visible;
         }
 
         public override bool HasCollisions()
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             return model.withCollisions;
         }
 
         public string GetAssetId()
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             return model.assetId;
         }
     }
@@ -118,7 +118,7 @@ namespace DCL.Components
             set { base.previousModel = value; }
         }
 
-        public LoadableShape(IParcelScene scene) : base(scene)
+        public LoadableShape()
         {
             OnDetach += DetachShape;
             OnAttach += AttachShape;
@@ -126,7 +126,6 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-           
             LoadWrapperModelType model = (LoadWrapperModelType) newModel;
 
             bool updateVisibility = true;
@@ -138,7 +137,7 @@ namespace DCL.Components
                 updateVisibility = previousModel.visible != model.visible;
                 updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
                 triggerAttachment = (!string.IsNullOrEmpty(model.src) && previousModel.src != model.src) ||
-                                         (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
+                                    (!string.IsNullOrEmpty(model.assetId) && previousModel.assetId != model.assetId);
             }
 
             foreach (var entity in attachedEntities)
@@ -154,6 +153,7 @@ namespace DCL.Components
 
                 entity.OnShapeUpdated?.Invoke(entity);
             }
+
             previousModel = model;
             return null;
         }

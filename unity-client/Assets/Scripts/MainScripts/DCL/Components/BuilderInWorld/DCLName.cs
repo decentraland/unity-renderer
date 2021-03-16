@@ -24,7 +24,7 @@ public class DCLName : BaseDisposable
         }
     }
 
-    public DCLName(IParcelScene scene) : base(scene)
+    public DCLName()
     {
         model = new Model();
     }
@@ -38,7 +38,7 @@ public class DCLName : BaseDisposable
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
     {
-        Model modelToApply = (Model)newModel;
+        Model modelToApply = (Model) newModel;
 
         model = modelToApply;
 

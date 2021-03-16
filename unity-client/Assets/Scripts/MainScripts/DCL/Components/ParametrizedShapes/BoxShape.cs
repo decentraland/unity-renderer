@@ -16,7 +16,7 @@ namespace DCL.Components
             }
         }
 
-        public BoxShape(IParcelScene scene) : base(scene)
+        public BoxShape()
         {
             model = new Model();
         }

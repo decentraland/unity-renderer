@@ -36,7 +36,7 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText(IParcelScene scene) : base(scene)
+        public UIInputText()
         {
             model = new Model();
         }
@@ -61,7 +61,7 @@ namespace DCL.Components
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
             model = (Model) newModel;
-            
+
             inputField.textViewport = referencesContainer.rectTransform;
 
             UnsuscribeFromEvents();

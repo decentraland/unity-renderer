@@ -55,7 +55,7 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public UIShape(IParcelScene scene) : base(scene)
+        public UIShape()
         {
         }
 
@@ -168,7 +168,7 @@ namespace DCL.Components
 
         public UIShape parentUIComponent { get; protected set; }
 
-        public UIShape(IParcelScene scene) : base(scene)
+        public UIShape()
         {
             model = new Model();
         }
@@ -198,7 +198,7 @@ namespace DCL.Components
 
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             GameObject uiGameObject = null;
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
                                       scene.disposableComponents.ContainsKey(model.parentComponent);
@@ -263,7 +263,8 @@ namespace DCL.Components
             {
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
             }
-            Model model = (Model)this.model;
+
+            Model model = (Model) this.model;
 
             referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
                 model.width.GetScaledValue(parentTransform.rect.width));
@@ -283,7 +284,7 @@ namespace DCL.Components
             Utils.ForceRebuildLayoutImmediate(parentTransform);
             referencesContainer.layoutElement.ignoreLayout = true;
 
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             // Reposition
             Vector3 position = Vector3.zero;
             position.x = model.positionX.GetScaledValue(parentTransform.rect.width);
@@ -389,7 +390,7 @@ namespace DCL.Components
 
         protected void ConfigureAlignment(LayoutGroup layout)
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
             switch (model.vAlign)
             {
                 case "top":

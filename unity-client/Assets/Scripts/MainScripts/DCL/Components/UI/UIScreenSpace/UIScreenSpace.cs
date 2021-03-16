@@ -20,15 +20,9 @@ namespace DCL.Components
         private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
 
-        public UIScreenSpace(IParcelScene scene) : base(scene)
+        public UIScreenSpace()
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
-
-            //Only no-dcl scenes are listening the the global visibility event
-            if (!scene.isPersistent)
-            {
-                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
-            }
             model = new Model();
         }
 
@@ -46,9 +40,9 @@ namespace DCL.Components
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
         }
-        
+
         private bool initialized = false;
-        
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             var model = (Model) newModel;
@@ -185,6 +179,7 @@ namespace DCL.Components
             if (!scene.isPersistent)
             {
                 UpdateCanvasVisibility();
+                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
             }
         }
     }

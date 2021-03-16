@@ -21,7 +21,7 @@ namespace DCL.Components
 
         public override string componentName => "NFT Shape";
 
-        public NFTShape(IParcelScene scene) : base(scene)
+        public NFTShape()
         {
             model = new Model();
         }

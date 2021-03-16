@@ -21,14 +21,14 @@ namespace DCL.Components
             }
         }
 
-        public BaseShape(IParcelScene scene) : base(scene)
+        public BaseShape()
         {
             model = new Model();
         }
 
         new public Model GetModel()
         {
-            return (Model)model;
+            return (Model) model;
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)

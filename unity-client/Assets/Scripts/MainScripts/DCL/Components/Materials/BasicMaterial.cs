@@ -23,7 +23,7 @@ namespace DCL.Components
 
             public override BaseModel GetDataFromJSON(string json)
             {
-                return Utils.SafeFromJson<Model>(json); 
+                return Utils.SafeFromJson<Model>(json);
             }
         }
 
@@ -36,7 +36,7 @@ namespace DCL.Components
         private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
         private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
 
-        public BasicMaterial(IParcelScene scene) : base(scene)
+        public BasicMaterial()
         {
             material = new Material(Utils.EnsureResourcesMaterial("Materials/BasicShapeMaterial"));
 
@@ -47,7 +47,7 @@ namespace DCL.Components
 
         new public Model GetModel()
         {
-            return (Model)model;
+            return (Model) model;
         }
 
         public override int GetClassId()

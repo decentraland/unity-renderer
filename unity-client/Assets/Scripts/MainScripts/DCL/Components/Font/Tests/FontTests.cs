@@ -23,7 +23,7 @@ namespace Tests
             (
                 sceneController: new SceneController(),
                 state: new WorldState(),
-                componentFactory: RuntimeComponentFactory.Create()
+                componentFactory: new RuntimeComponentFactory()
             );
         }
 

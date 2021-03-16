@@ -5,7 +5,7 @@ namespace DCL.Components
 {
     public class OBJShape : LoadableShape<LoadWrapper_OBJ, LoadableShape.Model>
     {
-        public OBJShape(IParcelScene scene) : base(scene)
+        public OBJShape()
         {
         }
 

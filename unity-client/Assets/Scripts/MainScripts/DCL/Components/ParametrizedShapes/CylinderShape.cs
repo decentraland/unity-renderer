@@ -25,7 +25,7 @@ namespace DCL.Components
             }
         }
 
-        public CylinderShape(IParcelScene scene) : base(scene)
+        public CylinderShape()
         {
             model = new Model();
         }
@@ -37,7 +37,7 @@ namespace DCL.Components
 
         public override Mesh GenerateGeometry()
         {
-            var model = (Model)this.model;
+            var model = (Model) this.model;
             return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
         }
 
@@ -46,14 +46,14 @@ namespace DCL.Components
             if (currentMesh == null) return true;
 
             Model newCylinderModel = newModel as Model;
-            var model = (Model)this.model;
-            return  newCylinderModel.radius != model.radius
-                    || newCylinderModel.radiusTop != model.radiusTop
-                    || newCylinderModel.radiusBottom != model.radiusBottom
-                    || newCylinderModel.segmentsHeight != model.segmentsHeight
-                    || newCylinderModel.segmentsRadial != model.segmentsRadial
-                    || newCylinderModel.openEnded != model.openEnded
-                    || newCylinderModel.arc != model.arc;
+            var model = (Model) this.model;
+            return newCylinderModel.radius != model.radius
+                   || newCylinderModel.radiusTop != model.radiusTop
+                   || newCylinderModel.radiusBottom != model.radiusBottom
+                   || newCylinderModel.segmentsHeight != model.segmentsHeight
+                   || newCylinderModel.segmentsRadial != model.segmentsRadial
+                   || newCylinderModel.openEnded != model.openEnded
+                   || newCylinderModel.arc != model.arc;
         }
     }
 }

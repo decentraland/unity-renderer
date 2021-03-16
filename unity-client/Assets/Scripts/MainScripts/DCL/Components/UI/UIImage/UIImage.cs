@@ -34,7 +34,7 @@ namespace DCL.Components
 
         DCLTexture dclTexture = null;
 
-        public UIImage(IParcelScene scene) : base(scene)
+        public UIImage()
         {
             model = new Model();
         }
