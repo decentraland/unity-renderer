@@ -19,14 +19,13 @@ namespace DCL.Configuration
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
-        
+
         public const int RETRY_AMOUNTS = 3;
 
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
-
 
         //Floor Scene Object
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
@@ -39,11 +38,16 @@ namespace DCL.Configuration
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
 
-
         //Collectables
         public const string ASSETS_COLLECTIBLES = "Collectibles";
         public const string COLLECTIBLE_MODEL_PROTOCOL = "ethereum://";
-    
+
+        //Gizmos
+        public const string TRANSLATE_GIZMO_NAME = "MOVE";
+        public const string ROTATE_GIZMO_NAME = "ROTATE";
+        public const string SCLAE_GIZMO_NAME = "SCALE";
+
+        public const float GIZMOS_RELATIVE_SCALE = 0.06f;
     }
 
     public static class ApplicationSettings

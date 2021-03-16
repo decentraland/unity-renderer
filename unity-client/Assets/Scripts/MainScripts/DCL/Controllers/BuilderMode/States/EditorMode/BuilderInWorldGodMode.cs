@@ -23,13 +23,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public Transform lookAtT;
     public MouseCatcher mouseCatcher;
     public PlayerAvatarController avatarRenderer;
-    
+
     [Header("Prefab References")]
     public DCLBuilderGizmoManager gizmoManager;
     public VoxelController voxelController;
     public BuilderInWorldInputWrapper builderInputWrapper;
     public BIWOutlinerController outlinerController;
-    
+
     [Header("InputActions")]
     [SerializeField]
     internal InputAction_Trigger focusOnSelectedEntitiesInputAction;
@@ -122,7 +122,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
                 foreach (DCLBuilderInWorldEntity entity in allEntities)
                 {
-                    if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected) continue;
+                    if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected)
+                        continue;
                     if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
                     {
                         if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
@@ -227,8 +228,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
             if (isSnapActive)
             {
-                currentPoint.x = Mathf.Round(currentPoint.x/snapDragFactor)*snapDragFactor;
-                currentPoint.z = Mathf.Round(currentPoint.z/snapDragFactor)*snapDragFactor;
+                currentPoint.x = Mathf.Round(currentPoint.x / snapDragFactor) * snapDragFactor;
+                currentPoint.z = Mathf.Round(currentPoint.z / snapDragFactor) * snapDragFactor;
                 destination = currentPoint;
             }
             else
@@ -336,15 +337,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     #region Voxel
 
-    public void ActivateVoxelMode()
-    {
-        voxelController.SetActiveMode(true);
-    }
+    public void ActivateVoxelMode() { voxelController.SetActiveMode(true); }
 
-    public void DesactivateVoxelMode()
-    {
-        voxelController.SetActiveMode(false);
-    }
+    public void DesactivateVoxelMode() { voxelController.SetActiveMode(false); }
 
     #endregion
 
@@ -359,7 +354,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             ActivateCamera(scene);
 
         if (gizmoManager.GetSelectedGizmo() == DCL.Components.DCLGizmos.Gizmo.NONE)
-            gizmoManager.SetGizmoType("MOVE");
+            gizmoManager.SetGizmoType(BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
         mouseCatcher.enabled = false;
         Environment.i.world.sceneController.IsolateScene(sceneToEdit);
         Utils.UnlockCursor();
@@ -387,7 +382,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
         gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
-        gizmoManager.SetAllGizmosInPosition(cameraPosition);
+        gizmoManager.ForceRelativeScaleRatio();
     }
 
     public override void Deactivate()
@@ -435,10 +430,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    public override Vector3 GetCreatedEntityPoint()
-    {
-        return GetFloorPointAtMouse(Input.mousePosition);
-    }
+    public override Vector3 GetCreatedEntityPoint() { return GetFloorPointAtMouse(Input.mousePosition); }
 
     public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
@@ -529,7 +521,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (isModeActive && !isPlacingNewObject)
         {
-            gizmoManager.SetGizmoType("MOVE");
+            gizmoManager.SetGizmoType(BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
             if (selectedEntities.Count > 0)
                 ShowGizmos();
             else
@@ -541,7 +533,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (isModeActive && !isPlacingNewObject)
         {
-            gizmoManager.SetGizmoType("ROTATE");
+            gizmoManager.SetGizmoType(BuilderInWorldSettings.ROTATE_GIZMO_NAME);
             if (selectedEntities.Count > 0)
                 ShowGizmos();
             else
@@ -553,7 +545,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (isModeActive && !isPlacingNewObject)
         {
-            gizmoManager.SetGizmoType("SCALE");
+            gizmoManager.SetGizmoType(BuilderInWorldSettings.SCLAE_GIZMO_NAME);
             if (selectedEntities.Count > 0)
                 ShowGizmos();
             else
@@ -561,10 +553,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus)
-    {
-        freeCameraController.FocusOnEntities(entitiesToFocus);
-    }
+    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
     void OnGizmosTransformStart(string gizmoType)
     {
@@ -583,24 +572,21 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         switch (gizmoType)
         {
-            case "MOVE":
+            case BuilderInWorldSettings.TRANSLATE_GIZMO_NAME:
 
                 ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
                 break;
-            case "ROTATE":
+            case BuilderInWorldSettings.ROTATE_GIZMO_NAME:
 
                 ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
                 break;
-            case "SCALE":
+            case BuilderInWorldSettings.SCLAE_GIZMO_NAME:
                 ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
                 break;
         }
     }
 
-    void ShowGizmos()
-    {
-        gizmoManager.ShowGizmo();
-    }
+    void ShowGizmos() { gizmoManager.ShowGizmo(); }
 
     void SetLookAtObject(ParcelScene parcelScene)
     {
@@ -622,10 +608,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 destination.x = Mathf.Round(destination.x / snapDragFactor) * snapDragFactor;
                 destination.z = Mathf.Round(destination.z / snapDragFactor) * snapDragFactor;
             }
-            
+
             editionGO.transform.position = destination;
-            
-            if (selectedEntities.Count > 0 && selectedEntities[0].isNFT) editionGO.transform.position += Vector3.up * 2f;
+
+            if (selectedEntities.Count > 0 && selectedEntities[0].isNFT)
+                editionGO.transform.position += Vector3.up * 2f;
         }
     }
 
