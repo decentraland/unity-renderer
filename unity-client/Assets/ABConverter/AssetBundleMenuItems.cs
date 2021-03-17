@@ -101,7 +101,6 @@ namespace DCL
             builder.Convert(avatarItemList);
         }
 
-
         [MenuItem("Decentraland/Start Visual Tests")]
         public static void StartVisualTests()
         {
@@ -109,17 +108,20 @@ namespace DCL
 
         }
 
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump Zone -110,-110")]
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
         public static void DumpZoneArea()
         {
             ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
         }
 
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump Tominoya Casino")]
-        public static void DumpTominoyaCasino()
-        {
-            ABConverter.Client.DumpArea(new Vector2Int(-119, 135), new Vector2Int(1, 1));
-        }
+         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
+         public static void DumpSingleAsset()
+         {
+             // TODO: Make an editor window to setup these values from editor (for other dump-modes as well)
+             ABConverter.Client.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
+                                            "models/FloorBaseGrass_01/FloorBaseGrass_01.glb",
+                                            "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
+         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]
         public static void DumpCenterPlaza()

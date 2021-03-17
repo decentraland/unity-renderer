@@ -17,15 +17,30 @@ namespace DCL.ABConverter
         static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
         static readonly float snapshotCamOffset = 3;
+        static int skippedAssets = 0;
 
+        /// <summary>
+        /// Instantiate all locally-converted GLTFs in both formats (GLTF and Asset Bundle) and
+        /// compare them visually. If a visual test fails, the AB is deleted to avoid uploading it
+        /// </summary>
         public static IEnumerator TestConvertedAssets(Environment env = null, Action<int> OnFinish = null)
         {
+            Debug.Log("Visual Test Detection: Starting converted assets testing...");
+
             EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
 
             VisualTestHelpers.baselineImagesPath += "ABConverter/";
             VisualTestHelpers.testImagesPath += "ABConverter/";
+            skippedAssets = 0;
 
             var gltfs = LoadAndInstantiateAllGltfAssets();
+
+            if (gltfs.Length == 0)
+            {
+                Debug.Log("Visual Test Detection: no instantiated GLTFs...");
+                OnFinish?.Invoke(1);
+                yield break;
+            }
 
             VisualTestHelpers.generateBaseline = true;
 
@@ -38,7 +53,7 @@ namespace DCL.ABConverter
             {
                 go.SetActive(true);
 
-                // unify all child renderer bounds and use that to position the camera
+                // unify all child renderer bounds and use that to position the snapshot camera
                 var mergedBounds = Helpers.Utils.BuildMergedBounds(go.GetComponentsInChildren<Renderer>());
                 Vector3 cameraPosition = new Vector3(mergedBounds.min.x - snapshotCamOffset, mergedBounds.max.y + snapshotCamOffset, mergedBounds.min.z - snapshotCamOffset);
 
@@ -50,12 +65,17 @@ namespace DCL.ABConverter
 
             var abs = LoadAndInstantiateAllAssetBundles();
 
+            if (abs.Length == 0)
+            {
+                Debug.Log("Visual Test Detection: no instantiated ABs...");
+                OnFinish?.Invoke(0);
+                yield break;
+            }
+
             foreach (GameObject go in abs)
             {
                 go.SetActive(false);
             }
-
-            int skippedAssets = 0;
 
             foreach (GameObject go in abs)
             {
@@ -70,10 +90,10 @@ namespace DCL.ABConverter
                 yield return VisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
 
                 bool result = VisualTestHelpers.TestSnapshot(
-                    VisualTestHelpers.baselineImagesPath + testName,
-                    VisualTestHelpers.testImagesPath + testName,
-                    95,
-                    false);
+                        VisualTestHelpers.baselineImagesPath + testName,
+                        VisualTestHelpers.testImagesPath + testName,
+                        95,
+                        false);
 
                 // Delete failed AB files to avoid uploading them
                 if (!result && env != null)
@@ -89,7 +109,7 @@ namespace DCL.ABConverter
 
                     skippedAssets++;
 
-                    // TODO: Notify some metrics API or something to let know that this asset has conversion problems and we should manually take a look
+                    // TODO: Notify some metrics API or something to let us know that this asset has conversion problems so that we take a look manually
                     Debug.Log("Visual Test Detection: FAILED converting asset -> " + go.name);
                 }
 
@@ -100,9 +120,11 @@ namespace DCL.ABConverter
             VisualTestHelpers.testImagesPath = testImagesPath;
 
             OnFinish?.Invoke(skippedAssets);
-            yield break;
         }
 
+        /// <summary>
+        /// Instantiate all local GLTFs found in the "_Downloaded" directory
+        /// </summary>
         public static GameObject[] LoadAndInstantiateAllGltfAssets()
         {
             var assets = AssetDatabase.FindAssets($"t:GameObject", new[] {"Assets/_Downloaded"});
@@ -120,6 +142,10 @@ namespace DCL.ABConverter
             return importedGLTFs.ToArray();
         }
 
+        /// <summary>
+        /// Search for local GLTFs in "_Downloaded" and use those hashes to find their corresponding
+        /// Asset Bundle files, then instantiate those ABs in the Unity scene
+        /// </summary>
         public static GameObject[] LoadAndInstantiateAllAssetBundles()
         {
             Caching.ClearCache();
@@ -140,7 +166,11 @@ namespace DCL.ABConverter
                 // NOTE(Brian): If no gameObjects are found, we assume they are dependency assets (textures, etc).
                 if (guids.Length == 0)
                 {
-                    dependencyAbs.Add(hash);
+                    // We need to avoid adding dependencies that are NOT converted to ABs (like .bin files)
+                    if (AssetDatabase.FindAssets("t:Texture", new[] { path }).Length != 0)
+                    {
+                        dependencyAbs.Add(hash);   
+                    }
                 }
                 else
                 {
@@ -168,7 +198,7 @@ namespace DCL.ABConverter
 
                 if (req.isHttpError || req.isNetworkError)
                 {
-                    Debug.Log("Visual Test Detection: Failed to instantiate AB, missing source file for : " + hash);
+                    Debug.Log("Visual Test Detection: Failed to download dependency asset: " + hash);
                     continue;
                 }
 
@@ -196,6 +226,7 @@ namespace DCL.ABConverter
                 if (req.isHttpError || req.isNetworkError)
                 {
                     Debug.Log("Visual Test Detection: Failed to instantiate AB, missing source file for : " + hash);
+                    skippedAssets++;
                     continue;
                 }
 

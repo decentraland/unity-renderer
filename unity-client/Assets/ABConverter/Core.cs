@@ -10,6 +10,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityGLTF;
 using UnityGLTF.Cache;
+using GLTF;
+using GLTF.Schema;
 
 namespace DCL.ABConverter
 {
@@ -17,10 +19,11 @@ namespace DCL.ABConverter
         {
             public enum ErrorCodes
             {
-                SUCCESS = 0,
-                UNDEFINED = 1,
-                SCENE_LIST_NULL = 2,
-                ASSET_BUNDLE_BUILD_FAIL = 3,
+                SUCCESS,
+                UNDEFINED,
+                SCENE_LIST_NULL,
+                ASSET_BUNDLE_BUILD_FAIL,
+                SOME_ASSET_BUNDLES_SKIPPED
             }
 
             public class State
@@ -49,7 +52,7 @@ namespace DCL.ABConverter
 
             private float startTime;
             private int totalAssets;
-            public int skippedAssets;
+            private int skippedAssets;
 
             private Environment env;
             private static Logger log = new Logger("ABConverter.Core");
@@ -82,6 +85,7 @@ namespace DCL.ABConverter
             /// <param name="OnFinish">End callback with the proper ErrorCode</param>
             public void Convert(ContentServerUtils.MappingPair[] rawContents, Action<ErrorCodes> OnFinish = null)
             {
+                OnFinish -= CleanAndExit;
                 OnFinish += CleanAndExit;
 
                 startTime = Time.realtimeSinceStartup;
@@ -160,11 +164,90 @@ namespace DCL.ABConverter
                         OnFinish: (skippedAssetsCount) =>
                         {
                             this.skippedAssets = skippedAssetsCount;
+
+                            if (this.skippedAssets > 0)
+                                state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
+
                             OnFinish?.Invoke(state.lastErrorCode);
                         }));
                 }
 
                 EditorApplication.update += UpdateLoop;
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            /// <param name="assetHash">The asset's content server hash</param>
+            /// <param name="assetFilename">The asset's content server file name</param>
+            /// <param name="sceneCid">The asset scene ID</param>
+            /// <param name="mappingPairsList">The reference of a list where the dependency mapping pairs will be added</param>
+            public void GetAssetDependenciesMappingPairs(string assetHash, string assetFilename, string sceneCid,  ref List<ContentServerUtils.MappingPair> mappingPairsList)
+            {
+                // 1. Get all dependencies
+                List<AssetPath> gltfPaths = ABConverter.Utils.GetPathsFromPairs(finalDownloadedPath, new []
+                    {
+                        new ContentServerUtils.MappingPair
+                        {
+                            file = assetFilename,
+                            hash = assetHash
+                        }
+                    }, Config.gltfExtensions);
+
+                // Disable editor assets auto-import temporarily to avoid Unity trying to import the GLTF on its own, when we know dependencies haven't been downloaded yet
+                AssetDatabase.StartAssetEditing();
+
+                string path = DownloadAsset(gltfPaths[0]);
+
+                if (string.IsNullOrEmpty(path))
+                {
+                    log.Error("Core - GetAssetDependenciesMappingPairs() - Invalid target asset data! aborting dependencies population");
+                    return;
+                }
+                
+                log.Info($"Core - GetAssetDependenciesMappingPairs() -> path: {path}," +
+                          $"\n file: {gltfPaths[0].file}," +
+                          $"\n hash: {gltfPaths[0].hash}," +
+                          $"\n pair: {gltfPaths[0].pair}, " +
+                          $"\n basePath: {gltfPaths[0].basePath}," +
+                          $"\n finalPath: {gltfPaths[0].finalPath}," +
+                          $"\n finalMetaPath: {gltfPaths[0].finalMetaPath}");
+
+                // 2. Search for dependencies hashes in scene mappings and add them to the collection
+                using (var stream = File.OpenRead(path))
+                {
+                    GLTFRoot gLTFRoot;
+                    GLTFParser.ParseJson(stream, out gLTFRoot);
+
+                    ContentServerUtils.MappingsAPIData parcelInfoApiData = ABConverter.Utils.GetSceneMappingsData(env.webRequest, settings.tld, sceneCid);
+
+                    if (gLTFRoot.Buffers != null)
+                    {
+                        foreach (var asset in gLTFRoot.Buffers)
+                        {
+                            if (string.IsNullOrEmpty(asset.Uri)) continue;
+
+                            mappingPairsList.AddRange(parcelInfoApiData.data[0].content.contents.Where(x => x.file.Contains(asset.Uri)).ToArray());
+                            
+                            log.Info("Core - GetAssetDependenciesMappingPairs - Buffers -> Searching for... uri: " + asset.Uri + " -> name: " + asset.Name);
+                        }
+                    }
+
+                    if (gLTFRoot.Images != null)
+                    {
+                        foreach (var asset in gLTFRoot.Images)
+                        {
+                            if (string.IsNullOrEmpty(asset.Uri)) continue;
+                            mappingPairsList.AddRange(parcelInfoApiData.data[0].content.contents.Where(x => x.file.Contains(asset.Uri)).ToArray());
+                            
+                            log.Info("Core - GetAssetDependenciesMappingPairs - Images -> uri: " + asset.Uri + " -> name: " + asset.Name);
+                        }
+                    }
+                }
+
+                // 3. Remove temporary GLTF file and re-enable editor assets auto-import
+                File.Delete(path);
+                AssetDatabase.StopAssetEditing();
             }
 
             /// <summary>
@@ -200,6 +283,7 @@ namespace DCL.ABConverter
 
                 MarkAllAssetBundles(assetsToMark);
                 MarkShaderAssetBundle();
+
                 return true;
             }
 
@@ -265,7 +349,7 @@ namespace DCL.ABConverter
 
                 foreach (var bufferPath in bufferPaths)
                 {
-                    RetrieveAndInjectBuffer(gltfPath, bufferPath);
+                    RetrieveAndInjectBuffer(gltfPath, bufferPath); // TODO: this adds buffers that will be used in the future by the GLTFSceneImporter
                 }
 
                 log.Verbose("About to load " + gltfPath.hash);
@@ -590,12 +674,10 @@ namespace DCL.ABConverter
                 env.assetDatabase.SaveAssets();
             }
 
-
             internal void CleanAssetBundleFolder(string[] assetBundles)
             {
                 ABConverter.Utils.CleanAssetBundleFolder(env.file, settings.finalAssetBundlePath, assetBundles, hashLowercaseToHashProper);
             }
-
 
             internal void PopulateLowercaseMappings(ContentServerUtils.MappingPair[] pairs)
             {
@@ -621,7 +703,6 @@ namespace DCL.ABConverter
                 var mainShader = Shader.Find("DCL/LWRP/Lit");
                 ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
             }
-
 
             internal virtual void InitializeDirectoryPaths(bool deleteIfExists)
             {

@@ -49,6 +49,9 @@ namespace UnityGLTF
 
                 foreach (var mat in rend.sharedMaterials)
                 {
+                    if (rend.sharedMaterials.Length == 0) break;
+                    if (mat == null) continue;
+
                     string crc = mat.ComputeCRC() + mat.name;
 
                     if (!matByCrc.ContainsKey(crc))
@@ -128,9 +131,10 @@ namespace UnityGLTF
                 var meshHash = new HashSet<UnityEngine.Mesh>();
                 var meshFilters = gltfScene.GetComponentsInChildren<MeshFilter>();
                 var vertexBuffer = new List<Vector3>();
-                meshes = meshFilters.Select(mf =>
+                meshes = meshFilters.Where(mf => mf.sharedMesh != null).Select(mf =>
                 {
                     var mesh = mf.sharedMesh;
+
                     vertexBuffer.Clear();
                     mesh.GetVertices(vertexBuffer);
                     for (var i = 0; i < vertexBuffer.Count; ++i)
@@ -496,7 +500,7 @@ namespace UnityGLTF
 
                 var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
                 GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-                loader.addImagesToPersistentCaching = false;
+                loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
                 loader.addMaterialsToPersistentCaching = false;
                 loader.initialVisibility = true;
                 loader.useMaterialTransition = false;
@@ -510,14 +514,22 @@ namespace UnityGLTF
                 while (stack.Count > 0)
                 {
                     var enumerator = stack.Pop();
-                    if (enumerator.MoveNext())
+
+                    try
                     {
-                        stack.Push(enumerator);
-                        var subEnumerator = enumerator.Current as IEnumerator;
-                        if (subEnumerator != null)
+                        if (enumerator.MoveNext())
                         {
-                            stack.Push(subEnumerator);
+                            stack.Push(enumerator);
+                            var subEnumerator = enumerator.Current as IEnumerator;
+                            if (subEnumerator != null)
+                            {
+                                stack.Push(subEnumerator);
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("GLTFImporter - CreateGLTFScene Failed: " + e.Message + "\n" + e.StackTrace);
                     }
                 }
 

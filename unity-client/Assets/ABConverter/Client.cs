@@ -197,6 +197,60 @@ namespace DCL.ABConverter
         }
 
         /// <summary>
+        /// This will start the asset bundle conversion for a single asset
+        /// </summary>
+        /// <param name="assetHash">The asset's content server hash</param>
+        /// <param name="assetFilename">The asset's content server file name</param>
+        /// <param name="sceneCid">The asset scene ID</param>
+        /// <param name="settings">Any conversion settings object, if its null, a new one will be created</param>
+        /// <returns>A state context object useful for tracking the conversion progress</returns>
+        public static Core.State ConvertAssetToAssetBundle(string assetHash, string assetFilename, string sceneCid, Settings settings = null)
+        {
+            if (string.IsNullOrEmpty(assetHash))
+            {
+                log.Error("Missing asset hash for ConvertAssetToAssetBundle()");
+                return new Core.State() {lastErrorCode = Core.ErrorCodes.UNDEFINED};
+            }
+
+            if (string.IsNullOrEmpty(assetFilename))
+            {
+                log.Error("Missing asset file name for ConvertAssetToAssetBundle()");
+                return new Core.State() {lastErrorCode = Core.ErrorCodes.UNDEFINED};
+            }
+
+            log.Info($"Building {assetHash} asset...");
+
+            EnsureEnvironment();
+
+            if (settings == null)
+            {
+                settings = new Settings()
+                {
+                    skipAlreadyBuiltBundles = false
+                };
+            }
+
+            var core = new ABConverter.Core(env, settings);
+
+            List<ContentServerUtils.MappingPair> rawContents = new List<ContentServerUtils.MappingPair>();
+            rawContents.Add(new ContentServerUtils.MappingPair
+            {
+                file = assetFilename,
+                hash = assetHash
+            });
+
+            // If the asset is a GLTF we add the dependencies to the rawContents to be downloaded
+            if (assetFilename.ToLower().EndsWith(".glb") || assetFilename.ToLower().EndsWith(".gltf"))
+            {
+                core.GetAssetDependenciesMappingPairs(assetHash, assetFilename, sceneCid, ref rawContents);
+            }
+
+            core.Convert(rawContents.ToArray(), null);
+
+            return core.state;
+        }
+
+        /// <summary>
         /// Dump a world area given coords and size. The zone is a rectangle with a center pivot.
         /// </summary>
         /// <param name="coords">Coords as parcel coordinates</param>
@@ -247,7 +301,25 @@ namespace DCL.ABConverter
             if (settings == null)
                 settings = new Settings();
 
-            return ConvertScenesToAssetBundles(new List<string> {cid}, settings);
+            return ConvertScenesToAssetBundles(new List<string> { cid }, settings);
+        }
+
+        /// <summary>
+        /// Dump a single asset (and its dependencies) given an asset hash and scene Cid
+        /// </summary>
+        /// <param name="assetHash">The asset's content server hash</param>
+        /// <param name="assetFilename">The asset's content server file name</param>
+        /// <param name="sceneCid">The asset scene ID</param>
+        /// <param name="settings">Conversion settings</param>
+        /// <returns>A state context object useful for tracking the conversion progress</returns>
+        public static Core.State DumpAsset(string assetHash, string assetFilename, string sceneCid, Settings settings = null)
+        {
+            EnsureEnvironment();
+
+            if (settings == null)
+                settings = new Settings();
+
+            return ConvertAssetToAssetBundle(assetHash, assetFilename, sceneCid, settings);
         }
     }
 }
