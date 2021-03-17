@@ -3,6 +3,7 @@ using UnityEngine;
 public class EntityListView : ListView<DCLBuilderInWorldEntity>
 {
     [SerializeField] internal EntityListAdapter entityListAdapter;
+    [SerializeField] internal DynamicScrollSensitivity dynamicScrollSensitivity;
 
     public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
     public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
@@ -20,6 +21,9 @@ public class EntityListView : ListView<DCLBuilderInWorldEntity>
             adapter.OnActionInvoked += EntityActionInvoked;
             adapter.OnEntityRename += EntityRename;
         }
+
+        if (dynamicScrollSensitivity != null)
+            dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
     public override void RemoveAdapters()
@@ -34,20 +38,14 @@ public class EntityListView : ListView<DCLBuilderInWorldEntity>
             }
             Destroy(toRemove.gameObject);
         }
+
+        if (dynamicScrollSensitivity != null)
+            dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
-    public void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply,EntityListAdapter adapter)
-    {
-        OnActionInvoked?.Invoke(action, entityToApply,adapter);
-    }
+    public void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter) { OnActionInvoked?.Invoke(action, entityToApply, adapter); }
 
-    public void EntityRename(DCLBuilderInWorldEntity entity, string newName)
-    {
-        OnEntityRename?.Invoke(entity, newName);
-    }
+    public void EntityRename(DCLBuilderInWorldEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
 
-    public void SetActive(bool isActive)
-    {
-        gameObject.SetActive(isActive);
-    }
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }

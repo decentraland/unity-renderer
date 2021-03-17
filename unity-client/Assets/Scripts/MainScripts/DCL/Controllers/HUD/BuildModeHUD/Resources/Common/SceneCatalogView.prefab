@@ -213,6 +213,7 @@ MonoBehaviour:
   contentPanelTransform: {fileID: 5040136038075063804}
   categoryListView: {fileID: 8458830412122484609}
   assetPackListView: {fileID: 9164274516667144591}
+  dynamicScrollSensitivity: {fileID: 6645175378169081571}
   categoryContentTransform: {fileID: 7402181836938702467}
   categoryAssetPackItemAdapterPrefab: {fileID: 8282728358854756999, guid: 19ecd202db4931d42b0fb9a9b83a96c9,
     type: 3}
@@ -1528,6 +1529,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4266531691584710823}
   - component: {fileID: 2661040676196991082}
+  - component: {fileID: 5792266167246783534}
   - component: {fileID: 893499464091778053}
   m_Layer: 5
   m_Name: CategoryListView
@@ -1565,6 +1567,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8458830412122484609}
   m_CullTransparentMesh: 0
+--- !u!114 &5792266167246783534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8458830412122484609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ed50f4f9d6ef342be3904431a5e938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScrollRect: {fileID: 893499464091778053}
+  viewport: {fileID: 6356494600647465261}
+  contentContainer: {fileID: 7402181836938702467}
+  minSensitivity: 5
+  maxSensitivity: 50
+  sensitivityMultiplier: 0.5
+  recalculateOnEnable: 1
 --- !u!114 &893499464091778053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1825,6 +1846,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &9164274515297767058
 GameObject:
   m_ObjectHideFlags: 0
@@ -2701,6 +2724,7 @@ GameObject:
   - component: {fileID: 9164274516264469579}
   - component: {fileID: 9164274516264469575}
   - component: {fileID: 9164274516264469572}
+  - component: {fileID: 8779995592463396033}
   - component: {fileID: 9164274516264469573}
   - component: {fileID: 9164274516264469578}
   m_Layer: 5
@@ -2755,6 +2779,26 @@ MonoBehaviour:
   generalCanvas: {fileID: 0}
   categoryItemAdapterPrefab: {fileID: 751415691112004589, guid: 6bcacb01925475b49b2fd03bfe1fd433,
     type: 3}
+  dynamicScrollSensitivity: {fileID: 8779995592463396033}
+--- !u!114 &8779995592463396033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9164274516264469576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ed50f4f9d6ef342be3904431a5e938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScrollRect: {fileID: 9164274516264469573}
+  viewport: {fileID: 9164274516162771192}
+  contentContainer: {fileID: 9164274517067509940}
+  minSensitivity: 5
+  maxSensitivity: 50
+  sensitivityMultiplier: 0.5
+  recalculateOnEnable: 1
 --- !u!114 &9164274516264469573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3174,6 +3218,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9164274516667144590}
   - component: {fileID: 9164274516667144586}
+  - component: {fileID: 6645175378169081571}
   - component: {fileID: 9164274516667144584}
   m_Layer: 5
   m_Name: AssetPackListView
@@ -3211,6 +3256,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9164274516667144591}
   m_CullTransparentMesh: 0
+--- !u!114 &6645175378169081571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9164274516667144591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ed50f4f9d6ef342be3904431a5e938, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScrollRect: {fileID: 9164274516667144584}
+  viewport: {fileID: 9164274516810160086}
+  contentContainer: {fileID: 5040136038075063804}
+  minSensitivity: 5
+  maxSensitivity: 50
+  sensitivityMultiplier: 0.5
+  recalculateOnEnable: 1
 --- !u!114 &9164274516667144584
 MonoBehaviour:
   m_ObjectHideFlags: 0

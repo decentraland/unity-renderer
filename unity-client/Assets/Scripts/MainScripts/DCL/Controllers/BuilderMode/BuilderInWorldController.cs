@@ -78,10 +78,7 @@ public class BuilderInWorldController : MonoBehaviour
     private Material previousSkyBoxMaterial;
     private Vector3 parcelUnityMiddlePoint;
 
-    private void Awake()
-    {
-        BIWCatalogManager.Init();
-    }
+    private void Awake() { BIWCatalogManager.Init(); }
 
     void Start()
     {
@@ -105,14 +102,15 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         CleanItems();
     }
-    
+
     private void Update()
     {
-        if (!isBuilderInWorldActivated) return;
+        if (!isBuilderInWorldActivated)
+            return;
 
         if (checkerInsideSceneOptimizationCounter >= 60)
         {
-            if (Vector3.Distance(DCLCharacterController.i.characterPosition.unityPosition,parcelUnityMiddlePoint) >= distanceToDisableBuilderInWorld)
+            if (Vector3.Distance(DCLCharacterController.i.characterPosition.unityPosition, parcelUnityMiddlePoint) >= distanceToDisableBuilderInWorld)
                 ExitEditMode();
             checkerInsideSceneOptimizationCounter = 0;
         }
@@ -128,16 +126,16 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
     }
 
-    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-    {
-        EnableFeature(current.features.enableBuilderInWorld);
-    }
+    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableFeature(current.features.enableBuilderInWorld); }
 
     private void EnableFeature(bool enable)
     {
         activeFeature = enable;
-        if(enable)
+        if (enable)
+        {
+            bypassLandOwnershipCheck = true;
             Init();
+        }
     }
 
     private void CatalogReceived(string catalogJson)
@@ -156,11 +154,11 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void Init()
     {
-        if(isInit)
+        if (isInit)
             return;
 
         isInit = true;
-        
+
         InitGameObjects();
 
         HUDConfiguration hudConfig = new HUDConfiguration();
@@ -218,10 +216,7 @@ public class BuilderInWorldController : MonoBehaviour
         bIWInputHandler.Init();
     }
 
-    private void StartTutorial()
-    {
-        TutorialController.i.SetBuilderInWorldTutorialEnabled();
-    }
+    private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
 
     public void CleanItems()
     {
@@ -299,7 +294,8 @@ public class BuilderInWorldController : MonoBehaviour
             {
                 DCLBuilderInWorldEntity entityToCheck = builderInWorldEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
 
-                if (entityToCheck == null) continue;
+                if (entityToCheck == null)
+                    continue;
 
                 Camera camera = Camera.main;
 
@@ -346,13 +342,11 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void CheckEnterEditMode()
     {
-        if (catalogAdded && sceneReady) EnterEditMode();
+        if (catalogAdded && sceneReady)
+            EnterEditMode();
     }
 
-    public void TryStartEnterEditMode()
-    {
-        TryStartEnterEditMode(true);
-    }
+    public void TryStartEnterEditMode() { TryStartEnterEditMode(true); }
 
     public void TryStartEnterEditMode(bool activateCamera)
     {
@@ -446,7 +440,7 @@ public class BuilderInWorldController : MonoBehaviour
         outlinerController.CancelAllOutlines();
 
         cursorGO.SetActive(true);
- 
+
         sceneToEdit.SetEditMode(false);
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
@@ -461,7 +455,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         ExitBiwControllers();
-        
+
         foreach (var groundVisual in groundVisualsGO)
         {
             groundVisual.SetActive(true);
@@ -493,20 +487,11 @@ public class BuilderInWorldController : MonoBehaviour
         outlinerController.ExitEditMode();
     }
 
-    public bool IsNewScene()
-    {
-        return sceneToEdit.entities.Count <= 0;
-    }
+    public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
 
-    public void SetupNewScene()
-    {
-        biwFloorHandler.CreateDefaultFloor();
-    }
+    public void SetupNewScene() { biwFloorHandler.CreateDefaultFloor(); }
 
-    void ExitAfterCharacterTeleport(DCLCharacterPosition position)
-    {
-        ExitEditMode();
-    }
+    void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
 
     public void FindSceneToEdit()
     {
