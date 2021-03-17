@@ -20,10 +20,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            entityInformationController.Dispose();
-        }
+        public void TearDown() { entityInformationController.Dispose(); }
 
         [Test]
         public void PositionChangedCorrectly()
@@ -78,7 +75,7 @@ namespace Tests.BuildModeHUDControllers
             string testText = "Test text";
             DCLBuilderInWorldEntity returnedEntity = null;
             string returnedText = "";
-            entityInformationController.OnNameChange += (entity, name) => 
+            entityInformationController.OnNameChange += (entity, name) =>
             {
                 returnedEntity = entity;
                 returnedText = name;
@@ -224,8 +221,7 @@ namespace Tests.BuildModeHUDControllers
             entityInformationController.UpdateLimitsInformation(testCatalogItem);
 
             // Assert
-            entityInformationController.entityInformationView.Received(1).SeEntityLimitsLeftText(isCatalogNull ? "" : Arg.Any<string>());
-            entityInformationController.entityInformationView.Received(1).SeEntityLimitsRightText(isCatalogNull ? "" : Arg.Any<string>());
+            entityInformationController.entityInformationView.Received(1).SeEntityLimitsText(isCatalogNull ? "" : Arg.Any<string>(), isCatalogNull ? "" : Arg.Any<string>(), isCatalogNull ? "" : Arg.Any<string>());
         }
 
         [Test]

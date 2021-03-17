@@ -39,7 +39,7 @@ namespace Builder.Gizmos
             axisZ.SetGizmo(this);
         }
 
-        public void ForceRelativeScaleRatio() { relativeScaleRatio = new Vector3(BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE); }
+        public void ForceRelativeScaleRatio() { relativeScaleRatio = new Vector3(BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO); }
 
         public string GetGizmoType() { return gizmoType; }
 

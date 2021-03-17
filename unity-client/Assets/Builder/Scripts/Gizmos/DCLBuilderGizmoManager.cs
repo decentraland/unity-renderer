@@ -104,11 +104,15 @@ namespace Builder.Gizmos
             }
         }
 
-        public void HideGizmo()
+        public void HideGizmo(bool setInactiveGizmos = false)
         {
             if (activeGizmo != null)
             {
                 activeGizmo.gameObject.SetActive(false);
+            }
+            if (setInactiveGizmos)
+            {
+                SetGizmoType(DCL.Components.DCLGizmos.Gizmo.NONE);
             }
         }
 

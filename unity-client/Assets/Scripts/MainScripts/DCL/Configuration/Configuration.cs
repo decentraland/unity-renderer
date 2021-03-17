@@ -47,7 +47,7 @@ namespace DCL.Configuration
         public const string ROTATE_GIZMO_NAME = "ROTATE";
         public const string SCLAE_GIZMO_NAME = "SCALE";
 
-        public const float GIZMOS_RELATIVE_SCALE = 0.06f;
+        public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
     }
 
     public static class ApplicationSettings

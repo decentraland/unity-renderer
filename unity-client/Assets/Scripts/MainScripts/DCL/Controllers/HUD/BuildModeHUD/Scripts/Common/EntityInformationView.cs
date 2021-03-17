@@ -20,8 +20,7 @@ public interface IEntityInformationView
     void ChangeEntityName(string newName);
     void Disable();
     void EndChangingName();
-    void SeEntityLimitsLeftText(string text);
-    void SeEntityLimitsRightText(string text);
+    void SeEntityLimitsText(string tris, string mats, string textures);
     void SetActive(bool isActive);
     void SetCurrentEntity(DCLBuilderInWorldEntity entity);
     void SetEntityThumbnailEnable(bool isEnable);
@@ -45,8 +44,9 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
 
     [Header("Prefab references")]
     [SerializeField] internal TextMeshProUGUI titleTxt;
-    [SerializeField] internal TextMeshProUGUI entityLimitsLeftTxt;
-    [SerializeField] internal TextMeshProUGUI entityLimitsRightTxt;
+    [SerializeField] internal TextMeshProUGUI entityLimitsTrisTxt;
+    [SerializeField] internal TextMeshProUGUI entityLimitsMaterialsTxt;
+    [SerializeField] internal TextMeshProUGUI entityLimitsTextureTxt;
     [SerializeField] internal TMP_InputField nameIF;
     [SerializeField] internal RawImage entitytTumbailImg;
     [SerializeField] internal AttributeXYZ positionAttribute;
@@ -116,10 +116,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             OnUpdateInfo?.Invoke(currentEntity);
     }
 
-    public void SetCurrentEntity(DCLBuilderInWorldEntity entity)
-    {
-        currentEntity = entity;
-    }
+    public void SetCurrentEntity(DCLBuilderInWorldEntity entity) { currentEntity = entity; }
 
     public void ToggleDetailsInfo()
     {
@@ -133,25 +130,13 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         basicToggleBtn.sprite = basicsGO.activeSelf ? openMenuSprite : closeMenuSprite;
     }
 
-    public void StartChangingName()
-    {
-        OnStartChangingName?.Invoke();
-    }
+    public void StartChangingName() { OnStartChangingName?.Invoke(); }
 
-    public void EndChangingName()
-    {
-        OnEndChangingName?.Invoke();
-    }
+    public void EndChangingName() { OnEndChangingName?.Invoke(); }
 
-    public void ChangeEntityName(string newName)
-    {
-        OnNameChange?.Invoke(currentEntity, newName);
-    }
+    public void ChangeEntityName(string newName) { OnNameChange?.Invoke(currentEntity, newName); }
 
-    public void Disable()
-    {
-        OnDisable?.Invoke();
-    }
+    public void Disable() { OnDisable?.Invoke(); }
 
     public void SetEntityThumbnailEnable(bool isEnable)
     {
@@ -169,48 +154,24 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         entitytTumbailImg.texture = texture;
     }
 
-    public void SeTitleText(string text)
+    public void SeTitleText(string text) { titleTxt.text = text; }
+
+    public void SeEntityLimitsText(string tris, string mats, string textures)
     {
-        titleTxt.text = text;
+        entityLimitsTrisTxt.text = tris;
+        entityLimitsMaterialsTxt.text = mats;
+        entityLimitsTextureTxt.text = textures;
     }
 
-    public void SeEntityLimitsLeftText(string text)
-    {
-        entityLimitsLeftTxt.text = text;
-    }
+    public void SetSmartItemListViewActive(bool isActive) { smartItemListView.gameObject.SetActive(isActive); }
 
-    public void SeEntityLimitsRightText(string text)
-    {
-        entityLimitsRightTxt.text = text;
-    }
+    public void SetNameIFText(string text) { nameIF.SetTextWithoutNotify(text); }
 
-    public void SetSmartItemListViewActive(bool isActive)
-    {
-        smartItemListView.gameObject.SetActive(isActive);
-    }
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
-    public void SetNameIFText(string text)
-    {
-        nameIF.SetTextWithoutNotify(text);
-    }
+    public void SetPositionAttribute(Vector3 newPos) { positionAttribute.SetValues(newPos); }
 
-    public void SetActive(bool isActive)
-    {
-        gameObject.SetActive(isActive);
-    }
+    public void SetRotationAttribute(Vector3 newRotation) { rotationAttribute.SetValues(newRotation); }
 
-    public void SetPositionAttribute(Vector3 newPos)
-    {
-        positionAttribute.SetValues(newPos);
-    }
-
-    public void SetRotationAttribute(Vector3 newRotation)
-    {
-        rotationAttribute.SetValues(newRotation);
-    }
-
-    public void SetScaleAttribute(Vector3 newScale)
-    {
-        scaleAttribute.SetValues(newScale);
-    }
+    public void SetScaleAttribute(Vector3 newScale) { scaleAttribute.SetValues(newScale); }
 }

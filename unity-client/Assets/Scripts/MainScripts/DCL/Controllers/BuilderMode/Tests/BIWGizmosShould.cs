@@ -18,6 +18,16 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    public void TestDesactivateGizmos()
+    {
+        //Act
+        gizmosController.HideGizmo(true);
+
+        //Assert
+        Assert.AreEqual(gizmosController.GetSelectedGizmo(), DCL.Components.DCLGizmos.Gizmo.NONE);
+    }
+
+    [Test]
     public void TestActivationTranslateGizmos()
     {
         //Act

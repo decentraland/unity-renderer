@@ -31,8 +31,9 @@ public interface IEntityInformationController
 
 public class EntityInformationController : IEntityInformationController
 {
-    private const string LEFT_TEXT_FORMAT = "ENTITIES: {0}\nBODIES:{1}\nTIRS:{2}";
-    private const string RIGHT_TEXT_FORMAT = "TEXTURES: {0}\nMATERIALS:{1}\nGEOMETRIES:{2}";
+    private const string TRIS_TEXT_FORMAT  = "{0} TRIS";
+    private const string MATERIALS_TEXT_FORMAT  = "{0} MATERIALS";
+    private const string TEXTURES_TEXT_FORMAT = "{0} TEXTURES";
 
     public event Action<Vector3> OnPositionChange;
     public event Action<Vector3> OnRotationChange;
@@ -83,45 +84,21 @@ public class EntityInformationController : IEntityInformationController
         entityInformationView.OnDisable -= Disable;
     }
 
-    public void PositionChanged(Vector3 pos)
-    {
-        OnPositionChange?.Invoke(pos);
-    }
+    public void PositionChanged(Vector3 pos) { OnPositionChange?.Invoke(pos); }
 
-    public void RotationChanged(Vector3 rot)
-    {
-        OnRotationChange?.Invoke(rot);
-    }
+    public void RotationChanged(Vector3 rot) { OnRotationChange?.Invoke(rot); }
 
-    public void ScaleChanged(Vector3 scale)
-    {
-        OnScaleChange?.Invoke(scale);
-    }
+    public void ScaleChanged(Vector3 scale) { OnScaleChange?.Invoke(scale); }
 
-    public void NameChanged(DCLBuilderInWorldEntity entity, string name)
-    {
-        OnNameChange?.Invoke(entity, name);
-    }
+    public void NameChanged(DCLBuilderInWorldEntity entity, string name) { OnNameChange?.Invoke(entity, name); }
 
-    public void ToggleDetailsInfo()
-    {
-        entityInformationView.ToggleDetailsInfo();
-    }
+    public void ToggleDetailsInfo() { entityInformationView.ToggleDetailsInfo(); }
 
-    public void ToggleBasicInfo()
-    {
-        entityInformationView.ToggleBasicInfo();
-    }
+    public void ToggleBasicInfo() { entityInformationView.ToggleBasicInfo(); }
 
-    public void StartChangingName()
-    {
-        isChangingName = true;
-    }
+    public void StartChangingName() { isChangingName = true; }
 
-    public void EndChangingName()
-    {
-        isChangingName = false;
-    }
+    public void EndChangingName() { isChangingName = false; }
 
     public void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene)
     {
@@ -133,7 +110,7 @@ public class EntityInformationController : IEntityInformationController
             entity.onStatusUpdate -= UpdateEntityName;
             entityInformationView.currentEntity.onStatusUpdate += UpdateEntityName;
         }
-        
+
         parcelScene = currentScene;
 
         if (entity.HasSmartItemComponent())
@@ -195,22 +172,18 @@ public class EntityInformationController : IEntityInformationController
     {
         if (catalogItem == null)
         {
-            entityInformationView.SeEntityLimitsLeftText("");
-            entityInformationView.SeEntityLimitsRightText("");
+            entityInformationView.SeEntityLimitsText("", "", "");
             return;
         }
 
-        string leftText = string.Format(LEFT_TEXT_FORMAT, catalogItem.metrics.entities, catalogItem.metrics.bodies, catalogItem.metrics.triangles);
-        string rightText = string.Format(RIGHT_TEXT_FORMAT, catalogItem.metrics.textures, catalogItem.metrics.materials, catalogItem.metrics.meshes);
+        string trisText = string.Format(TRIS_TEXT_FORMAT, catalogItem.metrics.triangles);
+        string materialText = string.Format(MATERIALS_TEXT_FORMAT, catalogItem.metrics.materials);
+        string textureText = string.Format(TEXTURES_TEXT_FORMAT, catalogItem.metrics.textures);
 
-        entityInformationView.SeEntityLimitsLeftText(leftText);
-        entityInformationView.SeEntityLimitsRightText(rightText);
+        entityInformationView.SeEntityLimitsText(trisText, materialText, textureText);
     }
 
-    public void Enable()
-    {
-        entityInformationView.SetActive(true);
-    }
+    public void Enable() { entityInformationView.SetActive(true); }
 
     public void Disable()
     {
@@ -253,8 +226,5 @@ public class EntityInformationController : IEntityInformationController
         }
     }
 
-    internal float RepeatWorking(float t, float length)
-    {
-        return (t - (Mathf.Floor(t / length) * length));
-    }
+    internal float RepeatWorking(float t, float length) { return (t - (Mathf.Floor(t / length) * length)); }
 }

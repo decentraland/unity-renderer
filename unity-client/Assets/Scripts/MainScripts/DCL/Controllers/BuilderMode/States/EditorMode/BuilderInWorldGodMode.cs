@@ -516,43 +516,52 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         freeCameraController.SmoothLookAt(pointToLook);
     }
 
+    #region Gizmos
+
     public void TranslateMode()
     {
-        if (isModeActive && !isPlacingNewObject)
+        if (!isModeActive && isPlacingNewObject)
+            return;
+        if (selectedEntities.Count > 0 && gizmoManager.GetSelectedGizmo() != BuilderInWorldSettings.TRANSLATE_GIZMO_NAME)
         {
             gizmoManager.SetGizmoType(BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
-            if (selectedEntities.Count > 0)
-                ShowGizmos();
-            else
-                gizmoManager.HideGizmo();
+            gizmoManager.ShowGizmo();
+        }
+        else
+        {
+            gizmoManager.HideGizmo(true);
         }
     }
 
     public void RotateMode()
     {
-        if (isModeActive && !isPlacingNewObject)
+        if (!isModeActive && isPlacingNewObject)
+            return;
+        if (selectedEntities.Count > 0 && gizmoManager.GetSelectedGizmo() != BuilderInWorldSettings.ROTATE_GIZMO_NAME)
         {
             gizmoManager.SetGizmoType(BuilderInWorldSettings.ROTATE_GIZMO_NAME);
-            if (selectedEntities.Count > 0)
-                ShowGizmos();
-            else
-                gizmoManager.HideGizmo();
+            gizmoManager.ShowGizmo();
+        }
+        else
+        {
+            gizmoManager.HideGizmo(true);
         }
     }
 
     public void ScaleMode()
     {
-        if (isModeActive && !isPlacingNewObject)
+        if (!isModeActive && isPlacingNewObject)
+            return;
+        if (selectedEntities.Count > 0 && gizmoManager.GetSelectedGizmo() != BuilderInWorldSettings.SCLAE_GIZMO_NAME)
         {
             gizmoManager.SetGizmoType(BuilderInWorldSettings.SCLAE_GIZMO_NAME);
-            if (selectedEntities.Count > 0)
-                ShowGizmos();
-            else
-                gizmoManager.HideGizmo();
+            gizmoManager.ShowGizmo();
+        }
+        else
+        {
+            gizmoManager.HideGizmo(true);
         }
     }
-
-    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
     void OnGizmosTransformStart(string gizmoType)
     {
@@ -585,7 +594,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    void ShowGizmos() { gizmoManager.ShowGizmo(); }
+    #endregion
+
+    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
     void SetLookAtObject(ParcelScene parcelScene)
     {

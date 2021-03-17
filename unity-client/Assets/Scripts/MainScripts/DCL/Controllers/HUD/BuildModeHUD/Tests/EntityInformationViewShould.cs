@@ -8,16 +8,10 @@ namespace Tests.BuildModeHUDViews
         private EntityInformationView entityInformationView;
 
         [SetUp]
-        public void SetUp()
-        {
-            entityInformationView = EntityInformationView.Create();
-        }
+        public void SetUp() { entityInformationView = EntityInformationView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(entityInformationView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(entityInformationView.gameObject); }
 
         [Test]
         public void SetCurrentEntityCorrectly()
@@ -189,27 +183,19 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             string newText = "Test text";
-            entityInformationView.entityLimitsLeftTxt.text = "";
+            string newText2 = "Test text2";
+            string newText3 = "Test text3";
+            entityInformationView.entityLimitsTrisTxt.text = "";
+            entityInformationView.entityLimitsMaterialsTxt.text = "";
+            entityInformationView.entityLimitsTextureTxt.text = "";
 
             // Act
-            entityInformationView.SeEntityLimitsLeftText(newText);
+            entityInformationView.SeEntityLimitsText(newText, newText2 , newText3);
 
             // Assert
-            Assert.AreEqual(newText, entityInformationView.entityLimitsLeftTxt.text, "The left limits text does not match!");
-        }
-
-        [Test]
-        public void SetEntityLimitsRightTextTextCorrectly()
-        {
-            // Arrange
-            string newText = "Test text";
-            entityInformationView.entityLimitsRightTxt.text = "";
-
-            // Act
-            entityInformationView.SeEntityLimitsRightText(newText);
-
-            // Assert
-            Assert.AreEqual(newText, entityInformationView.entityLimitsRightTxt.text, "The right limits text does not match!");
+            Assert.AreEqual(newText, entityInformationView.entityLimitsTrisTxt.text, "The left limits text does not match!");
+            Assert.AreEqual(newText2, entityInformationView.entityLimitsMaterialsTxt.text, "The left limits text does not match!");
+            Assert.AreEqual(newText3, entityInformationView.entityLimitsTextureTxt.text, "The left limits text does not match!");
         }
 
         [Test]
