@@ -93,12 +93,12 @@
     "web3x-codegen": "^4.0.6"
   },
   "dependencies": {
-    "@dcl/urn-resolver": "^1.0.1",
+    "@dcl/urn-resolver": "^1.0.2",
     "bignumber.js": "^9.0.0",
     "blob-to-buffer": "^1.2.8",
     "body-scroll-lock": "^2.5.10",
     "cids": "^0.7.3",
-    "dcl-catalyst-client": "^3.0.1",
+    "dcl-catalyst-client": "^4.0.2",
     "dcl-crypto": "^2.2.0",
     "dcl-ecs-quests": "^1.0.0",
     "dcl-quests-client": "^2.0.0",

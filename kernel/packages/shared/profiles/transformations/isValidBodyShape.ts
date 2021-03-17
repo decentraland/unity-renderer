@@ -1,3 +1,10 @@
+const BODY_SHAPES = [
+  'dcl://base-avatars/BaseFemale',
+  'dcl://base-avatars/BaseMale',
+  'urn:decentraland:off-chain:base-avatars:BaseFemale',
+  'urn:decentraland:off-chain:base-avatars:BaseMale'
+]
+
 export function isValidBodyShape(shape: string) {
-  return shape === 'dcl://base-avatars/BaseMale' || shape === 'dcl://base-avatars/BaseFemale'
+  return BODY_SHAPES.includes(shape)
 }

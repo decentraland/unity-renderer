@@ -117,7 +117,10 @@ export const contracts = {
     'AtariLaunch': '0x4c290f486bae507719c562b6b524bdb71a2570c9',
     'ERC20Predicate': '0x40ec5B33f54e0E8A33A975908C5BA1c14e5BbbDf',
     'RootChainManagerProxy': '0xA0c68C638235ee32657e8f720a23ceC1bFc77C77',
-    'RootChainProxy': '0x86E4Dc95c7FBdBf52e33D563BbDB00823894C287'
+    'RootChainProxy': '0x86E4Dc95c7FBdBf52e33D563BbDB00823894C287',
+    'RTFKTXAtari': '0x6b47e7066c7db71aa04a1d5872496fe05c4c331f',
+    'RACBasics': '0x68e139552c4077ce5c9ab929c7e18ca721ffff00',
+    'WinklevossCapital': '0xc82a864a94db3550bc71fcb4ce07228bcec21f1a'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',
