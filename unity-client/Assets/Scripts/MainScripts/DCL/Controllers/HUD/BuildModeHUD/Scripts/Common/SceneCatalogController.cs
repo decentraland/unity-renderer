@@ -2,6 +2,7 @@ using DCL.Configuration;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public interface ISceneCatalogController
 {
@@ -9,7 +10,8 @@ public interface ISceneCatalogController
     event Action<CatalogItem> OnCatalogItemSelected;
     event Action OnResumeInput;
     event Action OnStopInput;
-
+    event Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInCatalogItemAdapter;
+    event Action<PointerEventData, CatalogItemAdapter> OnPointerExitInCatalogItemAdapter;
     void Initialize(ISceneCatalogView view, IQuickBarController quickBarController);
     void Dispose();
     void AssetsPackFilter(bool isOn);
@@ -42,6 +44,8 @@ public class SceneCatalogController : ISceneCatalogController
     public event Action<CatalogItem> OnCatalogItemSelected;
     public event Action OnResumeInput;
     public event Action OnStopInput;
+    public event Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInCatalogItemAdapter;
+    public event Action<PointerEventData, CatalogItemAdapter> OnPointerExitInCatalogItemAdapter;
 
     internal ISceneCatalogView sceneCatalogView;
     internal IQuickBarController quickBarController;
@@ -66,6 +70,8 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogGroupList.OnCatalogItemClicked += CatalogItemSelected;
             sceneCatalogView.catalogGroupList.OnResumeInput += ResumeInput;
             sceneCatalogView.catalogGroupList.OnStopInput += StopInput;
+            sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter += OnPointerEnter;
+            sceneCatalogView.catalogGroupList.OnPointerExitInAdapter += OnPointerExit;
         }
 
         if (sceneCatalogView.searchInput != null)
@@ -88,7 +94,7 @@ public class SceneCatalogController : ISceneCatalogController
     public void Dispose()
     {
         sceneCatalogView.OnHideCatalogClicked -= HideCatalogClicked;
-        
+
         if (sceneCatalogView.catalogAssetPackList != null)
             sceneCatalogView.catalogAssetPackList.OnCatalogPackClick -= OnCatalogItemPackSelected;
 
@@ -97,6 +103,8 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogGroupList.OnCatalogItemClicked -= CatalogItemSelected;
             sceneCatalogView.catalogGroupList.OnResumeInput -= ResumeInput;
             sceneCatalogView.catalogGroupList.OnStopInput -= StopInput;
+            sceneCatalogView.catalogGroupList.OnPointerEnterInAdapter -= OnPointerEnter;
+            sceneCatalogView.catalogGroupList.OnPointerExitInAdapter -= OnPointerExit;
         }
 
         if (sceneCatalogView.searchInput != null)
@@ -145,10 +153,7 @@ public class SceneCatalogController : ISceneCatalogController
         ShowFavorites();
     }
 
-    public void ToggleCatalogExpanse()
-    {
-        sceneCatalogView.ToggleCatalogExpanse();
-    }
+    public void ToggleCatalogExpanse() { sceneCatalogView.ToggleCatalogExpanse(); }
 
     public void OnSearchInputChanged(string currentSearchInput)
     {
@@ -200,10 +205,7 @@ public class SceneCatalogController : ISceneCatalogController
         filterObjects.Add(groupedCatalogItems);
     }
 
-    public void QuickBarInput(int quickBarSlot)
-    {
-        quickBarController.QuickBarObjectSelected(quickBarSlot);
-    }
+    public void QuickBarInput(int quickBarSlot) { quickBarController.QuickBarObjectSelected(quickBarSlot); }
 
     public void ShowFavorites()
     {
@@ -218,25 +220,17 @@ public class SceneCatalogController : ISceneCatalogController
         sceneCatalogView.catalogGroupList.SetContent(favorites);
     }
 
-    public void CatalogItemSelected(CatalogItem catalogItem)
-    {
-        OnCatalogItemSelected?.Invoke(catalogItem);
-    }
+    public void CatalogItemSelected(CatalogItem catalogItem) { OnCatalogItemSelected?.Invoke(catalogItem); }
 
-    public void ResumeInput()
-    {
-        OnResumeInput?.Invoke();
-    }
+    public void ResumeInput() { OnResumeInput?.Invoke(); }
 
-    public void StopInput()
-    {
-        OnStopInput?.Invoke();
-    }
+    public void StopInput() { OnStopInput?.Invoke(); }
 
-    public void HideCatalogClicked()
-    {
-        OnHideCatalogClicked?.Invoke();
-    }
+    private void OnPointerEnter(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerEnterInCatalogItemAdapter?.Invoke(eventData, adapter); }
+
+    private void OnPointerExit(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerExitInCatalogItemAdapter?.Invoke(eventData, adapter); }
+
+    public void HideCatalogClicked() { OnHideCatalogClicked?.Invoke(); }
 
     public void OnCatalogItemPackSelected(CatalogItemPack catalogItemPack)
     {
@@ -295,10 +289,7 @@ public class SceneCatalogController : ISceneCatalogController
         }
     }
 
-    public bool IsCatalogOpen()
-    {
-        return sceneCatalogView.IsCatalogOpen();
-    }
+    public bool IsCatalogOpen() { return sceneCatalogView.IsCatalogOpen(); }
 
     public void ShowCategories()
     {
@@ -311,7 +302,7 @@ public class SceneCatalogController : ISceneCatalogController
 
         isShowingAssetPacks = true;
         sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
-        
+
         if (sceneCatalogView.catalogGroupList != null)
             sceneCatalogView.catalogGroupList.gameObject.SetActive(false);
     }
@@ -350,10 +341,7 @@ public class SceneCatalogController : ISceneCatalogController
         sceneCatalogView.SetActive(true);
     }
 
-    public void CloseCatalog()
-    {
-        sceneCatalogView.CloseCatalog();
-    }
+    public void CloseCatalog() { sceneCatalogView.CloseCatalog(); }
 
     public void RefreshAssetPack()
     {

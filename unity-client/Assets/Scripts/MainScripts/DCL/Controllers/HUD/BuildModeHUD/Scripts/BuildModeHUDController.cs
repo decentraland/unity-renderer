@@ -2,6 +2,7 @@ using DCL.Controllers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BuildModeHUDController : IHUD
 {
@@ -41,6 +42,8 @@ public class BuildModeHUDController : IHUD
     internal BuildModeHUDInitializationModel controllers;
     internal CatalogItemDropController catalogItemDropController;
 
+    internal static readonly Vector3 catalogItemTooltipOffset = new Vector3 (0, 25, 0);
+
     public void Initialize()
     {
         CreateBuildModeControllers();
@@ -62,7 +65,7 @@ public class BuildModeHUDController : IHUD
     {
         this.controllers = controllers;
         catalogItemDropController = new CatalogItemDropController();
-        
+
         CreateMainView();
     }
 
@@ -91,7 +94,7 @@ public class BuildModeHUDController : IHUD
     internal void CreateMainView()
     {
         view = CreateView();
-        
+
         if (view.viewGO != null)
             view.viewGO.SetActive(false);
 
@@ -104,6 +107,8 @@ public class BuildModeHUDController : IHUD
         controllers.sceneCatalogController.OnCatalogItemSelected += CatalogItemSelected;
         controllers.sceneCatalogController.OnStopInput += () => OnStopInput?.Invoke();
         controllers.sceneCatalogController.OnResumeInput += () => OnResumeInput?.Invoke();
+        controllers.sceneCatalogController.OnPointerEnterInCatalogItemAdapter += ShowTooltipForCatalogItemAdapter;
+        controllers.sceneCatalogController.OnPointerExitInCatalogItemAdapter += (x, y) => controllers.tooltipController.HideTooltip();
     }
 
     private void ConfigureEntityInformationController()
@@ -115,35 +120,17 @@ public class BuildModeHUDController : IHUD
         controllers.entityInformationController.OnSmartItemComponentUpdate += (entity) => OnEntitySmartItemComponentUpdate?.Invoke(entity);
     }
 
-    private void ConfigureFirstPersonModeController()
-    {
-        controllers.firstPersonModeController.OnClick += () => OnChangeModeAction?.Invoke();
-    }
+    private void ConfigureFirstPersonModeController() { controllers.firstPersonModeController.OnClick += () => OnChangeModeAction?.Invoke(); }
 
-    private void ConfigureShortcutsController()
-    {
-        controllers.shortcutsController.OnCloseClick += ChangeVisibilityOfControls;
-    }
+    private void ConfigureShortcutsController() { controllers.shortcutsController.OnCloseClick += ChangeVisibilityOfControls; }
 
-    private void ConfigureDragAndDropSceneObjectController()
-    {
-        controllers.dragAndDropSceneObjectController.OnDrop += () => SceneObjectDroppedInView();
-    }
+    private void ConfigureDragAndDropSceneObjectController() { controllers.dragAndDropSceneObjectController.OnDrop += () => SceneObjectDroppedInView(); }
 
-    private void ConfigurePublishBtnController()
-    {
-        controllers.publishBtnController.OnClick += () => OnPublishAction?.Invoke();
-    }
+    private void ConfigurePublishBtnController() { controllers.publishBtnController.OnClick += () => OnPublishAction?.Invoke(); }
 
-    private void ConfigureInspectorBtnController()
-    {
-        controllers.inspectorBtnController.OnClick += () => ChangeVisibilityOfEntityList();
-    }
+    private void ConfigureInspectorBtnController() { controllers.inspectorBtnController.OnClick += () => ChangeVisibilityOfEntityList(); }
 
-    private void ConfigureCatalogBtnController()
-    {
-        controllers.catalogBtnController.OnClick += ChangeVisibilityOfCatalog;
-    }
+    private void ConfigureCatalogBtnController() { controllers.catalogBtnController.OnClick += ChangeVisibilityOfCatalog; }
 
     private void ConfigureInspectorController()
     {
@@ -177,37 +164,25 @@ public class BuildModeHUDController : IHUD
         catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
     }
 
-    public void PublishStart()
-    {
-        view.PublishStart();
-    }
+    public void PublishStart() { view.PublishStart(); }
 
-    public void PublishEnd(string message)
-    {
-        view.PublishEnd(message);
-    }
+    public void PublishEnd(string message) { view.PublishEnd(message); }
 
-    public void SetParcelScene(ParcelScene parcelScene)
-    {
-        controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene);
-    }
+    public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
 
-    public void SetPublishBtnAvailability(bool isAvailable)
-    {
-        view.SetPublishBtnAvailability(isAvailable);
-    }
+    public void SetPublishBtnAvailability(bool isAvailable) { view.SetPublishBtnAvailability(isAvailable); }
 
     #region Catalog
 
-    public void RefreshCatalogAssetPack()
+    private void ShowTooltipForCatalogItemAdapter(PointerEventData data, CatalogItemAdapter adapter)
     {
-        view.RefreshCatalogAssetPack();
+        controllers.tooltipController.SetTooltipText(adapter.GetContent().name);
+        controllers.tooltipController.ShowTooltip(data, catalogItemTooltipOffset);
     }
 
-    public void RefreshCatalogContent()
-    {
-        view.RefreshCatalogContent();
-    }
+    public void RefreshCatalogAssetPack() { view.RefreshCatalogAssetPack(); }
+
+    public void RefreshCatalogContent() { view.RefreshCatalogContent(); }
 
     public void CatalogItemSelected(CatalogItem catalogItem)
     {
@@ -240,10 +215,7 @@ public class BuildModeHUDController : IHUD
             ChangeVisibilityOfSceneInfo();
     }
 
-    public void UpdateSceneLimitInfo()
-    {
-        controllers.inspectorController.sceneLimitsController.UpdateInfo();
-    }
+    public void UpdateSceneLimitInfo() { controllers.inspectorController.sceneLimitsController.UpdateInfo(); }
 
     public void ChangeVisibilityOfSceneInfo(bool shouldBeVisibile)
     {
@@ -267,26 +239,17 @@ public class BuildModeHUDController : IHUD
 
     public void ActivateGodModeUI()
     {
-        if(view != null)
+        if (view != null)
             view.SetGodModeView();
     }
 
     #region EntityInformation
 
-    public void EntityInformationSetEntity(DCLBuilderInWorldEntity entity,ParcelScene scene)
-    {
-        controllers.entityInformationController.SetEntity(entity, scene);
-    }
+    public void EntityInformationSetEntity(DCLBuilderInWorldEntity entity, ParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
 
-    public void ShowEntityInformation()
-    {
-        controllers.entityInformationController.Enable();
-    }
+    public void ShowEntityInformation() { controllers.entityInformationController.Enable(); }
 
-    public void HideEntityInformation()
-    {
-        controllers.entityInformationController.Disable();
-    }
+    public void HideEntityInformation() { controllers.entityInformationController.Disable(); }
 
     #endregion
 
@@ -312,10 +275,7 @@ public class BuildModeHUDController : IHUD
         }
     }
 
-    public void ClearEntityList()
-    {
-        controllers.inspectorController.ClearList();
-    }
+    public void ClearEntityList() { controllers.inspectorController.ClearList(); }
 
     public void ChangeVisibilityOfControls()
     {
@@ -323,10 +283,7 @@ public class BuildModeHUDController : IHUD
         view.SetVisibilityOfControls(isControlsVisible);
     }
 
-    public void ChangeVisibilityOfUI()
-    {
-        SetVisibility(!IsVisible());
-    }
+    public void ChangeVisibilityOfUI() { SetVisibility(!IsVisible()); }
 
     public void ChangeVisibilityOfExtraBtns()
     {
@@ -360,10 +317,7 @@ public class BuildModeHUDController : IHUD
             UnityEngine.Object.Destroy(view.viewGO);
     }
 
-    public void ToggleVisibility()
-    {
-        SetVisibility(!IsVisible());
-    }
+    public void ToggleVisibility() { SetVisibility(!IsVisible()); }
 
     public bool IsVisible()
     {
@@ -373,10 +327,7 @@ public class BuildModeHUDController : IHUD
         return view.isShowHideAnimatorVisible;
     }
 
-    public void SceneObjectDroppedInView()
-    {
-        catalogItemDropController.CatalogitemDropped();
-    }
+    public void SceneObjectDroppedInView() { catalogItemDropController.CatalogitemDropped(); }
 
     internal virtual IBuildModeHUDView CreateView() => BuildModeHUDView.Create();
 }

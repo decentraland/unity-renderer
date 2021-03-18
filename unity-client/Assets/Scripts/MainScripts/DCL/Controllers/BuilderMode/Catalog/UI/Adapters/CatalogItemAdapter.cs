@@ -8,42 +8,46 @@ using DCL;
 using UnityEngine.EventSystems;
 using DCL.Configuration;
 
-public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandler,IDragHandler
+public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public RawImage thumbnailImg;
-    public Image favImg;
-    public GameObject smartItemGO;
+    public Image backgroundImg;
     public CanvasGroup canvasGroup;
-    public Color offFavoriteColor, onFavoriteColor;
     public GameObject lockedGO;
+
+    [Header("Smart Items")]
+    public GameObject smartItemGO;
+    public Color smartItemColor, normalColor;
+
+    [Header("Favorites")]
+    public Color offFavoriteColor, onFavoriteColor;
+    public Image favImg;
 
     public System.Action<CatalogItem> OnCatalogItemClicked;
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
-    public System.Action<CatalogItem, CatalogItemAdapter,BaseEventData> OnAdapterStartDrag;
+    public System.Action<CatalogItem, CatalogItemAdapter, BaseEventData> OnAdapterStartDrag;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
     private CatalogItem catalogItem;
 
     private string loadedThumbnailURL;
     private AssetPromise_Texture loadedThumbnailPromise;
 
-    public CatalogItem GetContent()
-    {
-        return catalogItem;
-    }
+    private const float ADAPTER_DRAGGING_SIZE_SCALE = 0.75f;
+
+    public CatalogItem GetContent() { return catalogItem; }
 
     public void SetContent(CatalogItem catalogItem)
     {
         this.catalogItem = catalogItem;
 
         if (favImg != null)
-        {
-            if (catalogItem.IsFavorite())
-                favImg.color = onFavoriteColor;
-            else
-                favImg.color = offFavoriteColor;
-        }
+            favImg.color = catalogItem.IsFavorite() ? onFavoriteColor : offFavoriteColor;
 
+        if (backgroundImg != null)
+            backgroundImg.color = catalogItem.IsSmartItem() ? smartItemColor : normalColor;
         smartItemGO.SetActive(catalogItem.IsSmartItem());
 
         GetThumbnail();
@@ -84,8 +88,9 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
         RectTransform newAdapterRT = GetComponent<RectTransform>();
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
-        newAdapterRT.sizeDelta = sizeDelta* 0.75f;
+        newAdapterRT.sizeDelta = sizeDelta * ADAPTER_DRAGGING_SIZE_SCALE;
     }
+
     public void SetFavorite(bool isOn)
     {
         if (isOn)
@@ -94,20 +99,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
             favImg.color = offFavoriteColor;
     }
 
-    public void AdapterStartDragging(BaseEventData baseEventData)
-    {
-        OnAdapterStartDrag?.Invoke(catalogItem,this, baseEventData);
-    }
+    public void AdapterStartDragging(BaseEventData baseEventData) { OnAdapterStartDrag?.Invoke(catalogItem, this, baseEventData); }
 
-    public void FavoriteIconClicked()
-    {
-        
-        OnCatalogItemFavorite?.Invoke(catalogItem, this);
-    }
+    public void FavoriteIconClicked() { OnCatalogItemFavorite?.Invoke(catalogItem, this); }
 
     public void SceneObjectClicked()
     {
-       if (!lockedGO.gameObject.activeSelf)
+        if (!lockedGO.gameObject.activeSelf)
             OnCatalogItemClicked?.Invoke(catalogItem);
     }
 
@@ -121,19 +119,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
         }
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        AdapterStartDragging(eventData);
-    }
+    public void OnBeginDrag(PointerEventData eventData) { AdapterStartDragging(eventData); }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        OnAdapterDrag?.Invoke(eventData);
-    }
+    public void OnDrag(PointerEventData eventData) { OnAdapterDrag?.Invoke(eventData); }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        
-        OnAdapterEndDrag?.Invoke(eventData);
-    }
+    public void OnEndDrag(PointerEventData eventData) { OnAdapterEndDrag?.Invoke(eventData); }
+
+    public void OnPointerEnter(PointerEventData eventData) { OnPointerEnterInAdapter?.Invoke(eventData, this); }
+
+    public void OnPointerExit(PointerEventData eventData) { OnPointerExitInAdapter?.Invoke(eventData, this); }
 }

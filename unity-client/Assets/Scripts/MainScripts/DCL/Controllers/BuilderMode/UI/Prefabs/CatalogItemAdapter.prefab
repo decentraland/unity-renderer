@@ -343,12 +343,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thumbnailImg: {fileID: 1825411668205709546}
-  favImg: {fileID: 2856383264796359546}
-  smartItemGO: {fileID: 1630529308205124801}
+  backgroundImg: {fileID: 6081803941121651566}
   canvasGroup: {fileID: 6762876330481615913}
+  lockedGO: {fileID: 458071831985224605}
+  smartItemGO: {fileID: 1630529308205124801}
+  smartItemColor: {r: 0.2784314, g: 0.14901961, b: 0.3137255, a: 1}
+  normalColor: {r: 0.3137255, g: 0.30980393, b: 0.34901962, a: 1}
   offFavoriteColor: {r: 1, g: 1, b: 1, a: 1}
   onFavoriteColor: {r: 1, g: 0, b: 0, a: 1}
-  lockedGO: {fileID: 458071831985224605}
+  favImg: {fileID: 2856383264796359546}
 --- !u!114 &6081803941121651566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.31410027, g: 0.31118727, b: 0.3490566, a: 1}
+  m_Color: {r: 0.27607694, g: 0.14831792, b: 0.31132078, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -399,7 +402,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}

@@ -8,6 +8,7 @@ public interface ITooltipController
     void Dispose();
     void SetTooltipText(string text);
     void ShowTooltip(BaseEventData data);
+    void ShowTooltip(BaseEventData data, Vector3 offset);
     void HideTooltip();
 }
 
@@ -32,18 +33,17 @@ public class TooltipController : ITooltipController
         view.OnHideTooltip -= HideTooltip;
     }
 
-    public void SetTooltipText(string text)
-    {
-        view.SetText(text);
-    }
+    public void SetTooltipText(string text) { view.SetText(text); }
 
-    public void ShowTooltip(BaseEventData data)
+    public void ShowTooltip(BaseEventData data) { ShowTooltip(data, Vector3.zero); }
+
+    public void ShowTooltip(BaseEventData data, Vector3 offset)
     {
         if (!(data is PointerEventData dataConverted))
             return;
 
         RectTransform selectedRT = dataConverted.pointerEnter.GetComponent<RectTransform>();
-        view.SetTooltipPosition(selectedRT.position - Vector3.up * selectedRT.rect.height);
+        view.SetTooltipPosition(offset + selectedRT.position - Vector3.up * selectedRT.rect.height);
 
         KillTooltipCoroutine();
 

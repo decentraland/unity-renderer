@@ -54,11 +54,11 @@ public class BIWCatalogShould
         CatalogItemAdapter adapter = BuilderInWorldTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
-        CatalogAssetGroupAdapter groupAdatper = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
-        groupAdatper.AddAdapter(adapter);
+        CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
+        groupAdapter.SubscribeToEvents(adapter);
 
         CatalogGroupListView catalogGroupListView = new GameObject("_CatalogGroupListView").AddComponent<CatalogGroupListView>();
-        catalogGroupListView.AddAdapter(groupAdatper);
+        catalogGroupListView.SubscribeToEvents(groupAdapter);
         catalogGroupListView.generalCanvas = Utils.GetOrCreateComponent<Canvas>(gameObjectToUse);
         SceneCatalogView sceneCatalogView = SceneCatalogView.Create();
         sceneCatalogView.catalogGroupListView = catalogGroupListView;

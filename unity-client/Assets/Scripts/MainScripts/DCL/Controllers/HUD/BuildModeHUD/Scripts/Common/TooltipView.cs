@@ -9,7 +9,6 @@ public interface ITooltipView
 
     event Action OnHideTooltip;
     event Action<BaseEventData> OnShowTooltip;
-
     void SetText(string text);
     void SetTooltipPosition(Vector3 pos);
     void SetTooltipAlpha(float alphaValue);
@@ -20,6 +19,7 @@ public class TooltipView : MonoBehaviour, ITooltipView
     public float alphaTranstionSpeed => alphaSpeed;
 
     public event Action<BaseEventData> OnShowTooltip;
+
     public event Action OnHideTooltip;
 
     [SerializeField] internal float alphaSpeed = 3f;
@@ -37,18 +37,9 @@ public class TooltipView : MonoBehaviour, ITooltipView
         return view;
     }
 
-    public void SetTooltipPosition(Vector3 pos)
-    {
-        tooltipRT.position = pos;
-    }
+    public void SetTooltipPosition(Vector3 pos) { tooltipRT.position = pos; }
 
-    public void SetText(string text)
-    {
-        tooltipTxt.text = text;
-    }
+    public void SetText(string text) { tooltipTxt.text = text; }
 
-    public void SetTooltipAlpha(float alphaValue)
-    {
-        tooltipCG.alpha = alphaValue;
-    }
+    public void SetTooltipAlpha(float alphaValue) { tooltipCG.alpha = alphaValue; }
 }

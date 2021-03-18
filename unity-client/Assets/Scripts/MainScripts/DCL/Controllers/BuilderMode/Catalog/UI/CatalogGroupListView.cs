@@ -10,6 +10,8 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
 
     public System.Action<CatalogItem> OnCatalogItemClicked;
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
     public event System.Action OnResumeInput;
     public event System.Action OnStopInput;
@@ -30,7 +32,7 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
             {
                 CatalogAssetGroupAdapter adapter = Instantiate(categoryItemAdapterPrefab, contentPanelTransform).GetComponent<CatalogAssetGroupAdapter>();
                 adapter.SetContent(assetPackGroup.Key, assetPackGroup.Value);
-                AddAdapter(adapter);
+                SubscribeToEvents(adapter);
             }
         }
 
@@ -38,13 +40,44 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
             dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
-    public void AddAdapter(CatalogAssetGroupAdapter adapter)
+    public override void RemoveAdapters()
+    {
+        if (contentPanelTransform == null ||
+            contentPanelTransform.transform == null ||
+            contentPanelTransform.transform.childCount == 0)
+            return;
+
+        for (int i = 0; i < contentPanelTransform.transform.childCount; i++)
+        {
+            CatalogAssetGroupAdapter toRemove = contentPanelTransform.transform.GetChild(i).GetComponent<CatalogAssetGroupAdapter>();
+            if (toRemove != null)
+            {
+                UnsubscribeToEvents(toRemove);
+                Destroy(toRemove.gameObject);
+            }
+        }
+    }
+
+    public void SubscribeToEvents(CatalogAssetGroupAdapter adapter)
     {
         adapter.OnCatalogItemClicked += CatalogItemSelected;
         adapter.OnCatalogItemFavorite += CatalogItemFavorite;
         adapter.OnAdapterStartDragging += AdapterStartDragging;
         adapter.OnAdapterDrag += OnDrag;
         adapter.OnAdapterEndDrag += OnEndDrag;
+        adapter.OnPointerEnterInAdapter += OnPointerEnter;
+        adapter.OnPointerExitInAdapter += OnPointerExit;
+    }
+
+    public void UnsubscribeToEvents(CatalogAssetGroupAdapter adapter)
+    {
+        adapter.OnCatalogItemClicked -= CatalogItemSelected;
+        adapter.OnCatalogItemFavorite -= CatalogItemFavorite;
+        adapter.OnAdapterStartDragging -= AdapterStartDragging;
+        adapter.OnAdapterDrag -= OnDrag;
+        adapter.OnAdapterEndDrag -= OnEndDrag;
+        adapter.OnPointerEnterInAdapter -= OnPointerEnter;
+        adapter.OnPointerExitInAdapter -= OnPointerExit;
     }
 
     private void OnDrag(PointerEventData data) { draggedObject.transform.position = data.position; }
@@ -78,4 +111,7 @@ public class CatalogGroupListView : ListView<Dictionary<string, List<CatalogItem
 
     private void CatalogItemFavorite(CatalogItem sceneObject, CatalogItemAdapter adapter) { OnCatalogItemFavorite?.Invoke(sceneObject, adapter); }
 
+    private void OnPointerEnter(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerEnterInAdapter?.Invoke(eventData, adapter); }
+
+    private void OnPointerExit(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerExitInAdapter?.Invoke(eventData, adapter); }
 }

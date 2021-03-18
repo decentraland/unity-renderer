@@ -17,10 +17,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            tooltipController.Dispose();
-        }
+        public void TearDown() { tooltipController.Dispose(); }
 
         [Test]
         public void SetTooltipTextCorrectly()
@@ -49,6 +46,24 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             tooltipController.view.Received(1).SetTooltipPosition(testRT.position - Vector3.up * testRT.rect.height);
+            Assert.IsNotNull(tooltipController.changeAlphaCoroutine, "The changeAlphaCoroutine is null!");
+        }
+
+        [Test]
+        public void ShowTooltipWithOffsetCorrectly()
+        {
+            // Arrange
+            PointerEventData testEventData = new PointerEventData(null);
+            testEventData.pointerEnter = new GameObject("_PointerEnterGO");
+            RectTransform testRT = testEventData.pointerEnter.AddComponent<RectTransform>();
+            tooltipController.changeAlphaCoroutine = null;
+            Vector3 offset = new Vector3(0, 50, 0);
+
+            // Act
+            tooltipController.ShowTooltip(testEventData, offset);
+
+            // Assert
+            tooltipController.view.Received(1).SetTooltipPosition(offset + testRT.position - Vector3.up * testRT.rect.height);
             Assert.IsNotNull(tooltipController.changeAlphaCoroutine, "The changeAlphaCoroutine is null!");
         }
     }
