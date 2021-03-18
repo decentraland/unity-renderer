@@ -90,7 +90,8 @@ jobs:
       - run: &HASH_UNITY_FILES
           name: Get the hash of source files
           command: |
-            find . -type f \( -not -path '*Plugins*' \) \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Plugins*' \) \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Plugins*' \) \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \)
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
@@ -152,11 +153,11 @@ jobs:
                 bash ci-playmode-test.sh
                 exit $?
             fi;
+            mkdir -p "./unity-renderer/test-results"
+            cp ./unity-renderer/playmode-results.xml ./unity-renderer/test-results/playmode-results.xml
           no_output_timeout: 30m
       - store_test_results:
           path: test-results
-      - store_test_results:
-          path: ./unity-renderer/CodeCoverage
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/playmode-logs.txt
@@ -222,7 +223,7 @@ jobs:
       - persist_to_workspace:
           root: *working_directory
           paths:
-            - Builds
+            - ./unity-renderer/Builds
 
   build-js-interface:
     <<: *working_directory_root
@@ -269,6 +270,10 @@ jobs:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
+      - run:
+          working_directory: ./browser-interface
+          name: print files
+          command: find .
       - run:
           working_directory: ./browser-interface
           name: npm run publish
