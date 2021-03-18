@@ -35,8 +35,9 @@ fi
 
 ls -la "$BUILD_PATH"
 
-if [ -n "$(ls -A "$BUILD_PATH")" ]; then
+if [ -z "$(ls -A "$BUILD_PATH")" ]; then
   echo "directory BUILD_PATH $BUILD_PATH is empty"
+  UNITY_EXIT_CODE=4
 fi
 
 exit $UNITY_EXIT_CODE;
