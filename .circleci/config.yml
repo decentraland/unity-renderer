@@ -235,9 +235,9 @@ jobs:
       - <<: *attach_root
       - run:
           working_directory: &node_workspace browser-interface
-          name: find unity artifacts
+          name: copy artifacts
           command: |
-            pwd
+            cp -r /tmp/workspace/unity-renderer/unity-renderer/Builds/unity unity
             find .
       - run:
           working_directory: *node_workspace
@@ -274,7 +274,7 @@ jobs:
           when: on_success
       - run:
           working_directory: *node_workspace
-          name: print files
+          name: print files to publish
           command: find .
       - run:
           working_directory: *node_workspace
