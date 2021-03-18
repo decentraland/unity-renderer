@@ -151,6 +151,7 @@ jobs:
           name: Run playmode tests
           command: |
             if [[ -e ./unity-renderer/playmode-logs.txt ]]; then
+                echo "Skipping playmode tests"
                 exit 0
             else
                 bash ci-playmode-test.sh
