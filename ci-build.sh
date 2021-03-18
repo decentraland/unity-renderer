@@ -2,31 +2,26 @@
 
 source ci-setup.sh
 
-set +x 2> /dev/null
 echo "Building for $BUILD_TARGET at $PROJECT_PATH"
 
 export BUILD_PATH="$PROJECT_PATH/Builds/$BUILD_NAME/"
 mkdir -p "$BUILD_PATH"
-set -x
 
-${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
+xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -quit \
   -batchmode \
+  -projectPath "$PROJECT_PATH" \
   -logFile "$PROJECT_PATH/build-logs.txt" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \
   -customBuildName "$BUILD_NAME" \
   -customBuildPath "$BUILD_PATH" \
-  -customBuildOptions AcceptExternalModificationsToPlayer \
   -executeMethod BuildCommand.PerformBuild
 
 UNITY_EXIT_CODE=$?
 
 cat "$PROJECT_PATH/build-logs.txt"
-
 find "$BUILD_PATH"
-
-set +x 2> /dev/null
 
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
   echo "Run succeeded, no failures occurred";
@@ -40,10 +35,9 @@ fi
 
 ls -la "$BUILD_PATH"
 
-if [ -n "$(ls -A "$BUILD_PATH")" ]; then
+if [ -z "$(ls -A "$BUILD_PATH")" ]; then
   echo "directory BUILD_PATH $BUILD_PATH is empty"
+  UNITY_EXIT_CODE=4
 fi
-
-set -x
 
 exit $UNITY_EXIT_CODE;

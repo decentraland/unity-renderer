@@ -1,27 +1,27 @@
-#!/usr/bash
+#!/usr/bin/env bash
 
 source ci-setup.sh
 
-${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity } \
-        -batchmode \
-        -logFile "$PROJECT_PATH/playmode-logs.txt" \
-        -runTests \
-        -testPlatform PlayMode \
-        -testResults "$PROJECT_PATH/playmode-results.xml" \
-        -enableCodeCoverage \
-        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
-        -debugCodeOptimization
+echo "Running playmode tests for $PROJECT_PATH"
+
+xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
+  -batchmode \
+  -projectPath "$PROJECT_PATH" \
+  -logFile "$PROJECT_PATH/playmode-logs.txt" \
+  -runTests \
+  -testPlatform PlayMode \
+  -testResults "$PROJECT_PATH/playmode-results.xml" \
+  -enableCodeCoverage \
+  -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p test-results/playmode
-cp playmode-results.xml test-results/playmode/results.xml || true
+mkdir -p "$PROJECT_PATH/test-results/playmode"
+cp "$PROJECT_PATH/playmode-results.xml" "$PROJECT_PATH/test-results/playmode/results.xml" || true
 
 cat "$PROJECT_PATH/playmode-results.xml"
-
-set +x 2> /dev/null
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
@@ -34,5 +34,4 @@ else
   echo "Unexpected exit code $UNITY_EXIT_CODE";
 fi
 
-set -x
 exit $UNITY_EXIT_CODE
