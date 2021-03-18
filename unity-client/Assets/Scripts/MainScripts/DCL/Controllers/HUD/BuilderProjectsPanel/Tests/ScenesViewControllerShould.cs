@@ -37,7 +37,7 @@ namespace Tests
         [Test]
         public void CallListenerEventsCorrectly()
         {
-            scenesViewController.SetScenes(new List<ISceneData>(){new SceneData(){id = "1", isDeployed = true}});
+            scenesViewController.SetScenes(new ISceneData[]{new SceneData(){id = "1", isDeployed = true}});
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
             Assert.AreEqual(1, listenerMock.setScenes.Count);
@@ -47,7 +47,7 @@ namespace Tests
 
             listenerMock.Clear();
 
-            scenesViewController.SetScenes(new List<ISceneData>()
+            scenesViewController.SetScenes(new ISceneData[]
             {
                 new SceneData(){id = "1", isDeployed = true},
                 new SceneData(){id = "2", isDeployed = true}
@@ -61,7 +61,7 @@ namespace Tests
 
             listenerMock.Clear();
 
-            scenesViewController.SetScenes(new List<ISceneData>()
+            scenesViewController.SetScenes(new ISceneData[]
             {
                 new SceneData(){id = "1", isDeployed = true},
                 new SceneData(){id = "2", isDeployed = false}
@@ -75,7 +75,7 @@ namespace Tests
 
             listenerMock.Clear();
 
-            scenesViewController.SetScenes(new List<ISceneData>()
+            scenesViewController.SetScenes(new ISceneData[]
             {
                 new SceneData(){id = "1", isDeployed = true},
                 new SceneData(){id = "2", isDeployed = false}
@@ -89,7 +89,7 @@ namespace Tests
 
             listenerMock.Clear();
 
-            scenesViewController.SetScenes(new List<ISceneData>()
+            scenesViewController.SetScenes(new ISceneData[]
             {
                 new SceneData(){id = "1", isDeployed = false},
                 new SceneData(){id = "2", isDeployed = false}

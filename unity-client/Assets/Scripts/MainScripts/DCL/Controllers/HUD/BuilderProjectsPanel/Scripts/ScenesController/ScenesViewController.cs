@@ -16,9 +16,12 @@ internal class ScenesViewController : IDisposable
     public event Action<Dictionary<string, SceneCardView>> OnProjectScenesSet;
     public event Action<SceneCardView> OnProjectSceneAdded;
     public event Action<SceneCardView> OnProjectSceneRemoved;
+    public event Action<SceneCardView> OnSceneSelected; 
 
     public Dictionary<string, SceneCardView> deployedScenes { private set; get; } = new Dictionary<string, SceneCardView>();
     public Dictionary<string, SceneCardView> projectScenes { private set; get; } = new Dictionary<string, SceneCardView>();
+
+    public SceneCardView selectedScene { private set; get; }
 
     private readonly ScenesRefreshHelper scenesRefreshHelper = new ScenesRefreshHelper();
     private readonly SceneCardView sceneCardViewPrefab;
@@ -36,7 +39,7 @@ internal class ScenesViewController : IDisposable
     /// Set current user scenes (deployed and projects)
     /// </summary>
     /// <param name="scenesData">list of scenes</param>
-    public void SetScenes(List<ISceneData> scenesData)
+    public void SetScenes(ISceneData[] scenesData)
     {
         scenesRefreshHelper.Set(deployedScenes, projectScenes);
 
@@ -44,7 +47,7 @@ internal class ScenesViewController : IDisposable
         projectScenes = new Dictionary<string, SceneCardView>();
 
         // update or create new scenes view
-        for (int i = 0; i < scenesData.Count; i++)
+        for (int i = 0; i < scenesData.Length; i++)
         {
             SetScene(scenesData[i]);
         }
@@ -84,6 +87,30 @@ internal class ScenesViewController : IDisposable
         if (scenesRefreshHelper.isOldProjectScenesEmpty && projectScenes.Count > 0)
         {
             OnProjectScenesSet?.Invoke(projectScenes);
+        }
+    }
+
+    /// <summary>
+    /// Set selected scene
+    /// </summary>
+    /// <param name="id">scene id</param>
+    public void SelectScene(string id)
+    {
+        SceneCardView sceneCardView = null;
+        if (deployedScenes.TryGetValue(id, out SceneCardView deployedSceneCardView))
+        {
+            sceneCardView = deployedSceneCardView;
+        }
+        else if (projectScenes.TryGetValue(id, out SceneCardView projectSceneCardView))
+        {
+            sceneCardView = projectSceneCardView;
+        }
+
+        selectedScene = sceneCardView;
+        
+        if (sceneCardView != null)
+        {
+            OnSceneSelected?.Invoke(sceneCardView);
         }
     }
 
