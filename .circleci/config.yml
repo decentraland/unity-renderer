@@ -123,7 +123,7 @@ jobs:
           name: Store test coverage
           path: ./unity-renderer/CodeCoverage
       - store_test_results:
-          path: test-results
+          path: ./unity-renderer/test-results
       - save_cache:
           name: Store test cache
           key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
