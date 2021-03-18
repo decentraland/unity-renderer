@@ -10,6 +10,7 @@ mkdir -p "$BUILD_PATH"
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
   -quit \
   -batchmode \
+  -projectPath "$PROJECT_PATH" \
   -logFile "$PROJECT_PATH/build-logs.txt" \
   -buildTarget "$BUILD_TARGET" \
   -customBuildTarget "$BUILD_TARGET" \

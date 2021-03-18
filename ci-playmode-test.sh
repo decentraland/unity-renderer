@@ -2,21 +2,24 @@
 
 source ci-setup.sh
 
+echo "Running playmode tests for $PROJECT_PATH"
+
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
-        -batchmode \
-        -logFile "$PROJECT_PATH/playmode-logs.txt" \
-        -runTests \
-        -testPlatform PlayMode \
-        -testResults "$PROJECT_PATH/playmode-results.xml" \
-        -enableCodeCoverage \
-        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
+  -batchmode \
+  -projectPath "$PROJECT_PATH" \
+  -logFile "$PROJECT_PATH/playmode-logs.txt" \
+  -runTests \
+  -testPlatform PlayMode \
+  -testResults "$PROJECT_PATH/playmode-results.xml" \
+  -enableCodeCoverage \
+  -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p test-results/playmode
-cp playmode-results.xml test-results/playmode/results.xml || true
+mkdir -p "$PROJECT_PATH/test-results/playmode"
+cp "$PROJECT_PATH/playmode-results.xml" "$PROJECT_PATH/test-results/playmode/results.xml" || true
 
 cat "$PROJECT_PATH/playmode-results.xml"
 

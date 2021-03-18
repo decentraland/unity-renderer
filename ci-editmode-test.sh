@@ -3,25 +3,26 @@
 source ci-setup.sh
 
 xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Editor/Unity \
-        -batchmode \
-        -logFile "$PROJECT_PATH/editmode-logs.txt" \
-        -runTests \
-        -testPlatform EditMode \
-        -testResults "$PROJECT_PATH/editmode-results.xml" \
-        -enableCodeCoverage \
-        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
-        -debugCodeOptimization
+  -batchmode \
+  -projectPath "$PROJECT_PATH" \
+  -logFile "$PROJECT_PATH/editmode-logs.txt" \
+  -runTests \
+  -testPlatform EditMode \
+  -testResults "$PROJECT_PATH/editmode-results.xml" \
+  -enableCodeCoverage \
+  -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport" \
+  -debugCodeOptimization
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p test-results/editormode
-cp editmode-results.xml test-results/editormode/results.xml || true
+mkdir -p "$PROJECT_PATH/test-results/editormode"
+cp "$PROJECT_PATH/editmode-results.xml" "$PROJECT_PATH/test-results/editormode/results.xml" || true
 
 # Print unity log output
-cat "editmode-results.xml"
-cat "editmode-results.xml" | grep test-run | grep Passed
+cat "$PROJECT_PATH/editmode-results.xml"
+cat "$PROJECT_PATH/editmode-results.xml" | grep test-run | grep Passed
 
 # Display results
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
