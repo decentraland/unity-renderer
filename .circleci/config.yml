@@ -2,6 +2,7 @@ version: 2.0
 
 references:
   .working_directory: &working_directory /tmp/workspace/unity-renderer
+  #                                                     ~~~~~~~~~~~~~~ <- repo name
 
   .working_directory_root: &working_directory_root
     working_directory: *working_directory
@@ -13,14 +14,18 @@ references:
   .image_kernel: &image_kernel
     - image: circleci/node:14-browsers
       environment:
-        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                         ~~~~~~~~~~~~~~ <- folder name
 
   .unity_image: &unity_image
     - image: decentraland/renderer-build:2019-4-19f1
       environment:
         BUILD_TARGET: WebGL
-        BUILD_PATH: /tmp/workspace/unity-renderer/Builds/unity
         BUILD_NAME: unity
+        BUILD_PATH: /tmp/workspace/unity-renderer/unity-renderer/Builds/unity
+        #                          ~~~~~~~~~~~~~~ <- repo name
+        #                                         ~~~~~~~~~~~~~~ <- folder name
 
   .all_branches_and_tags: &all_branches_and_tags
     filters:
@@ -97,7 +102,7 @@ jobs:
       - run:
           name: Run editmode tests
           command: |
-            if [[ -e /tmp/workspace/editmode-logs.txt ]]; then
+            if [[ -e ./unity-renderer/editmode-logs.txt ]]; then
                 exit 0
             else
                 bash ci-editmode-test.sh
@@ -106,25 +111,25 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           name: Store logs
-          path: /tmp/workspace/unity-renderer/editmode-logs.txt
+          path: ./unity-renderer/editmode-logs.txt
       - store_artifacts:
           name: Store test results
-          path: /tmp/workspace/unity-renderer/editmode-results.xml
+          path: ./unity-renderer/editmode-results.xml
       - store_artifacts:
           name: Store test coverage
-          path: /tmp/workspace/unity-renderer/CodeCoverage
+          path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: test-results
       - save_cache:
           name: Store test cache
           key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/unity-renderer/test-results
-            - /tmp/workspace/unity-renderer/editmode-logs.txt
-            - /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+            - ./unity-renderer/test-results
+            - ./unity-renderer/editmode-logs.txt
+            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store visual tests result as artifacts
-          path: /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages
+          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
 
   playmode-tests:
     <<: *working_directory_root
@@ -141,7 +146,7 @@ jobs:
       - run:
           name: Run playmode tests
           command: |
-            if [[ -e /tmp/workspace/playmode-logs.txt ]]; then
+            if [[ -e ./unity-renderer/playmode-logs.txt ]]; then
                 exit 0
             else
                 bash ci-playmode-test.sh
@@ -151,28 +156,28 @@ jobs:
       - store_test_results:
           path: test-results
       - store_test_results:
-          path: /tmp/workspace/unity-renderer/CodeCoverage
+          path: ./unity-renderer/CodeCoverage
       - store_artifacts:
           name: Store logs
-          path: /tmp/workspace/unity-renderer/playmode-logs.txt
+          path: ./unity-renderer/playmode-logs.txt
       - store_artifacts:
           name: Store test results
-          path: /tmp/workspace/unity-renderer/playmode-results.xml
+          path: ./unity-renderer/playmode-results.xml
       - store_artifacts:
           name: Store test coverage
-          path: /tmp/workspace/unity-renderer/CodeCoverage
+          path: ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
           key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/unity-renderer/test-results
-            - /tmp/workspace/unity-renderer/playmode-logs.txt
-            - /tmp/workspace/unity-renderer/playmode-results.xml
-            - /tmp/workspace/unity-renderer/CodeCoverage
-            - /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+            - ./unity-renderer/test-results
+            - ./unity-renderer/playmode-logs.txt
+            - ./unity-renderer/playmode-results.xml
+            - ./unity-renderer/CodeCoverage
+            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store visual tests result as artifacts
-          path: /tmp/workspace/unity-renderer/TestResources/VisualTests/CurrentTestImages
+          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
 
   build-unity:
     <<: *working_directory_root
@@ -197,21 +202,21 @@ jobs:
                     echo "Running Unity Build..."
                     sleep 60
                 done
-                cat build-logs.txt
+                cat ./unity-renderer/build-logs.txt
             fi;
       - save_cache:
           name: Store decentraland-renderer build
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
           paths:
-            - /tmp/workspace/unity-renderer/Builds/
+            - ./unity-renderer/Builds/
       - save_cache:
           name: Store library
           key: library-{{ .Branch }}
           paths:
-            - /tmp/workspace/unity-renderer/Library
+            - ./unity-renderer/Library
       - store_artifacts:
           name: Store logs
-          path: /tmp/build-logs.txt
+          path: ./unity-renderer/build-logs.txt
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -228,7 +233,9 @@ jobs:
       - run:
           working_directory: &node_workspace browser-interface
           name: find unity artifacts
-          command: find /tmp/workspace/unity-renderer/Builds/
+          command: |
+            pwd
+            find ./browser-interface
       - run:
           working_directory: *node_workspace
           name: npm clean install
@@ -263,7 +270,7 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
       - run:
-          working_directory: /tmp/workspace/browser-interface
+          working_directory: ./browser-interface
           name: npm run publish
           command: npm run publish
 workflows:

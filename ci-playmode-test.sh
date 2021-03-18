@@ -8,6 +8,9 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
         -runTests \
         -testPlatform PlayMode \
         -testResults "$PROJECT_PATH/playmode-results.xml" \
+        -enableCodeCoverage \
+        -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
+        -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
