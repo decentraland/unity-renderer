@@ -17,6 +17,7 @@ public class BIWCreatorController : BIWController
 
     [Header("Prefab references")]
     public BIWModeController biwModeController;
+
     public BIWFloorHandler biwFloorHandler;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
 
@@ -58,6 +59,7 @@ public class BIWCreatorController : BIWController
         {
             GameObject.Destroy(gameObject);
         }
+
         loadingGameObjects.Clear();
     }
 
@@ -111,6 +113,7 @@ public class BIWCreatorController : BIWController
             HUDController.i.builderInWorldMainHud.ShowSceneLimitsPassed();
             return false;
         }
+
         return true;
     }
 
@@ -164,7 +167,10 @@ public class BIWCreatorController : BIWController
 
     #region LoadingObjects
 
-    public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
+    public bool ExistsLoadingGameObjectForEntity(string entityId)
+    {
+        return loadingGameObjects.ContainsKey(entityId);
+    }
 
     private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
@@ -205,26 +211,23 @@ public class BIWCreatorController : BIWController
         SmartItemComponent.Model model = new SmartItemComponent.Model();
         model.values = new Dictionary<object, object>();
 
-        string jsonModel = JsonUtility.ToJson(model);
-
-        //Note (Adrian): This shouldn't work this way, we should have a function to create the component from Model directly
-        sceneToEdit.EntityComponentCreateOrUpdateFromUnity(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
+        sceneToEdit.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
         //Note (Adrian): We can't wait to set the component 1 frame, so we set it
-        if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent baseComponent))
-            ((SmartItemComponent)baseComponent).UpdateFromModel(model);
+        if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
+            ((SmartItemComponent) component).UpdateFromModel(model);
     }
 
     private void AddEntityNameComponent(CatalogItem catalogItem, DCLBuilderInWorldEntity entity)
     {
-        DCLName name = (DCLName)sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
+        DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
         sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
         builderInWorldEntityHandler.SetEntityName(entity, catalogItem.name);
     }
 
     private void AddLockedComponent(DCLBuilderInWorldEntity entity)
     {
-        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit)sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
+        DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
         if (entity.isFloor)
             entityLocked.SetIsLocked(true);
         else
@@ -237,7 +240,7 @@ public class BIWCreatorController : BIWController
     {
         if (catalogItem.IsNFT())
         {
-            NFTShape nftShape = (NFTShape)sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
+            NFTShape nftShape = (NFTShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
             nftShape.model = new NFTShape.Model();
             nftShape.model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
             nftShape.model.src = catalogItem.model;
@@ -247,12 +250,13 @@ public class BIWCreatorController : BIWController
         }
         else
         {
-            GLTFShape mesh = (GLTFShape)sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
+            GLTFShape mesh = (GLTFShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
             mesh.model = new LoadableShape.Model();
             mesh.model.src = catalogItem.model;
             mesh.model.assetId = catalogItem.id;
             sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, mesh.id);
         }
+
         CreateLoadingObject(entity);
     }
 
@@ -278,9 +282,11 @@ public class BIWCreatorController : BIWController
                     break;
                 }
             }
+
             if (!found)
                 data.contents.Add(mappingPair);
         }
+
         DCL.Environment.i.world.sceneController.UpdateParcelScenesExecute(data);
     }
 

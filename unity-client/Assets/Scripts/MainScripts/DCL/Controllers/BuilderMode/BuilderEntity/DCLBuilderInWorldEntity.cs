@@ -140,6 +140,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
+        
         SetOriginalMaterials();
     }
 
@@ -162,11 +163,11 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         if (isNFT)
         {
-            foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+            foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.GetSharedComponents())
             {
-                if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+                if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                 {
-                    BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
+                    BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
                     break;
                 }
             }
@@ -215,11 +216,11 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool GetIsLockedValue()
     {
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.GetSharedComponents())
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
+            if (kvp.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
             {
-                return ((DCLLockedOnEdit.Model) keyValuePairBaseDisposable.Value.GetModel()).isLocked;
+                return ((DCLLockedOnEdit.Model) kvp.Value.GetModel()).isLocked;
             }
         }
 
@@ -230,11 +231,11 @@ public class DCLBuilderInWorldEntity : EditableEntity
     {
         bool foundComponent = false;
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.GetSharedComponents())
         {
-            if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
+            if (kvp.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
             {
-                ((DCLLockedOnEdit) keyValuePairBaseDisposable.Value).SetIsLocked(isLocked);
+                ((DCLLockedOnEdit) kvp.Value).SetIsLocked(isLocked);
                 foundComponent = true;
             }
         }
@@ -254,7 +255,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public void SetDescriptiveName(string newName)
     {
-        if (rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out BaseDisposable nameComponent))
+        if (rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out ISharedComponent nameComponent))
         {
             ((DCLName) nameComponent).SetNewName(newName);
         }
@@ -271,7 +272,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public string GetDescriptiveName()
     {
-        if (rootEntity != null && rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out BaseDisposable nameComponent))
+        if (rootEntity != null && rootEntity.TryGetSharedComponent(CLASS_ID.NAME, out ISharedComponent nameComponent))
         {
             return ((DCLName.Model) nameComponent.GetModel()).value;
         }
@@ -302,7 +303,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         if (isNFT)
         {
-            foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+            foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
             {
                 if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                 {
@@ -416,6 +417,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
                     matCont++;
                     continue;
                 }
+
                 originalMaterials[matCont] = renderer.materials[i];
                 matCont++;
             }
@@ -532,7 +534,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool IsEntityNFT()
     {
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in rootEntity.GetSharedComponents())
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                 return true;

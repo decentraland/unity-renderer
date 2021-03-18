@@ -46,7 +46,7 @@ namespace DCL.Components
             lastDCLAudioClip = dclAudioClip;
         }
 
-        public double Volume => ((Model)model).volume;
+        public double volume => ((Model) model).volume;
 
         public override IEnumerator ApplyChanges(BaseModel baseModel)
         {
@@ -72,7 +72,7 @@ namespace DCL.Components
                 Debug.LogWarning("AudioSource is null!.");
                 return;
             }
-            
+
             Model model = (Model) this.model;
             audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? model.volume : 0f;
             audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
@@ -117,12 +117,13 @@ namespace DCL.Components
         {
             if (audioSource != null)
             {
-                Model model = (Model)this.model;
+                Model model = (Model) this.model;
                 float volume = 0;
                 if ((scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience))
                 {
                     volume = model.volume;
                 }
+
                 audioSource.volume = volume;
             }
         }
@@ -162,7 +163,8 @@ namespace DCL.Components
             {
                 audioSource.clip = clip.audioClip;
             }
-            Model model = (Model)this.model;
+
+            Model model = (Model) this.model;
             if (audioSource.enabled && model.playing && !audioSource.isPlaying)
             {
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds

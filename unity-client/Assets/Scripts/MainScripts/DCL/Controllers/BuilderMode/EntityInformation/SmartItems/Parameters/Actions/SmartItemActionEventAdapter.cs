@@ -43,6 +43,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
                 RemoveActionable();
                 break;
         }
+
         optionsDropDown.SetValueWithoutNotify(1);
     }
 
@@ -73,19 +74,22 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         {
             GetThumbnail(entity);
         }
+
         SelectedEntity(entityDropDown.value);
     }
 
     private void SelectedEntity(int number)
     {
-        if (!filteredList[number].rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out BaseComponent component))
+        if (!filteredList[number].rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
+        {
             return;
+        }
 
         actionEvent.smartItemActionable.entityId = filteredList[number].rootEntity.entityId;
         selectedEntity = filteredList[number];
         GenerateActionDropdownContent(filteredList[number].GetSmartItemActions());
 
-        GenerateParametersFromSelectedOption();   
+        GenerateParametersFromSelectedOption();
     }
 
     private void GenerateParametersFromSelectedOption()
@@ -126,7 +130,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         {
             optionsLabelList.Add(action.label);
             if (!string.IsNullOrEmpty(actionEvent.smartItemActionable.actionId) &&
-               action.id == actionEvent.smartItemActionable.actionId)
+                action.id == actionEvent.smartItemActionable.actionId)
                 indexToUse = index;
 
             index++;

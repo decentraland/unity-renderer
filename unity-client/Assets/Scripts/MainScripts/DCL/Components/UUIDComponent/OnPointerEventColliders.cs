@@ -1,3 +1,4 @@
+using System;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -6,12 +7,12 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
-    public class OnPointerEventColliders : MonoBehaviour
+    public class OnPointerEventColliders : IDisposable
     {
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
-        [System.NonSerialized] public int refCount;
+        [System.NonSerialized]
+        public int refCount;
 
         Collider[] pointerEventColliders;
         Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
@@ -25,9 +26,11 @@ namespace DCL.Components
         }
 
         private DecentralandEntity ownerEntity;
+
         public void Initialize(DecentralandEntity entity)
         {
-            if (entity == null || entity.meshesInfo == null) return;
+            if (entity == null || entity.meshesInfo == null)
+                return;
 
             Renderer[] rendererList = entity.meshesInfo.renderers;
 
@@ -70,7 +73,7 @@ namespace DCL.Components
             return meshCollider;
         }
 
-        void OnDestroy()
+        public void Dispose()
         {
             DestroyOnPointerEventColliders();
         }
@@ -85,7 +88,7 @@ namespace DCL.Components
                 Collider collider = pointerEventColliders[i];
 
                 if (collider != null)
-                    Destroy(collider.gameObject);
+                    GameObject.Destroy(collider.gameObject);
             }
         }
     }

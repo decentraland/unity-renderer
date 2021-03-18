@@ -1104,8 +1104,8 @@ MonoBehaviour:
   openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 0
-  baseUrlCustom: 
+  baseUrlMode: 1
+  baseUrlCustom: https://play.decentraland.zone/?
   environment: 4
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
@@ -1113,8 +1113,8 @@ MonoBehaviour:
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  soloScene: 1
-  questsEnabled: 1
+  soloScene: 0
+  questsEnabled: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:

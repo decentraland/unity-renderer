@@ -27,26 +27,26 @@ public static partial class BuilderInWorldUtils
 
         return vectorToFilter;
     }
-    
-    static float ClosestNumber(float n, float m) 
-    { 
+
+    static float ClosestNumber(float n, float m)
+    {
         // find the quotient 
-        int q = Mathf.RoundToInt(n / m); 
-  
+        int q = Mathf.RoundToInt(n / m);
+
         // 1st possible closest number 
         float n1 = m * q;
-        
+
         // 2nd possible closest number 
-        float n2 = (n * m) > 0 ? (m * (q + 1)) : (m * (q - 1)); 
-  
+        float n2 = (n * m) > 0 ? (m * (q + 1)) : (m * (q - 1));
+
         // if true, then n1 is the required closest number 
-        if (Math.Abs(n - n1) < Math.Abs(n - n2)) 
-            return n1; 
-  
+        if (Math.Abs(n - n1) < Math.Abs(n - n2))
+            return n1;
+
         // else n2 is the required closest number 
-        return n2; 
-    } 
-    
+        return n2;
+    }
+
     public static Vector3 CalculateUnityMiddlePoint(ParcelScene parcelScene)
     {
         Vector3 position;
@@ -84,7 +84,7 @@ public static partial class BuilderInWorldUtils
 
         return position;
     }
-    
+
     public static CatalogItem CreateFloorSceneObject()
     {
         CatalogItem floorSceneObject = new CatalogItem();
@@ -214,7 +214,7 @@ public static partial class BuilderInWorldUtils
         builderInWorldEntityData.entityId = entity.entityId;
 
 
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> keyValuePair in entity.components)
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
         {
             if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
             {
@@ -236,7 +236,7 @@ public static partial class BuilderInWorldUtils
             }
         }
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePair in entity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in entity.GetSharedComponents())
         {
             if (keyValuePair.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
             {
@@ -311,7 +311,7 @@ public static partial class BuilderInWorldUtils
         original.sizeDelta = rectTransformToCopy.sizeDelta;
         original.pivot = rectTransformToCopy.pivot;
     }
-    
+
     public static IEnumerator MakeGetCall(string url, Action<string> functionToCall)
     {
         UnityWebRequest www = UnityWebRequest.Get(url);
@@ -326,6 +326,7 @@ public static partial class BuilderInWorldUtils
             {
                 yield return null;
             }
+
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);

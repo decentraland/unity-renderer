@@ -257,7 +257,7 @@ namespace DCL.Controllers
             {
                 if (entity.meshesInfo.renderers[i] == null)
                     continue;
-                
+
                 if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].bounds))
                 {
                     feedbackStyle.OnRendererExitBounds(entity.meshesInfo.renderers[i]);
@@ -279,12 +279,13 @@ namespace DCL.Controllers
                 return;
 
             int collidersCount = meshesInfo.colliders.Count;
-            if(collidersCount <= 0)
-                 return;
             
+            if (collidersCount == 0)
+                return;
+
             if (meshesInfo.colliders[0] == null)
                 return;
-            
+
             if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
             {
                 for (int i = 0; i < collidersCount; i++)

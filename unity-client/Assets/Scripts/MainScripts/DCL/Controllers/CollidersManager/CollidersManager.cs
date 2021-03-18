@@ -43,6 +43,15 @@ namespace DCL
                 colliderInfo.Remove(collider);
         }
 
+        public void RemoveEntityCollider(DecentralandEntity entity, Collider collider)
+        {
+            if (entity == null || collider == null || !collidersByEntity.ContainsKey(entity))
+                return;
+
+            collidersByEntity[entity].Remove(collider);
+            RemoveColliderInfo(collider);
+        }
+
         public void AddOrUpdateEntityCollider(DecentralandEntity entity, Collider collider)
         {
             if (!collidersByEntity.ContainsKey(entity))

@@ -17,12 +17,9 @@ public static class BuilderInWorldTestHelper
         if (model == null)
             model = new SmartItemComponent.Model();
 
-        string jsonModel = JsonUtility.ToJson(model);
-
         DCLBuilderInWorldEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
-        //Note (Adrian): This shouldn't work this way, we should have a function to create the component from Model directly
-        scene.EntityComponentCreateOrUpdateFromUnity(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, jsonModel);
+        scene.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
         return entity;
     }

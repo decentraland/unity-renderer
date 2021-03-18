@@ -2,20 +2,48 @@ using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public interface IComponent : ICleanable
+    public interface IDelayedComponent : IComponent, ICleanable
     {
-        bool isRoutineRunning { get; }
+        WaitForComponentUpdate yieldInstruction { get; }
         Coroutine routine { get; }
+        bool isRoutineRunning { get; }
+    }
+
+    public interface IMonoBehaviour
+    {
+        Transform GetTransform();
+    }
+
+    public interface IEntityComponent : IComponent, ICleanable, IMonoBehaviour
+    {
+        DecentralandEntity entity { get; }
+        void Initialize(IParcelScene scene, DecentralandEntity entity);
+    }
+
+    public interface ISharedComponent : IComponent, IDisposable
+    {
+        string id { get; }
+        void AttachTo(DecentralandEntity entity, Type overridenAttachedType = null);
+        void DetachFrom(DecentralandEntity entity, Type overridenAttachedType = null);
+        void DetachFromEveryEntity();
+        void Initialize(IParcelScene scene, string id);
+        HashSet<DecentralandEntity> GetAttachedEntities();
+        void CallWhenReady(Action<ISharedComponent> callback);
+    }
+
+    public interface IComponent
+    {
+        IParcelScene scene { get; }
         string componentName { get; }
         void UpdateFromJSON(string json);
         void UpdateFromModel(BaseModel model);
         IEnumerator ApplyChanges(BaseModel model);
         void RaiseOnAppliedChanges();
-        ComponentUpdateHandler CreateUpdateHandler();
         bool IsValid();
         BaseModel GetModel();
         int GetClassId();
@@ -27,9 +55,9 @@ namespace DCL.Components
     /// </summary>
     public class WaitForComponentUpdate : CleanableYieldInstruction
     {
-        public IComponent component;
+        public IDelayedComponent component;
 
-        public WaitForComponentUpdate(IComponent component)
+        public WaitForComponentUpdate(IDelayedComponent component)
         {
             this.component = component;
         }
@@ -45,17 +73,16 @@ namespace DCL.Components
         }
     }
 
-    public abstract class BaseComponent : MonoBehaviour, IComponent, IPoolLifecycleHandler, IPoolableObjectContainer
+    public abstract class BaseComponent : MonoBehaviour, IEntityComponent, IDelayedComponent, IPoolLifecycleHandler, IPoolableObjectContainer
     {
         protected ComponentUpdateHandler updateHandler;
         public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        public IParcelScene scene;
+        public IParcelScene scene { get; set; }
 
-        [NonSerialized]
-        public DecentralandEntity entity;
+        public DecentralandEntity entity { get; set; }
 
         public PoolableObject poolableObject { get; set; }
 
@@ -65,6 +92,15 @@ namespace DCL.Components
 
         public void RaiseOnAppliedChanges()
         {
+        }
+
+        public virtual void Initialize(IParcelScene scene, DecentralandEntity entity)
+        {
+            this.scene = scene;
+            this.entity = entity;
+
+            if (transform.parent != entity.gameObject.transform)
+                transform.SetParent(entity.gameObject.transform, false);
         }
 
         public virtual void UpdateFromJSON(string json)
@@ -88,7 +124,7 @@ namespace DCL.Components
 
         public virtual BaseModel GetModel() => model;
 
-        public virtual ComponentUpdateHandler CreateUpdateHandler()
+        protected virtual ComponentUpdateHandler CreateUpdateHandler()
         {
             return new ComponentUpdateHandler(this);
         }
@@ -115,5 +151,7 @@ namespace DCL.Components
         }
 
         public abstract int GetClassId();
+
+        public Transform GetTransform() => transform;
     }
 }

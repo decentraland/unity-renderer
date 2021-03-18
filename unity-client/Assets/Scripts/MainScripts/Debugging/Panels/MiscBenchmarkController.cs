@@ -157,7 +157,7 @@ namespace DCL
 
                     foreach (var e in scene.disposableComponents)
                     {
-                        sharedAttachCount += e.Value.attachedEntities.Count;
+                        sharedAttachCount += e.Value.GetAttachedEntities().Count;
                     }
 
                     entityCount += scene.entities.Count;

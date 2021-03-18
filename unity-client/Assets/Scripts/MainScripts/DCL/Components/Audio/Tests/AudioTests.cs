@@ -208,7 +208,7 @@ namespace Tests
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             // Check the volume
-            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.Volume);
+            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.volume);
         }
 
         [UnityTest]
@@ -260,7 +260,7 @@ namespace Tests
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
 
             // Check the volume
-            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.Volume);
+            Assert.AreEqual(unityAudioSource.volume, dclAudioSource.volume);
         }
 
         [UnityTest]

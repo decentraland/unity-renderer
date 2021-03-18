@@ -246,6 +246,7 @@ namespace DCL
             out CleanableYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
+            IDelayedComponent delayedComponent = null;
 
             try
             {
@@ -269,8 +270,10 @@ namespace DCL
                     case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
                     {
                         if (msgPayload is Protocol.EntityComponentCreateOrUpdate payload)
-                            scene.EntityComponentCreateOrUpdate(payload.entityId,
-                                (CLASS_ID_COMPONENT) payload.classId, payload.json, out yieldInstruction);
+                        {
+                            delayedComponent = scene.EntityComponentCreateOrUpdate(payload.entityId,
+                                (CLASS_ID_COMPONENT) payload.classId, payload.json) as IDelayedComponent;
+                        }
 
                         break;
                     }
@@ -309,7 +312,8 @@ namespace DCL
                     case MessagingTypes.SHARED_COMPONENT_UPDATE:
                     {
                         if (msgPayload is Protocol.SharedComponentUpdate payload)
-                            scene.SharedComponentUpdate(payload.componentId, payload.json, out yieldInstruction);
+                            delayedComponent = scene.SharedComponentUpdate(payload.componentId, payload.json) as IDelayedComponent;
+
                         break;
                     }
 
@@ -357,6 +361,12 @@ namespace DCL
             {
                 throw new Exception(
                     $"Scene message error. scene: {scene.sceneData.id} method: {method} payload: {JsonUtility.ToJson(msgPayload)} {e}");
+            }
+
+            if (delayedComponent != null)
+            {
+                if (delayedComponent.isRoutineRunning)
+                    yieldInstruction = delayedComponent.yieldInstruction;
             }
         }
 

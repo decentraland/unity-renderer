@@ -274,7 +274,7 @@ namespace DCL.Components
             entity.meshesInfo.CleanReferences();
         }
 
-        public override void CallWhenReady(Action<BaseDisposable> callback)
+        public override void CallWhenReady(Action<ISharedComponent> callback)
         {
             if (attachedEntities.Count == 0 || isLoaded || failed)
             {

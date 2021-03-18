@@ -48,7 +48,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         SceneAssetPack sceneAssetPack = new SceneAssetPack();
         sceneAssetPack.assets = new System.Collections.Generic.List<SceneObject>();
         sceneAssetPack.id = "mockupId";
-        
+
         SceneObject sceneObject = new SceneObject();
         sceneObject.id = mockupAssetId;
         sceneObject.contents = new System.Collections.Generic.Dictionary<string, string>();
@@ -72,7 +72,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             Assert.Fail();
 
 
-        LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF)gltfShape;
+        LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF) gltfShape;
         ContentProvider customContentProvider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
         Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
         Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
@@ -177,9 +177,8 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(scene.GetSharedComponent(gltfId2), entity.GetSharedComponent(typeof(BaseShape)));
-        Assert.IsFalse(gltf1.attachedEntities.Contains(entity));
+        Assert.IsFalse(gltf1.GetAttachedEntities().Contains(entity));
     }
-
 
 
     // NOTE: Since every deployed scene carries compiled core code of the sdk at the moment of deploying, most of them have GLTFs default 'withCollisions' value
@@ -238,7 +237,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Test]
     public void OnReadyBeforeLoading()
     {
-
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
 
         bool isOnReady = false;
@@ -250,7 +248,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyWaitLoading()
     {
-
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
 
         bool isOnReady = false;
@@ -265,8 +262,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Category("Explicit")]
     public void OnReadyWithoutAttachInstantlyCalled()
     {
-
-
         GLTFShape gltfShape = TestHelpers.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
         {
             src = Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb"
@@ -281,7 +276,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyAfterLoadingInstantlyCalled()
     {
-
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
         yield return TestHelpers.WaitForGLTFLoad(entity);
 
@@ -293,8 +287,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnDestroyWhileLoading()
     {
-
-
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
         GLTFShape gltfShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb", out DecentralandEntity entity2);
         GLTFShape gltfShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out DecentralandEntity entity3);

@@ -65,7 +65,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() { sceneId = sceneId })
+            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() {sceneId = sceneId})
             {
             }
         }
@@ -79,7 +79,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() { sceneId = sceneId })
+            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() {sceneId = sceneId})
             {
             }
         }
@@ -93,7 +93,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId })
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() {sceneId = sceneId})
             {
             }
         }
@@ -743,7 +743,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -753,7 +753,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -775,7 +775,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
         }
 
-        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance, bool isHitInfoValid)
+        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -959,12 +959,12 @@ namespace DCL.Interface
 
         public static void SendUserAcceptedCollectibles(string airdropId)
         {
-            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId });
+            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload {id = airdropId});
         }
 
         public static void SaveUserTutorialStep(int newTutorialStep)
         {
-            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep });
+            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() {tutorialStep = newTutorialStep});
         }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap)
@@ -1013,7 +1013,7 @@ namespace DCL.Interface
 
         public static void OpenURL(string url)
         {
-            SendMessage("OpenWebURL", new OpenURLPayload { url = url });
+            SendMessage("OpenWebURL", new OpenURLPayload {url = url});
         }
 
         public static void SendReportScene(string sceneID)
@@ -1220,7 +1220,7 @@ namespace DCL.Interface
         {
             searchEnsOwnerPayload.name = name;
             searchEnsOwnerPayload.maxResults = maxResults;
-            
+
             SendMessage("SearchENSOwner", searchEnsOwnerPayload);
         }
     }

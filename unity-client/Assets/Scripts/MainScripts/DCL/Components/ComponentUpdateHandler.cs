@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,11 +23,11 @@ namespace DCL
 #if UNITY_EDITOR
         bool applyChangesRunning = false;
 #endif
-        public ComponentUpdateHandler(IComponent owner)
+        public ComponentUpdateHandler(IDelayedComponent owner)
         {
             this.owner = owner;
             this.routine = null;
-            
+
             yieldInstruction = new WaitForComponentUpdate(owner);
         }
 
@@ -65,7 +65,7 @@ namespace DCL
         public void Cleanup()
         {
             Stop();
-            
+
             queue.Clear();
         }
 

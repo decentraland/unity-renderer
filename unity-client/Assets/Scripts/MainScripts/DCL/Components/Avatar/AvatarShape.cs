@@ -44,7 +44,7 @@ namespace DCL
         {
             if (model == null)
                 return;
-            currentPlayerInfoCardId.Set(((AvatarModel)model).id);
+            currentPlayerInfoCardId.Set(((AvatarModel) model).id);
         }
 
         public void OnDestroy()
@@ -72,12 +72,15 @@ namespace DCL
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
-            onPointerDown.Setup(scene, entity, new OnPointerDown.Model()
-            {
-                type = OnPointerDown.NAME,
-                button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                hoverText = "view profile"
-            });
+            onPointerDown.Initialize(
+                new OnPointerDown.Model()
+                {
+                    type = OnPointerDown.NAME,
+                    button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+                    hoverText = "view profile"
+                },
+                entity
+            );
 
             CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
@@ -119,11 +122,17 @@ namespace DCL
 
         public void DisablePassport()
         {
+            if (onPointerDown.collider == null)
+                return;
+
             onPointerDown.collider.enabled = false;
         }
 
         public void EnablePassport()
         {
+            if (onPointerDown.collider == null)
+                return;
+
             onPointerDown.collider.enabled = true;
         }
 
@@ -176,8 +185,8 @@ namespace DCL
                 entity = null;
             }
 
-            var model = (AvatarModel)this.model;
-            if(model != null)
+            var model = (AvatarModel) this.model;
+            if (model != null)
                 avatarUserInfo.userId = model.id;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }

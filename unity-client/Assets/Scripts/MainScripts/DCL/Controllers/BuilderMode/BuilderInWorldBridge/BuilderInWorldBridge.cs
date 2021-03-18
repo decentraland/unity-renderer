@@ -29,13 +29,13 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
-        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>(); 
+        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
         if (smartItemComponent == null)
-           return;
+            return;
 
 
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
-        entitySingleComponentPayload.componentId = (int)CLASS_ID_COMPONENT.SMART_ITEM;
+        entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
 
         entitySingleComponentPayload.data = smartItemComponent.GetValues();
 
@@ -67,7 +67,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
 
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
             {
@@ -84,7 +84,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;
 
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
             {
@@ -117,7 +117,8 @@ public class BuilderInWorldBridge : MonoBehaviour
     public void AddEntityOnKernel(DecentralandEntity entity, ParcelScene scene)
     {
         List<ComponentPayload> list = new List<ComponentPayload>();
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> keyValuePair in entity.components)
+
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
         {
             ComponentPayload componentPayLoad = new ComponentPayload();
             componentPayLoad.componentId = Convert.ToInt32(keyValuePair.Key);
@@ -140,7 +141,7 @@ public class BuilderInWorldBridge : MonoBehaviour
             list.Add(componentPayLoad);
         }
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.GetSharedComponents())
         {
             ComponentPayload componentPayLoad = new ComponentPayload();
 

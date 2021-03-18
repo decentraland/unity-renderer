@@ -9,7 +9,7 @@ namespace DCL.Components
         {
         }
 
-        public override void CallWhenReady(Action<BaseDisposable> callback)
+        public override void CallWhenReady(Action<ISharedComponent> callback)
         {
             callback.Invoke(this);
         }
