@@ -189,6 +189,8 @@ jobs:
       - run:
           name: Build Unity Project
           command: |
+            pwd
+            find .
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
                 (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
@@ -228,7 +230,7 @@ jobs:
       - run:
           working_directory: &node_workspace browser-interface
           name: find unity artifacts
-          command: find /tmp/workspace/unity-renderer/Builds/
+          command: find /tmp/workspace/
       - run:
           working_directory: *node_workspace
           name: npm clean install
