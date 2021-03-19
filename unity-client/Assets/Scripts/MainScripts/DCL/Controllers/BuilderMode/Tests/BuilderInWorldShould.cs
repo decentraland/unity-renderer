@@ -157,7 +157,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        AssetCatalogBridge.ClearCatalog();
+        AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         yield return base.TearDown();
     }

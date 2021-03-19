@@ -56,7 +56,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         sceneAssetPack.assets.Add(sceneObject);
 
-        AssetCatalogBridge.AddSceneAssetPackToCatalog(sceneAssetPack);
+        AssetCatalogBridge.i.AddSceneAssetPackToCatalog(sceneAssetPack);
 
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
@@ -73,7 +73,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
 
         LoadWrapper_GLTF gltfWrapper = (LoadWrapper_GLTF) gltfShape;
-        ContentProvider customContentProvider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
+        ContentProvider customContentProvider = AssetCatalogBridge.i.GetContentProviderForAssetIdInSceneObjectCatalog(mockupAssetId);
         Assert.AreEqual(customContentProvider.baseUrl, gltfWrapper.customContentProvider.baseUrl);
         Assert.AreEqual(mockupKey, gltfWrapper.customContentProvider.contents[0].file);
         Assert.AreEqual(mockupValue, gltfWrapper.customContentProvider.contents[0].hash);
@@ -180,7 +180,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         Assert.IsFalse(gltf1.GetAttachedEntities().Contains(entity));
     }
 
-
     // NOTE: Since every deployed scene carries compiled core code of the sdk at the moment of deploying, most of them have GLTFs default 'withCollisions' value
     // different than the new default value, that's why we are forcing the colliders to be ON on EVERY GLTF until that gets fixed, and that's why this test fails.
     [UnityTest]
@@ -232,7 +231,6 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
     }
-
 
     [Test]
     public void OnReadyBeforeLoading()

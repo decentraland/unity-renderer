@@ -1245,6 +1245,11 @@ PrefabInstance:
       objectReference: {fileID: 322303338}
     - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
+      propertyPath: bypassLandOwnershipCheck
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
       propertyPath: groundVisualsGO.Array.size
       value: 4
       objectReference: {fileID: 0}

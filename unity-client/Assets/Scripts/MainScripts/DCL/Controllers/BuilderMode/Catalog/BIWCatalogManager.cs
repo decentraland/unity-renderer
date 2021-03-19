@@ -98,7 +98,7 @@ public static class BIWCatalogManager
 
     public static void AddSceneObject(SceneObject sceneObject)
     {
-        if (DataStore.i.builderInWorld.catalogItemPackDict.ContainsKey(sceneObject.id))
+        if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
             return;
 
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);

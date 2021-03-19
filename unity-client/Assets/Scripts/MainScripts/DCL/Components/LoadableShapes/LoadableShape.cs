@@ -17,10 +17,7 @@ namespace DCL.Components
             public string src;
             public string assetId;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         protected Model previousModel = new Model();
@@ -51,20 +48,11 @@ namespace DCL.Components
             return result as T;
         }
 
-        public LoadableShape()
-        {
-            model = new Model();
-        }
+        public LoadableShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return -1;
-        }
+        public override int GetClassId() { return -1; }
 
-        public override IEnumerator ApplyChanges(BaseModel newModel)
-        {
-            return null;
-        }
+        public override IEnumerator ApplyChanges(BaseModel newModel) { return null; }
 
         public override bool IsVisible()
         {
@@ -163,7 +151,7 @@ namespace DCL.Components
             ContentProvider provider = null;
 
             if (!string.IsNullOrEmpty(model.assetId))
-                provider = AssetCatalogBridge.GetContentProviderForAssetIdInSceneObjectCatalog(model.assetId);
+                provider = AssetCatalogBridge.i.GetContentProviderForAssetIdInSceneObjectCatalog(model.assetId);
 
             if (provider == null)
                 provider = scene.contentProvider;
@@ -204,10 +192,7 @@ namespace DCL.Components
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
         }
 
-        protected virtual void ConfigureColliders(DecentralandEntity entity)
-        {
-            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
-        }
+        protected virtual void ConfigureColliders(DecentralandEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
         {
@@ -220,9 +205,12 @@ namespace DCL.Components
 
         void CleanFailedWrapper(LoadWrapper loadWrapper)
         {
-            if (loadWrapper == null) return;
-            if (loadWrapper.entity == null) return;
-            if (loadWrapper.entity.gameObject == null) return;
+            if (loadWrapper == null)
+                return;
+            if (loadWrapper.entity == null)
+                return;
+            if (loadWrapper.entity.gameObject == null)
+                return;
 
             GameObject go = loadWrapper.entity.gameObject;
 
@@ -265,7 +253,8 @@ namespace DCL.Components
 
         protected virtual void DetachShape(DecentralandEntity entity)
         {
-            if (entity == null || entity.meshRootGameObject == null) return;
+            if (entity == null || entity.meshRootGameObject == null)
+                return;
 
             LoadWrapper loadWrapper = GetLoaderForEntity(entity);
 

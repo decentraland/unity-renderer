@@ -2117,7 +2117,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9164274516587283706}
   m_HandleRect: {fileID: 9164274516587283707}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3445,6 +3445,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe74cb22466a6c479568eedc95801ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCatalogBackBtnSprite: {fileID: 21300000, guid: e9875824df772194ca04d2e96eda6d97,
+    type: 3}
+  backCatalogBackBtnSprite: {fileID: 21300000, guid: 2219966a5633ff34ebb85a2462e79dbc,
+    type: 3}
   catalogTitleTxt: {fileID: 9164274516171179723}
   catalogAssetPackListView: {fileID: 8285016998033159335}
   catalogGroupListView: {fileID: 9164274516264469572}
@@ -3455,6 +3459,7 @@ MonoBehaviour:
   hideCatalogBtn: {fileID: 9164274517318511039}
   backgBtn: {fileID: 9164274516329364504}
   toggleCatalogBtn: {fileID: 9164274517301949792}
+  biwSearchBarView: {fileID: 4401135372531134670}
   panelRT: {fileID: 9164274515348817592}
   headerRT: {fileID: 9164274516257064006}
   searchBarRT: {fileID: 9164274516946305848}
@@ -3477,6 +3482,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9164274516946305848}
+  - component: {fileID: 4401135372531134670}
   - component: {fileID: 9164274516946305845}
   - component: {fileID: 9164274516946305850}
   - component: {fileID: 9164274516946305851}
@@ -3509,6 +3515,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0.69, y: 23.41}
   m_SizeDelta: {x: 313.80292, y: 33.135155}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4401135372531134670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9164274516946305849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f57ec38a39cd973498691d6dbec21806, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smartItemPressedBtnColor: {r: 0.8117647, g: 0, b: 0.87058824, a: 1}
+  smartItemNormalBtnColor: {r: 1, g: 1, b: 1, a: 1}
+  searchInputField: {fileID: 9164274516946305851}
+  smartItemButton: {fileID: 9164274517060906143}
 --- !u!222 &9164274516946305845
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3740,7 +3762,7 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_PressedColor: {r: 0.6855669, g: 0, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -3757,7 +3779,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 9164274517060906142}
+  m_TargetGraphic: {fileID: 9164274516118484804}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []

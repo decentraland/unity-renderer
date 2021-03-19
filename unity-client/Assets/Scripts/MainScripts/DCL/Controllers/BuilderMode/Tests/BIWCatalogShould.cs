@@ -23,7 +23,6 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldSearch()
     {
-
         string nameToFilter = "Sandy";
         BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
@@ -38,7 +37,7 @@ public class BIWCatalogShould
         }
 
         SceneCatalogController sceneCatalogController = new SceneCatalogController();
-        List<Dictionary<string, List<CatalogItem>>>  result = sceneCatalogController.FilterAssets(nameToFilter);
+        List<Dictionary<string, List<CatalogItem>>>  result = sceneCatalogController.biwSearchBarController.FilterAssets(nameToFilter);
 
         CatalogItem filteredItem =  result[0].Values.ToList()[0][0];
 
@@ -119,7 +118,7 @@ public class BIWCatalogShould
     [UnityTearDown]
     protected IEnumerator TearDown()
     {
-        AssetCatalogBridge.ClearCatalog();
+        AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         BIWCatalogManager.Dispose();
         if (gameObjectToUse != null)
