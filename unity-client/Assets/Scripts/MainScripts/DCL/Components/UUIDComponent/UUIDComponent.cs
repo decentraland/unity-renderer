@@ -16,10 +16,7 @@ namespace DCL
             public string type;
             public string uuid;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
 
             public CLASS_ID_COMPONENT GetClassIdFromType()
             {
@@ -43,9 +40,6 @@ namespace DCL
             return null;
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.UUID_CALLBACK;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_CALLBACK; }
     }
 }

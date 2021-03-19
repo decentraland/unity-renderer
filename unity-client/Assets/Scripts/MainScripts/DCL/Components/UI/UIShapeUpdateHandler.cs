@@ -9,10 +9,7 @@ namespace DCL.Components
     {
         public UIShape<ReferencesContainerType, ModelType> uiShapeOwner;
 
-        public UIShapeUpdateHandler(IDelayedComponent owner) : base(owner)
-        {
-            uiShapeOwner = owner as UIShape<ReferencesContainerType, ModelType>;
-        }
+        public UIShapeUpdateHandler(IDelayedComponent owner) : base(owner) { uiShapeOwner = owner as UIShape<ReferencesContainerType, ModelType>; }
 
         public override IEnumerator ApplyChangesWrapper(BaseModel newModel)
         {

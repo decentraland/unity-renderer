@@ -47,10 +47,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         optionsDropDown.SetValueWithoutNotify(1);
     }
 
-    public SmartItemActionEvent GetContent()
-    {
-        return actionEvent;
-    }
+    public SmartItemActionEvent GetContent() { return actionEvent; }
 
     public void RemoveActionable()
     {
@@ -92,10 +89,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         GenerateParametersFromSelectedOption();
     }
 
-    private void GenerateParametersFromSelectedOption()
-    {
-        GenerateParametersFromIndex(actionDropDown.value);
-    }
+    private void GenerateParametersFromSelectedOption() { GenerateParametersFromIndex(actionDropDown.value); }
 
     private void GenerateParametersFromIndex(int index)
     {

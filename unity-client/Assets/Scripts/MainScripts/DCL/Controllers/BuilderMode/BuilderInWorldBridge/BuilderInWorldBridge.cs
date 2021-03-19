@@ -206,20 +206,11 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, removeEntityEvent);
     }
 
-    public void StartKernelEditMode(ParcelScene scene)
-    {
-        WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id));
-    }
+    public void StartKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
 
-    public void ExitKernelEditMode(ParcelScene scene)
-    {
-        WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id));
-    }
+    public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
-    public void PublishScene(ParcelScene scene)
-    {
-        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState);
-    }
+    public void PublishScene(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState); }
 
     void SendNewEntityToKernel(string sceneId, string entityId, ComponentPayload[] componentsPayload)
     {

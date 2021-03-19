@@ -49,10 +49,7 @@ public class ActionEventAdapter : MonoBehaviour
         GenerateParametersFromSelectedOption();
     }
 
-    void GenerateParametersFromSelectedOption()
-    {
-        GenerateParametersFromIndex(actionDropDown.value);
-    }
+    void GenerateParametersFromSelectedOption() { GenerateParametersFromIndex(actionDropDown.value); }
 
     void GenerateParametersFromIndex(int index)
     {

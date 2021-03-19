@@ -191,9 +191,6 @@ namespace DCL
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
     }
 }

@@ -48,7 +48,6 @@ namespace DCL.Controllers
         public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
 
-
         public ContentProvider contentProvider { get; protected set; }
 
         public bool isTestScene { get; set; } = false;
@@ -68,7 +67,6 @@ namespace DCL.Controllers
 
         public bool isReleased { get; private set; }
 
-
         public void Awake()
         {
             CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
@@ -79,15 +77,9 @@ namespace DCL.Controllers
             sceneLifecycleHandler = new SceneLifecycleHandler(this);
         }
 
-        private void OnDestroy()
-        {
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-        }
+        private void OnDestroy() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
 
-        void OnDisable()
-        {
-            metricsController.Disable();
-        }
+        void OnDisable() { metricsController.Disable(); }
 
         private void Update()
         {
@@ -97,17 +89,9 @@ namespace DCL.Controllers
 
         protected virtual string prettyName => sceneData.basePosition.ToString();
 
+        public void SetEditMode(bool isActive) { isEditModeActive = isActive; }
 
-        public void SetEditMode(bool isActive)
-        {
-            isEditModeActive = isActive;
-        }
-
-        public bool IsEditModeActive()
-        {
-            return isEditModeActive;
-        }
-
+        public bool IsEditModeActive() { return isEditModeActive; }
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
@@ -196,27 +180,24 @@ namespace DCL.Controllers
             isReleased = true;
         }
 
-        public override string ToString()
-        {
-            return "Parcel Scene: " + base.ToString() + "\n" + sceneData.ToString();
-        }
+        public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData.ToString(); }
 
-        public bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition)
-        {
-            return IsInsideSceneBoundaries(Utils.WorldToGridPosition(charPosition.worldPosition));
-        }
+        public bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition) { return IsInsideSceneBoundaries(Utils.WorldToGridPosition(charPosition.worldPosition)); }
 
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
-            if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.worldOffset, objectBounds.max.y)) return false;
-            if (!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.worldOffset, objectBounds.max.y)) return false;
+            if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.worldOffset, objectBounds.max.y))
+                return false;
+            if (!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.worldOffset, objectBounds.max.y))
+                return false;
 
             return true;
         }
 
         public virtual bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f)
         {
-            if (parcels.Count == 0) return false;
+            if (parcels.Count == 0)
+                return false;
 
             float heightLimit = metricsController.GetLimits().sceneHeight;
 
@@ -228,17 +209,20 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
         {
-            if (parcels.Count == 0) return false;
+            if (parcels.Count == 0)
+                return false;
 
             float heightLimit = metricsController.GetLimits().sceneHeight;
-            if (height > heightLimit) return false;
+            if (height > heightLimit)
+                return false;
 
             int noThresholdZCoordinate = Mathf.FloorToInt(worldPosition.z / ParcelSettings.PARCEL_SIZE);
             int noThresholdXCoordinate = Mathf.FloorToInt(worldPosition.x / ParcelSettings.PARCEL_SIZE);
 
             // We check the target world position
             Vector2Int targetCoordinate = new Vector2Int(noThresholdXCoordinate, noThresholdZCoordinate);
-            if (parcels.Contains(targetCoordinate)) return true;
+            if (parcels.Contains(targetCoordinate))
+                return true;
 
             // We need to check using a threshold from the target point, in order to cover correctly the parcel "border/edge" positions
             Vector2Int coordinateMin = new Vector2Int();
@@ -251,27 +235,28 @@ namespace DCL.Controllers
 
             // We check the east/north-threshold position
             targetCoordinate.Set(coordinateMax.x, coordinateMax.y);
-            if (parcels.Contains(targetCoordinate)) return true;
+            if (parcels.Contains(targetCoordinate))
+                return true;
 
             // We check the east/south-threshold position
             targetCoordinate.Set(coordinateMax.x, coordinateMin.y);
-            if (parcels.Contains(targetCoordinate)) return true;
+            if (parcels.Contains(targetCoordinate))
+                return true;
 
             // We check the west/north-threshold position
             targetCoordinate.Set(coordinateMin.x, coordinateMax.y);
-            if (parcels.Contains(targetCoordinate)) return true;
+            if (parcels.Contains(targetCoordinate))
+                return true;
 
             // We check the west/south-threshold position
             targetCoordinate.Set(coordinateMin.x, coordinateMin.y);
-            if (parcels.Contains(targetCoordinate)) return true;
+            if (parcels.Contains(targetCoordinate))
+                return true;
 
             return false;
         }
 
-        public Transform GetSceneTransform()
-        {
-            return transform;
-        }
+        public Transform GetSceneTransform() { return transform; }
 
         public DecentralandEntity CreateEntity(string id)
         {
@@ -399,10 +384,7 @@ namespace DCL.Controllers
             }
         }
 
-        private void RemoveAllEntitiesImmediate()
-        {
-            RemoveAllEntities(instant: true);
-        }
+        private void RemoveAllEntitiesImmediate() { RemoveAllEntities(instant: true); }
 
         public void SetEntityParent(string entityId, string parentId)
         {
@@ -476,7 +458,6 @@ namespace DCL.Controllers
             }
         }
 
-
         public IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
             DecentralandEntity entity = GetEntityForUpdate(entityId);
@@ -531,11 +512,7 @@ namespace DCL.Controllers
             return newComponent;
         }
 
-
-        public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data)
-        {
-            return EntityComponentCreateOrUpdateWithModel(entityId, classId, data);
-        }
+        public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data) { return EntityComponentCreateOrUpdateWithModel(entityId, classId, data); }
 
         // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
         public IEntityComponent EntityComponentUpdate(DecentralandEntity entity, CLASS_ID_COMPONENT classId,
@@ -688,7 +665,6 @@ namespace DCL.Controllers
                 metricsController.SendEvent();
         }
 
-
         public ISharedComponent GetSharedComponent(string componentId)
         {
             if (!disposableComponents.TryGetValue(componentId, out ISharedComponent result))
@@ -761,7 +737,6 @@ namespace DCL.Controllers
             gameObject.name = GetStateString();
 #endif
         }
-
 
         [ContextMenu("Get Waiting Components Debug Info")]
         public void GetWaitingComponentsDebugInfo()

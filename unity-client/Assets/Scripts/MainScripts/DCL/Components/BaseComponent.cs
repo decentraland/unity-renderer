@@ -57,20 +57,11 @@ namespace DCL.Components
     {
         public IDelayedComponent component;
 
-        public WaitForComponentUpdate(IDelayedComponent component)
-        {
-            this.component = component;
-        }
+        public WaitForComponentUpdate(IDelayedComponent component) { this.component = component; }
 
-        public override bool keepWaiting
-        {
-            get { return component.isRoutineRunning; }
-        }
+        public override bool keepWaiting { get { return component.isRoutineRunning; } }
 
-        public override void Cleanup()
-        {
-            component.Cleanup();
-        }
+        public override void Cleanup() { component.Cleanup(); }
     }
 
     public abstract class BaseComponent : MonoBehaviour, IEntityComponent, IDelayedComponent, IPoolLifecycleHandler, IPoolableObjectContainer
@@ -90,9 +81,7 @@ namespace DCL.Components
 
         protected BaseModel model;
 
-        public void RaiseOnAppliedChanges()
-        {
-        }
+        public void RaiseOnAppliedChanges() { }
 
         public virtual void Initialize(IParcelScene scene, DecentralandEntity entity)
         {
@@ -103,10 +92,7 @@ namespace DCL.Components
                 transform.SetParent(entity.gameObject.transform, false);
         }
 
-        public virtual void UpdateFromJSON(string json)
-        {
-            UpdateFromModel(model.GetDataFromJSON(json));
-        }
+        public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
 
         public virtual void UpdateFromModel(BaseModel newModel)
         {
@@ -124,25 +110,13 @@ namespace DCL.Components
 
         public virtual BaseModel GetModel() => model;
 
-        protected virtual ComponentUpdateHandler CreateUpdateHandler()
-        {
-            return new ComponentUpdateHandler(this);
-        }
+        protected virtual ComponentUpdateHandler CreateUpdateHandler() { return new ComponentUpdateHandler(this); }
 
-        public bool IsValid()
-        {
-            return this != null;
-        }
+        public bool IsValid() { return this != null; }
 
-        public virtual void Cleanup()
-        {
-            updateHandler.Cleanup();
-        }
+        public virtual void Cleanup() { updateHandler.Cleanup(); }
 
-        public virtual void OnPoolRelease()
-        {
-            Cleanup();
-        }
+        public virtual void OnPoolRelease() { Cleanup(); }
 
         public virtual void OnPoolGet()
         {

@@ -101,7 +101,7 @@ public class IntegrationTestController : MonoBehaviour
         }
 
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),
-            new TextShape.Model() {value = "Hello World!!!"});
+            new TextShape.Model() { value = "Hello World!!!" });
     }
 
     public IEnumerator Verify()

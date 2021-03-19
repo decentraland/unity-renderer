@@ -12,7 +12,8 @@ namespace DCL.Components
 
         public override void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled || !IsVisible()) return;
+            if (!enabled || !IsVisible())
+                return;
 
             Model model = (Model) this.model;
 
@@ -23,14 +24,8 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.UUID_ON_CLICK;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_CLICK; }
 
-        public override PointerEventType GetEventType()
-        {
-            return PointerEventType.CLICK;
-        }
+        public override PointerEventType GetEventType() { return PointerEventType.CLICK; }
     }
 }

@@ -130,7 +130,6 @@ namespace DCL
             lastPendingMessages = messagingManager.pendingMessagesCount;
         }
 
-
         private IEnumerator RefreshProfilingData()
         {
             while (true)

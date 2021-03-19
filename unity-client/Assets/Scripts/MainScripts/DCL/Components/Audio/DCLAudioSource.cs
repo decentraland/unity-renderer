@@ -18,10 +18,7 @@ namespace DCL.Components
             public bool loop = false;
             public float pitch = 1f;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public float playTime => audioSource.time;
@@ -172,9 +169,6 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.AUDIO_SOURCE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AUDIO_SOURCE; }
     }
 }

@@ -167,10 +167,7 @@ public class BIWCreatorController : BIWController
 
     #region LoadingObjects
 
-    public bool ExistsLoadingGameObjectForEntity(string entityId)
-    {
-        return loadingGameObjects.ContainsKey(entityId);
-    }
+    public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
 
     private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {

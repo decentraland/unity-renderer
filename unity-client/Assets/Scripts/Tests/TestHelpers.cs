@@ -26,19 +26,14 @@ namespace DCL.Helpers
 
     // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
     [AttributeUsage(AttributeTargets.Method)]
-    public class VisualTestAttribute : Attribute
-    {
-    }
+    public class VisualTestAttribute : Attribute { }
 
     public static class TestHelpers
     {
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
 
-        public static string CreateSceneMessage(string sceneId, string tag, string method, string payload)
-        {
-            return $"{sceneId}\t{method}\t{payload}\t{tag}\n";
-        }
+        public static string CreateSceneMessage(string sceneId, string tag, string method, string payload) { return $"{sceneId}\t{method}\t{payload}\t{tag}\n"; }
 
         static int entityCounter = 123;
         static int disposableIdCounter = 123;
@@ -78,20 +73,11 @@ namespace DCL.Helpers
             return scene.CreateEntity(id);
         }
 
-        public static DecentralandEntity CreateSceneEntity(ParcelScene scene, string id)
-        {
-            return scene.CreateEntity(id);
-        }
+        public static DecentralandEntity CreateSceneEntity(ParcelScene scene, string id) { return scene.CreateEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, string id)
-        {
-            scene.RemoveEntity(id);
-        }
+        public static void RemoveSceneEntity(ParcelScene scene, string id) { scene.RemoveEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
-        {
-            scene.RemoveEntity(entity.entityId);
-        }
+        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity) { scene.RemoveEntity(entity.entityId); }
 
         public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
             CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
@@ -145,15 +131,9 @@ namespace DCL.Helpers
             return component.routine;
         }
 
-        public static void SetEntityParent(ParcelScene scene, DecentralandEntity child, DecentralandEntity parent)
-        {
-            scene.SetEntityParent(child.entityId, parent.entityId);
-        }
+        public static void SetEntityParent(ParcelScene scene, DecentralandEntity child, DecentralandEntity parent) { scene.SetEntityParent(child.entityId, parent.entityId); }
 
-        public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId)
-        {
-            scene.SetEntityParent(childEntityId, parentEntityId);
-        }
+        public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
 
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
             string url,
@@ -237,15 +217,9 @@ namespace DCL.Helpers
             );
         }
 
-        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, DCLTransform.Model model)
-        {
-            SetEntityTransform(scene, entity, model.position, model.rotation, model.scale);
-        }
+        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, DCLTransform.Model model) { SetEntityTransform(scene, entity, model.position, model.rotation, model.scale); }
 
-        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity)
-        {
-            SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
-        }
+        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity) { SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one); }
 
         public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
@@ -283,13 +257,13 @@ namespace DCL.Helpers
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
         {
             DecentralandEntity entity = null;
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url,
             out DecentralandEntity entity)
         {
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
@@ -312,10 +286,7 @@ namespace DCL.Helpers
             return CreateEntityWithPrimitive<BoxShape, BoxShape.Model>(scene, position, CLASS_ID.BOX_SHAPE, model);
         }
 
-        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, bool visible)
-        {
-            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model {visible = visible});
-        }
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, bool visible) { return CreateEntityWithBoxShape(scene, position, new BoxShape.Model { visible = visible }); }
 
         public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position,
             SphereShape.Model model = null)
@@ -324,10 +295,7 @@ namespace DCL.Helpers
                 model);
         }
 
-        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, bool visible)
-        {
-            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model {visible = visible});
-        }
+        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, bool visible) { return CreateEntityWithSphereShape(scene, position, new SphereShape.Model { visible = visible }); }
 
         public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position,
             PlaneShape.Model model = null)
@@ -336,10 +304,7 @@ namespace DCL.Helpers
                 model);
         }
 
-        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, bool visible)
-        {
-            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model {visible = visible});
-        }
+        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, bool visible) { return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model { visible = visible }); }
 
         public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position,
             CylinderShape.Model model = null)
@@ -348,10 +313,7 @@ namespace DCL.Helpers
                 CLASS_ID.CYLINDER_SHAPE, model);
         }
 
-        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, bool visible)
-        {
-            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model {visible = visible});
-        }
+        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, bool visible) { return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model { visible = visible }); }
 
         public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position,
             ConeShape.Model model = null)
@@ -359,10 +321,7 @@ namespace DCL.Helpers
             return CreateEntityWithPrimitive<ConeShape, ConeShape.Model>(scene, position, CLASS_ID.CONE_SHAPE, model);
         }
 
-        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, bool visible)
-        {
-            return CreateEntityWithConeShape(scene, position, new ConeShape.Model {visible = visible});
-        }
+        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, bool visible) { return CreateEntityWithConeShape(scene, position, new ConeShape.Model { visible = visible }); }
 
         private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId,
             K model = null)
@@ -610,10 +569,7 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static void UpdateShape(ParcelScene scene, string componentId, string model)
-        {
-            scene.SharedComponentUpdate(componentId, model);
-        }
+        public static void UpdateShape(ParcelScene scene, string componentId, string model) { scene.SharedComponentUpdate(componentId, model); }
 
         static object GetRandomValueForType(System.Type t)
         {
@@ -937,7 +893,7 @@ namespace DCL.Helpers
             yield return parentElement.routine;
 
             // make canvas invisible
-            yield return SharedComponentUpdate(parentElement, new UIScreenSpace.Model {visible = false});
+            yield return SharedComponentUpdate(parentElement, new UIScreenSpace.Model { visible = false });
 
             TComponent targetUIElement =
                 SharedComponentCreate<TComponent, TComponentModel>(scene,
@@ -1232,10 +1188,7 @@ namespace DCL.Helpers
                 $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
 
-        public static void SetCharacterPosition(Vector3 newPosition)
-        {
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(newPosition));
-        }
+        public static void SetCharacterPosition(Vector3 newPosition) { DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(newPosition)); }
 
         public static IEnumerator WaitForGLTFLoad(DecentralandEntity entity)
         {

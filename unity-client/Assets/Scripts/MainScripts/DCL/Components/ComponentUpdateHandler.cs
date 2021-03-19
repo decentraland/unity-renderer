@@ -15,10 +15,7 @@ namespace DCL
 
         public IComponent owner;
 
-        public bool isRoutineRunning
-        {
-            get { return routine != null; }
-        }
+        public bool isRoutineRunning { get { return routine != null; } }
 
 #if UNITY_EDITOR
         bool applyChangesRunning = false;
@@ -31,10 +28,7 @@ namespace DCL
             yieldInstruction = new WaitForComponentUpdate(owner);
         }
 
-        public void ApplyChangesIfModified(BaseModel model)
-        {
-            HandleUpdate(model);
-        }
+        public void ApplyChangesIfModified(BaseModel model) { HandleUpdate(model); }
 
         protected void HandleUpdate(BaseModel newSerialization)
         {
@@ -87,7 +81,6 @@ namespace DCL
 
             routine = null;
         }
-
 
         public virtual IEnumerator ApplyChangesWrapper(BaseModel model)
         {

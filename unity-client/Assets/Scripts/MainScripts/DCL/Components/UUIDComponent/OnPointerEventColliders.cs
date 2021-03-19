@@ -34,7 +34,8 @@ namespace DCL.Components
 
             Renderer[] rendererList = entity.meshesInfo.renderers;
 
-            if (rendererList == null || rendererList.Length == 0) return;
+            if (rendererList == null || rendererList.Length == 0)
+                return;
 
             this.ownerEntity = entity;
 
@@ -73,10 +74,7 @@ namespace DCL.Components
             return meshCollider;
         }
 
-        public void Dispose()
-        {
-            DestroyOnPointerEventColliders();
-        }
+        public void Dispose() { DestroyOnPointerEventColliders(); }
 
         void DestroyOnPointerEventColliders()
         {

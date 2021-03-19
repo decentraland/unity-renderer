@@ -32,10 +32,7 @@ namespace Tests
             return CreateAudioClip(model);
         }
 
-        public DCLAudioClip CreateAudioClip(DCLAudioClip.Model model)
-        {
-            return TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP, model);
-        }
+        public DCLAudioClip CreateAudioClip(DCLAudioClip.Model model) { return TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP, model); }
 
         public IEnumerator CreateAndLoadAudioClip(bool waitForLoading = true)
         {
@@ -70,25 +67,16 @@ namespace Tests
         /// This should test creating a audioclip/audiosource couple, wait for audioClip load and send playing:true afterwards.
         /// </summary>
         [UnityTest]
-        public IEnumerator CreateAndLoadAudioClipTest()
-        {
-            yield return CreateAndLoadAudioClip(waitForLoading: true);
-        }
+        public IEnumerator CreateAndLoadAudioClipTest() { yield return CreateAndLoadAudioClip(waitForLoading: true); }
 
         /// <summary>
         /// This should test creating a audioclip/audiosource couple but send playing:true before the audioClip finished loading.
         /// </summary>
         [UnityTest]
-        public IEnumerator PlayAudioTestWithoutFinishLoading()
-        {
-            yield return CreateAndLoadAudioClip(waitForLoading: false);
-        }
+        public IEnumerator PlayAudioTestWithoutFinishLoading() { yield return CreateAndLoadAudioClip(waitForLoading: false); }
 
         [UnityTest]
-        public IEnumerator AudioComponentMissingValuesGetDefaultedOnUpdate()
-        {
-            yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAudioSource.Model, DCLAudioSource>(scene);
-        }
+        public IEnumerator AudioComponentMissingValuesGetDefaultedOnUpdate() { yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAudioSource.Model, DCLAudioSource>(scene); }
 
         [UnityTest]
         public IEnumerator AudioClipMissingValuesGetDefaultedOnUpdate()
@@ -273,8 +261,8 @@ namespace Tests
                 playing = false,
                 volume = 1f
             };
-            DCLAudioStream component = TestHelpers.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity,model );
-            
+            DCLAudioStream component = TestHelpers.EntityComponentCreate<DCLAudioStream, DCLAudioStream.Model>(scene, entity, model );
+
             yield return component.routine;
             Assert.IsFalse(component.GetModel().playing);
 
@@ -282,10 +270,10 @@ namespace Tests
             component.UpdateFromModel(model);
             yield return component.routine;
             Assert.IsTrue(component.GetModel().playing);
-            
+
             model.playing = false;
             component.UpdateFromModel(model);
-            yield return component.routine; 
+            yield return component.routine;
             Assert.IsFalse(component.GetModel().playing);
         }
 

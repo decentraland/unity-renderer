@@ -14,20 +14,11 @@ namespace DCL.Components
         public DecentralandEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
 
-        public WebInterface.ACTION_BUTTON GetActionButton()
-        {
-            return model.GetActionButton();
-        }
+        public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
 
-        public void SetHoverState(bool state)
-        {
-            eventHandler.SetFeedbackState(model.showFeedback, state, model.button, model.hoverText);
-        }
+        public void SetHoverState(bool state) { eventHandler.SetFeedbackState(model.showFeedback, state, model.button, model.hoverText); }
 
-        void Awake()
-        {
-            CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed;
-        }
+        void Awake() { CommonScriptableObjects.playerInfoCardVisibleState.OnChange += ReEnableOnInfoCardClosed; }
 
         void OnDestroy()
         {
@@ -48,15 +39,9 @@ namespace DCL.Components
             CollidersManager.i.AddOrUpdateEntityCollider(entity, collider);
         }
 
-        public bool IsAtHoverDistance(float distance)
-        {
-            return distance <= model.distance;
-        }
+        public bool IsAtHoverDistance(float distance) { return distance <= model.distance; }
 
-        public bool IsVisible()
-        {
-            return true;
-        }
+        public bool IsVisible() { return true; }
 
         public bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
@@ -66,7 +51,8 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled) return;
+            if (!enabled)
+                return;
 
             if (ShouldReportEvent(buttonId, hit))
             {
@@ -93,10 +79,7 @@ namespace DCL.Components
             }
         }
 
-        public PointerEventType GetEventType()
-        {
-            return PointerEventType.DOWN;
-        }
+        public PointerEventType GetEventType() { return PointerEventType.DOWN; }
 
         void ReEnableOnInfoCardClosed(bool newState, bool prevState)
         {
@@ -106,18 +89,10 @@ namespace DCL.Components
             enabled = true;
         }
 
-        public Transform GetTransform()
-        {
-            return transform;
-        }
+        public Transform GetTransform() { return transform; }
 
-        public void OnPoolRelease()
-        {
-            eventHandler.Dispose();
-        }
+        public void OnPoolRelease() { eventHandler.Dispose(); }
 
-        public void OnPoolGet()
-        {
-        }
+        public void OnPoolGet() { }
     }
 }

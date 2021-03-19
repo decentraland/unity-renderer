@@ -65,9 +65,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() {sceneId = sceneId})
-            {
-            }
+            public StartStatefulMode(string sceneId) : base("StartStatefulMode", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
@@ -79,9 +77,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() {sceneId = sceneId})
-            {
-            }
+            public StopStatefulMode(string sceneId) : base("StopStatefulMode", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
@@ -93,17 +89,13 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() {sceneId = sceneId})
-            {
-            }
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
         public class ActivateRenderingACK : ControlEvent<object>
         {
-            public ActivateRenderingACK() : base("ActivateRenderingACK", null)
-            {
-            }
+            public ActivateRenderingACK() : base("ActivateRenderingACK", null) { }
         }
 
         [System.Serializable]
@@ -131,14 +123,10 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnClickEvent : UUIDEvent<OnClickEventPayload>
-        {
-        };
+        public class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
 
         [System.Serializable]
-        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload>
-        {
-        };
+        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
         [System.Serializable]
         public class OnGlobalPointerEvent
@@ -147,39 +135,25 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload>
-        {
-        };
+        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload> { };
 
         [System.Serializable]
-        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload>
-        {
-        };
+        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload> { };
 
         [System.Serializable]
-        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload>
-        {
-        };
+        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload> { };
 
         [System.Serializable]
-        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload>
-        {
-        };
+        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload> { };
 
         [System.Serializable]
-        private class OnFocusEvent : UUIDEvent<EmptyPayload>
-        {
-        };
+        private class OnFocusEvent : UUIDEvent<EmptyPayload> { };
 
         [System.Serializable]
-        private class OnBlurEvent : UUIDEvent<EmptyPayload>
-        {
-        };
+        private class OnBlurEvent : UUIDEvent<EmptyPayload> { };
 
         [System.Serializable]
-        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload>
-        {
-        };
+        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload> { };
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -261,9 +235,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class EmptyPayload
-        {
-        }
+        public class EmptyPayload { }
 
         [System.Serializable]
         public class MetricsModel
@@ -284,9 +256,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnEnterEventPayload
-        {
-        }
+        public class OnEnterEventPayload { }
 
         [System.Serializable]
         public class TransformPayload
@@ -314,7 +284,6 @@ namespace DCL.Interface
         {
             public int baseResolution;
         };
-
 
         //-----------------------------------------------------
         // Raycast
@@ -366,14 +335,10 @@ namespace DCL.Interface
         // Note (Zak): We need to explicitly define this classes for the JsonUtility to
         // be able to serialize them
         [System.Serializable]
-        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity>
-        {
-        }
+        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity> { }
 
         [System.Serializable]
-        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities>
-        {
-        }
+        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities> { }
 
         [System.Serializable]
         public class SendExpressionPayload
@@ -571,7 +536,6 @@ namespace DCL.Interface
             public int maxResults;
         }
 
-
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -581,9 +545,7 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
     [DllImport("__Internal")] public static extern string GetGraphicCard();
 #else
-        public static void StartDecentraland()
-        {
-        }
+        public static void StartDecentraland() { }
 
         public static void MessageFromEngine(string type, string message)
         {
@@ -673,15 +635,9 @@ namespace DCL.Interface
             SendMessage("ReportPosition", positionPayload);
         }
 
-        public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent
-        {
-            SendMessage("ControlEvent", controlEvent);
-        }
+        public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }
 
-        public static void BuilderInWorldMessage(string type, string message)
-        {
-            MessageFromEngine(type, message);
-        }
+        public static void BuilderInWorldMessage(string type, string message) { MessageFromEngine(type, message); }
 
         public static void ReportOnClickEvent(string sceneId, string uuid)
         {
@@ -705,15 +661,9 @@ namespace DCL.Interface
             SendSceneEvent<T>(sceneId, "raycastResponse", response);
         }
 
-        public static void ReportRaycastHitFirstResult(string sceneId, string queryId, RaycastType raycastType, RaycastHitEntity payload)
-        {
-            ReportRaycastResult<RaycastHitFirstResponse, RaycastHitEntity>(sceneId, queryId, Protocol.RaycastTypeToLiteral(raycastType), payload);
-        }
+        public static void ReportRaycastHitFirstResult(string sceneId, string queryId, RaycastType raycastType, RaycastHitEntity payload) { ReportRaycastResult<RaycastHitFirstResponse, RaycastHitEntity>(sceneId, queryId, Protocol.RaycastTypeToLiteral(raycastType), payload); }
 
-        public static void ReportRaycastHitAllResult(string sceneId, string queryId, RaycastType raycastType, RaycastHitEntities payload)
-        {
-            ReportRaycastResult<RaycastHitAllResponse, RaycastHitEntities>(sceneId, queryId, Protocol.RaycastTypeToLiteral(raycastType), payload);
-        }
+        public static void ReportRaycastHitAllResult(string sceneId, string queryId, RaycastType raycastType, RaycastHitEntities payload) { ReportRaycastResult<RaycastHitAllResponse, RaycastHitEntities>(sceneId, queryId, Protocol.RaycastTypeToLiteral(raycastType), payload); }
 
         private static OnPointerEventPayload.Hit CreateHitObject(string entityId, string meshName, Vector3 point, Vector3 normal, float distance)
         {
@@ -851,11 +801,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onScrollChangeEvent);
         }
 
-        public static void ReportEvent<T>(string sceneId, T @event)
-        {
-            SendSceneEvent(sceneId, "uuidEvent", @event);
-        }
-
+        public static void ReportEvent<T>(string sceneId, T @event) { SendSceneEvent(sceneId, "uuidEvent", @event); }
 
         public static void ReportOnMetricsUpdate(string sceneId, MetricsModel current,
             MetricsModel limit)
@@ -876,20 +822,11 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onEnterEvent);
         }
 
-        public static void LogOut()
-        {
-            SendMessage("LogOut");
-        }
+        public static void LogOut() { SendMessage("LogOut"); }
 
-        public static void RedirectToSignUp()
-        {
-            SendMessage("RedirectToSignUp");
-        }
+        public static void RedirectToSignUp() { SendMessage("RedirectToSignUp"); }
 
-        public static void PreloadFinished(string sceneId)
-        {
-            SendMessage("PreloadFinished", sceneId);
-        }
+        public static void PreloadFinished(string sceneId) { SendMessage("PreloadFinished", sceneId); }
 
         public static void ReportMousePosition(Vector3 mousePosition, string id)
         {
@@ -928,10 +865,7 @@ namespace DCL.Interface
             public string newUnverifiedName;
         }
 
-        public static void RequestOwnProfileUpdate()
-        {
-            SendMessage("RequestOwnProfileUpdate");
-        }
+        public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
         {
@@ -957,15 +891,9 @@ namespace DCL.Interface
             SendMessage("SaveUserUnverifiedName", payload);
         }
 
-        public static void SendUserAcceptedCollectibles(string airdropId)
-        {
-            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload {id = airdropId});
-        }
+        public static void SendUserAcceptedCollectibles(string airdropId) { SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId }); }
 
-        public static void SaveUserTutorialStep(int newTutorialStep)
-        {
-            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() {tutorialStep = newTutorialStep});
-        }
+        public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap)
         {
@@ -1006,25 +934,13 @@ namespace DCL.Interface
             });
         }
 
-        public static void ReportMotdClicked()
-        {
-            SendMessage("MotdConfirmClicked");
-        }
+        public static void ReportMotdClicked() { SendMessage("MotdConfirmClicked"); }
 
-        public static void OpenURL(string url)
-        {
-            SendMessage("OpenWebURL", new OpenURLPayload {url = url});
-        }
+        public static void OpenURL(string url) { SendMessage("OpenWebURL", new OpenURLPayload { url = url }); }
 
-        public static void SendReportScene(string sceneID)
-        {
-            SendMessage("ReportScene", sceneID);
-        }
+        public static void SendReportScene(string sceneID) { SendMessage("ReportScene", sceneID); }
 
-        public static void SendReportPlayer(string playerName)
-        {
-            SendMessage("ReportPlayer", playerName);
-        }
+        public static void SendReportPlayer(string playerName) { SendMessage("ReportPlayer", playerName); }
 
         public static void SendBlockPlayer(string userId)
         {
@@ -1073,10 +989,7 @@ namespace DCL.Interface
             SendMessage("SetVoiceChatRecording", setVoiceChatRecordingPayload);
         }
 
-        public static void ToggleVoiceChatRecording()
-        {
-            SendMessage("ToggleVoiceChatRecording");
-        }
+        public static void ToggleVoiceChatRecording() { SendMessage("ToggleVoiceChatRecording"); }
 
         public static void ApplySettings(float voiceChatVolume, int voiceChatAllowCategory)
         {
@@ -1107,15 +1020,9 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void GoToCrowd()
-        {
-            SendMessage("GoToCrowd");
-        }
+        public static void GoToCrowd() { SendMessage("GoToCrowd"); }
 
-        public static void GoToMagic()
-        {
-            SendMessage("GoToMagic");
-        }
+        public static void GoToMagic() { SendMessage("GoToMagic"); }
 
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
@@ -1134,20 +1041,11 @@ namespace DCL.Interface
             SendMessage("SendChatMessage", sendChatMessageEvent);
         }
 
-        public static void UpdateFriendshipStatus(FriendsController.FriendshipUpdateStatusMessage message)
-        {
-            SendMessage("UpdateFriendshipStatus", message);
-        }
+        public static void UpdateFriendshipStatus(FriendsController.FriendshipUpdateStatusMessage message) { SendMessage("UpdateFriendshipStatus", message); }
 
-        public static void ScenesLoadingFeedback(LoadingFeedbackMessage message)
-        {
-            SendMessage("ScenesLoadingFeedback", message);
-        }
+        public static void ScenesLoadingFeedback(LoadingFeedbackMessage message) { SendMessage("ScenesLoadingFeedback", message); }
 
-        public static void FetchHotScenes()
-        {
-            SendMessage("FetchHotScenes");
-        }
+        public static void FetchHotScenes() { SendMessage("FetchHotScenes"); }
 
         public static void SetBaseResolution(int resolution)
         {
@@ -1155,10 +1053,7 @@ namespace DCL.Interface
             SendMessage("SetBaseResolution", baseResEvent);
         }
 
-        public static void ReportAnalyticsEvent(string eventName)
-        {
-            ReportAnalyticsEvent(eventName, null);
-        }
+        public static void ReportAnalyticsEvent(string eventName) { ReportAnalyticsEvent(eventName, null); }
 
         public static void ReportAnalyticsEvent(string eventName, AnalyticsPayload.Property[] eventProperties)
         {
@@ -1167,10 +1062,7 @@ namespace DCL.Interface
             SendMessage("Track", analyticsEvent);
         }
 
-        public static void FetchBalanceOfMANA()
-        {
-            SendMessage("FetchBalanceOfMANA");
-        }
+        public static void FetchBalanceOfMANA() { SendMessage("FetchBalanceOfMANA"); }
 
         public static void SendSceneExternalActionEvent(string sceneId, string type, string payload)
         {

@@ -819,10 +819,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entitySelectedColor: {r: 1, g: 1, b: 1, a: 0.02745098}
   entityUnselectedColor: {r: 1, g: 1, b: 1, a: 0}
+  entityInsideOdBoundsColor: {r: 1, g: 1, b: 1, a: 1}
+  entityOutOfBoundsColor: {r: 1, g: 0, b: 0, a: 1}
   iconsSelectedColor: {r: 0, g: 0.4436121, b: 1, a: 1}
   iconsUnselectedColor: {r: 1, g: 1, b: 1, a: 1}
   nameTxt: {fileID: 8250719920398028679}
   nameInputField: {fileID: 3144001738933584821}
+  nameInputField_Text: {fileID: 7920033379189279600}
   selectedImg: {fileID: 8050221025963402010}
   lockImg: {fileID: 7764534091301909399}
   showImg: {fileID: 5439454521911294905}

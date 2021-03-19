@@ -65,7 +65,8 @@ namespace DCL
 
         public void Update()
         {
-            if (!CommonScriptableObjects.rendererState.Get() || charCamera == null) return;
+            if (!CommonScriptableObjects.rendererState.Get() || charCamera == null)
+                return;
 
             IWorldState worldState = Environment.i.world.state;
 
@@ -167,7 +168,8 @@ namespace DCL
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
         {
-            if (Utils.LockedThisFrame()) return;
+            if (Utils.LockedThisFrame())
+                return;
 
             var mouseIsDown = Input.GetMouseButtonDown(0);
             var mouseIsUp = Input.GetMouseButtonUp(0);
@@ -210,7 +212,8 @@ namespace DCL
 
             for (int i = 0; i < lastHoveredEventList.Length; i++)
             {
-                if (lastHoveredEventList[i] == null) continue;
+                if (lastHoveredEventList[i] == null)
+                    continue;
                 lastHoveredEventList[i].SetHoverState(false);
             }
 
@@ -244,10 +247,7 @@ namespace DCL
             }
         }
 
-        public Ray GetRayFromCamera()
-        {
-            return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        }
+        public Ray GetRayFromCamera() { return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)); }
 
         void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast)
         {
@@ -445,10 +445,7 @@ namespace DCL
             }
         }
 
-        bool AreSameEntity(IPointerEvent pointerEvent, ColliderInfo colliderInfo)
-        {
-            return pointerEvent != null && colliderInfo.entity != null && pointerEvent.entity == colliderInfo.entity;
-        }
+        bool AreSameEntity(IPointerEvent pointerEvent, ColliderInfo colliderInfo) { return pointerEvent != null && colliderInfo.entity != null && pointerEvent.entity == colliderInfo.entity; }
 
         bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {

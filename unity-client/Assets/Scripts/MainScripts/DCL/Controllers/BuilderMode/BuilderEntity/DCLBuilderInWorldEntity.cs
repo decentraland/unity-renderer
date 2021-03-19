@@ -1,13 +1,12 @@
 using DCL;
-using DCL.Models;
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
-using System.Collections;
+using DCL.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Configuration;
-using System;
 
 public class DCLBuilderInWorldEntity : EditableEntity
 {
@@ -140,7 +139,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
-        
+
         SetOriginalMaterials();
     }
 

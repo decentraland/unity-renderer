@@ -8,7 +8,8 @@ namespace DCL.Controllers
     {
         public static DecentralandEntity DuplicateEntity(ParcelScene scene, DecentralandEntity entity)
         {
-            if (!scene.entities.ContainsKey(entity.entityId)) return null;
+            if (!scene.entities.ContainsKey(entity.entityId))
+                return null;
 
             DecentralandEntity newEntity = scene.CreateEntity(System.Guid.NewGuid().ToString());
 

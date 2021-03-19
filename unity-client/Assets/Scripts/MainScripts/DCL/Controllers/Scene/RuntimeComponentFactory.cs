@@ -23,10 +23,7 @@ namespace DCL
 
         public IPoolableComponentFactory poolableComponentFactory { get; private set; }
 
-        public void Initialize()
-        {
-            CoroutineStarter.Start(InitializeCoroutine());
-        }
+        public void Initialize() { CoroutineStarter.Start(InitializeCoroutine()); }
 
         IEnumerator InitializeCoroutine()
         {
@@ -98,10 +95,7 @@ namespace DCL
             builders.Add((int) CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION, BuildPoolableComponent);
         }
 
-        private IComponent BuildPoolableComponent(int classId)
-        {
-            return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId);
-        }
+        private IComponent BuildPoolableComponent(int classId) { return poolableComponentFactory.CreateItemFromId<BaseComponent>((CLASS_ID_COMPONENT) classId); }
 
         private T BuildComponent<T>(int classId)
             where T : IComponent, new()
