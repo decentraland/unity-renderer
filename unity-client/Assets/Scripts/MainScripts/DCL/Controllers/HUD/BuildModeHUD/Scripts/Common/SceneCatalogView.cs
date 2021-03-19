@@ -19,6 +19,7 @@ public interface ISceneCatalogView
     void Back();
     void CloseCatalog();
     bool IsCatalogOpen();
+    bool IsCatalogExpanded();
     void OnHideCatalogClick();
     void SetCatalogTitle(string text);
     void ToggleCatalogExpanse();
@@ -131,6 +132,8 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
     public void SetCatalogTitle(string text) { catalogTitleTxt.text = text; }
 
     public bool IsCatalogOpen() { return gameObject.activeSelf; }
+    
+    public bool IsCatalogExpanded() { return isCatalogExpanded; }
 
     public void CloseCatalog()
     {

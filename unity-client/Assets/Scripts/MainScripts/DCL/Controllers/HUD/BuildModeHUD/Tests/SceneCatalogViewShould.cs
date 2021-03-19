@@ -10,16 +10,10 @@ namespace Tests.BuildModeHUDViews
         private SceneCatalogView sceneCatalogView;
 
         [SetUp]
-        public void SetUp()
-        {
-            sceneCatalogView = SceneCatalogView.Create();
-        }
+        public void SetUp() { sceneCatalogView = SceneCatalogView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(sceneCatalogView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(sceneCatalogView.gameObject); }
 
         [Test]
         public void HideCatalogClickCorrectly()
@@ -77,6 +71,21 @@ namespace Tests.BuildModeHUDViews
 
             // Assert
             Assert.AreEqual(sceneCatalogView.gameObject.activeSelf, isCatalogOpen, "The catalog activation property does not match!");
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void CheckIfCatalogIsExpandedCorrectly(bool isExpanded)
+        {
+            // Arrange
+            sceneCatalogView.isCatalogExpanded = isExpanded;
+
+            // Act
+            bool isCatalogExpanded = sceneCatalogView.IsCatalogExpanded();
+
+            // Assert
+            Assert.AreEqual(sceneCatalogView.isCatalogExpanded, isCatalogExpanded, "The catalog expanded property does not match!");
         }
 
         [UnityTest]

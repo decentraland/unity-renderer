@@ -152,6 +152,16 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        public void CheckIfCatalogIsExpandedCorrectly()
+        {
+            // Act
+            sceneCatalogController.IsCatalogExpanded();
+
+            // Assert
+            sceneCatalogController.sceneCatalogView.Received(1).IsCatalogExpanded();
+        }
+
+        [Test]
         public void ShowCategoriesCorrectly()
         {
             // Arrange

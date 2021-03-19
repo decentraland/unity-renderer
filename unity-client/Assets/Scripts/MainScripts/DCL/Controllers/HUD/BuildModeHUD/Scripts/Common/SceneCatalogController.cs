@@ -24,6 +24,7 @@ public interface ISceneCatalogController
     void OnCatalogItemPackSelected(CatalogItemPack catalogItemPack);
     void SceneCatalogBack();
     bool IsCatalogOpen();
+    bool IsCatalogExpanded();
     void ShowCategories();
     void ShowAssetsPacks();
     void ShowCatalogContent();
@@ -253,6 +254,8 @@ public class SceneCatalogController : ISceneCatalogController
     }
 
     public bool IsCatalogOpen() { return sceneCatalogView.IsCatalogOpen(); }
+
+    public bool IsCatalogExpanded() { return sceneCatalogView.IsCatalogExpanded(); }
 
     public void ShowCategories()
     {
