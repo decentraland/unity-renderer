@@ -46,10 +46,7 @@ namespace DCL.ABConverter
             /// </summary>
             public string baseUrl;
 
-            public Settings Clone()
-            {
-                return this.MemberwiseClone() as Settings;
-            }
+            public Settings Clone() { return this.MemberwiseClone() as Settings; }
 
             public Settings(ContentServerUtils.ApiTLD tld = ContentServerUtils.ApiTLD.ORG)
             {
@@ -172,7 +169,7 @@ namespace DCL.ABConverter
             if (sceneCidsList == null || sceneCidsList.Count == 0)
             {
                 log.Error("Scene list is null or count == 0! Maybe this sector lacks scenes or content requests failed?");
-                return new Core.State() {lastErrorCode = Core.ErrorCodes.SCENE_LIST_NULL};
+                return new Core.State() { lastErrorCode = Core.ErrorCodes.SCENE_LIST_NULL };
             }
 
             log.Info($"Building {sceneCidsList.Count} scenes...");
@@ -209,13 +206,13 @@ namespace DCL.ABConverter
             if (string.IsNullOrEmpty(assetHash))
             {
                 log.Error("Missing asset hash for ConvertAssetToAssetBundle()");
-                return new Core.State() {lastErrorCode = Core.ErrorCodes.UNDEFINED};
+                return new Core.State() { lastErrorCode = Core.ErrorCodes.UNDEFINED };
             }
 
             if (string.IsNullOrEmpty(assetFilename))
             {
                 log.Error("Missing asset file name for ConvertAssetToAssetBundle()");
-                return new Core.State() {lastErrorCode = Core.ErrorCodes.UNDEFINED};
+                return new Core.State() { lastErrorCode = Core.ErrorCodes.UNDEFINED };
             }
 
             log.Info($"Building {assetHash} asset...");

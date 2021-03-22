@@ -90,10 +90,10 @@ namespace DCL.ABConverter
                 yield return VisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
 
                 bool result = VisualTestHelpers.TestSnapshot(
-                        VisualTestHelpers.baselineImagesPath + testName,
-                        VisualTestHelpers.testImagesPath + testName,
-                        95,
-                        false);
+                    VisualTestHelpers.baselineImagesPath + testName,
+                    VisualTestHelpers.testImagesPath + testName,
+                    95,
+                    false);
 
                 // Delete failed AB files to avoid uploading them
                 if (!result && env != null)
@@ -127,7 +127,7 @@ namespace DCL.ABConverter
         /// </summary>
         public static GameObject[] LoadAndInstantiateAllGltfAssets()
         {
-            var assets = AssetDatabase.FindAssets($"t:GameObject", new[] {"Assets/_Downloaded"});
+            var assets = AssetDatabase.FindAssets($"t:GameObject", new[] { "Assets/_Downloaded" });
 
             List<GameObject> importedGLTFs = new List<GameObject>();
 
@@ -161,7 +161,7 @@ namespace DCL.ABConverter
             {
                 var hash = new DirectoryInfo(paths).Name;
                 var path = "Assets/" + workingFolderName + "/" + hash;
-                var guids = AssetDatabase.FindAssets("t:GameObject", new[] {path});
+                var guids = AssetDatabase.FindAssets("t:GameObject", new[] { path });
 
                 // NOTE(Brian): If no gameObjects are found, we assume they are dependency assets (textures, etc).
                 if (guids.Length == 0)
@@ -169,7 +169,7 @@ namespace DCL.ABConverter
                     // We need to avoid adding dependencies that are NOT converted to ABs (like .bin files)
                     if (AssetDatabase.FindAssets("t:Texture", new[] { path }).Length != 0)
                     {
-                        dependencyAbs.Add(hash);   
+                        dependencyAbs.Add(hash);
                     }
                 }
                 else
@@ -187,14 +187,12 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if(SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
 
-                while (!req.isDone)
-                {
-                }
+                while (!req.isDone) { }
 
                 if (req.isHttpError || req.isNetworkError)
                 {
@@ -214,14 +212,12 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if(SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
 
-                while (!req.isDone)
-                {
-                }
+                while (!req.isDone) { }
 
                 if (req.isHttpError || req.isNetworkError)
                 {

@@ -12,9 +12,7 @@ using UnityGLTF;
 using static DCL.ContentServerUtils;
 using Utils = DCL.Helpers.Utils;
 
-namespace DCL.ABConverter
-{
-}
+namespace DCL.ABConverter { }
 
 namespace DCL
 {
@@ -38,16 +36,10 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Default Empty Parcels")]
-        public static void DumpEmptyParcels_Default()
-        {
-            DumpEmptyParcels();
-        }
+        public static void DumpEmptyParcels_Default() { DumpEmptyParcels(); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Halloween Empty Parcels")]
-        public static void DumpEmptyParcels_Halloween()
-        {
-            DumpEmptyParcels("empty-scenes-halloween");
-        }
+        public static void DumpEmptyParcels_Halloween() { DumpEmptyParcels("empty-scenes-halloween"); }
 
         public static void DumpEmptyParcels(string folderName = "empty-scenes")
         {
@@ -102,26 +94,19 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Start Visual Tests")]
-        public static void StartVisualTests()
-        {
-            EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets());
-
-        }
+        public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
-        public static void DumpZoneArea()
-        {
-            ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
-        }
+        public static void DumpZoneArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
 
-         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
-         public static void DumpSingleAsset()
-         {
-             // TODO: Make an editor window to setup these values from editor (for other dump-modes as well)
-             ABConverter.Client.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
-                                            "models/FloorBaseGrass_01/FloorBaseGrass_01.glb",
-                                            "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
-         }
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
+        public static void DumpSingleAsset()
+        {
+            // TODO: Make an editor window to setup these values from editor (for other dump-modes as well)
+            ABConverter.Client.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
+                "models/FloorBaseGrass_01/FloorBaseGrass_01.glb",
+                "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
+        }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]
         public static void DumpCenterPlaza()
@@ -131,10 +116,7 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Only Build Bundles")]
-        public static void OnlyBuildBundles()
-        {
-            BuildPipeline.BuildAssetBundles(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
-        }
+        public static void OnlyBuildBundles() { BuildPipeline.BuildAssetBundles(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL); }
 
         public class WearableItemArray
         {
@@ -148,9 +130,7 @@ namespace DCL
             UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
 
-            while (!w.isDone)
-            {
-            }
+            while (!w.isDone) { }
 
             if (!w.WebRequestSucceded())
             {
