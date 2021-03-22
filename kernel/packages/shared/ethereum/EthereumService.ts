@@ -39,6 +39,7 @@ const whitelist = [
   'web3_clientVersion',
   'eth_getTransactionCount',
   'eth_getBlockByNumber',
+  'eth_requestAccounts', // TODO: implement error-proof solution https://github.com/decentraland/explorer/issues/2156
   'eth_signTypedData_v4'
 ]
 
