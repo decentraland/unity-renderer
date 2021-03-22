@@ -1,4 +1,3 @@
-using DCL.Components;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,14 +6,16 @@ public class EntityListAdapter : MonoBehaviour
 {
     public Color entitySelectedColor;
     public Color entityUnselectedColor;
-    public Color entityInsideOdBoundsColor;
+    public Color entityInsideOfBoundsColor;
     public Color entityOutOfBoundsColor;
     public Color iconsSelectedColor;
     public Color iconsUnselectedColor;
-    public TextMeshProUGUI nameTxt;
     public TMP_InputField nameInputField;
     public TextMeshProUGUI nameInputField_Text;
-    public Image selectedImg, lockImg, showImg;
+    public Image selectedImg;
+    public Button unlockButton;
+    public Button lockButton;
+    public Image showImg;
     public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
     public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
     DCLBuilderInWorldEntity currentEntity;
@@ -42,6 +43,7 @@ public class EntityListAdapter : MonoBehaviour
         currentEntity.OnDelete += DeleteAdapter;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
+        AllowNameEdition(false);
         SetInfo(decentrelandEntity);
     }
 
@@ -58,15 +60,9 @@ public class EntityListAdapter : MonoBehaviour
         if (this != null)
         {
             if (string.IsNullOrEmpty(entityToEdit.GetDescriptiveName()))
-            {
                 nameInputField.text = entityToEdit.rootEntity.entityId;
-                nameTxt.text = entityToEdit.rootEntity.entityId;
-            }
             else
-            {
                 nameInputField.text = entityToEdit.GetDescriptiveName();
-                nameTxt.text = entityToEdit.GetDescriptiveName();
-            }
 
             //NOTE (Adrian): this is done to force the text component to update, otherwise it won't show the text, seems like a bug on textmeshpro to me
             nameInputField.textComponent.enabled = true;
@@ -76,20 +72,25 @@ public class EntityListAdapter : MonoBehaviour
             else
                 showImg.color = iconsUnselectedColor;
 
-            if (entityToEdit.IsLocked)
-                lockImg.color = iconsSelectedColor;
-            else
-                lockImg.color = iconsUnselectedColor;
-
+            unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
+            lockButton.gameObject.SetActive(entityToEdit.IsLocked);
 
             if (entityToEdit.IsSelected)
+            {
+                AllowNameEdition(true);
                 selectedImg.color = entitySelectedColor;
+            }
             else
+            {
+                AllowNameEdition(false);
                 selectedImg.color = entityUnselectedColor;
+            }
         }
     }
 
     public void Rename(string newName) { OnEntityRename?.Invoke(currentEntity, newName); }
+
+    public void AllowNameEdition(bool isAllowed) { nameInputField.enabled = isAllowed; }
 
     void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)
     {
@@ -103,6 +104,6 @@ public class EntityListAdapter : MonoBehaviour
         if (currentEntity.rootEntity.entityId != entity.entityId)
             return;
 
-        nameInputField_Text.color = isInsideBoundaries ? entityInsideOdBoundsColor : entityOutOfBoundsColor;
+        nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;
     }
 }
