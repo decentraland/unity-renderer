@@ -31,13 +31,20 @@ namespace DCL
         internal FacialFeatureController eyebrowsController;
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
+        internal StickersController stickersController;
+
+        private long lastStickerTimestamp = -1;
 
         internal bool isLoading = false;
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
 
-        private void Awake() { animator = GetComponent<AvatarAnimatorLegacy>(); }
+        private void Awake()
+        {
+            animator = GetComponent<AvatarAnimatorLegacy>();
+            stickersController = GetComponent<StickersController>();
+        }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
         {
@@ -334,6 +341,11 @@ namespace DCL
 
             SetWearableBones();
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
+            if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
+            {
+                lastStickerTimestamp = model.stickerTriggerTimestamp;
+                stickersController?.PlayEmote(model.stickerTriggerId);
+            }
 
             if (loadSoftFailed)
             {

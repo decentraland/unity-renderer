@@ -16,9 +16,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
     public string bodyShapeId => wearable.id;
     private Transform animationTarget;
 
-    public BodyShapeController(WearableItem wearableItem) : base(wearableItem)
-    {
-    }
+    public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
     protected BodyShapeController(BodyShapeController original) : base(original)
     {
@@ -119,30 +117,26 @@ public class BodyShapeController : WearableController, IBodyShapeController
             "mouth");
     }
 
-    private Animation PrepareAnimation(GameObject container)
+    protected override void PrepareWearable(GameObject assetContainer)
     {
-        Animation createdAnimation = null;
+        Animation animation = null;
 
         //NOTE(Brian): Fix to support hierarchy difference between AssetBundle and GLTF wearables.
         Utils.ForwardTransformChildTraversal<Transform>((x) =>
             {
                 if (x.name.Contains("Armature"))
                 {
-                    createdAnimation = x.parent.gameObject.GetOrCreateComponent<Animation>();
+                    var armatureGO = x.parent;
+                    animation = armatureGO.gameObject.GetOrCreateComponent<Animation>();
+                    armatureGO.gameObject.GetOrCreateComponent<StickerAnimationListener>();
                     return false; //NOTE(Brian): If we return false the traversal is stopped.
                 }
 
                 return true;
             },
-            container.transform);
+            assetContainer.transform);
 
-        createdAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
-        return createdAnimation;
-    }
-
-    protected override void PrepareWearable(GameObject assetContainer)
-    {
-        var animation = PrepareAnimation(assetContainer);
+        animation.cullingType = AnimationCullingType.BasedOnRenderers;
 
         //We create a mock SkinnedMeshRenderer to hold the bones for the animations,
         //since any of the others SkinnedMeshRenderers in the bodyshape can be disabled arbitrarily

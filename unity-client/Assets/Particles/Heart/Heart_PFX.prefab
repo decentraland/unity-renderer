@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5243280794287474790}
   - component: {fileID: 550886267225808357}
   m_Layer: 0
-  m_Name: Heart_PFX 1
+  m_Name: Heart_PFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8322741589490567795}
-  m_LocalRotation: {x: -0.088207476, y: -0.00000001117587, z: 0.70946836, w: 0.6991953}
-  m_LocalPosition: {x: -1.2126638, y: -47.17753, z: 55.226982}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 2.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &5243280794287474790
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -42,11 +42,11 @@ ParticleSystem:
   serializedVersion: 6
   lengthInSec: 3
   simulationSpeed: 1
-  stopAction: 0
+  stopAction: 2
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0

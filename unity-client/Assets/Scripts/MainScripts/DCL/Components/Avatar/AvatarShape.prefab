@@ -94,6 +94,7 @@ GameObject:
   - component: {fileID: 4675848658069725358}
   - component: {fileID: 7373291436495039860}
   - component: {fileID: 6790643881566083082}
+  - component: {fileID: 3298290865927950122}
   m_Layer: 0
   m_Name: AvatarRenderer
   m_TagString: Untagged
@@ -167,6 +168,18 @@ MonoBehaviour:
   target: {fileID: 2842120016485600253}
   runMinSpeed: 6
   walkMinSpeed: 0.1
+--- !u!114 &3298290865927950122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5582000225371496597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4efd5242010312149afedadae5a61e12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5854254909640412467
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,6 +296,51 @@ PrefabInstance:
       objectReference: {fileID: 2842120016485600253}
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
         type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -295,6 +353,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
         type: 3}
@@ -313,12 +376,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
         type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
         type: 3}
-      propertyPath: m_RootOrder
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
@@ -334,56 +397,6 @@ PrefabInstance:
     - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_Pivot.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2308405198860298521, guid: 18ee7e67182054d59b2fe9c713890484,
-        type: 3}
-      propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6832618840016913367, guid: 18ee7e67182054d59b2fe9c713890484,

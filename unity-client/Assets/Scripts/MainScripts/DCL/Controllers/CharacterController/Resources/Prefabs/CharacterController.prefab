@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 6758273427026275198}
   - component: {fileID: 4484426042789304097}
   - component: {fileID: 8727652042400483852}
+  - component: {fileID: 2374946182991755626}
   m_Layer: 15
   m_Name: AvatarRenderer
   m_TagString: Untagged
@@ -164,6 +165,18 @@ MonoBehaviour:
   useFx: 1
   fxSpawnPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
     type: 3}
+--- !u!114 &2374946182991755626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3711435650905816617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4efd5242010312149afedadae5a61e12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4323503760844960451
 GameObject:
   m_ObjectHideFlags: 0
