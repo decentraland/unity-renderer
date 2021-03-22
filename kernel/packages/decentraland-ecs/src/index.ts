@@ -2,6 +2,7 @@
 export * from './ecs/Attachable'
 export * from './ecs/Engine'
 export * from './ecs/Component'
+export * from './ecs/ComponentGroup'
 export * from './ecs/Entity'
 export * from './ecs/IEntity'
 export * from './ecs/Task'
