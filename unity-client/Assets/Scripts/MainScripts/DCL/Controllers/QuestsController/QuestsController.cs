@@ -43,10 +43,7 @@ namespace DCL.QuestsController
 
         private bool pinnedQuestsIsDirty = false;
 
-        static QuestsController()
-        {
-            i = new QuestsController();
-        }
+        static QuestsController() { i = new QuestsController(); }
 
         public QuestsController()
         {
@@ -83,14 +80,12 @@ namespace DCL.QuestsController
                 pinnedQuests.Remove(progressedQuest.id);
 
             //Alex: Edge case. Progressed quest was not included in the initialization.
-            // We invoke quests events but no sections ones.
+            // We invoke quests events but no sections or QuestCompleted one.
             if (!quests.TryGetValue(progressedQuest.id, out QuestModel oldQuest))
             {
                 quests.Add(progressedQuest.id, progressedQuest);
                 OnQuestProgressed?.Invoke(progressedQuest.id);
 
-                if (progressedQuest.isCompleted)
-                    OnQuestCompleted?.Invoke(progressedQuest.id);
                 return;
             }
 
@@ -120,15 +115,9 @@ namespace DCL.QuestsController
                 OnQuestCompleted?.Invoke(progressedQuest.id);
         }
 
-        public void RemoveQuest(QuestModel quest)
-        {
-            quests.Remove(quest.id);
-        }
+        public void RemoveQuest(QuestModel quest) { quests.Remove(quest.id); }
 
-        private void OnPinnedQuestUpdated(string questId)
-        {
-            pinnedQuestsIsDirty = true;
-        }
+        private void OnPinnedQuestUpdated(string questId) { pinnedQuestsIsDirty = true; }
 
         private void Update()
         {
