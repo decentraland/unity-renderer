@@ -117,6 +117,12 @@ async function createPackageJson() {
         tag: process.env.CIRCLE_TAG,
         commit: process.env.CIRCLE_SHA1,
         branch: process.env.CIRCLE_BRANCH,
+        author: "Decentraland Contributors",
+        license: "Apache-2.0",
+        repository: {
+          type: "git",
+          url: "https://github.com/decentraland/unity-renderer.git",
+        },
       },
       null,
       2
