@@ -238,12 +238,6 @@ jobs:
       - <<: *attach_root
       - run:
           working_directory: &node_workspace browser-interface
-          name: copy artifacts
-          command: |
-            cp -r /tmp/workspace/unity-renderer/unity-renderer/Builds/unity unity
-            find .
-      - run:
-          working_directory: *node_workspace
           name: npm clean install
           command: npm ci
       - run:
@@ -254,10 +248,12 @@ jobs:
           working_directory: *node_workspace
           name: npm run test
           command: npm run test
+
+      # temporary deploy
+      - run: sudo apt-get -y -qq install awscli
       - run:
-          working_directory: *node_workspace
-          name: clear dev dependencies
-          command: npm ci --only=production
+          name: Deploy artifacts
+          command: aws s3 sync /tmp/workspace/unity-renderer/browser-interface/dist s3://renderer-artifacts-decentraland-org-contentbucket-e758bc0/branch/${CIRCLE_BRANCH} --acl public-read
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -283,6 +279,17 @@ jobs:
           working_directory: *node_workspace
           name: npm run publish
           command: npm run publish
+
+  # deploy-on-pr:
+  #   <<: *working_directory_root
+  #   docker: *image_kernel
+  #   steps:
+  #     - <<: *attach_root
+  #     - run: sudo apt-get -y -qq install awscli
+  #     - run:
+  #         name: Deploy to S3 (.zone) under subfolder if tests pass and branch is not master
+  #         command: aws s3 sync /tmp/explorer/website/build s3://renderer-artifacts-decentraland-org-contentbucket-e758bc0/branch/${CIRCLE_BRANCH} --acl public-read
+
 workflows:
   version: 2
   build-deploy:

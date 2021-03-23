@@ -46,3 +46,6 @@ Assembly-UnityScript.unityProj
 
 debug.log
 Logs/Packages-Update.log
+
+browser-interface/dist
+browser-interface/node_modules
