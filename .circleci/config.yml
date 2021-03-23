@@ -212,6 +212,9 @@ jobs:
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
           paths:
             - ./unity-renderer/Builds/
+      - store_artifacts:
+          path: ./unity-renderer/Builds/
+          destination: Builds
       - save_cache:
           name: Store library
           key: library-{{ .Branch }}
