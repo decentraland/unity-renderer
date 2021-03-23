@@ -6,7 +6,8 @@
   "scripts": {
     "build": "ts-node --project scripts/tsconfig.json scripts/build.ts",
     "test": "echo \"no test specified\" && exit 0",
-    "publish": "ts-node --project scripts/tsconfig.json scripts/publish.ts"
+    "publish": "ts-node --project scripts/tsconfig.json scripts/publish.ts",
+    "publish-artifacts": "./scripts/publish-artifacts.sh"
   },
   "private": true,
   "keywords": [],

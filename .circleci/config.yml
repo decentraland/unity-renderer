@@ -249,11 +249,11 @@ jobs:
           name: npm run test
           command: npm run test
 
-      # temporary deploy
       - run: sudo apt-get -y -qq install awscli
       - run:
+          working_directory: *node_workspace
           name: Deploy artifacts
-          command: aws s3 sync /tmp/workspace/unity-renderer/browser-interface/dist s3://${S3_BUCKET}/branch/${CIRCLE_BRANCH} --acl public-read
+          command: npm run publish-artifacts
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -279,16 +279,6 @@ jobs:
           working_directory: *node_workspace
           name: npm run publish
           command: npm run publish
-
-  # deploy-on-pr:
-  #   <<: *working_directory_root
-  #   docker: *image_kernel
-  #   steps:
-  #     - <<: *attach_root
-  #     - run: sudo apt-get -y -qq install awscli
-  #     - run:
-  #         name: Deploy to S3 (.zone) under subfolder if tests pass and branch is not master
-  #         command: aws s3 sync /tmp/explorer/website/build s3://renderer-artifacts-decentraland-org-contentbucket-e758bc0/branch/${CIRCLE_BRANCH} --acl public-read
 
 workflows:
   version: 2
