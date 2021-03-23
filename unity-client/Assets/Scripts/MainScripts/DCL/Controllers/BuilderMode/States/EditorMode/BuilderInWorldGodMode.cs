@@ -68,11 +68,23 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         builderInputWrapper.OnMouseUp += OnMouseUp;
         builderInputWrapper.OnMouseDrag += OnMouseDrag;
 
-
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
         squareMultiSelectionInputAction.OnStarted += (o) => squareMultiSelectionButtonPressed = true;
         squareMultiSelectionInputAction.OnFinished += (o) => squareMultiSelectionButtonPressed = false;
+
+        gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
+    }
+
+    private void EntitiesTransfromByGizmos(Vector3 transformValue)
+    {
+        if (gizmoManager.GetSelectedGizmo() != BuilderInWorldSettings.ROTATE_GIZMO_NAME)
+            return;
+
+        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        {
+            entity.AddRotation(transformValue);
+        }
     }
 
     private void OnDestroy()
@@ -84,13 +96,14 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         builderInputWrapper.OnMouseUp -= OnMouseUp;
         builderInputWrapper.OnMouseDrag -= OnMouseDrag;
 
+        gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
+
         if (HUDController.i.builderInWorldMainHud == null)
             return;
 
         HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
-
 
         HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
@@ -173,7 +186,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
-        editionGO.transform.rotation = Quaternion.Euler(rotation);
+        selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
     }
 
     public void UpdateSelectionScale(Vector3 scale)

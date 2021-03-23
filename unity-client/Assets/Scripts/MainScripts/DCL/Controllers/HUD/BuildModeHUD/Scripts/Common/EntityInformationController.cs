@@ -45,6 +45,7 @@ public class EntityInformationController : IEntityInformationController
     internal ParcelScene parcelScene;
     internal AssetPromise_Texture loadedThumbnailPromise;
     internal bool isChangingName = false;
+    internal DCLBuilderInWorldEntity currentEntity;
 
     public void Initialize(IEntityInformationView entityInformationView)
     {
@@ -86,7 +87,11 @@ public class EntityInformationController : IEntityInformationController
 
     public void PositionChanged(Vector3 pos) { OnPositionChange?.Invoke(pos); }
 
-    public void RotationChanged(Vector3 rot) { OnRotationChange?.Invoke(rot); }
+    public void RotationChanged(Vector3 rot)
+    {
+        currentEntity?.SetRotation(rot);
+        OnRotationChange?.Invoke(rot);
+    }
 
     public void ScaleChanged(Vector3 scale) { OnScaleChange?.Invoke(scale); }
 
@@ -102,6 +107,7 @@ public class EntityInformationController : IEntityInformationController
 
     public void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene)
     {
+        currentEntity = entity;
         EntityDeselected();
         entityInformationView.SetCurrentEntity(entity);
 
@@ -211,19 +217,11 @@ public class EntityInformationController : IEntityInformationController
             Vector3 currentRotation = entity.gameObject.transform.rotation.eulerAngles;
             Vector3 currentScale = entity.gameObject.transform.localScale;
 
-            var newEuler = currentRotation;
-
-            newEuler.x = RepeatWorking(newEuler.x - currentRotation.x + 180.0F, 360.0F) + currentRotation.x - 180.0F;
-            newEuler.y = RepeatWorking(newEuler.y - currentRotation.y + 180.0F, 360.0F) + currentRotation.y - 180.0F;
-            newEuler.z = RepeatWorking(newEuler.z - currentRotation.z + 180.0F, 360.0F) + currentRotation.z - 180.0F;
-
-            currentRotation = newEuler;
+            currentRotation = entity.GetEulerRotation();
 
             entityInformationView.SetPositionAttribute(positionConverted);
             entityInformationView.SetRotationAttribute(currentRotation);
             entityInformationView.SetScaleAttribute(currentScale);
         }
     }
-
-    internal float RepeatWorking(float t, float length) { return (t - (Mathf.Floor(t / length) * length)); }
 }

@@ -132,6 +132,7 @@ public class BIWCreatorController : BIWController
 
         DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition);
         entity.isFloor = isFloor;
+        entity.SetRotation(Vector3.zero);
 
         AddShape(catalogItem, entity);
 

@@ -26,7 +26,7 @@ namespace Builder.Gizmos
         public DCLBuilderGizmoAxis activeAxis { protected set; get; }
 
         public abstract void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo);
-        public abstract void TransformEntity(Transform targetTransform, DCLBuilderGizmoAxis axis, float axisValue);
+        public abstract float TransformEntity(Transform targetTransform, DCLBuilderGizmoAxis axis, float axisValue);
 
         public virtual void Initialize(Camera camera, Transform cameraHolderTransform)
         {
@@ -37,6 +37,18 @@ namespace Builder.Gizmos
             axisX.SetGizmo(this);
             axisY.SetGizmo(this);
             axisZ.SetGizmo(this);
+        }
+
+        public Vector3 GetActiveAxisVector()
+        {
+            if (activeAxis == axisX)
+                return Vector3.right;
+            if (activeAxis == axisY)
+                return  Vector3.up;
+            if (activeAxis == axisZ)
+                return  Vector3.back;
+
+            return Vector3.zero;
         }
 
         public void ForceRelativeScaleRatio() { relativeScaleRatio = new Vector3(BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO, BuilderInWorldSettings.GIZMOS_RELATIVE_SCALE_RATIO); }
@@ -57,7 +69,7 @@ namespace Builder.Gizmos
             axis.SetColorHighlight();
         }
 
-        public virtual void OnDrag(Vector3 hitPoint, Vector2 mousePosition)
+        public virtual float OnDrag(Vector3 hitPoint, Vector2 mousePosition)
         {
             float axisValue = GetHitPointToAxisValue(activeAxis, hitPoint, mousePosition);
 
@@ -77,8 +89,9 @@ namespace Builder.Gizmos
                 }
 
                 SetPreviousAxisValue(axisValue, transformValue);
-                TransformEntity(targetTransform, activeAxis, transformValue);
+                return TransformEntity(targetTransform, activeAxis, transformValue);
             }
+            return 0;
         }
 
         public virtual void OnEndDrag() { activeAxis.SetColorDefault(); }
