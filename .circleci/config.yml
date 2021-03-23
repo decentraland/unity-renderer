@@ -253,7 +253,7 @@ jobs:
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Deploy artifacts
-          command: aws s3 sync /tmp/workspace/unity-renderer/browser-interface/dist s3://renderer-artifacts-decentraland-org-contentbucket-e758bc0/branch/${CIRCLE_BRANCH} --acl public-read
+          command: aws s3 sync /tmp/workspace/unity-renderer/browser-interface/dist s3://${S3_BUCKET}/branch/${CIRCLE_BRANCH} --acl public-read
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
