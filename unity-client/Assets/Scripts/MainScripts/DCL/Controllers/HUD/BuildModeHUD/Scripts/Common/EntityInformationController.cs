@@ -113,8 +113,8 @@ public class EntityInformationController : IEntityInformationController
 
         if (entityInformationView.currentEntity != null)
         {
-            entity.onStatusUpdate -= UpdateEntityName;
-            entityInformationView.currentEntity.onStatusUpdate += UpdateEntityName;
+            entity.OnStatusUpdate -= UpdateEntityName;
+            entityInformationView.currentEntity.OnStatusUpdate += UpdateEntityName;
         }
 
         parcelScene = currentScene;

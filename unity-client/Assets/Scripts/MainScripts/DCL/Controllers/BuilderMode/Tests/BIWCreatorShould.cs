@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {
@@ -95,7 +97,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Act
         biwCreatorController.CreateCatalogItem(item);
         DCLBuilderInWorldEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
-        entity.rootEntity.OnShapeUpdated?.Invoke(entity.rootEntity);
+        biwCreatorController.RemoveLoadingObject(entity.rootEntity.entityId);
 
         //Assert
         Assert.IsFalse(biwCreatorController.ExistsLoadingGameObjectForEntity(entity.rootEntity.entityId));

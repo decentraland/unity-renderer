@@ -12,7 +12,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
 {
     public string entityUniqueId;
 
-    public event System.Action<DCLBuilderInWorldEntity> onStatusUpdate;
+    public event System.Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
+    public event System.Action<DCLBuilderInWorldEntity> OnStatusUpdate;
     public event System.Action<DCLBuilderInWorldEntity> OnDelete;
 
     private bool isLockedValue = false;
@@ -23,7 +24,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         set
         {
             SetIsLockedValue(value);
-            onStatusUpdate?.Invoke(this);
+            OnStatusUpdate?.Invoke(this);
         }
     }
 
@@ -35,7 +36,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         set
         {
             isSelectedValue = value;
-            onStatusUpdate?.Invoke(this);
+            OnStatusUpdate?.Invoke(this);
         }
     }
 
@@ -47,7 +48,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         set
         {
             isNewValue = value;
-            onStatusUpdate?.Invoke(this);
+            OnStatusUpdate?.Invoke(this);
         }
     }
 
@@ -59,7 +60,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         set
         {
             isVisibleValue = value;
-            onStatusUpdate?.Invoke(this);
+            OnStatusUpdate?.Invoke(this);
         }
     }
 
@@ -150,10 +151,12 @@ public class DCLBuilderInWorldEntity : EditableEntity
     {
         rootEntity.gameObject.SetActive(!gameObject.activeSelf);
         IsVisible = gameObject.activeSelf;
-        onStatusUpdate?.Invoke(this);
+        OnStatusUpdate?.Invoke(this);
     }
 
     public void ToggleLockStatus() { IsLocked = !IsLocked; }
+
+    public void ShapeLoadFinish(ISharedComponent component) { OnShapeFinishLoading?.Invoke(this); }
 
     public void Delete()
     {
@@ -285,7 +288,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             scene.SharedComponentAttach(rootEntity.entityId, name.id);
         }
 
-        onStatusUpdate?.Invoke(this);
+        OnStatusUpdate?.Invoke(this);
     }
 
     public string GetDescriptiveName()
@@ -474,7 +477,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         }
     }
 
-    void OnNameUpdate(DCLName.Model model) { onStatusUpdate?.Invoke(this); }
+    void OnNameUpdate(DCLName.Model model) { OnStatusUpdate?.Invoke(this); }
 
     void OnShapeUpdate(DecentralandEntity decentralandEntity)
     {

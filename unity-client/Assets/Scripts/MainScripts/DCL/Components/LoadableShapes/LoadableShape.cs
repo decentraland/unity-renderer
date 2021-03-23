@@ -79,7 +79,7 @@ namespace DCL.Components
     {
         private bool isLoaded = false;
         private bool failed = false;
-        private event Action<BaseDisposable> OnReadyCallbacks;
+        private event Action<BaseDisposable> OnFinishCallbacks;
         public System.Action<DecentralandEntity> OnEntityShapeUpdated;
 
         new public LoadWrapperModelType model
@@ -199,8 +199,8 @@ namespace DCL.Components
             CleanFailedWrapper(loadWrapper);
 
             failed = true;
-            OnReadyCallbacks?.Invoke(this);
-            OnReadyCallbacks = null;
+            OnFinishCallbacks?.Invoke(this);
+            OnFinishCallbacks = null;
         }
 
         void CleanFailedWrapper(LoadWrapper loadWrapper)
@@ -247,8 +247,8 @@ namespace DCL.Components
 
             entity.OnShapeUpdated?.Invoke(entity);
 
-            OnReadyCallbacks?.Invoke(this);
-            OnReadyCallbacks = null;
+            OnFinishCallbacks?.Invoke(this);
+            OnFinishCallbacks = null;
         }
 
         protected virtual void DetachShape(DecentralandEntity entity)
@@ -271,7 +271,7 @@ namespace DCL.Components
             }
             else
             {
-                OnReadyCallbacks += callback;
+                OnFinishCallbacks += callback;
             }
         }
     }

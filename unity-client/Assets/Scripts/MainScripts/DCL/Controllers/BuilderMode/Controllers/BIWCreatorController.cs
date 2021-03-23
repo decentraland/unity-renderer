@@ -134,6 +134,9 @@ public class BIWCreatorController : BIWController
         entity.isFloor = isFloor;
         entity.SetRotation(Vector3.zero);
 
+        if (!isFloor)
+            CreateLoadingObject(entity);
+
         AddShape(catalogItem, entity);
 
         AddEntityNameComponent(catalogItem, entity);
@@ -160,6 +163,7 @@ public class BIWCreatorController : BIWController
 
         lastCatalogItemCreated = catalogItem;
 
+        entity.OnShapeFinishLoading += OnShapeLoadFinish;
         builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
         OnInputDone?.Invoke();
         OnSceneObjectPlaced?.Invoke();
@@ -172,32 +176,23 @@ public class BIWCreatorController : BIWController
 
     private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
-        entity.rootEntity.OnShapeUpdated += OnRealShapeLoaded;
         GameObject loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform);
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
-        CoroutineStarter.Start(LoadingObjectTimeout(entity.rootEntity.entityId));
     }
 
-    private void OnRealShapeLoaded(DecentralandEntity entity)
+    private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)
     {
-        entity.OnShapeUpdated -= OnRealShapeLoaded;
-
-        RemoveLoadingObject(entity.entityId);
+        entity.OnShapeFinishLoading -= OnShapeLoadFinish;
+        RemoveLoadingObject(entity.rootEntity.entityId);
     }
 
-    private void RemoveLoadingObject(string entityId)
+    public void RemoveLoadingObject(string entityId)
     {
         if (!loadingGameObjects.ContainsKey(entityId))
             return;
         GameObject loadingPlaceHolder = loadingGameObjects[entityId];
         loadingGameObjects.Remove(entityId);
         GameObject.Destroy(loadingPlaceHolder);
-    }
-
-    private IEnumerator LoadingObjectTimeout(string entityId)
-    {
-        yield return new WaitForSeconds(secondsToTimeOut);
-        RemoveLoadingObject(entityId);
     }
 
     #endregion
@@ -243,19 +238,20 @@ public class BIWCreatorController : BIWController
             nftShape.model.color = new Color(0.6404918f, 0.611472f, 0.8584906f);
             nftShape.model.src = catalogItem.model;
             nftShape.model.assetId = catalogItem.id;
-
             sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, nftShape.id);
+
+            nftShape.CallWhenReady(entity.ShapeLoadFinish);
         }
         else
         {
-            GLTFShape mesh = (GLTFShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
-            mesh.model = new LoadableShape.Model();
-            mesh.model.src = catalogItem.model;
-            mesh.model.assetId = catalogItem.id;
-            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, mesh.id);
-        }
+            GLTFShape gltfComponent = (GLTFShape) sceneToEdit.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.GLTF_SHAPE));
+            gltfComponent.model = new LoadableShape.Model();
+            gltfComponent.model.src = catalogItem.model;
+            gltfComponent.model.assetId = catalogItem.id;
+            sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, gltfComponent.id);
 
-        CreateLoadingObject(entity);
+            gltfComponent.CallWhenReady(entity.ShapeLoadFinish);
+        }
     }
 
     #endregion
