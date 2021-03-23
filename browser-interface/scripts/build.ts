@@ -113,7 +113,10 @@ async function createPackageJson() {
         name: "@dcl/renderer",
         main: "index.js",
         typings: "typings.d.ts",
-        version: "1.0.0",
+        version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}`,
+        tag: process.env.CIRCLE_TAG,
+        commit: process.env.CIRCLE_SHA1,
+        branch: process.env.CIRCLE_BRANCH,
       },
       null,
       2
