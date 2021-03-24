@@ -37,7 +37,7 @@ public class BIWCreatorController : BIWController
 
     private InputAction_Trigger.Triggered createLastSceneObjectDelegate;
 
-    private readonly Dictionary<string, GameObject> loadingGameObjects = new Dictionary<string, GameObject>();
+    private readonly Dictionary<string, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<string, BIWLoadingPlaceHolder>();
 
     private void Start()
     {
@@ -55,9 +55,9 @@ public class BIWCreatorController : BIWController
 
     public void Clean()
     {
-        foreach (GameObject gameObject in loadingGameObjects.Values)
+        foreach (BIWLoadingPlaceHolder placeHolder in loadingGameObjects.Values)
         {
-            GameObject.Destroy(gameObject);
+            placeHolder.Disspose();
         }
 
         loadingGameObjects.Clear();
@@ -130,7 +130,7 @@ public class BIWCreatorController : BIWController
         Vector3 startPosition = biwModeController.GetModeCreationEntryPoint();
         Vector3 editionPosition = biwModeController.GetCurrentEditionPosition();
 
-        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition);
+        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
         entity.isFloor = isFloor;
         entity.SetRotation(Vector3.zero);
 
@@ -164,6 +164,7 @@ public class BIWCreatorController : BIWController
         lastCatalogItemCreated = catalogItem;
 
         entity.OnShapeFinishLoading += OnShapeLoadFinish;
+        builderInWorldEntityHandler.EntityListChanged();
         builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
         OnInputDone?.Invoke();
         OnSceneObjectPlaced?.Invoke();
@@ -176,7 +177,7 @@ public class BIWCreatorController : BIWController
 
     private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
-        GameObject loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform);
+        BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
     }
 
@@ -190,9 +191,9 @@ public class BIWCreatorController : BIWController
     {
         if (!loadingGameObjects.ContainsKey(entityId))
             return;
-        GameObject loadingPlaceHolder = loadingGameObjects[entityId];
+        BIWLoadingPlaceHolder loadingPlaceHolder = loadingGameObjects[entityId];
         loadingGameObjects.Remove(entityId);
-        GameObject.Destroy(loadingPlaceHolder);
+        loadingPlaceHolder.DestroyAfterAnimation();
     }
 
     #endregion

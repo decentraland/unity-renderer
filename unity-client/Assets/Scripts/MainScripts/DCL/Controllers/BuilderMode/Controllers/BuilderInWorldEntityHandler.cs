@@ -479,7 +479,7 @@ public class BuilderInWorldEntityHandler : BIWController
         return newEntity;
     }
 
-    public DCLBuilderInWorldEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition)
+    public DCLBuilderInWorldEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
         DecentralandEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
 
@@ -497,7 +497,8 @@ public class BuilderInWorldEntityHandler : BIWController
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(newEntity, true);
         hudController?.UpdateSceneLimitInfo();
 
-        EntityListChanged();
+        if (notifyEntityList)
+            EntityListChanged();
         return convertedEntity;
     }
 
@@ -526,7 +527,7 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    void EntityListChanged()
+    public void EntityListChanged()
     {
         if (HUDController.i.builderInWorldMainHud == null)
             return;

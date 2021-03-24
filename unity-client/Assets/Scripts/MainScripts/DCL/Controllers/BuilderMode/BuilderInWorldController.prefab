@@ -101,8 +101,6 @@ MonoBehaviour:
     type: 2}
   toggleUndoActionInputAction: {fileID: 11400000, guid: 4cee9aa16106c7d44900a13123280dac,
     type: 2}
-  toggleSnapModeInputAction: {fileID: 11400000, guid: 9069f92e06a1094478a137f5274d1ab6,
-    type: 2}
   multiSelectionInputAction: {fileID: 11400000, guid: 5c1dc0623e14bc3439b6f58922b177ba,
     type: 2}
 --- !u!1 &1208871511180322530
@@ -2174,10 +2172,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d9cc0526a987be489ee7f8e156b3a92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  secondsToTimeOut: 10
   biwModeController: {fileID: 4364144288841107711}
   biwFloorHandler: {fileID: 1205861337032038080}
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
-  loadingObjectPrefab: {fileID: 8290156843023242693, guid: 1bb0d1bb76ba9f64da0542e03c213662,
+  loadingObjectPrefab: {fileID: 9065723555097372216, guid: d21a9c099a778423a908066cf9f458a0,
     type: 3}
   toggleCreateLastSceneObjectInputAction: {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e,
     type: 2}
@@ -2556,6 +2555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaf470ec8f3ccaa45b055d5d6ce0381c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  secondsToTimeOut: 10
   actionController: {fileID: 1208871512032110241}
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   dclBuilderMeshLoadIndicatorController: {fileID: 4453536760248188691}

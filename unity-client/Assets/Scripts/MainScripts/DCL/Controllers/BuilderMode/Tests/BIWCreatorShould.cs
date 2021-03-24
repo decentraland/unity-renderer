@@ -139,6 +139,11 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         BIWCatalogManager.ClearCatalog();
         BuilderInWorldNFTController.i.ClearNFTs();
         controller.CleanItems();
+        foreach (var placeHolder in GameObject.FindObjectsOfType<BIWLoadingPlaceHolder>())
+        {
+            placeHolder.Disspose();
+        }
+
         yield return base.TearDown();
     }
 }

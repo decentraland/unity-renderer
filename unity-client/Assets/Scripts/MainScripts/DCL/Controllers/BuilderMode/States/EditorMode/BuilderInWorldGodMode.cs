@@ -334,8 +334,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
-            if (entity.isVoxel && !isVoxelBoundMultiSelection)
+            if ((entity.isVoxel && !isVoxelBoundMultiSelection) ||
+                !entity.IsVisible)
                 continue;
+
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
