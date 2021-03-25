@@ -116,6 +116,7 @@
     "fp-future": "^1.0.1",
     "gifuct-js": "^2.0.0",
     "google-protobuf": "^3.6.1",
+    "hls.js": "^0.14.17",
     "keccakjs": "^0.2.3",
     "long": "^4.0.0",
     "multihashes": "^0.4.14",

@@ -207,8 +207,9 @@
       }
       // End Rollbar Snippet
     </script>
-    <script src="%PUBLIC_URL%/unity/Build/hls.min.js?%REACT_APP_HLS_VERSION%"></script>
-    <script src="%PUBLIC_URL%/unity/Build/DCLUnityLoader.js?%REACT_APP_LOADER_VERSION%"></script>
+    <script>
+      var RENDERER_ARTIFACTS_ROOT = '%PUBLIC_URL%/unity/Build/'
+    </script>
     <script src="%PUBLIC_URL%/website.js?%REACT_APP_WEBSITE_VERSION%"></script>
   </body>
 </html>

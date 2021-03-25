@@ -162,9 +162,9 @@ namespace editor {
   /**
    * Function executed by builder which is the first function of the entry point
    */
-  export async function initEngine(container: HTMLElement, buildConfigPath: string) {
+  export async function initEngine(container: HTMLElement) {
     try {
-      await initializeUnity(container, buildConfigPath)
+      await initializeUnity(container)
       defaultLogger.log('Engine initialized.')
       unityInterface.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
       unityInterface.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })

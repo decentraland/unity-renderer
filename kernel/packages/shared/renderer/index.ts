@@ -15,7 +15,7 @@ export function rendererInitialized() {
     return Promise.resolve()
   }
 
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     const unsubscribe = store.subscribe(() => {
       const initialized = isInitialized(store.getState())
       if (initialized) {

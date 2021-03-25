@@ -653,7 +653,6 @@
     </div>
 
     <div id="gameContainer"></div>
-    <script src="/@/artifacts/unity/Build/hls.min.js"></script>
     <script>
       const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
 
@@ -667,8 +666,8 @@
           handleServerMessage(JSON.parse(msg.data))
         }
       })
+      var RENDERER_ARTIFACTS_ROOT = '/@/artifacts/unity/Build/'
     </script>
   </body>
-  <script src="/@/artifacts/unity/Build/DCLUnityLoader.js"></script>
   <script defer async src="/@/artifacts/preview.js"></script>
 </html>
