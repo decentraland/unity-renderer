@@ -40,13 +40,13 @@ namespace DCL.Components
             model = new Model();
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(
                 "Aborted UIScrollRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
         }
 

@@ -12,8 +12,8 @@ namespace DCL
     {
         void Start();
         void Stop();
-        void MarkForCleanup(DecentralandEntity entity);
-        void MarkRootEntityForCleanup(ParcelScene scene, DecentralandEntity entity);
+        void MarkForCleanup(IDCLEntity entity);
+        void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity);
         void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId);
         void ForceCleanup();
     }
@@ -25,9 +25,9 @@ namespace DCL
         private struct MarkedEntityInfo
         {
             public ParcelScene scene;
-            public DecentralandEntity entity;
+            public IDCLEntity entity;
 
-            public MarkedEntityInfo(ParcelScene scene, DecentralandEntity entity)
+            public MarkedEntityInfo(ParcelScene scene, IDCLEntity entity)
             {
                 this.scene = scene;
                 this.entity = entity;
@@ -46,7 +46,7 @@ namespace DCL
             }
         }
 
-        Queue<DecentralandEntity> entitiesMarkedForCleanup = new Queue<DecentralandEntity>();
+        Queue<IDCLEntity> entitiesMarkedForCleanup = new Queue<IDCLEntity>();
         Queue<MarkedEntityInfo> rootEntitiesMarkedForCleanup = new Queue<MarkedEntityInfo>();
         Queue<MarkedSharedComponentInfo> disposableComponentsMarkedForCleanup = new Queue<MarkedSharedComponentInfo>();
 
@@ -63,7 +63,7 @@ namespace DCL
                 CoroutineStarter.Stop(removeEntitiesCoroutine);
         }
 
-        public void MarkForCleanup(DecentralandEntity entity)
+        public void MarkForCleanup(IDCLEntity entity)
         {
             if (entity.markedForCleanup)
                 return;
@@ -83,7 +83,7 @@ namespace DCL
 
         // When removing all entities from a scene, we need to separate the root entities, as stated in ParcelScene,
         // to avoid traversing a lot of child entities in the same frame and other problems
-        public void MarkRootEntityForCleanup(ParcelScene scene, DecentralandEntity entity)
+        public void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity)
         {
             rootEntitiesMarkedForCleanup.Enqueue(new MarkedEntityInfo(scene, entity));
         }
@@ -116,7 +116,7 @@ namespace DCL
 
             while (entitiesMarkedForCleanup.Count > 0)
             {
-                DecentralandEntity entity = entitiesMarkedForCleanup.Dequeue();
+                IDCLEntity entity = entitiesMarkedForCleanup.Dequeue();
                 entity.SetParent(null);
                 entity.Cleanup();
             }
@@ -167,7 +167,7 @@ namespace DCL
 
                 while (entitiesMarkedForCleanup.Count > 0)
                 {
-                    DecentralandEntity entity = entitiesMarkedForCleanup.Dequeue();
+                    IDCLEntity entity = entitiesMarkedForCleanup.Dequeue();
                     entity.SetParent(null);
                     entity.Cleanup();
 

@@ -8,30 +8,71 @@ using UnityEngine;
 
 namespace DCL.Models
 {
-    [Serializable]
-    public class DecentralandEntity : DCL.ICleanable, DCL.ICleanableEventDispatcher
+    public interface IDCLEntity : ICleanable, ICleanableEventDispatcher
     {
-        public IParcelScene scene;
-        public bool markedForCleanup = false;
+        GameObject gameObject { get; set; }
+        string entityId { get; set; }
+        MeshesInfo meshesInfo { get; set; }
+        GameObject meshRootGameObject { get; }
+        Renderer[] renderers { get; }
+        void SetParent(IDCLEntity entity);
+        void AddChild(IDCLEntity entity);
+        void RemoveChild(IDCLEntity entity);
+        void EnsureMeshGameObject(string gameObjectName = null);
+        void ResetRelease();
+        void AddSharedComponent(System.Type componentType, ISharedComponent component);
+        void RemoveSharedComponent(System.Type targetType, bool triggerDetaching = true);
 
-        public Dictionary<string, DecentralandEntity> children = new Dictionary<string, DecentralandEntity>();
-        public DecentralandEntity parent;
+        /// <summary>
+        /// This function is designed to get interfaces implemented by diverse components.
+        ///
+        /// If you want to get the component itself please use TryGetBaseComponent or TryGetSharedComponent.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        T TryGetComponent<T>() where T : class;
 
-        public Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components = new Dictionary<CLASS_ID_COMPONENT, IEntityComponent>();
-        Dictionary<System.Type, ISharedComponent> sharedComponents = new Dictionary<System.Type, ISharedComponent>();
+        bool TryGetBaseComponent(CLASS_ID_COMPONENT componentId, out IEntityComponent component);
+        bool TryGetSharedComponent(CLASS_ID componentId, out ISharedComponent component);
+        ISharedComponent GetSharedComponent(System.Type targetType);
+        IParcelScene scene { get; set; }
+        bool markedForCleanup { get; set; }
+        Dictionary<string, IDCLEntity> children { get; }
+        IDCLEntity parent { get; }
+        Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components { get; }
+        Dictionary<System.Type, ISharedComponent> sharedComponents { get; }
+        Action<IDCLEntity> OnShapeUpdated { get; set; }
+        Action<DCLName.Model> OnNameChange { get; set; }
+        Action<IDCLEntity> OnRemoved { get; set; }
+        Action<DCLTransform.Model> OnTransformChange { get; set; }
+        Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
+        Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
+    }
 
-        public GameObject gameObject;
-        public string entityId;
-        public MeshesInfo meshesInfo;
+    [Serializable]
+    public class DecentralandEntity : IDCLEntity
+    {
+        public IParcelScene scene { get; set; }
+        public bool markedForCleanup { get; set; } = false;
+
+        public Dictionary<string, IDCLEntity> children { get; private set; } = new Dictionary<string, IDCLEntity>();
+        public IDCLEntity parent { get; private set; }
+
+        public Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components { get; private set; } = new Dictionary<CLASS_ID_COMPONENT, IEntityComponent>();
+        public Dictionary<System.Type, ISharedComponent> sharedComponents { get; private set; } = new Dictionary<System.Type, ISharedComponent>();
+
+        public GameObject gameObject { get; set; }
+        public string entityId { get; set; }
+        public MeshesInfo meshesInfo { get; set; }
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;
 
-        public System.Action<DecentralandEntity> OnShapeUpdated;
-        public System.Action<DCLName.Model> OnNameChange;
-        public System.Action<DecentralandEntity> OnRemoved;
-        public System.Action<DCLTransform.Model> OnTransformChange;
-        public System.Action<DecentralandEntity> OnMeshesInfoUpdated;
-        public System.Action<DecentralandEntity> OnMeshesInfoCleaned;
+        public System.Action<IDCLEntity> OnShapeUpdated { get; set; }
+        public System.Action<DCLName.Model> OnNameChange { get; set; }
+        public System.Action<IDCLEntity> OnRemoved { get; set; }
+        public System.Action<DCLTransform.Model> OnTransformChange { get; set; }
+        public System.Action<IDCLEntity> OnMeshesInfoUpdated { get; set; }
+        public System.Action<IDCLEntity> OnMeshesInfoCleaned { get; set; }
 
         public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
 
@@ -47,9 +88,12 @@ namespace DCL.Models
             meshesInfo.OnCleanup += () => OnMeshesInfoCleaned?.Invoke(this);
         }
 
-        public Dictionary<System.Type, ISharedComponent> GetSharedComponents() { return sharedComponents; }
+        public Dictionary<System.Type, ISharedComponent> GetSharedComponents()
+        {
+            return sharedComponents;
+        }
 
-        private void AddChild(DecentralandEntity entity)
+        public void AddChild(IDCLEntity entity)
         {
             if (!children.ContainsKey(entity.entityId))
             {
@@ -57,7 +101,7 @@ namespace DCL.Models
             }
         }
 
-        private void RemoveChild(DecentralandEntity entity)
+        public void RemoveChild(IDCLEntity entity)
         {
             if (children.ContainsKey(entity.entityId))
             {
@@ -65,7 +109,7 @@ namespace DCL.Models
             }
         }
 
-        public void SetParent(DecentralandEntity entity)
+        public void SetParent(IDCLEntity entity)
         {
             if (parent != null)
             {
@@ -98,7 +142,10 @@ namespace DCL.Models
             }
         }
 
-        public void ResetRelease() { isReleased = false; }
+        public void ResetRelease()
+        {
+            isReleased = false;
+        }
 
         public void Cleanup()
         {
@@ -116,13 +163,13 @@ namespace DCL.Models
                 if (kvp.Value == null)
                     continue;
 
-                if (!(kvp.Value is BaseComponent baseComponent))
+                if (!(kvp.Value is IPoolableObjectContainer poolableContainer))
                     continue;
 
-                if (baseComponent.poolableObject == null)
+                if (poolableContainer.poolableObject == null)
                     continue;
 
-                baseComponent.poolableObject.Release();
+                poolableContainer.poolableObject.Release();
             }
 
             components.Clear();
@@ -151,7 +198,7 @@ namespace DCL.Models
             isReleased = true;
         }
 
-        public void AddSharedComponent(Type componentType, BaseDisposable component)
+        public void AddSharedComponent(System.Type componentType, ISharedComponent component)
         {
             if (component == null)
             {
@@ -200,7 +247,10 @@ namespace DCL.Models
             return null;
         }
 
-        public bool TryGetBaseComponent(CLASS_ID_COMPONENT componentId, out IEntityComponent component) { return components.TryGetValue(componentId, out component); }
+        public bool TryGetBaseComponent(CLASS_ID_COMPONENT componentId, out IEntityComponent component)
+        {
+            return components.TryGetValue(componentId, out component);
+        }
 
         public bool TryGetSharedComponent(CLASS_ID componentId, out ISharedComponent component)
         {

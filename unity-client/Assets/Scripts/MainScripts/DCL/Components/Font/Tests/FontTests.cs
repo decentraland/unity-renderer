@@ -41,7 +41,7 @@ namespace Tests
                 TestHelpers.SharedComponentCreate<DCLFont, DCLFont.Model>(scene, CLASS_ID.FONT, new DCLFont.Model() {src = TEST_BUILTIN_FONT_NAME});
             yield return font.routine;
 
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             TextShape textShape =
                 TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model() {font = font.id});
@@ -57,7 +57,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator BuiltInFontHandleErrorProperly()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             TextShape textShape =
                 TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());
@@ -80,7 +80,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator BuiltInFontAttachCorrectlyOnTextComponentUpdate()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             TextShape textShape =
                 TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model());

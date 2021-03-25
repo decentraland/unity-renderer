@@ -64,7 +64,7 @@ namespace DCL.Helpers
             return pbTranf;
         }
 
-        public static DecentralandEntity CreateSceneEntity(ParcelScene scene)
+        public static IDCLEntity CreateSceneEntity(ParcelScene scene)
         {
             Assert.IsNotNull(scene, "Can't create entity for null scene!");
 
@@ -73,13 +73,19 @@ namespace DCL.Helpers
             return scene.CreateEntity(id);
         }
 
-        public static DecentralandEntity CreateSceneEntity(ParcelScene scene, string id) { return scene.CreateEntity(id); }
+        public static IDCLEntity CreateSceneEntity(ParcelScene scene, string id)
+        {
+            return scene.CreateEntity(id);
+        }
 
         public static void RemoveSceneEntity(ParcelScene scene, string id) { scene.RemoveEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity) { scene.RemoveEntity(entity.entityId); }
+        public static void RemoveSceneEntity(ParcelScene scene, IDCLEntity entity)
+        {
+            scene.RemoveEntity(entity.entityId);
+        }
 
-        public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
+        public static T EntityComponentCreate<T, K>(ParcelScene scene, IDCLEntity entity, K model,
             CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
             where T : BaseComponent
             where K : new()
@@ -131,7 +137,10 @@ namespace DCL.Helpers
             return component.routine;
         }
 
-        public static void SetEntityParent(ParcelScene scene, DecentralandEntity child, DecentralandEntity parent) { scene.SetEntityParent(child.entityId, parent.entityId); }
+        public static void SetEntityParent(ParcelScene scene, IDCLEntity child, IDCLEntity parent)
+        {
+            scene.SetEntityParent(child.entityId, parent.entityId);
+        }
 
         public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
 
@@ -208,7 +217,7 @@ namespace DCL.Helpers
             scene.SharedComponentDispose(component.id);
         }
 
-        public static void SharedComponentAttach(BaseDisposable component, DecentralandEntity entity)
+        public static void SharedComponentAttach(BaseDisposable component, IDCLEntity entity)
         {
             ParcelScene scene = entity.scene as ParcelScene;
             scene.SharedComponentAttach(
@@ -217,11 +226,17 @@ namespace DCL.Helpers
             );
         }
 
-        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, DCLTransform.Model model) { SetEntityTransform(scene, entity, model.position, model.rotation, model.scale); }
+        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, DCLTransform.Model model)
+        {
+            SetEntityTransform(scene, entity, model.position, model.rotation, model.scale);
+        }
 
-        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity) { SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one); }
+        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity)
+        {
+            SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+        }
 
-        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
+        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.EntityComponentCreateOrUpdate(
@@ -233,7 +248,7 @@ namespace DCL.Helpers
 
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
         {
-            DecentralandEntity entity = CreateSceneEntity(scene);
+            IDCLEntity entity = CreateSceneEntity(scene);
             string componentId =
                 GetComponentUniqueId(scene, "textShape", (int) CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
 
@@ -244,7 +259,7 @@ namespace DCL.Helpers
             return textShape;
         }
 
-        public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
+        public static GLTFShape AttachGLTFShape(IDCLEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
             string componentId = GetComponentUniqueId(scene, "gltfShape", (int) CLASS_ID.GLTF_SHAPE, entity.entityId);
             GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
@@ -256,24 +271,24 @@ namespace DCL.Helpers
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
         {
-            DecentralandEntity entity = null;
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
+            IDCLEntity entity = null;
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
-            DecentralandEntity entity = null;
+            IDCLEntity entity = null;
             return CreateEntityWithGLTFShape(scene, position, model, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             entity = CreateSceneEntity(scene);
             GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
@@ -333,7 +348,7 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            DecentralandEntity entity = CreateSceneEntity(scene);
+            IDCLEntity entity = CreateSceneEntity(scene);
             T shape = SharedComponentCreate<T, K>(scene, classId, model);
             SharedComponentAttach(shape, entity);
             SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
@@ -341,13 +356,13 @@ namespace DCL.Helpers
         }
 
         public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             return CreateEntityWithBasicMaterial(scene, model, Vector3.zero, out entity);
         }
 
         public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model, Vector3 position,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, position,
                 out entity);
@@ -358,13 +373,13 @@ namespace DCL.Helpers
         }
 
         public static PBRMaterial CreateEntityWithPBRMaterial(ParcelScene scene, PBRMaterial.Model model,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             return CreateEntityWithPBRMaterial(scene, model, Vector3.zero, out entity);
         }
 
         public static PBRMaterial CreateEntityWithPBRMaterial(ParcelScene scene, PBRMaterial.Model model, Vector3 position,
-            out DecentralandEntity entity)
+            out IDCLEntity entity)
         {
             InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, position,
                 out entity);
@@ -375,7 +390,7 @@ namespace DCL.Helpers
         }
 
         public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId,
-            Vector3 position, out DecentralandEntity entity, K model = null)
+            Vector3 position, out IDCLEntity entity, K model = null)
             where T : BaseShape
             where K : class, new()
         {
@@ -418,9 +433,7 @@ namespace DCL.Helpers
 
         public static void DetachSharedComponent(ParcelScene scene, string fromEntityId, string sharedComponentId)
         {
-            DecentralandEntity entity = null;
-
-            if (!scene.entities.TryGetValue(fromEntityId, out entity))
+            if (!scene.entities.TryGetValue(fromEntityId, out IDCLEntity entity))
             {
                 return;
             }
@@ -519,7 +532,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator CreateAudioSourceWithClipForEntity(DecentralandEntity entity)
+        public static IEnumerator CreateAudioSourceWithClipForEntity(IDCLEntity entity)
         {
             yield return LoadAudioClip(entity.scene as ParcelScene,
                 audioClipId: "audioClipTest",
@@ -667,7 +680,7 @@ namespace DCL.Helpers
                 f.SetValue(generatedModel, valueToSet);
             }
 
-            DecentralandEntity e = CreateSceneEntity(scene);
+            IDCLEntity e = CreateSceneEntity(scene);
             TComponent component = EntityComponentCreate<TComponent, TModel>(scene, e, generatedModel);
 
             if (component.routine != null)
@@ -696,7 +709,7 @@ namespace DCL.Helpers
             where TModel : class, new()
         {
             // Create scene entity and 1st component
-            DecentralandEntity entity = CreateSceneEntity(scene);
+            IDCLEntity entity = CreateSceneEntity(scene);
 
             var component = SharedComponentCreate<TComponent, TModel>(scene, classId);
 
@@ -765,7 +778,7 @@ namespace DCL.Helpers
             component.Dispose();
         }
 
-        public static IEnumerator TestShapeCollision(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
+        public static IEnumerator TestShapeCollision(BaseShape shapeComponent, BaseShape.Model shapeModel, IDCLEntity entity)
         {
             var scene = shapeComponent.scene;
 
@@ -805,7 +818,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
+        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, IDCLEntity entity)
         {
             // make sure the shape is visible first
             shapeModel.visible = true;
@@ -848,7 +861,7 @@ namespace DCL.Helpers
             yield return TestShapeOnPointerEventCollider(entity);
         }
 
-        public static IEnumerator TestShapeOnPointerEventCollider(DecentralandEntity entity)
+        public static IEnumerator TestShapeOnPointerEventCollider(IDCLEntity entity)
         {
             Renderer[] renderers = entity.meshesInfo.renderers;
 
@@ -1190,7 +1203,7 @@ namespace DCL.Helpers
 
         public static void SetCharacterPosition(Vector3 newPosition) { DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(newPosition)); }
 
-        public static IEnumerator WaitForGLTFLoad(DecentralandEntity entity)
+        public static IEnumerator WaitForGLTFLoad(IDCLEntity entity)
         {
             LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);

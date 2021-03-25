@@ -456,7 +456,7 @@ namespace DCL
                 && !AreCollidersFromSameEntity(potentialBlockerHit, targetOnClickHit); // Does potential blocker belong to other entity rather than target entity?
         }
 
-        bool EntityHasPointerEvent(DecentralandEntity entity)
+        bool EntityHasPointerEvent(IDCLEntity entity)
         {
             return entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_CALLBACK) ||
                    entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.UUID_ON_UP) ||

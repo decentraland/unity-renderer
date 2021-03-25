@@ -1,3 +1,4 @@
+using DCL.Models;
 using DCL;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,7 @@ public class EntityListAdapter : MonoBehaviour
             currentEntity.OnDelete -= DeleteAdapter;
             DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
         }
+
         currentEntity = decentrelandEntity;
         currentEntity.OnStatusUpdate += SetInfo;
         currentEntity.OnDelete += DeleteAdapter;
@@ -55,13 +57,25 @@ public class EntityListAdapter : MonoBehaviour
         GetThumbnail(entitySceneObject);
     }
 
-    public void SelectOrDeselect() { OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this); }
+    public void SelectOrDeselect()
+    {
+        OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
+    }
 
-    public void ShowOrHide() { OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this); }
+    public void ShowOrHide()
+    {
+        OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this);
+    }
 
-    public void LockOrUnlock() { OnActionInvoked?.Invoke(EntityAction.LOCK, currentEntity, this); }
+    public void LockOrUnlock()
+    {
+        OnActionInvoked?.Invoke(EntityAction.LOCK, currentEntity, this);
+    }
 
-    public void DeleteEntity() { OnActionInvoked?.Invoke(EntityAction.DELETE, currentEntity, this); }
+    public void DeleteEntity()
+    {
+        OnActionInvoked?.Invoke(EntityAction.DELETE, currentEntity, this);
+    }
 
     void SetInfo(DCLBuilderInWorldEntity entityToEdit)
     {
@@ -124,7 +138,10 @@ public class EntityListAdapter : MonoBehaviour
 
     public void Rename(string newName) { OnEntityRename?.Invoke(currentEntity, newName); }
 
-    public void AllowNameEdition(bool isAllowed) { nameInputField.enabled = isAllowed; }
+    public void AllowNameEdition(bool isAllowed)
+    {
+        nameInputField.enabled = isAllowed;
+    }
 
     void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)
     {
@@ -133,7 +150,7 @@ public class EntityListAdapter : MonoBehaviour
                 Destroy(gameObject);
     }
 
-    private void ChangeEntityBoundsCheckerStatus(DCL.Models.DecentralandEntity entity, bool isInsideBoundaries)
+    private void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
     {
         if (currentEntity.rootEntity.entityId != entity.entityId)
             return;

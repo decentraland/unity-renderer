@@ -31,7 +31,7 @@ namespace DCL.Components
             return (Model) model;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity)) return;
 
@@ -42,7 +42,7 @@ namespace DCL.Components
             base.AttachTo(entity, typeof(BaseShape));
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity)) return;
 

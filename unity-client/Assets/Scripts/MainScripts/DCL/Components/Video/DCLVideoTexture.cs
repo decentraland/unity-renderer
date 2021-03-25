@@ -346,7 +346,7 @@ namespace DCL.Components
             }
         }
 
-        void OnEntityRemoved(DecentralandEntity entity)
+        void OnEntityRemoved(IDCLEntity entity)
         {
             isPlayStateDirty = true;
         }
@@ -378,12 +378,12 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private void OnEntityAttachedMaterial(DecentralandEntity entity)
+        private void OnEntityAttachedMaterial(IDCLEntity entity)
         {
             entity.OnShapeUpdated += OnEntityShapeUpdated;
         }
 
-        private void OnEntityDetachedMaterial(DecentralandEntity entity)
+        private void OnEntityDetachedMaterial(IDCLEntity entity)
         {
             if (texturePlayer != null)
                 texturePlayer.Pause();
@@ -391,7 +391,7 @@ namespace DCL.Components
             entity.OnShapeUpdated -= OnEntityShapeUpdated;
         }
 
-        private void OnEntityShapeUpdated(DecentralandEntity entity)
+        private void OnEntityShapeUpdated(IDCLEntity entity)
         {
             isPlayStateDirty = true;
         }
@@ -447,7 +447,7 @@ namespace DCL.Components
                 return false;
             }
 
-            bool IsEntityVisible(DecentralandEntity entity)
+            bool IsEntityVisible(IDCLEntity entity)
             {
                 if (entity.meshesInfo == null) return false;
                 if (entity.meshesInfo.currentShape == null) return false;

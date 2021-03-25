@@ -31,7 +31,7 @@ namespace DCL.Components
             return (int) CLASS_ID.NFT_SHAPE;
         }
 
-        protected override void AttachShape(DecentralandEntity entity)
+        protected override void AttachShape(IDCLEntity entity)
         {
             if (string.IsNullOrEmpty(model.src))
             {
@@ -62,7 +62,7 @@ namespace DCL.Components
             loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
         }
 
-        protected override void DetachShape(DecentralandEntity entity)
+        protected override void DetachShape(IDCLEntity entity)
         {
             if (entity == null || entity.meshRootGameObject == null) return;
 
@@ -71,12 +71,12 @@ namespace DCL.Components
             base.DetachShape(entity);
         }
 
-        protected override void ConfigureColliders(DecentralandEntity entity)
+        protected override void ConfigureColliders(IDCLEntity entity)
         {
             CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity);
         }
 
-        void UpdateBackgroundColor(DecentralandEntity entity)
+        void UpdateBackgroundColor(IDCLEntity entity)
         {
             if (previousModel is NFTShape.Model && model.color == previousModel.color) return;
 

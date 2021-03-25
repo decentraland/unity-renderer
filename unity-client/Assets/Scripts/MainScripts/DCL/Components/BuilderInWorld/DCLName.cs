@@ -42,13 +42,13 @@ public class DCLName : BaseDisposable
 
         model = modelToApply;
 
-        foreach (DecentralandEntity entity in attachedEntities)
+        foreach (IDCLEntity entity in attachedEntities)
         {
             entity.OnNameChange?.Invoke(modelToApply);
         }
 
 #if UNITY_EDITOR
-        foreach (DecentralandEntity decentralandEntity in this.attachedEntities)
+        foreach (IDCLEntity decentralandEntity in this.attachedEntities)
         {
             if (!string.IsNullOrEmpty(oldName))
                 decentralandEntity.gameObject.name.Replace(oldName, "");

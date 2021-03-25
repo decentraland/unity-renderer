@@ -24,7 +24,7 @@ namespace DCL.Components
 
         protected static Dictionary<GameObject, LoadWrapper> attachedLoaders = new Dictionary<GameObject, LoadWrapper>();
 
-        public static LoadWrapper GetLoaderForEntity(DecentralandEntity entity)
+        public static LoadWrapper GetLoaderForEntity(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
             {
@@ -36,7 +36,7 @@ namespace DCL.Components
             return result;
         }
 
-        public static T GetOrAddLoaderForEntity<T>(DecentralandEntity entity)
+        public static T GetOrAddLoaderForEntity<T>(IDCLEntity entity)
             where T : LoadWrapper, new()
         {
             if (!attachedLoaders.TryGetValue(entity.meshRootGameObject, out LoadWrapper result))
@@ -80,7 +80,7 @@ namespace DCL.Components
         private bool isLoaded = false;
         private bool failed = false;
         private event Action<BaseDisposable> OnFinishCallbacks;
-        public System.Action<DecentralandEntity> OnEntityShapeUpdated;
+        public System.Action<IDCLEntity> OnEntityShapeUpdated;
 
         new public LoadWrapperModelType model
         {
@@ -146,7 +146,7 @@ namespace DCL.Components
             return null;
         }
 
-        protected virtual void AttachShape(DecentralandEntity entity)
+        protected virtual void AttachShape(IDCLEntity entity)
         {
             ContentProvider provider = null;
 
@@ -182,7 +182,7 @@ namespace DCL.Components
             }
         }
 
-        void ConfigureVisibility(DecentralandEntity entity)
+        void ConfigureVisibility(IDCLEntity entity)
         {
             var loadable = GetLoaderForEntity(entity);
 
@@ -192,7 +192,10 @@ namespace DCL.Components
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
         }
 
-        protected virtual void ConfigureColliders(DecentralandEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
+        protected virtual void ConfigureColliders(IDCLEntity entity)
+        {
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
+        }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
         {
@@ -228,7 +231,7 @@ namespace DCL.Components
 
         protected void OnLoadCompleted(LoadWrapper loadWrapper)
         {
-            DecentralandEntity entity = loadWrapper.entity;
+            IDCLEntity entity = loadWrapper.entity;
 
             if (entity.meshesInfo.currentShape == null)
             {
@@ -251,7 +254,7 @@ namespace DCL.Components
             OnFinishCallbacks = null;
         }
 
-        protected virtual void DetachShape(DecentralandEntity entity)
+        protected virtual void DetachShape(IDCLEntity entity)
         {
             if (entity == null || entity.meshRootGameObject == null)
                 return;

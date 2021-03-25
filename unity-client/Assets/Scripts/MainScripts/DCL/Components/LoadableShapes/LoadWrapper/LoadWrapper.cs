@@ -9,7 +9,7 @@ namespace DCL.Components
         public bool initialVisibility = true;
         public bool alreadyLoaded = false;
 
-        public DecentralandEntity entity;
+        public IDCLEntity entity;
 
         public abstract void Load(string url, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail);
         public abstract void Unload();

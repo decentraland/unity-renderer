@@ -38,7 +38,7 @@ namespace DCL.Components
             base.UpdateFromModel(newModel);
         }
 
-        void UpdateRenderer(DecentralandEntity entity, Model model = null)
+        void UpdateRenderer(IDCLEntity entity, Model model = null)
         {
             if (model == null)
                 model = (T) this.model;
@@ -61,7 +61,7 @@ namespace DCL.Components
             }
         }
 
-        void OnShapeAttached(DecentralandEntity entity)
+        void OnShapeAttached(IDCLEntity entity)
         {
             if (entity == null)
                 return;
@@ -101,7 +101,7 @@ namespace DCL.Components
             entity.OnShapeUpdated?.Invoke(entity);
         }
 
-        void OnShapeDetached(DecentralandEntity entity)
+        void OnShapeDetached(IDCLEntity entity)
         {
             if (entity == null || entity.meshRootGameObject == null) return;
 
@@ -158,7 +158,7 @@ namespace DCL.Components
             return null;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity)) return;
 

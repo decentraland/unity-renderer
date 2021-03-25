@@ -26,15 +26,18 @@ namespace DCL.Components
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
-        public event System.Action<DecentralandEntity> OnAttach;
-        public event System.Action<DecentralandEntity> OnDetach;
+        public event System.Action<IDCLEntity> OnAttach;
+        public event System.Action<IDCLEntity> OnDetach;
         public event Action<BaseDisposable> OnAppliedChanges;
 
-        public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
+        public HashSet<IDCLEntity> attachedEntities = new HashSet<IDCLEntity>();
 
         protected BaseModel model;
 
-        public HashSet<DecentralandEntity> GetAttachedEntities() { return attachedEntities; }
+        public HashSet<IDCLEntity> GetAttachedEntities()
+        {
+            return attachedEntities;
+        }
 
         public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
 
@@ -48,7 +51,7 @@ namespace DCL.Components
 
         public virtual void RaiseOnAppliedChanges() { OnAppliedChanges?.Invoke(this); }
 
-        public virtual void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public virtual void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
             {
@@ -65,9 +68,12 @@ namespace DCL.Components
             OnAttach?.Invoke(entity);
         }
 
-        private void OnEntityRemoved(DecentralandEntity entity) { DetachFrom(entity); }
+        private void OnEntityRemoved(IDCLEntity entity)
+        {
+            DetachFrom(entity);
+        }
 
-        public virtual void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public virtual void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity))
                 return;
@@ -84,7 +90,7 @@ namespace DCL.Components
 
         public void DetachFromEveryEntity()
         {
-            DecentralandEntity[] attachedEntitiesArray = new DecentralandEntity[attachedEntities.Count];
+            IDCLEntity[] attachedEntitiesArray = new IDCLEntity[attachedEntities.Count];
 
             attachedEntities.CopyTo(attachedEntitiesArray);
 

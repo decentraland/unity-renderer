@@ -26,7 +26,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
     {
         yield return InitVisualTestsScene("GLTFImporterVisualTests_ProcessTextureOffsetAndScale");
 
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PlaneUVsOffset/planeUVsOffset.glb", out DecentralandEntity entity);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PlaneUVsOffset/planeUVsOffset.glb", out IDCLEntity entity);
 
         yield return gltfShape.routine;
         yield return new WaitForAllMessagesProcessed();
@@ -58,7 +58,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
     {
         yield return InitVisualTestsScene("GLTFImporterVisualTests_ProcessTexturesUVs");
 
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PlaneUVsMultichannel/PlaneUVsMultichannel.glb", out DecentralandEntity entity);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PlaneUVsMultichannel/PlaneUVsMultichannel.glb", out IDCLEntity entity);
 
         yield return gltfShape.routine;
         yield return new WaitForAllMessagesProcessed();

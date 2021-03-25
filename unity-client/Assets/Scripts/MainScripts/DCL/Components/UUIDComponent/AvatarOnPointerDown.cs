@@ -11,7 +11,7 @@ namespace DCL.Components
         public new Collider collider;
         private OnPointerEvent.Model model;
         private OnPointerEventHandler eventHandler;
-        public DecentralandEntity entity { get; private set; }
+        public IDCLEntity entity { get; private set; }
         public event System.Action OnPointerDownReport;
 
         public WebInterface.ACTION_BUTTON GetActionButton() { return model.GetActionButton(); }
@@ -27,7 +27,7 @@ namespace DCL.Components
             CollidersManager.i.RemoveEntityCollider(entity, collider);
         }
 
-        public void Initialize(OnPointerEvent.Model model, DecentralandEntity entity)
+        public void Initialize(OnPointerEvent.Model model, IDCLEntity entity)
         {
             this.model = model;
             this.entity = entity;

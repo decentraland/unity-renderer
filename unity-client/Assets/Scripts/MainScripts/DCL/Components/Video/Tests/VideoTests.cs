@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using DCL.Helpers;
 using DCL.Components;
 using DCL.Models;
@@ -14,7 +14,6 @@ namespace Tests
 {
     public class VideoTests : IntegrationTestSuite_Legacy
     {
-
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
@@ -43,10 +42,10 @@ namespace Tests
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 0, "DCLVideoTexture started with attachedMaterials != 0");
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
-                  scene,
-                  Utils.GetTestsAssetsPath() + "/Images/atlas.png",
-                  DCLTexture.BabylonWrapMode.CLAMP,
-                  FilterMode.Bilinear);
+                scene,
+                Utils.GetTestsAssetsPath() + "/Images/atlas.png",
+                DCLTexture.BabylonWrapMode.CLAMP,
+                FilterMode.Bilinear);
 
             yield return dclTexture.routine;
 
@@ -59,7 +58,7 @@ namespace Tests
 
             yield return mat.routine;
 
-            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(mat, new BasicMaterial.Model() { texture = videoTexture.id });
+            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(mat, new BasicMaterial.Model() {texture = videoTexture.id});
 
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 1, $"did DCLVideoTexture attach to material? {videoTexture.attachedMaterials.Count} expected 1");
         }
@@ -98,8 +97,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -112,8 +111,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -124,7 +123,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
-            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
+            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() {visible = false});
             yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
@@ -136,7 +135,7 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
             BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model());
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
@@ -146,11 +145,11 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(ent1Shape, ent1);
 
-            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(ent1Mat, new BasicMaterial.Model() { texture = videoTexture.id });
+            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(ent1Mat, new BasicMaterial.Model() {texture = videoTexture.id});
             yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
-            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
+            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() {visible = false});
             yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
@@ -162,8 +161,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -192,8 +191,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -219,8 +218,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -247,8 +246,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -262,7 +261,7 @@ namespace Tests
             CommonScriptableObjects.sceneID.Set("unexistent-scene");
 
             // to force the video player to update its volume
-            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666,666));
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666, 666));
 
             yield return null;
 
@@ -282,8 +281,8 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
 
-            DecentralandEntity ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
+            var ent1 = TestHelpers.CreateSceneEntity(scene);
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -297,7 +296,7 @@ namespace Tests
             CommonScriptableObjects.sceneID.Set(scene.sceneData.id);
 
             // to force the video player to update its volume
-            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666,666));
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(666, 666));
 
             yield return null;
 

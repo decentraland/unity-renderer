@@ -61,7 +61,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
     {
         ConfigureRaycastQuery("HitFirst");
 
-        List<DecentralandEntity> entities = new List<DecentralandEntity>();
+        List<IDCLEntity> entities = new List<IDCLEntity>();
         Vector3 pos = new Vector3(5, 0, 10);
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
@@ -69,7 +69,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
             BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, pos);
             yield return shape.routine;
 
-            DecentralandEntity entity = shape.attachedEntities.First();
+            IDCLEntity entity = shape.attachedEntities.First();
 
             TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
             yield return null;
@@ -127,7 +127,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
     {
         ConfigureRaycastQuery("HitAll");
 
-        List<DecentralandEntity> entities = new List<DecentralandEntity>();
+        List<IDCLEntity> entities = new List<IDCLEntity>();
         Vector3 pos = new Vector3(5, 0, 10);
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
@@ -135,7 +135,7 @@ public class PhysicsCast_Tests : IntegrationTestSuite_Legacy
             BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, pos);
             yield return shape.routine;
 
-            DecentralandEntity entity = shape.attachedEntities.First();
+            IDCLEntity entity = shape.attachedEntities.First();
 
             TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, new Vector3(5, 10, 1));
             yield return null;

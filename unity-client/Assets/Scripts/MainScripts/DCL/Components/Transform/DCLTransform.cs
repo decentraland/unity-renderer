@@ -24,16 +24,16 @@ namespace DCL.Components
 
         public static Model model = new Model();
 
-        public void Cleanup() { }
+        public void Cleanup()
+        {
+        }
 
-        public bool isRoutineRunning { get; } = false;
         public string componentName { get; } = "Transform";
-
         public IParcelScene scene { get; private set; }
-        public DecentralandEntity entity { get; private set; }
+        public IDCLEntity entity { get; private set; }
         public Transform GetTransform() => null;
 
-        public void Initialize(IParcelScene scene, DecentralandEntity entity)
+        public void Initialize(IParcelScene scene, IDCLEntity entity)
         {
             this.scene = scene;
             this.entity = entity;
@@ -63,9 +63,14 @@ namespace DCL.Components
             }
         }
 
-        public IEnumerator ApplyChanges(BaseModel model) { return null; }
+        public IEnumerator ApplyChanges(BaseModel model)
+        {
+            return null;
+        }
 
-        public void RaiseOnAppliedChanges() { }
+        public void RaiseOnAppliedChanges()
+        {
+        }
 
         public bool IsValid() => true;
         public BaseModel GetModel() => DCLTransform.model;

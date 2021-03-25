@@ -84,7 +84,7 @@ namespace DCL.Components
             return (int) CLASS_ID.PBR_MATERIAL;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
             {
@@ -127,7 +127,7 @@ namespace DCL.Components
             SetMaterialTexture(ShaderUtils.AlphaTexture, model.alphaTexture, alphaDCLTexture);
             SetMaterialTexture(ShaderUtils.BumpMap, model.bumpTexture, bumpDCLTexture);
 
-            foreach (DecentralandEntity decentralandEntity in attachedEntities)
+            foreach (IDCLEntity decentralandEntity in attachedEntities)
             {
                 InitMaterial(decentralandEntity.meshRootGameObject);
             }
@@ -211,7 +211,7 @@ namespace DCL.Components
             }
         }
 
-        void OnMaterialAttached(DecentralandEntity entity)
+        void OnMaterialAttached(IDCLEntity entity)
         {
             entity.OnShapeUpdated -= OnShapeUpdated;
             entity.OnShapeUpdated += OnShapeUpdated;
@@ -257,7 +257,7 @@ namespace DCL.Components
         }
 
 
-        private void OnShapeUpdated(DecentralandEntity entity)
+        private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
             {
@@ -266,7 +266,7 @@ namespace DCL.Components
         }
 
 
-        void OnMaterialDetached(DecentralandEntity entity)
+        void OnMaterialDetached(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
             {

@@ -76,7 +76,7 @@ namespace DCL
         [SerializeField]
         protected Model model;
 
-        protected Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
+        protected Dictionary<IDCLEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
         private Dictionary<Material, int> uniqueMaterialsRefCount;
 
@@ -93,7 +93,7 @@ namespace DCL
 
             uniqueMeshesRefCount = new Dictionary<Mesh, int>();
             uniqueMaterialsRefCount = new Dictionary<Material, int>();
-            entitiesMetrics = new Dictionary<DecentralandEntity, EntityMetrics>();
+            entitiesMetrics = new Dictionary<IDCLEntity, EntityMetrics>();
             model = new Model();
 
             if (VERBOSE)
@@ -183,7 +183,7 @@ namespace DCL
             }
         }
 
-        protected virtual void OnEntityAdded(DecentralandEntity e)
+        protected virtual void OnEntityAdded(IDCLEntity e)
         {
             e.OnMeshesInfoUpdated += OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned += OnEntityMeshInfoCleaned;
@@ -191,7 +191,7 @@ namespace DCL
             isDirty = true;
         }
 
-        protected virtual void OnEntityRemoved(DecentralandEntity e)
+        protected virtual void OnEntityRemoved(IDCLEntity e)
         {
             SubstractMetrics(e);
             e.OnMeshesInfoUpdated -= OnEntityMeshInfoUpdated;
@@ -200,17 +200,17 @@ namespace DCL
             isDirty = true;
         }
 
-        protected virtual void OnEntityMeshInfoUpdated(DecentralandEntity entity)
+        protected virtual void OnEntityMeshInfoUpdated(IDCLEntity entity)
         {
             AddOrReplaceMetrics(entity);
         }
 
-        protected virtual void OnEntityMeshInfoCleaned(DecentralandEntity entity)
+        protected virtual void OnEntityMeshInfoCleaned(IDCLEntity entity)
         {
             SubstractMetrics(entity);
         }
 
-        protected void AddOrReplaceMetrics(DecentralandEntity entity)
+        protected void AddOrReplaceMetrics(IDCLEntity entity)
         {
             if (entitiesMetrics.ContainsKey(entity))
             {
@@ -220,7 +220,7 @@ namespace DCL
             AddMetrics(entity);
         }
 
-        protected void SubstractMetrics(DecentralandEntity entity)
+        protected void SubstractMetrics(IDCLEntity entity)
         {
             if (!entitiesMetrics.ContainsKey(entity))
             {
@@ -245,7 +245,7 @@ namespace DCL
             isDirty = true;
         }
 
-        protected void AddMetrics(DecentralandEntity entity)
+        protected void AddMetrics(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
             {
@@ -310,7 +310,7 @@ namespace DCL
             isDirty = true;
         }
 
-        void CalculateMaterials(DecentralandEntity entity, EntityMetrics entityMetrics)
+        void CalculateMaterials(IDCLEntity entity, EntityMetrics entityMetrics)
         {
             var originalMaterials = Environment.i.world.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
 

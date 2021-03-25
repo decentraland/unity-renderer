@@ -15,10 +15,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+
     public float snapDragFactor = 5f;
 
     [Header("Scenes References")]
     public FreeCameraMovement freeCameraController;
+
     public CameraController cameraController;
     public Transform lookAtT;
     public MouseCatcher mouseCatcher;
@@ -26,6 +28,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     [Header("Prefab References")]
     public DCLBuilderGizmoManager gizmoManager;
+
     public VoxelController voxelController;
     public BuilderInWorldInputWrapper builderInputWrapper;
     public BIWOutlinerController outlinerController;
@@ -513,7 +516,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    public void LookAtEntity(DecentralandEntity entity)
+    public void LookAtEntity(IDCLEntity entity)
     {
         Vector3 pointToLook = entity.gameObject.transform.position;
         if (entity.meshRootGameObject && entity.meshesInfo.renderers.Length > 0)

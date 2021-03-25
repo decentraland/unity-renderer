@@ -13,12 +13,12 @@ namespace DCL.Controllers
     public interface IParcelScene
     {
         Transform GetSceneTransform();
-        Dictionary<string, DecentralandEntity> entities { get; }
+        Dictionary<string, IDCLEntity> entities { get; }
         Dictionary<string, ISharedComponent> disposableComponents { get; }
         T GetSharedComponent<T>() where T : class;
         ISharedComponent GetSharedComponent(string id);
-        event System.Action<DecentralandEntity> OnEntityAdded;
-        event System.Action<DecentralandEntity> OnEntityRemoved;
+        event System.Action<IDCLEntity> OnEntityAdded;
+        event System.Action<IDCLEntity> OnEntityRemoved;
         LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
@@ -32,7 +32,7 @@ namespace DCL.Controllers
     public class ParcelScene : MonoBehaviour, IParcelScene
     {
         public static bool VERBOSE = false;
-        public Dictionary<string, DecentralandEntity> entities { get; private set; } = new Dictionary<string, DecentralandEntity>();
+        public Dictionary<string, IDCLEntity> entities { get; private set; } = new Dictionary<string, IDCLEntity>();
         public Dictionary<string, ISharedComponent> disposableComponents { get; private set; } = new Dictionary<string, ISharedComponent>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
 
@@ -40,8 +40,8 @@ namespace DCL.Controllers
         public SceneController ownerController;
         public SceneMetricsController metricsController;
 
-        public event System.Action<DecentralandEntity> OnEntityAdded;
-        public event System.Action<DecentralandEntity> OnEntityRemoved;
+        public event System.Action<IDCLEntity> OnEntityAdded;
+        public event System.Action<IDCLEntity> OnEntityRemoved;
         public event System.Action<IComponent> OnComponentAdded;
         public event System.Action<IComponent> OnComponentRemoved;
         public event System.Action OnChanged;
@@ -258,7 +258,7 @@ namespace DCL.Controllers
 
         public Transform GetSceneTransform() { return transform; }
 
-        public DecentralandEntity CreateEntity(string id)
+        public IDCLEntity CreateEntity(string id)
         {
             if (entities.ContainsKey(id))
             {
@@ -299,7 +299,7 @@ namespace DCL.Controllers
         {
             if (entities.ContainsKey(id))
             {
-                DecentralandEntity entity = entities[id];
+                IDCLEntity entity = entities[id];
 
                 if (!entity.markedForCleanup)
                 {
@@ -317,7 +317,7 @@ namespace DCL.Controllers
 #endif
         }
 
-        void CleanUpEntityRecursively(DecentralandEntity entity, bool removeImmediatelyFromEntitiesList)
+        void CleanUpEntityRecursively(IDCLEntity entity, bool removeImmediatelyFromEntitiesList)
         {
             // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
@@ -353,7 +353,7 @@ namespace DCL.Controllers
             //NOTE(Brian): We need to remove only the rootEntities.
             //             If we don't, duplicated entities will get removed when destroying
             //             recursively, making this more complicated than it should.
-            List<DecentralandEntity> rootEntities = new List<DecentralandEntity>();
+            List<IDCLEntity> rootEntities = new List<IDCLEntity>();
 
             using (var iterator = entities.GetEnumerator())
             {
@@ -374,7 +374,7 @@ namespace DCL.Controllers
                 int rootEntitiesCount = rootEntities.Count;
                 for (int i = 0; i < rootEntitiesCount; i++)
                 {
-                    DecentralandEntity entity = rootEntities[i];
+                    IDCLEntity entity = rootEntities[i];
                     RemoveEntity(entity.entityId, instant);
                 }
 
@@ -393,7 +393,7 @@ namespace DCL.Controllers
                 return;
             }
 
-            DecentralandEntity me = GetEntityForUpdate(entityId);
+            IDCLEntity me = GetEntityForUpdate(entityId);
 
             if (me == null)
                 return;
@@ -427,7 +427,7 @@ namespace DCL.Controllers
                 }
                 else
                 {
-                    DecentralandEntity myParent = GetEntityForUpdate(parentId);
+                    IDCLEntity myParent = GetEntityForUpdate(parentId);
 
                     if (myParent != null)
                     {
@@ -445,7 +445,7 @@ namespace DCL.Controllers
           */
         public void SharedComponentAttach(string entityId, string id)
         {
-            DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
+            IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
 
             if (decentralandEntity == null)
             {
@@ -460,7 +460,7 @@ namespace DCL.Controllers
 
         public IEntityComponent EntityComponentCreateOrUpdateWithModel(string entityId, CLASS_ID_COMPONENT classId, object data)
         {
-            DecentralandEntity entity = GetEntityForUpdate(entityId);
+            IDCLEntity entity = GetEntityForUpdate(entityId);
 
             if (entity == null)
             {
@@ -515,7 +515,7 @@ namespace DCL.Controllers
         public IEntityComponent EntityComponentCreateOrUpdate(string entityId, CLASS_ID_COMPONENT classId, string data) { return EntityComponentCreateOrUpdateWithModel(entityId, classId, data); }
 
         // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
-        public IEntityComponent EntityComponentUpdate(DecentralandEntity entity, CLASS_ID_COMPONENT classId,
+        public IEntityComponent EntityComponentUpdate(IDCLEntity entity, CLASS_ID_COMPONENT classId,
             string componentJson)
         {
             if (entity == null)
@@ -573,7 +573,8 @@ namespace DCL.Controllers
 
         public void EntityComponentRemove(string entityId, string name)
         {
-            DecentralandEntity decentralandEntity = GetEntityForUpdate(entityId);
+            IDCLEntity decentralandEntity = GetEntityForUpdate(entityId);
+
             if (decentralandEntity == null)
             {
                 return;
@@ -588,7 +589,7 @@ namespace DCL.Controllers
             return disposableComponents.Values.FirstOrDefault(x => x is T) as T;
         }
 
-        private void RemoveComponentType<T>(DecentralandEntity entity, CLASS_ID_COMPONENT classId)
+        private void RemoveComponentType<T>(IDCLEntity entity, CLASS_ID_COMPONENT classId)
             where T : MonoBehaviour
         {
             var component = entity.components[classId] as IEntityComponent;
@@ -604,7 +605,7 @@ namespace DCL.Controllers
             }
         }
 
-        private void RemoveEntityComponent(DecentralandEntity entity, string componentName)
+        private void RemoveEntityComponent(IDCLEntity entity, string componentName)
         {
             switch (componentName)
             {
@@ -675,7 +676,7 @@ namespace DCL.Controllers
             return result;
         }
 
-        private DecentralandEntity GetEntityForUpdate(string entityId)
+        private IDCLEntity GetEntityForUpdate(string entityId)
         {
             if (string.IsNullOrEmpty(entityId))
             {
@@ -683,22 +684,20 @@ namespace DCL.Controllers
                 return null;
             }
 
-            DecentralandEntity decentralandEntity;
-
-            if (!entities.TryGetValue(entityId, out decentralandEntity))
+            if (!entities.TryGetValue(entityId, out IDCLEntity entity))
             {
                 return null;
             }
 
             //NOTE(Brian): This is for removing stray null references? This should never happen.
             //             Maybe move to a different 'clean-up' method to make this method have a single responsibility?.
-            if (decentralandEntity == null || decentralandEntity.gameObject == null)
+            if (entity == null || entity.gameObject == null)
             {
                 entities.Remove(entityId);
                 return null;
             }
 
-            return decentralandEntity;
+            return entity;
         }
 
         private void DisposeAllSceneComponents()

@@ -30,7 +30,7 @@ namespace Tests
             cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
         }
 
-        void InstantiateEntityWithShape(out DecentralandEntity entity, out BoxShape shape)
+        void InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape)
         {
             shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
@@ -43,7 +43,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithBasicShape()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
 
@@ -72,7 +72,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerDownInitializesWithBasicShape()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
 
@@ -100,7 +100,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpComponentInitializesWithBasicShape()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
 
@@ -508,7 +508,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickEventIsTriggered()
         {
-            InstantiateEntityWithShape(out DecentralandEntity entity, out BoxShape shape);
+            InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
             cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
@@ -545,6 +545,8 @@ namespace Tests
             sceneEvent.eventType = "uuidEvent";
             bool eventTriggered = false;
 
+            Debug.Log("Starting... 1");
+
             yield return TestHelpers.ExpectMessageToKernel(
                 targetEventType,
                 sceneEvent,
@@ -570,13 +572,14 @@ namespace Tests
                     return true;
                 });
 
+            Debug.Log("Starting... 2 " + eventTriggered);
             Assert.IsTrue(eventTriggered);
         }
 
         [UnityTest]
         public IEnumerator OnPointerDownEventIsTriggered()
         {
-            InstantiateEntityWithShape(out DecentralandEntity entity, out BoxShape shape);
+            InstantiateEntityWithShape(out IDCLEntity entity, out BoxShape shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
 
             cameraController.SetRotation(0, 0, 0, new Vector3(1, 0, 0));
@@ -636,7 +639,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpEventIsTriggered()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
@@ -698,7 +701,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerUpEventNotTriggeredOnInvisibles()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(9f, 1.5f, 11.0f), Quaternion.identity, new Vector3(5, 5, 5));
@@ -790,14 +793,14 @@ namespace Tests
             Assert.IsNotNull(cameraController, "camera is null?");
 
             // Create blocking entity
-            DecentralandEntity blockingEntity;
+            IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
             TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for click
-            DecentralandEntity clickTargetEntity;
+            IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
             TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
@@ -885,7 +888,7 @@ namespace Tests
             Assert.IsNotNull(cameraController, "camera is null?");
 
             // Create blocking entity
-            DecentralandEntity blockingEntity;
+            IDCLEntity blockingEntity;
             BoxShape blockingShape;
             InstantiateEntityWithShape(out blockingEntity, out blockingShape);
             TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
@@ -893,7 +896,7 @@ namespace Tests
             yield return blockingShape.routine;
 
             // Create target entity for click
-            DecentralandEntity clickTargetEntity;
+            IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
             TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
@@ -985,12 +988,12 @@ namespace Tests
         public IEnumerator PointerEventNotTriggeredByParent()
         {
             // Create parent entity
-            InstantiateEntityWithShape(out DecentralandEntity blockingEntity, out BoxShape blockingShape);
+            InstantiateEntityWithShape(out IDCLEntity blockingEntity, out BoxShape blockingShape);
             TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
             yield return blockingShape.routine;
 
             // Create target entity for click
-            DecentralandEntity clickTargetEntity;
+            IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape;
             InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
             TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity, new Vector3(1, 1, 1));
@@ -1076,7 +1079,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackPropertiesAreAppliedCorrectly()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
@@ -1129,7 +1132,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverDistanceIsAppliedCorrectly()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));

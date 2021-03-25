@@ -55,7 +55,7 @@ namespace DCL.Components
             return (int) CLASS_ID.BASIC_MATERIAL;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
                 return;
@@ -102,13 +102,14 @@ namespace DCL.Components
             material.SetFloat(_AlphaClip, 1);
             material.SetFloat(_Cutoff, model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
-            foreach (DecentralandEntity decentralandEntity in attachedEntities)
+
+            foreach (IDCLEntity decentralandEntity in attachedEntities)
             {
                 InitMaterial(decentralandEntity.meshRootGameObject);
             }
         }
 
-        void OnMaterialAttached(DecentralandEntity entity)
+        void OnMaterialAttached(IDCLEntity entity)
         {
             entity.OnShapeUpdated -= OnShapeUpdated;
             entity.OnShapeUpdated += OnShapeUpdated;
@@ -150,13 +151,13 @@ namespace DCL.Components
             }
         }
 
-        private void OnShapeUpdated(DecentralandEntity entity)
+        private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
                 InitMaterial(entity.meshRootGameObject);
         }
 
-        void OnMaterialDetached(DecentralandEntity entity)
+        void OnMaterialDetached(IDCLEntity entity)
         {
             if (entity.meshRootGameObject == null)
                 return;

@@ -22,10 +22,10 @@ namespace DCL.Components
             return null;
         }
 
-        private DecentralandEntity ownerEntity;
+        private IDCLEntity ownerEntity;
         private IShape lastShape;
 
-        public void Initialize(DecentralandEntity entity)
+        public void Initialize(IDCLEntity entity)
         {
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
 
