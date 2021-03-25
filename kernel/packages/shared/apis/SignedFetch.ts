@@ -6,6 +6,12 @@ import { userAuthentified } from 'shared/session'
 import { getIdentity } from 'shared/session'
 import { flatFetch, FlatFetchInit, FlatFetchResponse } from 'atomicHelpers/flatFetch'
 import { getTLD } from '../../config'
+import { Store } from 'redux'
+import { RootState } from 'shared/store/rootTypes'
+import { getRealm } from 'shared/dao/selectors'
+import { isGuest } from 'shared/ethereum/provider'
+
+declare const window: any
 
 const AUTH_CHAIN_HEADER_PREFIX = 'x-identity-auth-chain-'
 const AUTH_TIMESTAMP_HEADER = 'x-identity-timestamp'
@@ -14,7 +20,7 @@ const AUTH_METADATA_HEADER = 'x-identity-metadata'
 function getAuthHeaders(
   method: string,
   path: string,
-  metadata: Record<string, string>,
+  metadata: Record<string, any>,
   chainProvider: (payload: string) => AuthChain
 ) {
   const headers: Record<string, string> = {}
@@ -42,6 +48,10 @@ export class SignedFetch extends ExposableAPI {
   @exposeMethod
   async signedFetch(url: string, init?: FlatFetchInit): Promise<FlatFetchResponse> {
     await userAuthentified()
+
+    const store: Store<RootState> = window['globalStore']
+    const realm = getRealm(store.getState())
+
     const identity = getIdentity()!
     const path = new URL(url).pathname
     const actualInit = {
@@ -50,7 +60,14 @@ export class SignedFetch extends ExposableAPI {
         ...getAuthHeaders(
           init?.method ?? 'get',
           path,
-          { sceneId: this.parcelIdentity.cid, parcel: this.getSceneData().scene.base, tld: getTLD() },
+          {
+            sceneId: this.parcelIdentity.cid,
+            parcel: this.getSceneData().scene.base,
+            tld: getTLD(),
+            isGuest: isGuest(),
+            origin: location.origin,
+            realm
+          },
           (payload) => Authenticator.signPayload(identity, payload)
         ),
         ...init?.headers
