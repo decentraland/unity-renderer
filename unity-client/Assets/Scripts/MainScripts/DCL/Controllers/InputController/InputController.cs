@@ -125,8 +125,10 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        if (!renderingEnabled) return;
-        if (!isInputActive) return;
+        if (!renderingEnabled)
+            return;
+        if (!isInputActive)
+            return;
 
         if (isBuildModeActivate)
         {
@@ -164,17 +166,20 @@ public class InputController : MonoBehaviour
                                        InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
-                    if (allUIHidden) break;
+                    if (allUIHidden)
+                        break;
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleFriends:
-                    if (allUIHidden) break;
+                    if (allUIHidden)
+                        break;
                     InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleWorldChat:
-                    if (allUIHidden) break;
+                    if (allUIHidden)
+                        break;
                     InputProcessor.FromKey(action, KeyCode.Return, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.ToggleUIVisibility:
@@ -186,7 +191,8 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.OpenExpressions:
-                    if (allUIHidden) break;
+                    if (allUIHidden)
+                        break;
                     InputProcessor.FromKey(action, KeyCode.B, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
@@ -197,7 +203,8 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.P, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleExploreHud:
-                    if (allUIHidden) break;
+                    if (allUIHidden)
+                        break;
                     InputProcessor.FromKey(action, KeyCode.X, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.Expression_Wave:
@@ -222,7 +229,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Alpha7, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeChange:
-                    InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.K, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleVoiceChatRecording:
                     InputProcessor.FromKey(action, KeyCode.T, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftAlt });
@@ -256,8 +263,8 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.O, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeRedoAction:
-                    InputProcessor.FromKey(action, KeyCode.Z, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftControl,KeyCode.LeftShift });
-                    InputProcessor.FromKey(action, KeyCode.Z, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftCommand,KeyCode.LeftShift });
+                    InputProcessor.FromKey(action, KeyCode.Z, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftControl, KeyCode.LeftShift });
+                    InputProcessor.FromKey(action, KeyCode.Z, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftCommand, KeyCode.LeftShift });
                     break;
                 case DCLAction_Trigger.BuildEditModeUndoAction:
                     InputProcessor.FromKey(action, KeyCode.Z, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftControl });
@@ -457,11 +464,13 @@ public static class InputProcessor
             var pressed = Input.GetKey(keyCode);
             if (modifierKeys == null)
             {
-                if (pressed) return false;
+                if (pressed)
+                    return false;
             }
             else
             {
-                if (modifierKeys.Contains(keyCode) != pressed) return false;
+                if (modifierKeys.Contains(keyCode) != pressed)
+                    return false;
             }
         }
 
@@ -495,11 +504,14 @@ public static class InputProcessor
     public static void FromKey(InputAction_Trigger action, KeyCode key, KeyCode[] modifierKeys = null,
         Modifier modifiers = Modifier.None)
     {
-        if (!PassModifiers(modifiers)) return;
+        if (!PassModifiers(modifiers))
+            return;
 
-        if (!PassModifierKeys(modifierKeys)) return;
+        if (!PassModifierKeys(modifierKeys))
+            return;
 
-        if (Input.GetKeyDown(key)) action.RaiseOnTriggered();
+        if (Input.GetKeyDown(key))
+            action.RaiseOnTriggered();
     }
 
     /// <summary>
@@ -511,9 +523,11 @@ public static class InputProcessor
     public static void FromMouseButton(InputAction_Trigger action, int mouseButtonIdx,
         Modifier modifiers = Modifier.None)
     {
-        if (!PassModifiers(modifiers)) return;
+        if (!PassModifiers(modifiers))
+            return;
 
-        if (Input.GetMouseButton(mouseButtonIdx)) action.RaiseOnTriggered();
+        if (Input.GetMouseButton(mouseButtonIdx))
+            action.RaiseOnTriggered();
     }
 
     /// <summary>
@@ -524,10 +538,13 @@ public static class InputProcessor
     /// <param name="modifiers">Miscellaneous modifiers required for this action</param>
     public static void FromKey(InputAction_Hold action, KeyCode key, Modifier modifiers = Modifier.None)
     {
-        if (!PassModifiers(modifiers)) return;
+        if (!PassModifiers(modifiers))
+            return;
 
-        if (Input.GetKeyDown(key)) action.RaiseOnStarted();
-        if (Input.GetKeyUp(key)) action.RaiseOnFinished();
+        if (Input.GetKeyDown(key))
+            action.RaiseOnStarted();
+        if (Input.GetKeyUp(key))
+            action.RaiseOnFinished();
     }
 
     /// <summary>
@@ -539,7 +556,8 @@ public static class InputProcessor
     /// <param name="modifierKeys">KeyCodes required to perform the action</param>
     public static void FromKey(InputAction_Hold action, KeyCode key, Modifier modifiers, KeyCode[] modifierKeys)
     {
-        if (!PassModifierKeys(modifierKeys)) return;
+        if (!PassModifierKeys(modifierKeys))
+            return;
 
         FromKey(action, key, modifiers);
     }
@@ -552,10 +570,13 @@ public static class InputProcessor
     /// <param name="modifiers">Miscellaneous modifiers required for this action</param>
     public static void FromMouse(InputAction_Hold action, int mouseButtonIdx, Modifier modifiers = Modifier.None)
     {
-        if (!PassModifiers(modifiers)) return;
+        if (!PassModifiers(modifiers))
+            return;
 
-        if (Input.GetMouseButtonDown(mouseButtonIdx)) action.RaiseOnStarted();
-        if (Input.GetMouseButtonUp(mouseButtonIdx)) action.RaiseOnFinished();
+        if (Input.GetMouseButtonDown(mouseButtonIdx))
+            action.RaiseOnStarted();
+        if (Input.GetMouseButtonUp(mouseButtonIdx))
+            action.RaiseOnFinished();
     }
 
     /// <summary>

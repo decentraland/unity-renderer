@@ -1,24 +1,8 @@
 using Builder;
-using Builder.Gizmos;
-using Builder.MeshLoadIndicator;
-using DCL;
-using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Helpers;
-using DCL.Helpers.NFT;
-using DCL.Interface;
-using DCL.Models;
 using DCL.Tutorial;
-using Newtonsoft.Json;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.XR;
 using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
@@ -58,6 +42,9 @@ public class BuilderInWorldController : MonoBehaviour
     [Header("Project References")]
     public Material skyBoxMaterial;
 
+    [Header("Loading")]
+    public BuilderInWorldLoadingView initialLoadingView;
+
     [HideInInspector]
     public bool isBuilderInWorldActivated = false;
 
@@ -78,6 +65,8 @@ public class BuilderInWorldController : MonoBehaviour
     private Material previousSkyBoxMaterial;
     private Vector3 parcelUnityMiddlePoint;
 
+    internal IBuilderInWorldLoadingController initialLoadingController;
+
     private void Awake() { BIWCatalogManager.Init(); }
 
     void Start()
@@ -97,6 +86,12 @@ public class BuilderInWorldController : MonoBehaviour
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
+        }
+
+        if (initialLoadingController != null)
+        {
+            initialLoadingController.OnCancelLoading -= ExitEditMode;
+            initialLoadingController.Dispose();
         }
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
@@ -172,6 +167,7 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
 
+        ConfigureLoadingController();
         InitControllers();
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
@@ -179,6 +175,13 @@ public class BuilderInWorldController : MonoBehaviour
         CoroutineStarter.Start(BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived));
         BuilderInWorldNFTController.i.Initialize();
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+    }
+
+    private void ConfigureLoadingController()
+    {
+        initialLoadingController = new BuilderInWorldLoadingController();
+        initialLoadingController.Initialize(initialLoadingView);
+        initialLoadingController.OnCancelLoading += ExitEditMode;
     }
 
     public void InitGameObjects()
@@ -365,6 +368,8 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        initialLoadingController.Show();
+
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             editorMode.ActivateCamera(sceneToEdit);
@@ -392,7 +397,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
-        inputController.isInputActive = true;
         inputController.isBuildModeActivate = true;
 
         FindSceneToEdit();
@@ -417,7 +421,16 @@ public class BuilderInWorldController : MonoBehaviour
         Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
         if (IsNewScene())
+        {
             SetupNewScene();
+            biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+            biwFloorHandler.OnAllParcelsFloorLoaded += OnAllParcelsFloorLoaded;
+        }
+        else
+        {
+            initialLoadingController.Hide();
+            inputController.isInputActive = true;
+        }
 
         isBuilderInWorldActivated = true;
 
@@ -429,10 +442,21 @@ public class BuilderInWorldController : MonoBehaviour
         RenderSettings.skybox = skyBoxMaterial;
     }
 
+    private void OnAllParcelsFloorLoaded()
+    {
+        biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+        initialLoadingController.Hide();
+        inputController.isInputActive = true;
+    }
+
     public void ExitEditMode()
     {
+        biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+        initialLoadingController.Hide(true);
+
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
+        inputController.isInputActive = true;
         inputController.isBuildModeActivate = false;
         snapGO.transform.SetParent(transform);
 

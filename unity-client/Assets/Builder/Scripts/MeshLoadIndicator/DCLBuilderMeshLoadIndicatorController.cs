@@ -122,7 +122,7 @@ namespace Builder.MeshLoadIndicator
             }
         }
 
-        private void HideAllIndicators()
+        public void HideAllIndicators()
         {
             for (int i = 0; i < indicatorsInUse.Count; i++)
             {

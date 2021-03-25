@@ -1,12 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using DCL.Helpers;
-using System;
 using DCL;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using DCL.Configuration;
+using UnityEngine.UI;
 
 public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -14,13 +9,16 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
     public Image backgroundImg;
     public CanvasGroup canvasGroup;
     public GameObject lockedGO;
+    public GameObject loadingGO;
 
     [Header("Smart Items")]
     public GameObject smartItemGO;
-    public Color smartItemColor, normalColor;
+    public Color smartItemColor;
+    public Color normalColor;
 
     [Header("Favorites")]
-    public Color offFavoriteColor, onFavoriteColor;
+    public Color offFavoriteColor;
+    public Color onFavoriteColor;
     public Image favImg;
 
     public System.Action<CatalogItem> OnCatalogItemClicked;
@@ -31,7 +29,6 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
     public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
     private CatalogItem catalogItem;
-
     private string loadedThumbnailURL;
     private AssetPromise_Texture loadedThumbnailPromise;
 
@@ -60,27 +57,50 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
 
     private void GetThumbnail()
     {
-        var url = catalogItem?.GetThumbnailUrl();
+        SetLoadingActive(true);
 
-        if (url == loadedThumbnailURL)
+        if (catalogItem == null)
             return;
 
-        if (catalogItem == null || string.IsNullOrEmpty(url))
+        var url = catalogItem.GetThumbnailUrl();
+
+        if (string.IsNullOrEmpty(url) || url == loadedThumbnailURL)
             return;
 
-        string newLoadedThumbnailURL = url;
-        var newLoadedThumbnailPromise =  new AssetPromise_Texture(url);
+        ClearThumbnailPromise();
+        loadedThumbnailPromise = new AssetPromise_Texture(url);
 
+        loadedThumbnailPromise.OnSuccessEvent += x =>
+        {
+            loadedThumbnailURL = url;
+            SetThumbnail(x);
+        };
 
-        newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
-        newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
+        loadedThumbnailPromise.OnFailEvent += x =>
+        {
+            Debug.Log($"Error downloading: {url}");
+            SetLoadingActive(false);
+        };
 
-        AssetPromiseKeeper_Texture.i.Keep(newLoadedThumbnailPromise);
+        AssetPromiseKeeper_Texture.i.Keep(loadedThumbnailPromise);
+    }
 
+    private void ClearThumbnailPromise()
+    {
+        if (loadedThumbnailPromise != null)
+        {
+            loadedThumbnailPromise.ClearEvents();
+            AssetPromiseKeeper_Texture.i.Forget(loadedThumbnailPromise);
+            loadedThumbnailPromise = null;
+        }
+    }
 
-        AssetPromiseKeeper_Texture.i.Forget(loadedThumbnailPromise);
-        loadedThumbnailPromise = newLoadedThumbnailPromise;
-        loadedThumbnailURL = newLoadedThumbnailURL;
+    private void SetLoadingActive(bool isActive)
+    {
+        if (loadingGO == null)
+            return;
+
+        loadingGO.SetActive(isActive);
     }
 
     public void EnableDragMode(Vector2 sizeDelta)
@@ -117,6 +137,8 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
             thumbnailImg.texture = texture.texture;
             favImg.gameObject.SetActive(true);
         }
+
+        SetLoadingActive(false);
     }
 
     public void OnBeginDrag(PointerEventData eventData) { AdapterStartDragging(eventData); }
@@ -128,4 +150,6 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
     public void OnPointerEnter(PointerEventData eventData) { OnPointerEnterInAdapter?.Invoke(eventData, this); }
 
     public void OnPointerExit(PointerEventData eventData) { OnPointerExitInAdapter?.Invoke(eventData, this); }
+
+    private void OnDestroy() { ClearThumbnailPromise(); }
 }
