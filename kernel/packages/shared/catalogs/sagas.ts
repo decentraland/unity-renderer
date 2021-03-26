@@ -6,7 +6,8 @@ import {
   PIN_CATALYST,
   WSS_ENABLED,
   TEST_WEARABLES_OVERRIDE,
-  ALL_WEARABLES
+  ALL_WEARABLES,
+  WITH_FIXED_COLLECTIONS
 } from 'config'
 
 import defaultLogger from 'shared/logger'
@@ -159,12 +160,20 @@ function* fetchWearablesV2(filters: WearablesRequestFilters) {
 
   const result: any[] = []
   if (filters.ownedByUser) {
-    // TODO: What about ALL_WEARABLES?
-
-    const ownedWearables: OwnedWearablesWithDefinition[] = yield call(fetchOwnedWearables, filters.ownedByUser, client)
-    for (const { amount, definition } of ownedWearables) {
-      for (let i = 0; i < amount; i++) {
-        result.push(definition)
+    if (WITH_FIXED_COLLECTIONS) {
+      const collectionIds = WITH_FIXED_COLLECTIONS.split(',')
+      const wearables = yield call(fetchWearablesByFilters, { collectionIds }, client)
+      result.push(...wearables)
+    } else {
+      const ownedWearables: OwnedWearablesWithDefinition[] = yield call(
+        fetchOwnedWearables,
+        filters.ownedByUser,
+        client
+      )
+      for (const { amount, definition } of ownedWearables) {
+        for (let i = 0; i < amount; i++) {
+          result.push(definition)
+        }
       }
     }
   } else {
