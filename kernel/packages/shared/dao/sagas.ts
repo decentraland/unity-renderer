@@ -28,7 +28,12 @@ import {
   ping,
   commsStatusUrl
 } from '.'
-import { getAddedServers, getCatalystNodesEndpoint, getContentWhitelist } from 'shared/meta/selectors'
+import {
+  getAddedServers,
+  getCatalystNodesEndpoint,
+  getContentWhitelist,
+  getMinCatalystVersion
+} from 'shared/meta/selectors'
 import { getAllCatalystCandidates, isRealmInitialized } from './selectors'
 import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/localStorage'
 import defaultLogger from '../logger'
@@ -36,6 +41,8 @@ import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { CATALYST_COULD_NOT_LOAD } from 'shared/loading/types'
 import { META_CONFIGURATION_INITIALIZED } from 'shared/meta/actions'
 import { checkTldVsWeb3Network, registerProviderNetChanges } from 'shared/web3'
+import { gte } from 'semver'
+import { store } from 'shared/store/store'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
@@ -145,20 +152,31 @@ function getConfiguredRealm(candidates: Candidate[]) {
   }
 }
 
+function* filterCandidatesByCatalystVersion(candidates: Candidate[]) {
+  const minCatalystVersion: string | undefined = yield select(getMinCatalystVersion)
+  return minCatalystVersion
+    ? candidates.filter(({ catalystVersion }) => gte(catalystVersion, minCatalystVersion))
+    : candidates
+}
+
 function* initializeCatalystCandidates() {
   yield put(catalystRealmsScanRequested())
   const catalystsNodesEndpointURL = yield select(getCatalystNodesEndpoint)
   const candidates: Candidate[] = yield call(fetchCatalystRealms, catalystsNodesEndpointURL)
+  const filteredCandidates: Candidate[] = PIN_CATALYST
+    ? candidates
+    : yield call(filterCandidatesByCatalystVersion, candidates)
 
-  yield put(setCatalystCandidates(candidates))
+  yield put(setCatalystCandidates(filteredCandidates))
 
   const added: string[] = PIN_CATALYST ? [] : yield select(getAddedServers)
   const addedCandidates: Candidate[] = yield call(
     fetchCatalystStatuses,
     added.map((url) => ({ domain: url }))
   )
+  const filteredAddedCandidates = yield call(filterCandidatesByCatalystVersion, addedCandidates)
 
-  yield put(setAddedCatalystCandidates(addedCandidates))
+  yield put(setAddedCatalystCandidates(filteredAddedCandidates))
 
   const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
 
@@ -174,12 +192,15 @@ function* initializeCatalystCandidates() {
 }
 
 async function checkValidRealm(realm: Realm) {
+  const realmHasValues = realm && realm.domain && realm.catalystName && realm.layer
+  if (!realmHasValues) {
+    return false
+  }
+  const minCatalystVersion = getMinCatalystVersion(store.getState())
+  const pingResult = await ping(commsStatusUrl(realm.domain))
+  const catalystVersion = pingResult.result?.env.catalystVersion ?? '0.0.0'
   return (
-    realm &&
-    realm.domain &&
-    realm.catalystName &&
-    realm.layer &&
-    (await ping(commsStatusUrl(realm.domain))).status === ServerConnectionStatus.OK
+    pingResult.status === ServerConnectionStatus.OK && (!minCatalystVersion || gte(catalystVersion, minCatalystVersion))
   )
 }
 

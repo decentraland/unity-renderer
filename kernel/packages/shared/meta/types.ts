@@ -18,6 +18,7 @@ export type MetaConfiguration = {
   }
   world: WorldConfig
   comms: CommsConfig
+  minCatalystVersion?: string
   featureFlags?: Record<string, boolean>
 }
 

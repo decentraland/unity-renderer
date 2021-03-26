@@ -137,7 +137,8 @@ export async function fetchCatalystStatuses(nodes: { domain: string }[]) {
               elapsed: elapsed!,
               layer,
               score: score(layer),
-              lighthouseVersion: result!.version
+              lighthouseVersion: result!.version,
+              catalystVersion: result!.env.catalystVersion
             }))
           )
         : union,

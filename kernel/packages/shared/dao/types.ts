@@ -14,6 +14,9 @@ export type CatalystLayers = {
   name: string
   version: string
   layers: Layer[]
+  env: {
+    catalystVersion: string
+  }
 }
 
 export type Candidate = {
@@ -24,6 +27,7 @@ export type Candidate = {
   layer: Layer
   status: ServerConnectionStatus
   lighthouseVersion: string
+  catalystVersion: string
 }
 
 export type LayerUserInfo = {
