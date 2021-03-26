@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,6 +77,7 @@ public class FriendsHUDView : MonoBehaviour
             friendRequestsButton.animator.SetBool(ANIM_PROPERTY_SELECTED, false);
             friendsList.gameObject.SetActive(true);
             friendRequestsList.gameObject.SetActive(false);
+            Utils.ForceUpdateLayout(friendsList.transform as RectTransform);
         });
 
         friendRequestsButton.onClick.AddListener(() =>
@@ -84,6 +86,7 @@ public class FriendsHUDView : MonoBehaviour
             friendRequestsButton.animator.SetBool(ANIM_PROPERTY_SELECTED, true);
             friendsList.gameObject.SetActive(false);
             friendRequestsList.gameObject.SetActive(true);
+            Utils.ForceUpdateLayout(friendRequestsList.transform as RectTransform);
         });
 
         if (friendsButton.interactable)
@@ -174,7 +177,7 @@ public class FriendsHUDView : MonoBehaviour
         });
 
         FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus()
-            {userId = id1, presence = PresenceStatus.ONLINE});
+            { userId = id1, presence = PresenceStatus.ONLINE });
     }
 
     [ContextMenu("AddFakeOfflineFriend")]
@@ -195,7 +198,7 @@ public class FriendsHUDView : MonoBehaviour
         });
 
         FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus()
-            {userId = id1, presence = PresenceStatus.OFFLINE});
+            { userId = id1, presence = PresenceStatus.OFFLINE });
     }
 #endif
 }
