@@ -1,6 +1,7 @@
 import { Fetcher } from 'dcl-catalyst-commons'
 import { decentralandConfigurations, getDefaultTLD } from 'config'
 import { LandRole, ParcelsWithAccess } from 'decentraland-ecs/src'
+import defaultLogger from 'shared/logger'
 
 const getLandQuery = () => `
   query Land($address: Bytes) {
@@ -277,14 +278,22 @@ async function fetchLand(_address: string): Promise<Land[]> {
 }
 
 export async function fetchParcelsWithAccess(_address: string): Promise<ParcelsWithAccess> {
-  const result: ParcelsWithAccess = []
-  const lands = await fetchLand(_address)
-  lands.forEach((land) => {
-    if (land.type === LandType.PARCEL) {
-      result.push({ x: land.x!, y: land.y!, role: land.role })
-    } else {
-      result.push(...land.parcels!.map(({ x, y }) => ({ x, y, role: land.role })))
-    }
-  })
-  return result
+  try {
+    const result: ParcelsWithAccess = []
+    const lands = await fetchLand(_address)
+    lands.forEach((land) => {
+      if (land.type === LandType.PARCEL) {
+        result.push({ x: land.x!, y: land.y!, role: land.role })
+      } else {
+        result.push(...land.parcels!.map(({ x, y }) => ({ x, y, role: land.role })))
+      }
+    })
+    return result
+  } catch (e) {
+    defaultLogger.warn(
+      "Could not retrieve land that this user has access to! The user won't be able to edit any parcel",
+      e
+    )
+    return []
+  }
 }
