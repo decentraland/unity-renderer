@@ -58,10 +58,5 @@ public class UserProfileFetcher : IDisposable
         }
 
         pendingPromises.Remove(userId);
-        
-        if (pendingPromises.Count == 0)
-        {
-            UserProfileController.userProfilesCatalog.OnAdded -= OnProfileAddedToCatalog;
-        }
     }
 }
