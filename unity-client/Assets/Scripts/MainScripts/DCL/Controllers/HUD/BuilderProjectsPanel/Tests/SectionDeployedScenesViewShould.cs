@@ -1,18 +1,18 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
 namespace Tests
 {
-    public class SectionProjectScenesViewShould
+    public class SectionDeployedScenesViewShould
     {
-        private SectionProjectScenesView view;
+        private SectionDeployedScenesView view;
 
         [SetUp]
         public void SetUp()
         {
-            var prefab = Resources.Load<SectionProjectScenesView>(SectionProjectScenesController.VIEW_PREFAB_PATH);
+            var prefab = Resources.Load<SectionDeployedScenesView>(SectionDeployedScenesController.VIEW_PREFAB_PATH);
             view = Object.Instantiate(prefab);
         }
 
@@ -45,11 +45,11 @@ namespace Tests
             }
 
 
-            SectionProjectScenesController controller = new SectionProjectScenesController(view);
+            SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
             controller.searchHandler.SetSortType(SceneSearchHandler.SIZE_SORT_TYPE);
-            controller.searchHandler.SetSortOrder(true);
+            controller.searchHandler.SetSortOrder(false);
             
-            ((IProjectSceneListener)controller).OnSetScenes(cardViews);
+            ((IDeployedSceneListener)controller).OnSetScenes(cardViews);
             
             Assert.AreEqual(cardsCount, view.scenesCardContainer.childCount);
 
@@ -57,7 +57,7 @@ namespace Tests
             for (int i = 1; i < cardsCount; i++)
             {
                 var current = view.scenesCardContainer.GetChild(i).GetComponent<SceneCardView>();
-                Assert.LessOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
+                Assert.GreaterOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
                 prev = current;
             }
 

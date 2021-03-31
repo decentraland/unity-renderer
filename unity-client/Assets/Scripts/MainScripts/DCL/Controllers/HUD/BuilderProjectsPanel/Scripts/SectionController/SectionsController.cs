@@ -25,7 +25,7 @@ internal class SectionsController : IDisposable
         SCENES_DEPLOYED,
         SCENES_PROJECT,
         LAND,
-        SETTINGS_PROJECT_GENERAL,
+        SETTINGS_PROJECT_GENERAL
     }
 
     /// <summary>
