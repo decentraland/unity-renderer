@@ -241,6 +241,11 @@ export abstract class SceneRuntime extends Script {
         },
 
         openExternalUrl(url: string) {
+          if (JSON.stringify(url).length > 49000) {
+            that.onError(new Error("URL payload cannot exceed 49.000 bytes"))
+            return;
+          }
+
           if (that.allowOpenExternalUrl) {
             that.events.push({
               type: 'OpenExternalUrl',
@@ -254,14 +259,17 @@ export abstract class SceneRuntime extends Script {
 
         openNFTDialog(assetContractAddress: string, tokenId: string, comment: string | null) {
           if (that.allowOpenExternalUrl) {
+            let payload = { assetContractAddress, tokenId, comment}
+
+            if (JSON.stringify(payload).length > 49000) {
+              that.onError(new Error("OpenNFT payload cannot exceed 49.000 bytes"))
+              return;
+            }
+
             that.events.push({
               type: 'OpenNFTDialog',
               tag: '',
-              payload: {
-                assetContractAddress,
-                tokenId,
-                comment
-              } as OpenNFTDialogPayload
+              payload: payload as OpenNFTDialogPayload
             })
           } else {
             this.error('openNFTDialog can only be used inside a pointerEvent')
@@ -306,6 +314,11 @@ export abstract class SceneRuntime extends Script {
 
         /** called after adding a component to the entity or after updating a component */
         updateEntityComponent(entityId: string, componentName: string, classId: number, json: string): void {
+          if (json.length > 49000) {
+            that.onError(new Error("Component payload cannot exceed 49.000 bytes"))
+            return;
+          }
+
           if (componentNameRE.test(componentName)) {
             that.events.push({
               type: 'UpdateEntityComponent',
@@ -415,6 +428,11 @@ export abstract class SceneRuntime extends Script {
         },
 
         componentUpdated(id: string, json: string) {
+          if (json.length > 49000) {
+            that.onError(new Error("Component payload cannot exceed 49.000 bytes"))
+            return;
+          }
+
           that.events.push({
             type: 'ComponentUpdated',
             tag: id,

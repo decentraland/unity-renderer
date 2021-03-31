@@ -39,10 +39,7 @@ namespace DCL
             public int entities;
             public float sceneHeight;
 
-            public Model Clone()
-            {
-                return (Model) MemberwiseClone();
-            }
+            public Model Clone() { return (Model) MemberwiseClone(); }
 
             public WebInterface.MetricsModel ToMetricsModel()
             {
@@ -82,10 +79,7 @@ namespace DCL
 
         public bool isDirty { get; protected set; }
 
-        public Model GetModel()
-        {
-            return model.Clone();
-        }
+        public Model GetModel() { return model.Clone(); }
 
         public SceneMetricsController(ParcelScene sceneOwner)
         {
@@ -313,6 +307,8 @@ namespace DCL
         void CalculateMaterials(IDCLEntity entity, EntityMetrics entityMetrics)
         {
             var originalMaterials = Environment.i.world.sceneBoundsChecker.GetOriginalMaterials(entity.meshesInfo);
+            if (originalMaterials == null)
+                return;
 
             int originalMaterialsCount = originalMaterials.Count;
 
