@@ -10,6 +10,7 @@ namespace DCL.Huds.QuestsPanel
 {
     public class QuestsPanelEntry : MonoBehaviour
     {
+        private static readonly int LOADED_ANIM_TRIGGER = Animator.StringToHash("Loaded");
         public event Action<string> OnReadMoreClicked;
 
         [SerializeField] internal TextMeshProUGUI questName;
@@ -21,6 +22,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] internal RectTransform completedMarkInTitle;
         [SerializeField] internal RawImage thumbnailImage;
         [SerializeField] internal Button jumpInButton;
+        [SerializeField] internal Animator animator;
 
         private AssetPromise_Texture thumbnailPromise;
 
@@ -111,7 +113,10 @@ namespace DCL.Huds.QuestsPanel
             }
 
             if (string.IsNullOrEmpty(thumbnailURL))
+            {
+                animator.SetTrigger(LOADED_ANIM_TRIGGER);
                 return;
+            }
 
             thumbnailPromise = new AssetPromise_Texture(thumbnailURL);
             thumbnailPromise.OnSuccessEvent += OnThumbnailReady;
@@ -120,7 +125,11 @@ namespace DCL.Huds.QuestsPanel
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
 
-        private void OnThumbnailReady(Asset_Texture assetTexture) { thumbnailImage.texture = assetTexture.texture; }
+        private void OnThumbnailReady(Asset_Texture assetTexture)
+        {
+            thumbnailImage.texture = assetTexture.texture;
+            animator.SetTrigger(LOADED_ANIM_TRIGGER);
+        }
 
         private void OnDestroy()
         {

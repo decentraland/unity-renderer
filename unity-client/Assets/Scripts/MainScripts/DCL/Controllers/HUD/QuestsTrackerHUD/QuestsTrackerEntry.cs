@@ -1,5 +1,7 @@
 using DCL.Helpers;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -9,6 +11,8 @@ namespace DCL.Huds.QuestsTracker
 {
     public class QuestsTrackerEntry : MonoBehaviour
     {
+        private const float DELAY_TO_DESTROY = 0.5f;
+        private static readonly int OUT_ANIM_TRIGGER = Animator.StringToHash("Out");
         public event Action OnLayoutRebuildRequested;
 
         [SerializeField] internal TextMeshProUGUI questTitle;
@@ -22,8 +26,10 @@ namespace DCL.Huds.QuestsTracker
         [SerializeField] internal GameObject collapseIcon;
         [SerializeField] internal Toggle pinQuestToggle;
         [SerializeField] internal RawImage iconImage;
+        [SerializeField] internal Animator containerAnimator;
 
         private AssetPromise_Texture iconPromise;
+        private float progressTarget = 0;
 
         internal QuestModel quest;
         private bool isExpanded;
@@ -44,8 +50,9 @@ namespace DCL.Huds.QuestsTracker
             questTitle.text = quest.name;
             SetIcon(quest.icon);
             QuestSection currentSection = quest.sections.First(x => x.progress < 1f);
-            sectionTitle.text = $"{currentSection.name} - {(currentSection.progress * 100):0.0}%";
-            progress.fillAmount = currentSection.progress;
+            string separator = String.IsNullOrEmpty(currentSection.name) ? "" : " - ";
+            sectionTitle.text = $"{currentSection.name}{separator}{(currentSection.progress * 100):0.0}%";
+            progressTarget = currentSection.progress;
 
             CleanUpTasksList();
             foreach (QuestTask task in currentSection.tasks)
@@ -94,6 +101,12 @@ namespace DCL.Huds.QuestsTracker
             expandIcon.SetActive(!isExpanded);
             collapseIcon.SetActive(isExpanded);
             tasksContainer.gameObject.SetActive(isExpanded);
+
+            foreach (QuestsTrackerTask task in GetComponentsInChildren<QuestsTrackerTask>())
+            {
+                task.SetExpandedStatus(newIsExpanded);
+            }
+
             OnLayoutRebuildRequested?.Invoke();
         }
 
@@ -121,6 +134,19 @@ namespace DCL.Huds.QuestsTracker
         }
 
         public void SetPinStatus(bool isPinned) { pinQuestToggle.SetIsOnWithoutNotify(isPinned); }
+
+        public void StartDestroy() { StartCoroutine(DestroyRoutine()); }
+
+        private IEnumerator DestroyRoutine()
+        {
+            containerAnimator.SetTrigger(OUT_ANIM_TRIGGER);
+            yield return WaitForSecondsCache.Get(DELAY_TO_DESTROY);
+
+            OnLayoutRebuildRequested?.Invoke();
+            Destroy(gameObject);
+        }
+
+        private void Update() { progress.fillAmount = Mathf.MoveTowards(progress.fillAmount, progressTarget, 0.1f); }
 
         private void OnDestroy()
         {

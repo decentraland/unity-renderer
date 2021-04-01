@@ -76,7 +76,7 @@ namespace DCL.Huds.QuestsTracker
                 currentEntries.Add(quest.id, questEntry);
             }
 
-            RefreshLastUpdateTime(quest.id, isPinned);
+            RefreshLastUpdateTime(quest.id, isPinned ? DateTime.MaxValue : DateTime.Now);
             questEntry.transform.SetSiblingIndex(0);
 
             questEntry.Populate(quest);
@@ -92,7 +92,7 @@ namespace DCL.Huds.QuestsTracker
 
             currentEntries.Remove(questId);
             lastUpdateTimestamp.Remove(questId);
-            Destroy(entry.gameObject);
+            entry.StartDestroy();
         }
 
         public void PinQuest(string questId)
@@ -100,7 +100,7 @@ namespace DCL.Huds.QuestsTracker
             if (currentEntries.TryGetValue(questId, out QuestsTrackerEntry entry))
             {
                 entry.SetPinStatus(true);
-                RefreshLastUpdateTime(questId, true);
+                RefreshLastUpdateTime(questId, DateTime.MaxValue);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace DCL.Huds.QuestsTracker
                 return;
 
             entry.SetPinStatus(false);
-            RefreshLastUpdateTime(questId, false);
+            RefreshLastUpdateTime(questId, DateTime.MinValue);
         }
 
         private void Update()
@@ -125,14 +125,12 @@ namespace DCL.Huds.QuestsTracker
             if (layoutRebuildRequested)
             {
                 layoutRebuildRequested = false;
-                Utils.ForceRebuildLayoutImmediate(questsContainer);
+                questsContainer.ForceUpdateLayout( false);
             }
         }
 
-        internal void RefreshLastUpdateTime(string questId, bool isPinned)
+        internal void RefreshLastUpdateTime(string questId, DateTime dateToSet)
         {
-            DateTime dateToSet = isPinned ? DateTime.MaxValue : DateTime.Now;
-
             if (lastUpdateTimestamp.ContainsKey(questId))
                 lastUpdateTimestamp[questId] = dateToSet;
             else

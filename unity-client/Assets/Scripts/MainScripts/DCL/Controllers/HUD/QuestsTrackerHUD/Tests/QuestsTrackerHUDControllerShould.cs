@@ -230,7 +230,7 @@ namespace Tests.QuestsTrackerHUD
 
             hudView.UnpinQuest(MOCK_QUEST_ID);
 
-            Assert.Less((DateTime.Now - hudView.lastUpdateTimestamp[MOCK_QUEST_ID]), TimeSpan.FromSeconds(1)); //Approximately comparing timestamps
+            Assert.AreEqual(DateTime.MinValue, hudView.lastUpdateTimestamp[MOCK_QUEST_ID]); //Approximately comparing timestamps
         }
 
         [UnityTest]

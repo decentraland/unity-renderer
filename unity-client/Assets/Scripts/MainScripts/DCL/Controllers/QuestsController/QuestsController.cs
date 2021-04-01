@@ -67,7 +67,9 @@ namespace DCL.QuestsController
             {
                 pinnedQuests.Remove(questId);
             }
-            quests.Set(parsedQuests.Select(x => (x.id, x)));
+
+            //We ignore quests without sections/tasks
+            quests.Set(parsedQuests.Where(x => x.sections != null && x.sections.Length > 0).Select(x => (x.id, x)));
         }
 
         /// <summary>
@@ -78,6 +80,13 @@ namespace DCL.QuestsController
         {
             if (!progressedQuest.canBePinned)
                 pinnedQuests.Remove(progressedQuest.id);
+
+            //Alex: Edge case. Quests has no sections/tasks, we ignore the UpdateQuestProgress and remove the cached one.
+            if (progressedQuest.sections == null || progressedQuest.sections.Length == 0)
+            {
+                quests.Remove(progressedQuest.id);
+                return;
+            }
 
             //Alex: Edge case. Progressed quest was not included in the initialization.
             // We invoke quests events but no sections or QuestCompleted one.
