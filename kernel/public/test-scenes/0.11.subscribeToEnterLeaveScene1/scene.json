@@ -1,0 +1,30 @@
+{
+  "display": {
+    "title": "0.11.subscribeToEnterLeaveScene1",
+    "favicon": "favicon_asset"
+  },
+  "contact": {
+    "name": "author-name",
+    "email": ""
+  },
+  "owner": "",
+  "scene": {
+    "parcels": [
+      "0,11"
+    ],
+    "base": "0,11"
+  },
+  "communications": {
+    "type": "webrtc",
+    "signalling": "https://signalling-01.decentraland.org"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  },
+  "main": "game.js",
+  "tags": []
+}

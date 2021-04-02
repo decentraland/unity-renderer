@@ -9,6 +9,8 @@ import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/co
 import { renderStateObservable, isRendererEnabled } from './worldState'
 import { ParcelSceneAPI } from './ParcelSceneAPI'
 import { CustomWebWorkerTransport } from './CustomWebWorkerTransport'
+import { sceneObservable } from 'shared/world/sceneState'
+import { UserIdentity } from 'shared/apis/UserIdentity'
 
 const gamekitWorkerRaw = require('raw-loader!../../../static/systems/scene.system.js')
 const gamekitWorkerBLOB = new Blob([gamekitWorkerRaw])
@@ -27,6 +29,7 @@ export class SceneSystemWorker extends SceneWorker {
   private positionObserver: Observer<any> | null = null
   private sceneLifeCycleObserver: Observer<any> | null = null
   private renderStateObserver: Observer<any> | null = null
+  private sceneChangeObserver: Observer<any> | null = null
 
   private sceneReady: boolean = false
 
@@ -40,6 +43,7 @@ export class SceneSystemWorker extends SceneWorker {
     this.subscribeToSceneLifeCycleEvents()
     this.subscribeToWorldRunningEvents()
     this.subscribeToPositionEvents()
+    this.subscribeToSceneChangeEvents()
   }
 
   private static buildWebWorkerTransport(parcelScene: ParcelSceneAPI): ScriptingTransport {
@@ -78,6 +82,10 @@ export class SceneSystemWorker extends SceneWorker {
       renderStateObservable.remove(this.renderStateObserver)
       this.renderStateObserver = null
     }
+    if (this.sceneChangeObserver) {
+      sceneObservable.remove(this.sceneChangeObserver)
+      this.sceneChangeObserver = null
+    }
   }
 
   private sendUserViewMatrix(positionReport: Readonly<PositionReport>) {
@@ -111,6 +119,25 @@ export class SceneSystemWorker extends SceneWorker {
     this.positionObserver = positionObservable.add((obj) => {
       this.sendUserViewMatrix(obj)
     })
+  }
+
+  private subscribeToSceneChangeEvents() {
+    this.getAPIInstance(UserIdentity)
+      .then((userIdentity) => userIdentity.getUserData())
+      .then((userData) => userData!.userId)
+      .then((userId) => {
+        this.sceneChangeObserver = sceneObservable.add((report) => {
+          if (report.newScene.sceneId === this.getSceneId()) {
+            this.engineAPI!.sendSubscriptionEvent('onEnterScene', { userId })
+          } else if (report.previousScene?.sceneId === this.getSceneId()) {
+            this.engineAPI!.sendSubscriptionEvent('onLeftScene', { userId })
+          }
+        })
+      })
+      .catch(e => {
+        // @ts-ignore
+        console['error'](e)
+      })
   }
 
   private subscribeToWorldRunningEvents() {

@@ -12,6 +12,7 @@ export * from './ecs/UIValue'
 export * from './ecs/EventManager'
 export * from './ecs/UserActions'
 
+import { _initEventObservables } from './decentraland/Events'
 import { DecentralandSynchronizationSystem } from './decentraland/Implementation'
 
 // ECS INITIALIZATION
@@ -19,7 +20,7 @@ import { Engine } from './ecs/Engine'
 import { Entity } from './ecs/Entity'
 
 const entity = new Entity('scene')
-;(entity as any).uuid = '0'
+; (entity as any).uuid = '0'
 
 // Initialize engine
 /** @public */
@@ -36,6 +37,7 @@ import { DecentralandInterface } from './decentraland/Types'
 declare let dcl: DecentralandInterface | void
 if (typeof dcl !== 'undefined') {
   engine.addSystem(new DecentralandSynchronizationSystem(dcl), Infinity)
+  _initEventObservables(dcl)
 }
 
 import { uuidEventSystem, pointerEventSystem, raycastEventSystem } from './decentraland/Systems'
