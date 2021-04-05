@@ -1,6 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
-import { fetchInventoryItemsByAddress, handleWearablesFailure, handleWearablesRequest, handleWearablesSuccess, informRequestFailure, sendWearablesCatalog, WRONG_FILTERS_ERROR } from 'shared/catalogs/sagas'
+import { BASE_AVATARS_COLLECTION_ID, fetchInventoryItemsByAddress, handleWearablesFailure, handleWearablesRequest, handleWearablesSuccess, informRequestFailure, sendWearablesCatalog, WRONG_FILTERS_ERROR } from 'shared/catalogs/sagas'
 import { wearablesFailure, wearablesRequest, wearablesSuccess } from 'shared/catalogs/actions'
 import { baseCatalogsLoaded, getExclusiveCatalog, getPlatformCatalog } from 'shared/catalogs/selectors'
 import { ensureRenderer } from 'shared/renderer/sagas'
@@ -39,7 +39,7 @@ describe('Wearables Saga', () => {
 
   it('When base avatars are requested, then they are returned successfully', () => {
     const baseWearables = [wearable1]
-    return expectSaga(handleWearablesRequest, wearablesRequest({ collectionIds: ['base-avatars'] }, context))
+    return expectSaga(handleWearablesRequest, wearablesRequest({ collectionIds: [BASE_AVATARS_COLLECTION_ID] }, context))
       .put(wearablesSuccess(baseWearables, context))
       .provide([
         [select(baseCatalogsLoaded), true],

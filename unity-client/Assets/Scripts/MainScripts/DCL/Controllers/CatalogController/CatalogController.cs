@@ -27,7 +27,7 @@ public class CatalogController : MonoBehaviour
     private static List<string> pendingRequestsToSend = new List<string>();
     private float timeSinceLastUnusedWearablesCheck = 0f;
 
-    
+
 
     public void Awake()
     {
@@ -208,7 +208,7 @@ public class CatalogController : MonoBehaviour
             WebInterface.RequestWearables(
                 ownedByUser: null,
                 wearableIds: null,
-                collectionIds: new string[] { "base-avatars" },
+                collectionIds: new string[] { "urn:decentraland:off-chain:base-avatars" },
                 context: BASE_WEARABLES_CONTEXT
             );
         }

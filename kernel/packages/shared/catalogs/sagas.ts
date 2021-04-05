@@ -40,8 +40,8 @@ import { parseUrn } from '@dcl/urn-resolver'
 import { getCatalystServer, getFetchContentServer } from 'shared/dao/selectors'
 
 declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
-export const WRONG_FILTERS_ERROR =
-  'You must set one and only one filter for V1. Also, the only collection name allowed is base-avatars'
+export const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
+export const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
 
 /**
  * This saga handles wearable definition fetching.
@@ -258,7 +258,7 @@ async function mapLegacyIdToUrn(wearableId: WearableId): Promise<WearableId | un
   }
   try {
     const result = await parseUrn(wearableId)
-    if (result?.type === 'off-chain' || result?.type === 'blockchain-collection-v1') {
+    if (result?.type === 'off-chain' || result?.type === 'blockchain-collection-v1-asset') {
       return result.uri.toString()
     }
   } catch {
@@ -281,7 +281,7 @@ export async function mapUrnToLegacyId(wearableId: WearableId): Promise<Wearable
     const result = await parseUrn(wearableId)
     if (result?.type === 'off-chain') {
       return `dcl://${result.registry}/${result.id}`
-    } else if (result?.type === 'blockchain-collection-v1') {
+    } else if (result?.type === 'blockchain-collection-v1-asset') {
       return `dcl://${result.collectionName}/${result.id}`
     }
   } catch {
@@ -344,7 +344,7 @@ function areFiltersValid(filters: WearablesRequestFilters) {
   let ok = true
   if (filters.collectionIds) {
     filtersSet += 1
-    if (filters.collectionIds.some((name) => name !== 'base-avatars')) {
+    if (filters.collectionIds.some((id) => id !== BASE_AVATARS_COLLECTION_ID)) {
       ok = false
     }
   }
