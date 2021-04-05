@@ -70,8 +70,6 @@ const SEND_STATUS_INTERVAL_MILLIS = 5000
 type PresenceMemoization = { realm: SocialRealm | undefined; position: UserPosition | undefined }
 const presenceMap: Record<string, PresenceMemoization | undefined> = {}
 
-const CLOCK_SERVICE_URL = 'https://worldtimeapi.org/api/timezone/Etc/UTC'
-
 export function* friendsSaga() {
   if (WORLD_EXPLORER) {
     // We don't want to initialize the friends & chat feature if we are on preview or builder mode
@@ -119,9 +117,6 @@ function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdent
 
   // Try to fetch time from the catalyst server
   timestamp = yield fetchTimeFromCatalystServer()
-
-  // If that fails, use the global time API
-  timestamp = timestamp ?? (yield fetchTimeFromClockService())
 
   // If that fails, fall back to local time
   if (!timestamp) {
@@ -721,15 +716,5 @@ function* fetchTimeFromCatalystServer() {
     }
   } catch (e) {
     logger.warn(`Failed to fetch time from catalyst server`, e)
-  }
-}
-
-function* fetchTimeFromClockService() {
-  try {
-    const response = yield fetch(CLOCK_SERVICE_URL)
-    const { datetime } = yield response.json()
-    return new Date(datetime).getTime()
-  } catch (e) {
-    logger.warn(`Failed to fetch time from clock service`)
   }
 }
