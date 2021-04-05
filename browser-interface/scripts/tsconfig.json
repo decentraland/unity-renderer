@@ -18,7 +18,6 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "types": [],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true

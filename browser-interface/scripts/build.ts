@@ -110,7 +110,7 @@ async function createPackageJson() {
     path.resolve(DIST_PATH, "package.json"),
     JSON.stringify(
       {
-        name: "@dcl/renderer",
+        name: "@dcl/unity-renderer",
         main: "index.js",
         typings: "typings.d.ts",
         version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}`,
@@ -119,6 +119,9 @@ async function createPackageJson() {
         branch: process.env.CIRCLE_BRANCH,
         author: "Decentraland Contributors",
         license: "Apache-2.0",
+        publishConfig: {
+          access: "public",
+        },
         repository: {
           type: "git",
           url: "https://github.com/decentraland/unity-renderer.git",
