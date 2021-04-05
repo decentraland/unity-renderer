@@ -286,7 +286,7 @@ export interface IEvents {
   /**
    * This event gets triggered when the user leaves the scene
    */
-  onLeftScene: {
+  onLeaveScene: {
     userId: string
   }
 

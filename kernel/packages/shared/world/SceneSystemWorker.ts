@@ -130,7 +130,7 @@ export class SceneSystemWorker extends SceneWorker {
           if (report.newScene.sceneId === this.getSceneId()) {
             this.engineAPI!.sendSubscriptionEvent('onEnterScene', { userId })
           } else if (report.previousScene?.sceneId === this.getSceneId()) {
-            this.engineAPI!.sendSubscriptionEvent('onLeftScene', { userId })
+            this.engineAPI!.sendSubscriptionEvent('onLeaveScene', { userId })
           }
         })
       })

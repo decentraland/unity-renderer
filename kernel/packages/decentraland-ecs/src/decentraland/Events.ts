@@ -53,7 +53,7 @@ export const onEnterScene = new Observable<IEvents['onEnterScene']>(createSubscr
  * These events are triggered after your character leaves the scene.
  * @public
  */
-export const onLeftScene = new Observable<IEvents['onLeftScene']>(createSubscriber('onLeftScene'))
+export const onLeaveScene = new Observable<IEvents['onLeaveScene']>(createSubscriber('onLeaveScene'))
 
 /**
  * @internal
@@ -71,8 +71,8 @@ export function _initEventObservables(dcl: DecentralandInterface) {
           onEnterScene.notifyObservers(event.data as IEvents['onEnterScene'])
           return
         }
-        case 'onLeftScene': {
-          onLeftScene.notifyObservers(event.data as IEvents['onLeftScene'])
+        case 'onLeaveScene': {
+          onLeaveScene.notifyObservers(event.data as IEvents['onLeaveScene'])
           return
         }
       }
