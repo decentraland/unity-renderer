@@ -171,8 +171,10 @@ function* fetchWearablesV2(filters: WearablesRequestFilters) {
         client
       )
       for (const { amount, definition } of ownedWearables) {
-        for (let i = 0; i < amount; i++) {
-          result.push(definition)
+        if (definition) {
+          for (let i = 0; i < amount; i++) {
+            result.push(definition)
+          }
         }
       }
     }
