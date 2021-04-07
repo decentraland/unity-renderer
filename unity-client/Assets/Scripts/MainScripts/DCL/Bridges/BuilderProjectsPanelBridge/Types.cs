@@ -7,6 +7,11 @@ public class SceneDataUpdatePayload
     public bool allowVoiceChat;
 }
 
+public class SceneContributorsUpdatePayload
+{
+    public string[] contributors;
+}
+
 public class SceneAdminsUpdatePayload
 {
     public string[] admins;

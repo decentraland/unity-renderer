@@ -13,6 +13,7 @@ internal class SectionsController : IDisposable
     public event Action OnRequestContextMenuHide;
     public event Action<SectionId> OnOpenSectionId;
     public event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
+    public event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
     public event Action<string, SceneAdminsUpdatePayload> OnRequestUpdateSceneAdmins;
     public event Action<string, SceneBannedUsersUpdatePayload> OnRequestUpdateSceneBannedUsers;
 
@@ -28,6 +29,7 @@ internal class SectionsController : IDisposable
         SCENES_PROJECT,
         LAND,
         SETTINGS_PROJECT_GENERAL,
+        SETTINGS_PROJECT_CONTRIBUTORS,
         SETTINGS_PROJECT_ADMIN
     }
 
@@ -133,6 +135,11 @@ internal class SectionsController : IDisposable
     {
         OnRequestUpdateSceneData?.Invoke(id, payload);
     }
+    
+    private void OnUpdateSceneContributorsRequested(string id, SceneContributorsUpdatePayload payload)
+    {
+        OnRequestUpdateSceneContributors?.Invoke(id, payload);
+    }
 
     private void OnUpdateSceneAdminsRequested(string id, SceneAdminsUpdatePayload payload)
     {
@@ -157,6 +164,10 @@ internal class SectionsController : IDisposable
         if (sectionBase is ISectionUpdateSceneDataRequester updateSceneDataRequester)
         {
             updateSceneDataRequester.OnRequestUpdateSceneData += OnUpdateSceneDataRequested;
+        }       
+        if (sectionBase is ISectionUpdateSceneContributorsRequester updateSceneContributorsRequester)
+        {
+            updateSceneContributorsRequester.OnRequestUpdateSceneContributors += OnUpdateSceneContributorsRequested;
         }
         if (sectionBase is ISectionUpdateSceneAdminsRequester updateSceneAdminsRequester)
         {
