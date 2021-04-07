@@ -6,3 +6,13 @@ public class SceneDataUpdatePayload
     public bool isMatureContent;
     public bool allowVoiceChat;
 }
+
+public class SceneAdminsUpdatePayload
+{
+    public string[] admins;
+}
+
+public class SceneBannedUsersUpdatePayload
+{
+    public string[] bannedUsers;
+}

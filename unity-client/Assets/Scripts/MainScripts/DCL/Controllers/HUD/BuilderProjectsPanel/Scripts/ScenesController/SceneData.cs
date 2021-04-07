@@ -20,6 +20,8 @@ internal interface ISceneData
     bool allowVoiceChat { get; }
     string description { get; }
     string[] contributors { get; }
+    string[] admins { get;  }
+    string[] bannedUsers { get;  }
 }
 
 [Serializable]
@@ -42,6 +44,8 @@ internal class SceneData : ISceneData
     public bool allowVoiceChat;
     public string description;
     public string[] contributors;
+    public string[] admins;
+    public string[] bannedUsers;
 
     Vector2Int ISceneData.coords => coords;
     Vector2Int ISceneData.size => size;
@@ -60,4 +64,6 @@ internal class SceneData : ISceneData
     bool ISceneData.allowVoiceChat => allowVoiceChat;
     string ISceneData.description => description;
     string[] ISceneData.contributors => contributors;
+    string[] ISceneData.admins => admins;
+    string[] ISceneData.bannedUsers => bannedUsers;
 }
