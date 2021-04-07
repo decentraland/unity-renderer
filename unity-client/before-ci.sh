@@ -23,8 +23,8 @@ LICENSE="UNITY_LICENSE_CONTENT_"$UPPERCASE_BUILD_TARGET
 
 if [ -z "${!LICENSE}" ]
 then
-    echo "$LICENSE env var not found, trying UNITY_LICENSE_CONTENT_2019_4_19_BASE64 env var"
-    LICENSE=`echo $UNITY_LICENSE_CONTENT_2019_4_19_BASE64 | base64 -di`
+    echo "$LICENSE env var not found, trying UNITY_LICENSE_CONTENT_2020_3_0_BASE64 env var"
+    LICENSE=`echo $UNITY_LICENSE_CONTENT_2020_3_0_BASE64 | base64 -di`
 else
     echo "Using $LICENSE env var"
 fi

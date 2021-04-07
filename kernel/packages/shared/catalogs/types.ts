@@ -1,4 +1,3 @@
-import { EthAddress } from 'dcl-crypto'
 import { RarityEnum } from '../airdrops/interface'
 
 export type Catalog = Wearable[]
@@ -48,7 +47,7 @@ export type RootCatalogState = {
 }
 
 export type WearablesRequestFilters = {
-  ownedByUser?: EthAddress
+  ownedByUser?: string
   wearableIds?: WearableId[]
   collectionIds?: string[]
 }

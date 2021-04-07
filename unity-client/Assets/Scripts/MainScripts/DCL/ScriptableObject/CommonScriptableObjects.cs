@@ -147,6 +147,10 @@ public static class CommonScriptableObjects
     private static BooleanVariable isProfileHUDOpenValue;
     public static BooleanVariable isProfileHUDOpen => GetOrLoad(ref isProfileHUDOpenValue, "ScriptableObjects/IsProfileHUDOpen");
 
+    private static BooleanVariable isAvatarHUDOpenValue;
+    public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isProfileHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
+
+
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");
 

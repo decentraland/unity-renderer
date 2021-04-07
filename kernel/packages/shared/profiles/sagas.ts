@@ -43,7 +43,7 @@ import { WORLD_EXPLORER } from '../../config/index'
 import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
 import { getResourcesURL } from '../location'
 import { takeLatestById } from './utils/takeLatestById'
-import { UnityInterfaceContainer } from 'unity-interface/dcl'
+import { RendererInterfaces } from 'unity-interface/dcl'
 import { StoreContainer } from '../store/rootTypes'
 import { getCurrentUserId, getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
 import { USER_AUTHENTIFIED } from 'shared/session/actions'
@@ -72,7 +72,7 @@ import { FeatureFlags } from 'shared/meta/types'
 
 const toBuffer = require('blob-to-buffer')
 
-declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
+declare const globalThis: Window & RendererInterfaces & StoreContainer
 
 const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
   action.type + action.payload.userId

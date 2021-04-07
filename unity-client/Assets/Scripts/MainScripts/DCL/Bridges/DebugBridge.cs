@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Reflection;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
 namespace DCL
@@ -54,6 +58,18 @@ namespace DCL
         public void SetDisableAssetBundles()
         {
             RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
+        }
+
+        public void ToggleSSAO()
+        {
+            var urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+
+            ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0);
+            var featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            IList features = featuresField.GetValue(forwardRenderer) as IList;
+            var ssaoFeature = features[0] as ScriptableRendererFeature;
+            ssaoFeature.SetActive(!ssaoFeature.isActive);
         }
 
         public void DumpRendererLockersInfo()

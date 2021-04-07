@@ -35,7 +35,7 @@ namespace DCL.Helpers
         {
             if (mainShader == null)
             {
-                mainShader = Shader.Find("DCL/LWRP/Lit");
+                mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
             }
 
             return mainShader;
@@ -102,14 +102,6 @@ namespace DCL.Helpers
                             var materialCopy = new Material(mat);
 
 #if UNITY_EDITOR
-                            //NOTE(Brian): _Surface is only used by the material inspector. If we don't modify this
-                            //             the inspector overrides the _ALPHABLEND_ON and the material turns opaque.
-                            //             This is confusing when debugging.
-                            if (materialCopy.IsKeywordEnabled("_ALPHABLEND_ON"))
-                                materialCopy.SetFloat("_Surface", 1);
-                            else
-                                materialCopy.SetFloat("_Surface", 0);
-
                             materialCopy.name += $" (crc: {materialCopy.ComputeCRC()})";
 #endif
 
@@ -141,7 +133,7 @@ namespace DCL.Helpers
                     }
                 }
 
-                if(r != null)
+                if (r != null)
                     r.sharedMaterials = matList.ToArray();
             }
         }

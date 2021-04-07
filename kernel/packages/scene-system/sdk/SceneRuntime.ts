@@ -8,7 +8,7 @@ import future, { IFuture } from 'fp-future'
 import type { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-rpc/types'
 import type { QueryType } from 'decentraland-ecs'
 import type { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
-import type { IEngineAPI } from 'shared/apis/EngineAPI'
+import type { IEngineAPI } from 'shared/apis/IEngineAPI'
 import type { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
 import type {
   RPCSendableMessage,
@@ -170,7 +170,11 @@ export abstract class SceneRuntime extends Script {
       if (codeRequest.ok) {
         return [bootstrapData, await codeRequest.text()] as const
       } else {
-        throw new Error(`SDK: Error while loading ${url} (${mappingName} -> ${mapping})`)
+        // even though the loading failed, we send the message initMessagesFinished to not block loading
+        // in spawning points
+        this.events.push(this.initMessagesFinished())
+        this.sendBatch()
+        throw new Error(`SDK: Error while loading ${url} (${mappingName} -> ${mapping}) the mapping was not found`)
       }
     }
 
@@ -242,8 +246,8 @@ export abstract class SceneRuntime extends Script {
 
         openExternalUrl(url: string) {
           if (JSON.stringify(url).length > 49000) {
-            that.onError(new Error("URL payload cannot exceed 49.000 bytes"))
-            return;
+            that.onError(new Error('URL payload cannot exceed 49.000 bytes'))
+            return
           }
 
           if (that.allowOpenExternalUrl) {
@@ -259,11 +263,11 @@ export abstract class SceneRuntime extends Script {
 
         openNFTDialog(assetContractAddress: string, tokenId: string, comment: string | null) {
           if (that.allowOpenExternalUrl) {
-            let payload = { assetContractAddress, tokenId, comment}
+            let payload = { assetContractAddress, tokenId, comment }
 
             if (JSON.stringify(payload).length > 49000) {
-              that.onError(new Error("OpenNFT payload cannot exceed 49.000 bytes"))
-              return;
+              that.onError(new Error('OpenNFT payload cannot exceed 49.000 bytes'))
+              return
             }
 
             that.events.push({
@@ -315,8 +319,8 @@ export abstract class SceneRuntime extends Script {
         /** called after adding a component to the entity or after updating a component */
         updateEntityComponent(entityId: string, componentName: string, classId: number, json: string): void {
           if (json.length > 49000) {
-            that.onError(new Error("Component payload cannot exceed 49.000 bytes"))
-            return;
+            that.onError(new Error('Component payload cannot exceed 49.000 bytes'))
+            return
           }
 
           if (componentNameRE.test(componentName)) {
@@ -429,8 +433,8 @@ export abstract class SceneRuntime extends Script {
 
         componentUpdated(id: string, json: string) {
           if (json.length > 49000) {
-            that.onError(new Error("Component payload cannot exceed 49.000 bytes"))
-            return;
+            that.onError(new Error('Component payload cannot exceed 49.000 bytes'))
+            return
           }
 
           that.events.push({

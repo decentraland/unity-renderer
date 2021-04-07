@@ -7,7 +7,7 @@ global.enableWeb3 = true
 
 import { initShared } from 'shared'
 import { createLogger } from 'shared/logger'
-import { ReportFatalError, ReportSceneError } from 'shared/loading/ReportFatalError'
+import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import {
   AUTH_ERROR_LOGGED_OUT,
   experienceStarted,
@@ -22,7 +22,7 @@ import { signalParcelLoadingStarted, signalRendererInitialized } from 'shared/re
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { RootStore, StoreContainer } from 'shared/store/rootTypes'
 import { startUnitySceneWorkers } from '../unity-interface/dcl'
-import { initializeUnity, InitializeUnityResult } from '../unity-interface/initializer'
+import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID, RenderProfile } from 'shared/types'
 import {
   ensureRendererEnabled,
@@ -37,7 +37,7 @@ import { EnsureProfile } from 'shared/profiles/ProfileAsPromise'
 import { ensureMetaConfigurationInitialized, waitForMessageOfTheDay } from 'shared/meta'
 import { WorldConfig } from 'shared/meta/types'
 import { isVoiceChatEnabledFor } from 'shared/meta/selectors'
-import { UnityInterface } from 'unity-interface/UnityInterface'
+import { unityInterface, UnityInterface } from 'unity-interface/UnityInterface'
 import { kernelConfigForRenderer } from '../unity-interface/kernelConfigForRenderer'
 import Html from 'shared/Html'
 import { filterInvalidNameCharacters, isBadWord } from 'shared/profiles/utils/names'
@@ -89,8 +89,8 @@ namespace webApp {
     })
   }
 
-  export async function loadUnity({ instancedJS }: InitializeUnityResult) {
-    const i = (await instancedJS).unityInterface
+  export async function loadUnity() {
+    const i = unityInterface
     const worldConfig: WorldConfig | undefined = globalThis.globalStore.getState().meta.config.world
     const renderProfile = worldConfig ? worldConfig.renderProfile ?? RenderProfile.DEFAULT : RenderProfile.DEFAULT
 
@@ -116,9 +116,9 @@ namespace webApp {
     i.ConfigureHUDElement(HUDElementID.QUESTS_TRACKER, { active: QUESTS_ENABLED, visible: true })
     i.ConfigureHUDElement(HUDElementID.QUESTS_NOTIFICATIONS, { active: QUESTS_ENABLED, visible: true })
 
-    //NOTE(Brian): Scene download manager uses meta config to determine which empty parcels we want
-    //             so ensuring meta configuration is initialized in this stage is a must
-    //NOTE(Pablo): We also need meta configuration to know if we need to enable voice chat
+    // NOTE(Brian): Scene download manager uses meta config to determine which empty parcels we want
+    //              so ensuring meta configuration is initialized in this stage is a must
+    // NOTE(Pablo): We also need meta configuration to know if we need to enable voice chat
     await ensureMetaConfigurationInitialized()
 
     userAuthentified()
@@ -142,7 +142,7 @@ namespace webApp {
           globalThis.globalStore.dispatch(experienceStarted())
           globalThis.globalStore.dispatch(setLoadingScreen(false))
           Html.switchGameContainer(true)
-        })
+        }).catch(logger.error)
 
         EnsureProfile(identity.address)
           .then((profile) => {
@@ -191,29 +191,13 @@ namespace webApp {
           { active: !!messageOfTheDay, visible: false },
           messageOfTheDay
         )
-      })
+      }).catch(() => {/*noop*/})
     }
 
     teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))
 
     document.body.classList.remove('dcl-loading')
-    globalThis.UnityLoader.Error.handler = (error: any) => {
-      if (error.isSceneError) {
-        ReportSceneError((error.message || 'unknown') as string, error)
-        // @see packages/shared/world/SceneWorker.ts#loadSystem
-        debugger
-        return
-      }
 
-      console['error'](error)
-      if (error.message && error.message.includes('The error you provided does not contain a stack trace')) {
-        // This error is something that react causes only on development, with unhandled promises and strange errors with no stack trace (i.e, matrix errors).
-        // Some libraries (i.e, matrix client) don't handle promises well and we shouldn't crash the explorer because of that
-        return
-      }
-
-      ReportFatalError(error.message)
-    }
     return true
   }
 

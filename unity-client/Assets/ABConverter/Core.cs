@@ -691,19 +691,19 @@ namespace DCL.ABConverter
             }
         }
 
-        /// <summary>
-        /// This method tags the main shader, so all the asset bundles don't contain repeated shader assets.
-        /// This way we save the big Shader.Parse and gpu compiling performance overhead and make
-        /// the bundles a bit lighter.
-        /// </summary>
-        private void MarkShaderAssetBundle()
-        {
-            //NOTE(Brian): The shader asset bundle that's going to be generated doesn't need to be really used,
-            //             as we are going to use the embedded one, so we are going to just delete it after the
-            //             generation ended.
-            var mainShader = Shader.Find("DCL/LWRP/Lit");
-            ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
-        }
+            /// <summary>
+            /// This method tags the main shader, so all the asset bundles don't contain repeated shader assets.
+            /// This way we save the big Shader.Parse and gpu compiling performance overhead and make
+            /// the bundles a bit lighter.
+            /// </summary>
+            private void MarkShaderAssetBundle()
+            {
+                //NOTE(Brian): The shader asset bundle that's going to be generated doesn't need to be really used,
+                //             as we are going to use the embedded one, so we are going to just delete it after the
+                //             generation ended.
+                var mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
+                ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
+            }
 
         internal virtual void InitializeDirectoryPaths(bool deleteIfExists)
         {

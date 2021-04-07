@@ -12,14 +12,15 @@ namespace DCL.Helpers
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
             material.EnableKeyword("_EMISSION");
             material.EnableKeyword("_NORMALMAP");
+
             if (!material.IsKeywordEnabled("_ALPHATEST_ON"))
                 material.SetFloat(ShaderUtils.Cutoff, 0);
+
             material.EnableKeyword("_ALPHATEST_ON");
+            material.DisableKeyword("_ALPHABLEND_ON");
             material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
             material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
             material.DisableKeyword("VERTEX_COLOR_ON");
-            material.SetFloat(ShaderUtils.SpecularHighlights, 1);
-            material.SetFloat(ShaderUtils.EnvironmentReflections, 1);
 
             material.enableInstancing = false;
 
@@ -31,10 +32,15 @@ namespace DCL.Helpers
                 //             Transparency needs clip space z sorting to be displayed correctly.
                 if (zWrite == 0)
                 {
+                    material.SetInt("_Surface", 1);
+                    material.DisableKeyword("_SCREEN_SPACE_OCCLUSION");
+                    material.SetShaderPassEnabled("DepthNormals", false);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
                     return;
                 }
             }
+
+            material.SetInt("_Surface", 0);
 
             int cullMode = (int) UnityEngine.Rendering.CullMode.Off;
 

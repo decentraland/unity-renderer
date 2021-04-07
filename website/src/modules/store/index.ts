@@ -16,7 +16,8 @@ export const getKernelStore = () => {
           console.log("website-loadUnity completed at: ", Date.now() - start);
         });
       })
-      .then(() => console.log("website-initUnity completed"));
+      .then(() => console.log("website-initUnity completed"))
+      .catch(error => console.error("website-initUnity", error))
   }, 3000); // We delay Unity initialization to avoid hiccups in UI for the more anxious people. This has been shown to improve UX
 
   return store;

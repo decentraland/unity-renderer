@@ -1,9 +1,9 @@
 import { EventSubscriber, WebWorkerTransport } from 'decentraland-rpc'
 import { inject, Script } from 'decentraland-rpc/lib/client/Script'
-import { ILogOpts, ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
-import { IEngineAPI } from 'shared/apis/EngineAPI'
-import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
-import { SceneStateStorageController } from 'shared/apis/SceneStateStorageController/SceneStateStorageController'
+import type { ILogOpts, ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
+import type { IEngineAPI } from 'shared/apis/IEngineAPI'
+import type { ParcelIdentity } from 'shared/apis/ParcelIdentity'
+import type { ISceneStateStorageController } from 'shared/apis/SceneStateStorageController/ISceneStateStorageController'
 import { defaultLogger } from 'shared/logger'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { RendererStatefulActor } from './stateful-scene/RendererStatefulActor'
@@ -21,7 +21,7 @@ class StatefulWebWorkerScene extends Script {
   parcelIdentity!: ParcelIdentity
 
   @inject('SceneStateStorageController')
-  sceneStateStorage!: SceneStateStorageController
+  sceneStateStorage!: ISceneStateStorageController
 
   private devToolsAdapter!: DevToolsAdapter
   private renderer!: RendererStatefulActor

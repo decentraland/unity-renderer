@@ -488,6 +488,7 @@ namespace DCL
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "SetDisableAssetBundles":
+                            case "DumpRendererLockersInfo":
                                 //TODO(Brian): Move this to bridges
                                 Main.i.SendMessage(msg.type);
                                 break;

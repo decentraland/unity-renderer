@@ -1,5 +1,5 @@
 import { CLASS_ID } from 'decentraland-ecs/src'
-import { IEngineAPI } from 'shared/apis/EngineAPI'
+import type { IEngineAPI } from 'shared/apis/IEngineAPI'
 import {
   AttachEntityComponentPayload,
   ComponentCreatedPayload,
@@ -12,7 +12,7 @@ import {
 } from 'shared/types'
 import { Component, ComponentData, ComponentId, EntityId, StatefulActor } from './types'
 import { EventSubscriber } from 'decentraland-rpc'
-import { generatePBObjectJSON } from 'scene-system/sdk/Utils'
+import { generatePBObjectJSON } from '../sdk/Utils'
 
 export class RendererStatefulActor extends StatefulActor {
   private readonly eventSubscriber: EventSubscriber

@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 0
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: b9f7d97583ca83845a13fab265214464,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -1739,41 +1742,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Environment
-      objectReference: {fileID: 0}
-    - target: {fileID: 5619040623964129536, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.8446232
-      objectReference: {fileID: 0}
-    - target: {fileID: 5619040623964129536, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.4619398
-      objectReference: {fileID: 0}
-    - target: {fileID: 5619040623964129536, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.19134171
-      objectReference: {fileID: 0}
-    - target: {fileID: 5619040623964129536, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.1913417
-      objectReference: {fileID: 0}
-    - target: {fileID: 7045450462895841985, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_Color.b
-      value: 0.9137255
-      objectReference: {fileID: 0}
-    - target: {fileID: 7045450462895841985, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_Color.g
-      value: 0.90795577
-      objectReference: {fileID: 0}
-    - target: {fileID: 7045450462895841985, guid: fc76969801e8f44598a72147673a6c17,
-        type: 3}
-      propertyPath: m_Color.r
-      value: 0.85882354
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc76969801e8f44598a72147673a6c17, type: 3}

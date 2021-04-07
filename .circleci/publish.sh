@@ -10,7 +10,6 @@ export BUILD_VERSIONING=${MAJOR}${MINOR}'.'${CIRCLE_BUILD_NUM}`[ "$TAG" ] && ech
 
 echo "Building package.json for $BUILD_VERSIONING"
 
-
 function publish() {
     # Build package.json
     cd $BUILD_PATH
@@ -20,8 +19,8 @@ function publish() {
     # Export the name of the package as a file
     echo 'module.exports = "'${BUILD_VERSIONING}'";' > index.js
 
-    # Delete unnecessary files from the build
-    rm -f game.js index.html Build/UnityLoader.js Build/unity.json
+    # Delete unnecessary files from the build (and old files from Unity 2019)
+    rm -f game.js index.html Build/UnityLoader.js Build/unity.json Build/unity.wasm.framework.unityweb Build/unity.wasm.code.unityweb
     # Move all `.unityweb` files into the root build folder
     mv Build/* .
     # Publish on npm

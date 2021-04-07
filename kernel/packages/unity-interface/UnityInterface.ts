@@ -33,84 +33,44 @@ import { profileToRendererFormat } from 'shared/profiles/transformations/profile
 
 const MINIMAP_CHUNK_SIZE = 100
 
-let _gameInstance: any = null
-let originalFillMouseEventData: any
+export let originalPixelRatio: number = 1
 
-function fillMouseEventDataWrapper(eventStruct: any, e: any, target: any) {
-  let widthRatio = _gameInstance.Module.canvas.widthNative / (window.innerWidth * devicePixelRatio)
-  let heightRatio = _gameInstance.Module.canvas.heightNative / (window.innerHeight * devicePixelRatio)
-
-  let eWrapper: any = {
-    clientX: e.clientX * widthRatio,
-    clientY: e.clientY * heightRatio,
-    screenX: e.screenX,
-    screenY: e.screenY,
-    ctrlKey: e.ctrlKey,
-    shiftKey: e.shiftKey,
-    altKey: e.altKey,
-    metaKey: e.metaKey,
-    button: e.button,
-    buttons: e.buttons,
-    movementX: e['movementX'] || e['mozMovementX'] || e['webkitMovementX'],
-    movementY: e['movementY'] || e['mozMovementY'] || e['webkitMovementY'],
-    type: e.type
-  }
-
-  originalFillMouseEventData(eventStruct, eWrapper, target)
-}
-
-export let targetHeight: number = 1080
-
-function resizeCanvas(module: any) {
+function resizeCanvas(targetHeight: number) {
   // When renderer is configured with unlimited resolution,
   // the targetHeight is set to an arbitrary high value
   let assumeUnlimitedResolution: boolean = targetHeight > 2000
-  let finalHeight
-  let finalWidth
 
   if (assumeUnlimitedResolution) {
-    targetHeight = window.innerHeight * devicePixelRatio
-    finalHeight = targetHeight
-    finalWidth = window.innerWidth * devicePixelRatio
+    devicePixelRatio = originalPixelRatio
   } else {
     // We calculate width using height as reference
-    const screenWidth = screen.width * devicePixelRatio
-    const screenHeight = screen.height * devicePixelRatio
-    const targetWidth = targetHeight * (screenWidth / screenHeight)
+    const screenHeight = screen.height * originalPixelRatio
 
     const pixelRatioH = targetHeight / screenHeight
-    const pixelRatioW = targetWidth / screenWidth
 
-    finalHeight = window.innerHeight * devicePixelRatio * pixelRatioH
-    finalWidth = window.innerWidth * devicePixelRatio * pixelRatioW
+    // From 2020 version onwards, Unity hooks to devicePixelRatio to adjust
+    // the FBO size instead of the canvas resize.
+    devicePixelRatio = pixelRatioH * originalPixelRatio
   }
-
-  module.setCanvasSize(finalWidth, finalHeight)
 }
 
 export class UnityInterface {
   public debug: boolean = false
   public gameInstance: any
   public Module: any
+  public currentHeight: number = 1080
 
   public SetTargetHeight(height: number): void {
     if (EDITOR) {
       return
     }
 
-    if (targetHeight === height) {
+    if (this.currentHeight === height) {
       return
     }
 
-    if (!this.gameInstance.Module) {
-      defaultLogger.log(
-        `Can't change base resolution height to ${height}! Are you running explorer in unity editor or native?`
-      )
-      return
-    }
-
-    targetHeight = height
-    window.dispatchEvent(new Event('resize'))
+    this.currentHeight = height
+    resizeCanvas(height)
   }
 
   public Init(gameInstance: any): void {
@@ -120,7 +80,6 @@ export class UnityInterface {
 
     this.gameInstance = gameInstance
     this.Module = this.gameInstance.Module
-    _gameInstance = gameInstance
 
     if (this.Module) {
       if (EDITOR) {
@@ -128,26 +87,10 @@ export class UnityInterface {
         canvas.width = canvas.parentElement.clientWidth
         canvas.height = canvas.parentElement.clientHeight
       } else {
-        window.addEventListener('resize', this.resizeCanvasDelayed)
-
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') resizeCanvas(this.Module)
-        })
-
-        this.resizeCanvasDelayed(null)
-        this.waitForFillMouseEventData()
+        // TODO(Brian): Here we save the original pixel ratio, but we aren't listening to changes
+        //              We may have to listen them for some devices?
+        originalPixelRatio = devicePixelRatio
       }
-    }
-  }
-
-  public waitForFillMouseEventData() {
-    let DCL = (window as any)['DCL']
-
-    if (DCL.JSEvents !== undefined) {
-      originalFillMouseEventData = DCL.JSEvents.fillMouseEventData
-      DCL.JSEvents.fillMouseEventData = fillMouseEventDataWrapper
-    } else {
-      setTimeout(this.waitForFillMouseEventData, 100)
     }
   }
 
@@ -555,16 +498,10 @@ export class UnityInterface {
     this.SendBuilderMessage('SetBuilderConfiguration', JSON.stringify(config))
   }
 
-  private resizeCanvasDelayed(ev: UIEvent | null) {
-    window.setTimeout(() => {
-      resizeCanvas(_gameInstance.Module)
-    }, 100)
-  }
-
   // NOTE: we override wasm's setThrew function before sending message to unity and restore it to it's
   // original function after message is sent. If an exception is thrown during SendMessage we assume that it's related
   // to the code executed by the SendMessage on unity's side.
-  private SendMessageToUnity(object: string, method: string, payload: any = undefined) {
+  public SendMessageToUnity(object: string, method: string, payload: any = undefined) {
     // "this.Module" is not present when using remote websocket renderer, so we just send the message to unity without doing any override.
     if (!this.Module) {
       this.gameInstance.SendMessage(object, method, payload)

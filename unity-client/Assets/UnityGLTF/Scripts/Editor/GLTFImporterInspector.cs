@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 
 namespace UnityGLTF

@@ -28,7 +28,7 @@ import { baseCatalogsLoaded, getExclusiveCatalog, getPlatformCatalog } from './s
 import { Catalog, Wearable, Collection, WearableId, WearablesRequestFilters, BodyShapeRepresentation } from './types'
 import { WORLD_EXPLORER } from '../../config/index'
 import { getResourcesURL } from '../location'
-import { UnityInterfaceContainer } from 'unity-interface/dcl'
+import { RendererInterfaces } from 'unity-interface/dcl'
 import { StoreContainer } from '../store/rootTypes'
 import { retrieve, store } from 'shared/cache'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
@@ -39,7 +39,7 @@ import { CatalystClient, OwnedWearablesWithDefinition } from 'dcl-catalyst-clien
 import { parseUrn } from '@dcl/urn-resolver'
 import { getCatalystServer, getFetchContentServer } from 'shared/dao/selectors'
 
-declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
+declare const globalThis: Window & RendererInterfaces & StoreContainer
 export const BASE_AVATARS_COLLECTION_ID = 'urn:decentraland:off-chain:base-avatars'
 export const WRONG_FILTERS_ERROR = `You must set one and only one filter for V1. Also, the only collection id allowed is '${BASE_AVATARS_COLLECTION_ID}'`
 

@@ -56,9 +56,7 @@ import { fetchENSOwnerProfile } from './fetchENSOwnerProfile'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 
-declare const DCL: any
-
-declare const globalThis: StoreContainer
+declare const globalThis: StoreContainer & { gifProcessor?: GIFProcessor }
 export let futures: Record<string, IFuture<any>> = {}
 
 // ** TODO - move to friends related file - moliva - 15/07/2020
@@ -78,6 +76,23 @@ const positionEvent = {
 
 export class BrowserInterface {
   private lastBalanceOfMana: number = -1
+
+  // visitor pattern? anyone?
+  /**
+   * This is the only method that should be called publically in this class.
+   * It dispatches "renderer messages" to the correct handlers.
+   *
+   * It has a fallback that doesn't fail to support future versions of renderers
+   * and independant workflows for both teams.
+   */
+  public handleUnityMessage(type: string, message: any) {
+    if (type in this) {
+      // tslint:disable-next-line:semicolon
+      ;(this as any)[type](message)
+    } else {
+      defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
+    }
+  }
 
   /** Triggered when the camera moves */
   public ReportPosition(data: {
@@ -447,16 +462,16 @@ export class BrowserInterface {
   }
 
   async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
-    if (!DCL.gifProcessor) {
-      DCL.gifProcessor = new GIFProcessor(unityInterface.gameInstance, unityInterface, data.isWebGL1)
+    if (!globalThis.gifProcessor) {
+      globalThis.gifProcessor = new GIFProcessor(unityInterface.gameInstance, unityInterface, data.isWebGL1)
     }
 
-    DCL.gifProcessor.ProcessGIF(data)
+    globalThis.gifProcessor.ProcessGIF(data)
   }
 
   public DeleteGIF(data: { value: string }) {
-    if (DCL.gifProcessor) {
-      DCL.gifProcessor.DeleteGIF(data.value)
+    if (globalThis.gifProcessor) {
+      globalThis.gifProcessor.DeleteGIF(data.value)
     }
   }
 

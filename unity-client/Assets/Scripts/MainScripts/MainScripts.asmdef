@@ -1,5 +1,6 @@
 {
     "name": "MainScripts",
+    "rootNamespace": "",
     "references": [
         "GUID:54b09a4a10c111e46a817873fcea53fe",
         "GUID:c0f060bc5c9451f4483d26a0ed2d3f99",
@@ -53,7 +54,8 @@
         "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
         "GUID:81a6b1347b86bfe4aa02ed089ff533c1",
         "GUID:9b06d63e1a13bc34c995683595d8d849",
-        "GUID:28f74c468a54948bfa9f625c5d428f56"
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -20,11 +20,12 @@ import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { getUpdateProfileServer } from 'shared/dao/selectors'
 import { createGameFile } from './SceneStateDefinitionCodeGenerator'
+import { ISceneStateStorageController } from './ISceneStateStorageController'
 
-declare const window: any
+declare const globalThis: any
 
 @registerAPI('SceneStateStorageController')
-export class SceneStateStorageController extends ExposableAPI {
+export class SceneStateStorageController extends ExposableAPI implements ISceneStateStorageController {
   private parcelIdentity = this.options.getAPIInstance(ParcelIdentity)
 
   @exposeMethod
@@ -70,7 +71,7 @@ export class SceneStateStorageController extends ExposableAPI {
         )
 
         // Sign entity id
-        const store: Store<RootState> = window['globalStore']
+        const store: Store<RootState> = globalThis['globalStore']
         const identity = getCurrentIdentity(store.getState())
         if (!identity) {
           throw new Error('Identity not found when trying to deploy an entity')
@@ -88,7 +89,7 @@ export class SceneStateStorageController extends ExposableAPI {
       }
     }
 
-    window.unityInterface.SendPublishSceneResult(result)
+    globalThis.unityInterface.SendPublishSceneResult(result)
     return result
   }
 
@@ -100,7 +101,8 @@ export class SceneStateStorageController extends ExposableAPI {
         return fromStorableFormatToSerializedState(sceneState)
       }
       defaultLogger.warn(`Couldn't find a local scene state for scene ${sceneId}`)
-      return
+      // NOTE: RPC controllers should NEVER return undefined. Use null instead
+      return undefined
     }
 
     const contentClient = this.getContentClient()
@@ -131,7 +133,7 @@ export class SceneStateStorageController extends ExposableAPI {
   }
 
   private getContentClient(): ContentClient {
-    const store: Store<RootState> = window['globalStore']
+    const store: Store<RootState> = globalThis['globalStore']
     const contentUrl = getUpdateProfileServer(store.getState())
     return new ContentClient(contentUrl, 'builder in-world')
   }

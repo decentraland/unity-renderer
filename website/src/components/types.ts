@@ -2,7 +2,6 @@ import { Store } from "redux";
 
 export type InitializeUnityResult = {
   container: HTMLElement;
-  instancedJS: Promise<any>;
 };
 
 type KernelWebApp = {

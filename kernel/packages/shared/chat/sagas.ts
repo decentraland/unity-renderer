@@ -1,7 +1,7 @@
 import { takeEvery, put, select } from 'redux-saga/effects'
 import { PayloadAction } from 'typesafe-actions'
 import { Vector3Component } from 'atomicHelpers/landHelpers'
-import { UnityInterfaceContainer } from 'unity-interface/dcl'
+import { RendererInterfaces } from 'unity-interface/dcl'
 import {
   MESSAGE_RECEIVED,
   MessageReceived,
@@ -32,7 +32,7 @@ import { fetchHotScenes } from 'shared/social/hotScenes'
 import { getCurrentUserId } from 'shared/session/selectors'
 import { blockPlayers, mutePlayers, unblockPlayers, unmutePlayers } from 'shared/social/actions'
 
-declare const globalThis: UnityInterfaceContainer & StoreContainer
+declare const globalThis: RendererInterfaces & StoreContainer
 
 interface IChatCommand {
   name: string

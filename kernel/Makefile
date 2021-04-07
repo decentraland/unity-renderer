@@ -71,7 +71,7 @@ docs: $(DECENTRALAND_ECS_TYPEDEF_FILE) ## Generate `decentraland-ecs` documentat
 	@cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter markdown -i types/dcl -o docs
 	@echo "\nAPI Documentation was generated in the packages/decentraland-ecs/docs folder"
 
-RENDERER_BUILD := static/unity/Build/unity.data.unityweb static/unity/Build/unity.wasm.framework.unityweb static/unity/Build/unity.wasm.code.unityweb
+RENDERER_BUILD := static/unity/Build/unity.data.unityweb static/unity/Build/unity.framework.js.unityweb static/unity/Build/unity.wasm.unityweb
 
 static/unity/Build/%.unityweb: package.json package-lock.json
 	@npm install
@@ -134,7 +134,6 @@ DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNAL_SCENES) ## Build all the entrypoints needed for a deployment
-	@node ./scripts/replaceVersion.js
 
 build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) ## Build all the entrypoints and run the `scripts/prepareDist` script
 	@node ./scripts/prepareDist.js

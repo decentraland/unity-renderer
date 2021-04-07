@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "alwaysStrict": true,
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "newLine": "LF",

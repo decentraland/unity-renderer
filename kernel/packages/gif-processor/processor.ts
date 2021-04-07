@@ -2,7 +2,9 @@ import { GIF_WORKERS } from 'config'
 import { GifAsset, ProcessorMessageData, WorkerMessage, WorkerMessageData } from './types'
 
 declare const Worker: any
-declare const DCL: any
+
+// @see https://github.com/decentraland/unity-renderer/blob/bc2bf1ee0d685132c85606055e592bac038b3471/unity-renderer/Assets/Plugins/JSFunctions.jslib#L11
+declare const DCL: { GL: any }
 
 const gifProcessorWorkerRaw = require('raw-loader!../../static/gif-processor/worker.js')
 const gifProcessorWorkerUrl = URL.createObjectURL(new Blob([gifProcessorWorkerRaw]))

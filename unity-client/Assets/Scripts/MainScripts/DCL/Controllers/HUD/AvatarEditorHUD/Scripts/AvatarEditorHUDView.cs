@@ -34,30 +34,69 @@ public class AvatarEditorHUDView : MonoBehaviour
         public ItemSelector selector;
     }
 
-    [SerializeField] internal InputAction_Trigger toggleAction;
-    [SerializeField] internal InputAction_Trigger closeAction;
-    [SerializeField] internal Canvas avatarEditorCanvas;
-    [SerializeField] internal CanvasGroup avatarEditorCanvasGroup;
-    [SerializeField] internal AvatarEditorNavigationInfo[] navigationInfos;
-    [SerializeField] internal AvatarEditorWearableFilter[] wearableGridPairs;
-    [SerializeField] internal AvatarEditorNavigationInfo collectiblesNavigationInfo;
-    [SerializeField] internal ItemSelector collectiblesItemSelector;
-    [SerializeField] internal ColorSelector skinColorSelector;
-    [SerializeField] internal ColorSelector eyeColorSelector;
-    [SerializeField] internal ColorSelector hairColorSelector;
-    [SerializeField] internal GameObject characterPreviewPrefab;
-    [SerializeField] internal PreviewCameraRotation characterPreviewRotation;
-    [SerializeField] internal GameObject loadingPanel;
-    [SerializeField] internal Button randomizeButton;
-    [SerializeField] internal Button doneButton;
-    [SerializeField] internal Button exitButton;
+    [SerializeField]
+    internal InputAction_Trigger toggleAction;
 
-    [Header("Collectibles")] [SerializeField]
+    [SerializeField]
+    internal InputAction_Trigger closeAction;
+
+    [SerializeField]
+    internal Canvas avatarEditorCanvas;
+
+    [SerializeField]
+    internal CanvasGroup avatarEditorCanvasGroup;
+
+    [SerializeField]
+    internal AvatarEditorNavigationInfo[] navigationInfos;
+
+    [SerializeField]
+    internal AvatarEditorWearableFilter[] wearableGridPairs;
+
+    [SerializeField]
+    internal AvatarEditorNavigationInfo collectiblesNavigationInfo;
+
+    [SerializeField]
+    internal ItemSelector collectiblesItemSelector;
+
+    [SerializeField]
+    internal ColorSelector skinColorSelector;
+
+    [SerializeField]
+    internal ColorSelector eyeColorSelector;
+
+    [SerializeField]
+    internal ColorSelector hairColorSelector;
+
+    [SerializeField]
+    internal GameObject characterPreviewPrefab;
+
+    [SerializeField]
+    internal PreviewCameraRotation characterPreviewRotation;
+
+    [SerializeField]
+    internal GameObject loadingPanel;
+
+    [SerializeField]
+    internal Button randomizeButton;
+
+    [SerializeField]
+    internal Button doneButton;
+
+    [SerializeField]
+    internal Button exitButton;
+
+    [Header("Collectibles")]
+    [SerializeField]
     internal GameObject web3Container;
 
-    [SerializeField] internal Button web3GoToMarketplaceButton;
-    [SerializeField] internal GameObject noWeb3Container;
-    [SerializeField] internal Button noWeb3GoToMarketplaceButton;
+    [SerializeField]
+    internal Button web3GoToMarketplaceButton;
+
+    [SerializeField]
+    internal GameObject noWeb3Container;
+
+    [SerializeField]
+    internal Button noWeb3GoToMarketplaceButton;
 
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
@@ -243,7 +282,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
-        if (avatarModel?.wearables == null) return;
+        if (avatarModel?.wearables == null)
+            return;
 
         SetLoadingPanel(true);
         doneButton.interactable = false;
@@ -267,7 +307,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void AddWearable(WearableItem wearableItem, int amount)
     {
-        if (wearableItem == null) return;
+        if (wearableItem == null)
+            return;
 
         if (!selectorsByCategory.ContainsKey(wearableItem.category))
         {
@@ -284,7 +325,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void RemoveWearable(WearableItem wearableItem)
     {
-        if (wearableItem == null) return;
+        if (wearableItem == null)
+            return;
 
         if (!selectorsByCategory.ContainsKey(wearableItem.category))
         {
@@ -383,9 +425,12 @@ public class AvatarEditorHUDView : MonoBehaviour
             collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
         }
 
-        if (skinColorSelector != null) skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
-        if (eyeColorSelector != null) eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
-        if (hairColorSelector != null) hairColorSelector.OnColorChanged -= controller.HairColorClicked;
+        if (skinColorSelector != null)
+            skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
+        if (eyeColorSelector != null)
+            eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
+        if (hairColorSelector != null)
+            hairColorSelector.OnColorChanged -= controller.HairColorClicked;
 
         if (this != null)
             Destroy(gameObject);

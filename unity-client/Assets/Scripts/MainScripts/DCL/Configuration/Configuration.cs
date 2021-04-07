@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-
     public static class BuilderInWorldSettings
     {
         public static string BASE_URL_CATALOG = "https://builder-api.decentraland.org/v1/storage/contents/";
@@ -52,7 +51,7 @@ namespace DCL.Configuration
 
     public static class ApplicationSettings
     {
-        public static string version = "0.8";
+        public static string version = "1.0";
     }
 
     public static class EnvironmentSettings
