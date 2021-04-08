@@ -9,7 +9,8 @@
         "Clipboard",
         "DebugController",
         "RuntimeComponentFactory",
-        "MessagingContext"
+        "MessagingContext",
+        "WebRequest"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -73,7 +73,6 @@ namespace DCL.Helpers
             return uvsResult;
         }
 
-
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;
@@ -124,14 +123,14 @@ namespace DCL.Helpers
             }
         }
 
-
         /// <summary>
         /// Reimplementation of the LayoutRebuilder.ForceRebuildLayoutImmediate() function (Unity UI API) for make it more performant.
         /// </summary>
         /// <param name="rectTransformRoot">Root from which to rebuild.</param>
         public static void ForceRebuildLayoutImmediate(RectTransform rectTransformRoot)
         {
-            if (rectTransformRoot == null) return;
+            if (rectTransformRoot == null)
+                return;
 
             // NOTE(Santi): It seems to be very much cheaper to execute the next instructions manually than execute directly the function
             //              'LayoutRebuilder.ForceRebuildLayoutImmediate()', that theorically already contains these instructions.
@@ -161,11 +160,11 @@ namespace DCL.Helpers
                 rt);
         }
 
-
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
             where TComponent : Component
         {
-            if (startTransform == null) return;
+            if (startTransform == null)
+                return;
 
             foreach (Transform t in startTransform)
             {
@@ -199,7 +198,6 @@ namespace DCL.Helpers
             }
         }
 
-
         public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
@@ -214,7 +212,25 @@ namespace DCL.Helpers
 
         public static bool WebRequestSucceded(this UnityWebRequest request)
         {
-            return request != null && !request.isNetworkError && !request.isHttpError;
+            return request != null &&
+                   !request.isNetworkError &&
+                   !request.isHttpError;
+        }
+
+        public static bool WebRequestServerError(this UnityWebRequest request)
+        {
+            return request != null &&
+                   request.responseCode >= 500 &&
+                   request.responseCode < 600;
+        }
+
+        public static bool WebRequestAborted(this UnityWebRequest request)
+        {
+            return request != null &&
+                   request.isNetworkError &&
+                   request.isHttpError &&
+                   !string.IsNullOrEmpty(request.error) &&
+                   request.error.ToLower().Contains("aborted");
         }
 
         public static IEnumerator FetchAsset(string url, UnityWebRequest request,
@@ -338,10 +354,7 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T FromJsonWithNulls<T>(string json)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
-        }
+        public static T FromJsonWithNulls<T>(string json) { return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json); }
 
         public static T SafeFromJson<T>(string json)
         {
@@ -421,10 +434,7 @@ namespace DCL.Helpers
             );
         }
 
-        public static string GetTestAssetsPathRaw()
-        {
-            return Application.dataPath + "/../TestResources";
-        }
+        public static string GetTestAssetsPathRaw() { return Application.dataPath + "/../TestResources"; }
 
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
@@ -473,7 +483,8 @@ namespace DCL.Helpers
 
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] == null) continue;
+                if (renderers[i] == null)
+                    continue;
 
                 if (i == 0)
                     bounds = renderers[i].bounds;

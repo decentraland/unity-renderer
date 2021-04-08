@@ -1,4 +1,4 @@
-﻿using DCL.Rendering;
+using DCL.Rendering;
 
 namespace DCL
 {
@@ -12,7 +12,8 @@ namespace DCL
                 clipboard: Clipboard.Create(),
                 physicsSyncController: new PhysicsSyncController(),
                 parcelScenesCleaner: new ParcelScenesCleaner(),
-                debugController: new DebugController());
+                debugController: new DebugController(),
+                webRequest: WebRequestController.Create());
         }
     }
 }
