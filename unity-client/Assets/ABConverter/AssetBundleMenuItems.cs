@@ -8,6 +8,8 @@ using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.IO;
+using System.Linq;
 using UnityGLTF;
 using static DCL.ContentServerUtils;
 using Utils = DCL.Helpers.Utils;
@@ -84,20 +86,30 @@ namespace DCL
             var core = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             core.Convert(mappings.ToArray());
         }
-
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Wearables")]
-        public static void DumpBaseAvatars()
+        
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Body-Wearables")]
+        public static void DumpAllBodiesWearables()
         {
-            var avatarItemList = GetAvatarMappingList("https://dcl-wearables.now.sh/index.json");
-            var builder = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations());
-            builder.Convert(avatarItemList);
+            ABConverter.Client.DumpAllBodiesWearables();   
+        }
+ 
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Non-Body-Wearables (Optimized)")]
+        public static void DumpAllNonBodiesWearables()
+        {
+            ABConverter.Client.DumpAllNonBodiesWearables();
         }
 
         [MenuItem("Decentraland/Start Visual Tests")]
-        public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
+        public static void StartVisualTests()
+        {
+            EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets());
+        }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
-        public static void DumpZoneArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+        public static void DumpZoneArea()
+        {
+            ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
+        }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
         public static void DumpSingleAsset()
@@ -108,6 +120,12 @@ namespace DCL
                 "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
         }
 
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -6,30")]
+        public static void DumpOrg()
+        {
+            ABConverter.Client.DumpArea(new Vector2Int(-6, 30), new Vector2Int(15, 15));
+        }
+        
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]
         public static void DumpCenterPlaza()
         {
@@ -116,42 +134,9 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Only Build Bundles")]
-        public static void OnlyBuildBundles() { BuildPipeline.BuildAssetBundles(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL); }
-
-        public class WearableItemArray
+        public static void OnlyBuildBundles()
         {
-            public List<WearableItem> data;
-        }
-
-        public static MappingPair[] GetAvatarMappingList(string url)
-        {
-            List<MappingPair> mappingPairs = new List<MappingPair>();
-
-            UnityWebRequest w = UnityWebRequest.Get(url);
-            w.SendWebRequest();
-
-            while (!w.isDone) { }
-
-            if (!w.WebRequestSucceded())
-            {
-                Debug.LogWarning($"Request error! Parcels couldn't be fetched! -- {w.error}");
-                return null;
-            }
-
-            var avatarApiData = JsonUtility.FromJson<WearableItemArray>("{\"data\":" + w.downloadHandler.text + "}");
-
-            foreach (var avatar in avatarApiData.data)
-            {
-                foreach (var representation in avatar.representations)
-                {
-                    foreach (var datum in representation.contents)
-                    {
-                        mappingPairs.Add(datum);
-                    }
-                }
-            }
-
-            return mappingPairs.ToArray();
+            BuildPipeline.BuildAssetBundles(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
         }
     }
 }

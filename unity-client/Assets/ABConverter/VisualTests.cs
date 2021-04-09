@@ -16,7 +16,6 @@ namespace DCL.ABConverter
         static readonly string abPath = Application.dataPath + "/../AssetBundles/";
         static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
-        static readonly float snapshotCamOffset = 3;
         static int skippedAssets = 0;
 
         /// <summary>
@@ -38,7 +37,8 @@ namespace DCL.ABConverter
             if (gltfs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated GLTFs...");
-                OnFinish?.Invoke(1);
+                skippedAssets++;
+                OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
 
@@ -52,12 +52,9 @@ namespace DCL.ABConverter
             foreach (GameObject go in gltfs)
             {
                 go.SetActive(true);
-
-                // unify all child renderer bounds and use that to position the snapshot camera
-                var mergedBounds = Helpers.Utils.BuildMergedBounds(go.GetComponentsInChildren<Renderer>());
-                Vector3 cameraPosition = new Vector3(mergedBounds.min.x - snapshotCamOffset, mergedBounds.max.y + snapshotCamOffset, mergedBounds.min.z - snapshotCamOffset);
-
-                yield return VisualTestHelpers.TakeSnapshot($"ABConverter_{go.name}.png", Camera.main, cameraPosition, mergedBounds.center);
+                
+                yield return TakeObjectSnapshot(go, $"ABConverter_{go.name}.png");
+                
                 go.SetActive(false);
             }
 
@@ -68,7 +65,8 @@ namespace DCL.ABConverter
             if (abs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated ABs...");
-                OnFinish?.Invoke(0);
+                skippedAssets++;
+                OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
 
@@ -83,12 +81,8 @@ namespace DCL.ABConverter
 
                 go.SetActive(true);
 
-                // unify all child renderer bounds and use that to position the camera
-                var mergedBounds = Helpers.Utils.BuildMergedBounds(go.GetComponentsInChildren<Renderer>());
-                Vector3 cameraPosition = new Vector3(mergedBounds.min.x - snapshotCamOffset, mergedBounds.max.y + snapshotCamOffset, mergedBounds.min.z - snapshotCamOffset);
-
-                yield return VisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
-
+                yield return TakeObjectSnapshot(go, testName);
+                
                 bool result = VisualTestHelpers.TestSnapshot(
                     VisualTestHelpers.baselineImagesPath + testName,
                     VisualTestHelpers.testImagesPath + testName,
@@ -102,9 +96,7 @@ namespace DCL.ABConverter
                     if (env.file.Exists(filePath))
                     {
                         env.file.Delete(filePath);
-
-                        string depMapPath = filePath + ".depmap";
-                        env.file.Delete(depMapPath);
+                        env.file.Delete(filePath + ".depmap");
                     }
 
                     skippedAssets++;
@@ -119,7 +111,38 @@ namespace DCL.ABConverter
             VisualTestHelpers.baselineImagesPath = baselinePath;
             VisualTestHelpers.testImagesPath = testImagesPath;
 
+            Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);
+        }
+
+        /// <summary>
+        /// Position camera based on renderer bounds and take snapshot
+        /// </summary>
+        private static IEnumerator TakeObjectSnapshot(GameObject targetGO, string testName)
+        {
+            Vector3 originalScale = targetGO.transform.localScale;
+            var renderers = targetGO.GetComponentsInChildren<Renderer>();
+            
+            // unify all child renderer bounds and use that to position the snapshot camera
+            var mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+
+            // Some objects are imported super small (like 0.00x in scale) and we can barely see them in the snapshots
+            if (mergedBounds.size.magnitude < 1f)
+            {
+                targetGO.transform.localScale *= 100;
+                mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+            }
+            
+            Vector3 offset = mergedBounds.extents;
+            offset.x = Mathf.Max(1, offset.x);
+            offset.y = Mathf.Max(1, offset.y);
+            offset.z = Mathf.Max(1, offset.z);
+                
+            Vector3 cameraPosition = new Vector3(mergedBounds.min.x - offset.x, mergedBounds.max.y + offset.y, mergedBounds.min.z - offset.z);
+
+            yield return VisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
+            
+            targetGO.transform.localScale = originalScale;
         }
 
         /// <summary>
@@ -136,6 +159,9 @@ namespace DCL.ABConverter
                 GameObject gltf = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
                 var importedGLTF = Object.Instantiate(gltf);
                 importedGLTF.name = importedGLTF.name.Replace("(Clone)", "");
+                
+                PatchSkeletonlessSkinnedMeshRenderer(importedGLTF.gameObject.GetComponentInChildren<SkinnedMeshRenderer>());
+                
                 importedGLTFs.Add(importedGLTF);
             }
 
@@ -239,6 +265,9 @@ namespace DCL.ABConverter
                     if (asset is GameObject assetAsGameObject)
                     {
                         GameObject instance = Object.Instantiate(assetAsGameObject);
+                        
+                        PatchSkeletonlessSkinnedMeshRenderer(instance.GetComponentInChildren<SkinnedMeshRenderer>());
+                        
                         results.Add(instance);
                         instance.name = instance.name.Replace("(Clone)", "");
                     }
@@ -253,6 +282,23 @@ namespace DCL.ABConverter
             }
 
             return results.ToArray();
+        }
+        
+        /// <summary>
+        /// Wearables that are not body-shapes are optimized getting rid of the skeleton, so if this
+        /// SkinnedMeshRenderer is missing its root bone, we replace the renderer to make it rendereable
+        /// for the visual tests. In runtime, WearableController.SetAnimatorBones() takes care of the
+        /// root bone setup.
+        /// </summary>
+        private static void PatchSkeletonlessSkinnedMeshRenderer(SkinnedMeshRenderer skinnedMeshRenderer)
+        {
+            if (skinnedMeshRenderer == null || skinnedMeshRenderer.rootBone != null)
+                return;
+            
+            MeshRenderer meshRenderer = skinnedMeshRenderer.gameObject.AddComponent<MeshRenderer>();
+            meshRenderer.sharedMaterials = skinnedMeshRenderer.sharedMaterials;
+                
+            Object.DestroyImmediate(skinnedMeshRenderer);
         }
     }
 }

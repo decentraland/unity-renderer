@@ -105,6 +105,8 @@ public static class DependencyMapLoadHelper
         persistentCacheLoaded = true;
         CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
 
+        // Beware that if a wrongly-constructed depmap was created previously, this will always load that depmap
+        // when testing a new dump process locally it's safer to first run Edit->ClearAllPlayerPrefs from UnityEditor
         string depMapCache = PlayerPrefs.GetString(PERSISTENT_CACHE_KEY, String.Empty);
 
         if (!string.IsNullOrEmpty(depMapCache))

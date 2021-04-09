@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL.ABConverter
 {
@@ -25,6 +27,11 @@ namespace DCL.ABConverter
             /// the conversion process.
             /// </summary>
             public bool skipAlreadyBuiltBundles = false;
+            
+            /// <summary>
+            /// If set to true, the GLTF _Downloads folder and the Asset Bundles folder will be deleted at the beginning of the conversion
+            /// </summary>
+            public bool clearDirectoriesOnStart = true;
 
             /// <summary>
             /// Log verbosity.
@@ -53,6 +60,19 @@ namespace DCL.ABConverter
                 this.tld = tld;
                 this.baseUrl = ContentServerUtils.GetContentAPIUrlBase(tld);
             }
+        }
+        
+        [System.Serializable]
+        private class WearableItemArray
+        {
+            [System.Serializable]
+            public class Collection
+            {
+                public string id;
+                public List<WearableItem> wearables;
+            }
+
+            public List<Collection> data;
         }
 
         private static Logger log = new Logger("ABConverter.Client");
@@ -317,6 +337,153 @@ namespace DCL.ABConverter
                 settings = new Settings();
 
             return ConvertAssetToAssetBundle(assetHash, assetFilename, sceneCid, settings);
+        }
+        
+        /// <summary>
+        /// Dump all bodyshape wearables normally, including their imported skeleton 
+        /// </summary>
+        public static void DumpAllBodiesWearables()
+        {
+            EnsureEnvironment();
+            
+            List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
+                                                .Where(x => x.category == WearableLiterals.Categories.BODY_SHAPE)
+                                                .ToList();
+
+            Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
+            var settings = new Settings();
+            settings.skipAlreadyBuiltBundles = false;
+            settings.deleteDownloadPathAfterFinished = false;
+            settings.clearDirectoriesOnStart = false;
+            var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
+            
+            abConverterCoreController.InitializeDirectoryPaths(true);
+            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnBodyWearableLoad);
+        }
+
+        /// <summary>
+        /// Dump all non-bodyshape wearables, optimized to remove the skeleton for the wearables ABs since that is
+        /// only needed for the body shapes (and the WearablesController sets it up for non-bodyshapes in runtime) 
+        /// </summary>
+        public static void DumpAllNonBodiesWearables()
+        {
+            EnsureEnvironment();
+            
+            // For debugging purposes we can intercept this item list with LinQ for specific wearables
+            List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
+                                                .Where(x => x.category != WearableLiterals.Categories.BODY_SHAPE)
+                                                .ToList();
+            
+            Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
+            var settings = new Settings();
+            settings.skipAlreadyBuiltBundles = false;
+            settings.deleteDownloadPathAfterFinished = false;
+            settings.clearDirectoriesOnStart = false;
+            var abConverterCoreController = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
+            
+            abConverterCoreController.InitializeDirectoryPaths(true);
+            DumpWearableQueue(abConverterCoreController, itemQueue, GLTFImporter_OnNonBodyWearableLoad);
+        }
+        
+        /// <summary>
+        /// Given a list of WearableItems, each one is downloaded along with its dependencies and converted to ABs recursively
+        /// (to avoid mixing same-name dependencies between wearables)
+        /// </summary>
+        /// <param name="abConverterCoreController">an instance of the ABCore</param>
+        /// <param name="items">an already-populated list of WearableItems</param>
+        /// <param name="OnWearableLoad">an action to be bind to the OnWearableLoad event on each wearable</param>
+        private static void DumpWearableQueue(ABConverter.Core abConverterCoreController, Queue<WearableItem> items, System.Action<UnityGLTF.GLTFSceneImporter> OnWearableLoad)
+        {
+            // We toggle the core's ABs generation off so that we execute that conversion here when there is no more items left.
+            abConverterCoreController.generateAssetBundles = false;
+            
+            if (items.Count == 0)
+            {
+                abConverterCoreController.ConvertDumpedAssets();
+
+                return;
+            }
+
+            Debug.Log("Building wearables... items left... " + items.Count);
+
+            var pairs = ExtractMappingPairs(new List<WearableItem>() { items.Dequeue() });
+            
+            UnityGLTF.GLTFImporter.OnGLTFWillLoad += OnWearableLoad;
+
+            abConverterCoreController.Convert(pairs.ToArray(),
+                (err) =>
+                {
+                    UnityGLTF.GLTFImporter.OnGLTFWillLoad -= OnWearableLoad;
+                    abConverterCoreController.CleanupWorkingFolders();
+                    DumpWearableQueue(abConverterCoreController, items, OnWearableLoad);
+                });
+        }
+        
+        /// <summary>
+        /// Given a list of WearableItems, extracts and returns a list of MappingPairs
+        /// </summary>
+        /// <param name="wearableItems">A list of already-populated WearableItems</param>
+        /// <returns>A list of the extracted Wearables MappingPairs</returns>
+        private static List<ContentServerUtils.MappingPair> ExtractMappingPairs(List<WearableItem> wearableItems)
+        {
+            var result = new List<ContentServerUtils.MappingPair>();
+
+            foreach (var wearable in wearableItems)
+            {
+                foreach (var representation in wearable.representations)
+                {
+                    foreach (var datum in representation.contents)
+                    {
+                        result.Add(datum);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Given a base-url to fetch wearables collections, returns a list of all the WearableItems
+        /// </summary>
+        /// <param name="url">base-url to fetch the wearables collections</param>
+        /// <returns>A list of all the WearableItems found</returns>
+        private static List<WearableItem> GetAvatarMappingList(string url)
+        {
+            List<WearableItem> result = new List<WearableItem>();
+
+            UnityWebRequest w = UnityWebRequest.Get(url);
+            w.SendWebRequest();
+
+            while (!w.isDone) { }
+
+            if (!w.WebRequestSucceded())
+            {
+                Debug.LogWarning($"Request error! Parcels couldn't be fetched! -- {w.error}");
+                return null;
+            }
+
+            var avatarApiData = JsonUtility.FromJson<WearableItemArray>("{\"data\":" + w.downloadHandler.text + "}");
+            
+            foreach (var collection in avatarApiData.data)
+            {
+                foreach (var wearable in collection.wearables)
+                {
+                    result.Add(wearable);
+                }
+            }
+
+            return result;
+        }
+        
+        private static void GLTFImporter_OnNonBodyWearableLoad(UnityGLTF.GLTFSceneImporter obj)
+        {
+            obj.importSkeleton = false;
+            obj.maxTextureSize = 512;
+        }
+        private static void GLTFImporter_OnBodyWearableLoad(UnityGLTF.GLTFSceneImporter obj)
+        {
+            obj.importSkeleton = true;
+            obj.maxTextureSize = 512;
         }
     }
 }

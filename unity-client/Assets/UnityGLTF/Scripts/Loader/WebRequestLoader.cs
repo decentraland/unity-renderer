@@ -42,12 +42,15 @@ namespace UnityGLTF.Loader
                 Debug.Log($"CreateHTTPRequest rootUri: {_rootURI}, httpRequestPath: {filePath}");
             }
 
-            if (OnLoadStreamStart != null)
-            {
-                OnLoadStreamStart(ref filePath);
-            }
+            filePath = GetWrappedUri(filePath);
 
             yield return CreateHTTPRequest(_rootURI, filePath);
+        }
+
+        public string GetWrappedUri(string uri)
+        {
+            OnLoadStreamStart?.Invoke(ref uri);
+            return uri;
         }
 
         public void LoadStreamSync(string jsonFilePath)

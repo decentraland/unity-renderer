@@ -115,9 +115,14 @@ namespace UnityGLTF
 
         private bool useMaterialTransitionValue = true;
 
-        public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
+        public bool importSkeleton = false;
+        public bool useMaterialTransition
+        {
+            get => useMaterialTransitionValue && !renderingIsDisabled;
+            set => useMaterialTransitionValue = value;
+        }
 
-        public const int MAX_TEXTURE_SIZE = 1024;
+        public int maxTextureSize = 1024;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
 
         protected struct GLBStream
@@ -333,6 +338,18 @@ namespace UnityGLTF
                         }
                     );
                 }
+
+                if (!importSkeleton)
+                {
+                    foreach (var skeleton in skeletonGameObjects)
+                    {
+                        if (Application.isPlaying)
+                            Object.Destroy(skeleton);
+                        else
+                            Object.DestroyImmediate(skeleton);
+                    }
+                }
+
             }
             finally
             {
@@ -768,7 +785,7 @@ namespace UnityGLTF
         // Note that if the texture is reduced in size, the source one is destroyed
         protected Texture2D CheckAndReduceTextureSize(Texture2D source)
         {
-            if (source.width > MAX_TEXTURE_SIZE || source.height > MAX_TEXTURE_SIZE)
+            if (source.width > maxTextureSize || source.height > maxTextureSize)
             {
                 float factor = 1.0f;
                 int width = source.width;
@@ -776,11 +793,11 @@ namespace UnityGLTF
 
                 if (width >= height)
                 {
-                    factor = (float) MAX_TEXTURE_SIZE / width;
+                    factor = (float)maxTextureSize / width;
                 }
                 else
                 {
-                    factor = (float) MAX_TEXTURE_SIZE / height;
+                    factor = (float)maxTextureSize / height;
                 }
 
                 Texture2D dstTex = TextureHelpers.Resize(source, (int) (width * factor), (int) (height * factor));
@@ -2612,6 +2629,76 @@ namespace UnityGLTF
             return partialPath;
         }
 
-        public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale) { return new Vector2(offset.x, 1 - textureYScale - offset.y); }
+        public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale)
+        {
+            return new Vector2(offset.x, 1 - textureYScale - offset.y);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public bool ImageIsInGlobalCache(string uri)
+        {
+            uri = $"{uri}@{id}";
+            bool result = PersistentAssetCache.ImageCacheByUri.ContainsKey(uri);
+            return result;
+        }
+
+        public string GetCacheId(string uri)
+        {
+            return $"{uri}@{id}";
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public RefCountedTextureData GetGlobalCachedImage(string uri)
+        {
+            return PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="refCountedTexture"></param>
+        public void AddGlobalCachedImage(string uri, RefCountedTextureData refCountedTexture)
+        {
+            PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)] = refCountedTexture;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public bool BufferIsInGlobalCache(string uri)
+        {
+            return PersistentAssetCache.StreamCacheByUri.ContainsKey(GetCacheId(uri));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public RefCountedStreamData GetCachedBuffer(string uri)
+        {
+            return PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="refCountedStream"></param>
+        public void AddCachedBuffer(string uri, RefCountedStreamData refCountedStream)
+        {
+            PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)] = refCountedStream;
+        }
     }
 }

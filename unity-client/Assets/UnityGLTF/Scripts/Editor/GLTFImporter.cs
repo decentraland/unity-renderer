@@ -1,4 +1,4 @@
-﻿#if UNITY_2017_1_OR_NEWER
+#if UNITY_2017_1_OR_NEWER
 using GLTF;
 using GLTF.Schema;
 using System;
@@ -29,6 +29,7 @@ namespace UnityGLTF
         [SerializeField] private GLTFImporterNormals _importNormals = GLTFImporterNormals.Import;
         [SerializeField] private bool _importMaterials = true;
         [SerializeField] private bool _useJpgTextures = false;
+
         public bool _importTextures = true;
 
         static int delayCallsCount = 0;
@@ -488,7 +489,8 @@ namespace UnityGLTF
             ctx.SetMainObject(gltfScene);
         }
 
-        public static System.Action<GLTFRoot> OnGLTFRootIsConstructed;
+        public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
+        public static event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
 
         private GameObject CreateGLTFScene(string projectFilePath)
         {
@@ -508,6 +510,8 @@ namespace UnityGLTF
                 loader.useMaterialTransition = false;
                 loader.maximumLod = _maximumLod;
                 loader.isMultithreaded = true;
+
+                OnGLTFWillLoad?.Invoke(loader);
 
                 // HACK: Force the coroutine to run synchronously in the editor
                 var stack = new Stack<IEnumerator>();
