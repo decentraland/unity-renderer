@@ -161,9 +161,17 @@ function* fetchWearablesV2(filters: WearablesRequestFilters) {
   const result: any[] = []
   if (filters.ownedByUser) {
     if (WITH_FIXED_COLLECTIONS) {
+      // The WITH_FIXED_COLLECTIONS config can only be used in zone. However, we want to be able to use prod collections for testing.
+      // That's why we are also querying a prod catalyst for the given collections
       const collectionIds = WITH_FIXED_COLLECTIONS.split(',')
-      const wearables = yield call(fetchWearablesByFilters, { collectionIds }, client)
-      result.push(...wearables)
+      const orgClient: CatalystClient = yield CatalystClient.connectedToCatalystIn('mainnet', 'EXPLORER')
+      const zoneWearables = yield client.fetchWearables({ collectionIds })
+      const orgWearables = yield orgClient.fetchWearables({ collectionIds })
+      const orgWearablesWithBaseUrl = orgWearables.map((wearable: any) => ({
+        ...wearable,
+        baseUrl: `${orgClient.getContentUrl()}/contents/`
+      }))
+      result.push(...zoneWearables, ...orgWearablesWithBaseUrl)
     } else {
       const ownedWearables: OwnedWearablesWithDefinition[] = yield call(
         fetchOwnedWearables,
@@ -184,9 +192,10 @@ function* fetchWearablesV2(filters: WearablesRequestFilters) {
   }
 
   const v1Wearables = yield call(mapV2WearablesIntoV1, result)
-  return v1Wearables.map(overrideBaseUrl).map((wearable: Wearable) => ({
+  return v1Wearables.map((wearable: Wearable) => ({
     ...wearable,
-    baseUrl: downloadUrl + '/contents/'
+    baseUrl: wearable.baseUrl ?? downloadUrl + '/contents/',
+    baseUrlBundles: PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/'
   }))
 }
 
@@ -225,7 +234,7 @@ function mapV2WearablesIntoV1(v2Wearables: any[]): Promise<Wearable[]> {
 }
 
 async function mapV2WearableIntoV1(v2Wearable: any): Promise<Wearable> {
-  const { id, data, rarity, i18n, thumbnail } = v2Wearable
+  const { id, data, rarity, i18n, thumbnail, baseUrl, baseUrlBundles } = v2Wearable
   const { category, tags, hides, replaces, representations } = data
   const newId = await mapUrnToLegacyId(id)
   const newRepresentations: BodyShapeRepresentation[] = await Promise.all(
@@ -244,8 +253,8 @@ async function mapV2WearableIntoV1(v2Wearable: any): Promise<Wearable> {
     representations: newRepresentations,
     i18n,
     thumbnail: newThumbnail,
-    baseUrl: '',
-    baseUrlBundles: ''
+    baseUrl,
+    baseUrlBundles
   }
 }
 
