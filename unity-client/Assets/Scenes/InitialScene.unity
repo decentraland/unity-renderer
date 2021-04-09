@@ -1104,19 +1104,20 @@ MonoBehaviour:
   characterController: {fileID: 1989862556}
   cameraController: {fileID: 1608366483}
   bridgesGameObject: {fileID: 287244851}
-  openBrowserWhenStart: 1
+  wssServerUrl: ws://localhost:4999/
+  openBrowserWhenStart: 0
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
-  baseUrlCustom: https://play.decentraland.zone/?
+  baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 4
-  startInCoords: {x: 0, y: 0}
+  startInCoords: {x: 150, y: 150}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  soloScene: 0
+  soloScene: 1
   questsEnabled: 0
   debugPanelMode: 0
 --- !u!4 &1444882337

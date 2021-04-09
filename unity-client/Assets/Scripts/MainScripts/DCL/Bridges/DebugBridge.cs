@@ -40,6 +40,7 @@ namespace DCL
             Environment.i.platform.debugController.SetEngineDebugPanel();
         }
 
+        [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
         {
             bool prevLogValue = Debug.unityLogger.logEnabled;
@@ -60,18 +61,7 @@ namespace DCL
             RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
         }
 
-        public void ToggleSSAO()
-        {
-            var urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
-
-            ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0);
-            var featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            IList features = featuresField.GetValue(forwardRenderer) as IList;
-            var ssaoFeature = features[0] as ScriptableRendererFeature;
-            ssaoFeature.SetActive(!ssaoFeature.isActive);
-        }
-
+        [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()
         {
             bool prevLogValue = Debug.unityLogger.logEnabled;

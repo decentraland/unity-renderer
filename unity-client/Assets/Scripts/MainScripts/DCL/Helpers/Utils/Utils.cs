@@ -642,6 +642,12 @@ namespace DCL.Helpers
             return new Vector3(x, y, z);
         }
 
+        public static bool CompareFloats( float a, float b, float precision = 0.1f )
+        {
+            return Mathf.Abs(a - b) < precision;
+        }
+
+
         public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
         {
             key = tuple.Key;
