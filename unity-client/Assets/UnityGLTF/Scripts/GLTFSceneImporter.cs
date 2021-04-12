@@ -115,7 +115,8 @@ namespace UnityGLTF
 
         private bool useMaterialTransitionValue = true;
 
-        public bool importSkeleton = false;
+        public bool importSkeleton = true;
+
         public bool useMaterialTransition
         {
             get => useMaterialTransitionValue && !renderingIsDisabled;
