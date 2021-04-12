@@ -343,6 +343,7 @@ message PB_Billboard {
 message PB_BoxShape {
   bool withCollisions = 1;
   bool visible = 2;
+  repeated float uvs = 3;
 }
 
 message PB_CircleShape {

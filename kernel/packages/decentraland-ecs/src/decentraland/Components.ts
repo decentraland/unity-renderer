@@ -211,7 +211,14 @@ export class Shape extends ObservableComponent {
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.BOX_SHAPE)
-export class BoxShape extends Shape {}
+export class BoxShape extends Shape {
+  /**
+   * Sets the UV coordinates for the box.
+   * Used to map specific pieces of a Material's texture into the box's geometry.
+   */
+  @ObservableComponent.field
+  uvs?: number[]
+}
 
 /**
  * @public

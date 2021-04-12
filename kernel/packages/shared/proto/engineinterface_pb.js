@@ -914,7 +914,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.engineinterface.PB_BoxShape = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.engineinterface.PB_BoxShape.repeatedFields_, null);
 };
 goog.inherits(proto.engineinterface.PB_BoxShape, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -12267,6 +12267,13 @@ proto.engineinterface.PB_Billboard.prototype.setZ = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.engineinterface.PB_BoxShape.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -12299,7 +12306,8 @@ proto.engineinterface.PB_BoxShape.prototype.toObject = function(opt_includeInsta
 proto.engineinterface.PB_BoxShape.toObject = function(includeInstance, msg) {
   var f, obj = {
     withcollisions: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
-    visible: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
+    visible: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    uvsList: (f = jspb.Message.getRepeatedFloatingPointField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -12344,6 +12352,10 @@ proto.engineinterface.PB_BoxShape.deserializeBinaryFromReader = function(msg, re
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setVisible(value);
       break;
+    case 3:
+      var value = /** @type {!Array<number>} */ (reader.readPackedFloat());
+      msg.setUvsList(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -12387,6 +12399,13 @@ proto.engineinterface.PB_BoxShape.serializeBinaryToWriter = function(message, wr
       f
     );
   }
+  f = message.getUvsList();
+  if (f.length > 0) {
+    writer.writePackedFloat(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -12423,6 +12442,43 @@ proto.engineinterface.PB_BoxShape.prototype.getVisible = function() {
  */
 proto.engineinterface.PB_BoxShape.prototype.setVisible = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * repeated float uvs = 3;
+ * @return {!Array<number>}
+ */
+proto.engineinterface.PB_BoxShape.prototype.getUvsList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedFloatingPointField(this, 3));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.engineinterface.PB_BoxShape} returns this
+ */
+proto.engineinterface.PB_BoxShape.prototype.setUvsList = function(value) {
+  return jspb.Message.setField(this, 3, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.engineinterface.PB_BoxShape} returns this
+ */
+proto.engineinterface.PB_BoxShape.prototype.addUvs = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.engineinterface.PB_BoxShape} returns this
+ */
+proto.engineinterface.PB_BoxShape.prototype.clearUvsList = function() {
+  return this.setUvsList([]);
 };
 
 

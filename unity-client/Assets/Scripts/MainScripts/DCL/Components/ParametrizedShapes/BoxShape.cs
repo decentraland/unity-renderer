@@ -10,6 +10,8 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : BaseShape.Model
         {
+            public float[] uvs;
+
             public override BaseModel GetDataFromJSON(string json)
             {
                 return Utils.SafeFromJson<Model>(json);
@@ -31,8 +33,15 @@ namespace DCL.Components
 
         public override Mesh GenerateGeometry()
         {
+            var model = (Model) this.model;
+
             if (cubeMesh == null)
                 cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
+
+            if (model.uvs != null && model.uvs.Length > 0)
+            {
+                cubeMesh.uv = Utils.FloatArrayToV2List(model.uvs);
+            }
 
             cubeMeshRefCount++;
             return cubeMesh;
@@ -49,9 +58,32 @@ namespace DCL.Components
             }
         }
 
-        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model previousModel)
         {
-            return currentMesh == null;
+            if (currentMesh == null)
+                return true;
+
+            BoxShape.Model newBoxModel = (BoxShape.Model) this.model;
+            BoxShape.Model oldBoxModel = (BoxShape.Model) previousModel;
+
+            if (newBoxModel.uvs != null && oldBoxModel.uvs != null)
+            {
+                if (newBoxModel.uvs.Length != oldBoxModel.uvs.Length)
+                    return true;
+
+                for (int i = 0; i < newBoxModel.uvs.Length; i++)
+                {
+                    if (newBoxModel.uvs[i] != oldBoxModel.uvs[i])
+                        return true;
+                }
+            }
+            else
+            {
+                if (newBoxModel.uvs != oldBoxModel.uvs)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1539,6 +1539,11 @@ export class PB_BoxShape extends jspb.Message {
   getVisible(): boolean;
   setVisible(value: boolean): void;
 
+  clearUvsList(): void;
+  getUvsList(): Array<number>;
+  setUvsList(value: Array<number>): void;
+  addUvs(value: number, index?: number): number;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PB_BoxShape.AsObject;
   static toObject(includeInstance: boolean, msg: PB_BoxShape): PB_BoxShape.AsObject;
@@ -1553,6 +1558,7 @@ export namespace PB_BoxShape {
   export type AsObject = {
     withcollisions: boolean,
     visible: boolean,
+    uvsList: Array<number>,
   }
 }
 
