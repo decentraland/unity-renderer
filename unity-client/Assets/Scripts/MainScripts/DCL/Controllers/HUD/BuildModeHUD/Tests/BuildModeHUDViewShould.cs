@@ -26,6 +26,7 @@ namespace Tests.BuildModeHUDViews
                 inspectorBtnController = Substitute.For<IInspectorBtnController>(),
                 catalogBtnController = Substitute.For<ICatalogBtnController>(),
                 inspectorController = Substitute.For<IInspectorController>(),
+                buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>()
             };
 
@@ -34,10 +35,7 @@ namespace Tests.BuildModeHUDViews
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(buildModeHUDView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(buildModeHUDView.gameObject); }
 
         [Test]
         public void InitializeCorrectly()
@@ -68,7 +66,9 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.inspectorController, buildModeHUDView.controllers.inspectorController, "The inspectorController does not match!");
             testControllers.inspectorController.Received(1).Initialize(buildModeHUDView.inspectorView);
             Assert.AreEqual(testControllers.topActionsButtonsController, buildModeHUDView.controllers.topActionsButtonsController, "The topActionsButtonsController does not match!");
-            testControllers.topActionsButtonsController.Received(1).Initialize(buildModeHUDView.topActionsButtonsView, testControllers.tooltipController);
+            testControllers.topActionsButtonsController.Received(1).Initialize(buildModeHUDView.topActionsButtonsView, testControllers.tooltipController, testControllers.buildModeConfirmationModalController);
+            Assert.AreEqual(testControllers.buildModeConfirmationModalController, buildModeHUDView.controllers.buildModeConfirmationModalController, "The buildModeConfirmationModalController does not match!");
+            testControllers.buildModeConfirmationModalController.Received(1).Initialize(buildModeHUDView.buildModeConfirmationModalView);
         }
 
         [Test]
