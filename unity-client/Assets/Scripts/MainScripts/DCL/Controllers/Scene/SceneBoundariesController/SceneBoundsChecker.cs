@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using DCL.Helpers;
 
 namespace DCL.Controllers
 {
@@ -268,7 +269,7 @@ namespace DCL.Controllers
                 if (entity.meshesInfo.renderers[i] == null)
                     continue;
 
-                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].bounds))
+                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
                 {
                     feedbackStyle.OnRendererExitBounds(entity.meshesInfo.renderers[i]);
                     return false;
