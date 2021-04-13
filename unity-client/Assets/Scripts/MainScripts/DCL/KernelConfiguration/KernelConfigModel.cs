@@ -8,6 +8,7 @@ public class KernelConfigModel
     public Comms comms = new Comms();
     public Profiles profiles = new Profiles();
     public bool gifSupported = false;
+    public string tld = "org";
 
     public bool Equals(KernelConfigModel other)
     {
@@ -16,7 +17,8 @@ public class KernelConfigModel
         return this.comms.Equals(other.comms) &&
                this.profiles.Equals(other.profiles) &&
                this.features.Equals(other.features) &&
-               this.gifSupported == other.gifSupported;
+               this.gifSupported == other.gifSupported &&
+               this.tld == other.tld;
     }
 
     public KernelConfigModel Clone()
