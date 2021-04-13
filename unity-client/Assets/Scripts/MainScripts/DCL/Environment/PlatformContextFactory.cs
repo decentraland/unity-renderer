@@ -13,7 +13,8 @@ namespace DCL
                 physicsSyncController: new PhysicsSyncController(),
                 parcelScenesCleaner: new ParcelScenesCleaner(),
                 debugController: new DebugController(),
-                webRequest: WebRequestController.Create());
+                webRequest: WebRequestController.Create(),
+                serviceProviders: new ServiceProviders());
         }
     }
 }

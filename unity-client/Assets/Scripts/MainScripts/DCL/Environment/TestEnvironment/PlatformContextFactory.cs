@@ -14,7 +14,8 @@ namespace DCL.Tests
             IPhysicsSyncController physicsSyncController = null,
             IParcelScenesCleaner parcelScenesCleaner = null,
             IDebugController debugController = null,
-            IWebRequestController webRequestController = null)
+            IWebRequestController webRequestController = null,
+            IServiceProviders serviceProviders = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
@@ -23,7 +24,8 @@ namespace DCL.Tests
                 physicsSyncController: physicsSyncController ?? Substitute.For<IPhysicsSyncController>(),
                 parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<ParcelScenesCleaner>(),
                 debugController: debugController ?? Substitute.For<IDebugController>(),
-                webRequest: webRequestController ?? GetWebRequestControllerMock());
+                webRequest: webRequestController ?? GetWebRequestControllerMock(),
+                serviceProviders: serviceProviders ?? GetServiceProvidersMock());
         }
 
         private static IWebRequestController GetWebRequestControllerMock()
@@ -36,6 +38,16 @@ namespace DCL.Tests
                 audioWebRequest: Substitute.For<IWebRequestAudio>());
 
             return webRequestControllerMock;
+        }
+        
+        private static IServiceProviders GetServiceProvidersMock()
+        {
+            IServiceProviders serviceProviders = Substitute.For<IServiceProviders>();
+            
+            ITheGraph theGraph = Substitute.For<ITheGraph>();
+            serviceProviders.theGraph.Returns(theGraph);
+            
+            return serviceProviders;
         }
     }
 }

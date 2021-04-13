@@ -15,6 +15,7 @@ namespace DCL
         public readonly IPhysicsSyncController physicsSyncController;
         public readonly IDebugController debugController;
         public readonly IWebRequestController webRequest;
+        public readonly IServiceProviders serviceProviders; 
 
         public PlatformContext(IMemoryManager memoryManager,
             ICullingController cullingController,
@@ -22,7 +23,8 @@ namespace DCL
             IPhysicsSyncController physicsSyncController,
             IParcelScenesCleaner parcelScenesCleaner,
             IDebugController debugController,
-            IWebRequestController webRequest)
+            IWebRequestController webRequest,
+            IServiceProviders serviceProviders)
         {
             this.memoryManager = memoryManager;
             this.cullingController = cullingController;
@@ -31,6 +33,7 @@ namespace DCL
             this.parcelScenesCleaner = parcelScenesCleaner;
             this.debugController = debugController;
             this.webRequest = webRequest;
+            this.serviceProviders = serviceProviders;
         }
 
         public void Dispose()

@@ -1,5 +1,6 @@
 {
     "name": "TestEnvironment",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -10,7 +11,9 @@
         "DebugController",
         "RuntimeComponentFactory",
         "MessagingContext",
-        "WebRequest"
+        "WebRequest",
+        "ServiceProviders",
+        "TheGraph"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
