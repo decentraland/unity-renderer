@@ -65,6 +65,12 @@ export class AudioSource extends ObservableComponent {
   @ObservableComponent.field
   pitch: number = 1.0
 
+  /**
+   * Timestamp of when the playOnce was executed to see if we need to start over the audio
+   */
+  @ObservableComponent.field
+  playedAtTimestamp: number = Date.now()
+
   constructor(public readonly audioClip: AudioClip) {
     super()
     if (!(audioClip instanceof AudioClip)) {
@@ -80,6 +86,7 @@ export class AudioSource extends ObservableComponent {
   playOnce() {
     this.playing = true
     this.dirty = true
+    this.playedAtTimestamp = Date.now()
     this.data.nonce = Math.random()
     return this
   }

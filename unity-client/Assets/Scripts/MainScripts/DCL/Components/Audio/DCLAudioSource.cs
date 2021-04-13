@@ -17,6 +17,7 @@ namespace DCL.Components
             public float volume = 1f;
             public bool loop = false;
             public float pitch = 1f;
+            public long playedAtTimestamp = 0;
 
             public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
@@ -26,6 +27,7 @@ namespace DCL.Components
         DCLAudioClip lastDCLAudioClip;
 
         private bool isDestroyed = false;
+        public long playedAtTimestamp = 0;
 
         private void Awake()
         {
@@ -72,7 +74,6 @@ namespace DCL.Components
 
             Model model = (Model) this.model;
             audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? model.volume : 0f;
-            audioSource.volume = (scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) ? model.volume : 0f;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
             audioSource.spatialBlend = 1;
@@ -162,11 +163,15 @@ namespace DCL.Components
             }
 
             Model model = (Model) this.model;
-            if (audioSource.enabled && model.playing && !audioSource.isPlaying)
+            bool shouldPlay = playedAtTimestamp != model.playedAtTimestamp ||
+                              (model.playing && !audioSource.isPlaying);
+
+            if (audioSource.enabled && model.playing && shouldPlay)
             {
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
             }
+            playedAtTimestamp = model.playedAtTimestamp;
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AUDIO_SOURCE; }
