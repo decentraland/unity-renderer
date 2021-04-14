@@ -432,11 +432,6 @@ export abstract class SceneRuntime extends Script {
         },
 
         componentUpdated(id: string, json: string) {
-          if (json.length > 49000) {
-            that.onError(new Error('Component payload cannot exceed 49.000 bytes'))
-            return
-          }
-
           that.events.push({
             type: 'ComponentUpdated',
             tag: id,

@@ -59,6 +59,15 @@ export class UnityScene<T> implements ParcelSceneAPI {
     let messages = ''
     for (let i = 0; i < actions.length; i++) {
       const action = actions[i]
+
+      // Check moved from SceneRuntime.ts->DecentralandInterface.componentUpdate() here until we remove base64 support.
+      // This way we can still initialize problematic scenes in the Editor, otherwise the protobuf encoding explodes with such messages.
+      if (action.payload.json?.length > 49000) {
+        this.logger.error('Component payload cannot exceed 49.000 bytes. Skipping message.')
+
+        continue
+      }
+
       messages += protobufMsgBridge.encodeSceneMessage(sceneId, action.type, action.payload, action.tag)
       messages += '\n'
     }
