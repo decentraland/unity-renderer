@@ -50,6 +50,6 @@ function reportToRenderer(info: Partial<RealmsInfoForRenderer>) {
   unityInterface.UpdateRealmsInfo(info)
 }
 
-function convertRealmType(realm: Realm): { serverName: string; layer: string } {
-  return { serverName: realm.catalystName, layer: realm.layer }
+function convertRealmType(realm: Realm): { serverName: string; layer: string; domain: string } {
+  return { serverName: realm.catalystName, layer: realm.layer, domain: realm.domain }
 }
