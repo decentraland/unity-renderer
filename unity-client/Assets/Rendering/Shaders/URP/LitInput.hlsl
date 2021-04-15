@@ -5,6 +5,7 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
+#include "../Includes/DCLConstants.hlsl"
 
 #if defined(_DETAIL_MULX2) || defined(_DETAIL_SCALED)
 #define _DETAIL
@@ -246,7 +247,7 @@ inline void InitializeStandardLitSurfaceDataWithUV2(float2 uvAlbedo, float2 uvNo
         outSurfaceData.normalTS.y = 0;
 
     outSurfaceData.occlusion = SampleOcclusion(uvAlbedo);
-    outSurfaceData.emission = SampleEmission(uvEmissive, _EmissionColor.rgb * 5, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission(uvEmissive, _EmissionColor.rgb * DCL_EMISSION_MULTIPLIER, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
 
 #if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
     half2 clearCoat = SampleClearCoat(uv);

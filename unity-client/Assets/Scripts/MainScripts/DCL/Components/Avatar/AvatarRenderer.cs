@@ -361,7 +361,7 @@ namespace DCL
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
         {
-            Debug.LogError($"Avatar: {model.name}  -  Failed loading bodyshape: {wearableController.id}");
+            Debug.LogError($"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}");
             CleanupAvatar();
             OnFailEvent?.Invoke();
         }
@@ -370,7 +370,7 @@ namespace DCL
         {
             if (retriesCount <= 0)
             {
-                Debug.LogError($"Avatar: {model.name}  -  Failed loading wearable: {wearableController.id}");
+                Debug.LogError($"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}");
                 CleanupAvatar();
                 OnFailEvent?.Invoke();
                 return;

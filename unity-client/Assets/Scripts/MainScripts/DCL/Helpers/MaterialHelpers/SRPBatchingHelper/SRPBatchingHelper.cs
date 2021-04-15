@@ -5,6 +5,7 @@ namespace DCL.Helpers
 {
     public static class SRPBatchingHelper
     {
+        public static System.Action<Material> OnMaterialProcess;
         static Dictionary<int, int> crcToQueue = new Dictionary<int, int>();
 
         public static void OptimizeMaterial(Material material)
@@ -36,6 +37,7 @@ namespace DCL.Helpers
                     material.DisableKeyword("_SCREEN_SPACE_OCCLUSION");
                     material.SetShaderPassEnabled("DepthNormals", false);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                    OnMaterialProcess?.Invoke(material);
                     return;
                 }
             }
@@ -66,6 +68,7 @@ namespace DCL.Helpers
             //NOTE(Brian): we use 0, 100, 200 to group calls by culling mode (must group them or batches will break).
             int queueOffset = (cullMode + 1) * 150;
             material.renderQueue = baseQueue + crcToQueue[crc] + queueOffset;
+            OnMaterialProcess?.Invoke(material);
         }
     }
 }

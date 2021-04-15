@@ -657,7 +657,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -665,12 +664,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -795,11 +792,28 @@
             SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_8293478325e92d8dbfc0cd43a477d4e5_Out_2, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _Add_9aa5ce01d828b48c973710b335523c8a_Out_2, _Property_22b7e6c299217e8c995d810ee580d78b_Out_0, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            UnityTexture2D _Property_d37307025a964befabe3189269888bd8_Out_0 = UnityBuildTexture2DStructNoScale(_EmissionMap);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d37307025a964befabe3189269888bd8_Out_0.tex, _Property_d37307025a964befabe3189269888bd8_Out_0.samplerstate, IN.uv0.xy);
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_R_4 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.r;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_G_5 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.g;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_B_6 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.b;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_A_7 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.a;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_ff7cd58d224d43ada9119a8b56233def_Out_0 = _EmissionColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+            Unity_Multiply_float(_SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0, _Property_ff7cd58d224d43ada9119a8b56233def_Out_0, _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -1519,7 +1533,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -1527,12 +1540,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -1657,11 +1668,28 @@
             SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_8293478325e92d8dbfc0cd43a477d4e5_Out_2, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _Add_9aa5ce01d828b48c973710b335523c8a_Out_2, _Property_22b7e6c299217e8c995d810ee580d78b_Out_0, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            UnityTexture2D _Property_d37307025a964befabe3189269888bd8_Out_0 = UnityBuildTexture2DStructNoScale(_EmissionMap);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d37307025a964befabe3189269888bd8_Out_0.tex, _Property_d37307025a964befabe3189269888bd8_Out_0.samplerstate, IN.uv0.xy);
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_R_4 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.r;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_G_5 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.g;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_B_6 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.b;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_A_7 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.a;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_ff7cd58d224d43ada9119a8b56233def_Out_0 = _EmissionColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+            Unity_Multiply_float(_SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0, _Property_ff7cd58d224d43ada9119a8b56233def_Out_0, _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -3600,7 +3628,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -3608,12 +3635,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -3734,10 +3759,27 @@
             SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_8293478325e92d8dbfc0cd43a477d4e5_Out_2, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _Add_9aa5ce01d828b48c973710b335523c8a_Out_2, _Property_22b7e6c299217e8c995d810ee580d78b_Out_0, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            UnityTexture2D _Property_d37307025a964befabe3189269888bd8_Out_0 = UnityBuildTexture2DStructNoScale(_EmissionMap);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d37307025a964befabe3189269888bd8_Out_0.tex, _Property_d37307025a964befabe3189269888bd8_Out_0.samplerstate, IN.uv0.xy);
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_R_4 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.r;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_G_5 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.g;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_B_6 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.b;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_A_7 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.a;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_ff7cd58d224d43ada9119a8b56233def_Out_0 = _EmissionColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+            Unity_Multiply_float(_SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0, _Property_ff7cd58d224d43ada9119a8b56233def_Out_0, _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
             surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
             surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
             return surface;
@@ -4366,7 +4408,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -4374,12 +4415,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -5226,7 +5265,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -5234,12 +5272,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -5364,11 +5400,28 @@
             SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_8293478325e92d8dbfc0cd43a477d4e5_Out_2, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _Add_9aa5ce01d828b48c973710b335523c8a_Out_2, _Property_22b7e6c299217e8c995d810ee580d78b_Out_0, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            UnityTexture2D _Property_d37307025a964befabe3189269888bd8_Out_0 = UnityBuildTexture2DStructNoScale(_EmissionMap);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d37307025a964befabe3189269888bd8_Out_0.tex, _Property_d37307025a964befabe3189269888bd8_Out_0.samplerstate, IN.uv0.xy);
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_R_4 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.r;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_G_5 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.g;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_B_6 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.b;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_A_7 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.a;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_ff7cd58d224d43ada9119a8b56233def_Out_0 = _EmissionColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+            Unity_Multiply_float(_SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0, _Property_ff7cd58d224d43ada9119a8b56233def_Out_0, _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
@@ -7303,7 +7356,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -7311,12 +7363,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
@@ -7437,10 +7487,27 @@
             SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(_Multiply_8293478325e92d8dbfc0cd43a477d4e5_Out_2, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _Add_9aa5ce01d828b48c973710b335523c8a_Out_2, _Property_22b7e6c299217e8c995d810ee580d78b_Out_0, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c, _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            UnityTexture2D _Property_d37307025a964befabe3189269888bd8_Out_0 = UnityBuildTexture2DStructNoScale(_EmissionMap);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0 = SAMPLE_TEXTURE2D(_Property_d37307025a964befabe3189269888bd8_Out_0.tex, _Property_d37307025a964befabe3189269888bd8_Out_0.samplerstate, IN.uv0.xy);
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_R_4 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.r;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_G_5 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.g;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_B_6 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.b;
+            float _SampleTexture2D_1404bde833e44b9095557396e47c36b2_A_7 = _SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0.a;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Property_ff7cd58d224d43ada9119a8b56233def_Out_0 = _EmissionColor;
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+            float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+            Unity_Multiply_float(_SampleTexture2D_1404bde833e44b9095557396e47c36b2_RGBA_0, _Property_ff7cd58d224d43ada9119a8b56233def_Out_0, _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
+            #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-            surface.Emission = float3(0, 0, 0);
+            surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
             surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
             surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
             return surface;
@@ -8070,7 +8137,6 @@
 
         void SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(float4 Color_E739F888, float4 Color_D4F585C6, float4 Color_D7818A04, float4 Color_546468F9, Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb IN, out float4 FinalColor_1)
         {
-            float4 _Property_c6d5f376c324c08283eac8a94364ccb7_Out_0 = Color_E739F888;
             float4 _Property_519fcfdd306ddb839c113ca07f0f606c_Out_0 = Color_D4F585C6;
             float4 _Property_3e015b35bff76284853220d6ed019e2e_Out_0 = Color_546468F9;
             float4 _Property_ae789b17ad00778693ee4740849f6c53_Out_0 = Color_D7818A04;
@@ -8078,12 +8144,10 @@
             Unity_Add_float4(_Property_3e015b35bff76284853220d6ed019e2e_Out_0, _Property_ae789b17ad00778693ee4740849f6c53_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2);
             float4 _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2;
             Unity_Blend_Multiply_float4(_Property_519fcfdd306ddb839c113ca07f0f606c_Out_0, _Add_9c1c74d0fa17908ca9503658a239355d_Out_2, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, 1);
-            float4 _Add_802d32b9c27f47809bcd9627279cc77a_Out_2;
-            Unity_Add_float4(_Property_c6d5f376c324c08283eac8a94364ccb7_Out_0, _Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Add_802d32b9c27f47809bcd9627279cc77a_Out_2);
             Bindings_Fog_db57d56e4661e4144b06df0b3edef8a9 _Fog_18fab81a74b9d7858633e8fc73111a15;
             _Fog_18fab81a74b9d7858633e8fc73111a15.ViewSpacePosition = IN.ViewSpacePosition;
             float4 _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
-            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Add_802d32b9c27f47809bcd9627279cc77a_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
+            SG_Fog_db57d56e4661e4144b06df0b3edef8a9(_Blend_4690b56c61915281a6230c45fd4ae04b_Out_2, _Fog_18fab81a74b9d7858633e8fc73111a15, _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1);
             FinalColor_1 = _Fog_18fab81a74b9d7858633e8fc73111a15_Color_1;
         }
 
