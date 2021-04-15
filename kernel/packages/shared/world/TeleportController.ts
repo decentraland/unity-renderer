@@ -1,6 +1,7 @@
 import { parcelLimits } from 'config'
+import { isInsideWorldLimits } from '@dcl/schemas'
 
-import { lastPlayerPosition, teleportObservable, isInsideWorldLimits } from 'shared/world/positionThings'
+import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { POIs } from 'shared/comms/POIs'
 import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 import defaultLogger from 'shared/logger'

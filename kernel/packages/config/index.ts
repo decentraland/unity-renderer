@@ -1,5 +1,6 @@
 import { contracts as contractInfo } from './contracts'
 const queryString = require('query-string')
+import { getWorld } from '@dcl/schemas'
 
 export const NETWORK_HZ = 10
 
@@ -55,27 +56,8 @@ export namespace parcelLimits {
   export const minParcelX = -150
   export const minParcelZ = -150
 
-  export const validWorldRanges = [
-    {
-      x: { from: -150, to: 150 },
-      y: { from: -150, to: 150 }
-    },
-    {
-      x: { from: 62, to: 163 },
-      y: { from: 151, to: 158 }
-    },
-    {
-      x: { from: 151, to: 162 },
-      y: { from: 144, to: 150 }
-    },
-    {
-      x: { from: 151, to: 163 },
-      y: { from: 59, to: 143 }
-    }
-  ]
-
-  export const descriptiveValidWorldRanges = validWorldRanges
-    .map((range) => `(X from ${range.x.from} to ${range.x.to}, and Y from ${range.y.from} to ${range.y.to})`)
+  export const descriptiveValidWorldRanges = getWorld().validWorldRanges
+    .map((range) => `(X from ${range.xMin} to ${range.xMax}, and Y from ${range.yMin} to ${range.yMax})`)
     .join(' or ')
 }
 export namespace playerConfigurations {

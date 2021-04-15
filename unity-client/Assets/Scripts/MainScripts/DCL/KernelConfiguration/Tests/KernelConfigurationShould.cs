@@ -151,6 +151,10 @@ public class KernelConfigurationShould
     public void ParseJsonCorrectly()
     {
         KernelConfigModel model = new KernelConfigModel();
+
+        var worldRange = new WorldRange(-150, -150, 150, 150);
+        model.validWorldRanges.Add(worldRange);
+
         string json = JsonUtility.ToJson(model);
         KernelConfig.i.Set(json);
 

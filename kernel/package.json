@@ -93,6 +93,7 @@
     "web3x-codegen": "^4.0.6"
   },
   "dependencies": {
+    "@dcl/schemas": "^1.2.0",
     "@dcl/urn-resolver": "^1.1.0",
     "bignumber.js": "^9.0.0",
     "blob-to-buffer": "^1.2.8",
