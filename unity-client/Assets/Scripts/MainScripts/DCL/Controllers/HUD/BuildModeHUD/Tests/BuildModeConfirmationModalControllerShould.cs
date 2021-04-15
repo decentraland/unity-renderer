@@ -18,67 +18,34 @@ namespace Tests.BuildModeHUDControllers
         public void TearDown() { exitFromBiWModalController.Dispose(); }
 
         [Test]
+        public void ConfigureCorrectly()
+        {
+            // Arrange
+            string testTitleText = "Test title";
+            string testSubTitleText = "Test subtitle";
+            string testCancelBtnText = "Test cancel text";
+            string testconfirmBtnText = "Test confirm text";
+
+            // Act
+            exitFromBiWModalController.Configure(testTitleText, testSubTitleText, testCancelBtnText, testconfirmBtnText);
+
+            // Assert
+            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetTitle(testTitleText);
+            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetSubTitle(testSubTitleText);
+            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetCancelButtonText(testCancelBtnText);
+            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetConfirmButtonText(testconfirmBtnText);
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetActiveCorrectly(bool isActive)
         {
             // Act
-            exitFromBiWModalController.SetActive(isActive);
+            exitFromBiWModalController.SetActive(isActive, BuildModeModalType.EXIT);
 
             // Assert
             exitFromBiWModalController.exitFromBiWModalView.Received(1).SetActive(isActive);
-        }
-
-        [Test]
-        public void SetTitleCorrectly()
-        {
-            // Arrange
-            string testText = "Test text";
-
-            // Act
-            exitFromBiWModalController.SetTitle(testText);
-
-            // Assert
-            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetTitle(testText);
-        }
-
-        [Test]
-        public void SetSubTitleCorrectly()
-        {
-            // Arrange
-            string testText = "Test text";
-
-            // Act
-            exitFromBiWModalController.SetSubTitle(testText);
-
-            // Assert
-            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetSubTitle(testText);
-        }
-
-        [Test]
-        public void SetCancelButtonTextCorrectly()
-        {
-            // Arrange
-            string testText = "Test text";
-
-            // Act
-            exitFromBiWModalController.SetCancelButtonText(testText);
-
-            // Assert
-            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetCancelButtonText(testText);
-        }
-
-        [Test]
-        public void SetConfirmButtonTextCorrectly()
-        {
-            // Arrange
-            string testText = "Test text";
-
-            // Act
-            exitFromBiWModalController.SetConfirmButtonText(testText);
-
-            // Assert
-            exitFromBiWModalController.exitFromBiWModalView.Received(1).SetConfirmButtonText(testText);
         }
 
         [Test]
@@ -86,7 +53,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             bool canceled = false;
-            exitFromBiWModalController.OnCancelExit += () => { canceled = true; };
+            exitFromBiWModalController.OnCancelExit += (modalType) => { canceled = true; };
 
             // Act
             exitFromBiWModalController.CancelExit();
@@ -101,7 +68,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             bool confirmed = false;
-            exitFromBiWModalController.OnConfirmExit += () => { confirmed = true; };
+            exitFromBiWModalController.OnConfirmExit += (modalType) => { confirmed = true; };
 
             // Act
             exitFromBiWModalController.ConfirmExit();

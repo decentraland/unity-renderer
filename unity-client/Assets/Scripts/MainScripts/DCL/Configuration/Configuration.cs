@@ -47,6 +47,11 @@ namespace DCL.Configuration
         public const string SCLAE_GIZMO_NAME = "SCALE";
 
         public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
+
+        public const string PUBLISH_MODAL_TITLE = "Publish Scene";
+        public const string PUBLISH_MODAL_SUBTITLE = "Are you sure you want to publish your scene to this Land?";
+        public const string PUBLISH_MODAL_CONFIRM_BUTTON = "PUBLISH";
+        public const string PUBLISH_MODAL_CANCEL_BUTTON = "CANCEL";
     }
 
     public static class ApplicationSettings

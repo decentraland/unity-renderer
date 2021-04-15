@@ -1,5 +1,7 @@
+using DCL.Configuration;
 using DCL.Controllers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +20,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
+    public event Action OnConfirmPublishAction;
     public event Action OnLogoutAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
@@ -44,6 +47,8 @@ public class BuildModeHUDController : IHUD
 
     internal static readonly Vector3 catalogItemTooltipOffset = new Vector3 (0, 25, 0);
 
+    private Coroutine publishProgressCoroutine = null;
+
     public void Initialize()
     {
         CreateBuildModeControllers();
@@ -59,6 +64,7 @@ public class BuildModeHUDController : IHUD
         ConfigureInspectorController();
         ConfigureTopActionsButtonsController();
         ConfigureCatalogItemDropController();
+        ConfigureBuildModeConfirmationModalController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -166,9 +172,68 @@ public class BuildModeHUDController : IHUD
         catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
     }
 
-    public void PublishStart() { view.PublishStart(); }
+    private void ConfigureBuildModeConfirmationModalController()
+    {
+        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
+    }
 
-    public void PublishEnd(string message) { view.PublishEnd(message); }
+    public void PublishStart()
+    {
+        controllers.buildModeConfirmationModalController.Configure(
+            BuilderInWorldSettings.PUBLISH_MODAL_TITLE,
+            BuilderInWorldSettings.PUBLISH_MODAL_SUBTITLE,
+            BuilderInWorldSettings.PUBLISH_MODAL_CANCEL_BUTTON,
+            BuilderInWorldSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
+        controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
+    }
+
+    internal void CancelPublishModal(BuildModeModalType modalType)
+    {
+        if (modalType != BuildModeModalType.PUBLISH)
+            return;
+
+        controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
+    }
+
+    internal void ConfirmPublishModal(BuildModeModalType modalType)
+    {
+        if (modalType != BuildModeModalType.PUBLISH)
+            return;
+
+        controllers.publishPopupController.PublishStart();
+        OnConfirmPublishAction?.Invoke();
+
+        // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
+        //               Meanwhile we will display a fake progress.
+        publishProgressCoroutine = CoroutineStarter.Start(FakePublishProgress());
+    }
+
+    private IEnumerator FakePublishProgress()
+    {
+        while (true)
+        {
+            float newPercentage = Mathf.Clamp(
+                controllers.publishPopupController.currentProgress + UnityEngine.Random.Range(10f, 30f),
+                controllers.publishPopupController.currentProgress,
+                99f);
+
+            controllers.publishPopupController.SetPercentage(newPercentage);
+
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
+        }
+    }
+
+    public void PublishEnd(bool isOk, string message)
+    {
+        if (publishProgressCoroutine != null)
+        {
+            CoroutineStarter.Stop(publishProgressCoroutine);
+            publishProgressCoroutine = null;
+        }
+
+        controllers.publishPopupController.PublishEnd(isOk, message);
+    }
 
     public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
 

@@ -15,10 +15,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            publishPopupController.Dispose();
-        }
+        public void TearDown() { publishPopupController.Dispose(); }
 
         [Test]
         public void PublishStartCorrectly()
@@ -28,19 +25,35 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             publishPopupController.publishPopupView.Received(1).PublishStart();
+            publishPopupController.publishPopupView.Received(1).SetPercentage(0f);
         }
 
         [Test]
-        public void PublishEndCorrectly()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void PublishEndCorrectly(bool isOk)
         {
             // Arrange
-            string testText = "Test text";
+            string testErrorMesssage = "Test error";
 
             // Act
-            publishPopupController.PublishEnd(testText);
+            publishPopupController.PublishEnd(isOk, testErrorMesssage);
 
             // Assert
-            publishPopupController.publishPopupView.Received(1).PublishEnd(testText);
+            publishPopupController.publishPopupView.Received(1).PublishEnd(isOk, testErrorMesssage);
+        }
+
+        [Test]
+        public void SetPercentageCorrectly()
+        {
+            // Arrange
+            float testPercentage = 16.8f;
+
+            // Act
+            publishPopupController.SetPercentage(testPercentage);
+
+            // Assert
+            publishPopupController.publishPopupView.Received(1).SetPercentage(testPercentage);
         }
     }
 }

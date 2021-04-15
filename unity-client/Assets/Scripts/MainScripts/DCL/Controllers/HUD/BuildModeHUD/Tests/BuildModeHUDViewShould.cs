@@ -72,29 +72,6 @@ namespace Tests.BuildModeHUDViews
         }
 
         [Test]
-        public void PublishStartCorrectly()
-        {
-            // Act
-            buildModeHUDView.PublishStart();
-
-            // Assert
-            testControllers.publishPopupController.Received(1).PublishStart();
-        }
-
-        [Test]
-        public void PublishEndCorrectly()
-        {
-            // Arrange
-            string testText = "Test text";
-
-            // Act
-            buildModeHUDView.PublishEnd(testText);
-
-            // Assert
-            testControllers.publishPopupController.Received(1).PublishEnd(testText);
-        }
-
-        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetPublishBtnAvailabilityCorrectly(bool isAvailable)
