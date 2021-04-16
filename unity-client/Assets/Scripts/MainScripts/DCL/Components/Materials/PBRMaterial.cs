@@ -172,6 +172,7 @@ namespace DCL.Components
                     material.SetInt(ShaderUtils.ZWrite, 1);
                     material.SetFloat(ShaderUtils.AlphaClip, 1);
                     material.SetFloat(ShaderUtils.Cutoff, model.alphaTest);
+                    material.SetInt("_Surface", 0);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
                     break;
                 case TransparencyMode.ALPHA_BLEND: // ALPHABLEND
@@ -182,6 +183,7 @@ namespace DCL.Components
                     material.SetInt(ShaderUtils.ZWrite, 0);
                     material.SetFloat(ShaderUtils.AlphaClip, 0);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                    material.SetInt("_Surface", 1);
                     break;
                 case TransparencyMode.ALPHA_TEST_AND_BLEND:
                     material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -191,6 +193,7 @@ namespace DCL.Components
                     material.SetInt(ShaderUtils.ZWrite, 0);
                     material.SetFloat(ShaderUtils.AlphaClip, 1);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                    material.SetInt("_Surface", 1);
                     break;
             }
         }
@@ -247,7 +250,7 @@ namespace DCL.Components
 
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {
-                    matTransition.finalMaterials = new Material[] {material};
+                    matTransition.finalMaterials = new Material[] { material };
                     matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
                 }
 

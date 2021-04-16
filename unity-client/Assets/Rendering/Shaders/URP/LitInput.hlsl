@@ -5,7 +5,6 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
-#include "../Includes/DCLConstants.hlsl"
 
 #if defined(_DETAIL_MULX2) || defined(_DETAIL_SCALED)
 #define _DETAIL
@@ -77,6 +76,7 @@ UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 #define _Surface                UNITY_ACCESS_DOTS_INSTANCED_PROP_FROM_MACRO(float  , Metadata__Surface)
 #endif
 
+TEXTURE2D(_AlphaTexture);        SAMPLER(sampler_AlphaTexture);
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_DetailMask);         SAMPLER(sampler_DetailMask);
@@ -223,7 +223,9 @@ half3 ApplyDetailNormal(float2 detailUv, half3 normalTS, half detailMask)
 inline void InitializeStandardLitSurfaceDataWithUV2(float2 uvAlbedo, float2 uvNormal, float2 uvMetallic, float2 uvEmissive, out SurfaceData outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
+    half4 alphaTexture = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
+
+    outSurfaceData.alpha = Alpha(alphaTexture.r * albedoAlpha.a, _BaseColor, _Cutoff);
 
     half4 specGloss = SampleMetallicSpecGloss(uvMetallic, albedoAlpha.a);
     outSurfaceData.albedo = albedoAlpha.rgb * _BaseColor.rgb;
@@ -247,7 +249,7 @@ inline void InitializeStandardLitSurfaceDataWithUV2(float2 uvAlbedo, float2 uvNo
         outSurfaceData.normalTS.y = 0;
 
     outSurfaceData.occlusion = SampleOcclusion(uvAlbedo);
-    outSurfaceData.emission = SampleEmission(uvEmissive, _EmissionColor.rgb * DCL_EMISSION_MULTIPLIER, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission(uvEmissive, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
 
 #if defined(_CLEARCOAT) || defined(_CLEARCOATMAP)
     half2 clearCoat = SampleClearCoat(uv);

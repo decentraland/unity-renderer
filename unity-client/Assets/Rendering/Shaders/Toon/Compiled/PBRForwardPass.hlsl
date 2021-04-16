@@ -1,5 +1,4 @@
 #include "DCLSimpleLighting.hlsl"
-#include "../../Includes/DCLConstants.hlsl"
 
 void BuildInputData(Varyings input, SurfaceDescription surfaceDescription, out InputData inputData)
 {
@@ -81,7 +80,7 @@ half4 frag(PackedVaryings packedInput) : SV_TARGET
     surface.specular            = specular;
     surface.smoothness          = saturate(surfaceDescription.Smoothness),
     surface.occlusion           = surfaceDescription.Occlusion,
-    surface.emission            = surfaceDescription.Emission * DCL_EMISSION_MULTIPLIER_TOON,
+    surface.emission            = surfaceDescription.Emission,
     surface.alpha               = saturate(alpha);
     surface.clearCoatMask       = 0;
     surface.clearCoatSmoothness = 1;
