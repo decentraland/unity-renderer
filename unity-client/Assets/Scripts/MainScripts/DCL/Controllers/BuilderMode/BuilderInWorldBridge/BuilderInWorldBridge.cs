@@ -23,6 +23,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     TransformComponent entityTransformComponentModel = new TransformComponent();
 
     StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
+    SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
@@ -41,6 +42,8 @@ public class BuilderInWorldBridge : MonoBehaviour
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
+
+    public void SaveSceneState(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState); }
 
     public void PublishSceneResult(string payload)
     {

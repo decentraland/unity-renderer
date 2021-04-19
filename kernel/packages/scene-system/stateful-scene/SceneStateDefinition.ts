@@ -1,11 +1,12 @@
-import { Component, ComponentData, ComponentId, EntityId, StateContainer } from "./types";
+import { Component, ComponentData, ComponentId, EntityId, StateContainer } from './types'
 
 export class SceneStateDefinition implements StateContainer {
-
   private readonly entities: Map<EntityId, Map<ComponentId, ComponentData>> = new Map()
 
   addEntity(entityId: EntityId, components?: Component[]): void {
-    const componentMap: Map<ComponentId, ComponentData> = new Map((components ?? []).map(({ componentId, data }) => [componentId, data]))
+    const componentMap: Map<ComponentId, ComponentData> = new Map(
+      (components ?? []).map(({ componentId, data }) => [componentId, data])
+    )
     this.entities.set(entityId, componentMap)
   }
 
@@ -28,8 +29,7 @@ export class SceneStateDefinition implements StateContainer {
 
   sendStateTo(container: StateContainer) {
     for (const [entityId, components] of this.entities.entries()) {
-      const mappedComponents = Array.from(components.entries())
-        .map(([componentId, data]) => ({ componentId, data }))
+      const mappedComponents = Array.from(components.entries()).map(([componentId, data]) => ({ componentId, data }))
       container.addEntity(entityId, mappedComponents)
     }
   }
@@ -38,9 +38,9 @@ export class SceneStateDefinition implements StateContainer {
    * Returns a copy of the state
    */
   getState(): Map<EntityId, Map<ComponentId, ComponentData>> {
-    const newEntries: [EntityId, Map<ComponentId, ComponentData>][] = Array.from(this.entities.entries())
-      .map(([entityId, components]) => [entityId, new Map(components)])
+    const newEntries: [EntityId, Map<ComponentId, ComponentData>][] = Array.from(
+      this.entities.entries()
+    ).map(([entityId, components]) => [entityId, new Map(components)])
     return new Map(newEntries)
   }
-
 }

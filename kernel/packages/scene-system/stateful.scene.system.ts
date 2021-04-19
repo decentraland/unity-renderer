@@ -7,8 +7,10 @@ import type { ISceneStateStorageController } from 'shared/apis/SceneStateStorage
 import { defaultLogger } from 'shared/logger'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { RendererStatefulActor } from './stateful-scene/RendererStatefulActor'
+import { BuilderStatefulActor } from './stateful-scene/BuilderStatefulActor'
+import { serializeSceneState } from './stateful-scene/SceneStateDefinitionSerializer'
+import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
 import { SceneStateDefinition } from './stateful-scene/SceneStateDefinition'
-import { deserializeSceneState, serializeSceneState } from './stateful-scene/SceneStateDefinitionSerializer'
 
 class StatefulWebWorkerScene extends Script {
   @inject('DevTools')
@@ -17,6 +19,9 @@ class StatefulWebWorkerScene extends Script {
   @inject('EngineAPI')
   engine!: IEngineAPI
 
+  @inject('EnvironmentAPI')
+  environmentAPI!: EnvironmentAPI
+
   @inject('ParcelIdentity')
   parcelIdentity!: ParcelIdentity
 
@@ -24,8 +29,9 @@ class StatefulWebWorkerScene extends Script {
   sceneStateStorage!: ISceneStateStorageController
 
   private devToolsAdapter!: DevToolsAdapter
-  private renderer!: RendererStatefulActor
-  private sceneState!: SceneStateDefinition
+  private rendererActor!: RendererStatefulActor
+  private builderActor!: BuilderStatefulActor
+  private sceneDefinition!: SceneStateDefinition
   private eventSubscriber!: EventSubscriber
 
   constructor(transport: ScriptingTransport, opt?: ILogOpts) {
@@ -34,28 +40,43 @@ class StatefulWebWorkerScene extends Script {
 
   async systemDidEnable(): Promise<void> {
     this.devToolsAdapter = new DevToolsAdapter(this.devTools)
-    const { cid: sceneId } = await this.parcelIdentity.getParcel()
-    this.renderer = new RendererStatefulActor(this.engine, sceneId)
+    const { cid: sceneId, land: land } = await this.parcelIdentity.getParcel()
+    this.rendererActor = new RendererStatefulActor(this.engine, sceneId)
     this.eventSubscriber = new EventSubscriber(this.engine)
+    this.builderActor = new BuilderStatefulActor(land, this.sceneStateStorage)
 
     // Fetch stored scene
-    const storedState = await this.sceneStateStorage.getStoredState(sceneId)
-    this.sceneState = storedState ? deserializeSceneState(storedState) : new SceneStateDefinition()
+    this.sceneDefinition = await this.builderActor.getInititalSceneState()
 
     // Listen to the renderer and update the local scene state
-    this.renderer.forwardChangesTo(this.sceneState)
+    this.rendererActor.forwardChangesTo(this.sceneDefinition)
 
     // Send the initial state ot the renderer
-    this.sceneState.sendStateTo(this.renderer)
-    this.renderer.sendInitFinished()
+    this.sceneDefinition.sendStateTo(this.rendererActor)
+
+    this.rendererActor.sendInitFinished()
     this.log('Sent initial load')
 
-    // Listen to storage requests
+    // Listen to scene state events
+    this.listenToEvents(sceneId)
+  }
+
+  private listenToEvents(sceneId: string): void {
+    // Listen to publish requests
     this.eventSubscriber.on('stateEvent', ({ data }) => {
-      if (data.type === 'StoreSceneState') {
+      if (data.type === 'PublishSceneState') {
         this.sceneStateStorage
-          .storeState(sceneId, serializeSceneState(this.sceneState))
+          .publishSceneState(sceneId, serializeSceneState(this.sceneDefinition))
           .catch((error) => this.error(`Failed to store the scene's state`, error))
+      }
+    })
+
+    // Listen to save scene requests
+    this.eventSubscriber.on('stateEvent', ({ data }) => {
+      if (data.type === 'SaveSceneState') {
+        this.sceneStateStorage
+          .saveSceneState(serializeSceneState(this.sceneDefinition))
+          .catch((error) => this.error(`Failed to save the scene's manifest`, error))
       }
     })
   }

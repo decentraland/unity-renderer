@@ -10,15 +10,23 @@ import {
   RemoveEntityPayload,
   UpdateEntityComponentPayload
 } from 'shared/types'
-import { Component, ComponentData, ComponentId, EntityId, StatefulActor } from './types'
-import { EventSubscriber } from 'decentraland-rpc'
+import {
+  Component,
+  ComponentData,
+  ComponentId,
+  EntityId,
+  StateContainer,
+  StateContainerListener,
+  StatefulActor
+} from './types'
 import { generatePBObjectJSON } from '../sdk/Utils'
+import { EventSubscriber } from 'decentraland-rpc'
 
-export class RendererStatefulActor extends StatefulActor {
-  private readonly eventSubscriber: EventSubscriber
+export class RendererStatefulActor extends StatefulActor implements StateContainerListener {
   private disposableComponents: number = 0
+  private readonly eventSubscriber: EventSubscriber
 
-  constructor(private readonly engine: IEngineAPI, private readonly sceneId: string) {
+  constructor(protected readonly engine: IEngineAPI, private readonly sceneId: string) {
     super()
     this.eventSubscriber = new EventSubscriber(this.engine)
   }
@@ -74,6 +82,16 @@ export class RendererStatefulActor extends StatefulActor {
         payload: '{}'
       }
     ])
+  }
+
+  /**
+   * Take a @param container and update it when an change to the º occurs
+   */
+  forwardChangesTo(container: StateContainer) {
+    this.onAddEntity((entityId, components) => container.addEntity(entityId, components))
+    this.onRemoveEntity((entityId) => container.removeEntity(entityId))
+    this.onSetComponent((entityId, componentId, data) => container.setComponent(entityId, componentId, data))
+    this.onRemoveComponent((entityId, componentId) => container.removeComponent(entityId, componentId))
   }
 
   onAddEntity(listener: (entityId: EntityId, components?: Component[]) => void): void {
