@@ -14,6 +14,8 @@ public static class NotificationScriptableObjects
 
 public static class AudioScriptableObjects
 {
+    // UI events
+
     private static AudioEvent buttonHoverEvent;
     public static AudioEvent buttonHover => CommonScriptableObjects.GetOrLoad(ref buttonHoverEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonHover");
 
