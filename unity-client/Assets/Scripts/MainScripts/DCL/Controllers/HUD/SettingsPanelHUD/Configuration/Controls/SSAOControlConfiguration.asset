@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785002488258546488b783004eed1484, type: 3}
+  m_Name: SSAOControlConfiguration
+  m_EditorClassIdentifier: 
+  title: AMBIENT OCCLUSION
+  controlPrefab: {fileID: 3856968550380144319, guid: 12ace77c1b449714b89d5793ef36f983,
+    type: 3}
+  controlController: {fileID: 11400000, guid: 11a79c434dba49a468b8ce8c97eefc60, type: 2}
+  flagsThatDisableMe:
+  - {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
+  flagsThatDeactivateMe: []
+  isBeta: 0
+  spinBoxLabels:
+  - Off
+  - Low Quality
+  - Mid Quality
+  - High Quality

@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+<<<<<<< HEAD:unity-client/Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Resources/Music/Music - Avatar Editor HUD - A.ogg.meta
+guid: 70e40bfa45f5c284ba4c96359d12c88d
+=======
+guid: 945b491a22e92a5469fb009593f09fd8
+>>>>>>> master:unity-client/Assets/Scripts/MainScripts/DCL/Controllers/HUD/AvatarEditorHUD/Resources/SFX/Voice - Wearable Reaction - Female - Rare 02.wav.meta
+=======
+guid: 70e40bfa45f5c284ba4c96359d12c88d
+>>>>>>> master
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

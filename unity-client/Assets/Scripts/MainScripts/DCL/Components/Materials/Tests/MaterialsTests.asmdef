@@ -1,0 +1,27 @@
+{
+    "name": "MaterialsTests",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:e65144cdbd5b744238fa03c40df6cd71",
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

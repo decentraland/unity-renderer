@@ -1,0 +1,16 @@
+{
+    "name": "ServiceProviders",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1b07639381de24d0f932014911b5b207"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

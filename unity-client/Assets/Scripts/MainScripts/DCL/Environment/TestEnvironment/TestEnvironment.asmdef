@@ -1,0 +1,33 @@
+{
+    "name": "TestEnvironment",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "MainScripts",
+        "CullingController",
+        "PhysicsSyncController",
+        "Clipboard",
+        "DebugController",
+        "RuntimeComponentFactory",
+        "MessagingContext",
+        "WebRequest",
+        "ServiceProviders",
+        "TheGraph"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "NSubstitute.dll",
+        "System.Threading.Tasks.Extensions.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

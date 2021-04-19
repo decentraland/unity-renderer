@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "data": [
+    {"id": "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169",
+      "title": "Voxels Pack",
+      "thumbnail": "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169.png",
+      "user_id": null,
+      "created_at": "2020-09-10T17:49:59.577Z",
+      "updated_at": "2020-09-10T17:49:59.577Z",
+      "eth_address": "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD",
+      "assets": [
+     {"id":"68986c60-c95c-41ab-adf0-d0e02f5b5440","asset_pack_id":"07e7e010-3003-496d-a720-2a714a63a58b","name":"Indicator Arrow","model":"models/Arrow.glb","thumbnail":"QmSHA5Jtu9WSNapuXtoCuwpSDrdj3oFWGExmoxpJNpVZTJ","tags":["arrow","indicator","help","smart"],"category":"decorations","contents":{"package.json":"QmbedC4cCiioietLSVuUne96wdrAtYVaFphGjp87dwVvVa","bin/game.js":"QmXom2WN36Z6HqTksjUpFzLYwmuapALhVhfLn9rTmJCDRV","models/Arrow.glb":"QmNzoQeRREc6dDBtGBvwyUeRrWBGypk9RxLVxNnhe9KDR2","src/item.ts":"QmZFxLfiGu9nYvuPf7JfB32c8LGvKpiwmig7ACgjntrYpd"},"created_at":"2021-01-08T20:37:08.71","updated_at":"2021-01-08T20:37:08.71","metrics":{"triangles":64,"materials":1,"textures":2,"meshes":1,"bodies":1,"entities":1},"script":"bin/game.js","parameters":[{"id":"active","label":"Visible","type":"boolean","default":true}],"actions":[{"id":"activate","label":"Show","parameters":[]},{"id":"deactivate","label":"Hide","parameters":[]}]}
+	 ]
+    }
+  ]
+}

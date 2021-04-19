@@ -1,0 +1,46 @@
+{
+  "ok": true,
+  "data": [
+    {
+      "id": "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169",
+      "title": "Voxels Pack",
+      "thumbnail": "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169.png",
+      "user_id": null,
+      "created_at": "2020-09-10T17:49:59.577Z",
+      "updated_at": "2020-09-10T17:49:59.577Z",
+      "eth_address": "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD",
+      "assets": [
+        {
+          "id": "c397075a439902b3f687ae4ee0d3b49b3c9f04fb1ff32da346c9720e09ebf5fa",
+          "asset_pack_id": "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169",
+          "name": "Dirt - volcano",
+          "model": "dirt_volcan.glb",
+          "thumbnail": "QmVGjSX16TXsBCBTH16EMc7E6K3YcFzskzN7ZQvgRnMWgi",
+          "tags": [
+            "fantasy","ground"
+          ],
+          "category": "decorations",
+          "contents": {
+            "dirt_volcan.glb": "QmbcthVfn5kGwSkhY77KNS4ur4MNfBZH3kaNp5imiiVkAe"
+          },
+          "created_at": "2020-09-10T17:49:59.581",
+          "updated_at": "2020-09-10T17:49:59.581",
+          "metrics": {
+            "triangles": 24,
+            "materials": 2,
+            "textures": 2,
+            "meshes": 1,
+            "bodies": 2,
+            "entities": 1
+          },
+          "script": null,
+          "parameters": [
+            
+          ],
+          "actions": [
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+    "name": "RuntimeComponentFactory",
+    "references": [
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:82873c2d9c9cbe94391e6b33e5153865",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

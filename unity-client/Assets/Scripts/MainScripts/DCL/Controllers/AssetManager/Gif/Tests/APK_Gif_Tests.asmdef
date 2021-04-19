@@ -1,0 +1,26 @@
+{
+    "name": "AssetPromiseKeeper_Gif_Tests",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:a92fa8e55a4197b4d815691f30474181",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:a3ceb534947fac14da25035bc5c24788"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+    "name": "UnityGLTFAssembly",
+    "references": [
+        "CoroutineHelpers",
+        "MaterialTransitionController",
+        "ILoader",
+        "Utils",
+        "SRPBatchingHelper",
+        "ScriptableObjects",
+        "TextureHelpers"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
