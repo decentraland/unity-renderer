@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 using static WearableLiterals;
 
@@ -16,6 +17,9 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
+        public bool useFx = false;
+        public GameObject fxSpawnPrefab;
+
         private AvatarModel model;
 
         public event Action OnSuccessEvent;
@@ -27,6 +31,9 @@ namespace DCL
         internal FacialFeatureController eyebrowsController;
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
+        internal StickersController stickersController;
+
+        private long lastStickerTimestamp = -1;
 
         internal bool isLoading = false;
 
@@ -36,6 +43,7 @@ namespace DCL
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
+            stickersController = GetComponent<StickersController>();
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -54,6 +62,7 @@ namespace DCL
                 onSuccess?.Invoke();
                 this.OnSuccessEvent -= onSuccessWrapper;
             }
+
             this.OnSuccessEvent += onSuccessWrapper;
 
             void onFailWrapper()
@@ -61,6 +70,7 @@ namespace DCL
                 onFail?.Invoke();
                 this.OnFailEvent -= onFailWrapper;
             }
+
             this.OnFailEvent += onFailWrapper;
 
             isLoading = false;
@@ -150,7 +160,6 @@ namespace DCL
                 mouthController.CleanUp();
             }
         }
-
 
         private IEnumerator LoadAvatar()
         {
@@ -245,6 +254,7 @@ namespace DCL
                     bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
             }
 
+            bool wearablesIsDirty = false;
             HashSet<string> unusedCategories = new HashSet<string>(Categories.ALL);
             int wearableCount = resolvedWearables.Count;
             for (int index = 0; index < wearableCount; index++)
@@ -264,6 +274,8 @@ namespace DCL
                 else
                 {
                     AddWearableController(wearable);
+                    if (wearable.category != Categories.EYES && wearable.category != Categories.MOUTH && wearable.category != Categories.EYEBROWS)
+                        wearablesIsDirty = true;
                 }
             }
 
@@ -291,7 +303,7 @@ namespace DCL
                 bodyShapeController.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
             }
 
-            foreach(WearableController wearable in wearableControllers.Values)
+            foreach (WearableController wearable in wearableControllers.Values)
             {
                 if (bodyIsDirty)
                     wearable.boneRetargetingDirty = true;
@@ -302,11 +314,21 @@ namespace DCL
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
+
             eyesController.Load(bodyShapeController, model.eyeColor);
             eyebrowsController.Load(bodyShapeController, model.hairColor);
             mouthController.Load(bodyShapeController, model.skinColor);
 
             yield return new WaitUntil(() => eyebrowsController.isReady && eyesController.isReady && mouthController.isReady);
+
+            if (useFx && (bodyIsDirty || wearablesIsDirty))
+            {
+                var particles = Instantiate(fxSpawnPrefab);
+                var particlesFollow = particles.AddComponent<FollowObject>();
+                particles.transform.position += transform.position;
+                particlesFollow.target = transform;
+                particlesFollow.offset = fxSpawnPrefab.transform.position;
+            }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.UpdateVisibility(hiddenList);
@@ -319,6 +341,11 @@ namespace DCL
 
             SetWearableBones();
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
+            if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
+            {
+                lastStickerTimestamp = model.stickerTriggerTimestamp;
+                stickersController?.PlayEmote(model.stickerTriggerId);
+            }
 
             if (loadSoftFailed)
             {
@@ -330,14 +357,11 @@ namespace DCL
             }
         }
 
-        void OnWearableLoadingSuccess(WearableController wearableController)
-        {
-            wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
-        }
+        void OnWearableLoadingSuccess(WearableController wearableController) { wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor); }
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
         {
-            Debug.LogError($"Avatar: {model.name}  -  Failed loading bodyshape: {wearableController.id}");
+            Debug.LogError($"Avatar: {model?.name}  -  Failed loading bodyshape: {wearableController?.id}");
             CleanupAvatar();
             OnFailEvent?.Invoke();
         }
@@ -346,7 +370,7 @@ namespace DCL
         {
             if (retriesCount <= 0)
             {
-                Debug.LogError($"Avatar: {model.name}  -  Failed loading wearable: {wearableController.id}");
+                Debug.LogError($"Avatar: {model?.name}  -  Failed loading wearable: {wearableController?.id}");
                 CleanupAvatar();
                 OnFailEvent?.Invoke();
                 return;
@@ -379,7 +403,8 @@ namespace DCL
 
         private void AddWearableController(WearableItem wearable)
         {
-            if (wearable == null) return;
+            if (wearable == null)
+                return;
             switch (wearable.category)
             {
                 case Categories.EYES:
@@ -447,9 +472,6 @@ namespace DCL
             }
         }
 
-        protected virtual void OnDestroy()
-        {
-            CleanupAvatar();
-        }
+        protected virtual void OnDestroy() { CleanupAvatar(); }
     }
 }

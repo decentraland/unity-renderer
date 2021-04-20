@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CatalogAssetPackListView : ListView<CatalogItemPack>
 {
     public GameObject categoryListView;
     public GameObject assetPackListView;
+    public DynamicScrollSensitivity dynamicScrollSensitivity;
 
     public Transform categoryContentTransform;
     public CatalogAssetPackAdapter categoryAssetPackItemAdapterPrefab;
     public CatalogAssetPackAdapter catalogAssetPackItemAdapterPrefab;
     public System.Action<CatalogItemPack> OnCatalogPackClick;
-
 
     bool useAssetPackStyle = true;
 
@@ -22,7 +20,7 @@ public class CatalogAssetPackListView : ListView<CatalogItemPack>
         Transform transformToUse = contentPanelTransform;
         CatalogAssetPackAdapter prefabToUse = catalogAssetPackItemAdapterPrefab;
 
-        if(!useAssetPackStyle)
+        if (!useAssetPackStyle)
         {
             transformToUse = categoryContentTransform;
             prefabToUse = categoryAssetPackItemAdapterPrefab;
@@ -44,6 +42,9 @@ public class CatalogAssetPackListView : ListView<CatalogItemPack>
             adapter.SetContent(catalogItemPack);
             adapter.OnCatalogItemPackClick += SceneAssetPackClick;
         }
+
+        if (dynamicScrollSensitivity != null)
+            dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
     public override void RemoveAdapters()
@@ -57,20 +58,14 @@ public class CatalogAssetPackListView : ListView<CatalogItemPack>
             GameObject toRemove = transformToUse.GetChild(i).gameObject;
             Destroy(toRemove);
         }
+
+        if (dynamicScrollSensitivity != null)
+            dynamicScrollSensitivity.RecalculateSensitivity();
     }
 
-    public void SetCategoryStyle()
-    {
-        useAssetPackStyle = false;
-    }
+    public void SetCategoryStyle() { useAssetPackStyle = false; }
 
-    public void SetAssetPackStyle()
-    {
-        useAssetPackStyle = true;
-    }
+    public void SetAssetPackStyle() { useAssetPackStyle = true; }
 
-    void SceneAssetPackClick(CatalogItemPack sceneAssetPack)
-    {
-        OnCatalogPackClick?.Invoke(sceneAssetPack);
-    }
+    void SceneAssetPackClick(CatalogItemPack sceneAssetPack) { OnCatalogPackClick?.Invoke(sceneAssetPack); }
 }

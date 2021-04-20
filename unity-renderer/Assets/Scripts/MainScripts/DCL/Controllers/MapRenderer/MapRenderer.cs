@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using KernelConfigurationTypes;
 
 namespace DCL
 {
@@ -61,6 +62,10 @@ namespace DCL
 
         private bool parcelHighlightEnabledValue = false;
 
+        List<WorldRange> validWorldRanges = new List<WorldRange>{
+            new WorldRange(-150, -150, 150, 150) // default range
+        };
+
         public bool parcelHighlightEnabled
         {
             set
@@ -115,6 +120,8 @@ namespace DCL
                 MapUtils.GetTileToLocalPosition);
 
             usersPositionMarkerController.SetUpdateMode(MapGlobalUsersPositionMarkerController.UpdateMode.BACKGROUND);
+
+            KernelConfig.i.OnChange += OnKernelConfigChanged;
         }
 
         private void EnsurePools()
@@ -161,6 +168,8 @@ namespace DCL
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
             usersPositionMarkerController?.Dispose();
+
+            KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
             isInitialized = false;
         }
@@ -252,9 +261,21 @@ namespace DCL
             }
         }
 
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
+        {
+            validWorldRanges = current.validWorldRanges;
+        }
+
         bool CoordinatesAreInsideTheWorld(int xCoord, int yCoord)
         {
-            return (Mathf.Abs(xCoord) <= WORLDMAP_WIDTH_IN_PARCELS / 2) && (Mathf.Abs(yCoord) <= WORLDMAP_WIDTH_IN_PARCELS / 2);
+            foreach(WorldRange worldRange in validWorldRanges)
+            {
+                if (worldRange.Contains(xCoord, yCoord))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)

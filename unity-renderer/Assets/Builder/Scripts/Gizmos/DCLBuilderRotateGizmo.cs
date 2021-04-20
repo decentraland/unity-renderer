@@ -6,16 +6,16 @@ namespace Builder.Gizmos
     {
         private Plane raycastPlane;
 
-        public override void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo)
-        {
-            snapFactor = snapInfo.rotation;
-        }
+        public override void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo) { snapFactor = snapInfo.rotation; }
 
-        public override void TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
+        public override float TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
         {
             Space space = worldOrientedGizmos ? Space.World : Space.Self;
             Vector3 rotationVector = activeAxis.transform.forward;
-            entityTransform.Rotate(rotationVector, axisValue * Mathf.Rad2Deg, space);
+
+            float amount = axisValue * Mathf.Rad2Deg;
+            entityTransform.Rotate(rotationVector, amount, space);
+            return amount;
         }
 
         public override void OnBeginDrag(DCLBuilderGizmoAxis axis, Transform entityTransform)
@@ -43,9 +43,6 @@ namespace Builder.Gizmos
             return Vector3.SignedAngle(axis.transform.up, hitDir, axis.transform.forward) * Mathf.Deg2Rad;
         }
 
-        protected override void SetPreviousAxisValue(float axisValue, float transformValue)
-        {
-            prevAxisValue = axisValue;
-        }
+        protected override void SetPreviousAxisValue(float axisValue, float transformValue) { prevAxisValue = axisValue; }
     }
 }

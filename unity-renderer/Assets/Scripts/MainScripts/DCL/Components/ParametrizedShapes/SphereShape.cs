@@ -16,7 +16,7 @@ namespace DCL.Components
             }
         }
 
-        public SphereShape(IParcelScene scene) : base(scene)
+        public SphereShape()
         {
             model = new Model();
         }

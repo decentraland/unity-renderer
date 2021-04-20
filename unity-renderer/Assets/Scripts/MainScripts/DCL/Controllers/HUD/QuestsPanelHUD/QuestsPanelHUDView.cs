@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace DCL.Huds.QuestsPanel
 {
@@ -23,6 +24,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] private RectTransform questsContainer;
         [SerializeField] private GameObject questPrefab;
         [SerializeField] internal QuestsPanelPopup questPopup;
+        [SerializeField] private Button closeButton;
 
         private static BaseDictionary<string, QuestModel> quests => DataStore.i.Quests.quests;
 
@@ -41,7 +43,11 @@ namespace DCL.Huds.QuestsPanel
             return view;
         }
 
-        public void Awake() { questPopup.gameObject.SetActive(false); }
+        public void Awake()
+        {
+            questPopup.gameObject.SetActive(false);
+            closeButton.onClick.AddListener(() => DataStore.i.HUDs.questsPanelVisible.Set(false));
+        }
 
         public void RequestAddOrUpdateQuest(string questId)
         {
@@ -102,6 +108,10 @@ namespace DCL.Huds.QuestsPanel
                 Debug.Log($"Couldnt find quest with id {questId}");
                 return;
             }
+
+            Vector3 pos = questPopup.transform.position;
+            pos.y = questEntries[questId].readMorePosition.y;
+            questPopup.transform.position = pos;
 
             currentQuestInPopup = questId;
             questPopup.Populate(quest);

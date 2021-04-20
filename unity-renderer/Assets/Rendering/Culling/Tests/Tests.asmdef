@@ -9,7 +9,8 @@
         "TestHelpers",
         "MainScripts",
         "CoroutineHelpers",
-        "MeshesInfo"
+        "MeshesInfo",
+        "Interfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

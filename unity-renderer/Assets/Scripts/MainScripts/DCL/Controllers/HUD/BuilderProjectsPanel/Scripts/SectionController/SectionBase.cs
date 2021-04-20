@@ -3,9 +3,6 @@ using UnityEngine;
 
 internal abstract class SectionBase : IDisposable
 {
-    public static event Action OnRequestContextMenuHide;
-    public static event Action<SectionsController.SectionId> OnRequestOpenSection;
-
     public bool isVisible { get; private set; } = false;
     public virtual ISectionSearchHandler searchHandler { get; protected set; } = null;
     public virtual SearchBarConfig searchBarConfig { get; protected set; } = new SearchBarConfig()
@@ -29,15 +26,5 @@ internal abstract class SectionBase : IDisposable
         isVisible = visible;
         if (visible) OnShow();
         else OnHide();
-    }
-
-    protected void RequestOpenSection(SectionsController.SectionId id)
-    {
-        OnRequestOpenSection?.Invoke(id);
-    }
-
-    protected void RequestHideContextMenu()
-    {
-        OnRequestContextMenuHide?.Invoke();
     }
 }

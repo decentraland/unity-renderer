@@ -53,6 +53,7 @@ namespace Builder
                 public Quaternion rotation = Quaternion.identity;
                 public Vector3 scale = Vector3.one;
             }
+
             public string[] entities = null;
             public TransformPayload[] transforms = null;
             public string gizmoType = DCLGizmos.Gizmo.NONE;
@@ -64,7 +65,7 @@ namespace Builder
         private static ReportCameraTargetPosition onReportCameraTarget = new ReportCameraTargetPosition();
         private static GizmosEventPayload onGizmoEventPayload = new GizmosEventPayload();
 
-        public void SendEntityStartLoad(DecentralandEntity entity)
+        public void SendEntityStartLoad(IDCLEntity entity)
         {
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
@@ -73,7 +74,7 @@ namespace Builder
             WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
         }
 
-        public void SendEntityFinishLoad(DecentralandEntity entity)
+        public void SendEntityFinishLoad(IDCLEntity entity)
         {
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
@@ -92,7 +93,7 @@ namespace Builder
         public void SendBuilderSceneStart(string sceneId)
         {
             if (LOG_MESSAGES) Debug.Log($"SEND: BuilderSceneStartEvent {sceneId}");
-            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneId = sceneId });
+            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() {sceneId = sceneId});
         }
 
         public void SendCameraTargetPosition(Vector3 targetPosition, string promiseId)
@@ -106,7 +107,7 @@ namespace Builder
         public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoSelected";
-            onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId } : null;
+            onGizmoEventPayload.entities = entity ? new string[] {entity.rootEntity.entityId} : null;
             onGizmoEventPayload.gizmoType = gizmoType != null ? gizmoType : DCLGizmos.Gizmo.NONE;
             onGizmoEventPayload.transforms = null;
 
@@ -131,9 +132,9 @@ namespace Builder
                     scale = entities[i].transform.lossyScale
                 };
             }
+
             if (LOG_MESSAGES) Debug.Log($"SEND: NotifyGizmosTransformEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
             WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
         }
-
     }
 }

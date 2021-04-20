@@ -33,7 +33,7 @@ namespace Tests
         public IEnumerator TriggerSearchWhenUserStopTyping()
         {
             const string searchValue = "Something";
-            const float idleTimeToTriggerSearch = SearchInputField.IDLE_TYPE_TIME_TRIGGER_SEARCH;
+            const float idleTimeToTriggerSearch = 1;
 
             bool searchTriggered = false;
             string searchValueReceived = "";

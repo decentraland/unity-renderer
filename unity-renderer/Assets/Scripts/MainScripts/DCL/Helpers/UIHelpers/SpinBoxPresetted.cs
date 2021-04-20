@@ -11,11 +11,13 @@ public class SpinBoxPresetted : MonoBehaviour
 
     [Header("References")]
     [SerializeField] TMPro.TextMeshProUGUI textLabel = null;
+
     [SerializeField] Button increaseButton = null;
     [SerializeField] Button decreaseButton = null;
 
     [Header("Config")]
     [SerializeField] string[] labels = null;
+
     [SerializeField] int startingValue = 0;
 
     public bool loop;
@@ -80,23 +82,30 @@ public class SpinBoxPresetted : MonoBehaviour
     public void IncreaseValue()
     {
         int newVal = currentValue + 1;
-        if (loop && newVal >= labels.Length)
+
+        if (newVal >= labels.Length)
         {
-            if (loop) newVal = 0;
-            else newVal = labels.Length - 1;
+            if (loop)
+                newVal = 0;
+            else
+                newVal = labels.Length - 1;
         }
+
         SetValue(newVal);
     }
 
     public void DecreaseValue()
     {
         int newVal = currentValue - 1;
+
         if (newVal < 0)
         {
-            if (loop) newVal = labels.Length - 1;
-            else newVal = 0;
+            if (loop)
+                newVal = labels.Length - 1;
+            else
+                newVal = 0;
         }
+
         SetValue(newVal);
     }
-
 }

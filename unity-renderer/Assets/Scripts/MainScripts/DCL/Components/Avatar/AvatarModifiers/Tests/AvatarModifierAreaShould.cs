@@ -10,19 +10,20 @@ public class AvatarModifierAreaShould : IntegrationTestSuite_Legacy
     private const string MOCK_MODIFIER_KEY = "MockModifier";
     private AvatarModifierArea avatarModifierArea;
     private AvatarModifier mockAvatarModifier;
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
 
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+        var entity = TestHelpers.CreateSceneEntity(scene);
         AvatarModifierArea.Model model = new AvatarModifierArea.Model
         {
-            area = new BoxTriggerArea { box = new Vector3(10, 10, 10) },
+            area = new BoxTriggerArea {box = new Vector3(10, 10, 10)},
         };
         avatarModifierArea = TestHelpers.EntityComponentCreate<AvatarModifierArea, AvatarModifierArea.Model>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA);
         yield return avatarModifierArea.routine;
 
-        model.modifiers = new [] { MOCK_MODIFIER_KEY };
+        model.modifiers = new[] {MOCK_MODIFIER_KEY};
         mockAvatarModifier = Substitute.For<AvatarModifier>();
         avatarModifierArea.modifiers.Add(MOCK_MODIFIER_KEY, mockAvatarModifier);
 

@@ -20,7 +20,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
         (
             sceneController: new SceneController(),
             state: new WorldState(),
-            componentFactory: RuntimeComponentFactory.Create()
+            componentFactory: new RuntimeComponentFactory()
         );
     }
 
@@ -36,7 +36,7 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator InitializeEmpty()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
         QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, null, CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         mockQuestController.DidNotReceiveWithAnyArgs().UpdateQuestProgress(new QuestModel());
@@ -46,8 +46,8 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator AddQuests()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
@@ -60,8 +60,8 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator RemovePreviousQuest()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {
@@ -81,8 +81,8 @@ public class QuestTrackingInfoShould : IntegrationTestSuite
     [UnityTest]
     public IEnumerator RemovePreviousQuestOnDestroy()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity,  new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+        QuestTrackingInfo questTrackingInfo = TestHelpers.EntityComponentCreate<QuestTrackingInfo, QuestModel>(scene, entity, new QuestModel(), CLASS_ID_COMPONENT.QUEST_TRACKING_INFORMATION);
         yield return questTrackingInfo.routine;
         QuestModel quest = new QuestModel
         {

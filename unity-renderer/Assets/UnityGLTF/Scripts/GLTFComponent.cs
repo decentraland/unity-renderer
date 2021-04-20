@@ -59,7 +59,6 @@ namespace UnityGLTF
             }
         }
 
-
         public GameObject loadingPlaceholder;
         public System.Action OnFinishedLoadingAsset;
         public System.Action OnFailedLoadingAsset;
@@ -90,20 +89,15 @@ namespace UnityGLTF
         private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
         private Camera mainCamera;
+        private DCL.IWebRequestController webRequestController;
 
         public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
 
-        public Action OnSuccess
-        {
-            get { return OnFinishedLoadingAsset; }
-            set { OnFinishedLoadingAsset = value; }
-        }
+        public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
 
-        public Action OnFail
-        {
-            get { return OnFailedLoadingAsset; }
-            set { OnFailedLoadingAsset = value; }
-        }
+        public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
+
+        public void Initialize(DCL.IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
         public void LoadAsset(string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
         {
@@ -233,7 +227,7 @@ namespace UnityGLTF
                         // Path.Combine treats paths that start with the separator character
                         // as absolute paths, ignoring the first path passed in. This removes
                         // that character to properly handle a filename written with it.
-                        GLTFUri = GLTFUri.TrimStart(new[] {Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar});
+                        GLTFUri = GLTFUri.TrimStart(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
                         string fullPath = Path.Combine(Application.streamingAssetsPath, GLTFUri);
                         string directoryPath = URIHelper.GetDirectoryName(fullPath);
                         loader = new FileLoader(directoryPath);
@@ -246,7 +240,7 @@ namespace UnityGLTF
                     }
                     else
                     {
-                        loader = new WebRequestLoader("");
+                        loader = new WebRequestLoader("", webRequestController);
 
                         string id = string.IsNullOrEmpty(idPrefix) ? GLTFUri : idPrefix;
 
@@ -355,7 +349,6 @@ namespace UnityGLTF
             }
         }
 
-
         private bool TestDistance()
         {
             if (mainCamera == null || this == null)
@@ -382,10 +375,7 @@ namespace UnityGLTF
             return result;
         }
 
-        public void Load(string url)
-        {
-            throw new NotImplementedException();
-        }
+        public void Load(string url) { throw new NotImplementedException(); }
 
 #if UNITY_EDITOR
         // In production it will always be false
@@ -394,10 +384,7 @@ namespace UnityGLTF
         // We need to check if application is quitting in editor
         // to prevent the pool from releasing objects that are
         // being destroyed 
-        void Awake()
-        {
-            Application.quitting += OnIsQuitting;
-        }
+        void Awake() { Application.quitting += OnIsQuitting; }
 
         void OnIsQuitting()
         {

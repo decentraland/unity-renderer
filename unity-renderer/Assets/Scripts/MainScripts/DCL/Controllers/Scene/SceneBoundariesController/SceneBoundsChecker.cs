@@ -3,6 +3,8 @@ using DCL.Models;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System;
+using DCL.Helpers;
 
 namespace DCL.Controllers
 {
@@ -20,6 +22,8 @@ namespace DCL.Controllers
 
     public interface ISceneBoundsChecker
     {
+        event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
+
         float timeBetweenChecks { get; set; }
         bool enabled { get; }
         int entitiesToCheckCount { get; }
@@ -28,36 +32,38 @@ namespace DCL.Controllers
         List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
         void Start();
         void Stop();
-        void AddEntityToBeChecked(DecentralandEntity entity);
+        void AddEntityToBeChecked(IDCLEntity entity);
 
         /// <summary>
         /// Add an entity that will be consistently checked, until manually removed from the list.
         /// </summary>
-        void AddPersistent(DecentralandEntity entity);
+        void AddPersistent(IDCLEntity entity);
 
         /// <summary>
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
         ///
-        bool WasAddedAsPersistent(DecentralandEntity entity);
+        bool WasAddedAsPersistent(IDCLEntity entity);
 
-        void RemoveEntityToBeChecked(DecentralandEntity entity);
-        void EvaluateEntityPosition(DecentralandEntity entity);
-        bool IsEntityInsideSceneBoundaries(DecentralandEntity entity);
+        void RemoveEntityToBeChecked(IDCLEntity entity);
+        void EvaluateEntityPosition(IDCLEntity entity);
+        bool IsEntityInsideSceneBoundaries(IDCLEntity entity);
     }
 
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
+        public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
+
         public bool enabled => entitiesCheckRoutine != null;
 
         public float timeBetweenChecks { get; set; } = 1f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
-        HashSet<DecentralandEntity> entitiesToCheck = new HashSet<DecentralandEntity>();
-        HashSet<DecentralandEntity> checkedEntities = new HashSet<DecentralandEntity>();
+        HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
+        HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
         Coroutine entitiesCheckRoutine = null;
         float lastCheckTime;
-        private HashSet<DecentralandEntity> persistentEntities = new HashSet<DecentralandEntity>();
+        private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
 
         public int entitiesToCheckCount => entitiesToCheck.Count;
 
@@ -104,7 +110,8 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            if (messagingManager.timeBudgetCounter <= 0f) break;
+                            if (messagingManager.timeBudgetCounter <= 0f)
+                                break;
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -155,7 +162,7 @@ namespace DCL.Controllers
             entitiesCheckRoutine = null;
         }
 
-        public void AddEntityToBeChecked(DecentralandEntity entity)
+        public void AddEntityToBeChecked(IDCLEntity entity)
         {
             if (!enabled)
                 return;
@@ -166,7 +173,7 @@ namespace DCL.Controllers
         /// <summary>
         /// Add an entity that will be consistently checked, until manually removed from the list.
         /// </summary>
-        public void AddPersistent(DecentralandEntity entity)
+        public void AddPersistent(IDCLEntity entity)
         {
             if (!enabled)
                 return;
@@ -179,21 +186,23 @@ namespace DCL.Controllers
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
         ///
-        public bool WasAddedAsPersistent(DecentralandEntity entity)
+        public bool WasAddedAsPersistent(IDCLEntity entity)
         {
             return persistentEntities.Contains(entity);
         }
 
-        public void RemoveEntityToBeChecked(DecentralandEntity entity)
+        public void RemoveEntityToBeChecked(IDCLEntity entity)
         {
-            if (!enabled) return;
+            if (!enabled)
+                return;
 
             OnRemoveEntity(entity);
         }
 
-        public void EvaluateEntityPosition(DecentralandEntity entity)
+        public void EvaluateEntityPosition(IDCLEntity entity)
         {
-            if (entity == null || entity.scene == null || entity.gameObject == null) return;
+            if (entity == null || entity.scene == null || entity.gameObject == null)
+                return;
 
             // Recursively evaluate entity children as well, we need to check this up front because this entity may not have meshes of its own, but the children may.
             if (entity.children.Count > 0)
@@ -226,9 +235,10 @@ namespace DCL.Controllers
             EvaluateMeshBounds(entity);
         }
 
-        public bool IsEntityInsideSceneBoundaries(DecentralandEntity entity)
+        public bool IsEntityInsideSceneBoundaries(IDCLEntity entity)
         {
-            if (entity.meshesInfo == null || entity.meshesInfo.meshRootGameObject == null || entity.meshesInfo.mergedBounds == null) return false;
+            if (entity.meshesInfo == null || entity.meshesInfo.meshRootGameObject == null || entity.meshesInfo.mergedBounds == null)
+                return false;
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.mergedBounds);
@@ -242,23 +252,24 @@ namespace DCL.Controllers
             return isInsideBoundaries;
         }
 
-        void EvaluateMeshBounds(DecentralandEntity entity)
+        void EvaluateMeshBounds(IDCLEntity entity)
         {
             bool isInsideBoundaries = IsEntityInsideSceneBoundaries(entity);
+            OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
 
             UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateComponents(entity, isInsideBoundaries);
         }
 
-        protected bool AreSubmeshesInsideBoundaries(DecentralandEntity entity)
+        protected bool AreSubmeshesInsideBoundaries(IDCLEntity entity)
         {
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
             {
                 if (entity.meshesInfo.renderers[i] == null)
                     continue;
-                
-                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].bounds))
+
+                if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
                 {
                     feedbackStyle.OnRendererExitBounds(entity.meshesInfo.renderers[i]);
                     return false;
@@ -279,12 +290,13 @@ namespace DCL.Controllers
                 return;
 
             int collidersCount = meshesInfo.colliders.Count;
-            if(collidersCount <= 0)
-                 return;
-            
+
+            if (collidersCount == 0)
+                return;
+
             if (meshesInfo.colliders[0] == null)
                 return;
-            
+
             if (collidersCount > 0 && isInsideBoundaries != meshesInfo.colliders[0].enabled && meshesInfo.currentShape.HasCollisions())
             {
                 for (int i = 0; i < collidersCount; i++)
@@ -295,7 +307,7 @@ namespace DCL.Controllers
             }
         }
 
-        protected void UpdateComponents(DecentralandEntity entity, bool isInsideBoundaries)
+        protected void UpdateComponents(IDCLEntity entity, bool isInsideBoundaries)
         {
             IOutOfSceneBoundariesHandler[] components = entity.gameObject.GetComponentsInChildren<IOutOfSceneBoundariesHandler>();
 
@@ -305,12 +317,12 @@ namespace DCL.Controllers
             }
         }
 
-        protected void OnAddEntity(DecentralandEntity entity)
+        protected void OnAddEntity(IDCLEntity entity)
         {
             entitiesToCheck.Add(entity);
         }
 
-        protected void OnRemoveEntity(DecentralandEntity entity)
+        protected void OnRemoveEntity(IDCLEntity entity)
         {
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);

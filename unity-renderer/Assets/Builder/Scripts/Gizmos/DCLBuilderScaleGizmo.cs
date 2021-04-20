@@ -19,12 +19,9 @@ namespace Builder.Gizmos
             axisProportionalScale.SetGizmo(this);
         }
 
-        public override void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo)
-        {
-            snapFactor = snapInfo.scale;
-        }
+        public override void SetSnapFactor(DCLBuilderGizmoManager.SnapInfo snapInfo) { snapFactor = snapInfo.scale; }
 
-        public override void TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
+        public override float TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
         {
             Vector3 scaleDirection = activeAxis.transform.forward;
             if (axis == axisProportionalScale)
@@ -54,6 +51,7 @@ namespace Builder.Gizmos
             }
 
             entityTransform.localScale = newScale;
+            return axisValue;
         }
 
         protected override void SetPreviousAxisValue(float axisValue, float transformValue)

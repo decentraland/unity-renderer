@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuilderInWorldEntityAction 
+public class BuilderInWorldEntityAction
 {
     public string entityId;
 
@@ -29,12 +29,12 @@ public class BuilderInWorldEntityAction
         this.newValue = newValue;
     }
 
-    public BuilderInWorldEntityAction(DecentralandEntity entity)
+    public BuilderInWorldEntityAction(IDCLEntity entity)
     {
         this.entityId = entity.entityId;
     }
 
-    public BuilderInWorldEntityAction(DecentralandEntity entity,object oldValue,object newValue)
+    public BuilderInWorldEntityAction(IDCLEntity entity, object oldValue, object newValue)
     {
         this.entityId = entity.entityId;
         this.oldValue = oldValue;

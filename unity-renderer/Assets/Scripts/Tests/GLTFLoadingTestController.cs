@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections;
@@ -61,7 +61,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         // Send the request then wait here until it returns
         yield return uwr.SendWebRequest();
 
-        if (uwr.isNetworkError)
+        if (uwr.result == UnityWebRequest.Result.ConnectionError)
         {
             Debug.Log("Error While Sending: " + uwr.error);
         }
@@ -77,10 +77,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         public string user = "WorldTeam-Unity";
         public TestEvent[] events = new TestEvent[1];
 
-        public GLTFLoadingTestTrackingData()
-        {
-            events[0] = new TestEvent();
-        }
+        public GLTFLoadingTestTrackingData() { events[0] = new TestEvent(); }
 
         [Serializable]
         public class TestEvent

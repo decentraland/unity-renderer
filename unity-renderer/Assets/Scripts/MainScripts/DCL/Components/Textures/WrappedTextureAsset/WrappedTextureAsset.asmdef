@@ -2,7 +2,8 @@
     "name": "WrappedTextureAsset",
     "references": [
         "GUID:a3ceb534947fac14da25035bc5c24788",
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

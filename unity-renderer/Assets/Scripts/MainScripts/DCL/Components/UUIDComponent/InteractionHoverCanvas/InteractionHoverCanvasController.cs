@@ -17,7 +17,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
     Camera mainCamera;
     GameObject hoverIcon;
     Vector3 meshCenteredPos;
-    DecentralandEntity entity;
+    IDCLEntity entity;
 
     const string ACTION_BUTTON_POINTER = "POINTER";
     const string ACTION_BUTTON_PRIMARY = "PRIMARY";
@@ -29,7 +29,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    public void Setup(string button, string feedbackText, DecentralandEntity entity)
+    public void Setup(string button, string feedbackText, IDCLEntity entity)
     {
         text.text = feedbackText;
         this.entity = entity;

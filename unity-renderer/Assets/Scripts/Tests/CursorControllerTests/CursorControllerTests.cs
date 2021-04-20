@@ -24,7 +24,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsDisplayedCorrectly()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
 
             shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
@@ -103,7 +103,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackNotDisplayedOnInvisibles()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
 
             shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
@@ -170,7 +170,7 @@ namespace Tests
             Assert.IsNotNull(cameraController, "camera is null?");
 
             // Create parent entity
-            DecentralandEntity blockingEntity;
+            IDCLEntity blockingEntity;
             BoxShape blockingShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -181,7 +181,7 @@ namespace Tests
             yield return blockingShape.routine;
 
             // Create target entity for click
-            DecentralandEntity clickTargetEntity;
+            IDCLEntity clickTargetEntity;
             BoxShape clickTargetShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.BOX_SHAPE,
@@ -226,7 +226,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsBlockedByUI()
         {
-            DecentralandEntity entity;
+            IDCLEntity entity;
             BoxShape shape;
 
             shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(

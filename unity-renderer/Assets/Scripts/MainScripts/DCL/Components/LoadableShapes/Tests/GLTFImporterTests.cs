@@ -15,11 +15,11 @@ using UnityGLTF.Cache;
 
 public class GLTFImporterTests : IntegrationTestSuite_Legacy
 {
-    public IEnumerator LoadModel(string path, System.Action<DecentralandEntity, InstantiatedGLTFObject> OnFinishLoading)
+    public IEnumerator LoadModel(string path, System.Action<IDCLEntity, InstantiatedGLTFObject> OnFinishLoading)
     {
         string src = Utils.GetTestsAssetsPath() + path;
 
-        DecentralandEntity entity = null;
+        IDCLEntity entity = null;
 
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
 
@@ -32,6 +32,13 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
         {
             OnFinishLoading.Invoke(entity, entity.meshRootGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
         }
+    }
+
+    [Test]
+    public void ImporterCanLoadSkeletonsByDefault()
+    {
+        var importer = new GLTFSceneImporter("", "", null, null);
+        Assert.IsTrue( importer.importSkeleton, "Skeleton importing should be true by default or avatars won't load correctly!" );
     }
 
     [UnityTest]
@@ -127,7 +134,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator TexturesCacheWorksProperly()
     {
-        DecentralandEntity entity = null;
+        IDCLEntity entity = null;
         PersistentAssetCache.ImageCacheByUri.Clear();
         yield return LoadModel("/GLTF/Trunk/Trunk.gltf", (e, model) => entity = e);
 
@@ -143,29 +150,29 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator TexturesOffsetAndScaleWorkProperly()
     {
-        DecentralandEntity entity = null;
+        IDCLEntity entity = null;
         PersistentAssetCache.ImageCacheByUri.Clear();
         yield return LoadModel("/GLB/PlaneUVsOffset/planeUVsOffset.glb", (e, model) => entity = e);
 
         MeshRenderer meshRenderer = entity.gameObject.GetComponentInChildren<MeshRenderer>();
 
         var unityOffset = GLTFSceneImporter.GLTFOffsetToUnitySpace(new Vector2(0.35f, 0.35f), 2.5f);
-        Assert.AreEqual( unityOffset, meshRenderer.material.GetTextureOffset("_BaseMap"));
-        Assert.AreEqual( Vector2.one * 2.5f, meshRenderer.material.GetTextureScale("_BaseMap"));
+        Assert.AreEqual(unityOffset, meshRenderer.material.GetTextureOffset("_BaseMap"));
+        Assert.AreEqual(Vector2.one * 2.5f, meshRenderer.material.GetTextureScale("_BaseMap"));
     }
 
     [UnityTest]
     public IEnumerator TexturesProcessTexCoords()
     {
-        DecentralandEntity entity = null;
+        IDCLEntity entity = null;
         PersistentAssetCache.ImageCacheByUri.Clear();
         yield return LoadModel("/GLB/PlaneUVsMultichannel/PlaneUVsMultichannel.glb", (e, model) => entity = e);
 
         MeshRenderer meshRenderer = entity.gameObject.GetComponentInChildren<MeshRenderer>();
 
-        Assert.AreEqual( 1, meshRenderer.material.GetInt("_BaseMapUVs"));
-        Assert.AreEqual( 1, meshRenderer.material.GetInt("_NormalMapUVs"));
-        Assert.AreEqual( 1, meshRenderer.material.GetInt("_MetallicMapUVs"));
-        Assert.AreEqual( 1, meshRenderer.material.GetInt("_EmissiveMapUVs"));
+        Assert.AreEqual(1, meshRenderer.material.GetInt("_BaseMapUVs"));
+        Assert.AreEqual(1, meshRenderer.material.GetInt("_NormalMapUVs"));
+        Assert.AreEqual(1, meshRenderer.material.GetInt("_MetallicMapUVs"));
+        Assert.AreEqual(1, meshRenderer.material.GetInt("_EmissiveMapUVs"));
     }
 }

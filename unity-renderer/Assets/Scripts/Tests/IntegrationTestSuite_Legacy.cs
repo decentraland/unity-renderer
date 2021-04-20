@@ -95,8 +95,6 @@ public class IntegrationTestSuite_Legacy
     {
         yield return null;
 
-        Environment.Dispose();
-
         if (runtimeGameObjectsRoot != null)
             Object.Destroy(runtimeGameObjectsRoot.gameObject);
 
@@ -108,6 +106,8 @@ public class IntegrationTestSuite_Legacy
             if (DCLCharacterController.i.characterController != null)
                 DCLCharacterController.i.characterController.enabled = true;
         }
+
+        Environment.Dispose();
 
         yield return TearDown_Memory();
 

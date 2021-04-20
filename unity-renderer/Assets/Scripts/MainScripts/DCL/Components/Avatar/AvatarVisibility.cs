@@ -15,6 +15,8 @@ namespace DCL
         // A list of all the callers that want to hide the avatar
         private readonly HashSet<string> callsToHide = new HashSet<string>();
 
+        public event System.Action<bool> OnSetVisibility;
+
         public void SetVisibility(string callerId, bool visibility)
         {
             if (visibility)
@@ -35,6 +37,7 @@ namespace DCL
                     SetVisibilityForGameObjects(false);
                 }
             }
+            OnSetVisibility?.Invoke(visibility);
         }
 
         private void SetVisibilityForGameObjects(bool value)

@@ -225,7 +225,6 @@ namespace UnityGLTF
                     _material.SetInt(_ZWrite, 1);
                     _material.SetFloat(_AlphaClip, 1);
                     _material.EnableKeyword("_ALPHATEST_ON");
-                    _material.DisableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     _material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
                     if (_material.HasProperty(_Cutoff))
@@ -240,7 +239,6 @@ namespace UnityGLTF
                     _material.SetInt(_DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     _material.SetInt(_ZWrite, 0);
                     _material.DisableKeyword("_ALPHATEST_ON");
-                    _material.EnableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     _material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
                 }
@@ -251,7 +249,6 @@ namespace UnityGLTF
                     _material.SetInt(_DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
                     _material.SetInt(_ZWrite, 1);
                     _material.DisableKeyword("_ALPHATEST_ON");
-                    _material.DisableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     _material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
                 }
@@ -269,6 +266,7 @@ namespace UnityGLTF
                 {
                     _material.SetFloat(_Cutoff, (float)value);
                 }
+
                 _alphaCutoff = value;
             }
         }

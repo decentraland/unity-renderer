@@ -398,6 +398,8 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.BUILDER_IN_WORLD_MAIN:
                 CreateHudElement<BuildModeHUDController>(configuration, hudElementId);
+                if (configuration.active)
+                    builderInWorldMainHud.Initialize();
                 break;
             case HUDElementID.BUILDER_IN_WORLD_INITIAL:
                 CreateHudElement<BuilderInWorldInititalHUDController>(configuration, hudElementId);

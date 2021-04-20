@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
 using UnityGLTF;
@@ -44,6 +44,7 @@ public class GLTFBenchmark : MonoBehaviour
         GameObject gameObject = new GameObject("Test");
         lastGameObjectCreated = gameObject;
         GLTFComponent gltfComponent = gameObject.AddComponent<GLTFComponent>();
+        gltfComponent.Initialize(DCL.WebRequestController.i);
         GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
         {
             useVisualFeedback = false,

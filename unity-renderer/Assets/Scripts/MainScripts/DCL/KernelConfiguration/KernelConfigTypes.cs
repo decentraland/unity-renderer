@@ -56,4 +56,40 @@ namespace KernelConfigurationTypes
             return clone;
         }
     }
+
+    [Serializable]
+    public class WorldRange
+    {
+        public int xMin = 0;
+        public int xMax = 0;
+        public int yMin = 0;
+        public int yMax = 0;
+
+        public bool Equals(WorldRange other)
+        {
+            return xMin == other?.xMin &&
+                   xMax == other?.xMax &&
+                   yMin == other?.yMin &&
+                   yMax == other?.yMax;
+        }
+
+        public WorldRange Clone()
+        {
+            WorldRange clone = (WorldRange) this.MemberwiseClone();
+            return clone;
+        }
+        public WorldRange(int xMin, int yMin, int xMax, int yMax)
+        {
+            this.xMin = xMin;
+            this.yMin = yMin;
+            this.xMax = xMax;
+            this.yMax = yMax;
+        }
+
+        public bool Contains(int x, int y)
+        {
+            return x >= xMin && x <= xMax &&
+                   y >= yMin && y <= yMax;
+        }
+    }
 }

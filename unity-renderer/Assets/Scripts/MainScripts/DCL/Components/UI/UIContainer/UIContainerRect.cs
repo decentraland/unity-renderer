@@ -26,7 +26,7 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIContainerRect";
 
-        public UIContainerRect(IParcelScene scene) : base(scene)
+        public UIContainerRect()
         {
             model = new Model();
         }
@@ -36,13 +36,13 @@ namespace DCL.Components
             return (int) CLASS_ID.UI_CONTAINER_RECT;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(
                 "Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
         }
 

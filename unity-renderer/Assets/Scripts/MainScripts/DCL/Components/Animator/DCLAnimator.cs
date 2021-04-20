@@ -29,7 +29,7 @@ namespace DCL.Components
 
                 public DCLAnimationState Clone()
                 {
-                    return (DCLAnimationState)this.MemberwiseClone();
+                    return (DCLAnimationState) this.MemberwiseClone();
                 }
             }
 
@@ -70,10 +70,10 @@ namespace DCL.Components
 
         new public Model GetModel()
         {
-            return (Model)model;
+            return (Model) model;
         }
 
-        private void OnComponentUpdated(DecentralandEntity e)
+        private void OnComponentUpdated(IDCLEntity e)
         {
             UpdateAnimationState();
         }
@@ -115,7 +115,7 @@ namespace DCL.Components
             if (clipNameToClip.Count == 0 || animComponent == null)
                 return;
 
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
 
             if (model.states == null || model.states.Length == 0)
                 return;
@@ -173,7 +173,7 @@ namespace DCL.Components
 
         public Model.DCLAnimationState GetStateByString(string stateName)
         {
-            Model model = (Model)this.model;
+            Model model = (Model) this.model;
 
             for (var i = 0; i < model.states.Length; i++)
             {

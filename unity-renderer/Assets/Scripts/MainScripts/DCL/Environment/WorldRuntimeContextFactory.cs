@@ -13,7 +13,7 @@ namespace DCL
                 pointerEventsController: new PointerEventsController(),
                 sceneBoundsChecker: new SceneBoundsChecker(),
                 blockersController: new WorldBlockersController(),
-                componentFactory: RuntimeComponentFactory.Create());
+                componentFactory: new RuntimeComponentFactory());
         }
     }
 }

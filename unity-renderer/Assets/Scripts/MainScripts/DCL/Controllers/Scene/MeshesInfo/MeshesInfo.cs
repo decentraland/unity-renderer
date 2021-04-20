@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Components;
 using DCL.Helpers;
+using TMPro;
 using UnityEngine;
 
 namespace DCL.Models
@@ -56,13 +58,19 @@ namespace DCL.Models
             set { mergedBoundsValue = value; }
         }
 
-
         public void UpdateRenderersCollection()
         {
             if (meshRootGameObjectValue != null)
             {
                 renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
                 meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
+
+                TextMeshPro[] tmpros = meshRootGameObjectValue.GetComponentsInChildren<TextMeshPro>(true);
+                if (tmpros.Length > 0)
+                {
+                    renderers = renderers.Union(tmpros.Select(x => x.renderer)).ToArray();
+                    meshFilters = meshFilters.Union(tmpros.Select(x => x.meshFilter)).ToArray();
+                }
 
                 RecalculateBounds();
                 OnAnyUpdated?.Invoke();
@@ -72,7 +80,8 @@ namespace DCL.Models
 
         public void RecalculateBounds()
         {
-            if (renderers == null || renderers.Length == 0) return;
+            if (renderers == null || renderers.Length == 0)
+                return;
 
             lastBoundsCalculationPosition = meshRootGameObject.transform.position;
             lastBoundsCalculationScale = meshRootGameObject.transform.lossyScale;

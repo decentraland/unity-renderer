@@ -12,6 +12,8 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
     public System.Action<CatalogItem, CatalogItemAdapter, BaseEventData> OnAdapterStartDragging;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
     [Header("Prefab References")]
     public GameObject catalogItemAdapterPrefab;
@@ -24,50 +26,56 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         {
             CatalogItemAdapter adapter = Instantiate(catalogItemAdapterPrefab, categoryContentGO.transform).GetComponent<CatalogItemAdapter>();
             adapter.SetContent(catalogItem);
-            AddAdapter(adapter);
+            SubscribeToEvents(adapter);
         }
     }
 
-    public void AddAdapter(CatalogItemAdapter adapter)
+    public void SubscribeToEvents(CatalogItemAdapter adapter)
     {
         adapter.OnCatalogItemClicked += CatalogItemClicked;
         adapter.OnCatalogItemFavorite += CatalogItemFavorite;
         adapter.OnAdapterStartDrag += AdapterStartDragging;
         adapter.OnAdapterDrag += OnDrag;
         adapter.OnAdapterEndDrag += OnEndDrag;
+        adapter.OnPointerEnterInAdapter += OnPointerEnter;
+        adapter.OnPointerExitInAdapter += OnPointerExit;
+    }
+
+    public void UnsubscribeToEvents(CatalogItemAdapter adapter)
+    {
+        adapter.OnCatalogItemClicked -= CatalogItemClicked;
+        adapter.OnCatalogItemFavorite -= CatalogItemFavorite;
+        adapter.OnAdapterStartDrag -= AdapterStartDragging;
+        adapter.OnAdapterDrag -= OnDrag;
+        adapter.OnAdapterEndDrag -= OnEndDrag;
+        adapter.OnPointerEnterInAdapter -= OnPointerEnter;
+        adapter.OnPointerExitInAdapter -= OnPointerExit;
     }
 
     public void RemoveAdapters()
     {
         for (int i = 0; i < categoryContentGO.transform.childCount; i++)
         {
-            GameObject toRemove = categoryContentGO.transform.GetChild(i).gameObject;
-            Destroy(toRemove);
+            CatalogItemAdapter toRemove = categoryContentGO.transform.GetChild(i).GetComponent<CatalogItemAdapter>();
+            if (toRemove != null)
+            {
+                UnsubscribeToEvents(toRemove);
+                Destroy(toRemove.gameObject);
+            }
         }
     }
 
-    private void OnDrag(PointerEventData eventData)
-    {
-        OnAdapterDrag?.Invoke(eventData);
-    }
+    private void OnDrag(PointerEventData eventData) { OnAdapterDrag?.Invoke(eventData); }
 
-    private void OnEndDrag(PointerEventData eventData)
-    {
-        OnAdapterEndDrag?.Invoke(eventData);
-    }
+    private void OnEndDrag(PointerEventData eventData) { OnAdapterEndDrag?.Invoke(eventData); }
 
-    private void CatalogItemClicked(CatalogItem catalogItemClicked)
-    {
-        OnCatalogItemClicked?.Invoke(catalogItemClicked);
-    }
+    private void CatalogItemClicked(CatalogItem catalogItemClicked) { OnCatalogItemClicked?.Invoke(catalogItemClicked); }
 
-    private void CatalogItemFavorite(CatalogItem catalogItemClicked, CatalogItemAdapter adapter)
-    {
-        OnCatalogItemFavorite?.Invoke(catalogItemClicked, adapter);
-    }
+    private void CatalogItemFavorite(CatalogItem catalogItemClicked, CatalogItemAdapter adapter) { OnCatalogItemFavorite?.Invoke(catalogItemClicked, adapter); }
 
-    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data)
-    {
-        OnAdapterStartDragging?.Invoke(catalogItemClicked, adapter, data);
-    }
+    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter, BaseEventData data) { OnAdapterStartDragging?.Invoke(catalogItemClicked, adapter, data); }
+
+    private void OnPointerEnter(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerEnterInAdapter?.Invoke(eventData, adapter); }
+
+    private void OnPointerExit(PointerEventData eventData, CatalogItemAdapter adapter) { OnPointerExitInAdapter?.Invoke(eventData, adapter); }
 }

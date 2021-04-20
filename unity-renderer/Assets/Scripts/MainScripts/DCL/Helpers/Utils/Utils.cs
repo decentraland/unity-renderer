@@ -73,7 +73,6 @@ namespace DCL.Helpers
             return uvsResult;
         }
 
-
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;
@@ -124,14 +123,14 @@ namespace DCL.Helpers
             }
         }
 
-
         /// <summary>
         /// Reimplementation of the LayoutRebuilder.ForceRebuildLayoutImmediate() function (Unity UI API) for make it more performant.
         /// </summary>
         /// <param name="rectTransformRoot">Root from which to rebuild.</param>
         public static void ForceRebuildLayoutImmediate(RectTransform rectTransformRoot)
         {
-            if (rectTransformRoot == null) return;
+            if (rectTransformRoot == null)
+                return;
 
             // NOTE(Santi): It seems to be very much cheaper to execute the next instructions manually than execute directly the function
             //              'LayoutRebuilder.ForceRebuildLayoutImmediate()', that theorically already contains these instructions.
@@ -161,11 +160,11 @@ namespace DCL.Helpers
                 rt);
         }
 
-
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
             where TComponent : Component
         {
-            if (startTransform == null) return;
+            if (startTransform == null)
+                return;
 
             foreach (Transform t in startTransform)
             {
@@ -199,7 +198,6 @@ namespace DCL.Helpers
             }
         }
 
-
         public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
@@ -212,47 +210,7 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static bool WebRequestSucceded(this UnityWebRequest request)
-        {
-            return request != null && !request.isNetworkError && !request.isHttpError;
-        }
-
-        public static IEnumerator FetchAsset(string url, UnityWebRequest request,
-            System.Action<UnityWebRequest> OnSuccess = null, System.Action<string> OnFail = null)
-        {
-            if (!string.IsNullOrEmpty(url))
-            {
-                using (var webRequest = request)
-                {
-                    yield return webRequest.SendWebRequest();
-
-                    if (!WebRequestSucceded(request))
-                    {
-                        Debug.Log(
-                            string.Format("Fetching asset failed ({0}): {1} ", request.url, webRequest.error));
-
-                        if (OnFail != null)
-                        {
-                            OnFail.Invoke(webRequest.error);
-                        }
-                    }
-                    else
-                    {
-                        if (OnSuccess != null)
-                        {
-                            OnSuccess.Invoke(webRequest);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Debug.Log(string.Format("Can't fetch asset as the url is empty!"));
-            }
-        }
-
-        public static IEnumerator FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess,
-            Action<string> OnFail)
+        public static WebRequestAsyncOperation FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess, Action<string> OnFail)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             Action<UnityWebRequest> OnSuccessInternal =
@@ -273,22 +231,23 @@ namespace DCL.Helpers
                     }
                 };
 
-            Action<string> OnFailInternal =
-                (error) =>
+            Action<UnityWebRequest> OnFailInternal =
+                (request) =>
                 {
                     if (OnFail != null)
                     {
-                        OnFail.Invoke(error);
+                        OnFail.Invoke(request.error);
                     }
                 };
 
-            var req = UnityWebRequestMultimedia.GetAudioClip(url, audioType);
-
-            yield return FetchAsset(url, req, OnSuccessInternal,
-                OnFailInternal);
+            return WebRequestController.i.GetAudioClip(
+                url: url,
+                audioType: audioType,
+                OnSuccess: OnSuccessInternal,
+                OnFail: OnFailInternal);
         }
 
-        public static IEnumerator FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<string> OnFail = null)
+        public static WebRequestAsyncOperation FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<UnityWebRequest> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             void SuccessInternal(UnityWebRequest request)
@@ -297,7 +256,10 @@ namespace DCL.Helpers
                 OnSuccess?.Invoke(texture);
             }
 
-            yield return FetchAsset(textureURL, UnityWebRequestTexture.GetTexture(textureURL), SuccessInternal, OnFail);
+            return WebRequestController.i.GetTexture(
+                url: textureURL,
+                OnSuccess: SuccessInternal,
+                OnFail: OnFail);
         }
 
         public static AudioType GetAudioTypeFromUrlName(string url)
@@ -338,10 +300,7 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T FromJsonWithNulls<T>(string json)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
-        }
+        public static T FromJsonWithNulls<T>(string json) { return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json); }
 
         public static T SafeFromJson<T>(string json)
         {
@@ -421,10 +380,7 @@ namespace DCL.Helpers
             );
         }
 
-        public static string GetTestAssetsPathRaw()
-        {
-            return Application.dataPath + "/../TestResources";
-        }
+        public static string GetTestAssetsPathRaw() { return Application.dataPath + "/../TestResources"; }
 
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
@@ -473,12 +429,13 @@ namespace DCL.Helpers
 
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] == null) continue;
+                if (renderers[i] == null)
+                    continue;
 
                 if (i == 0)
-                    bounds = renderers[i].bounds;
+                    bounds = renderers[i].GetSafeBounds();
                 else
-                    bounds.Encapsulate(renderers[i].bounds);
+                    bounds.Encapsulate(renderers[i].GetSafeBounds());
             }
 
             return bounds;
@@ -631,10 +588,30 @@ namespace DCL.Helpers
             return new Vector3(x, y, z);
         }
 
+        public static bool CompareFloats( float a, float b, float precision = 0.1f ) { return Mathf.Abs(a - b) < precision; }
+
         public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
         {
             key = tuple.Key;
             value = tuple.Value;
+        }
+
+        /// <summary>
+        /// This get the renderer bounds with a check to ensure the renderer is at a safe position.
+        /// If the renderer is too far away from 0,0,0, wasm target ensures a crash.
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <returns>The bounds value if the value is correct, or a mocked bounds object with clamped values if its too far away.</returns>
+        public static Bounds GetSafeBounds( this Renderer renderer )
+        {
+            // World extents are of 4800 world mts, so this limit far exceeds the world size.
+            const float POSITION_OVERFLOW_LIMIT = 10000;
+            const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
+
+            if ( renderer.transform.position.sqrMagnitude > POSITION_OVERFLOW_LIMIT_SQR )
+                return new Bounds( Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f );
+
+            return renderer.bounds;
         }
     }
 }

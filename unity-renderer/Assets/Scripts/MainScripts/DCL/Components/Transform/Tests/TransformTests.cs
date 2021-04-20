@@ -11,7 +11,7 @@ namespace Tests
         [Test]
         public void TransformUpdate()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity != null);
 
@@ -24,7 +24,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(10, 50, -90);
                 Vector3 scale = new Vector3(0.7f, 0.7f, 0.7f);
 
-                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
+                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
@@ -47,7 +47,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(101, 51, -91);
                 Vector3 scale = new Vector3(1.7f, 3.7f, -0.7f);
 
-                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
+                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
@@ -70,7 +70,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(0, 0, 0);
                 Vector3 scale = new Vector3(1, 1, 1);
 
-                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
+                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
@@ -88,9 +88,7 @@ namespace Tests
         [Test]
         public void TransformationsAreKeptRelativeAfterParenting()
         {
-
-
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             Vector3 targetPosition = new Vector3(3f, 7f, 1f);
             Quaternion targetRotation = new Quaternion(4f, 9f, 1f, 7f);
@@ -112,7 +110,7 @@ namespace Tests
             Assert.IsTrue(targetScale == entity.gameObject.transform.localScale);
 
             // 3. Create new parent entity
-            DecentralandEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+            IDCLEntity entity2 = TestHelpers.CreateSceneEntity(scene);
 
             componentModel = new DCLTransform.Model
             {

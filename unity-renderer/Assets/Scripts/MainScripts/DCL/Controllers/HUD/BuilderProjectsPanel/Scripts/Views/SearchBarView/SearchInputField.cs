@@ -6,16 +6,35 @@ using UnityEngine.UI;
 
 internal class SearchInputField : MonoBehaviour
 {
-    internal const float IDLE_TYPE_TIME_TRIGGER_SEARCH = 1f;
-
     public event Action<string> OnSearchText;
 
     [SerializeField] internal TMP_InputField inputField;
     [SerializeField] internal GameObject searchSpinner;
     [SerializeField] internal Button clearSearchButton;
+    [SerializeField] internal float idleTimeToTriggerSearch = 1;
 
     private Coroutine searchWhileTypingRoutine;
     private float lastValueChangeTime = 0;
+
+    public void ShowSearchSpinner()
+    {
+        SetTypingMode();
+    }
+
+    public void ShowSearchClearButton()
+    {
+        SetSearchMode();
+    }
+
+    public void ClearSearch()
+    {
+        OnClear();
+    }
+
+    public void SetIdleSearchTime(float idleSearchTime)
+    {
+        idleTimeToTriggerSearch = idleSearchTime;
+    }
 
     private void Awake()
     {
@@ -28,11 +47,14 @@ internal class SearchInputField : MonoBehaviour
 
     private void OnValueChanged(string value)
     {
+        if (idleTimeToTriggerSearch < 0)
+            return;
+        
         lastValueChangeTime = Time.unscaledTime;
         StartSearchWhileTyping();
     }
 
-    private void OnSubmit(string value)
+    internal void OnSubmit(string value)
     {
         StopSearchWhileTyping();
         SetSearchMode();
@@ -67,7 +89,7 @@ internal class SearchInputField : MonoBehaviour
     {
         SetTypingMode();
 
-        while ((Time.unscaledTime - lastValueChangeTime) < IDLE_TYPE_TIME_TRIGGER_SEARCH)
+        while ((Time.unscaledTime - lastValueChangeTime) < idleTimeToTriggerSearch)
         {
             yield return null;
         }

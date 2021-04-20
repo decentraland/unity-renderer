@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using DCL;
 using DCL.Components;
 using DCL.Helpers;
@@ -31,7 +31,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
                 texture = texture.id,
                 alphaTest = 1,
             },
-            out DecentralandEntity entity1);
+            out IDCLEntity entity1);
 
         yield return mat.routine;
 
@@ -41,7 +41,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
                 texture = texture.id,
                 alphaTest = 1,
             },
-            out DecentralandEntity entity2);
+            out IDCLEntity entity2);
 
         yield return mat2.routine;
 
@@ -52,7 +52,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator WorkCorrectlyWhenAttachedBeforeShape()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
 
         DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
             scene,
@@ -269,7 +269,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         {
             alphaTest = 1f,
             castShadows = true
-        }, out DecentralandEntity entity);
+        }, out IDCLEntity entity);
         yield return basicMaterialComponent.routine;
 
         Assert.AreEqual(true, basicMaterialComponent.GetModel().castShadows);
@@ -283,7 +283,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         {
             alphaTest = 1f,
             castShadows = false
-        }, out DecentralandEntity entity);
+        }, out IDCLEntity entity);
         yield return basicMaterialComponent.routine;
 
         Assert.AreEqual(false, basicMaterialComponent.GetModel().castShadows);

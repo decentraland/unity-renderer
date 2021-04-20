@@ -30,7 +30,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
             FilterMode.Bilinear);
 
 
-        DecentralandEntity entity;
+        IDCLEntity entity;
 
         TestHelpers.CreateEntityWithBasicMaterial(
             scene,

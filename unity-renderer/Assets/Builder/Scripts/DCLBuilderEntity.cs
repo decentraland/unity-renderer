@@ -56,7 +56,7 @@ namespace Builder
         private Vector3 scaleTarget;
         private bool isScalingAnimation = false;
 
-        public void SetEntity(DecentralandEntity entity)
+        public void SetEntity(IDCLEntity entity)
         {
             rootEntity = entity;
 
@@ -164,7 +164,7 @@ namespace Builder
             }
         }
 
-        private void OnEntityRemoved(DecentralandEntity entity)
+        private void OnEntityRemoved(IDCLEntity entity)
         {
             rootEntity.OnRemoved -= OnEntityRemoved;
             rootEntity.OnShapeUpdated -= OnShapeUpdated;
@@ -174,7 +174,7 @@ namespace Builder
             DestroyColliders();
         }
 
-        private void OnShapeUpdated(DecentralandEntity entity)
+        private void OnShapeUpdated(IDCLEntity entity)
         {
             isShapeComponentSet = true;
             OnEntityShapeUpdated?.Invoke(this);
@@ -236,7 +236,7 @@ namespace Builder
             }
         }
 
-        private void OnAvatarShapeUpdated(DecentralandEntity entity, AvatarShape avatarShape)
+        private void OnAvatarShapeUpdated(IDCLEntity entity, AvatarShape avatarShape)
         {
             if (rootEntity != entity)
             {
@@ -263,7 +263,7 @@ namespace Builder
             SetCollidersActive(!isPreview);
         }
 
-        private void ProcessEntityShape(DecentralandEntity entity)
+        private void ProcessEntityShape(IDCLEntity entity)
         {
             if (entity.meshRootGameObject && entity.meshesInfo.renderers.Length > 0)
             {

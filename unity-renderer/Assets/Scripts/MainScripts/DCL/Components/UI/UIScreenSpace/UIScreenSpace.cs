@@ -20,15 +20,9 @@ namespace DCL.Components
         private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
 
-        public UIScreenSpace(IParcelScene scene) : base(scene)
+        public UIScreenSpace()
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
-
-            //Only no-dcl scenes are listening the the global visibility event
-            if (!scene.isPersistent)
-            {
-                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
-            }
             model = new Model();
         }
 
@@ -37,18 +31,18 @@ namespace DCL.Components
             return (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(
                 "Aborted UIScreenShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
         }
-        
+
         private bool initialized = false;
-        
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             var model = (Model) newModel;
@@ -185,6 +179,7 @@ namespace DCL.Components
             if (!scene.isPersistent)
             {
                 UpdateCanvasVisibility();
+                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
             }
         }
     }

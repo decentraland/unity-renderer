@@ -38,6 +38,7 @@ namespace UnityGLTF.Loader
             if (!File.Exists(pathToLoad))
             {
                 Debug.LogError($"Buffer file not found ({pathToLoad}) -- {fileToLoad}");
+
                 yield break;
             }
 
@@ -63,6 +64,7 @@ namespace UnityGLTF.Loader
             if (!File.Exists(pathToLoad))
             {
                 Debug.LogError("Buffer file not found -- " + fileToLoad);
+
                 return;
             }
 

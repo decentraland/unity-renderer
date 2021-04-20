@@ -3,9 +3,8 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using Tests;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 public class BIWCatalogShould
@@ -16,7 +15,7 @@ public class BIWCatalogShould
     protected IEnumerator SetUp()
     {
         BIWCatalogManager.Init();
-        gameObjectToUse = new GameObject();
+        gameObjectToUse = new GameObject("_TestObject");
         gameObjectToUse.AddComponent<AssetCatalogBridge>();
         yield return null;
     }
@@ -24,7 +23,6 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldSearch()
     {
-
         string nameToFilter = "Sandy";
         BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
@@ -38,8 +36,8 @@ public class BIWCatalogShould
             }
         }
 
-        SceneObjectCatalogController sceneObjectCatalogController = Utils.GetOrCreateComponent<SceneObjectCatalogController>(gameObjectToUse);
-        List<Dictionary<string, List<CatalogItem>>>  result = sceneObjectCatalogController.FilterAssets(nameToFilter);
+        SceneCatalogController sceneCatalogController = new SceneCatalogController();
+        List<Dictionary<string, List<CatalogItem>>>  result = sceneCatalogController.biwSearchBarController.FilterAssets(nameToFilter);
 
         CatalogItem filteredItem =  result[0].Values.ToList()[0][0];
 
@@ -55,29 +53,31 @@ public class BIWCatalogShould
         CatalogItemAdapter adapter = BuilderInWorldTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
-        CatalogAssetGroupAdapter groupAdatper = new CatalogAssetGroupAdapter();
-        groupAdatper.AddAdapter(adapter);
+        CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
+        groupAdapter.SubscribeToEvents(adapter);
 
-        CatalogGroupListView catalogGroupListView = new CatalogGroupListView();
-        catalogGroupListView.AddAdapter(groupAdatper);
+        CatalogGroupListView catalogGroupListView = new GameObject("_CatalogGroupListView").AddComponent<CatalogGroupListView>();
+        catalogGroupListView.SubscribeToEvents(groupAdapter);
         catalogGroupListView.generalCanvas = Utils.GetOrCreateComponent<Canvas>(gameObjectToUse);
+        SceneCatalogView sceneCatalogView = SceneCatalogView.Create();
+        sceneCatalogView.catalogGroupListView = catalogGroupListView;
+        SceneCatalogController sceneCatalogController = new SceneCatalogController();
 
-        QuickBarView quickBarView = new QuickBarView();
+        QuickBarView quickBarView = QuickBarView.Create();
 
-        quickBarView.catalogGroupListView = catalogGroupListView;
-
-        QuickBarController quickBarController = new QuickBarController(quickBarView);
+        QuickBarController quickBarController = new QuickBarController();
+        sceneCatalogController.Initialize(sceneCatalogView, quickBarController);
+        quickBarController.Initialize(quickBarView, sceneCatalogController);
         int slots = quickBarController.GetSlotsCount();
         quickBarView.shortcutsImgs = new QuickBarSlot[slots];
 
         for (int i = 0; i < slots; i++)
         {
-            quickBarView.SetIndexToDrop(i);
+            quickBarController.SetIndexToDrop(i);
             adapter.AdapterStartDragging(null);
-            quickBarView.SceneObjectDropped(null);
+            quickBarController.SceneObjectDroppedFromCatalog(null);
             Assert.AreEqual(item, quickBarController.QuickBarObjectSelected(i));
         }
-
     }
 
     [Test]
@@ -87,7 +87,7 @@ public class BIWCatalogShould
 
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        FavoritesController favoritesController = new FavoritesController(new CatalogGroupListView());
+        FavoritesController favoritesController = new FavoritesController(new GameObject("_FavoritesController").AddComponent<CatalogGroupListView>());
         favoritesController.ToggleFavoriteState(item, null);
         Assert.IsTrue(item.IsFavorite());
 
@@ -118,7 +118,7 @@ public class BIWCatalogShould
     [UnityTearDown]
     protected IEnumerator TearDown()
     {
-        AssetCatalogBridge.ClearCatalog();
+        AssetCatalogBridge.i.ClearCatalog();
         BIWCatalogManager.ClearCatalog();
         BIWCatalogManager.Dispose();
         if (gameObjectToUse != null)

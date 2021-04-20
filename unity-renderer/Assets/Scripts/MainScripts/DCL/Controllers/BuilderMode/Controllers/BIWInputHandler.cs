@@ -28,9 +28,6 @@ public class BIWInputHandler : BIWController
     internal InputAction_Trigger toggleUndoActionInputAction;
 
     [SerializeField]
-    internal InputAction_Trigger toggleSnapModeInputAction;
-
-    [SerializeField]
     internal InputAction_Hold multiSelectionInputAction;
 
     private InputAction_Hold.Started multiSelectionStartDelegate;
@@ -167,10 +164,7 @@ public class BIWInputHandler : BIWController
 
     public bool IsMultiSelectionActive() => isMultiSelectionActive;
 
-    private void OnEditModeChangeAction(DCLAction_Trigger action)
-    {
-        builderInWorldController.ChangeFeatureActivationState();
-    }
+    private void OnEditModeChangeAction(DCLAction_Trigger action) { builderInWorldController.ChangeFeatureActivationState(); }
 
     private void RedoAction()
     {
@@ -201,18 +195,9 @@ public class BIWInputHandler : BIWController
         }
     }
 
-    private void InputDone()
-    {
-        nexTimeToReceiveInput = Time.timeSinceLevelLoad + msBetweenInputInteraction / 1000;
-    }
+    private void InputDone() { nexTimeToReceiveInput = Time.timeSinceLevelLoad + msBetweenInputInteraction / 1000; }
 
-    private void StopInput()
-    {
-        builderInputWrapper.StopInput();
-    }
+    private void StopInput() { builderInputWrapper.StopInput(); }
 
-    private void ResumeInput()
-    {
-        builderInputWrapper.ResumeInput();
-    }
+    private void ResumeInput() { builderInputWrapper.ResumeInput(); }
 }

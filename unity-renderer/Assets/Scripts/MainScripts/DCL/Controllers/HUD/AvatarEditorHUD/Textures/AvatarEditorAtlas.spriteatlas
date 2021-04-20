@@ -28,11 +28,14 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 935ddd9b29b3345009bfa22069bace25, type: 3}
     totalSpriteSurfaceArea: 468033
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 57f4b3503db7141bea960af5af6aba3f, type: 3}
@@ -150,5 +153,6 @@ SpriteAtlas:
   - UniqueShadow
   - NFTtIcon
   - CellHighlight
+  m_RenderDataMap: {}
   m_Tag: AvatarEditorAtlas
   m_IsVariant: 0

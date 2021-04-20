@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using UnityEngine;
-using DCL.Helpers;
 using UnityEngine.Networking;
 
 namespace DCL
@@ -19,7 +18,7 @@ namespace DCL
         bool storeDefaultTextureInAdvance = false;
         bool storeTexAsNonReadable = false;
 
-        UnityWebRequest webRequest = null;
+        WebRequestAsyncOperation webRequestOp = null;
 
         public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true)
         {
@@ -32,25 +31,16 @@ namespace DCL
             idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode);
         }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-        }
+        protected override void OnAfterLoadOrReuse() { }
 
-        protected override void OnBeforeLoadOrReuse()
-        {
-        }
+        protected override void OnBeforeLoadOrReuse() { }
 
-        protected override object GetLibraryAssetCheckId()
-        {
-            return idWithTexSettings;
-        }
+        protected override object GetLibraryAssetCheckId() { return idWithTexSettings; }
 
         protected override void OnCancelLoading()
         {
-            if (webRequest != null)
-            {
-                webRequest.Abort();
-            }
+            if (webRequestOp != null)
+                webRequestOp.Dispose();
         }
 
         protected override void OnLoad(Action OnSuccess, Action OnFail)
@@ -64,29 +54,31 @@ namespace DCL
 
             if (!url.StartsWith(PLAIN_BASE64_PROTOCOL))
             {
-                webRequest = UnityWebRequestTexture.GetTexture(url);
-                webRequest.SendWebRequest().completed += (asyncOp) =>
-                {
-                    bool success = webRequest != null && webRequest.WebRequestSucceded() && asset != null;
-                    if (success)
+                webRequestOp = WebRequestController.i.GetTexture(
+                    url: url,
+                    OnSuccess: (webRequestResult) =>
                     {
-                        asset.texture = DownloadHandlerTexture.GetContent(webRequest);
-                        OnSuccess?.Invoke();
-                    }
-                    else
+                        if (asset != null)
+                        {
+                            asset.texture = DownloadHandlerTexture.GetContent(webRequestResult);
+                            OnSuccess?.Invoke();
+                        }
+                        else
+                        {
+                            OnFail?.Invoke();
+                        }
+                    },
+                    OnFail: (webRequestResult) =>
                     {
                         OnFail?.Invoke();
-                    }
-                    webRequest?.Dispose();
-                    webRequest = null;
-                };
+                    });
             }
             else
             {
                 //For Base64 protocols we just take the bytes and create the texture
                 //to avoid Unity's web request issue with large URLs
                 byte[] decodedTexture = Convert.FromBase64String(url.Substring(PLAIN_BASE64_PROTOCOL.Length));
-                asset.texture = new Texture2D(1,1);
+                asset.texture = new Texture2D(1, 1);
                 asset.texture.LoadImage(decodedTexture);
                 OnSuccess?.Invoke();
             }
@@ -130,10 +122,7 @@ namespace DCL
             return true;
         }
 
-        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode)
-        {
-            return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl;
-        }
+        string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode) { return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl; }
 
         public override object GetId()
         {
@@ -141,9 +130,6 @@ namespace DCL
             return idWithDefaultTexSettings;
         }
 
-        public bool UsesDefaultWrapAndFilterMode()
-        {
-            return wrapMode == DEFAULT_WRAP_MODE && filterMode == DEFAULT_FILTER_MODE;
-        }
+        public bool UsesDefaultWrapAndFilterMode() { return wrapMode == DEFAULT_WRAP_MODE && filterMode == DEFAULT_FILTER_MODE; }
     }
 }

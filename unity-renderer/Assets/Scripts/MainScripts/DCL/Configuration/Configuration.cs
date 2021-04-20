@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-
     public static class BuilderInWorldSettings
     {
         public static string BASE_URL_CATALOG = "https://builder-api.decentraland.org/v1/storage/contents/";
@@ -20,12 +19,12 @@ namespace DCL.Configuration
         public const string VOXEL_TAG = "Voxel";
         public const string CUSTOM_LAND = "CUSTOM LAND";
 
+        public const int RETRY_AMOUNTS = 3;
 
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
-
 
         //Floor Scene Object
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
@@ -38,16 +37,26 @@ namespace DCL.Configuration
         public const string FLOOR_TEXTURE_KEY = "FloorBaseGrass_01/Floor_Grass01.png.png";
         public const string FLOOR_TEXTURE_VALUE = "QmT1WfQPMBVhgwyxV5SfcfWivZ6hqMCT74nxdKXwyZBiXb";
 
-
         //Collectables
         public const string ASSETS_COLLECTIBLES = "Collectibles";
         public const string COLLECTIBLE_MODEL_PROTOCOL = "ethereum://";
-    
+
+        //Gizmos
+        public const string TRANSLATE_GIZMO_NAME = "MOVE";
+        public const string ROTATE_GIZMO_NAME = "ROTATE";
+        public const string SCLAE_GIZMO_NAME = "SCALE";
+
+        public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
+
+        public const string PUBLISH_MODAL_TITLE = "Publish Scene";
+        public const string PUBLISH_MODAL_SUBTITLE = "Are you sure you want to publish your scene to this Land?";
+        public const string PUBLISH_MODAL_CONFIRM_BUTTON = "PUBLISH";
+        public const string PUBLISH_MODAL_CANCEL_BUTTON = "CANCEL";
     }
 
     public static class ApplicationSettings
     {
-        public static string version = "0.8";
+        public static string version = "1.0";
     }
 
     public static class EnvironmentSettings

@@ -2,6 +2,7 @@ using DCL;
 using DCL.Components;
 using DCL.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,9 +14,81 @@ using Environment = DCL.Environment;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Controllers;
+using UnityEngine.Networking;
+using UnityEngine.Events;
 
 public static partial class BuilderInWorldUtils
 {
+    public static Vector3 SnapFilterEulerAngles(Vector3 vectorToFilter, float degrees)
+    {
+        vectorToFilter.x = ClosestNumber(vectorToFilter.x, degrees);
+        vectorToFilter.y = ClosestNumber(vectorToFilter.y, degrees);
+        vectorToFilter.z = ClosestNumber(vectorToFilter.z, degrees);
+
+        return vectorToFilter;
+    }
+
+    static float ClosestNumber(float n, float m)
+    {
+        // find the quotient 
+        int q = Mathf.RoundToInt(n / m);
+
+        // 1st possible closest number 
+        float n1 = m * q;
+
+        // 2nd possible closest number 
+        float n2 = (n * m) > 0 ? (m * (q + 1)) : (m * (q - 1));
+
+        // if true, then n1 is the required closest number 
+        if (Math.Abs(n - n1) < Math.Abs(n - n2))
+            return n1;
+
+        // else n2 is the required closest number 
+        return n2;
+    }
+
+    public static Vector3 CalculateUnityMiddlePoint(ParcelScene parcelScene)
+    {
+        Vector3 position;
+
+        float totalX = 0f;
+        float totalY = 0f;
+        float totalZ = 0f;
+
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+
+        foreach (Vector2Int vector in parcelScene.sceneData.parcels)
+        {
+            totalX += vector.x;
+            totalZ += vector.y;
+            if (vector.x < minX)
+                minX = vector.x;
+            if (vector.y < minY)
+                minY = vector.y;
+            if (vector.x > maxX)
+                maxX = vector.x;
+            if (vector.y > maxY)
+                maxY = vector.y;
+        }
+
+        float centerX = totalX / parcelScene.sceneData.parcels.Length;
+        float centerZ = totalZ / parcelScene.sceneData.parcels.Length;
+
+        position.x = centerX;
+        position.y = totalY;
+        position.z = centerZ;
+
+        position = WorldStateUtils.ConvertScenePositionToUnityPosition(parcelScene);
+
+        position.x += ParcelSettings.PARCEL_SIZE / 2;
+        position.z += ParcelSettings.PARCEL_SIZE / 2;
+
+        return position;
+    }
+
     public static CatalogItem CreateFloorSceneObject()
     {
         CatalogItem floorSceneObject = new CatalogItem();
@@ -91,10 +164,7 @@ public static partial class BuilderInWorldUtils
         return bounds;
     }
 
-    public static bool IsWithInSelectionBounds(Transform transform, Vector3 lastClickMousePosition, Vector3 mousePosition)
-    {
-        return IsWithInSelectionBounds(transform.position, lastClickMousePosition, mousePosition);
-    }
+    public static bool IsWithInSelectionBounds(Transform transform, Vector3 lastClickMousePosition, Vector3 mousePosition) { return IsWithInSelectionBounds(transform.position, lastClickMousePosition, mousePosition); }
 
     public static bool IsWithInSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
     {
@@ -134,18 +204,15 @@ public static partial class BuilderInWorldUtils
         return results.Count > 2;
     }
 
-    public static bool IsPointerOverUIElement()
-    {
-        return IsPointerOverUIElement(Input.mousePosition);
-    }
+    public static bool IsPointerOverUIElement() { return IsPointerOverUIElement(Input.mousePosition); }
 
-    public static string ConvertEntityToJSON(DecentralandEntity entity)
+    public static string ConvertEntityToJSON(IDCLEntity entity)
     {
         EntityData builderInWorldEntityData = new EntityData();
         builderInWorldEntityData.entityId = entity.entityId;
 
 
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> keyValuePair in entity.components)
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
         {
             if (keyValuePair.Key == CLASS_ID_COMPONENT.TRANSFORM)
             {
@@ -167,7 +234,7 @@ public static partial class BuilderInWorldUtils
             }
         }
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePair in entity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePair in entity.sharedComponents)
         {
             if (keyValuePair.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
             {
@@ -197,10 +264,7 @@ public static partial class BuilderInWorldUtils
         return JsonConvert.SerializeObject(builderInWorldEntityData);
     }
 
-    public static EntityData ConvertJSONToEntityData(string json)
-    {
-        return JsonConvert.DeserializeObject<EntityData>(json);
-    }
+    public static EntityData ConvertJSONToEntityData(string json) { return JsonConvert.DeserializeObject<EntityData>(json); }
 
     public static List<DCLBuilderInWorldEntity> RemoveGroundEntities(List<DCLBuilderInWorldEntity> entityList)
     {
@@ -242,4 +306,33 @@ public static partial class BuilderInWorldUtils
         original.sizeDelta = rectTransformToCopy.sizeDelta;
         original.pivot = rectTransformToCopy.pivot;
     }
+
+    public static void MakeGetCall(string url, Action<string> functionToCall)
+    {
+        Environment.i.platform.webRequest.Get(
+            url: url,
+            OnSuccess: (webRequestResult) =>
+            {
+                if (functionToCall != null)
+                {
+                    byte[] byteArray = webRequestResult.downloadHandler.data;
+                    string result = System.Text.Encoding.UTF8.GetString(byteArray);
+                    functionToCall?.Invoke(result);
+                }
+            },
+            OnFail: (webRequestResult) =>
+            {
+                Debug.Log(webRequestResult.error);
+            });
+    }
+
+    public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)
+    {
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = eventType;
+        entry.callback.AddListener(call);
+        eventTrigger.triggers.Add(entry);
+    }
+
+    public static void RemoveEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType) { eventTrigger.triggers.RemoveAll(x => x.eventID == eventType); }
 }

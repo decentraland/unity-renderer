@@ -50,7 +50,7 @@ namespace DCL.Controllers
             owner.OnAddSharedComponent += OnAddSharedComponent;
         }
 
-        private void OnAddSharedComponent(string id, BaseDisposable component)
+        private void OnAddSharedComponent(string id, ISharedComponent component)
         {
             if (state != State.READY)
             {
@@ -77,12 +77,12 @@ namespace DCL.Controllers
                 SetSceneReady();
         }
 
-        private void OnDisposableReady(BaseDisposable disposable)
+        private void OnDisposableReady(ISharedComponent component)
         {
             if (owner.isReleased)
                 return;
 
-            disposableNotReady.Remove(disposable.id);
+            disposableNotReady.Remove(component.id);
 
             if (VERBOSE)
             {

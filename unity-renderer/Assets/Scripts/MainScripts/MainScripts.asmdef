@@ -1,5 +1,6 @@
 {
     "name": "MainScripts",
+    "rootNamespace": "",
     "references": [
         "GUID:54b09a4a10c111e46a817873fcea53fe",
         "GUID:c0f060bc5c9451f4483d26a0ed2d3f99",
@@ -41,7 +42,6 @@
         "GUID:086c21f5b0c2a6a488e34b5e5da4eb40",
         "GUID:e945202cffc30cc479229aef4577a74c",
         "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
-        "GUID:28f74c468a54948bfa9f625c5d428f56",
         "GUID:16ad09a45a70eac4fa3ab1c6650ae7ae",
         "GUID:6dacc6cde5056a34c9488c309ca0a18a",
         "GUID:c44f6fd10d3d94432a107d581e0096b5",
@@ -53,7 +53,12 @@
         "GUID:bb6e4d6fc48a2cf4191076e3407fc249",
         "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
         "GUID:81a6b1347b86bfe4aa02ed089ff533c1",
-        "GUID:9b06d63e1a13bc34c995683595d8d849"
+        "GUID:9b06d63e1a13bc34c995683595d8d849",
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:85ae2f0b8e8614c42bebf9817fc6f2be",
+        "GUID:4e6796037298c492ea25360846f48fc3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

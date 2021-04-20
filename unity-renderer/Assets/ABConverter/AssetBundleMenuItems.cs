@@ -8,13 +8,13 @@ using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.IO;
+using System.Linq;
 using UnityGLTF;
 using static DCL.ContentServerUtils;
 using Utils = DCL.Helpers.Utils;
 
-namespace DCL.ABConverter
-{
-}
+namespace DCL.ABConverter { }
 
 namespace DCL
 {
@@ -38,16 +38,10 @@ namespace DCL
         }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Default Empty Parcels")]
-        public static void DumpEmptyParcels_Default()
-        {
-            DumpEmptyParcels();
-        }
+        public static void DumpEmptyParcels_Default() { DumpEmptyParcels(); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Halloween Empty Parcels")]
-        public static void DumpEmptyParcels_Halloween()
-        {
-            DumpEmptyParcels("empty-scenes-halloween");
-        }
+        public static void DumpEmptyParcels_Halloween() { DumpEmptyParcels("empty-scenes-halloween"); }
 
         public static void DumpEmptyParcels(string folderName = "empty-scenes")
         {
@@ -92,35 +86,46 @@ namespace DCL
             var core = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations(), settings);
             core.Convert(mappings.ToArray());
         }
-
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Wearables")]
-        public static void DumpBaseAvatars()
+        
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Body-Wearables")]
+        public static void DumpAllBodiesWearables()
         {
-            var avatarItemList = GetAvatarMappingList("https://dcl-wearables.now.sh/index.json");
-            var builder = new ABConverter.Core(ABConverter.Environment.CreateWithDefaultImplementations());
-            builder.Convert(avatarItemList);
+            ABConverter.Client.DumpAllBodiesWearables();   
         }
-
+ 
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump All Non-Body-Wearables (Optimized)")]
+        public static void DumpAllNonBodiesWearables()
+        {
+            ABConverter.Client.DumpAllNonBodiesWearables();
+        }
 
         [MenuItem("Decentraland/Start Visual Tests")]
         public static void StartVisualTests()
         {
             EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets());
-
         }
 
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump Zone -110,-110")]
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
         public static void DumpZoneArea()
         {
             ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
         }
 
-        [MenuItem("Decentraland/Asset Bundle Builder/Dump Tominoya Casino")]
-        public static void DumpTominoyaCasino()
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
+        public static void DumpSingleAsset()
         {
-            ABConverter.Client.DumpArea(new Vector2Int(-119, 135), new Vector2Int(1, 1));
+            // TODO: Make an editor window to setup these values from editor (for other dump-modes as well)
+            ABConverter.Client.DumpAsset("QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC",
+                "models/FloorBaseGrass_01/FloorBaseGrass_01.glb",
+                "QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM");
         }
 
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -6,30")]
+        public static void DumpOrg()
+        {
+            ABConverter.Client.DumpArea(new Vector2Int(-6, 30), new Vector2Int(15, 15));
+        }
+        
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org 0,0")]
         public static void DumpCenterPlaza()
         {
@@ -132,44 +137,6 @@ namespace DCL
         public static void OnlyBuildBundles()
         {
             BuildPipeline.BuildAssetBundles(ABConverter.Config.ASSET_BUNDLES_PATH_ROOT, BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.WebGL);
-        }
-
-        public class WearableItemArray
-        {
-            public List<WearableItem> data;
-        }
-
-        public static MappingPair[] GetAvatarMappingList(string url)
-        {
-            List<MappingPair> mappingPairs = new List<MappingPair>();
-
-            UnityWebRequest w = UnityWebRequest.Get(url);
-            w.SendWebRequest();
-
-            while (!w.isDone)
-            {
-            }
-
-            if (!w.WebRequestSucceded())
-            {
-                Debug.LogWarning($"Request error! Parcels couldn't be fetched! -- {w.error}");
-                return null;
-            }
-
-            var avatarApiData = JsonUtility.FromJson<WearableItemArray>("{\"data\":" + w.downloadHandler.text + "}");
-
-            foreach (var avatar in avatarApiData.data)
-            {
-                foreach (var representation in avatar.representations)
-                {
-                    foreach (var datum in representation.contents)
-                    {
-                        mappingPairs.Add(datum);
-                    }
-                }
-            }
-
-            return mappingPairs.ToArray();
         }
     }
 }
