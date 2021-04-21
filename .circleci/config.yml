@@ -102,7 +102,7 @@ jobs:
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-{{ .Branch }}
+            - library-2020-3-{{ .Branch }}
       - run:
           name: Run editmode tests
           command: |
@@ -217,7 +217,7 @@ jobs:
           destination: Builds
       - save_cache:
           name: Store library
-          key: library-{{ .Branch }}
+          key: library-2020-3-{{ .Branch }}
           paths:
             - ./unity-renderer/Library
       - store_artifacts:
