@@ -60,7 +60,7 @@ jobs:
       - restore_cache:
           name: Restore large files from CircleCI cache
           keys:
-            - git-lfs-{{ .Branch }}
+            - git-lfs-2020-3-{{ .Branch }}
             - git-lfs-master
       - run:
           name: "Download LFS files from GitHub's LFS Storage"
@@ -68,7 +68,7 @@ jobs:
             while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - save_cache:
           name: Store large files in cache
-          key: git-lfs-{{ .Branch }}
+          key: git-lfs-2020-3-{{ .Branch }}
           paths:
             - .git/lfs
 
@@ -98,7 +98,7 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-editmode-{{ checksum "../.unitysources-checksum" }}
+            - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
@@ -126,7 +126,7 @@ jobs:
           path: ./unity-renderer/test-results
       - save_cache:
           name: Store test cache
-          key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
+          key: unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
           paths:
             - ./unity-renderer/test-results
             - ./unity-renderer/editmode-logs.txt
@@ -145,7 +145,7 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
+            - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run playmode tests
@@ -171,7 +171,7 @@ jobs:
           path: ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
-          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
+          key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
           paths:
             - ./unity-renderer/test-results
             - ./unity-renderer/playmode-logs.txt
@@ -192,7 +192,7 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-build-{{ checksum "../.unitysources-checksum" }}
+            - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
@@ -209,7 +209,7 @@ jobs:
             fi;
       - save_cache:
           name: Store decentraland-renderer build
-          key: unity-build-{{ checksum "../.unitysources-checksum" }}
+          key: unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
           paths:
             - ./unity-renderer/Builds/
       - store_artifacts:
