@@ -19,7 +19,7 @@ references:
         #                                         ~~~~~~~~~~~~~~ <- folder name
 
   .unity_image: &unity_image
-    - image: decentraland/renderer-build:2019-4-19f1
+    - image: decentraland/renderer-build:2020.3.0
       environment:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
