@@ -68,7 +68,7 @@ jobs:
             while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - save_cache:
           name: Store large files in cache
-          key: git-lfs-{{ .Branch }}-{{ epoch }}
+          key: git-lfs-{{ .Branch }}
           paths:
             - .git/lfs
 
