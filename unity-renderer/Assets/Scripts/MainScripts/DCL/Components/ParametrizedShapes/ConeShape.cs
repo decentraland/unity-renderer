@@ -24,8 +24,8 @@ namespace DCL.Components
                 return Utils.SafeFromJson<Model>(json);
             }
         }
-        
-        public ConeShape(IParcelScene scene) : base(scene)
+
+        public ConeShape()
         {
             model = new Model();
         }
@@ -37,7 +37,7 @@ namespace DCL.Components
 
         public override Mesh GenerateGeometry()
         {
-            var model = (Model)this.model;
+            var model = (Model) this.model;
             return PrimitiveMeshBuilder.BuildCone(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
         }
 
@@ -47,7 +47,7 @@ namespace DCL.Components
                 return true;
 
             Model newConeModel = newModel as Model;
-            var model = (Model)this.model;
+            var model = (Model) this.model;
             return newConeModel.radius != model.radius
                    || newConeModel.radiusTop != model.radiusTop
                    || newConeModel.radiusBottom != model.radiusBottom

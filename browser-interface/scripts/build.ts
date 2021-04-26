@@ -53,9 +53,9 @@ async function copyBuiltFiles() {
 }
 
 async function buildRollup() {
-  ensureFileExists(DIST_PATH, "UnityLoader.js")
-  console.log("> reading UnityLoader.js")
-  const banner = readFileSync(path.resolve(DIST_PATH, "UnityLoader.js")).toString()
+  ensureFileExists(DIST_PATH, "unity.loader.js")
+  console.log("> reading unity.loader.js")
+  const banner = readFileSync(path.resolve(DIST_PATH, "unity.loader.js")).toString()
   console.log("> compiling src folder")
 
   const bundle = await rollup({

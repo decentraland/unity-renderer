@@ -32,39 +32,39 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Hold advanceRightInputAction;
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
-
-
+    
     private float yaw = 0f;
     private float pitch = 0f;
 
-    bool isCameraAbleToMove = true;
-    bool isAdvancingForward = false;
-    bool isAdvancingBackward = false;
-    bool isAdvancingLeft = false;
-    bool isAdvancingRight = false;
-    bool isAdvancingUp = false;
-    bool isAdvancingDown = false;
+    private bool isCameraAbleToMove = true;
+    private bool isAdvancingForward = false;
+    private bool isAdvancingBackward = false;
+    private bool isAdvancingLeft = false;
+    private bool isAdvancingRight = false;
+    private bool isAdvancingUp = false;
+    private bool isAdvancingDown = false;
 
-    Coroutine smoothLookAtCor, smoothFocusOnTargetCor;
+    private Coroutine smoothLookAtCor;
+    private Coroutine smoothFocusOnTargetCor;
+    private Coroutine smoothScrollCor;
 
-    InputAction_Hold.Started advanceForwardStartDelegate;
-    InputAction_Hold.Finished advanceForwardFinishedDelegate;
+    private InputAction_Hold.Started advanceForwardStartDelegate;
+    private InputAction_Hold.Finished advanceForwardFinishedDelegate;
 
-    InputAction_Hold.Started advanceBackStartDelegate;
-    InputAction_Hold.Finished advanceBackFinishedDelegate;
+    private InputAction_Hold.Started advanceBackStartDelegate;
+    private InputAction_Hold.Finished advanceBackFinishedDelegate;
 
-    InputAction_Hold.Started advanceLeftStartDelegate;
-    InputAction_Hold.Finished advanceLeftFinishedDelegate;
+    private InputAction_Hold.Started advanceLeftStartDelegate;
+    private InputAction_Hold.Finished advanceLeftFinishedDelegate;
 
-    InputAction_Hold.Started advanceRightStartDelegate;
-    InputAction_Hold.Finished advanceRightFinishedDelegate;
+    private InputAction_Hold.Started advanceRightStartDelegate;
+    private InputAction_Hold.Finished advanceRightFinishedDelegate;
 
-    InputAction_Hold.Started advanceDownStartDelegate;
-    InputAction_Hold.Finished advanceDownFinishedDelegate;
+    private InputAction_Hold.Started advanceDownStartDelegate;
+    private InputAction_Hold.Finished advanceDownFinishedDelegate;
 
-    InputAction_Hold.Started advanceUpStartDelegate;
-    InputAction_Hold.Finished advanceUpFinishedDelegate;
-
+    private InputAction_Hold.Started advanceUpStartDelegate;
+    private InputAction_Hold.Finished advanceUpFinishedDelegate;
 
     private void Awake()
     {    
@@ -185,8 +185,13 @@ public class FreeCameraMovement : CameraStateBase
 
     private void MouseWheel(float axis)
     {
-         if(isCameraAbleToMove)
-            transform.Translate(0, 0, axis * zoomSpeed, Space.Self);
+        if (!isCameraAbleToMove)
+            return;
+
+        if (smoothScrollCor != null )
+            CoroutineStarter.Stop(smoothScrollCor);
+
+        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -281,6 +286,22 @@ public class FreeCameraMovement : CameraStateBase
 
         finalPosition /= totalPoints;
         return finalPosition;
+    }
+    
+    IEnumerator SmoothScroll(float axis)
+    {
+        float scrollMovementDestination = axis* zoomSpeed;
+
+        Vector3 targetPosition = transform.position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
+
+        float advance = 0;
+        while (advance <= 1)
+        {
+            advance += smoothLookAtSpeed * Time.deltaTime;
+            Vector3 result = Vector3.Lerp(transform.position, targetPosition, advance);
+            transform.position = result;
+            yield return null;
+        }
     }
 
     IEnumerator SmoothFocusOnTarget(Vector3 targetPosition)

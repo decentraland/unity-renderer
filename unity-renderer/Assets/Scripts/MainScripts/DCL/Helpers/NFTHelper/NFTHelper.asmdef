@@ -2,9 +2,9 @@
     "name": "NFTHelper",
     "references": [
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:760a1d365aad58044916992b072cf2a6"
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:e9cee4050cfa5534d9b26e2782df20be"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -12,5 +12,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

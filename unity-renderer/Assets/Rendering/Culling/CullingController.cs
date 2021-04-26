@@ -175,7 +175,8 @@ namespace DCL.Rendering
                 //             world repositioning.
                 Vector3 playerPosition = CommonScriptableObjects.playerUnityPosition;
 
-                Bounds bounds = r.bounds;
+                Bounds bounds = r.GetSafeBounds();
+
                 Vector3 boundingPoint = bounds.ClosestPoint(playerPosition);
                 float distance = Vector3.Distance(playerPosition, boundingPoint);
                 bool boundsContainsPlayer = bounds.Contains(playerPosition);
@@ -414,7 +415,7 @@ namespace DCL.Rendering
         public void SetSettings(CullingControllerSettings settings)
         {
             this.settings = settings;
-            profiles = new List<CullingControllerProfile> {settings.rendererProfile, settings.skinnedRendererProfile};
+            profiles = new List<CullingControllerProfile> { settings.rendererProfile, settings.skinnedRendererProfile };
             objectsTracker?.MarkDirty();
             MarkDirty();
         }
@@ -506,7 +507,7 @@ namespace DCL.Rendering
             if (!shouldBeVisible)
             {
                 CullingControllerUtils.DrawBounds(bounds, Color.blue, 1);
-                CullingControllerUtils.DrawBounds(new Bounds() {center = boundingPoint, size = Vector3.one}, Color.red, 1);
+                CullingControllerUtils.DrawBounds(new Bounds() { center = boundingPoint, size = Vector3.one }, Color.red, 1);
             }
         }
     }

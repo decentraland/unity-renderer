@@ -18,7 +18,7 @@ namespace DCL
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
             public bool hasAlpha = false;
-            
+
             public override BaseModel GetDataFromJSON(string json)
             {
                 return Utils.SafeFromJson<Model>(json);
@@ -44,7 +44,7 @@ namespace DCL
             return (int) CLASS_ID.TEXTURE;
         }
 
-        public DCLTexture(IParcelScene scene) : base(scene)
+        public DCLTexture()
         {
             model = new Model();
         }

@@ -1,7 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System;
 using DCL.Helpers;
 using UnityEngine.Networking;
+using DCL;
 
 /// <summary>
 /// GifProcessor: Is in charge of choosing which gif processor tu use (typescript's webworker through GIFProcessingBridge or Unity's plugin UniGif)
@@ -10,7 +11,7 @@ using UnityEngine.Networking;
 public class GifProcessor
 {
     private bool jsGIFProcessingEnabled = false;
-    private UnityWebRequest webRequest;
+    private WebRequestAsyncOperation webRequestOp;
     private string url;
 
     public GifProcessor(string url)
@@ -48,9 +49,9 @@ public class GifProcessor
         {
             DCL.GIFProcessingBridge.i.DeleteGIF(url);
         }
-        else if (!(webRequest is null))
+        else if (webRequestOp != null)
         {
-            webRequest.Abort();
+            webRequestOp.Dispose();
         }
     }
 
@@ -76,15 +77,15 @@ public class GifProcessor
 
     private IEnumerator UniGifProcessorLoad(string url, Action<GifFrameData[]> OnSuccess, Action OnFail)
     {
-        webRequest = UnityWebRequest.Get(url);
-        yield return webRequest.SendWebRequest();;
+        webRequestOp = WebRequestController.i.Get(url: url, disposeOnCompleted: false);
 
-        bool success = webRequest != null && webRequest.WebRequestSucceded();
-        if (success)
+        yield return webRequestOp;
+
+        if (webRequestOp.isSucceded)
         {
-            var bytes = webRequest.downloadHandler.data;
+            var bytes = webRequestOp.webRequest.downloadHandler.data;
             yield return UniGif.GetTextureListCoroutine(bytes,
-                (frames,loopCount, width, height) =>
+                (frames, loopCount, width, height) =>
                 {
                     if (frames != null)
                     {
@@ -100,7 +101,7 @@ public class GifProcessor
         {
             OnFail?.Invoke();
         }
-        webRequest.Dispose();
-        webRequest = null;
+
+        webRequestOp.Dispose();
     }
 }

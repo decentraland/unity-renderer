@@ -1,3 +1,4 @@
+using System;
 using DCL.SettingsControls;
 using TMPro;
 using UnityEngine;
@@ -20,13 +21,13 @@ namespace DCL.SettingsPanelHUD.Controls
 
         public override void Initialize(SettingsControlModel controlConfig, SettingsControlController settingsControlController)
         {
+            sliderController = (SliderSettingsControlController)settingsControlController;
+            sliderController.OnIndicatorLabelChange += OverrideIndicatorLabel;
+
             this.sliderControlConfig = (SliderControlModel)controlConfig;
             slider.maxValue = this.sliderControlConfig.sliderMaxValue;
             slider.minValue = this.sliderControlConfig.sliderMinValue;
-            slider.wholeNumbers = this.sliderControlConfig.sliderWholeNumbers;
-
-            sliderController = (SliderSettingsControlController)settingsControlController;
-            sliderController.OnIndicatorLabelChange += OverrideIndicatorLabel;
+            slider.wholeNumbers = false;
 
             base.Initialize(controlConfig, sliderController);
             OverrideIndicatorLabel(slider.value.ToString());
@@ -34,7 +35,11 @@ namespace DCL.SettingsPanelHUD.Controls
 
             slider.onValueChanged.AddListener(sliderValue =>
             {
-                OverrideIndicatorLabel(sliderValue.ToString());
+                // https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+                // FX = floating point with X precision digits
+                string stringFormat = sliderControlConfig.wholeNumbers ? "F0" : "F1";
+
+                OverrideIndicatorLabel( sliderValue.ToString(stringFormat) );
                 ApplySetting(this.sliderControlConfig.storeValueAsNormalized ? RemapSliderValueTo01(sliderValue) : sliderValue);
             });
         }
@@ -60,8 +65,10 @@ namespace DCL.SettingsPanelHUD.Controls
         {
             base.RefreshControl();
 
-            float storedValue = (float)sliderController.GetStoredValue();
+            float storedValue = Convert.ToSingle( sliderController.GetStoredValue() );
+
             float newValue = sliderControlConfig.storeValueAsNormalized ? RemapNormalizedValueToSlider(storedValue) : storedValue;
+
             if (slider.value != newValue)
                 slider.value = newValue;
         }

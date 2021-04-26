@@ -1,0 +1,15 @@
+{
+    "name": "BuilderInWorldPanelBridge",
+    "references": [
+        "GUID:99f1c728107724153bc9c17f979d04ea"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

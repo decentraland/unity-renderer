@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -54,21 +55,15 @@ namespace DCL.Components
             public float outlineWidth = 0f;
 
             public Color outlineColor = Color.white;
-            
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
 
-        private void Awake()
-        {
-            model = new Model();
-        }
+        private void Awake() { model = new Model(); }
 
         public void Update()
         {
@@ -78,20 +73,21 @@ namespace DCL.Components
             }
         }
 
-        new public Model GetModel()
-        {
-            return cachedModel;
-        }
+        new public Model GetModel() { return cachedModel; }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
-            if (rectTransform == null) yield break;
+            if (rectTransform == null)
+                yield break;
 
             Model model = (Model) newModel;
             cachedModel = model;
             PrepareRectTransform();
 
             yield return ApplyModelChanges(scene, text, model);
+            if (entity.meshRootGameObject == null)
+                entity.meshesInfo.meshRootGameObject = gameObject;
+            entity.OnShapeUpdated?.Invoke(entity);
         }
 
         public static IEnumerator ApplyModelChanges(IParcelScene scene, TMP_Text text, Model model)
@@ -197,10 +193,7 @@ namespace DCL.Components
             }
         }
 
-        private void ApplyCurrentModel()
-        {
-            ApplyModelChanges(scene, text, cachedModel);
-        }
+        private void ApplyCurrentModel() { ApplyModelChanges(scene, text, cachedModel); }
 
         private void PrepareRectTransform()
         {
@@ -223,9 +216,6 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_TEXT_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
     }
 }

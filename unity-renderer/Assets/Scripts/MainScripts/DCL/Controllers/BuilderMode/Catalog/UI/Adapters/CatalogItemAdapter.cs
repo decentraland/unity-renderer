@@ -1,46 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using DCL.Helpers;
-using System;
 using DCL;
+using UnityEngine;
 using UnityEngine.EventSystems;
-using DCL.Configuration;
+using UnityEngine.UI;
 
-public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandler,IDragHandler
+public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public RawImage thumbnailImg;
-    public Image favImg;
-    public GameObject smartItemGO;
+    public Image backgroundImg;
     public CanvasGroup canvasGroup;
-    public Color offFavoriteColor, onFavoriteColor;
     public GameObject lockedGO;
+    public GameObject loadingGO;
+
+    [Header("Smart Items")]
+    public GameObject smartItemGO;
+    public Color smartItemColor;
+    public Color normalColor;
+
+    [Header("Favorites")]
+    public Color offFavoriteColor;
+    public Color onFavoriteColor;
+    public Image favImg;
 
     public System.Action<CatalogItem> OnCatalogItemClicked;
     public System.Action<CatalogItem, CatalogItemAdapter> OnCatalogItemFavorite;
-    public System.Action<CatalogItem, CatalogItemAdapter,BaseEventData> OnAdapterStartDrag;
+    public System.Action<CatalogItem, CatalogItemAdapter, BaseEventData> OnAdapterStartDrag;
     public System.Action<PointerEventData> OnAdapterDrag, OnAdapterEndDrag;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerEnterInAdapter;
+    public System.Action<PointerEventData, CatalogItemAdapter> OnPointerExitInAdapter;
 
     private CatalogItem catalogItem;
-
     private string loadedThumbnailURL;
     private AssetPromise_Texture loadedThumbnailPromise;
 
-    public CatalogItem GetContent()
-    {
-        return catalogItem;
-    }
+    private const float ADAPTER_DRAGGING_SIZE_SCALE = 0.75f;
+
+    public CatalogItem GetContent() { return catalogItem; }
 
     public void SetContent(CatalogItem catalogItem)
     {
         this.catalogItem = catalogItem;
 
-        if(catalogItem.IsFavorite())
-            favImg.color = onFavoriteColor;
-        else
-            favImg.color = offFavoriteColor;
+        if (favImg != null)
+            favImg.color = catalogItem.IsFavorite() ? onFavoriteColor : offFavoriteColor;
 
+        if (backgroundImg != null)
+            backgroundImg.color = catalogItem.IsSmartItem() ? smartItemColor : normalColor;
         smartItemGO.SetActive(catalogItem.IsSmartItem());
 
         GetThumbnail();
@@ -53,27 +57,50 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
 
     private void GetThumbnail()
     {
-        var url = catalogItem?.GetThumbnailUrl();
+        SetLoadingActive(true);
 
-        if (url == loadedThumbnailURL)
+        if (catalogItem == null)
             return;
 
-        if (catalogItem == null || string.IsNullOrEmpty(url))
+        var url = catalogItem.GetThumbnailUrl();
+
+        if (string.IsNullOrEmpty(url) || url == loadedThumbnailURL)
             return;
 
-        string newLoadedThumbnailURL = url;
-        var newLoadedThumbnailPromise =  new AssetPromise_Texture(url);
+        ClearThumbnailPromise();
+        loadedThumbnailPromise = new AssetPromise_Texture(url);
 
+        loadedThumbnailPromise.OnSuccessEvent += x =>
+        {
+            loadedThumbnailURL = url;
+            SetThumbnail(x);
+        };
 
-        newLoadedThumbnailPromise.OnSuccessEvent += SetThumbnail;
-        newLoadedThumbnailPromise.OnFailEvent += x => { Debug.Log($"Error downloading: {url}"); };
+        loadedThumbnailPromise.OnFailEvent += x =>
+        {
+            Debug.Log($"Error downloading: {url}");
+            SetLoadingActive(false);
+        };
 
-        AssetPromiseKeeper_Texture.i.Keep(newLoadedThumbnailPromise);
+        AssetPromiseKeeper_Texture.i.Keep(loadedThumbnailPromise);
+    }
 
+    private void ClearThumbnailPromise()
+    {
+        if (loadedThumbnailPromise != null)
+        {
+            loadedThumbnailPromise.ClearEvents();
+            AssetPromiseKeeper_Texture.i.Forget(loadedThumbnailPromise);
+            loadedThumbnailPromise = null;
+        }
+    }
 
-        AssetPromiseKeeper_Texture.i.Forget(loadedThumbnailPromise);
-        loadedThumbnailPromise = newLoadedThumbnailPromise;
-        loadedThumbnailURL = newLoadedThumbnailURL;
+    private void SetLoadingActive(bool isActive)
+    {
+        if (loadingGO == null)
+            return;
+
+        loadingGO.SetActive(isActive);
     }
 
     public void EnableDragMode(Vector2 sizeDelta)
@@ -81,8 +108,9 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
         RectTransform newAdapterRT = GetComponent<RectTransform>();
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
-        newAdapterRT.sizeDelta = sizeDelta* 0.75f;
+        newAdapterRT.sizeDelta = sizeDelta * ADAPTER_DRAGGING_SIZE_SCALE;
     }
+
     public void SetFavorite(bool isOn)
     {
         if (isOn)
@@ -91,20 +119,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
             favImg.color = offFavoriteColor;
     }
 
-    public void AdapterStartDragging(BaseEventData baseEventData)
-    {
-        OnAdapterStartDrag?.Invoke(catalogItem,this, baseEventData);
-    }
+    public void AdapterStartDragging(BaseEventData baseEventData) { OnAdapterStartDrag?.Invoke(catalogItem, this, baseEventData); }
 
-    public void FavoriteIconClicked()
-    {
-        
-        OnCatalogItemFavorite?.Invoke(catalogItem, this);
-    }
+    public void FavoriteIconClicked() { OnCatalogItemFavorite?.Invoke(catalogItem, this); }
 
     public void SceneObjectClicked()
     {
-       if (!lockedGO.gameObject.activeSelf)
+        if (!lockedGO.gameObject.activeSelf)
             OnCatalogItemClicked?.Invoke(catalogItem);
     }
 
@@ -116,21 +137,19 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler,IEndDragHandl
             thumbnailImg.texture = texture.texture;
             favImg.gameObject.SetActive(true);
         }
+
+        SetLoadingActive(false);
     }
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        AdapterStartDragging(eventData);
-    }
+    public void OnBeginDrag(PointerEventData eventData) { AdapterStartDragging(eventData); }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        OnAdapterDrag?.Invoke(eventData);
-    }
+    public void OnDrag(PointerEventData eventData) { OnAdapterDrag?.Invoke(eventData); }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        
-        OnAdapterEndDrag?.Invoke(eventData);
-    }
+    public void OnEndDrag(PointerEventData eventData) { OnAdapterEndDrag?.Invoke(eventData); }
+
+    public void OnPointerEnter(PointerEventData eventData) { OnPointerEnterInAdapter?.Invoke(eventData, this); }
+
+    public void OnPointerExit(PointerEventData eventData) { OnPointerExitInAdapter?.Invoke(eventData, this); }
+
+    private void OnDestroy() { ClearThumbnailPromise(); }
 }

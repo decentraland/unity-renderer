@@ -12,13 +12,13 @@ namespace Builder
             isDirty = true;
         }
 
-        protected override void OnEntityAdded(DecentralandEntity e)
+        protected override void OnEntityAdded(IDCLEntity e)
         {
             e.OnMeshesInfoUpdated += OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned += OnEntityMeshInfoCleaned;
         }
 
-        protected override void OnEntityRemoved(DecentralandEntity e)
+        protected override void OnEntityRemoved(IDCLEntity e)
         {
             e.OnMeshesInfoUpdated -= OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned -= OnEntityMeshInfoCleaned;
@@ -30,7 +30,7 @@ namespace Builder
             }
         }
 
-        protected override void OnEntityMeshInfoUpdated(DecentralandEntity entity)
+        protected override void OnEntityMeshInfoUpdated(IDCLEntity entity)
         {
             //builder should only check scene limits for not smart items entities
             if (!entity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM))

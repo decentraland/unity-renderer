@@ -17,14 +17,14 @@ public class DCLLockedOnEdit : BaseDisposable
     public class Model : BaseModel
     {
         public bool isLocked;
-        
+
         public override BaseModel GetDataFromJSON(string json)
         {
-            return Utils.SafeFromJson <Model> (json);
+            return Utils.SafeFromJson<Model>(json);
         }
     }
 
-    public DCLLockedOnEdit(IParcelScene scene) : base(scene)
+    public DCLLockedOnEdit()
     {
         model = new Model();
     }
@@ -36,7 +36,7 @@ public class DCLLockedOnEdit : BaseDisposable
 
     public void SetIsLocked(bool value)
     {
-        Model model = (Model)this.model;
+        Model model = (Model) this.model;
         model.isLocked = value;
     }
 

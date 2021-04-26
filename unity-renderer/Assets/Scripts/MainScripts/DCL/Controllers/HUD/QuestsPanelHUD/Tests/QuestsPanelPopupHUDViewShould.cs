@@ -22,7 +22,7 @@ namespace Tests.QuestsPanelHUD
             {
                 id = MOCK_TASK_ID,
                 type = "single",
-                payload = JsonUtility.ToJson(new TaskPayload_Single{isDone = false})
+                payload = JsonUtility.ToJson(new TaskPayload_Single { isDone = false })
             };
             sectionMock.tasks = new [] { taskMock };
             questMock.sections = new [] { sectionMock };
@@ -37,6 +37,7 @@ namespace Tests.QuestsPanelHUD
         {
             DataStore.i.Quests.quests[MOCK_QUEST_ID].name = "name";
             DataStore.i.Quests.quests[MOCK_QUEST_ID].description = "description";
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
 
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
@@ -48,6 +49,7 @@ namespace Tests.QuestsPanelHUD
         public void PopulateSection()
         {
             DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].name = "name";
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
 
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
@@ -63,7 +65,8 @@ namespace Tests.QuestsPanelHUD
             DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].type = "single";
             DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].progress = isDone ? 1 : 0;
             DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].coordinates = hasCoordinates ? "/goto 0,0" : null;
-            DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].payload = JsonUtility.ToJson(new TaskPayload_Single{isDone = isDone});
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].payload = JsonUtility.ToJson(new TaskPayload_Single { isDone = isDone });
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
 
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
@@ -76,8 +79,8 @@ namespace Tests.QuestsPanelHUD
         }
 
         [Test]
-        [TestCase(0,1,2, true)]
-        [TestCase(10,13,20, false)]
+        [TestCase(0, 1, 2, true)]
+        [TestCase(10, 13, 20, false)]
         public void PopulateTask_Numeric(int start, int current, int end, bool hasCoordinates)
         {
             DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].name = "name";
@@ -90,6 +93,7 @@ namespace Tests.QuestsPanelHUD
                 current = current,
                 end = end
             });
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
 
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
@@ -105,9 +109,6 @@ namespace Tests.QuestsPanelHUD
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(hudView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }

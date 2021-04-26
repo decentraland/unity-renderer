@@ -1,9 +1,10 @@
 fileFormatVersion: 2
-guid: 7bc4dc8666ba3c94e80873a8e72e5b06
+guid: 3b75227de96217540aae9be81fbd99f6
 ShaderImporter:
   externalObjects: {}
   defaultTextures: []
   nonModifiableTextures: []
+  preprocessorOverride: 0
   userData: 
-  assetBundleName: mainshader_delete_me
+  assetBundleName: 
   assetBundleVariant: 

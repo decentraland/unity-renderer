@@ -29,7 +29,7 @@ namespace DCL.Components
             public float seek = -1;
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
-            
+
             public override BaseModel GetDataFromJSON(string json)
             {
                 return Utils.SafeFromJson<Model>(json);
@@ -48,7 +48,7 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture(IParcelScene scene) : base(scene)
+        public DCLVideoTexture()
         {
             model = new Model();
         }
@@ -158,7 +158,7 @@ namespace DCL.Components
 
         public float GetVolume()
         {
-            return ((Model)model).volume;
+            return ((Model) model).volume;
         }
 
         private bool HasTexturePropertiesChanged()
@@ -346,7 +346,7 @@ namespace DCL.Components
             }
         }
 
-        void OnEntityRemoved(DecentralandEntity entity)
+        void OnEntityRemoved(IDCLEntity entity)
         {
             isPlayStateDirty = true;
         }
@@ -378,12 +378,12 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private void OnEntityAttachedMaterial(DecentralandEntity entity)
+        private void OnEntityAttachedMaterial(IDCLEntity entity)
         {
             entity.OnShapeUpdated += OnEntityShapeUpdated;
         }
 
-        private void OnEntityDetachedMaterial(DecentralandEntity entity)
+        private void OnEntityDetachedMaterial(IDCLEntity entity)
         {
             if (texturePlayer != null)
                 texturePlayer.Pause();
@@ -391,7 +391,7 @@ namespace DCL.Components
             entity.OnShapeUpdated -= OnEntityShapeUpdated;
         }
 
-        private void OnEntityShapeUpdated(DecentralandEntity entity)
+        private void OnEntityShapeUpdated(IDCLEntity entity)
         {
             isPlayStateDirty = true;
         }
@@ -447,7 +447,7 @@ namespace DCL.Components
                 return false;
             }
 
-            bool IsEntityVisible(DecentralandEntity entity)
+            bool IsEntityVisible(IDCLEntity entity)
             {
                 if (entity.meshesInfo == null) return false;
                 if (entity.meshesInfo.currentShape == null) return false;
@@ -471,7 +471,7 @@ namespace DCL.Components
 
             bool MaterialInfo.IsVisible()
             {
-                if (!((UIShape.Model)shape.GetModel()).visible) return false;
+                if (!((UIShape.Model) shape.GetModel()).visible) return false;
                 return IsParentVisible(shape);
             }
 

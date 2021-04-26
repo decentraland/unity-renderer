@@ -1,6 +1,4 @@
-using System;
 using DCL.Helpers;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,37 +17,33 @@ namespace DCL
         [System.NonSerialized] public MapAtlas owner;
         protected RectTransform rt;
         protected bool isLoadingOrLoaded = false;
+        private WebRequestAsyncOperation loadOp;
 
-        private void Start()
+        private void Start() { targetImage.color = Color.clear; }
+
+        public virtual WebRequestAsyncOperation LoadChunkImage()
         {
-            targetImage.color = Color.clear;
-        }
-
-        public virtual IEnumerator LoadChunkImage()
-        {
-            if (isLoadingOrLoaded)
-                yield break;
-
             isLoadingOrLoaded = true;
 
             string url = $"{MAP_API_BASE}?center={center.x},{center.y}&width={size.x}&height={size.y}&size={tileSize}";
 
             Texture result = null;
 
-            yield return Utils.FetchTexture(url, (x) => result = x);
-
-            if (result != null)
+            return Utils.FetchTexture(url, (x) =>
             {
-                result.filterMode = FilterMode.Trilinear;
-                result.wrapMode = TextureWrapMode.Clamp;
-                result.anisoLevel = 16;
+                result = x;
 
-                targetImage.texture = result;
-                targetImage.SetNativeSize();
-                targetImage.color = Color.white;
-            }
+                if (result != null)
+                {
+                    result.filterMode = FilterMode.Trilinear;
+                    result.wrapMode = TextureWrapMode.Clamp;
+                    result.anisoLevel = 16;
 
-            loadCoroutine = null;
+                    targetImage.texture = result;
+                    targetImage.SetNativeSize();
+                    targetImage.color = Color.white;
+                }
+            });
         }
 
         public void UpdateCulling()
@@ -92,18 +86,15 @@ namespace DCL
             targetImage.enabled = visible;
 
             if (!isLoadingOrLoaded)
-                loadCoroutine = CoroutineStarter.Start(LoadChunkImage());
+            {
+                loadOp = LoadChunkImage();
+            }
         }
-
-        private Coroutine loadCoroutine;
 
         private void OnDestroy()
         {
-            if (loadCoroutine != null)
-            {
-                CoroutineStarter.Stop(loadCoroutine);
-                loadCoroutine = null;
-            }
+            if (loadOp != null)
+                loadOp.Dispose();
         }
     }
 }

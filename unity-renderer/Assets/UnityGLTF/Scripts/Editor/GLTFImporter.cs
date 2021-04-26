@@ -1,4 +1,4 @@
-﻿#if UNITY_2017_1_OR_NEWER
+#if UNITY_2017_1_OR_NEWER
 using GLTF;
 using GLTF.Schema;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
+using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityGLTF.Loader;
 using UnityGLTF.Cache;
@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 
 namespace UnityGLTF
 {
-    [ScriptedImporter(1, new[] {"glb", "gltf"})]
+    [ScriptedImporter(1, new[] { "glb", "gltf" })]
     public class GLTFImporter : ScriptedImporter
     {
         [SerializeField] private bool _removeEmptyRootObjects = true;
@@ -29,14 +29,12 @@ namespace UnityGLTF
         [SerializeField] private GLTFImporterNormals _importNormals = GLTFImporterNormals.Import;
         [SerializeField] private bool _importMaterials = true;
         [SerializeField] private bool _useJpgTextures = false;
+
         public bool _importTextures = true;
 
         static int delayCallsCount = 0;
 
-        public static bool finishedImporting
-        {
-            get { return delayCallsCount == 0; }
-        }
+        public static bool finishedImporting { get { return delayCallsCount == 0; } }
 
         public List<Material> SimplifyMaterials(Renderer[] renderers)
         {
@@ -49,6 +47,11 @@ namespace UnityGLTF
 
                 foreach (var mat in rend.sharedMaterials)
                 {
+                    if (rend.sharedMaterials.Length == 0)
+                        break;
+                    if (mat == null)
+                        continue;
+
                     string crc = mat.ComputeCRC() + mat.name;
 
                     if (!matByCrc.ContainsKey(crc))
@@ -128,52 +131,55 @@ namespace UnityGLTF
                 var meshHash = new HashSet<UnityEngine.Mesh>();
                 var meshFilters = gltfScene.GetComponentsInChildren<MeshFilter>();
                 var vertexBuffer = new List<Vector3>();
-                meshes = meshFilters.Select(mf =>
-                {
-                    var mesh = mf.sharedMesh;
-                    vertexBuffer.Clear();
-                    mesh.GetVertices(vertexBuffer);
-                    for (var i = 0; i < vertexBuffer.Count; ++i)
-                    {
-                        vertexBuffer[i] *= _scaleFactor;
-                    }
+                meshes = meshFilters.Where(mf => mf.sharedMesh != null)
+                                    .Select(mf =>
+                                    {
+                                        var mesh = mf.sharedMesh;
 
-                    mesh.SetVertices(vertexBuffer);
-                    if (_swapUvs)
-                    {
-                        var uv = mesh.uv;
-                        var uv2 = mesh.uv2;
-                        mesh.uv = uv2;
-                        mesh.uv2 = uv2;
-                    }
+                                        vertexBuffer.Clear();
+                                        mesh.GetVertices(vertexBuffer);
+                                        for (var i = 0; i < vertexBuffer.Count; ++i)
+                                        {
+                                            vertexBuffer[i] *= _scaleFactor;
+                                        }
 
-                    if (_importNormals == GLTFImporterNormals.None)
-                    {
-                        mesh.normals = new Vector3[0];
-                    }
+                                        mesh.SetVertices(vertexBuffer);
+                                        if (_swapUvs)
+                                        {
+                                            var uv = mesh.uv;
+                                            var uv2 = mesh.uv2;
+                                            mesh.uv = uv2;
+                                            mesh.uv2 = uv2;
+                                        }
 
-                    if (_importNormals == GLTFImporterNormals.Calculate)
-                    {
-                        mesh.RecalculateNormals();
-                    }
+                                        if (_importNormals == GLTFImporterNormals.None)
+                                        {
+                                            mesh.normals = new Vector3[0];
+                                        }
 
-                    mesh.UploadMeshData(!_readWriteEnabled);
+                                        if (_importNormals == GLTFImporterNormals.Calculate)
+                                        {
+                                            mesh.RecalculateNormals();
+                                        }
 
-                    if (_generateColliders)
-                    {
-                        var collider = mf.gameObject.AddComponent<MeshCollider>();
-                        collider.sharedMesh = mesh;
-                    }
+                                        mesh.UploadMeshData(!_readWriteEnabled);
 
-                    if (meshHash.Add(mesh))
-                    {
-                        var meshName = string.IsNullOrEmpty(mesh.name) ? mf.gameObject.name : mesh.name;
-                        mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
-                        meshNames.Add(mesh.name);
-                    }
+                                        if (_generateColliders)
+                                        {
+                                            var collider = mf.gameObject.AddComponent<MeshCollider>();
+                                            collider.sharedMesh = mesh;
+                                        }
 
-                    return mesh;
-                }).ToArray();
+                                        if (meshHash.Add(mesh))
+                                        {
+                                            var meshName = string.IsNullOrEmpty(mesh.name) ? mf.gameObject.name : mesh.name;
+                                            mesh.name = ObjectNames.GetUniqueName(meshNames.ToArray(), meshName);
+                                            meshNames.Add(mesh.name);
+                                        }
+
+                                        return mesh;
+                                    })
+                                    .ToArray();
 
                 var renderers = gltfScene.GetComponentsInChildren<Renderer>();
 
@@ -227,60 +233,61 @@ namespace UnityGLTF
                         var textureHash = new HashSet<Texture2D>();
 
                         textures = materials.SelectMany(mat =>
-                        {
-                            var shader = mat.shader;
-                            if (!shader)
-                            {
-                                return Enumerable.Empty<Texture2D>();
-                            }
-
-                            var matTextures = new List<Texture2D>();
-
-                            for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
-                            {
-                                if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-                                {
-                                    var propertyName = ShaderUtil.GetPropertyName(shader, i);
-                                    var tex = mat.GetTexture(propertyName) as Texture2D;
-
-                                    if (!tex)
-                                        continue;
-
-                                    if (textureHash.Add(tex))
-                                    {
-                                        var texName = tex.name;
-
-                                        if (string.IsNullOrEmpty(texName))
-                                        {
-                                            if (propertyName.StartsWith("_"))
                                             {
-                                                texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
-                                            }
-                                        }
+                                                var shader = mat.shader;
+                                                if (!shader)
+                                                {
+                                                    return Enumerable.Empty<Texture2D>();
+                                                }
 
-                                        // Ensure name is unique
-                                        texName = ObjectNames.NicifyVariableName(texName);
-                                        texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
+                                                var matTextures = new List<Texture2D>();
 
-                                        tex.name = texName;
-                                        textureNames.Add(texName);
-                                        matTextures.Add(tex);
-                                    }
+                                                for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
+                                                {
+                                                    if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                                                    {
+                                                        var propertyName = ShaderUtil.GetPropertyName(shader, i);
+                                                        var tex = mat.GetTexture(propertyName) as Texture2D;
 
-                                    List<TexMaterialMap> materialMaps;
+                                                        if (!tex)
+                                                            continue;
 
-                                    if (!texMaterialMap.TryGetValue(tex, out materialMaps))
-                                    {
-                                        materialMaps = new List<TexMaterialMap>();
-                                        texMaterialMap.Add(tex, materialMaps);
-                                    }
+                                                        if (textureHash.Add(tex))
+                                                        {
+                                                            var texName = tex.name;
 
-                                    materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
-                                }
-                            }
+                                                            if (string.IsNullOrEmpty(texName))
+                                                            {
+                                                                if (propertyName.StartsWith("_"))
+                                                                {
+                                                                    texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                                                }
+                                                            }
 
-                            return matTextures;
-                        }).ToList();
+                                                            // Ensure name is unique
+                                                            texName = ObjectNames.NicifyVariableName(texName);
+                                                            texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
+
+                                                            tex.name = texName;
+                                                            textureNames.Add(texName);
+                                                            matTextures.Add(tex);
+                                                        }
+
+                                                        List<TexMaterialMap> materialMaps;
+
+                                                        if (!texMaterialMap.TryGetValue(tex, out materialMaps))
+                                                        {
+                                                            materialMaps = new List<TexMaterialMap>();
+                                                            texMaterialMap.Add(tex, materialMaps);
+                                                        }
+
+                                                        materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
+                                                    }
+                                                }
+
+                                                return matTextures;
+                                            })
+                                            .ToList();
 
                         var folderName = Path.GetDirectoryName(ctx.assetPath);
 
@@ -438,7 +445,7 @@ namespace UnityGLTF
                     {
                         var temp = GameObject.CreatePrimitive(PrimitiveType.Plane);
                         temp.SetActive(false);
-                        var defaultMat = new[] {temp.GetComponent<Renderer>().sharedMaterial};
+                        var defaultMat = new[] { temp.GetComponent<Renderer>().sharedMaterial };
                         DestroyImmediate(temp);
 
                         foreach (var rend in renderers)
@@ -482,7 +489,8 @@ namespace UnityGLTF
             ctx.SetMainObject(gltfScene);
         }
 
-        public static System.Action<GLTFRoot> OnGLTFRootIsConstructed;
+        public static event System.Action<GLTFRoot> OnGLTFRootIsConstructed;
+        public static event System.Action<GLTFSceneImporter> OnGLTFWillLoad;
 
         private GameObject CreateGLTFScene(string projectFilePath)
         {
@@ -496,12 +504,14 @@ namespace UnityGLTF
 
                 var loader = new GLTFSceneImporter(Path.GetFullPath(projectFilePath), gLTFRoot, fileLoader, null, stream);
                 GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-                loader.addImagesToPersistentCaching = false;
+                loader.addImagesToPersistentCaching = false; // Since we control the PersistentAssetCache during AB Conversion, we don't want the importer to mess with that
                 loader.addMaterialsToPersistentCaching = false;
                 loader.initialVisibility = true;
                 loader.useMaterialTransition = false;
                 loader.maximumLod = _maximumLod;
                 loader.isMultithreaded = true;
+
+                OnGLTFWillLoad?.Invoke(loader);
 
                 // HACK: Force the coroutine to run synchronously in the editor
                 var stack = new Stack<IEnumerator>();
@@ -510,14 +520,22 @@ namespace UnityGLTF
                 while (stack.Count > 0)
                 {
                     var enumerator = stack.Pop();
-                    if (enumerator.MoveNext())
+
+                    try
                     {
-                        stack.Push(enumerator);
-                        var subEnumerator = enumerator.Current as IEnumerator;
-                        if (subEnumerator != null)
+                        if (enumerator.MoveNext())
                         {
-                            stack.Push(subEnumerator);
+                            stack.Push(enumerator);
+                            var subEnumerator = enumerator.Current as IEnumerator;
+                            if (subEnumerator != null)
+                            {
+                                stack.Push(subEnumerator);
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("GLTFImporter - CreateGLTFScene Failed: " + e.Message + "\n" + e.StackTrace);
                     }
                 }
 

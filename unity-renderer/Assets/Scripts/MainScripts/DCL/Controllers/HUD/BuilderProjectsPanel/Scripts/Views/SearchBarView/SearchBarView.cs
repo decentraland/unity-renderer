@@ -117,6 +117,7 @@ internal class SearchBarView : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+        gameObject.SetActive(true);
 
         sortDropdown.Clear();
         sortDropdown.AddSortType(handler.sortTypes);
@@ -141,8 +142,6 @@ internal class SearchBarView : MonoBehaviour
         SetResultCount(handler.resultCount);
 
         searchHandler.OnUpdated += OnUpdateResultCount;
-
-        gameObject.SetActive(true);
     }
 
     private void OnUpdateResultCount()

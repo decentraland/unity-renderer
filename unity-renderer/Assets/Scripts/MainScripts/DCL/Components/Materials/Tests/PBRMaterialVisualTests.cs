@@ -35,7 +35,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
             albedoTexture = texture.id,
             transparencyMode = 2,
             albedoColor = Color.blue
-        }, camTarget, out DecentralandEntity entity);
+        }, camTarget, out IDCLEntity entity);
         yield return matPBR.routine;
 
 

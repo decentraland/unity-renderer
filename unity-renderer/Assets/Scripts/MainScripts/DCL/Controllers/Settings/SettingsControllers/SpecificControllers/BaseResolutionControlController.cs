@@ -18,7 +18,7 @@ namespace DCL.SettingsControls
             switch (currentQualitySetting.baseResolution)
             {
                 case SettingsData.QualitySettings.BaseResolution.BaseRes_720:
-                    WebInterface.SetBaseResolution(720);
+                    WebInterface.SetBaseResolution(820);
                     break;
                 case SettingsData.QualitySettings.BaseResolution.BaseRes_1080:
                     WebInterface.SetBaseResolution(1080);

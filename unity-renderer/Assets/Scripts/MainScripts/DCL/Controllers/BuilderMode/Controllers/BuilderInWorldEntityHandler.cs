@@ -21,6 +21,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
     [Header("Prefab References")]
     public BIWOutlinerController outlinerController;
+
     public BuilderInWorldController buildModeController;
     public BIWModeController biwModeController;
     public ActionController actionController;
@@ -98,22 +99,24 @@ public class BuilderInWorldEntityHandler : BIWController
         if (hudController == null)
             return;
 
-       hudController.OnEntityDelete -= DeleteSingleEntity;
-       hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
-       hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
-       hudController.OnEntityClick -= ChangeEntitySelectionFromList;
-       hudController.OnEntityLock -= ChangeEntityLockStatus;
-       hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-       hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-       hudController.OnEntityRename -= SetEntityName;
+        hudController.OnEntityDelete -= DeleteSingleEntity;
+        hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
+        hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
+        hudController.OnEntityClick -= ChangeEntitySelectionFromList;
+        hudController.OnEntityLock -= ChangeEntityLockStatus;
+        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+        hudController.OnEntityRename -= SetEntityName;
     }
 
     protected override void FrameUpdate()
     {
         base.FrameUpdate();
 
-        if (selectedEntities.Count <= 0) return;
-        if ((DCLTime.realtimeSinceStartup - lastTransformReportTime) <= BuilderInWorldSettings.ENTITY_POSITION_REPORTING_DELAY) return;
+        if (selectedEntities.Count == 0)
+            return;
+        if ((DCLTime.realtimeSinceStartup - lastTransformReportTime) <= BuilderInWorldSettings.ENTITY_POSITION_REPORTING_DELAY)
+            return;
 
         ReportTransform();
     }
@@ -131,20 +134,11 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    public ParcelScene GetParcelSceneToEdit()
-    {
-        return sceneToEdit;
-    }
+    public ParcelScene GetParcelSceneToEdit() { return sceneToEdit; }
 
-    public List<DCLBuilderInWorldEntity> GetSelectedEntityList()
-    {
-        return selectedEntities;
-    }
+    public List<DCLBuilderInWorldEntity> GetSelectedEntityList() { return selectedEntities; }
 
-    public bool IsAnyEntitySelected()
-    {
-        return selectedEntities.Count > 0;
-    }
+    public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
 
     public void SetActiveMode(BuilderInWorldMode buildMode)
     {
@@ -152,10 +146,7 @@ public class BuilderInWorldEntityHandler : BIWController
         DeselectEntities();
     }
 
-    public void SetMultiSelectionActive(bool isActive)
-    {
-        isMultiSelectionActive = isActive;
-    }
+    public void SetMultiSelectionActive(bool isActive) { isMultiSelectionActive = isActive; }
 
     public override void EnterEditMode(ParcelScene sceneToEdit)
     {
@@ -189,12 +180,6 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         if (selectedEntities.Count <= 0)
             return;
-
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
-        {
-            if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
-                return;
-        }
 
         DuplicateSelectedEntities();
     }
@@ -237,27 +222,20 @@ public class BuilderInWorldEntityHandler : BIWController
         if (!selectedEntities.Contains(entity))
             return;
 
-        if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
-        {
-            DestroyLastCreatedEntities();
-        }
-
-        DCL.Environment.i.world.sceneBoundsChecker.EvaluateEntityPosition(entity.rootEntity);
-        DCL.Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(entity.rootEntity);
-
         entity.Deselect();
 
         outlinerController.CancelEntityOutline(entity);
         selectedEntities.Remove(entity);
         currentActiveMode?.EntityDeselected(entity);
         if (selectedEntities.Count <= 0 &&
-           hudController != null)
-           hudController.HideEntityInformation();
+            hudController != null)
+            hudController.HideEntityInformation();
     }
 
     public void DeselectEntities()
     {
-        if (selectedEntities.Count <= 0) return;
+        if (selectedEntities.Count <= 0)
+            return;
 
         int amountToDeselect = selectedEntities.Count;
         for (int i = 0; i < amountToDeselect; i++)
@@ -347,9 +325,9 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    public void Select(DecentralandEntity decentralandEntity)
+    public void Select(IDCLEntity entity)
     {
-        DCLBuilderInWorldEntity entityEditable = GetConvertedEntity(decentralandEntity);
+        DCLBuilderInWorldEntity entityEditable = GetConvertedEntity(entity);
         if (entityEditable == null) return;
 
         SelectEntity(entityEditable);
@@ -357,9 +335,11 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public bool SelectEntity(DCLBuilderInWorldEntity entityEditable)
     {
-        if (entityEditable.IsLocked) return false;
+        if (entityEditable.IsLocked)
+            return false;
 
-        if (entityEditable.IsSelected) return false;
+        if (entityEditable.IsSelected)
+            return false;
 
         entityEditable.Select();
 
@@ -369,8 +349,8 @@ public class BuilderInWorldEntityHandler : BIWController
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
-           hudController.ShowEntityInformation();
-           hudController.EntityInformationSetEntity(entityEditable, sceneToEdit);
+            hudController.ShowEntityInformation();
+            hudController.EntityInformationSetEntity(entityEditable, sceneToEdit);
         }
 
         outlinerController.CancelAllOutlines();
@@ -394,7 +374,8 @@ public class BuilderInWorldEntityHandler : BIWController
         List<DCLBuilderInWorldEntity> entities = new List<DCLBuilderInWorldEntity>();
         foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
-            if (entity.rootEntity.scene == sceneToEdit) entities.Add(entity);
+            if (entity.rootEntity.scene == sceneToEdit)
+                entities.Add(entity);
         }
 
         return entities;
@@ -408,12 +389,12 @@ public class BuilderInWorldEntityHandler : BIWController
             return null;
     }
 
-    public DCLBuilderInWorldEntity GetConvertedEntity(DecentralandEntity decentralandEntity)
+    public DCLBuilderInWorldEntity GetConvertedEntity(IDCLEntity entity)
     {
-        if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(decentralandEntity)))
-            return convertedEntities[GetConvertedUniqueKeyForEntity(decentralandEntity)];
-        else
-            return null;
+        if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
+            return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
+
+        return null;
     }
 
     public void DuplicateSelectedEntities()
@@ -429,7 +410,7 @@ public class BuilderInWorldEntityHandler : BIWController
             if (selectedEntities[i].isNFT)
                 continue;
 
-            DecentralandEntity entityDuplicated = DuplicateEntity(selectedEntities[i]);
+            var entityDuplicated = DuplicateEntity(selectedEntities[i]);
             BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entityDuplicated, entityDuplicated.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entityDuplicated));
             entityActionList.Add(builderInWorldEntityAction);
         }
@@ -442,9 +423,9 @@ public class BuilderInWorldEntityHandler : BIWController
         actionController.AddAction(buildAction);
     }
 
-    public DecentralandEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
+    public IDCLEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
-        DecentralandEntity entity = sceneToEdit.DuplicateEntity(entityToDuplicate.rootEntity);
+        IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         SetupEntityToEdit(entity);
@@ -454,11 +435,11 @@ public class BuilderInWorldEntityHandler : BIWController
         return entity;
     }
 
-    public DecentralandEntity CreateEntityFromJSON(string entityJson)
+    public IDCLEntity CreateEntityFromJSON(string entityJson)
     {
         EntityData data = BuilderInWorldUtils.ConvertJSONToEntityData(entityJson);
 
-        DecentralandEntity newEntity = sceneToEdit.CreateEntity(data.entityId);
+        IDCLEntity newEntity = sceneToEdit.CreateEntity(data.entityId);
 
 
         if (data.transformComponent != null)
@@ -466,12 +447,12 @@ public class BuilderInWorldEntityHandler : BIWController
             DCLTransform.model.position = data.transformComponent.position;
             DCLTransform.model.rotation = Quaternion.Euler(data.transformComponent.rotation);
             DCLTransform.model.scale = data.transformComponent.scale;
-            sceneToEdit.EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
+            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
         }
 
         foreach (ProtocolV2.GenericComponent component in data.components)
         {
-            sceneToEdit.EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
+            sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
 
@@ -497,9 +478,9 @@ public class BuilderInWorldEntityHandler : BIWController
         return newEntity;
     }
 
-    public DCLBuilderInWorldEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition)
+    public DCLBuilderInWorldEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true)
     {
-        DecentralandEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
+        IDCLEntity newEntity = parcelScene.CreateEntity(Guid.NewGuid().ToString());
 
         DCLTransform.model.position = WorldStateUtils.ConvertUnityToScenePosition(entryPoint, parcelScene);
 
@@ -510,18 +491,19 @@ public class BuilderInWorldEntityHandler : BIWController
         DCLTransform.model.rotation = lookOnLook;
         DCLTransform.model.scale = newEntity.gameObject.transform.lossyScale;
 
-        parcelScene.EntityComponentCreateOrUpdateFromUnity(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
+        parcelScene.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, CLASS_ID_COMPONENT.TRANSFORM, DCLTransform.model);
 
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(newEntity, true);
-       hudController?.UpdateSceneLimitInfo();
+        hudController?.UpdateSceneLimitInfo();
 
-        EntityListChanged();
+        if (notifyEntityList)
+            EntityListChanged();
         return convertedEntity;
     }
 
     private void SetupAllEntities()
     {
-        foreach (DecentralandEntity entity in sceneToEdit.entities.Values)
+        foreach (IDCLEntity entity in sceneToEdit.entities.Values)
         {
             SetupEntityToEdit(entity);
         }
@@ -544,11 +526,11 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    void EntityListChanged()
+    public void EntityListChanged()
     {
         if (HUDController.i.builderInWorldMainHud == null)
             return;
-       hudController.SetEntityList(GetEntitiesInCurrentScene());
+        hudController.SetEntityList(GetEntitiesInCurrentScene());
     }
 
     List<DCLBuilderInWorldEntity> GetEntitiesInCurrentScene()
@@ -563,7 +545,7 @@ public class BuilderInWorldEntityHandler : BIWController
         return currentEntitiesInScene;
     }
 
-    DCLBuilderInWorldEntity SetupEntityToEdit(DecentralandEntity entity, bool hasBeenCreated = false)
+    DCLBuilderInWorldEntity SetupEntityToEdit(IDCLEntity entity, bool hasBeenCreated = false)
     {
         if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
         {
@@ -594,10 +576,7 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    public string GetNewNameForEntity(CatalogItem sceneObject)
-    {
-        return GetNewNameForEntity(sceneObject.name);
-    }
+    public string GetNewNameForEntity(CatalogItem sceneObject) { return GetNewNameForEntity(sceneObject.name); }
 
     public string GetNewNameForEntity(string name)
     {
@@ -637,10 +616,7 @@ public class BuilderInWorldEntityHandler : BIWController
         DeleteEntity(entity, true);
     }
 
-    public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete)
-    {
-        DeleteEntity(entityToDelete, true);
-    }
+    public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete) { DeleteEntity(entityToDelete, true); }
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection = true)
     {
@@ -660,9 +636,9 @@ public class BuilderInWorldEntityHandler : BIWController
         entityToDelete.Delete();
         string idToRemove = entityToDelete.rootEntity.entityId;
         Destroy(entityToDelete);
-        if(sceneToEdit.entities.ContainsKey(idToRemove))
+        if (sceneToEdit.entities.ContainsKey(idToRemove))
             sceneToEdit.RemoveEntity(idToRemove, true);
-       hudController?.RefreshCatalogAssetPack();
+        hudController?.RefreshCatalogAssetPack();
         EntityListChanged();
         builderInWorldBridge?.RemoveEntityOnKernel(idToRemove, sceneToEdit);
     }
@@ -720,20 +696,17 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
-    private void RemoveConvertedEntity(DecentralandEntity entity)
+    private void RemoveConvertedEntity(IDCLEntity entity)
     {
         convertedEntities.Remove(GetConvertedUniqueKeyForEntity(entity));
     }
 
-    public void NotifyEntityIsCreated(DecentralandEntity entity)
+    public void NotifyEntityIsCreated(IDCLEntity entity)
     {
         builderInWorldBridge?.AddEntityOnKernel(entity, sceneToEdit);
     }
 
-    public void UpdateSmartItemComponentInKernel(DCLBuilderInWorldEntity entityToUpdate)
-    {
-        builderInWorldBridge?.UpdateSmartItemComponent(entityToUpdate, sceneToEdit);
-    }
+    public void UpdateSmartItemComponentInKernel(DCLBuilderInWorldEntity entityToUpdate) { builderInWorldBridge?.UpdateSmartItemComponent(entityToUpdate, sceneToEdit); }
 
     public void SetEntityName(DCLBuilderInWorldEntity entityToApply, string newName)
     {
@@ -770,12 +743,9 @@ public class BuilderInWorldEntityHandler : BIWController
         builderInWorldBridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
-    private string GetConvertedUniqueKeyForEntity(string entityID)
-    {
-        return sceneToEdit.sceneData.id + entityID;
-    }
+    private string GetConvertedUniqueKeyForEntity(string entityID) { return sceneToEdit.sceneData.id + entityID; }
 
-    private string GetConvertedUniqueKeyForEntity(DecentralandEntity entity)
+    private string GetConvertedUniqueKeyForEntity(IDCLEntity entity)
     {
         return entity.scene.sceneData.id + entity.entityId;
     }
@@ -804,6 +774,7 @@ public class BuilderInWorldEntityHandler : BIWController
                 break;
             }
         }
+
         return areAllIn;
     }
 }

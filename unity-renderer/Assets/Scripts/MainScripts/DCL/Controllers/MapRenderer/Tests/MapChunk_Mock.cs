@@ -1,15 +1,14 @@
-using System.Collections;
+using UnityEngine.Networking;
 
 namespace DCL
 {
     public class MapChunk_Mock : MapChunk
     {
-        public override IEnumerator LoadChunkImage()
+        public override WebRequestAsyncOperation LoadChunkImage()
         {
-            if (isLoadingOrLoaded)
-                yield break;
-
             isLoadingOrLoaded = true;
+
+            return new WebRequestAsyncOperation(null);
         }
     }
 }

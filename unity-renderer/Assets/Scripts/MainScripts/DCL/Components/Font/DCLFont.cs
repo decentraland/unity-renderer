@@ -20,7 +20,7 @@ namespace DCL.Components
 
             public override BaseModel GetDataFromJSON(string json)
             {
-                return Utils.SafeFromJson<Model>(json); 
+                return Utils.SafeFromJson<Model>(json);
             }
         }
 
@@ -29,7 +29,7 @@ namespace DCL.Components
 
         public TMP_FontAsset fontAsset { private set; get; }
 
-        public DCLFont(IParcelScene scene) : base(scene)
+        public DCLFont()
         {
             model = new Model();
         }

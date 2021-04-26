@@ -15,8 +15,8 @@ public class AssetCatalogBridge : MonoBehaviour
 
     public static AssetCatalogBridge i { get; private set; }
 
-    private static SceneAssetPackDictionary sceneAssetPackCatalogValue;
-    public static SceneAssetPackDictionary sceneAssetPackCatalog
+    private SceneAssetPackDictionary sceneAssetPackCatalogValue;
+    public SceneAssetPackDictionary sceneAssetPackCatalog
     {
         get
         {
@@ -29,8 +29,8 @@ public class AssetCatalogBridge : MonoBehaviour
         }
     }
 
-    private static SceneObjectDictionary sceneObjectCatalogValue;
-    public static SceneObjectDictionary sceneObjectCatalog
+    private SceneObjectDictionary sceneObjectCatalogValue;
+    public SceneObjectDictionary sceneObjectCatalog
     {
         get
         {
@@ -43,12 +43,9 @@ public class AssetCatalogBridge : MonoBehaviour
         }
     }
 
-    public void Awake()
-    {
-        i = this;
-    }
+    public void Awake() { i = this; }
 
-    public static ContentProvider GetContentProviderForAssetIdInSceneObjectCatalog(string assetId)
+    public ContentProvider GetContentProviderForAssetIdInSceneObjectCatalog(string assetId)
     {
         if (sceneObjectCatalogValue.TryGetValue(assetId, out SceneObject sceneObject))
             return CreateContentProviderForSceneObject(sceneObject);
@@ -56,7 +53,7 @@ public class AssetCatalogBridge : MonoBehaviour
         return null;
     }
 
-    static ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
+    ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
     {
         ContentProvider contentProvider = new ContentProvider();
         contentProvider.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
@@ -72,7 +69,7 @@ public class AssetCatalogBridge : MonoBehaviour
         return contentProvider;
     }
 
-    public static SceneObject GetSceneObjectById(string assetId)
+    public SceneObject GetSceneObjectById(string assetId)
     {
         if (sceneObjectCatalogValue.TryGetValue(assetId, out SceneObject sceneObject))
             return sceneObject;
@@ -94,27 +91,31 @@ public class AssetCatalogBridge : MonoBehaviour
         }
     }
 
-    public static void ClearCatalog()
+    public void ClearCatalog()
     {
         sceneObjectCatalog.Clear();
         sceneAssetPackCatalog.Clear();
     }
 
-    public static void AddSceneObjectToCatalog(SceneObject sceneObject)
+    public void AddSceneObjectToCatalog(SceneObject sceneObject)
     {
         if (sceneObjectCatalog.ContainsKey(sceneObject.id))
+            return;
+
+        //TODO: SmartItems This quit all the smart items from the catalog
+        if (sceneObject.IsSmartItem())
             return;
 
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);
         OnSceneObjectAdded?.Invoke(sceneObject);
     }
 
-    public static void AddSceneAssetPackToCatalog(SceneAssetPack sceneAssetPack)
+    public void AddSceneAssetPackToCatalog(SceneAssetPack sceneAssetPack)
     {
         if (sceneAssetPackCatalog.ContainsKey(sceneAssetPack.id))
             return;
 
-        foreach(SceneObject sceneObject in sceneAssetPack.assets)
+        foreach (SceneObject sceneObject in sceneAssetPack.assets)
         {
             AddSceneObjectToCatalog(sceneObject);
         }

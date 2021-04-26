@@ -1,5 +1,6 @@
 {
     "name": "AvatarEditorHUD",
+    "rootNamespace": "",
     "references": [
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:4973650d2444c4561a15d50f24d91cd9",
@@ -24,7 +25,8 @@
         "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
         "GUID:d7ced3c8f2800ed40a132e6df054755e",
         "GUID:a1e1473c53889c2489c0822a9dd5fa33",
-        "GUID:a78c5d8dad39efe45ab1b21901f8db0f"
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DCL.Helpers;
+using DCL;
 
 public class TeleportPromptHUDView : MonoBehaviour
 {
@@ -43,7 +44,7 @@ public class TeleportPromptHUDView : MonoBehaviour
     public event Action OnCloseEvent;
     public event Action OnTeleportEvent;
 
-    Coroutine fetchParcelImageRoutine;
+    WebRequestAsyncOperation fetchParcelImageOp;
     Texture2D downloadedBanner;
 
     private void Awake()
@@ -106,8 +107,8 @@ public class TeleportPromptHUDView : MonoBehaviour
     {
         content.SetActive(false);
 
-        if (fetchParcelImageRoutine != null) StopCoroutine(fetchParcelImageRoutine);
-        fetchParcelImageRoutine = null;
+        if (fetchParcelImageOp != null)
+            fetchParcelImageOp.Dispose();
 
         if (downloadedBanner != null)
         {
@@ -122,19 +123,19 @@ public class TeleportPromptHUDView : MonoBehaviour
             return;
 
         spinnerImage.SetActive(true);
-        fetchParcelImageRoutine = StartCoroutine(Utils.FetchTexture(previewImageUrl, (texture) =>
-            {
-                downloadedBanner = texture;
-                imageSceneThumbnail.texture = texture;
+        fetchParcelImageOp = Utils.FetchTexture(previewImageUrl, (texture) =>
+        {
+            downloadedBanner = texture;
+            imageSceneThumbnail.texture = texture;
 
-                RectTransform rt = (RectTransform)imageSceneThumbnail.transform.parent;
-                float h = rt.rect.height;
-                float w = h * (texture.width / (float)texture.height);
-                imageSceneThumbnail.rectTransform.sizeDelta = new Vector2(w, h);
+            RectTransform rt = (RectTransform)imageSceneThumbnail.transform.parent;
+            float h = rt.rect.height;
+            float w = h * (texture.width / (float)texture.height);
+            imageSceneThumbnail.rectTransform.sizeDelta = new Vector2(w, h);
 
-                spinnerImage.SetActive(false);
-                imageSceneThumbnail.gameObject.SetActive(true);
-            }));
+            spinnerImage.SetActive(false);
+            imageSceneThumbnail.gameObject.SetActive(true);
+        });
     }
 
     private void OnClosePressed()
@@ -158,5 +159,8 @@ public class TeleportPromptHUDView : MonoBehaviour
             UnityEngine.Object.Destroy(downloadedBanner);
             downloadedBanner = null;
         }
+
+        if (fetchParcelImageOp != null)
+            fetchParcelImageOp.Dispose();
     }
 }

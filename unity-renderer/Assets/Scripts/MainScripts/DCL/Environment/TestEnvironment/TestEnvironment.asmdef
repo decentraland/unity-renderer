@@ -1,5 +1,6 @@
 {
     "name": "TestEnvironment",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -9,7 +10,10 @@
         "Clipboard",
         "DebugController",
         "RuntimeComponentFactory",
-        "MessagingContext"
+        "MessagingContext",
+        "WebRequest",
+        "ServiceProviders",
+        "TheGraph"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

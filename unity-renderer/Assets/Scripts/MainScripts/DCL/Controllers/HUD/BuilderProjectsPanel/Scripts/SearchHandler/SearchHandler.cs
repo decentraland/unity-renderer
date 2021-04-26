@@ -25,8 +25,10 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
     {
         this.sortingTypes = sortingTypes;
         this.currentFilterPredicate = filterPredicate;
-        this.currentSortingType = sortingTypes[0];
+        this.currentSortingType = sortingTypes?[0];
     }
+    
+    public SearchHandler(): this(null, null) { }
 
     public void SetSearchableList(List<T> list)
     {
@@ -73,6 +75,12 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
 
     public void GetResult(Action<List<T>> onResult)
     {
+        if (originalList == null)
+        {
+            onResult?.Invoke(null);
+            return;
+        }
+        
         if (searchStringChanged)
         {
             searchResult = string.IsNullOrEmpty(currentSearchString) ? originalList : SearchHelper.Search(currentSearchString, originalList);
@@ -86,7 +94,7 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
                 : searchResult;
         }
 
-        if ((searchSortChanged || searchStringChanged) && currentResult != null)
+        if ((searchSortChanged || searchStringChanged) && currentResult != null && currentSortingType != null)
         {
             SearchHelper.Sort(currentSortingType, currentResult, isDescendingSortOrder);
         }

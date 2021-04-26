@@ -32,19 +32,14 @@ namespace DCL
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-            settings.ApplyAfterLoad(asset.container.transform);
-        }
+        protected override void OnAfterLoadOrReuse() { settings.ApplyAfterLoad(asset.container.transform); }
 
-        public override object GetId()
-        {
-            return id;
-        }
+        public override object GetId() { return id; }
 
         protected override void OnLoad(System.Action OnSuccess, System.Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
+            gltfComponent.Initialize(WebRequestController.i);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
             {
@@ -63,10 +58,7 @@ namespace DCL
             asset.name = url;
         }
 
-        void ParseGLTFWebRequestedFile(ref string requestedFileName)
-        {
-            provider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out requestedFileName);
-        }
+        void ParseGLTFWebRequestedFile(ref string requestedFileName) { provider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out requestedFileName); }
 
         protected override void OnReuse(System.Action OnSuccess)
         {

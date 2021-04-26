@@ -1,6 +1,5 @@
-using System.Collections;
+using DCL;
 using UnityEngine;
-using UnityEngine.Networking;
 
 public class DynamicOBJLoaderController : MonoBehaviour
 {
@@ -13,7 +12,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
     [HideInInspector] public bool alreadyLoadedAsset = false;
     [HideInInspector] public GameObject loadedOBJGameObject;
 
-    Coroutine loadingRoutine = null;
+    WebRequestAsyncOperation asyncOp = null;
 
     void Awake()
     {
@@ -33,38 +32,36 @@ public class DynamicOBJLoaderController : MonoBehaviour
             OBJUrl = url;
         }
 
-        if (loadingRoutine != null)
+        if (asyncOp != null)
         {
-            StopCoroutine(loadingRoutine);
+            asyncOp.Dispose();
         }
 
-        loadingRoutine = StartCoroutine(LoadAssetCoroutine());
+        LoadAsset();
     }
 
-    IEnumerator LoadAssetCoroutine()
+    void LoadAsset()
     {
         if (!string.IsNullOrEmpty(OBJUrl))
         {
             Destroy(loadedOBJGameObject);
 
-            UnityWebRequest webRequest = UnityWebRequest.Get(OBJUrl);
+            asyncOp = Environment.i.platform.webRequest.Get(
+                url: OBJUrl,
+                OnSuccess: (webRequestResult) =>
+                {
+                    loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequestResult.downloadHandler.text, true);
+                    loadedOBJGameObject.name = "LoadedOBJ";
+                    loadedOBJGameObject.transform.SetParent(transform);
+                    loadedOBJGameObject.transform.localPosition = Vector3.zero;
 
-            yield return webRequest.SendWebRequest();
-
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                Debug.Log("Couldn't get OBJ, error: " + webRequest.error + " ... " + OBJUrl);
-            }
-            else
-            {
-                loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequest.downloadHandler.text, true);
-                loadedOBJGameObject.name = "LoadedOBJ";
-                loadedOBJGameObject.transform.SetParent(transform);
-                loadedOBJGameObject.transform.localPosition = Vector3.zero;
-
-                OnFinishedLoadingAsset?.Invoke();
-                alreadyLoadedAsset = true;
-            }
+                    OnFinishedLoadingAsset?.Invoke();
+                    alreadyLoadedAsset = true;
+                },
+                OnFail: (webRequestResult) =>
+                {
+                    Debug.Log("Couldn't get OBJ, error: " + webRequestResult.error + " ... " + OBJUrl);
+                });
         }
         else
         {
@@ -75,12 +72,15 @@ public class DynamicOBJLoaderController : MonoBehaviour
         {
             loadingPlaceholder.SetActive(false);
         }
-
-        loadingRoutine = null;
     }
 
     void OnDestroy()
     {
+        if (asyncOp != null)
+        {
+            asyncOp.Dispose();
+        }
+
         Destroy(loadingPlaceholder);
         Destroy(loadedOBJGameObject);
     }

@@ -32,7 +32,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         {
             alphaTest = 1f,
             castShadows = false
-        }, camTarget, out DecentralandEntity entity);
+        }, camTarget, out IDCLEntity entity);
         yield return basicMaterialComponent.routine;
 
         yield return new WaitForAllMessagesProcessed();
@@ -64,7 +64,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
         {
             alphaTest = 1f,
             castShadows = true
-        }, camTarget, out DecentralandEntity entity);
+        }, camTarget, out IDCLEntity entity);
         yield return basicMaterialComponent.routine;
 
         yield return new WaitForAllMessagesProcessed();

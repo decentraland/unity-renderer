@@ -6,17 +6,14 @@ namespace DCL.Controllers
 {
     public class SceneBoundsFeedbackStyle_Simple : ISceneBoundsFeedbackStyle
     {
-        public void OnRendererExitBounds(Renderer renderer)
-        {
-            renderer.enabled = false;
-        }
+        public void OnRendererExitBounds(Renderer renderer) { renderer.enabled = false; }
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
             if (meshesInfo?.renderers == null || meshesInfo.renderers.Length == 0)
                 return;
 
-            if (!meshesInfo.currentShape.IsVisible())
+            if (meshesInfo?.currentShape != null && !meshesInfo.currentShape.IsVisible())
                 return;
 
             for (int i = 0; i < meshesInfo.renderers.Length; i++)
@@ -30,7 +27,6 @@ namespace DCL.Controllers
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
             }
         }
-
 
         public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
         {

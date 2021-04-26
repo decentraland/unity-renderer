@@ -4,7 +4,7 @@ namespace UnityGLTF
 {
     class SpecGlossMap : SpecGloss2StandardMap
     {
-        public SpecGlossMap(int MaxLOD = 1000) : base("DCL/LWRP/Lit", MaxLOD) { }
+        public SpecGlossMap(int MaxLOD = 1000) : base("DCL/Universal Render Pipeline/Lit", MaxLOD) { }
         public SpecGlossMap(string shaderName, int MaxLOD = 1000) : base(shaderName, MaxLOD) { }
         public SpecGlossMap(Material m, int MaxLOD = 1000) : base(m, MaxLOD) { }
 

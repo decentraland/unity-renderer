@@ -19,7 +19,7 @@ references:
         #                                         ~~~~~~~~~~~~~~ <- folder name
 
   .unity_image: &unity_image
-    - image: decentraland/renderer-build:2019-4-19f1
+    - image: decentraland/renderer-build:2020.3.0
       environment:
         BUILD_TARGET: WebGL
         BUILD_NAME: unity
@@ -98,11 +98,11 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-editmode-{{ checksum "../.unitysources-checksum" }}
+            - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
-            - library-{{ .Branch }}
+            - library-2020-3-{{ .Branch }}
       - run:
           name: Run editmode tests
           command: |
@@ -217,7 +217,7 @@ jobs:
           destination: Builds
       - save_cache:
           name: Store library
-          key: library-{{ .Branch }}
+          key: library-2020-3-{{ .Branch }}-{{ epoch }}
           paths:
             - ./unity-renderer/Library
       - store_artifacts:

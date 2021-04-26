@@ -27,7 +27,7 @@ namespace Tests
 
             Assert.IsTrue(hologramShader != null, "Hologram shader == null??");
 
-            DecentralandEntity entity = null;
+            IDCLEntity entity = null;
 
             GLTFShape shape = TestHelpers.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
             (scene,
@@ -91,7 +91,7 @@ namespace Tests
 
             ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
-            DecentralandEntity entity = null;
+            IDCLEntity entity = null;
             ConeShape shape = TestHelpers.InstantiateEntityWithShape<ConeShape, ConeShape.Model>
             (
                 scene,

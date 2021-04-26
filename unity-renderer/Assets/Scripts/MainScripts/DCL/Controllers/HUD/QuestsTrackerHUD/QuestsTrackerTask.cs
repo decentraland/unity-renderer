@@ -8,17 +8,20 @@ namespace DCL.Huds.QuestsTracker
 {
     public class QuestsTrackerTask : MonoBehaviour
     {
+        private static readonly int EXPAND_ANIMATOR_TRIGGER = Animator.StringToHash("Expand");
+        private static readonly int COLLAPSE_ANIMATOR_TRIGGER = Animator.StringToHash("Collapse");
+
         [SerializeField] internal TextMeshProUGUI taskTitle;
         [SerializeField] internal Image progress;
         [SerializeField] internal TextMeshProUGUI progressText;
         [SerializeField] internal Button jumpInButton;
+        [SerializeField] internal Animator animator;
+
+        private float progressTarget = 0;
 
         private Action jumpInDelegate;
 
-        public void Awake()
-        {
-            jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); });
-        }
+        public void Awake() { jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); }); }
 
         public void Populate(QuestTask task)
         {
@@ -31,7 +34,7 @@ namespace DCL.Huds.QuestsTracker
             });
 
             jumpInButton.gameObject.SetActive(task.progress < 1 && !string.IsNullOrEmpty(task.coordinates));
-            progress.fillAmount = task.progress;
+            progressTarget = task.progress;
             switch (task.type)
             {
                 case "single":
@@ -44,9 +47,23 @@ namespace DCL.Huds.QuestsTracker
             }
         }
 
-        internal void SetProgressText(float current, float end)
+        private void Update()
         {
-            progressText.text = $"{current}/{end}";
+            Vector3 scale = progress.transform.localScale;
+            if (Math.Abs(scale.x - progressTarget) < Mathf.Epsilon)
+                return;
+            scale.x = Mathf.MoveTowards(scale.x, progressTarget, 0.1f);
+            progress.transform.localScale = scale;
+        }
+
+        internal void SetProgressText(float current, float end) { progressText.text = $"{current}/{end}"; }
+
+        public void SetExpandedStatus(bool active)
+        {
+            if (active)
+                animator.SetTrigger(EXPAND_ANIMATOR_TRIGGER);
+            else
+                animator.SetTrigger(COLLAPSE_ANIMATOR_TRIGGER);
         }
     }
 }

@@ -83,7 +83,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     [Test]
     public void EntityDuplicate()
     {
-        DecentralandEntity duplicateEntity = entityHandler.DuplicateEntity(entity);
+        IDCLEntity duplicateEntity = entityHandler.DuplicateEntity(entity);
         DCLBuilderInWorldEntity convertedEntity = entityHandler.GetConvertedEntity(duplicateEntity);
 
         Assert.IsNotNull(convertedEntity);

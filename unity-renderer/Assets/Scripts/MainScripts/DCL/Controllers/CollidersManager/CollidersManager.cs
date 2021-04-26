@@ -9,7 +9,7 @@ namespace DCL
     public class CollidersManager : Singleton<CollidersManager>
     {
         private Dictionary<Collider, ColliderInfo> colliderInfo = new Dictionary<Collider, ColliderInfo>();
-        private Dictionary<DecentralandEntity, List<Collider>> collidersByEntity = new Dictionary<DecentralandEntity, List<Collider>>();
+        private Dictionary<IDCLEntity, List<Collider>> collidersByEntity = new Dictionary<IDCLEntity, List<Collider>>();
         private static CollidersManager instance = null;
 
         public static void Release()
@@ -43,7 +43,16 @@ namespace DCL
                 colliderInfo.Remove(collider);
         }
 
-        public void AddOrUpdateEntityCollider(DecentralandEntity entity, Collider collider)
+        public void RemoveEntityCollider(IDCLEntity entity, Collider collider)
+        {
+            if (entity == null || collider == null || !collidersByEntity.ContainsKey(entity))
+                return;
+
+            collidersByEntity[entity].Remove(collider);
+            RemoveColliderInfo(collider);
+        }
+
+        public void AddOrUpdateEntityCollider(IDCLEntity entity, Collider collider)
         {
             if (!collidersByEntity.ContainsKey(entity))
                 collidersByEntity.Add(entity, new List<Collider>());
@@ -64,7 +73,7 @@ namespace DCL
             entity.OnCleanupEvent += OnEntityCleanUpEvent;
         }
 
-        void RemoveAllEntityColliders(DecentralandEntity entity)
+        void RemoveAllEntityColliders(IDCLEntity entity)
         {
             if (collidersByEntity.ContainsKey(entity))
             {
@@ -82,7 +91,7 @@ namespace DCL
         {
             dispatcher.OnCleanupEvent -= OnEntityCleanUpEvent;
 
-            RemoveAllEntityColliders((DecentralandEntity) dispatcher);
+            RemoveAllEntityColliders((IDCLEntity) dispatcher);
         }
 
         public bool GetColliderInfo(Collider collider, out ColliderInfo info)
@@ -100,14 +109,15 @@ namespace DCL
             return false;
         }
 
-        public void ConfigureColliders(DecentralandEntity entity, bool hasCollision = true, bool filterByColliderName = true)
+        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true)
         {
             ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
         }
 
-        public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, DecentralandEntity entity = null, int colliderLayer = -1)
+        public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, IDCLEntity entity = null, int colliderLayer = -1)
         {
-            if (meshGameObject == null) return;
+            if (meshGameObject == null)
+                return;
 
             if (entity != null)
                 entity.meshesInfo.colliders.Clear();
@@ -121,11 +131,13 @@ namespace DCL
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
-                if (meshFilters[i].gameObject.layer == onClickLayer) continue;
+                if (meshFilters[i].gameObject.layer == onClickLayer)
+                    continue;
 
                 if (filterByColliderName)
                 {
-                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider")) continue;
+                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                        continue;
 
                     // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
                     Object.Destroy(meshFilters[i].GetComponent<Renderer>());

@@ -115,6 +115,7 @@ namespace DCL
             get { return ws.IsListening; }
         }
 
+        public string wssServerUrl = "ws://localhost:5000/";
         public bool openBrowserWhenStart;
 
         [Header("Kernel General Settings")]
@@ -160,8 +161,10 @@ namespace DCL
 #if UNITY_EDITOR
             DCL.DataStore.i.debugConfig.isWssDebugMode = true;
 
-            ws = new WebSocketServer("ws://localhost:5000");
-            ws.AddWebSocketService<DCLWebSocketService>("/dcl");
+            string wssUrl = this.wssServerUrl;
+            string wssServiceId = "dcl";
+            ws = new WebSocketServer(wssUrl);
+            ws.AddWebSocketService<DCLWebSocketService>("/" + wssServiceId);
             ws.Start();
 
             if (openBrowserWhenStart)
@@ -239,7 +242,7 @@ namespace DCL
                 }
 
                 Application.OpenURL(
-                    $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                    $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=" + wssUrl + wssServiceId);
             }
 #endif
         }
@@ -488,6 +491,7 @@ namespace DCL
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "SetDisableAssetBundles":
+                            case "DumpRendererLockersInfo":
                                 //TODO(Brian): Move this to bridges
                                 Main.i.SendMessage(msg.type);
                                 break;

@@ -318,10 +318,10 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         // Arrange: set inverse of withCollision to trigger is dirty later
         BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {withCollisions = !withCollision});
         yield return shapeComponent.routine;
-        List<DecentralandEntity> entities = new List<DecentralandEntity>();
+        List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
             TestHelpers.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }
@@ -331,7 +331,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         yield return shapeComponent.routine;
 
         // Assert:
-        foreach (DecentralandEntity entity in entities)
+        foreach (IDCLEntity entity in entities)
         {
             for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
             {
@@ -351,10 +351,10 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         // Arrange: set inverse of visible to trigger is dirty later
         BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {visible = !visible});
         yield return shapeComponent.routine;
-        List<DecentralandEntity> entities = new List<DecentralandEntity>();
+        List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene, $"entity{i}");
             TestHelpers.SharedComponentAttach(shapeComponent, entity);
             entities.Add(entity);
         }
@@ -364,7 +364,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         yield return shapeComponent.routine;
 
         // Assert:
-        foreach (DecentralandEntity entity in entities)
+        foreach (IDCLEntity entity in entities)
         {
             for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
             {

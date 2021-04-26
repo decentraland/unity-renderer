@@ -13,15 +13,26 @@ internal class SectionFactory : ISectionFactory
         switch (id)
         {
             case SectionsController.SectionId.SCENES_MAIN:
+                result = new SectionScenesController();
                 break;
             case SectionsController.SectionId.SCENES_DEPLOYED:
+                result = new SectionDeployedScenesController();
                 break;
             case SectionsController.SectionId.SCENES_PROJECT:
+                result = new SectionProjectScenesController();
                 break;
             case SectionsController.SectionId.LAND:
+                result = new SectionLandController();
                 break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(id), id, null);
+            case SectionsController.SectionId.SETTINGS_PROJECT_GENERAL:
+                result = new SectionSceneGeneralSettingsController();
+                break;
+            case SectionsController.SectionId.SETTINGS_PROJECT_CONTRIBUTORS:
+                result = new SectionSceneContributorsSettingsController();
+                break;
+            case SectionsController.SectionId.SETTINGS_PROJECT_ADMIN:
+                result = new SectionSceneAdminsSettingsController();
+                break;
         }
 
         return result;

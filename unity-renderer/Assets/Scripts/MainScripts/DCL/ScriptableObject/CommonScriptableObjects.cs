@@ -14,6 +14,8 @@ public static class NotificationScriptableObjects
 
 public static class AudioScriptableObjects
 {
+    // UI events
+
     private static AudioEvent buttonHoverEvent;
     public static AudioEvent buttonHover => CommonScriptableObjects.GetOrLoad(ref buttonHoverEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonHover");
 
@@ -146,6 +148,10 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isProfileHUDOpenValue;
     public static BooleanVariable isProfileHUDOpen => GetOrLoad(ref isProfileHUDOpenValue, "ScriptableObjects/IsProfileHUDOpen");
+
+    private static BooleanVariable isFullscreenHUDOpenValue;
+    public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
+
 
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");

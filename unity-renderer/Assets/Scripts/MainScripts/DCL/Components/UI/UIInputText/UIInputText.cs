@@ -36,7 +36,7 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText(IParcelScene scene) : base(scene)
+        public UIInputText()
         {
             model = new Model();
         }
@@ -46,13 +46,13 @@ namespace DCL.Components
             return (int) CLASS_ID.UI_INPUT_TEXT_SHAPE;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(
                 "Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
         }
 
@@ -61,7 +61,7 @@ namespace DCL.Components
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
             model = (Model) newModel;
-            
+
             inputField.textViewport = referencesContainer.rectTransform;
 
             UnsuscribeFromEvents();

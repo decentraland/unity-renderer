@@ -1,6 +1,7 @@
 using DCL.Interface;
-using UnityEngine;
 using DCL.Helpers;
+using DCL.Models;
+using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
@@ -8,19 +9,27 @@ namespace DCL.Components
     {
         public const string NAME = "pointerUp";
 
-        public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit, bool isHitInfoValid)
+        public override void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled || !IsVisible()) return;
+            if (!enabled || !IsVisible())
+                return;
 
-            if (IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button))
+            Model pointerEventModel = this.model as Model;
+
+            if (pointerEventModel == null)
+                return;
+
+            bool validButton = pointerEventModel.button == "ANY" || buttonId.ToString() == pointerEventModel.button;
+
+            if (IsAtHoverDistance(hit.distance) && validButton)
             {
-                string meshName = null;
-
-                if (isHitInfoValid)
-                    meshName = GetMeshName(hit.collider);
-
-                DCL.Interface.WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance, isHitInfoValid);
+                string meshName = pointerEventHandler.GetMeshName(hit.collider);
+                WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, pointerEventModel.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
         }
+
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.UUID_ON_UP; }
+
+        public override PointerEventType GetEventType() { return PointerEventType.UP; }
     }
 }

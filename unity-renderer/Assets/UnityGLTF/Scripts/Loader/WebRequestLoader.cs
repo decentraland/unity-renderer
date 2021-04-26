@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using System.Collections;
 using System.IO;
@@ -20,11 +21,13 @@ namespace UnityGLTF.Loader
 
         string _rootURI;
         bool VERBOSE = false;
+        IWebRequestController webRequestController;
 
-        public WebRequestLoader(string rootURI)
+        public WebRequestLoader(string rootURI, IWebRequestController webRequestController)
         {
             _rootURI = rootURI;
             HasSyncLoadMethod = false;
+            this.webRequestController = webRequestController;
         }
 
         public IEnumerator LoadStream(string filePath)
@@ -39,18 +42,18 @@ namespace UnityGLTF.Loader
                 Debug.Log($"CreateHTTPRequest rootUri: {_rootURI}, httpRequestPath: {filePath}");
             }
 
-            if (OnLoadStreamStart != null)
-            {
-                OnLoadStreamStart(ref filePath);
-            }
+            filePath = GetWrappedUri(filePath);
 
             yield return CreateHTTPRequest(_rootURI, filePath);
         }
 
-        public void LoadStreamSync(string jsonFilePath)
+        public string GetWrappedUri(string uri)
         {
-            throw new NotImplementedException();
+            OnLoadStreamStart?.Invoke(ref uri);
+            return uri;
         }
+
+        public void LoadStreamSync(string jsonFilePath) { throw new NotImplementedException(); }
 
         private IEnumerator CreateHTTPRequest(string rootUri, string httpRequestPath)
         {
@@ -61,31 +64,32 @@ namespace UnityGLTF.Loader
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
 
-            UnityWebRequest www = new UnityWebRequest(finalUrl, "GET", new DownloadHandlerBuffer(), null);
+            return webRequestController.Get(
+                url: finalUrl,
+                downloadHandler: new DownloadHandlerBuffer(),
+                OnSuccess: (webRequestResult) =>
+                {
+                    if (webRequestResult.downloadedBytes > int.MaxValue)
+                    {
+                        Debug.LogError("Stream is too big for a byte array");
+                    }
+                    else
+                    {
+                        //NOTE(Brian): Caution, webRequestResult.downloadHandler.data returns a COPY of the data, if accessed twice,
+                        //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
+                        //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
+                        byte[] data = webRequestResult.downloadHandler.data;
 
-            www.timeout = 5000;
-#if UNITY_2017_2_OR_NEWER
-            yield return www.SendWebRequest();
-#else
-            yield return www.Send();
-#endif
-            if ((int)www.responseCode >= 400)
-            {
-                Debug.LogError($"{www.responseCode} - {www.url}");
-                yield break;
-            }
+                        if (data != null)
+                            LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
+                    }
+                },
+                OnFail: (webRequestResult) =>
+                {
+                    Debug.LogError($"{webRequestResult.error} - {finalUrl}");
+                },
+                timeout: 5000);
 
-            if (www.downloadedBytes > int.MaxValue)
-            {
-                Debug.LogError("Stream is larger than can be copied into byte array");
-                yield break;
-            }
-
-            //NOTE(Brian): Caution, www.downloadHandler.data returns a COPY of the data, if accessed twice,
-            //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
-            //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
-            byte[] data = www.downloadHandler.data;
-            LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
         }
     }
 }

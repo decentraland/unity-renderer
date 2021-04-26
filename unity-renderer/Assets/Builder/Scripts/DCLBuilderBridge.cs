@@ -392,7 +392,7 @@ namespace Builder
             }
         }
 
-        private void OnEntityIsAdded(DecentralandEntity entity)
+        private void OnEntityIsAdded(IDCLEntity entity)
         {
             if (isPreviewMode)
                 return;
@@ -405,7 +405,7 @@ namespace Builder
             builderWebInterface.SendEntityStartLoad(entity);
         }
 
-        private void OnEntityIsRemoved(DecentralandEntity entity)
+        private void OnEntityIsRemoved(IDCLEntity entity)
         {
             var builderEntity = entity.gameObject.GetComponent<DCLBuilderEntity>();
 
@@ -415,7 +415,7 @@ namespace Builder
             }
         }
 
-        private void OnEntityShapeUpdated(DecentralandEntity entity)
+        private void OnEntityShapeUpdated(IDCLEntity entity)
         {
             entity.OnShapeUpdated -= OnEntityShapeUpdated;
 
@@ -613,7 +613,7 @@ namespace Builder
         }
 
 
-        private DCLBuilderEntity AddBuilderEntityComponent(DecentralandEntity entity)
+        private DCLBuilderEntity AddBuilderEntityComponent(IDCLEntity entity)
         {
             DCLBuilderEntity builderComponent = Utils.GetOrCreateComponent<DCLBuilderEntity>(entity.gameObject);
             builderComponent.SetEntity(entity);

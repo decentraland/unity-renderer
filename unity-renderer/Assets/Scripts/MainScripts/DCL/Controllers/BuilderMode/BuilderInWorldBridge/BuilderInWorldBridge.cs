@@ -23,42 +23,43 @@ public class BuilderInWorldBridge : MonoBehaviour
     TransformComponent entityTransformComponentModel = new TransformComponent();
 
     StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
+    SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
 
     public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
-        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>(); 
+        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
         if (smartItemComponent == null)
-           return;
+            return;
 
 
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
-        entitySingleComponentPayload.componentId = (int)CLASS_ID_COMPONENT.SMART_ITEM;
+        entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
 
         entitySingleComponentPayload.data = smartItemComponent.GetValues();
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
+    public void SaveSceneState(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState); }
+
     public void PublishSceneResult(string payload)
     {
         PublishSceneResultPayload publishSceneResultPayload = JsonUtility.FromJson<PublishSceneResultPayload>(payload);
-        string message;
+        string errorMessage = "";
         if (publishSceneResultPayload.ok)
         {
-            //Note (Adrian): This is temporary until implement the UI
-            message = "Done!\nThe scene has been published";
             OnPublishSuccess?.Invoke();
         }
         else
         {
-            message = publishSceneResultPayload.error;
+            errorMessage = publishSceneResultPayload.error;
             OnPublishError?.Invoke(publishSceneResultPayload.error);
         }
 
-        HUDController.i.builderInWorldMainHud.PublishEnd(message);
+        HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
     public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
@@ -67,7 +68,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
 
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
             {
@@ -84,7 +85,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;
 
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.rootEntity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NAME)
             {
@@ -114,10 +115,11 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.SCENE_EVENT_NAME, message);
     }
 
-    public void AddEntityOnKernel(DecentralandEntity entity, ParcelScene scene)
+    public void AddEntityOnKernel(IDCLEntity entity, ParcelScene scene)
     {
         List<ComponentPayload> list = new List<ComponentPayload>();
-        foreach (KeyValuePair<CLASS_ID_COMPONENT, BaseComponent> keyValuePair in entity.components)
+
+        foreach (KeyValuePair<CLASS_ID_COMPONENT, IEntityComponent> keyValuePair in entity.components)
         {
             ComponentPayload componentPayLoad = new ComponentPayload();
             componentPayLoad.componentId = Convert.ToInt32(keyValuePair.Key);
@@ -140,7 +142,7 @@ public class BuilderInWorldBridge : MonoBehaviour
             list.Add(componentPayLoad);
         }
 
-        foreach (KeyValuePair<Type, BaseDisposable> keyValuePairBaseDisposable in entity.GetSharedComponents())
+        foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.sharedComponents)
         {
             ComponentPayload componentPayLoad = new ComponentPayload();
 
@@ -170,7 +172,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         SendNewEntityToKernel(scene.sceneData.id, entity.entityId, list.ToArray());
     }
 
-    public void EntityTransformReport(DecentralandEntity entity, ParcelScene scene)
+    public void EntityTransformReport(IDCLEntity entity, ParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.TRANSFORM;
@@ -205,20 +207,11 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, removeEntityEvent);
     }
 
-    public void StartKernelEditMode(ParcelScene scene)
-    {
-        WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id));
-    }
+    public void StartKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StartStatefulMode(scene.sceneData.id)); }
 
-    public void ExitKernelEditMode(ParcelScene scene)
-    {
-        WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id));
-    }
+    public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
-    public void PublishScene(ParcelScene scene)
-    {
-        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState);
-    }
+    public void PublishScene(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState); }
 
     void SendNewEntityToKernel(string sceneId, string entityId, ComponentPayload[] componentsPayload)
     {

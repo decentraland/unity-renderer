@@ -49,8 +49,8 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
-        currentValue.x = float.Parse(value);
-        OnChanged?.Invoke(currentValue);
+        if (float.TryParse(value, out currentValue.x))
+            OnChanged?.Invoke(currentValue);
     }
 
     public void ChangeYValue(string value)
@@ -58,8 +58,8 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
-        currentValue.y = float.Parse(value);
-        OnChanged?.Invoke(currentValue);
+        if (float.TryParse(value, out currentValue.y))
+            OnChanged?.Invoke(currentValue);
     }
 
     public void ChangeZValue(string value)
@@ -67,19 +67,11 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
-        currentValue.z = float.Parse(value);
-        OnChanged?.Invoke(currentValue);
+        if (float.TryParse(value, out currentValue.z))
+            OnChanged?.Invoke(currentValue);
     }
 
+    public void InputSelected(string text) { isSelected = true; }
 
-    public void InputSelected(string text)
-    {
-        isSelected = true;
-    }
-
-    public void InputDeselected(string text)
-    {
-        isSelected = false;
-    }
-
+    public void InputDeselected(string text) { isSelected = false; }
 }

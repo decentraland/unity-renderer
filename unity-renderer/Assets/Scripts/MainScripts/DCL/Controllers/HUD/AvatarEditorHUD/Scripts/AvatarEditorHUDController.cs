@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
-    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
-    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
+    protected static readonly string[] categoriesThatMustHaveSelection = {Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH};
+    protected static readonly string[] categoriesToRandomize = {Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET};
 
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
@@ -419,6 +421,9 @@ public class AvatarEditorHUDController : IHUD
         return wearablesToReplace;
     }
 
+    private float prevRenderScale = 1.0f;
+    private Camera mainCamera;
+
     public void SetVisibility(bool visible)
     {
         var currentRenderProfile = DCL.RenderProfileManifest.i.currentProfile;
@@ -433,6 +438,11 @@ public class AvatarEditorHUDController : IHUD
                 Utils.LockCursor();
             }
 
+            // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
+            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            asset.renderScale = prevRenderScale;
+
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(false);
             OnClose?.Invoke();
         }
         else if (visible && !view.isOpen)
@@ -443,6 +453,13 @@ public class AvatarEditorHUDController : IHUD
 
             prevMouseLockState = Utils.isCursorLocked;
             Utils.UnlockCursor();
+
+            // NOTE(Brian): SSAO doesn't work correctly with the offseted avatar preview if the renderScale != 1.0
+            var asset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+            prevRenderScale = asset.renderScale;
+            asset.renderScale = 1.0f;
+
+            CommonScriptableObjects.isFullscreenHUDOpen.Set(true);
             OnOpen?.Invoke();
         }
 

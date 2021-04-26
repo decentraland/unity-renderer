@@ -32,7 +32,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
                 metallic = 0,
                 roughness = 1,
             },
-            out DecentralandEntity entity1);
+            out IDCLEntity entity1);
 
         yield return mat.routine;
 
@@ -43,7 +43,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
                 metallic = 0,
                 roughness = 1,
             },
-            out DecentralandEntity entity2);
+            out IDCLEntity entity2);
 
         yield return mat2.routine;
 
@@ -67,7 +67,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
                 metallic = 0,
                 roughness = 1,
             },
-            out DecentralandEntity entity);
+            out IDCLEntity entity);
 
         yield return matPBR.routine;
 
@@ -252,7 +252,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             new PBRMaterial.Model
             {
                 metallic = 0.3f,
-            }, out DecentralandEntity entity1);
+            }, out IDCLEntity entity1);
 
         Assert.IsTrue(entity1.meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
@@ -262,7 +262,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
             new PBRMaterial.Model
             {
                 metallic = 0.66f,
-            }, out DecentralandEntity entity2);
+            }, out IDCLEntity entity2);
 
         Assert.IsTrue(entity2.meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
@@ -312,7 +312,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator WorkCorrectlyWhenAttachedBeforeShape()
     {
-        DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+        IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
 
         DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
             scene,

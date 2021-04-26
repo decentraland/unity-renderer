@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
 using WaitUntil = DCL.WaitUntil;
-
+using DCL;
 
 public static class DependencyMapLoadHelper
 {
@@ -62,31 +62,28 @@ public static class DependencyMapLoadHelper
             yield break;
         }
 
-        using (UnityWebRequest depmapRequest = UnityWebRequest.Get(url))
-        {
-            downloadingDepmap.Add(hash);
+        downloadingDepmap.Add(hash);
+        yield return WebRequestController.i.Get(
+            url: url,
+            OnSuccess: (depmapRequest) =>
+            {
+                AssetDependencyMap map = JsonUtility.FromJson<AssetDependencyMap>(depmapRequest.downloadHandler.text);
+                map.dependencies = map.dependencies.Where(x => !x.Contains("mainshader")).ToArray();
 
-            yield return depmapRequest.SendWebRequest();
+                dependenciesMap.Add(hash, new List<string>(map.dependencies));
 
-            if (!depmapRequest.WebRequestSucceded())
+                downloadingDepmap.Remove(hash);
+
+                if (DCLTime.realtimeSinceStartup - lastTimeSavedPersistentCache >= MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE)
+                {
+                    SavePersistentCache();
+                }
+            },
+            OnFail: (depmapRequest) =>
             {
                 failedRequests.Add(hash);
                 downloadingDepmap.Remove(hash);
-                yield break;
-            }
-
-            AssetDependencyMap map = JsonUtility.FromJson<AssetDependencyMap>(depmapRequest.downloadHandler.text);
-            map.dependencies = map.dependencies.Where(x => !x.Contains("mainshader")).ToArray();
-
-            dependenciesMap.Add(hash, new List<string>(map.dependencies));
-
-            downloadingDepmap.Remove(hash);
-
-            if (DCLTime.realtimeSinceStartup - lastTimeSavedPersistentCache >= MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE)
-            {
-                SavePersistentCache();
-            }
-        }
+            });
     }
 
     private static void SavePersistentCache()
@@ -100,11 +97,14 @@ public static class DependencyMapLoadHelper
 
     private static void LoadPersistentCache()
     {
-        if (persistentCacheLoaded) return;
+        if (persistentCacheLoaded)
+            return;
 
         persistentCacheLoaded = true;
         CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
 
+        // Beware that if a wrongly-constructed depmap was created previously, this will always load that depmap
+        // when testing a new dump process locally it's safer to first run Edit->ClearAllPlayerPrefs from UnityEditor
         string depMapCache = PlayerPrefs.GetString(PERSISTENT_CACHE_KEY, String.Empty);
 
         if (!string.IsNullOrEmpty(depMapCache))

@@ -39,15 +39,17 @@ namespace CullingControllerTests
             Assert.IsTrue(Environment.i.platform.cullingController.IsDirty(), "culling controller not dirty");
             Assert.IsTrue(Environment.i.platform.cullingController.objectsTracker.IsDirty(), "object tracker not dirty");
 
+            yield return boxShape.routine;
+
             yield return
-                new DCL.WaitUntil(() => entity.meshesInfo.renderers[0].forceRenderingOff, 0.1f);
+                new DCL.WaitUntil(() => entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
 
             Assert.IsTrue(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't hidden!");
 
             TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
 
             yield return
-                new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.1f);
+                new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
 
             Assert.IsFalse(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't brought back!");
         }

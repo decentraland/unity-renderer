@@ -52,11 +52,14 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 0
       enableTightPacking: 0
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 3acab99763c85c14a98d022b27506bbf, type: 3}
     totalSpriteSurfaceArea: 108313
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300000, guid: 40617d005efa0d94398573c6377b3007, type: 3}
@@ -110,5 +113,6 @@ SpriteAtlas:
   - ContainerShadowBlueRadius20
   - KeySpaceBack
   - ArrowLeft
+  m_RenderDataMap: {}
   m_Tag: TutorialStepsAtlas
   m_IsVariant: 0

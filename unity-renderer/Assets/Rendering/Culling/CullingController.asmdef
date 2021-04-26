@@ -1,5 +1,6 @@
 {
     "name": "CullingController",
+    "rootNamespace": "",
     "references": [
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
@@ -7,7 +8,8 @@
         "GUID:15fc0a57446b3144c949da3e2b9737a9",
         "GUID:760a1d365aad58044916992b072cf2a6",
         "GUID:f070f44586498a44c9e6d2ea3e166379",
-        "GUID:8af21c3a612af2645a9953d4b9b3f6d5"
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

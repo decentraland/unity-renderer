@@ -81,8 +81,8 @@ public class DCLCharacterController : MonoBehaviour
 
 
     // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
-    public DCL.Models.DecentralandEntity avatarReference { get; private set; }
-    public DCL.Models.DecentralandEntity firstPersonCameraReference { get; private set; }
+    public DCL.Models.IDCLEntity avatarReference { get; private set; }
+    public DCL.Models.IDCLEntity firstPersonCameraReference { get; private set; }
 
     [SerializeField]
     private GameObject avatarGameObject;
@@ -101,6 +101,10 @@ public class DCLCharacterController : MonoBehaviour
 
     [System.NonSerialized]
     public float movingPlatformSpeed;
+
+    public event System.Action OnJump;
+    public event System.Action OnHitGround;
+    public event System.Action<float> OnMoved;
 
     void Awake()
     {
@@ -203,6 +207,10 @@ public class DCLCharacterController : MonoBehaviour
                 ReportMovement();
 
             OnCharacterMoved?.Invoke(characterPosition);
+
+            float distance = Vector3.Distance(characterPosition.worldPosition, lastPosition);
+            if (distance > 0f && isGrounded)
+                OnMoved?.Invoke(distance / Time.deltaTime);
         }
 
         lastPosition = transform.position;
@@ -322,8 +330,13 @@ public class DCLCharacterController : MonoBehaviour
                     Jump();
                 }
             }
-        }
 
+            //NOTE(Mordi): Detecting when the character hits the ground (for landing-SFX)
+            if (isGrounded && !previouslyGrounded && (Time.time - lastUngroundedTime) > 0.4f)
+            {
+                OnHitGround?.Invoke();
+            }
+        }
 
         bool movingPlatformMovedTooMuch = Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta;
 
@@ -367,6 +380,8 @@ public class DCLCharacterController : MonoBehaviour
         ResetGround();
 
         velocity.y = jumpForce;
+
+        OnJump?.Invoke();
     }
 
     public void ResetGround()

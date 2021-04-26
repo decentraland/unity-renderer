@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Reflection;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
 namespace DCL
@@ -36,6 +40,7 @@ namespace DCL
             Environment.i.platform.debugController.SetEngineDebugPanel();
         }
 
+        [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
         {
             bool prevLogValue = Debug.unityLogger.logEnabled;
@@ -56,6 +61,7 @@ namespace DCL
             RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
         }
 
+        [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()
         {
             bool prevLogValue = Debug.unityLogger.logEnabled;

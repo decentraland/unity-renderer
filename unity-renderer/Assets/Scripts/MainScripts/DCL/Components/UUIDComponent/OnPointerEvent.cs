@@ -1,73 +1,134 @@
+using System;
+using System.Collections;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using UnityEngine;
+using Ray = UnityEngine.Ray;
 
 namespace DCL.Components
 {
-    public class OnPointerEvent : UUIDComponent<OnPointerEvent.Model>
+    public enum PointerEventType
+    {
+        NONE,
+        CLICK,
+        DOWN,
+        UP
+    }
+
+    public interface IPointerEvent : IMonoBehaviour
+    {
+        void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit);
+        PointerEventType GetEventType();
+        IDCLEntity entity { get; }
+        WebInterface.ACTION_BUTTON GetActionButton();
+        void SetHoverState(bool state);
+        bool IsAtHoverDistance(float distance);
+        bool IsVisible();
+    }
+
+    public class OnPointerEventHandler : IDisposable
+    {
+        public static bool enableInteractionHoverFeedback = true;
+        public OnPointerEventColliders eventColliders { get; private set; }
+
+        private IDCLEntity entity;
+
+        public OnPointerEventHandler() { eventColliders = new OnPointerEventColliders(); }
+
+        public void SetColliders(IDCLEntity entity)
+        {
+            this.entity = entity;
+            eventColliders.Initialize(entity);
+        }
+
+        public void SetFeedbackState(bool showFeedback, bool hoverState, string button, string hoverText)
+        {
+            if (!enableInteractionHoverFeedback)
+                return;
+
+            var hoverCanvasController = InteractionHoverCanvasController.i;
+
+            hoverCanvasController.enabled = showFeedback;
+
+            if (showFeedback)
+            {
+                if (hoverState)
+                    hoverCanvasController.Setup(button, hoverText, entity);
+
+                hoverCanvasController.SetHoverState(hoverState);
+            }
+        }
+
+        public string GetMeshName(Collider collider)
+        {
+            if (collider == null || eventColliders == null)
+                return null;
+
+            return eventColliders.GetMeshName(collider);
+        }
+
+        public void Dispose() { eventColliders.Dispose(); }
+    }
+
+    public class OnPointerEvent : UUIDComponent, IPointerEvent
     {
         public static bool enableInteractionHoverFeedback = true;
 
-        InteractionHoverCanvasController hoverCanvasController;
-
         [System.Serializable]
-        new public class Model : UUIDComponent.Model
+        public new class Model : UUIDComponent.Model
         {
             public string button = WebInterface.ACTION_BUTTON.ANY.ToString();
             public string hoverText = "Interact";
             public float distance = 10f;
             public bool showFeedback = true;
-        }
 
-        public OnPointerEventColliders pointerEventColliders { get; private set; }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
 
-        public override void Setup(IParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
-        {
-            if (entity == null) return;
-
-            this.entity = entity;
-            this.scene = scene;
-
-            if (model == null)
-                this.model = new OnPointerEvent.Model();
-            else
-                this.model = (OnPointerEvent.Model) model;
-
-            Initialize();
-
-            entity.OnShapeUpdated -= OnComponentUpdated;
-            entity.OnShapeUpdated += OnComponentUpdated;
-        }
-
-        public string GetMeshName(Collider collider)
-        {
-            return pointerEventColliders.GetMeshName(collider);
-        }
-
-        public WebInterface.ACTION_BUTTON GetActionButton()
-        {
-            switch (model.button)
+            public WebInterface.ACTION_BUTTON GetActionButton()
             {
-                case "PRIMARY":
-                    return WebInterface.ACTION_BUTTON.PRIMARY;
-                case "SECONDARY":
-                    return WebInterface.ACTION_BUTTON.SECONDARY;
-                case "POINTER":
-                    return WebInterface.ACTION_BUTTON.POINTER;
-                default:
-                    return WebInterface.ACTION_BUTTON.ANY;
+                switch (button)
+                {
+                    case "PRIMARY":
+                        return WebInterface.ACTION_BUTTON.PRIMARY;
+                    case "SECONDARY":
+                        return WebInterface.ACTION_BUTTON.SECONDARY;
+                    case "POINTER":
+                        return WebInterface.ACTION_BUTTON.POINTER;
+                    default:
+                        return WebInterface.ACTION_BUTTON.ANY;
+                }
             }
         }
 
-        public void Initialize()
+        public OnPointerEventHandler pointerEventHandler;
+
+        public override void Initialize(IParcelScene scene, IDCLEntity entity)
         {
-            // Create OnPointerEventCollider child
-            pointerEventColliders = Utils.GetOrCreateComponent<OnPointerEventColliders>(this.gameObject);
-            pointerEventColliders.Initialize(entity);
-            pointerEventColliders.refCount++;
-            hoverCanvasController = InteractionHoverCanvasController.i;
+            base.Initialize(scene, entity);
+
+            if (model == null)
+                model = new OnPointerEvent.Model();
+
+            pointerEventHandler = new OnPointerEventHandler();
+            SetEventColliders(entity);
+
+            entity.OnShapeUpdated -= SetEventColliders;
+            entity.OnShapeUpdated += SetEventColliders;
+        }
+
+        public WebInterface.ACTION_BUTTON GetActionButton() { return ((Model) this.model).GetActionButton(); }
+
+        public void SetHoverState(bool hoverState)
+        {
+            Model model = (Model) this.model;
+            pointerEventHandler.SetFeedbackState(model.showFeedback, hoverState, model.button, model.hoverText);
+        }
+
+        void SetEventColliders(IDCLEntity entity)
+        {
+            pointerEventHandler.SetColliders(entity);
         }
 
         public bool IsVisible()
@@ -77,57 +138,38 @@ namespace DCL.Components
 
             bool isVisible = false;
 
-            if (this is AvatarOnPointerDown)
-                isVisible = true;
-            else if (entity.meshesInfo != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0)
+            if (entity.meshesInfo != null &&
+                entity.meshesInfo.renderers != null &&
+                entity.meshesInfo.renderers.Length > 0)
+            {
                 isVisible = entity.meshesInfo.renderers[0].enabled;
+            }
 
             return isVisible;
         }
 
-        void OnComponentUpdated(DecentralandEntity e)
-        {
-            Initialize();
-        }
-
-        public void SetHoverState(bool hoverState)
-        {
-            if (!enableInteractionHoverFeedback || !enabled) return;
-
-            hoverCanvasController.enabled = model.showFeedback;
-            if (model.showFeedback)
-            {
-                if (hoverState)
-                    hoverCanvasController.Setup(model.button, model.hoverText, entity);
-
-                hoverCanvasController.SetHoverState(hoverState);
-            }
-        }
-
-        public bool IsAtHoverDistance(Transform other)
-        {
-            return model != null && other != null && Vector3.Distance(other.position, transform.position) <= model.distance;
-        }
-
         public bool IsAtHoverDistance(float distance)
         {
+            Model model = this.model as Model;
             return distance <= model.distance;
+        }
+
+        public override IEnumerator ApplyChanges(BaseModel newModel)
+        {
+            this.model = newModel ?? new Model();
+            return null;
         }
 
         void OnDestroy()
         {
             if (entity != null)
-                entity.OnShapeUpdated -= OnComponentUpdated;
+                entity.OnShapeUpdated -= SetEventColliders;
 
-            if (pointerEventColliders != null)
-            {
-                pointerEventColliders.refCount--;
-
-                if (pointerEventColliders.refCount <= 0)
-                {
-                    Destroy(pointerEventColliders);
-                }
-            }
+            pointerEventHandler.Dispose();
         }
+
+        public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit) { }
+
+        public virtual PointerEventType GetEventType() { return PointerEventType.NONE; }
     }
 }

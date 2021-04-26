@@ -136,8 +136,8 @@ namespace Tests
         [TestCase(1, ExpectedResult = null)]
         public IEnumerator OpacityIsProcessedCorrectly(float opacity)
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = opacity});
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = opacity});
 
             yield return textShapeComponent.routine;
 
@@ -151,8 +151,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator VisibleTrueIsProcessedCorrectly()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = true});
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = 0.3f, visible = true});
 
             yield return textShapeComponent.routine;
 
@@ -167,8 +167,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator VisibleFalseIsProcessedCorrectly()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = false});
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = 0.3f, visible = false});
 
             yield return textShapeComponent.routine;
 

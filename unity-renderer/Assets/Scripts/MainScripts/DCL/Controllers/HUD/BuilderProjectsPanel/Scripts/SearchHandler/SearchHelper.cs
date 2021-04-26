@@ -17,7 +17,7 @@ public static class SearchHelper
         if (string.IsNullOrEmpty(text))
             return true;
 
-        return item.keywords.Any(keyword => !string.IsNullOrEmpty(keyword) && keyword.Contains(text));
+        return item.keywords.Any(keyword => !string.IsNullOrEmpty(keyword) && keyword.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 
     public static void Sort<T>(string sortType, List<T> input, bool descendingOrder) where T : ISortable<T>

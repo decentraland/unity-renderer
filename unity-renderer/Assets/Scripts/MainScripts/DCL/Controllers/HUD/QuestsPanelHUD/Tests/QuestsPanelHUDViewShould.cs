@@ -28,7 +28,7 @@ namespace Tests.QuestsPanelHUD
             {
                 id = MOCK_TASK_ID,
                 type = "single",
-                payload = JsonUtility.ToJson(new TaskPayload_Single{isDone = false})
+                payload = JsonUtility.ToJson(new TaskPayload_Single { isDone = false })
             };
             sectionMock.tasks = new [] { taskMock };
             questMock.sections = new [] { sectionMock };
@@ -126,15 +126,13 @@ namespace Tests.QuestsPanelHUD
         [Test]
         public void ShowPopup()
         {
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
             Assert.IsTrue(hudView.questPopup.gameObject.activeSelf);
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(hudView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(hudView.gameObject); }
     }
 }

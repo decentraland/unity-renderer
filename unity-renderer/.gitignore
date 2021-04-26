@@ -11,4 +11,5 @@ TestResults/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
-/AssetBundles/
+AssetBundles/
+Logs/

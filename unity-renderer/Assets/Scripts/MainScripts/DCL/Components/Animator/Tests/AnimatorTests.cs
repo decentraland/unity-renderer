@@ -15,7 +15,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CreateAnimationComponent()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
@@ -199,7 +199,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator UpdateAnimationComponent()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
@@ -253,7 +253,7 @@ namespace Tests
         public IEnumerator AnimationStartsAutomaticallyWithNoDCLAnimator()
         {
             // GLTFShape without DCLAnimator
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
@@ -273,7 +273,7 @@ namespace Tests
             Assert.IsTrue(animation.isPlaying);
 
             // GLTFShape with DCLAnimator
-            DecentralandEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+            var entity2 = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity2.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
                 "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
@@ -314,7 +314,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator NonSkeletalAnimationsSupport()
         {
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            var entity = TestHelpers.CreateSceneEntity(scene);
 
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
 

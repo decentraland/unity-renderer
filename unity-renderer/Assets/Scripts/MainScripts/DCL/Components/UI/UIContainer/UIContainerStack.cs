@@ -38,7 +38,7 @@ namespace DCL.Components
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
-        public UIContainerStack(IParcelScene scene) : base(scene)
+        public UIContainerStack()
         {
             model = new Model();
         }
@@ -48,13 +48,13 @@ namespace DCL.Components
             return (int) CLASS_ID.UI_CONTAINER_STACK;
         }
 
-        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError(
                 "Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
         }
 
@@ -90,8 +90,8 @@ namespace DCL.Components
         {
             UIShape childComponent = updatedComponent as UIShape;
             Assert.IsTrue(childComponent != null, "This should never happen!!!!");
-        
-            if (((UIShape.Model)childComponent.GetModel()).parentComponent != id)
+
+            if (((UIShape.Model) childComponent.GetModel()).parentComponent != id)
             {
                 RefreshAll();
                 return;

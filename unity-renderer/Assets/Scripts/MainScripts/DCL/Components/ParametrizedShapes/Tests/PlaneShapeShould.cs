@@ -25,7 +25,7 @@ public class PlaneShapeShould : IntegrationTestSuite_Legacy
     {
         float[] uvs = new float[] {0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1, 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1};
 
-        DecentralandEntity entity;
+        IDCLEntity entity;
 
         PlaneShape plane = TestHelpers.InstantiateEntityWithShape<PlaneShape, PlaneShape.Model>(
             scene,

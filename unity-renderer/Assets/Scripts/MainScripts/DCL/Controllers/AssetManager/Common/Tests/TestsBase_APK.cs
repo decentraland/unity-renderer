@@ -16,6 +16,7 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
+            Environment.SetupWithBuilders();
             keeper = new APKType();
             yield break;
         }
@@ -23,6 +24,7 @@ namespace AssetPromiseKeeper_Tests
         [UnityTearDown]
         protected virtual IEnumerator TearDown()
         {
+            Environment.Dispose();
             keeper.Cleanup();
             yield break;
         }

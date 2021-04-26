@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -94,7 +94,7 @@ namespace DCL.Controllers
 
         public void SetupWorldBlockers()
         {
-            if (!enabled) return;
+            if (!enabled || sceneHandler == null) return;
 
             SetupWorldBlockers(sceneHandler.GetAllLoadedScenesCoords());
         }

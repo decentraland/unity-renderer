@@ -1,3 +1,4 @@
+using System;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -6,14 +7,11 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
-    public class OnPointerEventColliders : MonoBehaviour
+    public class OnPointerEventColliders : IDisposable
     {
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
-        [System.NonSerialized] public int refCount;
-
-        Collider[] pointerEventColliders;
+        Collider[] colliders;
         Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
 
         public string GetMeshName(Collider collider)
@@ -24,28 +22,38 @@ namespace DCL.Components
             return null;
         }
 
-        private DecentralandEntity ownerEntity;
-        public void Initialize(DecentralandEntity entity)
+        private IDCLEntity ownerEntity;
+        private IShape lastShape;
+
+        public void Initialize(IDCLEntity entity)
         {
-            if (entity == null || entity.meshesInfo == null) return;
+            Renderer[] rendererList = entity?.meshesInfo?.renderers;
 
-            Renderer[] rendererList = entity.meshesInfo.renderers;
+            if (rendererList == null || rendererList.Length == 0)
+                return;
 
-            if (rendererList == null || rendererList.Length == 0) return;
+            IShape shape = entity.meshesInfo.currentShape;
 
+            if (lastShape == shape)
+                return;
+            
             this.ownerEntity = entity;
+            lastShape = shape;
 
-            DestroyOnPointerEventColliders();
+            DestroyColliders();
 
-            pointerEventColliders = new Collider[rendererList.Length];
+            if (shape == null)
+                return;
 
-            for (int i = 0; i < pointerEventColliders.Length; i++)
+            colliders = new Collider[rendererList.Length];
+
+            for (int i = 0; i < colliders.Length; i++)
             {
-                pointerEventColliders[i] = CreatePointerEventCollider(rendererList[i]);
+                colliders[i] = CreateColliders(rendererList[i]);
             }
         }
 
-        Collider CreatePointerEventCollider(Renderer renderer)
+        Collider CreateColliders(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 
@@ -65,27 +73,24 @@ namespace DCL.Components
             Transform t = go.transform;
 
             t.SetParent(renderer.transform);
-            Utils.ResetLocalTRS(t);
+            t.ResetLocalTRS();
 
             return meshCollider;
         }
 
-        void OnDestroy()
-        {
-            DestroyOnPointerEventColliders();
-        }
+        public void Dispose() { DestroyColliders(); }
 
-        void DestroyOnPointerEventColliders()
+        void DestroyColliders()
         {
-            if (pointerEventColliders == null)
+            if (colliders == null)
                 return;
 
-            for (int i = 0; i < pointerEventColliders.Length; i++)
+            for (int i = 0; i < colliders.Length; i++)
             {
-                Collider collider = pointerEventColliders[i];
+                Collider collider = colliders[i];
 
                 if (collider != null)
-                    Destroy(collider.gameObject);
+                    UnityEngine.Object.Destroy(collider.gameObject);
             }
         }
     }

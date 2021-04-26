@@ -28,12 +28,16 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
+    secondaryTextureSettings: {}
     variantMultiplier: 1
     packables: []
     totalSpriteSurfaceArea: 0
     bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites: []
   m_PackedSpriteNamesToIndex: []
+  m_RenderDataMap: {}
   m_Tag: AvatarExpressions
   m_IsVariant: 0

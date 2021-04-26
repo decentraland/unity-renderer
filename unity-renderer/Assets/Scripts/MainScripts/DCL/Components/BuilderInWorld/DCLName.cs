@@ -24,7 +24,7 @@ public class DCLName : BaseDisposable
         }
     }
 
-    public DCLName(IParcelScene scene) : base(scene)
+    public DCLName()
     {
         model = new Model();
     }
@@ -38,17 +38,17 @@ public class DCLName : BaseDisposable
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
     {
-        Model modelToApply = (Model)newModel;
+        Model modelToApply = (Model) newModel;
 
         model = modelToApply;
 
-        foreach (DecentralandEntity entity in attachedEntities)
+        foreach (IDCLEntity entity in attachedEntities)
         {
             entity.OnNameChange?.Invoke(modelToApply);
         }
 
 #if UNITY_EDITOR
-        foreach (DecentralandEntity decentralandEntity in this.attachedEntities)
+        foreach (IDCLEntity decentralandEntity in this.attachedEntities)
         {
             if (!string.IsNullOrEmpty(oldName))
                 decentralandEntity.gameObject.name.Replace(oldName, "");

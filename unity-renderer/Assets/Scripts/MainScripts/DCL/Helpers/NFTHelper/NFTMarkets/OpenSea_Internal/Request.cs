@@ -141,61 +141,70 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
             do
             {
-                using (UnityWebRequest request = UnityWebRequest.Get(url))
+                if (OpenSeaRequestController.VERBOSE)
+                    Debug.Log($"RequestGroup: Request to OpenSea {url}");
+
+                // NOTE(Santi): In this case, as this code is implementing a very specific retries system (including delays), we use our
+                //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
+                WebRequestAsyncOperation asyncOp = WebRequestController.i.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
+                yield return asyncOp;
+
+                AssetsResponse response = null;
+                if (asyncOp.isSucceded)
                 {
-                    if (OpenSeaRequestController.VERBOSE)
-                        Debug.Log($"RequestGroup: Request to OpenSea {url}");
-                    yield return request.SendWebRequest();
+                    response = Utils.FromJsonWithNulls<AssetsResponse>(asyncOp.webRequest.downloadHandler.text);
+                }
 
-                    AssetsResponse response = null;
+                if (OpenSeaRequestController.VERBOSE)
+                    Debug.Log($"RequestGroup: Request resolving {response != null} {asyncOp.webRequest.error} {url}");
 
-                    if (!request.isNetworkError && !request.isHttpError)
+                if (response != null)
+                {
+                    shouldRetry = false;
+                    //if we have one element in the group, is the one failing and we dont group it again
+                    if (response.assets.Length != 0 || requests.Count <= 1)
                     {
-                        response = Utils.FromJsonWithNulls<AssetsResponse>(request.downloadHandler.text);
-                    }
-
-                    if (OpenSeaRequestController.VERBOSE)
-                        Debug.Log($"RequestGroup: Request resolving {response != null} {request.error} {url}");
-                    if (response != null)
-                    {
-                        shouldRetry = false;
-                        //if we have one element in the group, is the one failing and we dont group it again
-                        if (response.assets.Length != 0 || requests.Count <= 1)
+                        using (var iterator = requests.GetEnumerator())
                         {
-                            using (var iterator = requests.GetEnumerator())
+                            while (iterator.MoveNext())
                             {
-                                while (iterator.MoveNext())
-                                {
-                                    iterator.Current.Value.Resolve(response);
-                                }
+                                iterator.Current.Value.Resolve(response);
                             }
-                        }
-                        else
-                        {
-                            //There are invalids NFTs to fetch, we split the request into 2 smaller groups to find the ofender
-                            SplitGroup();
                         }
                     }
                     else
                     {
-                        shouldRetry = retryCount < REQUEST_RETRIES;
-                        if (!shouldRetry)
+                        //There are invalids NFTs to fetch, we split the request into 2 smaller groups to find the ofender
+                        SplitGroup();
+                    }
+
+                    asyncOp.Dispose();
+                }
+                else
+                {
+                    shouldRetry = retryCount < REQUEST_RETRIES;
+                    if (!shouldRetry)
+                    {
+                        using (var iterator = requests.GetEnumerator())
                         {
-                            using (var iterator = requests.GetEnumerator())
+                            while (iterator.MoveNext())
                             {
-                                while (iterator.MoveNext())
-                                {
-                                    iterator.Current.Value.Resolve(request.error);
-                                }
+                                iterator.Current.Value.Resolve(asyncOp.webRequest.error);
                             }
                         }
-                        else
-                        {
-                            retryCount++;
-                            if (OpenSeaRequestController.VERBOSE)
-                                Debug.Log($"RequestGroup: Request retrying {url}");
-                            yield return new WaitForSeconds(GetRetryDelay());
-                        }
+
+                        asyncOp.Dispose();
+                    }
+                    else
+                    {
+                        retryCount++;
+
+                        if (OpenSeaRequestController.VERBOSE)
+                            Debug.Log($"RequestGroup: Request retrying {url}");
+
+                        asyncOp.Dispose();
+
+                        yield return new WaitForSeconds(GetRetryDelay());
                     }
                 }
             } while (shouldRetry);
@@ -269,40 +278,46 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
             do
             {
-                using (UnityWebRequest request = UnityWebRequest.Get(url))
+                if (OpenSeaRequestController.VERBOSE)
+                    Debug.Log($"RequestGroup: Request to OpenSea {url}");
+
+                // NOTE(Santi): In this case, as this code is implementing a very specific retries system (including delays), we use our
+                //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
+                WebRequestAsyncOperation requestOp = WebRequestController.i.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
+                yield return requestOp;
+
+                AssetsResponse response = null;
+                if (requestOp.isSucceded)
                 {
-                    if (OpenSeaRequestController.VERBOSE)
-                        Debug.Log($"RequestGroup: Request to OpenSea {url}");
-                    yield return request.SendWebRequest();
+                    response = Utils.FromJsonWithNulls<AssetsResponse>(requestOp.webRequest.downloadHandler.text);
+                }
 
-                    AssetsResponse response = null;
+                if (OpenSeaRequestController.VERBOSE)
+                    Debug.Log($"RequestGroup: Request resolving {response != null} {requestOp.webRequest.error} {url}");
 
-                    if (!request.isNetworkError && !request.isHttpError)
+                if (response != null)
+                {
+                    shouldRetry = false;
+                    OnSuccess?.Invoke(response);
+                    requestOp.Dispose();
+                }
+                else
+                {
+                    shouldRetry = retryCount < REQUEST_RETRIES;
+                    if (!shouldRetry)
                     {
-                        response = Utils.FromJsonWithNulls<AssetsResponse>(request.downloadHandler.text);
-                    }
-
-                    if (OpenSeaRequestController.VERBOSE)
-                        Debug.Log($"RequestGroup: Request resolving {response != null} {request.error} {url}");
-                    if (response != null)
-                    {
-                        shouldRetry = false;
-                        OnSuccess?.Invoke(response);
+                        OnError?.Invoke("Error " + requestOp.webRequest.downloadHandler.text);
+                        requestOp.Dispose();
                     }
                     else
                     {
-                        shouldRetry = retryCount < REQUEST_RETRIES;
-                        if (!shouldRetry)
-                        {
-                            OnError?.Invoke("Error " + request.downloadHandler.text);
-                        }
-                        else
-                        {
-                            retryCount++;
-                            if (OpenSeaRequestController.VERBOSE)
-                                Debug.Log($"RequestGroup: Request retrying {url}");
-                            yield return new WaitForSeconds(GetRetryDelay());
-                        }
+                        retryCount++;
+
+                        if (OpenSeaRequestController.VERBOSE)
+                            Debug.Log($"RequestGroup: Request retrying {url}");
+
+                        yield return new WaitForSeconds(GetRetryDelay());
+                        requestOp.Dispose();
                     }
                 }
             } while (shouldRetry);

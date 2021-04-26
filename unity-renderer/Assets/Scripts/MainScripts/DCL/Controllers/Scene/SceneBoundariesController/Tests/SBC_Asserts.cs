@@ -48,7 +48,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
@@ -57,6 +57,7 @@ namespace SceneBoundariesCheckerTests
                 }));
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return null;
 
             AssertMeshIsInvalid(entity.meshesInfo);
         }
@@ -65,7 +66,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             var componentModel = new NFTShape.Model()
             {
@@ -96,7 +97,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
-            var transformModel = new DCLTransform.Model {position = new Vector3(18, 1, 18)};
+            var transformModel = new DCLTransform.Model { position = new Vector3(18, 1, 18) };
             TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
             yield return null;
@@ -109,7 +110,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
@@ -122,7 +123,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
             yield return null;
@@ -134,7 +135,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             var componentModel = new NFTShape.Model()
             {
@@ -153,7 +154,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
@@ -169,7 +170,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsValid(entity.meshesInfo);
 
             // Move object to surpass the scene height boundaries
-            var transformModel = new DCLTransform.Model {position = new Vector3(8, 30, 8)};
+            var transformModel = new DCLTransform.Model { position = new Vector3(8, 30, 8) };
             TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
             yield return null;
@@ -196,7 +197,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.SetEntityParent(scene, childEntityId, entityId);
 
             // Move parent object to surpass the scene boundaries
-            var transformModel = new DCLTransform.Model {position = new Vector3(18, 1, 18)};
+            var transformModel = new DCLTransform.Model { position = new Vector3(18, 1, 18) };
             TestHelpers.SetEntityTransform(scene, scene.entities[entityId], transformModel);
 
             yield return null;
@@ -245,7 +246,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsInvalid(entity.meshesInfo);
 
             // Move object to re-enter the scene boundaries
-            var transformModel = new DCLTransform.Model {position = new Vector3(8, 1, 8)};
+            var transformModel = new DCLTransform.Model { position = new Vector3(8, 1, 8) };
             TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
             yield return null;
@@ -257,7 +258,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
@@ -266,11 +267,12 @@ namespace SceneBoundariesCheckerTests
                 }));
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return null;
 
             AssertMeshIsInvalid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
             yield return null;
@@ -282,7 +284,7 @@ namespace SceneBoundariesCheckerTests
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             var componentModel = new NFTShape.Model()
             {
@@ -301,7 +303,7 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsInvalid(entity.meshesInfo);
 
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
 

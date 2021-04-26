@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-internal class SectionProjectScenesController : SectionBase, IProjectSceneListener
+internal class SectionProjectScenesController : SectionBase, IProjectSceneListener, ISectionHideContextMenuRequester
 {
     public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectScenesView";
+    
+    public event Action OnRequestContextMenuHide;
+    
     public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
     private readonly SectionProjectScenesView view;
@@ -22,7 +27,7 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
     {
         this.view = view;
 
-        view.OnScrollRectValueChanged += RequestHideContextMenu;
+        view.OnScrollRectValueChanged += OnRequestContextMenuHide;
         sceneSearchHandler.OnResult += OnSearchResult;
     }
 
@@ -33,7 +38,7 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
 
     public override void Dispose()
     {
-        view.OnScrollRectValueChanged -= RequestHideContextMenu;
+        view.OnScrollRectValueChanged -= OnRequestContextMenuHide;
         Object.Destroy(view.gameObject);
     }
 
