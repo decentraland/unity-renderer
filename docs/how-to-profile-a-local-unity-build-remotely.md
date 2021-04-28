@@ -1,9 +1,9 @@
 ### How to profile a local Unity build remotely
 
 #### Option 1
-1. Run `make watch` in a terminal at `kernel/`. Wait for it to finish and leave it watching for changes. **This step must be done before replacing the build files or they may be replaced again with the latest published build files when the `make watch` process runs**
+1. Run `make watch` in a terminal at your `kernel` repository. Wait for it to finish and leave it watching for changes. **This step must be done before replacing the build files or they may be replaced again with the latest published build files when the `make watch` process runs**
 2. In Unity Editor, build unity WASM with its name as `unity` into your desired folder. **It's very important that the folder/build name is `unity`**.
-3. When the building process finishes, move the 3 ".unityweb" files that will end up inside `[ChosenDestination]/unity/Build/` into `kernel/static/unity/Build/`. Just remember that if you run the `make watch` after this last step, your new files may be replaced by the latest published build files during the `make watch` process.
+3. When the building process finishes, move all the ".unityweb" files that will end up inside `[ChosenDestination]/unity/Build/` into `kernel/static/unity/Build/`. Just remember that if you run the `make watch` after this last step, your new files may be replaced by the latest published build files during the `make watch` process.
 
 Just to be clear, the .unityweb files should end up in the following path
 ```
@@ -20,19 +20,7 @@ kernel
 #### Option 2
 1. Run `make watch` in a terminal at `kernel/`. Wait for it to finish and leave it watching for changes. **This step must be done before replacing the build files or they may be replaced again with the latest published build files when the `make watch` process runs**
 2. Build unity WASM with its name as `unity` into the folder `kernel/static`. **It's very important that the folder/build name is `unity`**.
-3. In another terminal checkout the deletion of the file named `kernel/static/unity/Build/DCLUnityLoader.js`. Unity deletes anything on this folder as part of the build process and we need that file.
-
-```
-git checkout -- kernel/static/unity/Build/DCLUnityLoader.js
-```
-
-4. Checkout the modifications in the `kernel/static/unity/Build/unity.json` file. Unity deletes our custom changes as part of the build process.
-
-```
-git checkout -- kernel/static/unity/Build/unity.json
-```
-
-5. Testing how your new build performs:
+3. Testing how your new build performs:
 
 - Open **[http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
 - Open **[http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:3000/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
