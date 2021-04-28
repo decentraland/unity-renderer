@@ -7,8 +7,20 @@ const DIST_ROOT = resolve(__dirname, "../dist")
 
 async function main() {
   await checkFiles()
-  if (process.env.CIRCLE_BRANCH == "master") {
+  
+  const branchName = process.env.CIRCLE_BRANCH;
+
+  if (branchName === "master") {
     await publish(["latest"], "public", DIST_ROOT)
+  } else {
+    const circleBuildNum = process.env.CIRCLE_BUILD_NUM;
+  
+    let match = /[^a-zA-Z0-9-]/g;
+    const cleanedBranchName = branchName.replaceAll(match, "")
+  
+    const tagName = `1.0.0.${circleBuildNum}${cleanedBranchName}`
+  
+    await publish([tagName], "public", DIST_ROOT);
   }
 }
 
@@ -19,7 +31,7 @@ async function checkFiles() {
   console.assert(packageJson.typings, "package.json must contain typings file")
   ensureFileExists(DIST_ROOT, packageJson.main)
   ensureFileExists(DIST_ROOT, packageJson.typings)
-  ensureFileExists(DIST_ROOT, "UnityLoader.js")
+  ensureFileExists(DIST_ROOT, "unity.loader.js")
 }
 
 export async function publish(npmTags: string[], access: string, workingDirectory: string): Promise<string> {
@@ -33,6 +45,7 @@ export async function publish(npmTags: string[], access: string, workingDirector
     args.push("--tag", JSON.stringify(tag))
   }
 
+  console.log("> publishing renderer package with tags:\n" + JSON.stringify(npmTags));
   return execute(`npm publish ` + args.join(" "), workingDirectory)
 }
 

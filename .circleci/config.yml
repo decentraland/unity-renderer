@@ -310,12 +310,7 @@ workflows:
             - build-unity
 
       - publish-renderer:
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
+          <<: *all_branches_and_tags
           requires:
             - build-unity
             - build-js-interface
