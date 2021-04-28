@@ -78,10 +78,7 @@ jobs:
           paths:
             - "*"
 
-  ############
-  ## THIS IS TEMPORARILY DISABLED AND RUNS ONLY IN THE "editmode-branch" branch
-  ############
-  editmode-tests:
+  build-unity:
     <<: *working_directory_root
     resource_class: xlarge
     docker: *unity_image
@@ -98,11 +95,62 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+            - unity-build-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
           name: Restore library if exists
           keys:
             - library-2020-3-{{ .Branch }}
+      - run:
+          name: Build Unity Project
+          command: |
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                mkdir -p ${BUILD_PATH}
+                (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
+                pid=`cat /tmp/workspace/build.pid`
+                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+                    echo "Running Unity Build..."
+                    sleep 60
+                done
+                cat ./unity-renderer/build-logs.txt
+            fi;
+      - save_cache:
+          name: Store decentraland-renderer build
+          key: unity-build-{{ checksum "../.unitysources-checksum" }}
+          paths:
+            - ./unity-renderer/Builds/
+      - store_artifacts:
+          path: ./unity-renderer/Builds/
+          destination: Builds
+      - save_cache:
+          name: Store library
+          key: library-2020-3-{{ .Branch }}-{{ epoch }}
+          paths:
+            - ./unity-renderer/Library
+      - store_artifacts:
+          name: Store logs
+          path: ./unity-renderer/build-logs.txt
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - ./unity-renderer/Builds
+
+  ############
+  ## THIS IS TEMPORARILY DISABLED AND RUNS ONLY IN THE "editmode-branch" branch
+  ############
+  editmode-tests:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run editmode tests
           command: |
@@ -181,54 +229,6 @@ jobs:
       - store_artifacts:
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
-
-  build-unity:
-    <<: *working_directory_root
-    resource_class: xlarge
-    docker: *unity_image
-    steps:
-      - <<: *attach_root
-      - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-build-{{ checksum "../.unitysources-checksum" }}
-      - restore_cache: *RESTORE_LIBRARY_CACHE
-      - run:
-          name: Build Unity Project
-          command: |
-            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
-                mkdir -p ${BUILD_PATH}
-                (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
-                pid=`cat /tmp/workspace/build.pid`
-                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
-                    echo "Running Unity Build..."
-                    sleep 60
-                done
-                cat ./unity-renderer/build-logs.txt
-            fi;
-      - save_cache:
-          name: Store decentraland-renderer build
-          key: unity-build-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/Builds/
-      - store_artifacts:
-          path: ./unity-renderer/Builds/
-          destination: Builds
-      - save_cache:
-          name: Store library
-          key: library-2020-3-{{ .Branch }}-{{ epoch }}
-          paths:
-            - ./unity-renderer/Library
-      - store_artifacts:
-          name: Store logs
-          path: ./unity-renderer/build-logs.txt
-
-      # persist to workspace to use in downstream jobs
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - ./unity-renderer/Builds
 
   build-js-interface:
     <<: *working_directory_root
