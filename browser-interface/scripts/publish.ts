@@ -17,7 +17,7 @@ async function main() {
     const circleBuildNum = process.env.CIRCLE_BUILD_NUM;  
     console.log(`> circle build num is ${circleBuildNum}`);
     let match = /[^a-zA-Z0-9-]/g;
-    const cleanedBranchName = branchName!.replaceAll(match, "")
+    const cleanedBranchName = branchName!.replace(match, "")
     const tagName = `1.0.0.${circleBuildNum}${cleanedBranchName}`
 
     console.log(`> tag is ${tagName}`);
