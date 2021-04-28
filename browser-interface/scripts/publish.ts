@@ -6,6 +6,7 @@ import { ensureFileExists } from "./utils"
 const DIST_ROOT = resolve(__dirname, "../dist")
 
 async function main() {
+  console.log(`> start`);
   await checkFiles()
   
   const branchName = process.env.CIRCLE_BRANCH;
@@ -13,12 +14,14 @@ async function main() {
   if (branchName === "master") {
     await publish(["latest"], "public", DIST_ROOT)
   } else {
-    const circleBuildNum = process.env.CIRCLE_BUILD_NUM;
-  
+    const circleBuildNum = process.env.CIRCLE_BUILD_NUM;  
+    console.log(`> circle build num is ${circleBuildNum}`);
     let match = /[^a-zA-Z0-9-]/g;
     const cleanedBranchName = branchName.replaceAll(match, "")
   
     const tagName = `1.0.0.${circleBuildNum}${cleanedBranchName}`
+
+    console.log(`> tag is ${tagName}`);
   
     await publish([tagName], "public", DIST_ROOT);
   }
