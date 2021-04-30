@@ -12,7 +12,7 @@ public class TaskbarButton : MonoBehaviour
     public ShowHideAnimator lineOnIndicator;
     public Image iconImage;
     public Color notInteractableColor;
-    public List<AppMode> modesWhereNotInteractable;
+    public List<AppMode> compatibleModes;
 
     public event System.Action<TaskbarButton> OnToggleOn;
     public event System.Action<TaskbarButton> OnToggleOff;
@@ -36,20 +36,7 @@ public class TaskbarButton : MonoBehaviour
 
     private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
 
-    private void AppMode_OnChange(AppMode current, AppMode previous)
-    {
-        bool isInteractable = true;
-        foreach (var mode in modesWhereNotInteractable)
-        {
-            if (current == mode)
-            {
-                isInteractable = false;
-                break;
-            }
-        }
-
-        SetInteractable(isInteractable);
-    }
+    private void AppMode_OnChange(AppMode currentMode, AppMode previousMode) { SetInteractable(compatibleModes.Contains(currentMode)); }
 
     private void OnToggleButtonClick() { SetToggleState(!toggledOn); }
 

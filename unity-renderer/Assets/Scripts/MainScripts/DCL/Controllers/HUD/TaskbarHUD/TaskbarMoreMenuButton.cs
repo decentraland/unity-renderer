@@ -18,7 +18,7 @@ public class TaskbarMoreMenuButton : MonoBehaviour
     [SerializeField] internal TMP_Text buttonText;
     [SerializeField] internal Animator buttonAnimator;
     [SerializeField] internal Color notInteractableColor;
-    [SerializeField] internal List<AppMode> modesWhereNotInteractable;
+    [SerializeField] internal List<AppMode> compatibleModes;
 
     internal AnimationStatus lastPlayedAnimation { get; private set; } = AnimationStatus.Hide;
 
@@ -37,20 +37,7 @@ public class TaskbarMoreMenuButton : MonoBehaviour
 
     private void OnDisable() { lastPlayedAnimation = AnimationStatus.Hide; }
 
-    private void AppMode_OnChange(AppMode current, AppMode previous)
-    {
-        bool isInteractable = true;
-        foreach (var mode in modesWhereNotInteractable)
-        {
-            if (current == mode)
-            {
-                isInteractable = false;
-                break;
-            }
-        }
-
-        SetInteractable(isInteractable);
-    }
+    private void AppMode_OnChange(AppMode currentMode, AppMode previousMode) { SetInteractable(compatibleModes.Contains(currentMode)); }
 
     internal void PlayAnimation(AnimationStatus newStatus)
     {
