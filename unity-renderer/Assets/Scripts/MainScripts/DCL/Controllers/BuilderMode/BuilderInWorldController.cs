@@ -413,6 +413,11 @@ public class BuilderInWorldController : MonoBehaviour
         Environment.i.world.blockersController.SetEnabled(false);
 
         builderInWorldBridge.StartKernelEditMode(sceneToEdit);
+
+        foreach (var groundVisual in groundVisualsGO)
+        {
+            groundVisual.SetActive(false);
+        }
     }
 
     public void EnterEditMode()
@@ -469,11 +474,6 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         isBuilderInWorldActivated = true;
-
-        foreach (var groundVisual in groundVisualsGO)
-        {
-            groundVisual.SetActive(false);
-        }
 
         previousSkyBoxMaterial = RenderSettings.skybox;
         RenderSettings.skybox = skyBoxMaterial;

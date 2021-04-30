@@ -58,7 +58,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
     private DCLBuilderInWorldEntity lastClickedEntity;
     private float lastTimeEntityClicked;
-    
+
     private void Start()
     {
         hideSelectedEntitiesDelegate = (action) => ChangeShowStateSelectedEntities();
@@ -300,7 +300,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
             if (entityToSelect == lastClickedEntity && (lastTimeEntityClicked + BuilderInWorldSettings.MOUSE_MS_DOUBLE_CLICK_THRESHOLD / 1000f) >= Time.realtimeSinceStartup )
                 biwModeController.EntityDoubleClick(entityToSelect);
-            
+
             lastClickedEntity = entityToSelect;
             lastTimeEntityClicked = Time.realtimeSinceStartup;
         }
@@ -480,6 +480,8 @@ public class BuilderInWorldEntityHandler : BIWController
     public DCLBuilderInWorldEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
+        //Note: If the entity contains the name component, we don't want to copy the name
+        entity.RemoveSharedComponent(typeof(DCLName), false);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(entity);
