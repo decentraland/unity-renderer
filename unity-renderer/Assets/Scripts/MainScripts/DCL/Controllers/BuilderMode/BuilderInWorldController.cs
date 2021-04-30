@@ -539,7 +539,7 @@ public class BuilderInWorldController : MonoBehaviour
         RenderSettings.skybox = previousSkyBoxMaterial;
 
         OnExitEditMode?.Invoke();
-        DataStore.i.appMode.Set(AppMode.GENERIC);
+        DataStore.i.appMode.Set(AppMode.DEFAULT);
     }
 
     public void StartBiwControllers()

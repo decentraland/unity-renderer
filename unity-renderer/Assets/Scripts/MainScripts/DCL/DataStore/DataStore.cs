@@ -4,7 +4,7 @@ namespace DCL
 {
     public enum AppMode
     {
-        GENERIC,
+        DEFAULT,
         BUILDER_IN_WORLD_EDITION
     }
 

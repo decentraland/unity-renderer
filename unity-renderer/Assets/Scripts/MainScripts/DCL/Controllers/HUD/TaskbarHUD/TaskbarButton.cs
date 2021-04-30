@@ -31,7 +31,7 @@ public class TaskbarButton : MonoBehaviour
             originalIconColor = iconImage.color;
 
         DataStore.i.appMode.OnChange += AppMode_OnChange;
-        AppMode_OnChange(DataStore.i.appMode.Get(), AppMode.GENERIC);
+        AppMode_OnChange(DataStore.i.appMode.Get(), AppMode.DEFAULT);
     }
 
     private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
