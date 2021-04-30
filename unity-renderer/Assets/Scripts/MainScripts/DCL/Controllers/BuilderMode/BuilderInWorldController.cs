@@ -390,6 +390,7 @@ public class BuilderInWorldController : MonoBehaviour
         inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
+        DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
 
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
@@ -435,12 +436,6 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetParcelScene(sceneToEdit);
             HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
-        }
-
-        if (HUDController.i.taskbarHud != null)
-        {
-            HUDController.i.taskbarHud.SetExploreInteractable(false);
-            HUDController.i.taskbarHud.SetMoreTutorialInteractable(false);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
@@ -531,12 +526,6 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetVisibility(false);
         }
 
-        if (HUDController.i.taskbarHud != null)
-        {
-            HUDController.i.taskbarHud?.SetExploreInteractable(true);
-            HUDController.i.taskbarHud?.SetMoreTutorialInteractable(true);
-        }
-
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         Environment.i.world.blockersController.SetEnabled(true);
         ExitBiwControllers();
@@ -550,6 +539,7 @@ public class BuilderInWorldController : MonoBehaviour
         RenderSettings.skybox = previousSkyBoxMaterial;
 
         OnExitEditMode?.Invoke();
+        DataStore.i.appMode.Set(AppMode.GENERIC);
     }
 
     public void StartBiwControllers()
