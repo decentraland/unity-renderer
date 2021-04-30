@@ -22,8 +22,8 @@ namespace DCL.Huds.QuestsPanel
         internal static int ENTRIES_PER_FRAME { get; set; } = 5;
         private const string VIEW_PATH = "QuestsPanelHUD";
 
-        [SerializeField] private RectTransform availableQuestsContainer;
-        [SerializeField] private RectTransform completedQuestsContainer;
+        [SerializeField] internal RectTransform availableQuestsContainer;
+        [SerializeField] internal RectTransform completedQuestsContainer;
         [SerializeField] private GameObject questsContainerSeparators;
         [SerializeField] private GameObject questPrefab;
         [SerializeField] internal QuestsPanelPopup questPopup;
