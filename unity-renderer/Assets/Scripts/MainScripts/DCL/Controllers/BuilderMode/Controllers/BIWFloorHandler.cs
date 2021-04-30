@@ -90,15 +90,13 @@ public class BIWFloorHandler : BIWController
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(floorSceneObject, false, true);
+            DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(floorSceneObject, WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel), false, true);
             decentralandEntity.rootEntity.OnShapeUpdated += OnFloorLoaded;
-            decentralandEntity.transform.position = WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel);
             dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
 
             GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
             floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
             decentralandEntity.OnShapeFinishLoading += OnShapeLoadFinish;
-            builderInWorldBridge?.EntityTransformReport(decentralandEntity.rootEntity, sceneToEdit);
         }
 
         builderInWorldEntityHandler.DeselectEntities();

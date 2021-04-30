@@ -21,10 +21,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         public CharacterPreviewController.CameraFocus focus = CharacterPreviewController.CameraFocus.DefaultEditing;
 
         //To remove when we refactor this to avoid ToggleGroup issues when quitting application
-        public void Initialize()
-        {
-            Application.quitting += () => toggle.onValueChanged.RemoveAllListeners();
-        }
+        public void Initialize() { Application.quitting += () => toggle.onValueChanged.RemoveAllListeners(); }
     }
 
     [System.Serializable]
@@ -128,15 +125,9 @@ public class AvatarEditorHUDView : MonoBehaviour
         closeAction.OnTriggered -= CloseAction_OnTriggered;
     }
 
-    private void ToggleAction_OnTriggered(DCLAction_Trigger action)
-    {
-        OnToggleActionTriggered?.Invoke();
-    }
+    private void ToggleAction_OnTriggered(DCLAction_Trigger action) { OnToggleActionTriggered?.Invoke(); }
 
-    private void CloseAction_OnTriggered(DCLAction_Trigger action)
-    {
-        OnCloseActionTriggered?.Invoke();
-    }
+    private void CloseAction_OnTriggered(DCLAction_Trigger action) { OnCloseActionTriggered?.Invoke(); }
 
     private void Initialize(AvatarEditorHUDController controller)
     {
@@ -202,6 +193,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         collectiblesItemSelector.OnItemClicked += controller.WearableClicked;
         collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
+        collectiblesItemSelector.OnRetryClicked += controller.RetryLoadOwnedWearables;
 
         skinColorSelector.OnColorChanged += controller.SkinColorClicked;
         eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
@@ -245,20 +237,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.Unselect(wearable.id);
     }
 
-    public void SelectHairColor(Color hairColor)
-    {
-        hairColorSelector.Select(hairColor);
-    }
+    public void SelectHairColor(Color hairColor) { hairColorSelector.Select(hairColor); }
 
-    public void SelectSkinColor(Color skinColor)
-    {
-        skinColorSelector.Select(skinColor);
-    }
+    public void SelectSkinColor(Color skinColor) { skinColorSelector.Select(skinColor); }
 
-    public void SelectEyeColor(Color eyesColor)
-    {
-        eyeColorSelector.Select(eyesColor);
-    }
+    public void SelectEyeColor(Color eyesColor) { eyeColorSelector.Select(eyesColor); }
 
     public void SetColors(List<Color> skinColors, List<Color> hairColors, List<Color> eyeColors)
     {
@@ -364,10 +347,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         characterPreviewController.TakeSnapshots(OnSnapshotsReady, OnSnapshotsFailed);
     }
 
-    private void OnExitButton()
-    {
-        OnCloseActionTriggered?.Invoke();
-    }
+    private void OnExitButton() { OnCloseActionTriggered?.Invoke(); }
 
     private void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body)
     {
@@ -423,6 +403,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         {
             collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
             collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
+            collectiblesItemSelector.OnRetryClicked -= controller.RetryLoadOwnedWearables;
         }
 
         if (skinColorSelector != null)
@@ -441,4 +422,8 @@ public class AvatarEditorHUDView : MonoBehaviour
             characterPreviewController = null;
         }
     }
+
+    public void ShowCollectiblesLoadingSpinner(bool isActive) { collectiblesItemSelector.ShowLoading(isActive); }
+
+    public void ShowCollectiblesLoadingRetry(bool isActive) { collectiblesItemSelector.ShowRetryLoading(isActive); }
 }

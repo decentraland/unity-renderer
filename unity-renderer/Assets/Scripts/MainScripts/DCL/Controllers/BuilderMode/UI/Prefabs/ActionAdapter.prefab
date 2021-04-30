@@ -317,6 +317,7 @@ GameObject:
   - component: {fileID: 6914422666240938454}
   - component: {fileID: 4773495027207557038}
   - component: {fileID: 5906003200819925143}
+  - component: {fileID: 6404508545019889341}
   m_Layer: 0
   m_Name: ActionAdapter
   m_TagString: Untagged
@@ -457,3 +458,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6404508545019889341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7834014110047757458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}

@@ -31,6 +31,14 @@ public class ShortcutsView : MonoBehaviour, IShortcutsView
         closeButton.onClick.AddListener(OnCloseClick);
     }
 
+    private void OnEnable() {
+        AudioScriptableObjects.dialogOpen.Play();
+    }
+
+    private void OnDisable() {
+        AudioScriptableObjects.dialogClose.Play();
+    }
+
     public void SetActive(bool isActive)
     {
         gameObject.SetActive(isActive);

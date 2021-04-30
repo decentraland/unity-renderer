@@ -8,23 +8,27 @@ public class TaskbarButton : MonoBehaviour
     public Button toggleButton;
     public GameObject lineOffIndicator;
     public ShowHideAnimator lineOnIndicator;
+    public Image iconImage;
+    public Color notInteractableColor;
 
     public event System.Action<TaskbarButton> OnToggleOn;
     public event System.Action<TaskbarButton> OnToggleOff;
 
     public bool toggledOn { get; private set; } = true;
 
+    private Color originalIconColor;
+
     public void Initialize()
     {
         toggleButton.onClick.RemoveAllListeners();
         toggleButton.onClick.AddListener(OnToggleButtonClick);
         SetToggleState(false, useCallback: false);
+
+        if (iconImage != null)
+            originalIconColor = iconImage.color;
     }
 
-    private void OnToggleButtonClick()
-    {
-        SetToggleState(!toggledOn);
-    }
+    private void OnToggleButtonClick() { SetToggleState(!toggledOn); }
 
     public void SetToggleState(bool on, bool useCallback = true)
     {
@@ -63,5 +67,13 @@ public class TaskbarButton : MonoBehaviour
 
         if (lineOffIndicator != null)
             lineOffIndicator.SetActive(!on);
+    }
+
+    public void SetInteractable(bool isInteractable)
+    {
+        toggleButton.interactable = isInteractable;
+
+        if (iconImage != null)
+            iconImage.color = isInteractable ? originalIconColor : notInteractableColor;
     }
 }

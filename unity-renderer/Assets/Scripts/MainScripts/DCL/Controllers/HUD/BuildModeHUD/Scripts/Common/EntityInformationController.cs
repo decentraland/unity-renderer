@@ -27,6 +27,7 @@ public interface IEntityInformationController
     void Enable();
     void Disable();
     void UpdateInfo(DCLBuilderInWorldEntity entity);
+    void UpdateEntitiesSelection(int numberOfSelectedEntities);
 }
 
 public class EntityInformationController : IEntityInformationController
@@ -167,7 +168,6 @@ public class EntityInformationController : IEntityInformationController
             return;
 
         string currentName = entity.GetDescriptiveName();
-        entityInformationView.SeTitleText(currentName);
 
         if (!isChangingName)
             entityInformationView.SetNameIFText(currentName);
@@ -224,4 +224,6 @@ public class EntityInformationController : IEntityInformationController
             entityInformationView.SetScaleAttribute(currentScale);
         }
     }
+
+    public void UpdateEntitiesSelection(int numberOfSelectedEntities) { entityInformationView.UpdateEntitiesSelection(numberOfSelectedEntities); }
 }

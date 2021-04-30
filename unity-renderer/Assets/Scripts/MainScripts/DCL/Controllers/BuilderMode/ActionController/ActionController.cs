@@ -14,7 +14,6 @@ public class ActionController : MonoBehaviour
 
     public System.Action OnUndo, OnRedo;
 
-
     List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
 
     int currentUndoStepIndex = 0;
@@ -51,14 +50,16 @@ public class ActionController : MonoBehaviour
 
     public void TryToRedoAction()
     {
-        if (currentRedoStepIndex >= actionsMade.Count || currentRedoStepIndex < 0) return;
+        if (currentRedoStepIndex >= actionsMade.Count || currentRedoStepIndex < 0)
+            return;
 
         RedoCurrentAction();
 
         if (currentRedoStepIndex + 1 < actionsMade.Count)
             currentRedoStepIndex++;
 
-        if (currentUndoStepIndex < actionsMade.Count - 1) currentUndoStepIndex++;
+        if (currentUndoStepIndex < actionsMade.Count - 1)
+            currentUndoStepIndex++;
 
         if (VERBOSE)
             Debug.Log("Redo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
@@ -68,14 +69,16 @@ public class ActionController : MonoBehaviour
     {
         if (currentUndoStepIndex < 0 ||
             actionsMade.Count <= 0 ||
-            !actionsMade[0].isDone) return;
+            !actionsMade[0].isDone)
+            return;
 
         UndoCurrentAction();
 
         if (currentUndoStepIndex > 0)
         {
             currentUndoStepIndex--;
-            if (currentRedoStepIndex < actionsMade.Count - 1 || currentRedoStepIndex - currentUndoStepIndex > 1) currentRedoStepIndex--;
+            if (currentRedoStepIndex < actionsMade.Count - 1 || currentRedoStepIndex - currentUndoStepIndex > 1)
+                currentRedoStepIndex--;
         }
         else if (!actionsMade[currentUndoStepIndex].isDone && currentRedoStepIndex > 0)
         {
@@ -86,10 +89,7 @@ public class ActionController : MonoBehaviour
             Debug.Log("Undo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
     }
 
-    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity)
-    {
-        CreateActionEntityDeleted(new List<DCLBuilderInWorldEntity> {entity});
-    }
+    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity) { CreateActionEntityDeleted(new List<DCLBuilderInWorldEntity> { entity }); }
 
     public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList)
     {

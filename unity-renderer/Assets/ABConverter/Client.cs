@@ -10,6 +10,9 @@ namespace DCL.ABConverter
 {
     public static class Client
     {
+        private const string WEARABLES_CONTENT_BASE_URL = "https://peer.decentraland.org/content/contents/";
+        private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
+    
         public class Settings
         {
             /// <summary>
@@ -61,18 +64,128 @@ namespace DCL.ABConverter
                 this.baseUrl = ContentServerUtils.GetContentAPIUrlBase(tld);
             }
         }
-
-        [System.Serializable]
-        private class WearableItemArray
+        
+        [Serializable]
+        private class WearablesAPIData
         {
-            [System.Serializable]
-            public class Collection
+            [Serializable]
+            public class WearableResponseRootData
             {
-                public string id;
-                public List<WearableItem> wearables;
+                [Serializable]
+                public class Content
+                {
+                    public string key;
+                    public string hash;
+                }
+
+                [Serializable]
+                public class Metadata
+                {
+                    [Serializable]
+                    public class Data
+                    {
+                        [Serializable]
+                        public class Representation
+                        {
+                            public string[] bodyShapes;
+                            public string mainFile;
+                            public string[] overrideHides;
+                            public string[] overrideReplaces;
+                            public string[] contents;
+                        }
+
+                        public string[] replaces;
+                        public string[] hides;
+                        public string[] tags;
+                        public string category;
+                        public Representation[] representations;
+                    }
+                    
+                    public string id;
+                    public string description;
+                    public string thumbnail;
+                    public string rarity;
+                    public Data data;
+                    public i18n[] i18n;
+                }
+                
+                public Content[] content;
+                public Metadata metadata;
             }
 
-            public List<Collection> data;
+            [Serializable]
+            public class PaginationData
+            {
+                public int offset;
+                public int limit;
+                public bool moreData;
+            }
+
+            public List<WearableResponseRootData> deployments;
+            public PaginationData pagination;
+
+            public List<WearableItem> GetWearableItemsList()
+            {
+                if (deployments == null || deployments.Count == 0) return null;
+
+                List<WearableItem> result = new List<WearableItem>();
+                
+                foreach (var wearableData in deployments)
+                {
+                    // Populate new WearableItem with fetched data
+                    WearableItem wearable = new WearableItem()
+                    {
+                        id = wearableData.metadata.id,
+                        category = wearableData.metadata.data.category,
+                        tags = wearableData.metadata.data.tags,
+                        baseUrl = WEARABLES_CONTENT_BASE_URL,
+                        thumbnail = wearableData.metadata.thumbnail,
+                        hides = wearableData.metadata.data.hides,
+                        replaces = wearableData.metadata.data.replaces,
+                        rarity = wearableData.metadata.rarity,
+                        description = wearableData.metadata.description,
+                        i18n = wearableData.metadata.i18n
+                    };
+                    
+                    List<WearableItem.Representation> wearableRepresentations = new List<WearableItem.Representation>();
+                    foreach (var wearableDataRepresentation in wearableData.metadata.data.representations)
+                    {
+                        WearableItem.Representation wearableRepresentation = new WearableItem.Representation()
+                        {
+                            bodyShapes = wearableDataRepresentation.bodyShapes,
+                            overrideHides = wearableDataRepresentation.overrideHides,
+                            overrideReplaces = wearableDataRepresentation.overrideReplaces,
+                            mainFile = wearableDataRepresentation.mainFile
+                        };
+
+                        List<ContentServerUtils.MappingPair> contentMappingPairs = new List<ContentServerUtils.MappingPair>();
+                        foreach (var contentFileName in wearableDataRepresentation.contents)
+                        {
+                            var contentData = wearableData.content.FirstOrDefault((x) => x.key == contentFileName);
+                            
+                            if (contentData == null)
+                            {
+                                log.Error($"Missing related content mapping pair info from fetched Wearable {wearableData.metadata.id}");
+                                continue;
+                            }
+                            
+                            contentMappingPairs.Add(new ContentServerUtils.MappingPair()
+                            {
+                                file = contentData.key,
+                                hash = contentData.hash
+                            });
+                        }
+                        
+                        wearableRepresentation.contents = contentMappingPairs.ToArray();
+                        wearableRepresentations.Add(wearableRepresentation);
+                    }
+
+                    wearable.representations = wearableRepresentations.ToArray();
+                    result.Add(wearable);
+                }
+
+                return result;
+            }
         }
 
         private static Logger log = new Logger("ABConverter.Client");
@@ -345,8 +458,8 @@ namespace DCL.ABConverter
         public static void DumpAllBodiesWearables()
         {
             EnsureEnvironment();
-
-            List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
+            
+            List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
                                                 .Where(x => x.category == WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
@@ -370,7 +483,7 @@ namespace DCL.ABConverter
             EnsureEnvironment();
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
-            List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
+            List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
                                                 .Where(x => x.category != WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
@@ -447,11 +560,9 @@ namespace DCL.ABConverter
         /// </summary>
         /// <param name="url">base-url to fetch the wearables collections</param>
         /// <returns>A list of all the WearableItems found</returns>
-        private static List<WearableItem> GetAvatarMappingList(string url)
+        private static List<WearableItem> GetAvatarMappingList(string url, int paginationElementOffset = 0)
         {
-            List<WearableItem> result = new List<WearableItem>();
-
-            UnityWebRequest w = UnityWebRequest.Get(url);
+            UnityWebRequest w = UnityWebRequest.Get(url + $"&offset={paginationElementOffset}");
             w.SendWebRequest();
 
             while (!w.isDone) { }
@@ -462,17 +573,18 @@ namespace DCL.ABConverter
                 return null;
             }
 
-            var avatarApiData = JsonUtility.FromJson<WearableItemArray>("{\"data\":" + w.downloadHandler.text + "}");
-
-            foreach (var collection in avatarApiData.data)
+            var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
+            var resultList = wearablesApiData.GetWearableItemsList();
+            
+            // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
+            // batches sequentially
+            if (wearablesApiData.pagination.moreData)
             {
-                foreach (var wearable in collection.wearables)
-                {
-                    result.Add(wearable);
-                }
+                var nextPageResults = GetAvatarMappingList(url, paginationElementOffset + wearablesApiData.pagination.limit);
+                resultList.AddRange(nextPageResults);
             }
-
-            return result;
+            
+            return resultList;
         }
 
         private static void GLTFImporter_OnNonBodyWearableLoad(UnityGLTF.GLTFSceneImporter obj)

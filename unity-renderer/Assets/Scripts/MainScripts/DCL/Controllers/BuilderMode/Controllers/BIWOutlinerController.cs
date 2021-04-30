@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Serialization;
 
 public class BIWOutlinerController : BIWController
 {
@@ -15,9 +16,9 @@ public class BIWOutlinerController : BIWController
     public Material outlineMaterial;
     public Material cameraOutlinerMaterial;
 
-    public BuilderInWorldController builderInWorldController;
+    [SerializeField] internal BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public BIWInputHandler biwInputHandler;
-   
+
     private List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
@@ -34,10 +35,7 @@ public class BIWOutlinerController : BIWController
         DeactivateBuilderInWorldCamera();
     }
 
-    public void SetOutlineCheckActive(bool isActive)
-    {
-        isOutlineCheckActive = isActive;
-    }
+    public void SetOutlineCheckActive(bool isActive) { isOutlineCheckActive = isActive; }
 
     public void CheckOutline()
     {
@@ -45,11 +43,8 @@ public class BIWOutlinerController : BIWController
         {
             if (!BuilderInWorldUtils.IsPointerOverUIElement())
             {
-                DCLBuilderInWorldEntity entity = builderInWorldController.GetEntityOnPointer();
-                if (!biwInputHandler.IsMultiSelectionActive())
-                    CancelAllOutlines();
-                else
-                    CancelUnselectedOutlines();
+                DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.GetEntityOnPointer();
+                RemoveEntitiesOutsidePointerOrUnselected();
 
                 if (entity != null && !entity.IsSelected)
                     OutlineEntity(entity);
@@ -57,17 +52,15 @@ public class BIWOutlinerController : BIWController
 
             outlinerOptimizationCounter = 0;
         }
-        else outlinerOptimizationCounter++;
+        else
+            outlinerOptimizationCounter++;
     }
 
-    public bool IsEntityOutlined(DCLBuilderInWorldEntity entity)
-    {
-        return entitiesOutlined.Contains(entity);
-    }
+    public bool IsEntityOutlined(DCLBuilderInWorldEntity entity) { return entitiesOutlined.Contains(entity); }
 
     public void OutlineEntities(List<DCLBuilderInWorldEntity> entitiesToEdit)
     {
-        foreach(DCLBuilderInWorldEntity entityToEdit in entitiesToEdit)
+        foreach (DCLBuilderInWorldEntity entityToEdit in entitiesToEdit)
         {
             OutlineEntity(entityToEdit);
         }
@@ -80,7 +73,7 @@ public class BIWOutlinerController : BIWController
 
         if (entitiesOutlined.Contains(entity))
             return;
-  
+
         if (entity.IsLocked)
             return;
 
@@ -103,17 +96,28 @@ public class BIWOutlinerController : BIWController
         }
     }
 
+    public void RemoveEntitiesOutsidePointerOrUnselected()
+    {
+        var entity = builderInWorldEntityHandler.GetEntityOnPointer();
+        for (int i = 0; i < entitiesOutlined.Count; i++)
+        {
+            if (!entitiesOutlined[i].IsSelected || entity != entitiesOutlined[i])
+                CancelEntityOutline(entitiesOutlined[i]);
+        }
+    }
+
     public void CancelAllOutlines()
     {
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
-            CancelEntityOutline(entitiesOutlined[i]);           
+            CancelEntityOutline(entitiesOutlined[i]);
         }
     }
 
     public void CancelEntityOutline(DCLBuilderInWorldEntity entityToQuitOutline)
     {
-        if (!entitiesOutlined.Contains(entityToQuitOutline)) return;
+        if (!entitiesOutlined.Contains(entityToQuitOutline))
+            return;
 
         if (entityToQuitOutline.rootEntity.meshRootGameObject && entityToQuitOutline.rootEntity.meshesInfo.renderers.Length > 0)
         {
@@ -156,9 +160,6 @@ public class BIWOutlinerController : BIWController
             outliner.enabled = false;
             outliner.Deactivate();
         }
-
-        outliner.enabled = false;
-        outliner.Deactivate();
 
         UniversalAdditionalCameraData additionalCameraData = camera.transform.GetComponent<UniversalAdditionalCameraData>();
         additionalCameraData.SetRenderer(0);

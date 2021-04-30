@@ -139,7 +139,7 @@ namespace DCL.Components
                 if (updateCollisions)
                     ConfigureColliders(entity);
 
-                entity.OnShapeUpdated?.Invoke(entity);
+                RaiseOnShapeUpdated(entity);
             }
 
             previousModel = model;
@@ -199,10 +199,7 @@ namespace DCL.Components
             ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
         }
 
-        protected virtual void ConfigureColliders(IDCLEntity entity)
-        {
-            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
-        }
+        protected virtual void ConfigureColliders(IDCLEntity entity) { CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model)); }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
         {
@@ -255,7 +252,7 @@ namespace DCL.Components
 
             ConfigureColliders(entity);
 
-            entity.OnShapeUpdated?.Invoke(entity);
+            RaiseOnShapeUpdated(entity);
 
             OnFinishCallbacks?.Invoke(this);
             OnFinishCallbacks = null;
@@ -283,6 +280,13 @@ namespace DCL.Components
             {
                 OnFinishCallbacks += callback;
             }
+        }
+
+        private void RaiseOnShapeUpdated(IDCLEntity entity)
+        {
+            if (!isLoaded) return;
+            
+            entity.OnShapeUpdated?.Invoke(entity);
         }
     }
 }

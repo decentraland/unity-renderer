@@ -10,10 +10,6 @@ public class DynamicScrollSensitivity : MonoBehaviour
 {
     [Tooltip("Scroll Rect component that will be modified.")]
     public ScrollRect mainScrollRect;
-    [Tooltip("Viewport associated to the Scroll Rect.")]
-    public RectTransform viewport;
-    [Tooltip("Transform that will contain all the items of the viewport.")]
-    public RectTransform contentContainer;
     [Tooltip("Min value for the calculated scroll sensitivity.")]
     public float minSensitivity = 5f;
     [Tooltip("Max value for the calculated scroll sensitivity.")]
@@ -47,7 +43,7 @@ public class DynamicScrollSensitivity : MonoBehaviour
         // We need to wait for a frame for having available the correct height of the contentContainer after the OnEnable event
         yield return null;
 
-        float newSensitivity = (contentContainer.rect.height * minSensitivity / viewport.rect.height) * sensitivityMultiplier;
+        float newSensitivity = (mainScrollRect.content.rect.height * minSensitivity / mainScrollRect.viewport.rect.height) * sensitivityMultiplier;
         mainScrollRect.scrollSensitivity = Mathf.Clamp(newSensitivity, minSensitivity, maxSensitivity);
     }
 

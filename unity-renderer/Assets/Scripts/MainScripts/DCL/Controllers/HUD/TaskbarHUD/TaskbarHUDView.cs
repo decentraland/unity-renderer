@@ -167,10 +167,7 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    public void SetQuestsPanelStatus(bool isActive)
-    {
-        questPanelButton.gameObject.SetActive(isActive);
-    }
+    public void SetQuestsPanelStatus(bool isActive) { questPanelButton.gameObject.SetActive(isActive); }
 
     private void OnWindowToggleOff(TaskbarButton obj)
     {
@@ -277,15 +274,9 @@ public class TaskbarHUDView : MonoBehaviour
         }
     }
 
-    internal void OnAddChatWindow()
-    {
-        chatButton.transform.parent.gameObject.SetActive(true);
-    }
+    internal void OnAddChatWindow() { chatButton.transform.parent.gameObject.SetActive(true); }
 
-    internal void OnAddFriendsWindow()
-    {
-        friendsButton.transform.parent.gameObject.SetActive(true);
-    }
+    internal void OnAddFriendsWindow() { friendsButton.transform.parent.gameObject.SetActive(true); }
 
     internal void OnAddSettingsWindow()
     {
@@ -299,15 +290,9 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    internal void OnAddHelpAndSupportWindow()
-    {
-        moreMenu.ActivateHelpAndSupportButton();
-    }
+    internal void OnAddHelpAndSupportWindow() { moreMenu.ActivateHelpAndSupportButton(); }
 
-    internal void OnAddControlsMoreOption()
-    {
-        moreMenu.ActivateControlsButton();
-    }
+    internal void OnAddControlsMoreOption() { moreMenu.ActivateControlsButton(); }
 
     internal void OnAddVoiceChat()
     {
@@ -325,10 +310,9 @@ public class TaskbarHUDView : MonoBehaviour
         isBarVisible = visible;
     }
 
-    public void SetVisibility(bool visible)
-    {
-        gameObject.SetActive(visible);
-    }
+    public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
+
+    public void SetExploreInteractable(bool isInteractable) { exploreButton.SetInteractable(isInteractable); }
 
     private void OnDestroy()
     {

@@ -4,6 +4,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
+public enum BuildModeCatalogSection
+{
+    CATEGORIES,
+    ASSET_PACKS,
+    FAVOURITES
+}
+
 public interface ISceneCatalogController
 {
     event Action OnHideCatalogClicked;
@@ -52,6 +59,7 @@ public class SceneCatalogController : ISceneCatalogController
     internal BIWSearchBarController biwSearchBarController;
     internal bool isShowingAssetPacks = false;
     internal bool isFilterByAssetPacks = true;
+    internal BuildModeCatalogSection currentSection = BuildModeCatalogSection.ASSET_PACKS;
 
     public void Initialize(ISceneCatalogView sceneCatalogView, IQuickBarController quickBarController)
     {
@@ -136,7 +144,7 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogGroupList.SetContent(filterObjects);
     }
 
-    public void FilterRemoved() { ShowAssetsPacks(); }
+    public void FilterRemoved() { ShowLastSelectedSection(); }
 
     public void AssetsPackFilter(bool isOn)
     {
@@ -170,6 +178,9 @@ public class SceneCatalogController : ISceneCatalogController
 
     public void ShowFavorites()
     {
+        currentSection = BuildModeCatalogSection.FAVOURITES;
+        biwSearchBarController.ReleaseFilters();
+
         sceneCatalogView.SetCatalogTitle(FAVORITE_NAME);
         ShowCatalogContent();
 
@@ -179,6 +190,7 @@ public class SceneCatalogController : ISceneCatalogController
         favorites.Add(groupedCategoryItems);
 
         sceneCatalogView.catalogGroupList.SetContent(favorites);
+        sceneCatalogView.ShowBackButton(false);
     }
 
     public void CatalogItemSelected(CatalogItem catalogItem) { OnCatalogItemSelected?.Invoke(catalogItem); }
@@ -197,6 +209,7 @@ public class SceneCatalogController : ISceneCatalogController
     {
         ShowCatalogContent();
         SetCatalogAssetPackInListView(catalogItemPack);
+        sceneCatalogView.ShowBackButton(true);
     }
 
     internal void SetCatalogAssetPackInListView(CatalogItemPack catalogItemPack)
@@ -248,7 +261,7 @@ public class SceneCatalogController : ISceneCatalogController
             else
                 ShowCategories();
 
-            sceneCatalogView.SetBackBtnSprite(false);
+            sceneCatalogView.ShowBackButton(false);
             biwSearchBarController.ReleaseFilters();
         }
     }
@@ -259,6 +272,9 @@ public class SceneCatalogController : ISceneCatalogController
 
     public void ShowCategories()
     {
+        currentSection = BuildModeCatalogSection.CATEGORIES;
+        biwSearchBarController.ReleaseFilters();
+
         if (sceneCatalogView.catalogAssetPackList != null)
         {
             sceneCatalogView.catalogAssetPackList.SetCategoryStyle();
@@ -271,10 +287,15 @@ public class SceneCatalogController : ISceneCatalogController
 
         if (sceneCatalogView.catalogGroupList != null)
             sceneCatalogView.catalogGroupList.gameObject.SetActive(false);
+
+        sceneCatalogView.ShowBackButton(false);
     }
 
     public void ShowAssetsPacks()
     {
+        currentSection = BuildModeCatalogSection.ASSET_PACKS;
+        biwSearchBarController.ReleaseFilters();
+
         if (sceneCatalogView.catalogAssetPackList != null)
         {
             sceneCatalogView.catalogAssetPackList.SetAssetPackStyle();
@@ -287,6 +308,8 @@ public class SceneCatalogController : ISceneCatalogController
 
         if (sceneCatalogView.catalogGroupList != null)
             sceneCatalogView.catalogGroupList.gameObject.SetActive(false);
+
+        sceneCatalogView.ShowBackButton(false);
     }
 
     public void ShowCatalogContent()
@@ -297,14 +320,11 @@ public class SceneCatalogController : ISceneCatalogController
 
         if (sceneCatalogView.catalogGroupList != null)
             sceneCatalogView.catalogGroupList.gameObject.SetActive(true);
-
-        sceneCatalogView.SetBackBtnSprite(true);
     }
 
     public void OpenCatalog()
     {
-        RefreshCatalog();
-        sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
+        ShowLastSelectedSection();
         Utils.UnlockCursor();
         sceneCatalogView.SetActive(true);
     }
@@ -329,5 +349,21 @@ public class SceneCatalogController : ISceneCatalogController
             return null;
 
         return sceneCatalogView.catalogGroupList.GetLastCatalogItemDragged();
+    }
+
+    private void ShowLastSelectedSection()
+    {
+        switch (currentSection)
+        {
+            case BuildModeCatalogSection.CATEGORIES:
+                ShowCategories();
+                break;
+            case BuildModeCatalogSection.ASSET_PACKS:
+                ShowAssetsPacks();
+                break;
+            case BuildModeCatalogSection.FAVOURITES:
+                ShowFavorites();
+                break;
+        }
     }
 }

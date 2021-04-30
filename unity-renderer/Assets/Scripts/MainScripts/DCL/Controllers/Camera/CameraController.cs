@@ -2,6 +2,7 @@ using Cinemachine;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -107,6 +108,8 @@ public class CameraController : MonoBehaviour
         currentCameraState.OnUnselect();
         CommonScriptableObjects.cameraMode.Set(newMode);
         currentCameraState.OnSelect();
+        
+        DCL.Interface.WebInterface.ReportCameraChanged(newMode);
 
         onSetCameraMode.Invoke(newMode);
     }

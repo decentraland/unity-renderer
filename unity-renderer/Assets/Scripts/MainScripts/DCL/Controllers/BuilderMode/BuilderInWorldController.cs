@@ -1,9 +1,11 @@
 using Builder;
+using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
 using UnityEngine;
 using Environment = DCL.Environment;
+using System;
 
 public class BuilderInWorldController : MonoBehaviour
 {
@@ -32,6 +34,7 @@ public class BuilderInWorldController : MonoBehaviour
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public ActionController actionController;
     public BuilderInWorldBridge builderInWorldBridge;
+    public BIWSaveController biwSaveController;
 
     [Header("Build Modes")]
     public BuilderInWorldGodMode editorMode;
@@ -52,19 +55,20 @@ public class BuilderInWorldController : MonoBehaviour
     private GameObject undoGO;
     private GameObject snapGO;
     private GameObject freeMovementGO;
-
     private int checkerInsideSceneOptimizationCounter = 0;
-
     private string sceneToEditId;
-
     private const float RAYCAST_MAX_DISTANCE = 10000f;
-
     private bool catalogAdded = false;
     private bool sceneReady = false;
     private bool isInit = false;
     private Material previousSkyBoxMaterial;
     private Vector3 parcelUnityMiddlePoint;
+    private bool previousAllUIHidden;
+    private WebRequestAsyncOperation catalogAsyncOp;
+    private bool isCatalogLoading = false;
 
+    public event Action OnEnterEditMode;
+    public event Action OnExitEditMode;
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private void Awake() { BIWCatalogManager.Init(); }
@@ -77,6 +81,12 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (sceneToEdit != null)
+            sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
+
+        Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
+        Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
+
         KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
         if (HUDController.i.builderInWorldInititalHud != null)
@@ -90,7 +100,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (initialLoadingController != null)
         {
-            initialLoadingController.OnCancelLoading -= ExitEditMode;
+            initialLoadingController.OnCancelLoading -= CancelLoading;
             initialLoadingController.Dispose();
         }
 
@@ -100,6 +110,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void Update()
     {
+        if (isCatalogLoading && catalogAsyncOp.webRequest != null)
+            UpdateCatalogLoadingProgress(catalogAsyncOp.webRequest.downloadProgress * 100);
+
         if (!isBuilderInWorldActivated)
             return;
 
@@ -135,6 +148,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void CatalogReceived(string catalogJson)
     {
+        isCatalogLoading = false;
         AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
         CatalogLoaded();
     }
@@ -172,7 +186,8 @@ public class BuilderInWorldController : MonoBehaviour
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
-        BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+        isCatalogLoading = true;
         BuilderInWorldNFTController.i.Initialize();
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
     }
@@ -181,7 +196,7 @@ public class BuilderInWorldController : MonoBehaviour
     {
         initialLoadingController = new BuilderInWorldLoadingController();
         initialLoadingController.Initialize(initialLoadingView);
-        initialLoadingController.OnCancelLoading += ExitEditMode;
+        initialLoadingController.OnCancelLoading += CancelLoading;
     }
 
     public void InitGameObjects()
@@ -217,6 +232,7 @@ public class BuilderInWorldController : MonoBehaviour
         outlinerController.Init();
         biwFloorHandler.Init();
         bIWInputHandler.Init();
+        biwSaveController.Init();
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -257,27 +273,14 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         if (isBuilderInWorldActivated)
-            ExitEditMode();
-        else
-            TryStartEnterEditMode();
-    }
-
-    public DCLBuilderInWorldEntity GetEntityOnPointer()
-    {
-        RaycastHit hit;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(biwModeController.GetMousePosition());
-        float distanceToSelect = biwModeController.GetMaxDistanceToSelectEntities();
-
-        if (Physics.Raycast(ray, out hit, distanceToSelect, layerToRaycast))
         {
-            string entityID = hit.collider.gameObject.name;
-
-            if (sceneToEdit.entities.ContainsKey(entityID))
-            {
-                return builderInWorldEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
-            }
+            if (!initialLoadingController.isActive)
+                HUDController.i.builderInWorldMainHud.ExitStart();
         }
-        return null;
+        else
+        {
+            TryStartEnterEditMode();
+        }
     }
 
     public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
@@ -316,11 +319,23 @@ public class BuilderInWorldController : MonoBehaviour
         return voxelEntityHit;
     }
 
-    public void NewSceneReady(string id)
+    private void NewSceneAdded(ParcelScene newScene)
+    {
+        if (newScene.sceneData.id != sceneToEditId)
+            return;
+
+        Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
+
+        sceneToEdit = Environment.i.world.state.GetScene(sceneToEditId) as ParcelScene;
+        sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
+    }
+
+    private void NewSceneReady(string id)
     {
         if (sceneToEditId != id)
             return;
 
+        sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
         Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
         sceneToEditId = null;
         sceneReady = true;
@@ -368,7 +383,13 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
+        NotificationsController.i.allowNotifications = false;
+        CommonScriptableObjects.allUIHidden.Set(true);
+        NotificationsController.i.allowNotifications = true;
+        inputController.inputTypeMode = InputTypeMode.BUILD_MODE_LOADING;
         initialLoadingController.Show();
+        initialLoadingController.SetPercentage(0f);
 
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
@@ -384,20 +405,24 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         sceneToEditId = sceneToEdit.sceneData.id;
-        inputController.isInputActive = false;
 
+        // In this point we're sure that the catalog loading (the first half of our progress bar) has already finished
+        initialLoadingController.SetPercentage(50f);
+        Environment.i.world.sceneController.OnNewSceneAdded += NewSceneAdded;
         Environment.i.world.sceneController.OnReadyScene += NewSceneReady;
+        Environment.i.world.blockersController.SetEnabled(false);
 
         builderInWorldBridge.StartKernelEditMode(sceneToEdit);
     }
 
     public void EnterEditMode()
     {
+        if (!initialLoadingController.isActive)
+            return;
+
         BuilderInWorldNFTController.i.ClearNFTs();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
-
-        inputController.isBuildModeActivate = true;
 
         FindSceneToEdit();
 
@@ -407,10 +432,15 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
-            HUDController.i.builderInWorldMainHud.SetVisibility(true);
             HUDController.i.builderInWorldMainHud.SetParcelScene(sceneToEdit);
             HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
+        }
+
+        if (HUDController.i.taskbarHud != null)
+        {
+            HUDController.i.taskbarHud.SetExploreInteractable(false);
+            HUDController.i.taskbarHud.SetMoreTutorialInteractable(false);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
@@ -420,6 +450,8 @@ public class BuilderInWorldController : MonoBehaviour
         StartBiwControllers();
         Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
+        initialLoadingController.SetPercentage(100f);
+
         if (IsNewScene())
         {
             SetupNewScene();
@@ -428,8 +460,12 @@ public class BuilderInWorldController : MonoBehaviour
         }
         else
         {
-            initialLoadingController.Hide();
-            inputController.isInputActive = true;
+            initialLoadingController.Hide(onHideAction: () =>
+            {
+                inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
+                HUDController.i.builderInWorldMainHud?.SetVisibility(true);
+                CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+            });
         }
 
         isBuilderInWorldActivated = true;
@@ -438,27 +474,43 @@ public class BuilderInWorldController : MonoBehaviour
         {
             groundVisual.SetActive(false);
         }
+
         previousSkyBoxMaterial = RenderSettings.skybox;
         RenderSettings.skybox = skyBoxMaterial;
+
+        OnEnterEditMode?.Invoke();
     }
 
     private void OnAllParcelsFloorLoaded()
     {
+        if (!initialLoadingController.isActive)
+            return;
+
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
-        initialLoadingController.Hide();
-        inputController.isInputActive = true;
+        initialLoadingController.Hide(onHideAction: () =>
+        {
+            inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
+            HUDController.i.builderInWorldMainHud.SetVisibility(true);
+            CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+        });
+    }
+
+    public void CancelLoading()
+    {
+        editorMode.Deactivate();
+        ExitEditMode();
     }
 
     public void ExitEditMode()
     {
-        builderInWorldBridge.SaveSceneState(sceneToEdit);
+        biwSaveController.ForceSave();
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
+        inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
+        CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
 
-        inputController.isInputActive = true;
-        inputController.isBuildModeActivate = false;
         snapGO.transform.SetParent(transform);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
@@ -479,7 +531,14 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetVisibility(false);
         }
 
+        if (HUDController.i.taskbarHud != null)
+        {
+            HUDController.i.taskbarHud?.SetExploreInteractable(true);
+            HUDController.i.taskbarHud?.SetMoreTutorialInteractable(true);
+        }
+
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
+        Environment.i.world.blockersController.SetEnabled(true);
         ExitBiwControllers();
 
         foreach (var groundVisual in groundVisualsGO)
@@ -489,6 +548,8 @@ public class BuilderInWorldController : MonoBehaviour
 
         isBuilderInWorldActivated = false;
         RenderSettings.skybox = previousSkyBoxMaterial;
+
+        OnExitEditMode?.Invoke();
     }
 
     public void StartBiwControllers()
@@ -500,6 +561,7 @@ public class BuilderInWorldController : MonoBehaviour
         biwPublishController.EnterEditMode(sceneToEdit);
         bIWInputHandler.EnterEditMode(sceneToEdit);
         outlinerController.EnterEditMode(sceneToEdit);
+        biwSaveController.EnterEditMode(sceneToEdit);
     }
 
     public void ExitBiwControllers()
@@ -511,6 +573,7 @@ public class BuilderInWorldController : MonoBehaviour
         biwPublishController.ExitEditMode();
         bIWInputHandler.ExitEditMode();
         outlinerController.ExitEditMode();
+        biwSaveController.ExitEditMode();
     }
 
     public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
@@ -528,8 +591,13 @@ public class BuilderInWorldController : MonoBehaviour
                 if (sceneToEdit != null && sceneToEdit != scene)
                     actionController.Clear();
                 sceneToEdit = scene;
+
                 break;
             }
         }
     }
+
+    private void UpdateCatalogLoadingProgress(float catalogLoadingProgress) { initialLoadingController.SetPercentage(catalogLoadingProgress / 2); }
+
+    private void UpdateSceneLoadingProgress(float sceneLoadingProgress) { initialLoadingController.SetPercentage(50f + (sceneLoadingProgress / 2)); }
 }

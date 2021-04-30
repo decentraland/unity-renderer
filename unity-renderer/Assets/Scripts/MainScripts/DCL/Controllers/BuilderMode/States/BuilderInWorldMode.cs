@@ -3,6 +3,7 @@ using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BuilderInWorldMode : MonoBehaviour
 {
@@ -19,11 +20,11 @@ public class BuilderInWorldMode : MonoBehaviour
 
     [Header("Prefab references")]
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
-
+    public BIWSaveController biwSaveController;
     public ActionController actionController;
 
-    public event System.Action OnInputDone;
-    public event System.Action<BuildInWorldCompleteAction> OnActionGenerated;
+    public event Action OnInputDone;
+    public event Action<BuildInWorldCompleteAction> OnActionGenerated;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
@@ -60,32 +61,24 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void SetSnapActive(bool isActive)
     {
+        if (isActive && !isSnapActive)
+            AudioScriptableObjects.enable.Play();
+        else if (!isActive && isSnapActive)
+            AudioScriptableObjects.disable.Play();
+
         isSnapActive = isActive;
+        HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActive);
     }
 
-    public virtual void StartMultiSelection()
-    {
-        isMultiSelectionActive = true;
-    }
+    public virtual void StartMultiSelection() { isMultiSelectionActive = true; }
 
-    public virtual Vector3 GetPointerPosition()
-    {
-        return Input.mousePosition;
-    }
+    public virtual Vector3 GetPointerPosition() { return Input.mousePosition; }
 
-    public virtual void EndMultiSelection()
-    {
-        isMultiSelectionActive = false;
-    }
+    public virtual void EndMultiSelection() { isMultiSelectionActive = false; }
 
-    public virtual bool ShouldCancelUndoAction()
-    {
-        return false;
-    }
+    public virtual bool ShouldCancelUndoAction() { return false; }
 
-    public virtual void SetDuplicationOffset(float offset)
-    {
-    }
+    public virtual void SetDuplicationOffset(float offset) { }
 
     public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
@@ -113,10 +106,7 @@ public class BuilderInWorldMode : MonoBehaviour
         }
     }
 
-    public virtual void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
-    {
-        isNewObjectPlaced = true;
-    }
+    public virtual void CreatedEntity(DCLBuilderInWorldEntity createdEntity) { isNewObjectPlaced = true; }
 
     public virtual void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)
     {
@@ -130,22 +120,19 @@ public class BuilderInWorldMode : MonoBehaviour
         isNewObjectPlaced = false;
     }
 
-    public virtual void DeselectedEntities()
+    public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
+
+    public virtual void OnDeselectedEntities()
     {
+        builderInWorldEntityHandler.ReportTransform(true);
+        biwSaveController.TryToSave();
     }
 
-    public virtual void CheckInput()
-    {
-    }
+    public virtual void CheckInput() { }
 
-    public virtual void CheckInputSelectedEntities()
-    {
-    }
+    public virtual void CheckInputSelectedEntities() { }
 
-    public virtual void InputDone()
-    {
-        OnInputDone?.Invoke();
-    }
+    public virtual void InputDone() { OnInputDone?.Invoke(); }
 
     public virtual void ResetScaleAndRotation()
     {
@@ -161,14 +148,13 @@ public class BuilderInWorldMode : MonoBehaviour
 
         foreach (DCLBuilderInWorldEntity decentralandEntityToEdit in selectedEntities)
         {
-            decentralandEntityToEdit.rootEntity.gameObject.transform.eulerAngles = Vector3.zero;
+            decentralandEntityToEdit.ResetTransfrom();
         }
+
+        CenterGameObjectToEdit();
     }
 
-    public virtual Vector3 GetCreatedEntityPoint()
-    {
-        return Vector3.zero;
-    }
+    public virtual Vector3 GetCreatedEntityPoint() { return Vector3.zero; }
 
     protected Vector3 GetCenterPointOfSelectedObjects()
     {
@@ -212,23 +198,27 @@ public class BuilderInWorldMode : MonoBehaviour
         List<BuilderInWorldEntityAction> removeList = new List<BuilderInWorldEntityAction>();
         foreach (BuilderInWorldEntityAction entityAction in actionList)
         {
-            if (entityAction.entityId != entity.entityId) continue;
+            if (entityAction.entityId != entity.entityId)
+                continue;
 
             switch (type)
             {
                 case "MOVE":
 
                     entityAction.newValue = entity.gameObject.transform.position;
-                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
+                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f)
+                        removeList.Add(entityAction);
                     break;
                 case "ROTATE":
 
                     entityAction.newValue = entity.gameObject.transform.rotation.eulerAngles;
-                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
+                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f)
+                        removeList.Add(entityAction);
                     break;
                 case "SCALE":
                     entityAction.newValue = entity.gameObject.transform.lossyScale;
-                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f) removeList.Add(entityAction);
+                    if (Vector3.Distance((Vector3) entityAction.oldValue, (Vector3) entityAction.newValue) <= 0.09f)
+                        removeList.Add(entityAction);
                     break;
             }
         }

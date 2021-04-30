@@ -28,6 +28,9 @@ public class AudioEvent : ScriptableObject
     [Reorderable]
     public AudioClipList clips;
 
+    [Space(25)]
+    public AudioEvent stopEventOnPlay;
+
     [HideInInspector]
     public AudioSource source;
 
@@ -91,6 +94,9 @@ public class AudioEvent : ScriptableObject
 
     public virtual void Play(bool oneShot = false)
     {
+        if (stopEventOnPlay != null)
+            stopEventOnPlay.Stop();
+
         if (source == null)
         {
             if (VERBOSE)

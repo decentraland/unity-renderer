@@ -63,21 +63,13 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
     public void SetActive(bool isActive)
     {
-        gameObject.SetActive(isActive);
+        if (gameObject.activeSelf != isActive)
+            gameObject.SetActive(isActive);
     }
 
-    public void OnControlsClick(DCLAction_Trigger action)
-    {
-        OnControlsClicked?.Invoke();
-    }
+    public void OnControlsClick(DCLAction_Trigger action) { OnControlsClicked?.Invoke(); }
 
-    public void OnHideUIClick(DCLAction_Trigger action)
-    {
-        OnHideUIClicked?.Invoke();
-    }
+    public void OnHideUIClick(DCLAction_Trigger action) { OnHideUIClicked?.Invoke(); }
 
-    public void OnTutorialClick()
-    {
-        OnTutorialClicked?.Invoke();
-    }
+    public void OnTutorialClick() { OnTutorialClicked?.Invoke(); }
 }

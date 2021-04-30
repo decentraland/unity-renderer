@@ -101,10 +101,7 @@ namespace Tests.QuestsPanelHUD
 
             Assert.NotNull(taskEntry);
             Assert.AreEqual("name", taskEntry.taskName.text);
-            Assert.AreEqual(start.ToString(), taskEntry.start.text);
-            Assert.AreEqual(current.ToString(), taskEntry.current.text);
-            Assert.AreEqual(end.ToString(), taskEntry.end.text);
-            Assert.AreEqual(Mathf.InverseLerp(start, end, current), taskEntry.ongoingProgress.fillAmount);
+            Assert.AreEqual(Mathf.InverseLerp(start, end, current), taskEntry.ongoingProgress.transform.localScale.x);
             Assert.AreEqual(hasCoordinates, taskEntry.jumpInButton.gameObject.activeSelf);
         }
 
