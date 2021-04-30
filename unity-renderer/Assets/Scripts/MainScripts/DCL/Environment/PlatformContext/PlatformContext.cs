@@ -15,7 +15,7 @@ namespace DCL
         public readonly IPhysicsSyncController physicsSyncController;
         public readonly IDebugController debugController;
         public readonly IWebRequestController webRequest;
-        public readonly IServiceProviders serviceProviders; 
+        public readonly IServiceProviders serviceProviders;
 
         public PlatformContext(IMemoryManager memoryManager,
             ICullingController cullingController,
@@ -43,6 +43,7 @@ namespace DCL
             cullingController.Dispose();
             debugController.Dispose();
             webRequest.Dispose();
+            serviceProviders.Dispose();
         }
     }
 }

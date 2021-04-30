@@ -29,10 +29,7 @@ namespace DCL
             public string type;
             public string payload;
 
-            public override string ToString()
-            {
-                return string.Format("type = {0}... payload = {1}...", type, payload);
-            }
+            public override string ToString() { return string.Format("type = {0}... payload = {1}...", type, payload); }
         }
 
         protected override void OnMessage(MessageEventArgs e)
@@ -49,10 +46,7 @@ namespace DCL
             }
         }
 
-        protected override void OnError(ErrorEventArgs e)
-        {
-            base.OnError(e);
-        }
+        protected override void OnError(ErrorEventArgs e) { base.OnError(e); }
 
         protected override void OnClose(CloseEventArgs e)
         {
@@ -110,10 +104,7 @@ namespace DCL
         [System.NonSerialized]
         public static volatile bool queuedMessagesDirty;
 
-        public bool isServerReady
-        {
-            get { return ws.IsListening; }
-        }
+        public bool isServerReady { get { return ws.IsListening; } }
 
         public string wssServerUrl = "ws://localhost:5000/";
         public bool openBrowserWhenStart;
@@ -144,11 +135,7 @@ namespace DCL
         public bool questsEnabled = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
-
-        private void Awake()
-        {
-            i = this;
-        }
+        private void Awake() { i = this; }
 
         private void Start()
         {
@@ -438,7 +425,7 @@ namespace DCL
                                 DCL.Tutorial.TutorialController.i?.SetTutorialEnabled(msg.payload);
                                 break;
                             case "SetTutorialEnabledForUsersThatAlreadyDidTheTutorial":
-                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial();
+                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(msg.payload);
                                 break;
                             case "TriggerSelfUserExpression":
                                 HUDController.i.TriggerSelfUserExpression(msg.payload);

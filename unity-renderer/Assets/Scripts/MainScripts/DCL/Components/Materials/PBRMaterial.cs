@@ -38,10 +38,7 @@ namespace DCL.Components
             [Range(0, 4)]
             public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         enum TransparencyMode
@@ -74,15 +71,9 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
-        new public Model GetModel()
-        {
-            return (Model) model;
-        }
+        new public Model GetModel() { return (Model) model; }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.PBR_MATERIAL;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.PBR_MATERIAL; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -198,7 +189,6 @@ namespace DCL.Components
             }
         }
 
-
         private void LoadMaterial(string resourcesFilename)
         {
             if (material == null || currentMaterialResourcesFilename != resourcesFilename)
@@ -259,7 +249,6 @@ namespace DCL.Components
             }
         }
 
-
         private void OnShapeUpdated(IDCLEntity entity)
         {
             if (entity != null)
@@ -267,7 +256,6 @@ namespace DCL.Components
                 InitMaterial(entity.meshRootGameObject);
             }
         }
-
 
         void OnMaterialDetached(IDCLEntity entity)
         {
@@ -312,7 +300,8 @@ namespace DCL.Components
 
         bool AreSameTextureComponent(DCLTexture dclTexture, string textureId)
         {
-            if (dclTexture == null) return false;
+            if (dclTexture == null)
+                return false;
             return dclTexture.id == textureId;
         }
 

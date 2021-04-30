@@ -45,6 +45,8 @@ public class CatalogAssetPackListView : ListView<CatalogItemPack>
 
         if (dynamicScrollSensitivity != null)
             dynamicScrollSensitivity.RecalculateSensitivity();
+
+        AudioScriptableObjects.listItemAppear.ResetPitch();
     }
 
     public override void RemoveAdapters()

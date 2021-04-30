@@ -1,12 +1,15 @@
 using System;
-using System.Linq;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
 {
     public static UserProfileController i { get; private set; }
 
+    public event Action OnBaseWereablesFail;
+
     private static UserProfileDictionary userProfilesCatalogValue;
+    private bool baseWearablesAlreadyRequested = false;
+
     public static UserProfileDictionary userProfilesCatalog
     {
         get
@@ -30,32 +33,26 @@ public class UserProfileController : MonoBehaviour
 
     public void LoadProfile(string payload)
     {
-        if (payload == null)
+        if (!baseWearablesAlreadyRequested)
         {
-            return;
+            baseWearablesAlreadyRequested = true;
+            CatalogController.RequestBaseWearables()
+                             .Catch((error) =>
+                             {
+                                 OnBaseWereablesFail?.Invoke();
+                                 Debug.LogError(error);
+                             });
         }
 
+        if (payload == null)
+            return;
+
         var model = JsonUtility.FromJson<UserProfileModel>(payload);
-
-        CatalogController.RequestBaseWearables()
-            .Then((baseWearables) =>
-            {
-                CatalogController.RequestOwnedWearables(model.userId)
-                    .Then((ownedWearables) =>
-                    {
-                        ownUserProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                        ownUserProfile.UpdateData(model);
-                        userProfilesCatalog.Add(model.userId, ownUserProfile);
-                    })
-                    .Catch((error) => Debug.LogError(error));
-            })
-            .Catch((error) => Debug.LogError(error));
+        ownUserProfile.UpdateData(model);
+        userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
 
-    public void AddUserProfileToCatalog(string payload)
-    {
-        AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload));
-    }
+    public void AddUserProfileToCatalog(string payload) { AddUserProfileToCatalog(JsonUtility.FromJson<UserProfileModel>(payload)); }
 
     public void AddUserProfilesToCatalog(string payload)
     {
@@ -96,14 +93,12 @@ public class UserProfileController : MonoBehaviour
 
     public void RemoveUserProfileFromCatalog(UserProfile userProfile)
     {
-        if (userProfile == null) return;
+        if (userProfile == null)
+            return;
 
         userProfilesCatalog.Remove(userProfile.userId);
         Destroy(userProfile);
     }
 
-    public void ClearProfilesCatalog()
-    {
-        userProfilesCatalog?.Clear();
-    }
+    public void ClearProfilesCatalog() { userProfilesCatalog?.Clear(); }
 }

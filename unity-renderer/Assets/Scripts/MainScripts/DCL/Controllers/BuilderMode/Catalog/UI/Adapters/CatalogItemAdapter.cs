@@ -136,6 +136,9 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
             thumbnailImg.enabled = true;
             thumbnailImg.texture = texture.texture;
             favImg.gameObject.SetActive(true);
+
+            if (gameObject.activeInHierarchy && ItemAdapterIsOnScreen())
+                AudioScriptableObjects.listItemAppear.Play();
         }
 
         SetLoadingActive(false);
@@ -150,6 +153,8 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
     public void OnPointerEnter(PointerEventData eventData) { OnPointerEnterInAdapter?.Invoke(eventData, this); }
 
     public void OnPointerExit(PointerEventData eventData) { OnPointerExitInAdapter?.Invoke(eventData, this); }
+
+    private bool ItemAdapterIsOnScreen() { return (transform.position.y > 0 && transform.position.y < Screen.height); }
 
     private void OnDestroy() { ClearThumbnailPromise(); }
 }

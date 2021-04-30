@@ -62,7 +62,8 @@ namespace DCL
 
         private bool parcelHighlightEnabledValue = false;
 
-        List<WorldRange> validWorldRanges = new List<WorldRange>{
+        List<WorldRange> validWorldRanges = new List<WorldRange>
+        {
             new WorldRange(-150, -150, 150, 150) // default range
         };
 
@@ -141,10 +142,7 @@ namespace DCL
             }
         }
 
-        public void OnDestroy()
-        {
-            Cleanup();
-        }
+        public void OnDestroy() { Cleanup(); }
 
         public void Cleanup()
         {
@@ -176,7 +174,8 @@ namespace DCL
 
         void Update()
         {
-            if (!parcelHighlightEnabled) return;
+            if (!parcelHighlightEnabled)
+                return;
 
             parcelSizeInMap = centeredReferenceParcel.rect.width * centeredReferenceParcel.lossyScale.x;
 
@@ -195,7 +194,8 @@ namespace DCL
 
         void UpdateCursorMapCoords()
         {
-            if (!IsCursorOverMapChunk()) return;
+            if (!IsCursorOverMapChunk())
+                return;
 
             cursorMapCoords = Input.mousePosition - worldCoordsOriginInMap;
             cursorMapCoords = cursorMapCoords / parcelSizeInMap;
@@ -243,7 +243,8 @@ namespace DCL
         {
             if (cursorMapCoords == lastCursorMapCoords)
             {
-                if (parcelHoldCountdown <= 0f) return;
+                if (parcelHoldCountdown <= 0f)
+                    return;
 
                 parcelHoldCountdown -= Time.deltaTime;
 
@@ -261,14 +262,11 @@ namespace DCL
             }
         }
 
-        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-        {
-            validWorldRanges = current.validWorldRanges;
-        }
+        private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { validWorldRanges = current.validWorldRanges; }
 
         bool CoordinatesAreInsideTheWorld(int xCoord, int yCoord)
         {
-            foreach(WorldRange worldRange in validWorldRanges)
+            foreach (WorldRange worldRange in validWorldRanges)
             {
                 if (worldRange.Contains(xCoord, yCoord))
                 {
@@ -351,10 +349,7 @@ namespace DCL
             UpdateRendering(Utils.WorldToGridPositionUnclamped(current));
         }
 
-        private void OnCharacterRotate(Vector3 current, Vector3 previous)
-        {
-            UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get()));
-        }
+        private void OnCharacterRotate(Vector3 current, Vector3 previous) { UpdateRendering(Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get())); }
 
         public void OnCharacterSetPosition(Vector2Int newCoords, Vector2Int oldCoords)
         {
@@ -371,10 +366,7 @@ namespace DCL
             UpdateOverlayLayer();
         }
 
-        void UpdateBackgroundLayer(Vector2 newCoords)
-        {
-            atlas.CenterToTile(newCoords);
-        }
+        void UpdateBackgroundLayer(Vector2 newCoords) { atlas.CenterToTile(newCoords); }
 
         void UpdateSelectionLayer()
         {
@@ -392,10 +384,7 @@ namespace DCL
             playerPositionIcon.transform.rotation = playerAngle;
         }
 
-        public Vector3 GetViewportCenter()
-        {
-            return atlas.viewport.TransformPoint(atlas.viewport.rect.center);
-        }
+        public Vector3 GetViewportCenter() { return atlas.viewport.TransformPoint(atlas.viewport.rect.center); }
 
         // Called by the parcelhighlight image button
         public void ClickMousePositionParcel()

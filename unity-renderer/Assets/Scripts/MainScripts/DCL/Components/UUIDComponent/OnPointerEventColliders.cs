@@ -23,7 +23,6 @@ namespace DCL.Components
         }
 
         private IDCLEntity ownerEntity;
-        private IShape lastShape;
 
         public void Initialize(IDCLEntity entity)
         {
@@ -33,12 +32,8 @@ namespace DCL.Components
                 return;
 
             IShape shape = entity.meshesInfo.currentShape;
-
-            if (lastShape == shape)
-                return;
             
-            this.ownerEntity = entity;
-            lastShape = shape;
+            ownerEntity = entity;
 
             DestroyColliders();
 
@@ -49,11 +44,11 @@ namespace DCL.Components
 
             for (int i = 0; i < colliders.Length; i++)
             {
-                colliders[i] = CreateColliders(rendererList[i]);
+                colliders[i] = CreateCollider(rendererList[i]);
             }
         }
 
-        Collider CreateColliders(Renderer renderer)
+        Collider CreateCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,14 +13,21 @@ public class TaskbarMoreMenuButton : MonoBehaviour
     }
 
     [SerializeField] internal Button mainButton;
+    [SerializeField] internal TMP_Text buttonText;
     [SerializeField] internal Animator buttonAnimator;
+    [SerializeField] internal Color notInteractableColor;
 
     internal AnimationStatus lastPlayedAnimation { get; private set; } = AnimationStatus.Hide;
 
-    private void OnDisable()
+    private Color originalTextColor;
+
+    private void Start()
     {
-        lastPlayedAnimation = AnimationStatus.Hide;
+        if (buttonText != null)
+            originalTextColor = buttonText.color;
     }
+
+    private void OnDisable() { lastPlayedAnimation = AnimationStatus.Hide; }
 
     internal void PlayAnimation(AnimationStatus newStatus)
     {
@@ -49,5 +57,13 @@ public class TaskbarMoreMenuButton : MonoBehaviour
             return 0f;
 
         return buttonAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length;
+    }
+
+    internal void SetInteractable(bool isInteractable)
+    {
+        mainButton.interactable = isInteractable;
+
+        if (buttonText != null)
+            buttonText.color = isInteractable ? originalTextColor : notInteractableColor;
     }
 }

@@ -225,7 +225,7 @@ inline void InitializeStandardLitSurfaceDataWithUV2(float2 uvAlbedo, float2 uvNo
     half4 albedoAlpha = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
     half4 alphaTexture = SampleAlbedoAlpha(uvAlbedo, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
 
-    outSurfaceData.alpha = Alpha(alphaTexture.r * albedoAlpha.a, _BaseColor, _Cutoff);
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff) * saturate(length(alphaTexture.rgb));
 
     half4 specGloss = SampleMetallicSpecGloss(uvMetallic, albedoAlpha.a);
     outSurfaceData.albedo = albedoAlpha.rgb * _BaseColor.rgb;

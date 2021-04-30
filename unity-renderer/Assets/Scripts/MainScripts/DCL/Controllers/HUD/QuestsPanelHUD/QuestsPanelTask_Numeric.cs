@@ -9,19 +9,17 @@ namespace DCL.Huds.QuestsPanel
     public class QuestsPanelTask_Numeric : MonoBehaviour, IQuestsPanelTask
     {
         [SerializeField] internal TextMeshProUGUI taskName;
-        [SerializeField] internal TextMeshProUGUI start;
-        [SerializeField] internal TextMeshProUGUI end;
-        [SerializeField] internal TextMeshProUGUI current;
+        [SerializeField] internal TextMeshProUGUI progressText;
         [SerializeField] internal Image ongoingProgress;
         [SerializeField] internal Button jumpInButton;
+        [SerializeField] internal Toggle status;
+        [SerializeField] internal Color ongoinColor;
+        [SerializeField] internal Color completedcolor;
 
         internal TaskPayload_Numeric payload;
         private Action jumpInDelegate;
 
-        public void Awake()
-        {
-            jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke();});
-        }
+        public void Awake() { jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); }); }
 
         public void Populate(QuestTask task)
         {
@@ -36,11 +34,10 @@ namespace DCL.Huds.QuestsPanel
             });
 
             taskName.text = task.name;
-            start.text = payload.start.ToString();
-            current.text = payload.current.ToString();
-            end.text = payload.end.ToString();
-
-            ongoingProgress.fillAmount = task.progress;
+            progressText.text = $"{payload.current}/{payload.end}";
+            status.isOn = task.progress >= 1;
+            ongoingProgress.transform.localScale = new Vector3(task.progress, 1, 1);
+            ongoingProgress.color = task.progress < 1 ? ongoinColor : completedcolor;
         }
     }
 }

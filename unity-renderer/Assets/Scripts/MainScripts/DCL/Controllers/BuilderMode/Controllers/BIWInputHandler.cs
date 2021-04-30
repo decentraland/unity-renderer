@@ -3,6 +3,7 @@ using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BIWInputHandler : BIWController
 {
@@ -53,7 +54,7 @@ public class BIWInputHandler : BIWController
         multiSelectionStartDelegate = (action) => StartMultiSelection();
         multiSelectionFinishedDelegate = (action) => EndMultiSelection();
 
-        builderInputWrapper.OnMouseClick += MouseClick;
+        BuilderInWorldInputWrapper.OnMouseClick += MouseClick;
         biwModeController.OnInputDone += InputDone;
 
         multiSelectionInputAction.OnStarted += multiSelectionStartDelegate;
@@ -70,7 +71,7 @@ public class BIWInputHandler : BIWController
         multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
-        builderInputWrapper.OnMouseClick -= MouseClick;
+        BuilderInWorldInputWrapper.OnMouseClick -= MouseClick;
         biwModeController.OnInputDone -= InputDone;
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -101,9 +102,9 @@ public class BIWInputHandler : BIWController
         biwModeController.CheckInput();
     }
 
-    public override void EnterEditMode(ParcelScene sceneToEdit)
+    public override void EnterEditMode(ParcelScene scene)
     {
-        base.EnterEditMode(sceneToEdit);
+        base.EnterEditMode(scene);
         builderInputWrapper.gameObject.SetActive(true);
     }
 
@@ -115,10 +116,7 @@ public class BIWInputHandler : BIWController
 
     private void CheckEditModeInput()
     {
-        if (!builderInWorldEntityHandler.IsAnyEntitySelected() || isMultiSelectionActive)
-        {
-            outlinerController.CheckOutline();
-        }
+        outlinerController.CheckOutline();
 
         if (builderInWorldEntityHandler.IsAnyEntitySelected())
         {
@@ -149,6 +147,9 @@ public class BIWInputHandler : BIWController
 
         if (Time.timeSinceLevelLoad < nexTimeToReceiveInput)
             return;
+
+        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+            HUDController.i.builderInWorldMainHud.HideExtraBtns();
 
         if (Utils.isCursorLocked || biwModeController.IsGodModeActive())
         {
@@ -184,7 +185,7 @@ public class BIWInputHandler : BIWController
 
     private void MouseClickDetected()
     {
-        DCLBuilderInWorldEntity entityToSelect = builderInWorldController.GetEntityOnPointer();
+        DCLBuilderInWorldEntity entityToSelect = builderInWorldEntityHandler.GetEntityOnPointer();
         if (entityToSelect != null)
         {
             builderInWorldEntityHandler.EntityClicked(entityToSelect);

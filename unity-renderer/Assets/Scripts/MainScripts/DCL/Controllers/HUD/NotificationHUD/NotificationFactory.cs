@@ -12,7 +12,8 @@ public class NotificationFactory : ScriptableObject
         GENERIC_WITHOUT_BUTTON,
         CUSTOM,
         UI_HIDDEN,
-        GRAPHIC_CARD_WARNING
+        GRAPHIC_CARD_WARNING,
+        WARNING
     }
 
     [System.Serializable]

@@ -10,16 +10,10 @@ namespace Tests.BuildModeHUDViews
         private InspectorView inspectorView;
 
         [SetUp]
-        public void SetUp()
-        {
-            inspectorView = InspectorView.Create();
-        }
+        public void SetUp() { inspectorView = InspectorView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(inspectorView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(inspectorView.gameObject); }
 
         [Test]
         public void InvokeEntityActionCorrectly()
@@ -141,17 +135,14 @@ namespace Tests.BuildModeHUDViews
         public void SetCloseButtonsActionCorrectly()
         {
             // Arrange
-            int actionsCalled = 0;
+            bool actionsCalled = false;
 
             // Act
-            inspectorView.SetCloseButtonsAction(() => { actionsCalled++; });
-            for (int i = 0; i < inspectorView.closeEntityListBtns.Length; i++)
-            {
-                inspectorView.closeEntityListBtns[i].onClick.Invoke();
-            }
+            inspectorView.SetCloseButtonsAction(() => { actionsCalled = true; });
+            inspectorView.closeEntityListBtn.onClick.Invoke();
 
             // Assert
-            Assert.AreEqual(inspectorView.closeEntityListBtns.Length, actionsCalled, "");
+            Assert.IsTrue(actionsCalled, "");
         }
 
         [Test]
