@@ -39,17 +39,17 @@ public class TaskbarMoreMenuButton : MonoBehaviour
 
     private void AppMode_OnChange(AppMode current, AppMode previous)
     {
-        bool needToDeactivate = false;
+        bool isInteractable = true;
         foreach (var mode in modesWhereNotInteractable)
         {
             if (current == mode)
             {
-                needToDeactivate = true;
+                isInteractable = false;
                 break;
             }
         }
 
-        SetInteractable(needToDeactivate);
+        SetInteractable(isInteractable);
     }
 
     internal void PlayAnimation(AnimationStatus newStatus)
