@@ -57,7 +57,11 @@ public class EntityListAdapter : MonoBehaviour
         GetThumbnail(entitySceneObject);
     }
 
-    public void SelectOrDeselect() { OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this); }
+    public void SelectOrDeselect()
+    {
+        if (currentEntity.IsVisible)
+            OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
+    }
 
     public void ShowOrHide() { OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this); }
 

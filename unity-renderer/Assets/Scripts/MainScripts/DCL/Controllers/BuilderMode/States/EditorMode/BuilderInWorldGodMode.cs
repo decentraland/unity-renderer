@@ -627,7 +627,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         LookAtEntity(entity);
     }
-    
+
     public void LookAtEntity(IDCLEntity entity)
     {
         Vector3 pointToLook = entity.gameObject.transform.position;
@@ -665,11 +665,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             if (selectedEntities.Count > 0 )
                 gizmoManager.ShowGizmo();
         }
-        else
-        {
-            gizmoManager.HideGizmo(true);
-            HUDController.i.builderInWorldMainHud?.SetGizmosActive(BuilderInWorldSettings.EMPTY_GIZMO_NAME);
-        }
+        //TODO: Free-Movement tool, This could be re-enabled in the future so let the code there 
+        // else
+        // {
+        //     gizmoManager.HideGizmo(true);
+        //     HUDController.i.builderInWorldMainHud?.SetGizmosActive(BuilderInWorldSettings.EMPTY_GIZMO_NAME);
+        // }
     }
 
     void OnGizmosTransformStart(string gizmoType)

@@ -16,6 +16,8 @@ public class EntityListView : ListView<DCLBuilderInWorldEntity>
 
         foreach (DCLBuilderInWorldEntity entity in contentList)
         {
+            if (entity.isFloor)
+                continue;
             EntityListAdapter adapter = Instantiate(entityListAdapter, contentPanelTransform).GetComponent<EntityListAdapter>();
             adapter.SetContent(entity);
             adapter.OnActionInvoked += EntityActionInvoked;
