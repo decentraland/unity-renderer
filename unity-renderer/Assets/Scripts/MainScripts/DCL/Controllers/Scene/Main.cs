@@ -68,10 +68,7 @@ namespace DCL
                 componentFactory: new RuntimeComponentFactory(componentFactory));
         }
 
-        private void Start()
-        {
-            Environment.i.world.sceneController.Start();
-        }
+        private void Start() { Environment.i.world.sceneController.Start(); }
 
         private void Update()
         {
@@ -79,10 +76,7 @@ namespace DCL
             performanceMetricsController?.Update();
         }
 
-        private void LateUpdate()
-        {
-            Environment.i.world.sceneController.LateUpdate();
-        }
+        private void LateUpdate() { Environment.i.world.sceneController.LateUpdate(); }
 
         private void OnDestroy()
         {
@@ -92,36 +86,18 @@ namespace DCL
 
         #region RuntimeMessagingBridge
 
-        public void LoadParcelScenes(string payload)
-        {
-            Environment.i.world.sceneController.LoadParcelScenes(payload);
-        }
+        public void LoadParcelScenes(string payload) { Environment.i.world.sceneController.LoadParcelScenes(payload); }
 
-        public void SendSceneMessage(string payload)
-        {
-            Environment.i.world.sceneController.SendSceneMessage(payload);
-        }
+        public void SendSceneMessage(string payload) { Environment.i.world.sceneController.SendSceneMessage(payload); }
 
-        public void UnloadScene(string sceneId)
-        {
-            Environment.i.world.sceneController.UnloadScene(sceneId);
-        }
+        public void UnloadScene(string sceneId) { Environment.i.world.sceneController.UnloadScene(sceneId); }
 
-        public void CreateGlobalScene(string payload)
-        {
-            Environment.i.world.sceneController.CreateGlobalScene(payload);
-        }
+        public void CreateGlobalScene(string payload) { Environment.i.world.sceneController.CreateGlobalScene(payload); }
 
-        public void UpdateParcelScenes(string payload)
-        {
-            Environment.i.world.sceneController.UpdateParcelScenes(payload);
-        }
+        public void UpdateParcelScenes(string payload) { Environment.i.world.sceneController.UpdateParcelScenes(payload); }
 
         #endregion
 
-        public void BuilderReady()
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive);
-        }
+        public void BuilderReady() { UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive); }
     }
 }

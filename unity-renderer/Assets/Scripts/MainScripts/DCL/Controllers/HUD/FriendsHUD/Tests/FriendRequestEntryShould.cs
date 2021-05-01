@@ -52,7 +52,6 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(entry.rejectButton.gameObject.activeSelf);
     }
 
-
     [Test]
     public void SendProperEventWhenOnAcceptedIsPressed()
     {
@@ -61,7 +60,11 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.Populate(model);
 
         bool buttonPressed = false;
-        entry.OnAccepted += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnAccepted += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.acceptButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }
@@ -73,7 +76,11 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.userId = "userId-1";
         entry.Populate(model);
         bool buttonPressed = false;
-        entry.OnCancelled += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnCancelled += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.cancelButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }
@@ -85,7 +92,11 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.userId = "userId-1";
         entry.Populate(model);
         bool buttonPressed = false;
-        entry.OnMenuToggle += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnMenuToggle += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.menuButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }
@@ -97,7 +108,11 @@ public class FriendRequestEntryShould : IntegrationTestSuite_Legacy
         entry.userId = "userId-1";
         entry.Populate(model);
         bool buttonPressed = false;
-        entry.OnRejected += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnRejected += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.rejectButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }

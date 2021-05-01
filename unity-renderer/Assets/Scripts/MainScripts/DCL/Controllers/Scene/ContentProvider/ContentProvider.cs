@@ -26,9 +26,7 @@ namespace DCL
             return result;
         }
 
-        public ContentProvider()
-        {
-        }
+        public ContentProvider() { }
 
         public ContentProvider(ContentProvider toCopy)
         {

@@ -16,10 +16,7 @@ public class ExpressionsHUDController : IHUD
         ownUserProfile.OnAvatarExpressionSet += OnAvatarExpressionSet;
     }
 
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisiblity(visible);
-    }
+    public void SetVisibility(bool visible) { view.SetVisiblity(visible); }
 
     public void Dispose()
     {
@@ -33,10 +30,7 @@ public class ExpressionsHUDController : IHUD
         }
     }
 
-    public void ExpressionCalled(string id)
-    {
-        UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
-    }
+    public void ExpressionCalled(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
 
     private void OnAvatarExpressionSet(string id, long timestamp)
     {

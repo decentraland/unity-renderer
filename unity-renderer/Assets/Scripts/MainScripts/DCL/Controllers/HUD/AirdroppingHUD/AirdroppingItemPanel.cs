@@ -26,15 +26,9 @@ public class AirdroppingItemPanel : MonoBehaviour
             GetThumbnail();
     }
 
-    private void OnEnable()
-    {
-        GetThumbnail();
-    }
+    private void OnEnable() { GetThumbnail(); }
 
-    private void OnDisable()
-    {
-        ForgetThumbnail();
-    }
+    private void OnDisable() { ForgetThumbnail(); }
 
     public void ThumbnailReady(Asset_Texture texture)
     {

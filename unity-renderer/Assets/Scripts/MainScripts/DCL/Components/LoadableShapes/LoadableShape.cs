@@ -284,8 +284,9 @@ namespace DCL.Components
 
         private void RaiseOnShapeUpdated(IDCLEntity entity)
         {
-            if (!isLoaded) return;
-            
+            if (!isLoaded)
+                return;
+
             entity.OnShapeUpdated?.Invoke(entity);
         }
     }

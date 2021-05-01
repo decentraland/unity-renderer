@@ -13,10 +13,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator AlphaTextureShouldWork_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTextureShouldWork());
-    }
+    public IEnumerator AlphaTextureShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTextureShouldWork()); }
 
     [UnityTest]
     [VisualTest]

@@ -13,15 +13,9 @@ namespace DCL
         public string realmServer { set; get; }
         public string realmLayer { set; get; }
 
-        public string name
-        {
-            set { markerObject.name = value; }
-        }
+        public string name { set { markerObject.name = value; } }
 
-        public Vector3 localPosition
-        {
-            set { markerObject.transform.localPosition = value; }
-        }
+        public Vector3 localPosition { set { markerObject.transform.localPosition = value; } }
 
         private UserMarkerObject markerObject;
 
@@ -61,9 +55,6 @@ namespace DCL
             SetColor(current.Equals(realmServer, realmLayer) ? markerObject.sameRealmColor : markerObject.otherRealmColor);
         }
 
-        private void SetColor(Color color)
-        {
-            markerObject.color = color;
-        }
+        private void SetColor(Color color) { markerObject.color = color; }
     }
 }

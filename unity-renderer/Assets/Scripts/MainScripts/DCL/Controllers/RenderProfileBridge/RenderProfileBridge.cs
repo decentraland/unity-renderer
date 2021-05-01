@@ -25,10 +25,7 @@ public class RenderProfileBridge : MonoBehaviour
 
     public static RenderProfileBridge i { get; private set; }
 
-    public void Awake()
-    {
-        i = this;
-    }
+    public void Awake() { i = this; }
 
     /// <summary>
     /// Called from kernel. Toggles the current WorldRenderProfile used by explorer.

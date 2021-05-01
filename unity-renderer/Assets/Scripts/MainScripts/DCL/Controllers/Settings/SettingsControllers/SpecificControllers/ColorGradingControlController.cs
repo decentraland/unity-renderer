@@ -7,10 +7,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Color Grading", fileName = "ColorGradingControlController")]
     public class ColorGradingControlController : ToggleSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.colorGrading;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.colorGrading; }
 
         public override void UpdateSetting(object newValue)
         {

@@ -88,10 +88,7 @@ public class EmailPromptHUDController : IHUD
         }
     }
 
-    void StartPopupRoutine()
-    {
-        showPopupDelayedRoutine = CoroutineStarter.Start(ShowPopupDelayed(POPUP_DELAY));
-    }
+    void StartPopupRoutine() { showPopupDelayedRoutine = CoroutineStarter.Start(ShowPopupDelayed(POPUP_DELAY)); }
 
     void StopPopupRoutine()
     {
@@ -130,16 +127,14 @@ public class EmailPromptHUDController : IHUD
         }
         SetVisibility(false);
 
-        WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]{
-             new WebInterface.AnalyticsPayload.Property("notAgain", dontAskAgain? "true" : "false")
-         };
+        WebInterface.AnalyticsPayload.Property[] properties = new WebInterface.AnalyticsPayload.Property[]
+        {
+            new WebInterface.AnalyticsPayload.Property("notAgain", dontAskAgain ? "true" : "false")
+        };
         WebInterface.ReportAnalyticsEvent("skip email popup", properties);
     }
 
-    void SetEmailFlag()
-    {
-        WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | EMAIL_PROMPT_PROFILE_FLAG);
-    }
+    void SetEmailFlag() { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | EMAIL_PROMPT_PROFILE_FLAG); }
 
     private void TutorialActive_OnChange(bool current, bool previous)
     {

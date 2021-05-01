@@ -48,9 +48,6 @@ namespace DCL.Helpers
             OnAllLocksRemoved?.Invoke();
         }
 
-        public HashSet<object> GetLockIdsCopy()
-        {
-            return new HashSet<object>(lockIds);
-        }
+        public HashSet<object> GetLockIdsCopy() { return new HashSet<object>(lockIds); }
     }
 }

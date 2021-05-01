@@ -1,4 +1,3 @@
-
 namespace DCL
 {
     public interface ICleanableEventDispatcher

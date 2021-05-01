@@ -18,10 +18,7 @@ public class CoroutineStarter : MonoBehaviour
         }
     }
 
-    public static Coroutine Start(IEnumerator function)
-    {
-        return instance.StartCoroutine(function);
-    }
+    public static Coroutine Start(IEnumerator function) { return instance.StartCoroutine(function); }
 
     public static void Stop(Coroutine coroutine)
     {

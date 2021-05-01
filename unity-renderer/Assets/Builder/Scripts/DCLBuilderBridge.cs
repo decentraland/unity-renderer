@@ -57,7 +57,6 @@ namespace Builder
 
         private DCLBuilderWebInterface builderWebInterface = new DCLBuilderWebInterface();
 
-
         [System.Serializable]
         private class MousePayload
         {
@@ -84,7 +83,8 @@ namespace Builder
 
         public void PreloadFile(string url)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: PreloadFile {url}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: PreloadFile {url}");
             if (currentScene != null)
             {
                 string[] split = url.Split('\t');
@@ -106,7 +106,8 @@ namespace Builder
 
         public void GetMousePosition(string newJson)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: GetMousePosition {newJson}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: GetMousePosition {newJson}");
             MousePayload m = Utils.SafeFromJson<MousePayload>(newJson);
 
             Vector3 mousePosition = new Vector3(m.x, Screen.height - m.y, 0);
@@ -114,26 +115,30 @@ namespace Builder
 
             if (builderRaycast.RaycastToGround(mousePosition, out hitPoint))
             {
-                if (LOG_MESSAGES) Debug.Log($"SEND: ReportMousePosition {m.id} {hitPoint}");
+                if (LOG_MESSAGES)
+                    Debug.Log($"SEND: ReportMousePosition {m.id} {hitPoint}");
                 WebInterface.ReportMousePosition(hitPoint, m.id);
             }
         }
 
         public void SelectGizmo(string gizmoType)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SelectGizmo {gizmoType}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SelectGizmo {gizmoType}");
             OnSelectGizmo?.Invoke(gizmoType);
         }
 
         public void ResetObject()
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: ResetObject");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: ResetObject");
             OnResetObject?.Invoke();
         }
 
         public void ZoomDelta(string delta)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: ZoomDelta {delta}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: ZoomDelta {delta}");
             float d = 0;
             if (float.TryParse(delta, out d))
             {
@@ -143,7 +148,8 @@ namespace Builder
 
         public void SetPlayMode(string on)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetPlayMode {on}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SetPlayMode {on}");
             bool isPreview = false;
             if (bool.TryParse(on, out isPreview))
             {
@@ -153,7 +159,8 @@ namespace Builder
 
         public void TakeScreenshot(string id)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: TakeScreenshot {id}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: TakeScreenshot {id}");
             if (screenshotCoroutine != null)
             {
                 StopCoroutine(screenshotCoroutine);
@@ -164,7 +171,8 @@ namespace Builder
 
         public void ResetBuilderScene()
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: ResetBuilderScene");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: ResetBuilderScene");
             OnResetBuilderScene?.Invoke();
             DCLCharacterController.i?.gameObject.SetActive(false);
             outOfBoundariesEntitiesId.Clear();
@@ -181,7 +189,8 @@ namespace Builder
 
         public void SetBuilderCameraPosition(string position)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetBuilderCameraPosition {position}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SetBuilderCameraPosition {position}");
             if (!string.IsNullOrEmpty(position))
             {
                 string[] splitPositionStr = position.Split(',');
@@ -206,7 +215,8 @@ namespace Builder
 
         public void SetBuilderCameraRotation(string yawpitchRotation)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetBuilderCameraRotation {yawpitchRotation}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SetBuilderCameraRotation {yawpitchRotation}");
             if (!string.IsNullOrEmpty(yawpitchRotation))
             {
                 string[] splitRotationStr = yawpitchRotation.Split(',');
@@ -244,13 +254,15 @@ namespace Builder
 
         public void ResetBuilderCameraZoom()
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: ResetBuilderCameraZoom");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: ResetBuilderCameraZoom");
             OnResetCameraZoom?.Invoke();
         }
 
         public void SetGridResolution(string payloadJson)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetGridResolution {payloadJson}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SetGridResolution {payloadJson}");
             try
             {
                 SetGridResolutionPayload payload = JsonUtility.FromJson<SetGridResolutionPayload>(payloadJson);
@@ -273,20 +285,23 @@ namespace Builder
 
         public void UnloadBuilderScene(string sceneKey)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: UnloadBuilderScene {sceneKey}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: UnloadBuilderScene {sceneKey}");
             Environment.i.world.sceneController.UnloadScene(sceneKey);
         }
 
         public void SetSelectedEntities(string msj)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SelectEntity {msj}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SelectEntity {msj}");
             SelectedEntitiesPayload payload = JsonUtility.FromJson<SelectedEntitiesPayload>(msj);
             OnBuilderSelectEntity?.Invoke(payload.entities);
         }
 
         public void GetCameraTargetBuilder(string id)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: GetCameraTargetBuilder {id}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: GetCameraTargetBuilder {id}");
             Vector3 targetPosition;
             Camera builderCamera = builderRaycast.builderCamera;
             if (builderRaycast.RaycastToGround(builderCamera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, builderCamera.nearClipPlane)),
@@ -298,7 +313,8 @@ namespace Builder
 
         public void SetBuilderConfiguration(string payloadJson)
         {
-            if (LOG_MESSAGES) Debug.Log($"RECEIVE: SetBuilderConfiguration {payloadJson}");
+            if (LOG_MESSAGES)
+                Debug.Log($"RECEIVE: SetBuilderConfiguration {payloadJson}");
             DCLBuilderConfig.SetConfig(payloadJson);
 
             if (!currentScene)
@@ -488,37 +504,23 @@ namespace Builder
             entitiesMoved = true;
         }
 
-        private void OnObjectSelected(EditableEntity entity, string gizmoType)
-        {
-            NotifyGizmosSelectedEvent(entity, gizmoType);
-        }
+        private void OnObjectSelected(EditableEntity entity, string gizmoType) { NotifyGizmosSelectedEvent(entity, gizmoType); }
 
-        private void OnNoObjectSelected()
-        {
-            NotifyGizmosSelectedEvent(null, DCLGizmos.Gizmo.NONE);
-        }
+        private void OnNoObjectSelected() { NotifyGizmosSelectedEvent(null, DCLGizmos.Gizmo.NONE); }
 
-        private void OnSelectionChanged(Transform selectionParent, List<EditableEntity> selectedEntitiesList)
-        {
-            selectedEntities = selectedEntitiesList;
-        }
+        private void OnSelectionChanged(Transform selectionParent, List<EditableEntity> selectedEntitiesList) { selectedEntities = selectedEntitiesList; }
 
-        private void NotifyGizmosTransformEvent(List<EditableEntity> entities, string gizmoType)
-        {
-            builderWebInterface.SendEntitiesTransform(entities, gizmoType, currentScene.sceneData.id);
-        }
+        private void NotifyGizmosTransformEvent(List<EditableEntity> entities, string gizmoType) { builderWebInterface.SendEntitiesTransform(entities, gizmoType, currentScene.sceneData.id); }
 
-        private void NotifyGizmosSelectedEvent(EditableEntity entity, string gizmoType)
-        {
-            builderWebInterface.SendEntitySelected(entity, gizmoType, currentScene.sceneData.id);
-        }
+        private void NotifyGizmosSelectedEvent(EditableEntity entity, string gizmoType) { builderWebInterface.SendEntitySelected(entity, gizmoType, currentScene.sceneData.id); }
 
         private IEnumerator TakeScreenshotRoutine(string id)
         {
             yield return new WaitForEndOfFrame();
 
             var texture = ScreenCapture.CaptureScreenshotAsTexture();
-            if (LOG_MESSAGES) Debug.Log($"SEND: SendScreenshot {id}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: SendScreenshot {id}");
             WebInterface.SendScreenshot("data:image/png;base64," + System.Convert.ToBase64String(texture.EncodeToPNG()), id);
             Destroy(texture);
         }
@@ -538,7 +540,8 @@ namespace Builder
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = isPreview;
-                if (!isPreview) mouseCatcher.UnlockCursor();
+                if (!isPreview)
+                    mouseCatcher.UnlockCursor();
             }
 
             cameraController?.gameObject.SetActive(isPreviewMode);
@@ -612,7 +615,6 @@ namespace Builder
             }
         }
 
-
         private DCLBuilderEntity AddBuilderEntityComponent(IDCLEntity entity)
         {
             DCLBuilderEntity builderComponent = Utils.GetOrCreateComponent<DCLBuilderEntity>(entity.gameObject);
@@ -640,10 +642,7 @@ namespace Builder
             Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(entity.rootEntity);
         }
 
-        private void SendOutOfBoundariesEntities()
-        {
-            builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.id);
-        }
+        private void SendOutOfBoundariesEntities() { builderWebInterface.SendEntitiesOutOfBoundaries(outOfBoundariesEntitiesId.ToArray(), currentScene.sceneData.id); }
 
         private void EvaluateSelectedEntitiesPosition()
         {

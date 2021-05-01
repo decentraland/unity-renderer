@@ -129,7 +129,8 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void OnAssetDeselect(DCLBuilderInWorldEntity entity)
     {
-        if (playPlacementSoundOnDeselect) {
+        if (playPlacementSoundOnDeselect)
+        {
             eventAssetPlace.Play();
             playPlacementSoundOnDeselect = false;
         }
@@ -138,14 +139,13 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
         UpdateEntityCount();
 
-        if (entitiesOutOfBounds.Contains(entity.rootEntity.entityId)) {
+        if (entitiesOutOfBounds.Contains(entity.rootEntity.entityId))
+        {
             eventBuilderOutOfBoundsPlaced.Play();
         }
     }
 
-    private void OnCatalogItemSelected(CatalogItem catalogItem) {
-        playPlacementSoundOnDeselect = true;
-    }
+    private void OnCatalogItemSelected(CatalogItem catalogItem) { playPlacementSoundOnDeselect = true; }
 
     private void OnTutorialEnabled()
     {
@@ -204,13 +204,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         }
     }
 
-    private void UpdateEntityCount()
-    {
-        entityCount = entityHandler.GetCurrentSceneEntityCount();
-    }
+    private void UpdateEntityCount() { entityCount = entityHandler.GetCurrentSceneEntityCount(); }
 
-    private bool EntityHasBeenAddedSinceLastUpdate()
-    {
-        return (entityHandler.GetCurrentSceneEntityCount() > entityCount);
-    }
+    private bool EntityHasBeenAddedSinceLastUpdate() { return (entityHandler.GetCurrentSceneEntityCount() > entityCount); }
 }

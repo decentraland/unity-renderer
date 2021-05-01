@@ -23,10 +23,7 @@ namespace DCL.HelpAndSupportHUD
 
         private InputAction_Trigger.Triggered closeActionDelegate;
 
-        private void Awake()
-        {
-            closeActionDelegate = (x) => SetVisibility(false);
-        }
+        private void Awake() { closeActionDelegate = (x) => SetVisibility(false); }
 
         private void Initialize()
         {

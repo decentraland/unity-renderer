@@ -69,25 +69,13 @@ namespace DCL.Controllers
 
         private ISceneBoundsFeedbackStyle feedbackStyle;
 
-        public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null)
-        {
-            this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple();
-        }
+        public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null) { this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple(); }
 
-        public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)
-        {
-            this.feedbackStyle = feedbackStyle;
-        }
+        public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle) { this.feedbackStyle = feedbackStyle; }
 
-        public ISceneBoundsFeedbackStyle GetFeedbackStyle()
-        {
-            return feedbackStyle;
-        }
+        public ISceneBoundsFeedbackStyle GetFeedbackStyle() { return feedbackStyle; }
 
-        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
-        {
-            return feedbackStyle.GetOriginalMaterials(meshesInfo);
-        }
+        public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) { return feedbackStyle.GetOriginalMaterials(meshesInfo); }
 
         // TODO: Improve MessagingControllersManager.i.timeBudgetCounter usage once we have the centralized budget controller for our immortal coroutines
         IEnumerator CheckEntities()
@@ -186,10 +174,7 @@ namespace DCL.Controllers
         /// Returns whether an entity was added to be consistently checked
         /// </summary>
         ///
-        public bool WasAddedAsPersistent(IDCLEntity entity)
-        {
-            return persistentEntities.Contains(entity);
-        }
+        public bool WasAddedAsPersistent(IDCLEntity entity) { return persistentEntities.Contains(entity); }
 
         public void RemoveEntityToBeChecked(IDCLEntity entity)
         {
@@ -279,10 +264,7 @@ namespace DCL.Controllers
             return true;
         }
 
-        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
-        {
-            feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries);
-        }
+        protected void UpdateEntityMeshesValidState(MeshesInfo meshesInfo, bool isInsideBoundaries) { feedbackStyle.ApplyFeedback(meshesInfo, isInsideBoundaries); }
 
         protected void UpdateEntityCollidersValidState(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
@@ -317,10 +299,7 @@ namespace DCL.Controllers
             }
         }
 
-        protected void OnAddEntity(IDCLEntity entity)
-        {
-            entitiesToCheck.Add(entity);
-        }
+        protected void OnAddEntity(IDCLEntity entity) { entitiesToCheck.Add(entity); }
 
         protected void OnRemoveEntity(IDCLEntity entity)
         {

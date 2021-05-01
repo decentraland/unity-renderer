@@ -191,10 +191,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate()
-        {
-            yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene);
-        }
+        public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate() { yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene); }
 
         [UnityTest]
         public IEnumerator UpdateAnimationComponent()

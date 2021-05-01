@@ -20,10 +20,7 @@ namespace DCL.Components
             public bool adaptHeight = true;
             public float spacing = 0;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public enum StackOrientation
@@ -38,15 +35,9 @@ namespace DCL.Components
 
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
-        public UIContainerStack()
-        {
-            model = new Model();
-        }
+        public UIContainerStack() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_CONTAINER_STACK;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_CONTAINER_STACK; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -54,9 +45,7 @@ namespace DCL.Components
                 "Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {

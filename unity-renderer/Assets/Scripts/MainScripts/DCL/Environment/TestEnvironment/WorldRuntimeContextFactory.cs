@@ -5,10 +5,7 @@ namespace DCL.Tests
 {
     public static class WorldRuntimeContextFactory
     {
-        public static WorldRuntimeContext CreateMocked()
-        {
-            return CreateWithCustomMocks();
-        }
+        public static WorldRuntimeContext CreateMocked() { return CreateWithCustomMocks(); }
 
         public static WorldRuntimeContext CreateWithCustomMocks(
             IWorldState state = null,

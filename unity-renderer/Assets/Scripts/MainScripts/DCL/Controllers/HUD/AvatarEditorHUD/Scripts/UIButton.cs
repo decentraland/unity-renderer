@@ -15,10 +15,7 @@ public abstract class UIButton : MonoBehaviour
         button.onClick.AddListener(OnClick);
     }
 
-    private void OnDestroy()
-    {
-        button.onClick.RemoveListener(OnClick);
-    }
+    private void OnDestroy() { button.onClick.RemoveListener(OnClick); }
 
     protected abstract void OnClick();
 }

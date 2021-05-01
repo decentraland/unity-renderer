@@ -12,10 +12,7 @@ public class PlaneShapeShould_VisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ReceiveShadowsCorrectly_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(ReceiveShadowsCorrectly());
-    }
+    public IEnumerator ReceiveShadowsCorrectly_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ReceiveShadowsCorrectly()); }
 
     [UnityTest]
     [VisualTest]

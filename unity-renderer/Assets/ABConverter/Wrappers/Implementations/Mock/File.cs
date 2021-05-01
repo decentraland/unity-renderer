@@ -10,7 +10,7 @@ namespace DCL
         //TODO(Brian): Use mocking library to replace this mock
         public class File : IFile
         {
-            private static Logger logger = new Logger("Mocked.File") {verboseEnabled = false};
+            private static Logger logger = new Logger("Mocked.File") { verboseEnabled = false };
             public Dictionary<string, string> mockedFiles = new Dictionary<string, string>();
 
             public void Delete(string path)

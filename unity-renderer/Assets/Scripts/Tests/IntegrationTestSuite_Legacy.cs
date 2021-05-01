@@ -21,7 +21,6 @@ public class IntegrationTestSuite_Legacy
 {
     protected virtual string TEST_SCENE_NAME => "MainTest";
 
-
     protected bool sceneInitialized = false;
     protected ISceneController sceneController;
     protected ParcelScene scene;
@@ -88,7 +87,6 @@ public class IntegrationTestSuite_Legacy
         //TODO(Brian): Remove when the init layer is ready
         Environment.i.platform.cullingController.Stop();
     }
-
 
     [UnityTearDown]
     protected virtual IEnumerator TearDown()
@@ -159,10 +157,7 @@ public class IntegrationTestSuite_Legacy
         }
     }
 
-    public void SetUp_TestScene()
-    {
-        scene = sceneController.CreateTestScene() as ParcelScene;
-    }
+    public void SetUp_TestScene() { scene = sceneController.CreateTestScene() as ParcelScene; }
 
     public virtual IEnumerator SetUp_CharacterController()
     {
@@ -209,10 +204,7 @@ public class IntegrationTestSuite_Legacy
         );
     }
 
-    public virtual void SetUp_Renderer()
-    {
-        CommonScriptableObjects.rendererState.Set(true);
-    }
+    public virtual void SetUp_Renderer() { CommonScriptableObjects.rendererState.Set(true); }
 
     protected virtual IEnumerator InitScene(bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
     {
@@ -239,26 +231,13 @@ public class IntegrationTestSuite_Legacy
         }
     }
 
-    protected IEnumerator WaitForUICanvasUpdate()
-    {
-        yield break;
-    }
+    protected IEnumerator WaitForUICanvasUpdate() { yield break; }
 
-    public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName)
-    {
-        return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-    }
+    public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName) { return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null); }
 
-    public static T Reflection_GetField<T>(object instance, string fieldName)
-    {
-        return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
-    }
+    public static T Reflection_GetField<T>(object instance, string fieldName) { return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance); }
 
-    public static void Reflection_SetField<T>(object instance, string fieldName, T newValue)
-    {
-        instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue);
-    }
-
+    public static void Reflection_SetField<T>(object instance, string fieldName, T newValue) { instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue); }
 
     protected GameObject CreateTestGameObject(string name)
     {

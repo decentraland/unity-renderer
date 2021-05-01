@@ -10,13 +10,7 @@ public class MapRendererAudioHandler : MonoBehaviour
     [SerializeField]
     AudioEvent eventMapParcelHighlight;
 
-    private void Awake()
-    {
-        mapRenderer.OnMovedParcelCursor += OnMovedParcelCursor;
-    }
+    private void Awake() { mapRenderer.OnMovedParcelCursor += OnMovedParcelCursor; }
 
-    public void OnMovedParcelCursor()
-    {
-        eventMapParcelHighlight.Play(true);
-    }
+    public void OnMovedParcelCursor() { eventMapParcelHighlight.Play(true); }
 }

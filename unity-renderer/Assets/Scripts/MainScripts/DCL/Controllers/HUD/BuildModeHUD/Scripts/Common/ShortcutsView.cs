@@ -26,26 +26,13 @@ public class ShortcutsView : MonoBehaviour, IShortcutsView
         return view;
     }
 
-    private void Awake()
-    {
-        closeButton.onClick.AddListener(OnCloseClick);
-    }
+    private void Awake() { closeButton.onClick.AddListener(OnCloseClick); }
 
-    private void OnEnable() {
-        AudioScriptableObjects.dialogOpen.Play();
-    }
+    private void OnEnable() { AudioScriptableObjects.dialogOpen.Play(); }
 
-    private void OnDisable() {
-        AudioScriptableObjects.dialogClose.Play();
-    }
+    private void OnDisable() { AudioScriptableObjects.dialogClose.Play(); }
 
-    public void SetActive(bool isActive)
-    {
-        gameObject.SetActive(isActive);
-    }
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
-    public void OnCloseClick()
-    {
-        OnCloseButtonClick?.Invoke();
-    }
+    public void OnCloseClick() { OnCloseButtonClick?.Invoke(); }
 }

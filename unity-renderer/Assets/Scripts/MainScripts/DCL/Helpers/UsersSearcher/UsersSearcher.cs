@@ -9,7 +9,7 @@ using DCL.Interface;
 public class UsersSearcher : IDisposable
 {
     private readonly IUsersSearchBridge bridge;
-    
+
     private Promise<UserProfileModel[]> searchPrommise;
     private string currentSearchInput;
 

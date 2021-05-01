@@ -13,9 +13,6 @@ namespace DCL.SettingsController
 
         public static GeneralSettingsReferences i { get; private set; }
 
-        private void Awake()
-        {
-            i = this;
-        }
+        private void Awake() { i = this; }
     }
 }

@@ -7,15 +7,9 @@ public class UsersAroundListHUDButtonView : MonoBehaviour, IUsersAroundListHUDBu
 {
     [SerializeField] private TextMeshProUGUI usersCountText;
 
-    public void SetUsersCount(int count)
-    {
-        usersCountText.text = count.ToString();
-    }
+    public void SetUsersCount(int count) { usersCountText.text = count.ToString(); }
 
     public event Action OnClick;
 
-    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-    {
-        OnClick?.Invoke();
-    }
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData) { OnClick?.Invoke(); }
 }

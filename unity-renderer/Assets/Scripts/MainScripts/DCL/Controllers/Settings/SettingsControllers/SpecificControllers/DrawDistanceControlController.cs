@@ -7,10 +7,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Draw Distance", fileName = "DrawDistanceControlController")]
     public class DrawDistanceControlController : SliderSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.cameraDrawDistance;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.cameraDrawDistance; }
 
         public override void UpdateSetting(object newValue)
         {

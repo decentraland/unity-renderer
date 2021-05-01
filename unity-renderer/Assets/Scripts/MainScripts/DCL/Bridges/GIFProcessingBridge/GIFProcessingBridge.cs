@@ -67,7 +67,7 @@ namespace DCL
                 };
                 pendingGifs.Add(url, gif);
                 DCL.Interface.WebInterface.RequestGIFProcessor(
-                       url, url, SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2);
+                    url, url, SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2);
             }
 
             yield return new WaitUntil(() => gif.status != PendingGifs.Status.PENDING);
@@ -97,15 +97,9 @@ namespace DCL
             }
         }
 
-        public void FailGIFFetch(string id)
-        {
-            RemovePending(id);
-        }
+        public void FailGIFFetch(string id) { RemovePending(id); }
 
-        public void DeleteGIF(string id)
-        {
-            DCL.Interface.WebInterface.DeleteGIF(id);
-        }
+        public void DeleteGIF(string id) { DCL.Interface.WebInterface.DeleteGIF(id); }
 
         private GifFrameData[] GenerateTexturesList(int width, int height, int[] pointers, float[] frameDelays)
         {
@@ -129,7 +123,7 @@ namespace DCL
 
                 newTex.wrapMode = TextureWrapMode.Clamp;
 
-                gifTextures[j] = new GifFrameData() {texture = newTex, delay = frameDelays[j] / 1000};
+                gifTextures[j] = new GifFrameData() { texture = newTex, delay = frameDelays[j] / 1000 };
             }
 
             return gifTextures;

@@ -8,9 +8,9 @@ using UnityEngine.TestTools;
 namespace AssetPromiseKeeper_Gif_Tests
 {
     public class APK_Gif_Promise_Should : TestsBase_APK<AssetPromiseKeeper_Gif,
-                                                            AssetPromise_Gif,
-                                                            Asset_Gif,
-                                                            AssetLibrary_RefCounted<Asset_Gif>>
+        AssetPromise_Gif,
+        Asset_Gif,
+        AssetLibrary_RefCounted<Asset_Gif>>
     {
         protected AssetPromise_Gif CreatePromise()
         {
@@ -22,8 +22,8 @@ namespace AssetPromiseKeeper_Gif_Tests
         [UnityTest]
         public IEnumerator ShareGifAmongPromises()
         {
-            Asset_Gif[] assets = new Asset_Gif [] {null, null};
-            AssetPromise_Gif[] promises = new AssetPromise_Gif [] {CreatePromise(), CreatePromise()};
+            Asset_Gif[] assets = new Asset_Gif [] { null, null };
+            AssetPromise_Gif[] promises = new AssetPromise_Gif [] { CreatePromise(), CreatePromise() };
 
             promises[0].OnSuccessEvent += (x) => assets[0] = x;
             promises[1].OnSuccessEvent += (x) => assets[1] = x;

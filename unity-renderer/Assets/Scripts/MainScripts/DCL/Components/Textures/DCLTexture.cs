@@ -19,10 +19,7 @@ namespace DCL
             public FilterMode samplingMode = FilterMode.Bilinear;
             public bool hasAlpha = false;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public enum BabylonWrapMode
@@ -39,15 +36,9 @@ namespace DCL
         public Texture2D texture;
         protected bool isDisposed;
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.TEXTURE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.TEXTURE; }
 
-        public DCLTexture()
-        {
-            model = new Model();
-        }
+        public DCLTexture() { model = new Model(); }
 
         public static IEnumerator FetchFromComponent(IParcelScene scene, string componentId,
             System.Action<Texture2D> OnFinish)
@@ -158,40 +149,19 @@ namespace DCL
 
         private int refCount;
 
-        public virtual void AttachTo(PBRMaterial material)
-        {
-            AddRefCount();
-        }
+        public virtual void AttachTo(PBRMaterial material) { AddRefCount(); }
 
-        public virtual void AttachTo(BasicMaterial material)
-        {
-            AddRefCount();
-        }
+        public virtual void AttachTo(BasicMaterial material) { AddRefCount(); }
 
-        public virtual void AttachTo(UIImage image)
-        {
-            AddRefCount();
-        }
+        public virtual void AttachTo(UIImage image) { AddRefCount(); }
 
-        public virtual void DetachFrom(PBRMaterial material)
-        {
-            RemoveRefCount();
-        }
+        public virtual void DetachFrom(PBRMaterial material) { RemoveRefCount(); }
 
-        public virtual void DetachFrom(BasicMaterial material)
-        {
-            RemoveRefCount();
-        }
+        public virtual void DetachFrom(BasicMaterial material) { RemoveRefCount(); }
 
-        public virtual void DetachFrom(UIImage image)
-        {
-            RemoveRefCount();
-        }
+        public virtual void DetachFrom(UIImage image) { RemoveRefCount(); }
 
-        public void AddRefCount()
-        {
-            refCount++;
-        }
+        public void AddRefCount() { refCount++; }
 
         public void RemoveRefCount()
         {

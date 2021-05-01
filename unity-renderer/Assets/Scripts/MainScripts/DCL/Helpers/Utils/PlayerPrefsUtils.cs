@@ -4,15 +4,9 @@ namespace DCL.Helpers
 {
     public static class PlayerPrefsUtils
     {
-        public static int GetInt(string key)
-        {
-            return PlayerPrefs.GetInt(key);
-        }
+        public static int GetInt(string key) { return PlayerPrefs.GetInt(key); }
 
-        public static int GetInt(string key, int defaultValue)
-        {
-            return PlayerPrefs.GetInt(key, defaultValue);
-        }
+        public static int GetInt(string key, int defaultValue) { return PlayerPrefs.GetInt(key, defaultValue); }
 
         public static void SetInt(string key, int value)
         {
@@ -26,15 +20,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static bool HasKey(string key)
-        {
-            return PlayerPrefs.HasKey(key);
-        }
+        public static bool HasKey(string key) { return PlayerPrefs.HasKey(key); }
 
-        public static string GetString(string key, string defaultValue = null)
-        {
-            return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue);
-        }
+        public static string GetString(string key, string defaultValue = null) { return PlayerPrefs.GetString(key, string.IsNullOrEmpty(defaultValue) ? "" : defaultValue); }
 
         public static void SetString(string key, string value)
         {
@@ -48,9 +36,6 @@ namespace DCL.Helpers
             }
         }
 
-        public static void Save()
-        {
-            PlayerPrefs.Save();
-        }
+        public static void Save() { PlayerPrefs.Save(); }
     }
 }

@@ -19,21 +19,12 @@ namespace DCL.Components
             public float? radius;
             public float arc = 360f;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public ConeShape()
-        {
-            model = new Model();
-        }
+        public ConeShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.CONE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.CONE_SHAPE; }
 
         public override Mesh GenerateGeometry()
         {

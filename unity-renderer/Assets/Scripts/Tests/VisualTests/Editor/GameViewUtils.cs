@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using UnityEditor;
 
-
 //NOTE(Brian): Code adapted from this answer https://answers.unity.com/questions/956123/add-and-select-game-view-resolution.html
 public static class GameViewUtils
 {
@@ -23,14 +22,12 @@ public static class GameViewUtils
         AspectRatio, FixedResolution
     }
 
-
-
     public static void SetSize(int index)
     {
         var gvWndType = typeof(Editor).Assembly.GetType("UnityEditor.GameView");
 
         var selectedSizeIndexProp = gvWndType.GetProperty("selectedSizeIndex",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
         var gvWnd = EditorWindow.GetWindow(gvWndType);
 
@@ -62,10 +59,7 @@ public static class GameViewUtils
         addCustomSize.Invoke(group, new object[] { index });
     }
 
-    public static bool SizeExists(GameViewSizeGroupType sizeGroupType, string text)
-    {
-        return FindSize(sizeGroupType, text) != -1;
-    }
+    public static bool SizeExists(GameViewSizeGroupType sizeGroupType, string text) { return FindSize(sizeGroupType, text) != -1; }
 
     public static int FindSize(GameViewSizeGroupType sizeGroupType, string text)
     {
@@ -90,10 +84,7 @@ public static class GameViewUtils
         return -1;
     }
 
-    public static bool SizeExists(GameViewSizeGroupType sizeGroupType, int width, int height)
-    {
-        return FindSize(sizeGroupType, width, height) != -1;
-    }
+    public static bool SizeExists(GameViewSizeGroupType sizeGroupType, int width, int height) { return FindSize(sizeGroupType, width, height) != -1; }
 
     public static int FindSize(GameViewSizeGroupType sizeGroupType, int width, int height)
     {
@@ -122,10 +113,7 @@ public static class GameViewUtils
         return -1;
     }
 
-    static object GetGroup(GameViewSizeGroupType type)
-    {
-        return getGroup.Invoke(gameViewSizesInstance, new object[] { (int)type });
-    }
+    static object GetGroup(GameViewSizeGroupType type) { return getGroup.Invoke(gameViewSizesInstance, new object[] { (int)type }); }
 
     public static GameViewSizeGroupType GetCurrentGroupType()
     {

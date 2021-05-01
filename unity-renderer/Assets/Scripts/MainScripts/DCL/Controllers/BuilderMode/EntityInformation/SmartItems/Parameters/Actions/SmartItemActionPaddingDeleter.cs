@@ -9,7 +9,7 @@ public class SmartItemActionPaddingDeleter : MonoBehaviour
 
     void Start()
     {
-        if(GetComponentsInParent<SmartItemListView>().Length > 1)
+        if (GetComponentsInParent<SmartItemListView>().Length > 1)
         {
             verticalLayoutGroup.padding.left = 0;
             verticalLayoutGroup.padding.right = 0;

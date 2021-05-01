@@ -10,7 +10,7 @@ namespace SettingsSectionTests
 {
     public class SettingsSectionShould_EditMode
     {
-		[Test]
+        [Test]
         public void AddWidgetCorrectly()
         {
             // Arrange
@@ -28,10 +28,11 @@ namespace SettingsSectionTests
             sectionController.AddWidget(newWidgetView, newWidgetController, newWidgetConfig);
 
             // Assert
-            newWidgetView.Received(1).Initialize(
-                newWidgetConfig.title,
-                newWidgetController,
-                Arg.Any<List<SettingsControlGroup>>());
+            newWidgetView.Received(1)
+                         .Initialize(
+                             newWidgetConfig.title,
+                             newWidgetController,
+                             Arg.Any<List<SettingsControlGroup>>());
 
             Assert.Contains(newWidgetView, sectionController.widgets, "The new widget should be contained in the widget list.");
         }

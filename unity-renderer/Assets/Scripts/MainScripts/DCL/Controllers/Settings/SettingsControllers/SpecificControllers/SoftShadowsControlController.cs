@@ -18,15 +18,13 @@ namespace DCL.SettingsControls
 
             lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
 
-            if (lightweightRenderPipelineAsset == null) return;
+            if (lightweightRenderPipelineAsset == null)
+                return;
 
             lwrpaSoftShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_SoftShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.softShadows;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.softShadows; }
 
         public override void UpdateSetting(object newValue)
         {

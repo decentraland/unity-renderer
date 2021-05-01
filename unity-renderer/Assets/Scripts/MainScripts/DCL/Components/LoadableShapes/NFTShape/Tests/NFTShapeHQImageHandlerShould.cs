@@ -19,30 +19,32 @@ public class NFTShapeHQImageHandlerShould
     protected void SetUp()
     {
         isHQAsset = false;
-        camera = new GameObject("Camera"){tag = "MainCamera"}.AddComponent<Camera>();
+        camera = new GameObject("Camera") { tag = "MainCamera" }.AddComponent<Camera>();
 
         asset = Substitute.For<INFTAsset>();
-        asset.When(a => a.RestorePreviewAsset()).Do(i =>
-        {
-            isHQAsset = false;
-            asset.isHQ.Returns(false);
-        });
-        asset.WhenForAnyArgs(a => a.FetchAndSetHQAsset(null,null,null))
-            .Do(i =>
-            {
-                isHQAsset = true;
-                asset.isHQ.Returns(true);
-            });
+        asset.When(a => a.RestorePreviewAsset())
+             .Do(i =>
+             {
+                 isHQAsset = false;
+                 asset.isHQ.Returns(false);
+             });
+        asset.WhenForAnyArgs(a => a.FetchAndSetHQAsset(null, null, null))
+             .Do(i =>
+             {
+                 isHQAsset = true;
+                 asset.isHQ.Returns(true);
+             });
 
         nftGO = new GameObject();
         var nftController = NFTShapeFactory.InstantiateLoaderController(0).GetComponent<NFTShapeLoaderController>();
         nftController.transform.SetParent(nftGO.transform);
         nftController.transform.ResetLocalTRS();
 
-        nftGO.transform.position = new Vector3(10,0,10);
+        nftGO.transform.position = new Vector3(10, 0, 10);
         nftShapeConfig = nftController.config;
 
-        var config = new NFTShapeHQImageConfig(){
+        var config = new NFTShapeHQImageConfig()
+        {
             asset = asset,
             controller = nftController,
             nftConfig = nftShapeConfig
@@ -92,7 +94,7 @@ public class NFTShapeHQImageHandlerShould
         SetInFrontAndLookingToNFT();
         Assert.IsTrue(isHQAsset, "Should be using HQ image");
         CommonScriptableObjects.playerUnityPosition
-            .Set(nftGO.transform.position - nftGO.transform.forward * (nftShapeConfig.hqImgMinDistance + 1));
+                               .Set(nftGO.transform.position - nftGO.transform.forward * (nftShapeConfig.hqImgMinDistance + 1));
         Assert.IsFalse(isHQAsset, "Shouldn't use HQ image");
     }
 

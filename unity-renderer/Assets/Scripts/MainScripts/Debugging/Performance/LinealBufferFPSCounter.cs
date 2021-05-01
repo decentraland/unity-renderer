@@ -30,13 +30,7 @@
                     begin = 0;
             }
         }
-        public float CurrentFPSCount()
-        {
-            return countBetweenBeginAndEnd;
-        }
-        public float GetTotalSeconds()
-        {
-            return secondsInBuffer;
-        }
+        public float CurrentFPSCount() { return countBetweenBeginAndEnd; }
+        public float GetTotalSeconds() { return secondsInBuffer; }
     }
 }

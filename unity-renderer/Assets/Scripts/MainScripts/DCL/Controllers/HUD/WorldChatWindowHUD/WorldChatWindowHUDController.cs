@@ -51,10 +51,7 @@ public class WorldChatWindowHUDController : IHUD
         }
     }
 
-    void ChatHUDController_OnPressPrivateMessage(string friendUserId)
-    {
-        OnPressPrivateMessage?.Invoke(friendUserId);
-    }
+    void ChatHUDController_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
 
     public void Dispose()
     {
@@ -133,10 +130,7 @@ public class WorldChatWindowHUDController : IHUD
         WebInterface.SendChatMessage(message);
     }
 
-    public void SetVisibility(bool visible)
-    {
-        view.gameObject.SetActive(visible);
-    }
+    public void SetVisibility(bool visible) { view.gameObject.SetActive(visible); }
 
     public bool OnPressReturn()
     {

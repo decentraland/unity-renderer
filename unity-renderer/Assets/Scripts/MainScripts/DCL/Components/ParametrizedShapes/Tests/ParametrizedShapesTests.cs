@@ -32,7 +32,6 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         yield break;
     }
 
-
     [UnityTest]
     public IEnumerator CylinderShapeUpdate()
     {
@@ -152,7 +151,6 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
                 CLASS_ID.CYLINDER_SHAPE);
     }
 
-
     [UnityTest]
     public IEnumerator CollisionProperty()
     {
@@ -160,7 +158,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
         yield return null;
 
@@ -237,7 +235,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
-        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
         yield return null;
 
@@ -316,7 +314,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of withCollision to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {withCollisions = !withCollision});
+        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { withCollisions = !withCollision });
         yield return shapeComponent.routine;
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
@@ -327,7 +325,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         }
 
         // Act: Update withCollision
-        shapeComponent.UpdateFromModel(new BoxShape.Model {withCollisions = withCollision});
+        shapeComponent.UpdateFromModel(new BoxShape.Model { withCollisions = withCollision });
         yield return shapeComponent.routine;
 
         // Assert:
@@ -349,7 +347,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         Environment.i.world.sceneBoundsChecker.Stop();
 
         // Arrange: set inverse of visible to trigger is dirty later
-        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model {visible = !visible});
+        BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BaseShape.Model { visible = !visible });
         yield return shapeComponent.routine;
         List<IDCLEntity> entities = new List<IDCLEntity>();
         for (int i = 0; i < entitiesCount; i++)
@@ -360,7 +358,7 @@ public class ParametrizedShapesTests : IntegrationTestSuite_Legacy
         }
 
         // Act: Update visible
-        shapeComponent.UpdateFromModel(new BoxShape.Model {visible = visible, withCollisions = true, isPointerBlocker = true});
+        shapeComponent.UpdateFromModel(new BoxShape.Model { visible = visible, withCollisions = true, isPointerBlocker = true });
         yield return shapeComponent.routine;
 
         // Assert:

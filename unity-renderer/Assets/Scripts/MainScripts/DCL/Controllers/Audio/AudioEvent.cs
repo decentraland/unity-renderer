@@ -7,11 +7,8 @@ public class AudioEvent : ScriptableObject
 {
     private static bool VERBOSE = false;
 
-
     [System.Serializable]
-    public class AudioClipList : ReorderableArray<AudioClip>
-    {
-    }
+    public class AudioClipList : ReorderableArray<AudioClip> { }
 
     public bool loop = false;
 
@@ -43,7 +40,8 @@ public class AudioEvent : ScriptableObject
 
     public virtual void Initialize(AudioContainer audioContainer)
     {
-        if (audioContainer == null) return;
+        if (audioContainer == null)
+            return;
 
         pitch = initialPitch;
         lastPlayedTime = 0f;
@@ -74,11 +72,7 @@ public class AudioEvent : ScriptableObject
         source.maxDistance = audioContainer.maxDistance;
     }
 
-
-    public void RandomizeIndex()
-    {
-        RandomizeIndex(0, clips.Length);
-    }
+    public void RandomizeIndex() { RandomizeIndex(0, clips.Length); }
 
     // Randomize the index from (inclusive) to y (exclusive)
     public void RandomizeIndex(int from, int to)
@@ -142,10 +136,12 @@ public class AudioEvent : ScriptableObject
 
     public void PlayScheduled(float delaySeconds)
     {
-        if (source == null) return;
+        if (source == null)
+            return;
 
         // Check if AudioSource is active and check cooldown time (taking delay into account)
-        if (!source.gameObject.activeSelf || Time.time + delaySeconds < nextAvailablePlayTime) return;
+        if (!source.gameObject.activeSelf || Time.time + delaySeconds < nextAvailablePlayTime)
+            return;
 
         source.clip = clips[clipIndex];
         source.pitch = pitch + Random.Range(0f, randomPitch) - (randomPitch * 0.5f);
@@ -166,20 +162,11 @@ public class AudioEvent : ScriptableObject
         OnStop?.Invoke();
     }
 
-    public void ResetVolume()
-    {
-        source.volume = initialVolume;
-    }
+    public void ResetVolume() { source.volume = initialVolume; }
 
-    public void SetIndex(int index)
-    {
-        clipIndex = index;
-    }
+    public void SetIndex(int index) { clipIndex = index; }
 
-    public void SetPitch(float pitch)
-    {
-        this.pitch = pitch;
-    }
+    public void SetPitch(float pitch) { this.pitch = pitch; }
 
     /// <summary>Use StartCoroutine() on this one.</summary>
     public IEnumerator FadeIn(float fadeSeconds)

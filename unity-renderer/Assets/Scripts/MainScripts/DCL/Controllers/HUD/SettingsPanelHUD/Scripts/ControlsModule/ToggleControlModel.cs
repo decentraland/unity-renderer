@@ -6,7 +6,5 @@ namespace DCL.SettingsPanelHUD.Controls
     /// Model that represents a TOGGLE type CONTROL.
     /// </summary>
     [CreateAssetMenu(menuName = "Settings/Configuration/Controls/Toggle Control", fileName = "ToggleControlConfiguration")]
-    public class ToggleControlModel : SettingsControlModel
-    {
-    }
+    public class ToggleControlModel : SettingsControlModel { }
 }

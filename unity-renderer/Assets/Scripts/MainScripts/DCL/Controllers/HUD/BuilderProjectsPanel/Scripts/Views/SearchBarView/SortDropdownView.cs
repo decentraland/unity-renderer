@@ -25,10 +25,7 @@ internal class SortDropdownView : MonoBehaviour, IDeselectHandler
         gameObject.SetActive(false);
     }
 
-    public int GetSortTypesCount()
-    {
-        return activeButtons.Count;
-    }
+    public int GetSortTypesCount() { return activeButtons.Count; }
 
     public void Show()
     {
@@ -45,10 +42,7 @@ internal class SortDropdownView : MonoBehaviour, IDeselectHandler
         showHideAnimator.Show();
     }
 
-    public void Hide()
-    {
-        showHideAnimator.Hide();
-    }
+    public void Hide() { showHideAnimator.Hide(); }
 
     public void AddSortType(string[] texts)
     {
@@ -86,13 +80,7 @@ internal class SortDropdownView : MonoBehaviour, IDeselectHandler
         activeButtons.Clear();
     }
 
-    private void OnSortButtonPressed(string sortType)
-    {
-        OnSortTypeSelected?.Invoke(sortType);
-    }
+    private void OnSortButtonPressed(string sortType) { OnSortTypeSelected?.Invoke(sortType); }
 
-    void IDeselectHandler.OnDeselect(BaseEventData eventData)
-    {
-        Hide();
-    }
+    void IDeselectHandler.OnDeselect(BaseEventData eventData) { Hide(); }
 }

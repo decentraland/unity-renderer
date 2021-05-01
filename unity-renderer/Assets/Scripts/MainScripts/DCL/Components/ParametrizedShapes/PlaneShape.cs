@@ -14,21 +14,12 @@ namespace DCL.Components
             public float width = 1f; // Plane
             public float height = 1f; // Plane
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public PlaneShape()
-        {
-            model = new Model();
-        }
+        public PlaneShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.PLANE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.PLANE_SHAPE; }
 
         public override Mesh GenerateGeometry()
         {

@@ -45,15 +45,9 @@ namespace DCL
             return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         }
 
-        public static Vector3 ConvertSceneToUnityPosition(Vector3 pos, IParcelScene scene = null)
-        {
-            return ConvertPointInSceneToUnityPosition(pos, scene);
-        }
+        public static Vector3 ConvertSceneToUnityPosition(Vector3 pos, IParcelScene scene = null) { return ConvertPointInSceneToUnityPosition(pos, scene); }
 
-        public static Vector3 ConvertScenePositionToUnityPosition(IParcelScene scene = null)
-        {
-            return ConvertPointInSceneToUnityPosition(Vector3.zero, scene);
-        }
+        public static Vector3 ConvertScenePositionToUnityPosition(IParcelScene scene = null) { return ConvertPointInSceneToUnityPosition(Vector3.zero, scene); }
 
         public static Vector3 ConvertPointInSceneToUnityPosition(Vector3 pos, IParcelScene scene = null)
         {
@@ -76,10 +70,7 @@ namespace DCL
             return worldPosition;
         }
 
-        public static bool IsCharacterInsideScene(IParcelScene scene)
-        {
-            return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
-        }
+        public static bool IsCharacterInsideScene(IParcelScene scene) { return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition); }
 
         public static List<GlobalScene> GetActivePortableExperienceScenes()
         {
@@ -119,12 +110,11 @@ namespace DCL
             return currentSceneAndPortableExperiencesIds;
         }
 
-
         static IParcelScene GetCurrentScene()
         {
             var worldState = Environment.i.world.state;
             string currentSceneId = worldState.currentSceneId;
-            
+
             if (string.IsNullOrEmpty(currentSceneId))
                 return null;
 

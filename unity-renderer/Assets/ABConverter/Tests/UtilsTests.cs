@@ -8,10 +8,7 @@ namespace DCL.ABConverter
     public class UtilsTests
     {
         [Test]
-        public void CIDtoGuidTest()
-        {
-            Assert.AreEqual("d3b55cc7e3367537c1670ecebb1ccb05", DCL.ABConverter.Utils.CidToGuid("QmWVcyTEzSEBKC7hzq6doiTWnopZ6DdqJMqufx6gXwFnTS"));
-        }
+        public void CIDtoGuidTest() { Assert.AreEqual("d3b55cc7e3367537c1670ecebb1ccb05", DCL.ABConverter.Utils.CidToGuid("QmWVcyTEzSEBKC7hzq6doiTWnopZ6DdqJMqufx6gXwFnTS")); }
 
         [Test]
         [TestCase("..|FenceStoneLarge_01|file1.png", "models/Fountain_01/Fountain_01.glb", "models/FenceStoneLarge_01/file1.png")]

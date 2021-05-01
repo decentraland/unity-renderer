@@ -44,15 +44,9 @@ namespace DCL
 
         public int objectsCount => unusedObjectsCount + usedObjectsCount;
 
-        public int unusedObjectsCount
-        {
-            get { return unusedObjects.Count; }
-        }
+        public int unusedObjectsCount { get { return unusedObjects.Count; } }
 
-        public int usedObjectsCount
-        {
-            get { return usedObjects.Count; }
-        }
+        public int usedObjectsCount { get { return usedObjects.Count; } }
 
         public Pool(string name, int maxPrewarmCount)
         {
@@ -321,10 +315,7 @@ namespace DCL
             return false;
         }
 
-        public bool IsValid()
-        {
-            return original != null;
-        }
+        public bool IsValid() { return original != null; }
 
 #if UNITY_EDITOR
         // In production it will always be false

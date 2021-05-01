@@ -27,10 +27,7 @@ namespace Builder
             groundPlane = new Plane(Vector3.up, Vector3.zero);
         }
 
-        public void SetEntityHitPlane(float height)
-        {
-            entityHitPlane = new Plane(Vector3.up, new Vector3(0, height, 0));
-        }
+        public void SetEntityHitPlane(float height) { entityHitPlane = new Plane(Vector3.up, new Vector3(0, height, 0)); }
 
         public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, bool checkGizmo = false)
         {
@@ -58,20 +55,11 @@ namespace Builder
             return false;
         }
 
-        public Ray GetMouseRay(Vector3 mousePosition)
-        {
-            return builderCamera.ScreenPointToRay(mousePosition);
-        }
+        public Ray GetMouseRay(Vector3 mousePosition) { return builderCamera.ScreenPointToRay(mousePosition); }
 
-        public bool RaycastToGizmos(Ray ray, out RaycastHit hitInfo)
-        {
-            return Physics.Raycast(ray, out hitInfo, RAYCAST_MAX_DISTANCE, gizmoMask);
-        }
+        public bool RaycastToGizmos(Ray ray, out RaycastHit hitInfo) { return Physics.Raycast(ray, out hitInfo, RAYCAST_MAX_DISTANCE, gizmoMask); }
 
-        public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo)
-        {
-            return RaycastToGizmos(GetMouseRay(mousePosition), out hitInfo);
-        }
+        public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo) { return RaycastToGizmos(GetMouseRay(mousePosition), out hitInfo); }
 
         public bool RaycastToGround(Vector3 mousePosition, out Vector3 hitPosition)
         {

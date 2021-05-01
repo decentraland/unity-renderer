@@ -52,7 +52,11 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
         entry.userId = "userId-1";
         entry.Populate(model);
         bool buttonPressed = false;
-        entry.OnWhisperClick += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnWhisperClick += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.whisperButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }
@@ -64,7 +68,11 @@ public class FriendEntryShould : IntegrationTestSuite_Legacy
         entry.userId = "userId-1";
         entry.Populate(model);
         bool buttonPressed = false;
-        entry.OnMenuToggle += (x) => { if (x == entry) buttonPressed = true; };
+        entry.OnMenuToggle += (x) =>
+        {
+            if (x == entry)
+                buttonPressed = true;
+        };
         entry.menuButton.onClick.Invoke();
         Assert.IsTrue(buttonPressed);
     }

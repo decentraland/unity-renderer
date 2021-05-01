@@ -48,10 +48,7 @@ namespace DCL
             }
         }
 
-        public void ApplyAfterLoad(Transform transform)
-        {
-            ApplyAfterLoad(new List<Renderer>(transform.GetComponentsInChildren<Renderer>(true)));
-        }
+        public void ApplyAfterLoad(Transform transform) { ApplyAfterLoad(new List<Renderer>(transform.GetComponentsInChildren<Renderer>(true))); }
 
         public void ApplyAfterLoad(List<Renderer> renderers = null)
         {

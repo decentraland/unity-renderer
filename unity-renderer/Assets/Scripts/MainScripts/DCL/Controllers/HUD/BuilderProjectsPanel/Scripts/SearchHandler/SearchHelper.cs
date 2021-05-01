@@ -20,13 +20,7 @@ public static class SearchHelper
         return item.keywords.Any(keyword => !string.IsNullOrEmpty(keyword) && keyword.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 
-    public static void Sort<T>(string sortType, List<T> input, bool descendingOrder) where T : ISortable<T>
-    {
-        input.Sort((a, b) => a.Compare(sortType, descendingOrder, b));
-    }
+    public static void Sort<T>(string sortType, List<T> input, bool descendingOrder) where T : ISortable<T> { input.Sort((a, b) => a.Compare(sortType, descendingOrder, b)); }
 
-    public static List<T> Filter<T>(List<T> input, Predicate<T> match)
-    {
-        return input.FindAll(match);
-    }
+    public static List<T> Filter<T>(List<T> input, Predicate<T> match) { return input.FindAll(match); }
 }

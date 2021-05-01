@@ -45,7 +45,7 @@ namespace DCL.Helpers.NFT
             yield break;
         }
 
-        static public IEnumerator GetMarket(string assetContractAddress,Action<INFTMarket> onSuccess)
+        static public IEnumerator GetMarket(string assetContractAddress, Action<INFTMarket> onSuccess)
         {
             onSuccess?.Invoke(market);
             yield break;

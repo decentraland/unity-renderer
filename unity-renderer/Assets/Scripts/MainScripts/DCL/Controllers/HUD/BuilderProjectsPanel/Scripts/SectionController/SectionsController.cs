@@ -37,9 +37,7 @@ internal class SectionsController : IDisposable
     /// Ctor
     /// </summary>
     /// <param name="sectionsParent">container for the different sections view</param>
-    public SectionsController(Transform sectionsParent) : this(new SectionFactory(), sectionsParent)
-    {
-    }
+    public SectionsController(Transform sectionsParent) : this(new SectionFactory(), sectionsParent) { }
 
     /// <summary>
     /// Ctor
@@ -126,30 +124,15 @@ internal class SectionsController : IDisposable
         loadedSections.Clear();
     }
 
-    private void OnHideContextMenuRequested()
-    {
-        OnRequestContextMenuHide?.Invoke();
-    }
+    private void OnHideContextMenuRequested() { OnRequestContextMenuHide?.Invoke(); }
 
-    private void OnUpdateSceneDataRequested(string id, SceneDataUpdatePayload payload)
-    {
-        OnRequestUpdateSceneData?.Invoke(id, payload);
-    }
-    
-    private void OnUpdateSceneContributorsRequested(string id, SceneContributorsUpdatePayload payload)
-    {
-        OnRequestUpdateSceneContributors?.Invoke(id, payload);
-    }
+    private void OnUpdateSceneDataRequested(string id, SceneDataUpdatePayload payload) { OnRequestUpdateSceneData?.Invoke(id, payload); }
 
-    private void OnUpdateSceneAdminsRequested(string id, SceneAdminsUpdatePayload payload)
-    {
-        OnRequestUpdateSceneAdmins?.Invoke(id, payload);
-    }
-    
-    private void OnUpdateSceneBannedUsersRequested(string id, SceneBannedUsersUpdatePayload payload)
-    {
-        OnRequestUpdateSceneBannedUsers?.Invoke(id, payload);
-    }
+    private void OnUpdateSceneContributorsRequested(string id, SceneContributorsUpdatePayload payload) { OnRequestUpdateSceneContributors?.Invoke(id, payload); }
+
+    private void OnUpdateSceneAdminsRequested(string id, SceneAdminsUpdatePayload payload) { OnRequestUpdateSceneAdmins?.Invoke(id, payload); }
+
+    private void OnUpdateSceneBannedUsersRequested(string id, SceneBannedUsersUpdatePayload payload) { OnRequestUpdateSceneBannedUsers?.Invoke(id, payload); }
 
     private void SubscribeEvents(SectionBase sectionBase)
     {
@@ -164,7 +147,7 @@ internal class SectionsController : IDisposable
         if (sectionBase is ISectionUpdateSceneDataRequester updateSceneDataRequester)
         {
             updateSceneDataRequester.OnRequestUpdateSceneData += OnUpdateSceneDataRequested;
-        }       
+        }
         if (sectionBase is ISectionUpdateSceneContributorsRequester updateSceneContributorsRequester)
         {
             updateSceneContributorsRequester.OnRequestUpdateSceneContributors += OnUpdateSceneContributorsRequested;

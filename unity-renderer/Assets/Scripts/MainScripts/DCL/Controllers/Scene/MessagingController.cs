@@ -91,10 +91,7 @@ namespace DCL
             }
         }
 
-        public void ForceEnqueue(MessagingBusType busType, QueuedSceneMessage queuedMessage)
-        {
-            messagingBuses[busType].Enqueue(queuedMessage);
-        }
+        public void ForceEnqueue(MessagingBusType busType, QueuedSceneMessage queuedMessage) { messagingBuses[busType].Enqueue(queuedMessage); }
 
         public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage, out MessagingBusType busType)
         {

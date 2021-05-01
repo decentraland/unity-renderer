@@ -15,15 +15,9 @@ namespace DCL
         [SerializeField]
         private GameObject sceneDebugPanel;
 
-        public void ShowFPSPanel()
-        {
-            fpsPanel.SetActive(true);
-        }
+        public void ShowFPSPanel() { fpsPanel.SetActive(true); }
 
-        public void HideFPSPanel()
-        {
-            fpsPanel.SetActive(false);
-        }
+        public void HideFPSPanel() { fpsPanel.SetActive(false); }
 
         public void SetSceneDebugPanel()
         {

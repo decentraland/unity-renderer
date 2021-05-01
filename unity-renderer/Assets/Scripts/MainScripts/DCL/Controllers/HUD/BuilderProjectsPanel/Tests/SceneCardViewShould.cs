@@ -18,10 +18,7 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            UnityEngine.Object.Destroy(cardView.gameObject);
-        }
+        public void TearDown() { UnityEngine.Object.Destroy(cardView.gameObject); }
 
         [Test]
         public void DisplayCorrectlyWhenSceneIsDeployed()

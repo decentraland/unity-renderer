@@ -9,10 +9,7 @@ namespace DCL
         IPooledObjectInstantiator instantiator;
         public Dictionary<object, AssetType> masterAssets = new Dictionary<object, AssetType>();
 
-        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator)
-        {
-            this.instantiator = instantiator;
-        }
+        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator) { this.instantiator = instantiator; }
 
         private void OnPoolRemoved(Pool pool)
         {
