@@ -7,14 +7,8 @@
     {
         public readonly IMessagingControllersManager manager;
 
-        public MessagingContext(IMessagingControllersManager manager)
-        {
-            this.manager = manager;
-        }
+        public MessagingContext(IMessagingControllersManager manager) { this.manager = manager; }
 
-        public void Dispose()
-        {
-            manager.Dispose();
-        }
+        public void Dispose() { manager.Dispose(); }
     }
 }

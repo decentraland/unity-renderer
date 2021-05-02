@@ -8,16 +8,10 @@ namespace Tests.BuildModeHUDViews
         private ExtraActionsView extraActionsView;
 
         [SetUp]
-        public void SetUp()
-        {
-            extraActionsView = ExtraActionsView.Create();
-        }
+        public void SetUp() { extraActionsView = ExtraActionsView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(extraActionsView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(extraActionsView.gameObject); }
 
         [Test]
         [TestCase(true)]

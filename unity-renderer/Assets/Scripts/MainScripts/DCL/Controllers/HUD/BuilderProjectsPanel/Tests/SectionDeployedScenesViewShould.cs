@@ -17,16 +17,10 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(view.gameObject);
-        }
+        public void TearDown() { Object.Destroy(view.gameObject); }
 
         [Test]
-        public void HaveScenesContainerEmptyAtInstantiation()
-        {
-            Assert.AreEqual(0, view.scenesCardContainer.childCount);
-        }
+        public void HaveScenesContainerEmptyAtInstantiation() { Assert.AreEqual(0, view.scenesCardContainer.childCount); }
 
         [Test]
         public void ShowCardsInCorrectSortOrder()
@@ -40,7 +34,7 @@ namespace Tests
             for (int i = 0; i < cardsCount; i++)
             {
                 var card = Object.Instantiate(prefab);
-                card.Setup(new SceneData(){size = new Vector2Int(i,i), id = i.ToString()});
+                card.Setup(new SceneData() { size = new Vector2Int(i, i), id = i.ToString() });
                 cardViews.Add(i.ToString(), card);
             }
 
@@ -48,9 +42,9 @@ namespace Tests
             SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
             controller.searchHandler.SetSortType(SceneSearchHandler.SIZE_SORT_TYPE);
             controller.searchHandler.SetSortOrder(false);
-            
+
             ((IDeployedSceneListener)controller).OnSetScenes(cardViews);
-            
+
             Assert.AreEqual(cardsCount, view.scenesCardContainer.childCount);
 
             var prev = view.scenesCardContainer.GetChild(0).GetComponent<SceneCardView>();

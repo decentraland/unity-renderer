@@ -18,23 +18,14 @@ namespace DCL.Components
             public bool adaptWidth = false;
             public bool adaptHeight = false;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public override string referencesContainerPrefabName => "UIContainerRect";
 
-        public UIContainerRect()
-        {
-            model = new Model();
-        }
+        public UIContainerRect() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_CONTAINER_RECT;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_CONTAINER_RECT; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -42,9 +33,7 @@ namespace DCL.Components
                 "Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {

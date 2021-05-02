@@ -29,10 +29,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         // This list store each friendId with the greatest timestamp from his related messages
         private List<LastFriendTimestampModel> latestTimestampsOrdered = new List<LastFriendTimestampModel>();
 
-        public int Count()
-        {
-            return entries.Count;
-        }
+        public int Count() { return entries.Count; }
 
         public void Add(string userId, FriendEntryBase entry)
         {
@@ -134,10 +131,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         updateRoutine = CoroutineStarter.Start(UpdateCoroutine());
     }
 
-    internal List<FriendEntryBase> GetAllEntries()
-    {
-        return entries.Values.ToList();
-    }
+    internal List<FriendEntryBase> GetAllEntries() { return entries.Values.ToList(); }
 
     internal FriendEntryBase GetEntry(string userId)
     {
@@ -217,9 +211,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         }
     }
 
-    protected virtual void OnPressDeleteButton(string userId)
-    {
-    }
+    protected virtual void OnPressDeleteButton(string userId) { }
 
     protected virtual void OnPressBlockButton(string userId, bool blockUser)
     {
@@ -233,7 +225,8 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
     protected virtual bool CreateEntry(string userId)
     {
-        if (entries.ContainsKey(userId)) return false;
+        if (entries.ContainsKey(userId))
+            return false;
 
         PoolableObject newFriendEntry = friendEntriesPool.Get();
         instantiatedFriendEntries.Add(userId, newFriendEntry);
@@ -252,7 +245,8 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
     public virtual bool UpdateEntry(string userId, FriendEntryBase.Model model)
     {
-        if (!entries.ContainsKey(userId)) return false;
+        if (!entries.ContainsKey(userId))
+            return false;
 
         var entry = entries[userId];
 
@@ -265,7 +259,8 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 
     public virtual bool RemoveEntry(string userId)
     {
-        if (!entries.ContainsKey(userId)) return false;
+        if (!entries.ContainsKey(userId))
+            return false;
 
         if (instantiatedFriendEntries.TryGetValue(userId, out PoolableObject go))
         {
@@ -280,8 +275,5 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         return true;
     }
 
-    protected virtual void UpdateEmptyListObjects()
-    {
-        emptyListImage.SetActive(entries.Count == 0);
-    }
+    protected virtual void UpdateEmptyListObjects() { emptyListImage.SetActive(entries.Count == 0); }
 }

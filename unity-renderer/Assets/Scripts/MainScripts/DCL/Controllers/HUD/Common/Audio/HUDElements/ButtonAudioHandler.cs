@@ -8,10 +8,7 @@ public class ButtonAudioHandler : GeneralHUDElementAudioHandler
     [SerializeField]
     AudioEvent extraClickEvent = null;
 
-    void Awake()
-    {
-        selectable = GetComponent<Selectable>();
-    }
+    void Awake() { selectable = GetComponent<Selectable>(); }
 
     public override void OnPointerEnter(PointerEventData eventData)
     {

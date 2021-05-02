@@ -29,10 +29,7 @@ public class UsersAroundListHUDController : IHUD
         Initialize(view);
     }
 
-    public UsersAroundListHUDController(IUsersAroundListHUDListView usersListView)
-    {
-        Initialize(usersListView);
-    }
+    public UsersAroundListHUDController(IUsersAroundListHUDListView usersListView) { Initialize(usersListView); }
 
     /// <summary>
     /// Dispose HUD controller
@@ -106,10 +103,7 @@ public class UsersAroundListHUDController : IHUD
     /// </summary>
     /// <param name="userId">User's id</param>
     /// <param name="isRecording">Set user status as "talking" or "not talking"</param>
-    public void SetUserRecording(string userId, bool isRecording)
-    {
-        usersListView.SetUserRecording(userId, isRecording);
-    }
+    public void SetUserRecording(string userId, bool isRecording) { usersListView.SetUserRecording(userId, isRecording); }
 
     void Initialize(IUsersAroundListHUDListView view)
     {
@@ -203,15 +197,9 @@ public class UsersAroundListHUDController : IHUD
         OnMuteUsers(trackedUsersHashSet, mute);
     }
 
-    void OnGoToCrowd()
-    {
-        WebInterface.GoToCrowd();
-    }
+    void OnGoToCrowd() { WebInterface.GoToCrowd(); }
 
-    void OnListOpen()
-    {
-        OnOpen?.Invoke();
-    }
+    void OnListOpen() { OnOpen?.Invoke(); }
 
     private void OnRendererStateChanged(bool isEnable, bool prevState)
     {

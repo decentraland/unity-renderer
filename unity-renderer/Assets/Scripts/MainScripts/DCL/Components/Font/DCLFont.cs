@@ -18,10 +18,7 @@ namespace DCL.Components
         {
             public string src;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public bool loaded { private set; get; } = false;
@@ -29,15 +26,9 @@ namespace DCL.Components
 
         public TMP_FontAsset fontAsset { private set; get; }
 
-        public DCLFont()
-        {
-            model = new Model();
-        }
+        public DCLFont() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.FONT;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.FONT; }
 
         public static IEnumerator SetFontFromComponent(IParcelScene scene, string componentId, TMP_Text text)
         {

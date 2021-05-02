@@ -9,13 +9,7 @@ internal class SortDropdownButton : MonoBehaviour, IPointerDownHandler
 
     [SerializeField] internal TextMeshProUGUI label;
 
-    public void SetText(string text)
-    {
-        label.text = text;
-    }
+    public void SetText(string text) { label.text = text; }
 
-    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-    {
-        OnSelected?.Invoke(label.text);
-    }
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData) { OnSelected?.Invoke(label.text); }
 }

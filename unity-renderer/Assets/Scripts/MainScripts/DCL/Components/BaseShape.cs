@@ -15,25 +15,17 @@ namespace DCL.Components
             public bool isPointerBlocker = true;
             public bool visible = true;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public BaseShape()
-        {
-            model = new Model();
-        }
+        public BaseShape() { model = new Model(); }
 
-        new public Model GetModel()
-        {
-            return (Model) model;
-        }
+        new public Model GetModel() { return (Model) model; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+                return;
 
             //NOTE(Brian): This assignation must be before the base.AttachTo call, or the OnAttach events will receive entity.currentShape == null
             //             and fail to generate colliders randomly.
@@ -44,7 +36,8 @@ namespace DCL.Components
 
         public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
-            if (!attachedEntities.Contains(entity)) return;
+            if (!attachedEntities.Contains(entity))
+                return;
 
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.meshesInfo.currentShape = null;
@@ -52,19 +45,14 @@ namespace DCL.Components
             base.DetachFrom(entity, typeof(BaseShape));
         }
 
-        public virtual bool IsVisible()
-        {
-            return false;
-        }
+        public virtual bool IsVisible() { return false; }
 
-        public virtual bool HasCollisions()
-        {
-            return false;
-        }
+        public virtual bool HasCollisions() { return false; }
 
         public static void ConfigureVisibility(GameObject meshGameObject, bool shouldBeVisible, Renderer[] meshRenderers = null)
         {
-            if (meshGameObject == null) return;
+            if (meshGameObject == null)
+                return;
 
             if (!shouldBeVisible)
             {

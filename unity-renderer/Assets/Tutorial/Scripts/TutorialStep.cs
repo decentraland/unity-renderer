@@ -71,10 +71,7 @@ namespace DCL.Tutorial
         /// Executes the main flow of the step and waits for its finalization.
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerator OnStepExecute()
-        {
-            yield break;
-        }
+        public virtual IEnumerator OnStepExecute() { yield break; }
 
         /// <summary>
         /// Executes the final animation and waits for its finalization and for any camera blending.
@@ -104,18 +101,12 @@ namespace DCL.Tutorial
             }
         }
 
-        private void OnShowAnimationFinish()
-        {
-            OnShowAnimationFinished?.Invoke();
-        }
+        private void OnShowAnimationFinish() { OnShowAnimationFinished?.Invoke(); }
 
         /// <summary>
         /// Warn about the finalization of the hide animation of the step
         /// </summary>
-        private void OnHideAnimationFinish()
-        {
-            hideAnimationFinished = true;
-        }
+        private void OnHideAnimationFinish() { hideAnimationFinished = true; }
 
         private IEnumerator PlayAndWaitForHideAnimation()
         {

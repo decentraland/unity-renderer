@@ -19,15 +19,13 @@ namespace DCL.SettingsControls
 
             lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
 
-            if (lightweightRenderPipelineAsset == null) return;
+            if (lightweightRenderPipelineAsset == null)
+                return;
 
             lwrpaShadowField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowsSupported", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.shadows;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.shadows; }
 
         public override void UpdateSetting(object newValue)
         {

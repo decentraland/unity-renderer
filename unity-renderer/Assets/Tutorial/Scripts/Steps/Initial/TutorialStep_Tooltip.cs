@@ -29,10 +29,7 @@ namespace DCL.Tutorial
                 stepIsFinished = true;
         }
 
-        public virtual void OnPointerDown(PointerEventData eventData)
-        {
-            stepIsFinished = true;
-        }
+        public virtual void OnPointerDown(PointerEventData eventData) { stepIsFinished = true; }
 
         public override void OnStepStart()
         {
@@ -46,10 +43,7 @@ namespace DCL.Tutorial
             tooltipStarted = true;
         }
 
-        public override IEnumerator OnStepExecute()
-        {
-            yield return new WaitUntil(() => stepIsFinished);
-        }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => stepIsFinished); }
 
         public override IEnumerator OnStepPlayHideAnimation()
         {
@@ -57,13 +51,8 @@ namespace DCL.Tutorial
             yield return new WaitUntil(() => !isRelatedFeatureActived);
         }
 
-        protected virtual void SetTooltipPosition()
-        {
-        }
+        protected virtual void SetTooltipPosition() { }
 
-        public void OverrideSetMaxTimeToHide(bool setMaxTimeToHide)
-        {
-            this.setMaxTimeToHide = setMaxTimeToHide;
-        }
+        public void OverrideSetMaxTimeToHide(bool setMaxTimeToHide) { this.setMaxTimeToHide = setMaxTimeToHide; }
     }
 }

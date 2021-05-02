@@ -64,11 +64,7 @@ namespace DCL
 
         public bool enabled;
 
-        public float timeBudget
-        {
-            get => renderingIsDisabled ? float.MaxValue : timeBudgetValue;
-            set => timeBudgetValue = value;
-        }
+        public float timeBudget { get => renderingIsDisabled ? float.MaxValue : timeBudgetValue; set => timeBudgetValue = value; }
 
         public MessagingBus(MessagingBusType type, IMessageProcessHandler handler, MessagingController owner)
         {
@@ -81,10 +77,7 @@ namespace DCL
             manager = Environment.i.messaging.manager as MessagingControllersManager;
         }
 
-        public void Start()
-        {
-            enabled = true;
-        }
+        public void Start() { enabled = true; }
 
         public void Stop()
         {
@@ -93,10 +86,7 @@ namespace DCL
             pendingMessagesCount = 0;
         }
 
-        public void Dispose()
-        {
-            Stop();
-        }
+        public void Dispose() { Stop(); }
 
         public void Enqueue(QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
         {

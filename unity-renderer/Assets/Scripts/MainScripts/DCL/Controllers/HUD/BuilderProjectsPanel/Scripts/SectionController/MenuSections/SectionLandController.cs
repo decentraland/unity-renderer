@@ -27,25 +27,13 @@ internal class SectionLandController : SectionBase, ILandsListener
         landSearchHandler.OnResult += OnSearchResult;
     }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.SetParent(viewContainer);
-    }
+    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
-    public override void Dispose()
-    {
-        view.Dispose();
-    }
+    public override void Dispose() { view.Dispose(); }
 
-    protected override void OnShow()
-    {
-        view.SetActive(true);
-    }
+    protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
+    protected override void OnHide() { view.SetActive(false); }
 
     void ILandsListener.OnSetLands(LandData[] lands)
     {

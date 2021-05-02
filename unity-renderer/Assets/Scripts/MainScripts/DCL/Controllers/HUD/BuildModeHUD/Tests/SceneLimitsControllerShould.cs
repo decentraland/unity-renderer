@@ -16,10 +16,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            sceneLimitsController.Dispose();
-        }
+        public void TearDown() { sceneLimitsController.Dispose(); }
 
         [Test]
         public void SetParcelSceneCorrectly()

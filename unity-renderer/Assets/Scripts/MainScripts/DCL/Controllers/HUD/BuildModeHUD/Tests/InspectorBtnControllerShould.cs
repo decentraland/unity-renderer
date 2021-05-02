@@ -18,10 +18,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            inspectorBtnController.Dispose();
-        }
+        public void TearDown() { inspectorBtnController.Dispose(); }
 
         [Test]
         public void ClickCorrectly()

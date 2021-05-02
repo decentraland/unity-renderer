@@ -68,10 +68,7 @@ namespace Builder
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
         }
 
-        private void OnDestroy()
-        {
-            DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
-        }
+        private void OnDestroy() { DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged; }
 
         private void Update()
         {
@@ -163,10 +160,7 @@ namespace Builder
             }
         }
 
-        private void OnMouseWheel(float axisValue)
-        {
-            Zoom(axisValue * zoomAmount);
-        }
+        private void OnMouseWheel(float axisValue) { Zoom(axisValue * zoomAmount); }
 
         private void OnKeyboardButtonHold(KeyCode keyCode)
         {
@@ -187,10 +181,7 @@ namespace Builder
             }
         }
 
-        private void OnZoomFormUI(float delta)
-        {
-            Zoom(-delta);
-        }
+        private void OnZoomFormUI(float delta) { Zoom(-delta); }
 
         private void Pan(float forward, float right, float up)
         {
@@ -198,15 +189,9 @@ namespace Builder
             panTarget += panOffset;
         }
 
-        private void Zoom(float amount)
-        {
-            zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin);
-        }
+        private void Zoom(float amount) { zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin); }
 
-        private void OnDragObjectStart()
-        {
-            isObjectBeingDrag = true;
-        }
+        private void OnDragObjectStart() { isObjectBeingDrag = true; }
 
         private void OnDragObjectEnd()
         {
@@ -215,15 +200,9 @@ namespace Builder
             yawTarget = yawCurrent;
         }
 
-        private void OnGizmoTransformObjectStart(string gizmoType)
-        {
-            OnDragObjectStart();
-        }
+        private void OnGizmoTransformObjectStart(string gizmoType) { OnDragObjectStart(); }
 
-        private void OnGizmoTransformObjectEnd(string gizmoType)
-        {
-            OnDragObjectEnd();
-        }
+        private void OnGizmoTransformObjectEnd(string gizmoType) { OnDragObjectEnd(); }
 
         private void OnSetCameraPosition(Vector3 position)
         {
@@ -249,10 +228,7 @@ namespace Builder
             OnCameraZoomChanged?.Invoke(builderCamera, zoomCurrent);
         }
 
-        private bool CanOrbit()
-        {
-            return !isObjectBeingDrag;
-        }
+        private bool CanOrbit() { return !isObjectBeingDrag; }
 
         private void CalcSceneBoundaries(IParcelScene scene)
         {
@@ -283,10 +259,7 @@ namespace Builder
             }
         }
 
-        private void OnPreviewModeChanged(bool isPreview)
-        {
-            gameObject.SetActive(!isPreview);
-        }
+        private void OnPreviewModeChanged(bool isPreview) { gameObject.SetActive(!isPreview); }
 
         private void OnConfigChanged(BuilderConfig config)
         {

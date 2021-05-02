@@ -39,7 +39,6 @@ namespace DCL
         const string PROCESSED_MESSAGES_TEXT = "Processed Messages";
         const string PENDING_MESSAGES_TEXT = "Pending on Queue";
 
-
         const string CURRENT_SCENE_TEST = "Scene Location:";
         const string POLYGON_VS_LIMIT_TEXT = "Poly Count";
         const string TEXTURES_VS_LIMIT_TEXT = "Textures Count";
@@ -56,15 +55,9 @@ namespace DCL
         List<Columns> columnsList;
         List<Rows> rowsList;
 
-        private void Awake()
-        {
-            StartProfiling();
-        }
+        private void Awake() { StartProfiling(); }
 
-        private void OnDestroy()
-        {
-            StopProfiling();
-        }
+        private void OnDestroy() { StopProfiling(); }
 
         public void Init()
         {

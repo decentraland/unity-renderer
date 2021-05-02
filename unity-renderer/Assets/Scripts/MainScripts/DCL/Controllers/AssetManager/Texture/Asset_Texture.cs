@@ -15,7 +15,8 @@ namespace DCL
 
         public void ConfigureTexture(TextureWrapMode textureWrapMode, FilterMode textureFilterMode, bool makeNoLongerReadable = true)
         {
-            if (texture == null) return;
+            if (texture == null)
+                return;
 
             texture.wrapMode = textureWrapMode;
             texture.filterMode = textureFilterMode;
@@ -30,10 +31,7 @@ namespace DCL
             Object.Destroy(texture);
         }
 
-        public void Dispose()
-        {
-            Cleanup();
-        }
+        public void Dispose() { Cleanup(); }
 
         public int width => texture.width;
         public int height => texture.height;

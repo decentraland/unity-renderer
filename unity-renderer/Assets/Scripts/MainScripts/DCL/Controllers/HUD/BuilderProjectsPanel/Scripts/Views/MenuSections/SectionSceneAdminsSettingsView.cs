@@ -33,18 +33,15 @@ internal class SectionSceneAdminsSettingsView : MonoBehaviour, IDisposable
 
     private void Awake()
     {
-        addAdminButton.onClick.AddListener(()=> OnSearchFriendButtonPressed?.Invoke());
-        addBlockedButton.onClick.AddListener(()=> OnSearchUserButtonPressed?.Invoke());
+        addAdminButton.onClick.AddListener(() => OnSearchFriendButtonPressed?.Invoke());
+        addBlockedButton.onClick.AddListener(() => OnSearchUserButtonPressed?.Invoke());
         PoolView(adminElementView);
         PoolView(blockedElementView);
         adminsLabelFormat = labelAdmins.text;
         blockedLabelFormat = labelBlocked.text;
     }
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+    private void OnDestroy() { isDestroyed = true; }
 
     public void Dispose()
     {
@@ -60,72 +57,45 @@ internal class SectionSceneAdminsSettingsView : MonoBehaviour, IDisposable
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public UsersSearchPromptView GetAdminsSearchPromptView()
-    {
-        return adminsSearchPromptView;
-    }
-    
-    public UsersSearchPromptView GetBlockedSearchPromptView()
-    {
-        return blockedSearchPromptView;
-    }
-    
+    public UsersSearchPromptView GetAdminsSearchPromptView() { return adminsSearchPromptView; }
+
+    public UsersSearchPromptView GetBlockedSearchPromptView() { return blockedSearchPromptView; }
+
     public void SetAdminsEmptyList(bool isEmpty)
     {
         adminsContainer.gameObject.SetActive(!isEmpty);
         adminsEmptyListContainer.SetActive(isEmpty);
-        
+
         if (isEmpty)
         {
             ClearElementViewsDictionary(adminsElementViews);
-        }        
+        }
     }
-    
+
     public void SetBannedUsersEmptyList(bool isEmpty)
     {
         blockedContainer.gameObject.SetActive(!isEmpty);
         blockedEmptyListContainer.SetActive(isEmpty);
-        
+
         if (isEmpty)
         {
             ClearElementViewsDictionary(bannedUsersElementViews);
-        }   
+        }
     }
 
-    public void SetAdminsCount(int count)
-    {
-        labelAdmins.text = string.Format(adminsLabelFormat, count);
-    }
-    
-    public void SetBannedUsersCount(int count)
-    {
-        labelBlocked.text = string.Format(blockedLabelFormat, count);
-    }
+    public void SetAdminsCount(int count) { labelAdmins.text = string.Format(adminsLabelFormat, count); }
 
-    public UserElementView AddAdmin(string userId)
-    {
-        return AddUser(userId, true);
-    }
-    
-    public UserElementView AddBannedUser(string userId)
-    {
-        return AddUser(userId, false);
-    }
+    public void SetBannedUsersCount(int count) { labelBlocked.text = string.Format(blockedLabelFormat, count); }
 
-    public bool RemoveAdmin(string userId)
-    {
-        return RemoveUser(userId, true);
-    }
-    
-    public bool RemoveBannedUser(string userId)
-    {
-        return RemoveUser(userId, false);
-    }
+    public UserElementView AddAdmin(string userId) { return AddUser(userId, true); }
+
+    public UserElementView AddBannedUser(string userId) { return AddUser(userId, false); }
+
+    public bool RemoveAdmin(string userId) { return RemoveUser(userId, true); }
+
+    public bool RemoveBannedUser(string userId) { return RemoveUser(userId, false); }
 
     UserElementView AddUser(string userId, bool addAsAdmin)
     {
@@ -140,10 +110,10 @@ internal class SectionSceneAdminsSettingsView : MonoBehaviour, IDisposable
             view.SetActive(true);
             dictionary.Add(userId, view);
         }
-        
+
         bool isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
         view.SetBlocked(isBlocked);
-        view.SetParent(addAsAdmin? adminsContainer : blockedContainer);
+        view.SetParent(addAsAdmin ? adminsContainer : blockedContainer);
         return view;
     }
 
@@ -154,7 +124,7 @@ internal class SectionSceneAdminsSettingsView : MonoBehaviour, IDisposable
         {
             return false;
         }
-        
+
         Transform container = removeAsAdmin ? adminsContainer : blockedContainer;
 
         if (view.GetParent() != container)

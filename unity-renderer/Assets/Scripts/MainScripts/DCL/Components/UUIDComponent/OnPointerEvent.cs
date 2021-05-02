@@ -126,10 +126,7 @@ namespace DCL.Components
             pointerEventHandler.SetFeedbackState(model.showFeedback, hoverState, model.button, model.hoverText);
         }
 
-        void SetEventColliders(IDCLEntity entity)
-        {
-            pointerEventHandler.SetColliders(entity);
-        }
+        void SetEventColliders(IDCLEntity entity) { pointerEventHandler.SetColliders(entity); }
 
         public bool IsVisible()
         {

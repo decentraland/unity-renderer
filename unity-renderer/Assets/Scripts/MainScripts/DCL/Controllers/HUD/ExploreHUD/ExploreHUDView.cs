@@ -38,38 +38,17 @@ internal class ExploreHUDView : MonoBehaviour
         }
     }
 
-    public bool IsVisible()
-    {
-        return popup.isVisible;
-    }
+    public bool IsVisible() { return popup.isVisible; }
 
-    public bool IsActive()
-    {
-        return popup.gameObject.activeSelf;
-    }
+    public bool IsActive() { return popup.gameObject.activeSelf; }
 
-    public void RefreshData()
-    {
-        highlightScenesController.RefreshIfNeeded();
-    }
+    public void RefreshData() { highlightScenesController.RefreshIfNeeded(); }
 
-    public void Initialize(FriendTrackerController friendsController)
-    {
-        highlightScenesController.Initialize(friendsController);
-    }
+    public void Initialize(FriendTrackerController friendsController) { highlightScenesController.Initialize(friendsController); }
 
-    private void RaiseOnClose()
-    {
-        OnCloseButtonPressed?.Invoke();
-    }
+    private void RaiseOnClose() { OnCloseButtonPressed?.Invoke(); }
 
-    private void OnEnable()
-    {
-        closeAction.OnTriggered += closeActionDelegate;
-    }
+    private void OnEnable() { closeAction.OnTriggered += closeActionDelegate; }
 
-    private void OnDisable()
-    {
-        closeAction.OnTriggered -= closeActionDelegate;
-    }
+    private void OnDisable() { closeAction.OnTriggered -= closeActionDelegate; }
 }

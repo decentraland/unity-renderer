@@ -48,7 +48,6 @@ namespace DCL
                 EnsureContainer();
                 return containerValue;
             }
-
             set { containerValue = value; }
         }
 
@@ -68,10 +67,7 @@ namespace DCL
             CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
         }
 
-        void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
-        {
-            initializing = !renderingEnabled;
-        }
+        void OnRenderingStateChanged(bool renderingEnabled, bool prevState) { initializing = !renderingEnabled; }
 
         public Pool AddPool(object id, GameObject original, IPooledObjectInstantiator instantiator = null, int maxPrewarmCount = DEFAULT_PREWARM_COUNT, bool isPersistent = false)
         {
@@ -125,7 +121,6 @@ namespace DCL
 
             return pool;
         }
-
 
         public Pool GetPool(object id)
         {

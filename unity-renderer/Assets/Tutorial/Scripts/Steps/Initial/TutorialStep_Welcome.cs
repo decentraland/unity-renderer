@@ -19,9 +19,6 @@ namespace DCL.Tutorial
             descriptionText.text = descriptionText.text.Replace("{userName}", UserProfile.GetOwnUserProfile().userName);
         }
 
-        public override IEnumerator OnStepExecute()
-        {
-            yield return new WaitUntil(() => mainSection.activeSelf && confirmInputAction.isOn);
-        }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => mainSection.activeSelf && confirmInputAction.isOn); }
     }
 }

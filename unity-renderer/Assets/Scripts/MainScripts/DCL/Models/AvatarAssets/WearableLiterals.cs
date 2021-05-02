@@ -62,7 +62,7 @@ public static class WearableLiterals
             { (BodyShapes.MALE, Categories.EYEBROWS), "dcl://base-avatars/eyebrows_00" },
             { (BodyShapes.MALE, Categories.MOUTH), "dcl://base-avatars/mouth_00" },
             { (BodyShapes.MALE, Categories.HAIR), "dcl://base-avatars/casual_hair_01" },
-            { (BodyShapes.MALE, Categories.FACIAL), "dcl://base-avatars/beard"},
+            { (BodyShapes.MALE, Categories.FACIAL), "dcl://base-avatars/beard" },
             { (BodyShapes.MALE, Categories.UPPER_BODY), "dcl://base-avatars/green_hoodie" },
             { (BodyShapes.MALE, Categories.LOWER_BODY), "dcl://base-avatars/brown_pants" },
             { (BodyShapes.MALE, Categories.FEET), "dcl://base-avatars/sneakers" },

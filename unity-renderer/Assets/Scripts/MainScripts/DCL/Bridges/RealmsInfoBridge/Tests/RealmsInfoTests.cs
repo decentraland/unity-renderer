@@ -77,7 +77,7 @@ public class RealmsInfoTests
 
         var testModel = new RealmsInfoModel()
         {
-            realms = new RealmModel[] {realm1, realm2}
+            realms = new RealmModel[] { realm1, realm2 }
         };
 
         var handler = new RealmsInfoHandler();

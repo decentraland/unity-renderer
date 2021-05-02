@@ -194,15 +194,9 @@ namespace DCL
             isDirty = true;
         }
 
-        protected virtual void OnEntityMeshInfoUpdated(IDCLEntity entity)
-        {
-            AddOrReplaceMetrics(entity);
-        }
+        protected virtual void OnEntityMeshInfoUpdated(IDCLEntity entity) { AddOrReplaceMetrics(entity); }
 
-        protected virtual void OnEntityMeshInfoCleaned(IDCLEntity entity)
-        {
-            SubstractMetrics(entity);
-        }
+        protected virtual void OnEntityMeshInfoCleaned(IDCLEntity entity) { SubstractMetrics(entity); }
 
         protected void AddOrReplaceMetrics(IDCLEntity entity)
         {

@@ -68,8 +68,5 @@ public class CatalogAssetPackAdapter : MonoBehaviour
         }
     }
 
-    public void SceneAssetPackClick()
-    {
-        OnCatalogItemPackClick?.Invoke(catalogItemPack);
-    }
+    public void SceneAssetPackClick() { OnCatalogItemPackClick?.Invoke(catalogItemPack); }
 }

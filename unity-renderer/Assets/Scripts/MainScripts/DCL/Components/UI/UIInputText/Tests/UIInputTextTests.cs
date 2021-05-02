@@ -16,7 +16,6 @@ namespace Tests
         UIInputText textInput;
         Camera mockCamera;
 
-
         public IEnumerator InputTextCreate()
         {
             ssshape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
@@ -121,10 +120,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent()
-        {
-            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE);
-        }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE); }
 
         [UnityTest]
         public IEnumerator TestOnFocus()
@@ -145,7 +141,6 @@ namespace Tests
             textInput.Dispose();
             Object.DestroyImmediate(mockCamera.gameObject);
         }
-
 
         [UnityTest]
         public IEnumerator TestOnSubmit()

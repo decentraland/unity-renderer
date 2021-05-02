@@ -40,20 +40,20 @@ public class CatalystSceneEntityMetadata
         public string description;
         public string navmapThumbnail;
     }
-    
+
     [Serializable]
     public class Contact
     {
         public string name;
     }
-    
+
     [Serializable]
     public class Scene
     {
         public string @base;
         public string[] parcels;
     }
-    
+
     [Serializable]
     public class Policy
     {
@@ -62,7 +62,7 @@ public class CatalystSceneEntityMetadata
         public bool voiceEnabled;
         public string[] blacklist;
     }
-    
+
     [Serializable]
     public class SpawnPoint
     {

@@ -12,7 +12,7 @@ namespace DCL.ABConverter
     {
         private const string WEARABLES_CONTENT_BASE_URL = "https://peer.decentraland.org/content/contents/";
         private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
-    
+
         public class Settings
         {
             /// <summary>
@@ -64,7 +64,7 @@ namespace DCL.ABConverter
                 this.baseUrl = ContentServerUtils.GetContentAPIUrlBase(tld);
             }
         }
-        
+
         [Serializable]
         private class WearablesAPIData
         {
@@ -100,7 +100,7 @@ namespace DCL.ABConverter
                         public string category;
                         public Representation[] representations;
                     }
-                    
+
                     public string id;
                     public string description;
                     public string thumbnail;
@@ -108,7 +108,7 @@ namespace DCL.ABConverter
                     public Data data;
                     public i18n[] i18n;
                 }
-                
+
                 public Content[] content;
                 public Metadata metadata;
             }
@@ -126,10 +126,11 @@ namespace DCL.ABConverter
 
             public List<WearableItem> GetWearableItemsList()
             {
-                if (deployments == null || deployments.Count == 0) return null;
+                if (deployments == null || deployments.Count == 0)
+                    return null;
 
                 List<WearableItem> result = new List<WearableItem>();
-                
+
                 foreach (var wearableData in deployments)
                 {
                     // Populate new WearableItem with fetched data
@@ -146,7 +147,7 @@ namespace DCL.ABConverter
                         description = wearableData.metadata.description,
                         i18n = wearableData.metadata.i18n
                     };
-                    
+
                     List<WearableItem.Representation> wearableRepresentations = new List<WearableItem.Representation>();
                     foreach (var wearableDataRepresentation in wearableData.metadata.data.representations)
                     {
@@ -162,20 +163,20 @@ namespace DCL.ABConverter
                         foreach (var contentFileName in wearableDataRepresentation.contents)
                         {
                             var contentData = wearableData.content.FirstOrDefault((x) => x.key == contentFileName);
-                            
+
                             if (contentData == null)
                             {
                                 log.Error($"Missing related content mapping pair info from fetched Wearable {wearableData.metadata.id}");
                                 continue;
                             }
-                            
+
                             contentMappingPairs.Add(new ContentServerUtils.MappingPair()
                             {
                                 file = contentData.key,
                                 hash = contentData.hash
                             });
                         }
-                        
+
                         wearableRepresentation.contents = contentMappingPairs.ToArray();
                         wearableRepresentations.Add(wearableRepresentation);
                     }
@@ -458,7 +459,7 @@ namespace DCL.ABConverter
         public static void DumpAllBodiesWearables()
         {
             EnsureEnvironment();
-            
+
             List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
                                                 .Where(x => x.category == WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
@@ -575,7 +576,7 @@ namespace DCL.ABConverter
 
             var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
             var resultList = wearablesApiData.GetWearableItemsList();
-            
+
             // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
             // batches sequentially
             if (wearablesApiData.pagination.moreData)
@@ -583,7 +584,7 @@ namespace DCL.ABConverter
                 var nextPageResults = GetAvatarMappingList(url, paginationElementOffset + wearablesApiData.pagination.limit);
                 resultList.AddRange(nextPageResults);
             }
-            
+
             return resultList;
         }
 

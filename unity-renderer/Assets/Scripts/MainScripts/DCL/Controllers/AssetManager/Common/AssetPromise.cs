@@ -35,10 +35,7 @@ namespace DCL
         public event Action<AssetType> OnSuccessEvent;
         public event Action<AssetType> OnFailEvent;
 
-        public override bool keepWaiting
-        {
-            get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; }
-        }
+        public override bool keepWaiting { get { return state == AssetPromiseState.LOADING || state == AssetPromiseState.WAITING; } }
 
         public void ClearEvents()
         {
@@ -113,20 +110,11 @@ namespace DCL
             OnLoad(OnLoadSuccess, OnLoadFailure);
         }
 
-        protected virtual object GetLibraryAssetCheckId()
-        {
-            return GetId();
-        }
+        protected virtual object GetLibraryAssetCheckId() { return GetId(); }
 
-        protected virtual AssetType GetAsset(object id)
-        {
-            return library.Get(id);
-        }
+        protected virtual AssetType GetAsset(object id) { return library.Get(id); }
 
-        protected virtual void OnReuse(Action OnFinish)
-        {
-            OnFinish?.Invoke();
-        }
+        protected virtual void OnReuse(Action OnFinish) { OnFinish?.Invoke(); }
 
         protected void OnReuseFinished()
         {
@@ -155,10 +143,7 @@ namespace DCL
             Cleanup();
         }
 
-        protected virtual bool AddToLibrary()
-        {
-            return library.Add(asset);
-        }
+        protected virtual bool AddToLibrary() { return library.Add(asset); }
 
         internal void Unload()
         {

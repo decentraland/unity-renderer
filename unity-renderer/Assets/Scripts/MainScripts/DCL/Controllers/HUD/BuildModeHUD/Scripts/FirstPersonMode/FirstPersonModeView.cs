@@ -48,18 +48,9 @@ public class FirstPersonModeView : MonoBehaviour, IFirstPersonModeView
         BuilderInWorldUtils.RemoveEventTrigger(changeModeEventTrigger, EventTriggerType.PointerExit);
     }
 
-    public void OnPointerClick()
-    {
-        OnFirstPersonModeClick?.Invoke();
-    }
+    public void OnPointerClick() { OnFirstPersonModeClick?.Invoke(); }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnShowTooltip?.Invoke(eventData, tooltipText);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
-    public void OnPointerExit()
-    {
-        OnHideTooltip?.Invoke();
-    }
+    public void OnPointerExit() { OnHideTooltip?.Invoke(); }
 }

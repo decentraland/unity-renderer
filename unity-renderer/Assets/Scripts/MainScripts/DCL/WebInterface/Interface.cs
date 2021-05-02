@@ -105,7 +105,7 @@ namespace DCL.Interface
             public string eventType;
             public T payload;
         }
-        
+
         [System.Serializable]
         public class AllScenesEvent<T>
         {
@@ -173,6 +173,7 @@ namespace DCL.Interface
         {
             public ACTION_BUTTON buttonId = ACTION_BUTTON.POINTER;
         }
+
         [System.Serializable]
         public class SendChatMessageEvent
         {
@@ -631,7 +632,7 @@ namespace DCL.Interface
         private static KillPortableExperiencePayload killPortableExperiencePayload = new KillPortableExperiencePayload();
         private static RequestWearablesPayload requestWearablesPayload = new RequestWearablesPayload();
         private static SearchENSOwnerPayload searchEnsOwnerPayload = new SearchENSOwnerPayload();
-        
+
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
             SceneEvent<T> sceneEvent = new SceneEvent<T>();
@@ -641,7 +642,7 @@ namespace DCL.Interface
 
             SendMessage("SceneEvent", sceneEvent);
         }
-        
+
         private static void SendAllScenesEvent<T>(string eventType, T payload)
         {
             AllScenesEvent<T> allScenesEvent = new AllScenesEvent<T>();
@@ -659,7 +660,7 @@ namespace DCL.Interface
 
             SendMessage("ReportPosition", positionPayload);
         }
-        
+
         public static void ReportCameraChanged(CameraMode.ModeId cameraMode)
         {
             cameraModePayload.cameraMode = cameraMode;

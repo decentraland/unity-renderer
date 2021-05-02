@@ -144,10 +144,7 @@ namespace DCL.Components.Video.Plugin
             shouldBePlaying = false;
         }
 
-        public bool IsPaused()
-        {
-            return !shouldBePlaying;
-        }
+        public bool IsPaused() { return !shouldBePlaying; }
 
         public void SetVolume(float volume)
         {

@@ -16,9 +16,6 @@ namespace Tests
         }
 
         [Test]
-        public void SectionsContainerShouldBeEmpty()
-        {
-            Assert.AreEqual(0, prefab.sectionsContainer.transform.childCount);
-        }
+        public void SectionsContainerShouldBeEmpty() { Assert.AreEqual(0, prefab.sectionsContainer.transform.childCount); }
     }
 }

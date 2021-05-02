@@ -15,14 +15,14 @@ public interface ICatalyst : IDisposable
     /// url for content server
     /// </summary>
     public string contentUrl { get; }
-    
+
     /// <summary>
     /// get scenes deployed in parcels
     /// </summary>
     /// <param name="parcels">parcels to get scenes from</param>
     /// <returns>promise of an array of scenes entities</returns>
     Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels);
-    
+
     /// <summary>
     /// get entities of entityType
     /// </summary>
@@ -30,7 +30,7 @@ public interface ICatalyst : IDisposable
     /// <param name="pointers">pointers to fetch</param>
     /// <returns>promise of a string containing catalyst response json</returns>
     Promise<string> GetEntities(string entityType, string[] pointers);
-    
+
     /// <summary>
     /// wraps a WebRequest inside a promise and cache it result
     /// </summary>
@@ -61,10 +61,7 @@ public class Catalyst : ICatalyst
         DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
-    public void Dispose()
-    {
-        DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange;
-    }
+    public void Dispose() { DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange; }
 
     public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels)
     {
@@ -78,7 +75,7 @@ public class Catalyst : ICatalyst
                 try
                 {
                     CatalystSceneEntityPayload[] parsedValue = Utils.ParseJsonArray<CatalystSceneEntityPayload[]>(json);
-                    
+
                     // remove duplicated 
                     List<CatalystSceneEntityPayload> noDuplicates = new List<CatalystSceneEntityPayload>();
                     for (int i = 0; i < parsedValue.Length; i++)
@@ -86,7 +83,7 @@ public class Catalyst : ICatalyst
                         var sceneToCheck = parsedValue[i];
                         if (noDuplicates.Any(scene => scene.id == sceneToCheck.id))
                             continue;
-                        
+
                         noDuplicates.Add(sceneToCheck);
                     }
                     scenes = noDuplicates.ToArray();
@@ -106,11 +103,11 @@ public class Catalyst : ICatalyst
 
         return promise;
     }
-    
+
     public Promise<string> GetEntities(string entityType, string[] pointers)
     {
         Promise<string> promise = new Promise<string>();
-        
+
         string[][] pointersGroupsToFetch;
 
         if (pointers.Length <= MAX_POINTERS_PER_REQUEST)
@@ -136,38 +133,39 @@ public class Catalyst : ICatalyst
         }
 
         Promise<string>[] splittedPromises = new Promise<string>[pointersGroupsToFetch.Length];
-        
+
         for (int i = 0; i < pointersGroupsToFetch.Length; i++)
         {
             string urlParams = "";
             urlParams = pointersGroupsToFetch[i].Aggregate(urlParams, (current, pointer) => current + $"&pointer={pointer}");
             string url = $"{realmDomain}/content/entities/{entityType}?{urlParams}";
-            
-            splittedPromises[i] = Get(url);
-            splittedPromises[i].Then(value =>
-            {
-                // check if all other promises have been resolved
-                for (int j = 0; j < splittedPromises.Length; j++)
-                {
-                    if (splittedPromises[j] == null || splittedPromises[j].keepWaiting || !string.IsNullOrEmpty(splittedPromises[j].error))
-                    {
-                        return;
-                    }
-                }
 
-                // make sure not to continue if promise was already resolved
-                if (!promise.keepWaiting)
-                    return;
-                
-                // build json with all promises result
-                string json = splittedPromises[0].value.Substring(1, splittedPromises[0].value.Length - 2);
-                for (int j = 1; j < splittedPromises.Length; j++)
+            splittedPromises[i] = Get(url);
+            splittedPromises[i]
+                .Then(value =>
                 {
-                    string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
-                    json += $",{jsonContent}";
-                }
-                promise.Resolve($"[{json}]");
-            });
+                    // check if all other promises have been resolved
+                    for (int j = 0; j < splittedPromises.Length; j++)
+                    {
+                        if (splittedPromises[j] == null || splittedPromises[j].keepWaiting || !string.IsNullOrEmpty(splittedPromises[j].error))
+                        {
+                            return;
+                        }
+                    }
+
+                    // make sure not to continue if promise was already resolved
+                    if (!promise.keepWaiting)
+                        return;
+
+                    // build json with all promises result
+                    string json = splittedPromises[0].value.Substring(1, splittedPromises[0].value.Length - 2);
+                    for (int j = 1; j < splittedPromises.Length; j++)
+                    {
+                        string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
+                        json += $",{jsonContent}";
+                    }
+                    promise.Resolve($"[{json}]");
+                });
             splittedPromises[i].Catch(error => promise.Reject(error));
         }
 
@@ -184,7 +182,7 @@ public class Catalyst : ICatalyst
             return promise;
         }
 
-        WebRequestController.i.Get(url, null ,request =>
+        WebRequestController.i.Get(url, null , request =>
         {
             AddToCache(url, request.downloadHandler.text);
             promise.Resolve(request.downloadHandler.text);

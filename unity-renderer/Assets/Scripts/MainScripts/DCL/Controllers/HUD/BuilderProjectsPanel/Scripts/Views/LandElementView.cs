@@ -11,10 +11,10 @@ internal class LandElementView : MonoBehaviour, IDisposable
     internal const string SIZE_TEXT_FORMAT = "{0} LAND";
     private const string BUILDER_LAND_URL_FORMAT = "https://builder.decentraland.org/land/{0}";
 
-    public event Action<string> OnJumpInPressed; 
-    public event Action<string> OnEditorPressed; 
-    public event Action<string> OnSettingsPressed; 
-        
+    public event Action<string> OnJumpInPressed;
+    public event Action<string> OnEditorPressed;
+    public event Action<string> OnSettingsPressed;
+
     [SerializeField] private Texture2D defaultThumbnail;
     [SerializeField] private RawImageFillParent thumbnail;
     [SerializeField] internal TextMeshProUGUI landName;
@@ -38,23 +38,17 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
     private void Awake()
     {
-        buttonSettings.onClick.AddListener(()=> OnSettingsPressed?.Invoke(landId));
-        buttonJumpIn.onClick.AddListener(()=> OnJumpInPressed?.Invoke(landId));
-        buttonEditor.onClick.AddListener(()=> OnEditorPressed?.Invoke(landId));
-        
+        buttonSettings.onClick.AddListener(() => OnSettingsPressed?.Invoke(landId));
+        buttonJumpIn.onClick.AddListener(() => OnJumpInPressed?.Invoke(landId));
+        buttonEditor.onClick.AddListener(() => OnEditorPressed?.Invoke(landId));
+
         //NOTE: for MVP we are redirecting user to Builder's page
         OnSettingsPressed += (id) => WebInterface.OpenURL(string.Format(BUILDER_LAND_URL_FORMAT, isEstate ? landId : landCoordinates));
     }
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+    private void OnDestroy() { isDestroyed = true; }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
     public void SetId(string id)
     {
@@ -62,10 +56,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
         searchInfo.id = id;
     }
 
-    public string GetId()
-    {
-        return landId;
-    }
+    public string GetId() { return landId; }
 
     public void SetName(string name)
     {
@@ -93,20 +84,11 @@ internal class LandElementView : MonoBehaviour, IDisposable
         searchInfo.SetRole(isOwner);
     }
 
-    public void SetIsState(bool isEstate)
-    {
-        this.isEstate = isEstate;
-    }
+    public void SetIsState(bool isEstate) { this.isEstate = isEstate; }
 
-    public Transform GetParent()
-    {
-        return transform.parent;
-    }
+    public Transform GetParent() { return transform.parent; }
 
-    public void SetParent(Transform parent)
-    {
-        transform.SetParent(parent);
-    }
+    public void SetParent(Transform parent) { transform.SetParent(parent); }
 
     public void SetThumbnail(string url)
     {
@@ -114,7 +96,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
             return;
 
         thumbnailUrl = url;
-        
+
         var prevPromise = thumbnailPromise;
 
         if (string.IsNullOrEmpty(url))
@@ -128,17 +110,14 @@ internal class LandElementView : MonoBehaviour, IDisposable
             thumbnailPromise.OnFailEvent += asset => SetThumbnail(defaultThumbnail);
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
-        
+
         if (prevPromise != null)
         {
             AssetPromiseKeeper_Texture.i.Forget(prevPromise);
         }
     }
 
-    public void SetThumbnail(Texture thumbnailTexture)
-    {
-        thumbnail.texture = thumbnailTexture;
-    }
+    public void SetThumbnail(Texture thumbnailTexture) { thumbnail.texture = thumbnailTexture; }
 
     public void Dispose()
     {

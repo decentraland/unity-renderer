@@ -9,10 +9,7 @@ public class SmartItemIntegerParameter : SmartItemUIParameterAdapter
 {
     public TMP_InputField textParameterInputField;
 
-    private void Start()
-    {
-        textParameterInputField.onEndEdit.AddListener(OnValueChange);
-    }
+    private void Start() { textParameterInputField.onEndEdit.AddListener(OnValueChange); }
 
     public override void SetInfo()
     {
@@ -24,8 +21,5 @@ public class SmartItemIntegerParameter : SmartItemUIParameterAdapter
         textParameterInputField.text = GetParameterValue().ToString();
     }
 
-    public void OnValueChange(string text)
-    {
-        SetParameterValue(Convert.ToInt32(text));
-    }
+    public void OnValueChange(string text) { SetParameterValue(Convert.ToInt32(text)); }
 }

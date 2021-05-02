@@ -51,7 +51,8 @@ public class AirdroppingHUDController : IHUD
 
     public void AirdroppingRequested(Model model)
     {
-        if (model == null) return;
+        if (model == null)
+            return;
 
         this.model = model;
 
@@ -131,10 +132,7 @@ public class AirdroppingHUDController : IHUD
         }
     }
 
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisibility(visible);
-    }
+    public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
     public void Dispose()
     {

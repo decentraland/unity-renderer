@@ -58,7 +58,7 @@ namespace Tests
 
             yield return mat.routine;
 
-            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(mat, new BasicMaterial.Model() {texture = videoTexture.id});
+            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(mat, new BasicMaterial.Model() { texture = videoTexture.id });
 
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 1, $"did DCLVideoTexture attach to material? {videoTexture.attachedMaterials.Count} expected 1");
         }
@@ -98,7 +98,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -112,7 +112,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -123,7 +123,7 @@ namespace Tests
             yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
-            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() {visible = false});
+            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
             yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
@@ -145,11 +145,11 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(ent1Shape, ent1);
 
-            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(ent1Mat, new BasicMaterial.Model() {texture = videoTexture.id});
+            yield return TestHelpers.SharedComponentUpdate<BasicMaterial, BasicMaterial.Model>(ent1Mat, new BasicMaterial.Model() { texture = videoTexture.id });
             yield return new WaitForAllMessagesProcessed();
             Assert.IsTrue(videoTexture.isVisible, "DCLVideoTexture should be visible");
 
-            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() {visible = false});
+            yield return TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(ent1Shape, new BoxShape.Model() { visible = false });
             yield return new WaitForAllMessagesProcessed();
 
             Assert.IsTrue(!videoTexture.isVisible, "DCLVideoTexture should not be visible ");
@@ -162,7 +162,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -192,7 +192,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -219,7 +219,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -247,7 +247,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -282,7 +282,7 @@ namespace Tests
             yield return videoTexture.routine;
 
             var ent1 = TestHelpers.CreateSceneEntity(scene);
-            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() {texture = videoTexture.id});
+            BasicMaterial ent1Mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, new BasicMaterial.Model() { texture = videoTexture.id });
             TestHelpers.SharedComponentAttach(ent1Mat, ent1);
             yield return ent1Mat.routine;
 
@@ -330,9 +330,6 @@ namespace Tests
             );
         }
 
-        static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url)
-        {
-            return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url));
-        }
+        static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url) { return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url)); }
     }
 }

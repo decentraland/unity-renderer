@@ -76,20 +76,19 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerEnter(PointerEventData eventData)
     {
         List<WearableItem> toReplace = getEquippedWearablesReplacedByFunc(wearableItem);
-        if (wearableItem == null || toReplace.Count == 0) return;
+        if (wearableItem == null || toReplace.Count == 0)
+            return;
         if (toReplace.Count == 1)
         {
             WearableItem w = toReplace[0];
-            if (w.category == wearableItem.category) return;
+            if (w.category == wearableItem.category)
+                return;
         }
 
         warningPanel.SetActive(true);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        warningPanel.SetActive(false);
-    }
+    public void OnPointerExit(PointerEventData eventData) { warningPanel.SetActive(false); }
 
     private void OnThumbnailReady(Asset_Texture texture)
     {
@@ -105,25 +104,13 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    private void OnEnable()
-    {
-        GetThumbnail();
-    }
+    private void OnEnable() { GetThumbnail(); }
 
-    private void OnDisable()
-    {
-        ForgetThumbnail();
-    }
+    private void OnDisable() { ForgetThumbnail(); }
 
-    protected virtual void OnDestroy()
-    {
-        OnClicked = null;
-    }
+    protected virtual void OnDestroy() { OnClicked = null; }
 
-    protected void CallOnSellClicked()
-    {
-        OnSellClicked?.Invoke(this);
-    }
+    protected void CallOnSellClicked() { OnSellClicked?.Invoke(this); }
 
     private void GetThumbnail()
     {

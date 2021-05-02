@@ -6,12 +6,12 @@ using Object = UnityEngine.Object;
 internal class SectionSceneGeneralSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneDataRequester
 {
     public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneGeneralSettingsView";
-    
+
     internal const string PERMISSION_MOVE_PLAYER = "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE";
     internal const string PERMISSION_TRIGGER_EMOTES = "ALLOW_TO_TRIGGER_AVATAR_EMOTE";
 
     private ISceneData sceneData;
-    
+
     private readonly SceneDataUpdatePayload sceneDataUpdatePayload = new SceneDataUpdatePayload();
     private readonly SectionSceneGeneralSettingsView view;
 
@@ -19,10 +19,8 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
 
     public SectionSceneGeneralSettingsController() : this(
         Object.Instantiate(Resources.Load<SectionSceneGeneralSettingsView>(VIEW_PREFAB_PATH))
-    )
-    {
-    }
-    
+    ) { }
+
     public SectionSceneGeneralSettingsController(SectionSceneGeneralSettingsView view)
     {
         this.view = view;
@@ -35,20 +33,17 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
         Object.Destroy(view.gameObject);
     }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.SetParent(viewContainer);
-    }
+    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
     public void SetSceneData(ISceneData sceneData)
     {
         this.sceneData = sceneData;
-        
+
         view.SetName(sceneData.name);
         view.SetDescription(sceneData.description);
         view.SetConfigurationActive(sceneData.isDeployed);
         view.SetPermissionsActive(sceneData.isDeployed);
-        
+
         if (sceneData.isDeployed)
         {
             view.SetAllowMovePlayer(sceneData.requiredPermissions != null && sceneData.requiredPermissions.Contains(PERMISSION_MOVE_PLAYER));
@@ -58,19 +53,10 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
         }
     }
 
-    protected override void OnShow()
-    {
-        view.SetActive(true);
-    }
+    protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
-    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView)
-    {
-        SetSceneData(sceneCardView.sceneData);
-    }
+    protected override void OnHide() { view.SetActive(false); }
+    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView) { SetSceneData(sceneCardView.sceneData); }
 
     void OnApplyChanges()
     {

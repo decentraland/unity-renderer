@@ -9,9 +9,6 @@ namespace DCL.SettingsControls
     {
         public event Action<string> OnIndicatorLabelChange;
 
-        protected void RaiseOnIndicatorLabelChange(string newIndicatorLabel)
-        {
-            OnIndicatorLabelChange?.Invoke(newIndicatorLabel);
-        }
+        protected void RaiseOnIndicatorLabelChange(string newIndicatorLabel) { OnIndicatorLabelChange?.Invoke(newIndicatorLabel); }
     }
 }

@@ -19,10 +19,7 @@ public class NotificationHUDView : MonoBehaviour
         return view;
     }
 
-    private void Initialize()
-    {
-        gameObject.name = VIEW_OBJECT_NAME;
-    }
+    private void Initialize() { gameObject.name = VIEW_OBJECT_NAME; }
 
     public void ShowNotification(Notification notification, Notification.Model model = null)
     {
@@ -46,13 +43,7 @@ public class NotificationHUDView : MonoBehaviour
         return notification;
     }
 
-    private void OnNotificationDismissed(Notification notification)
-    {
-        OnNotificationDismissedEvent?.Invoke(notification);
-    }
+    private void OnNotificationDismissed(Notification notification) { OnNotificationDismissedEvent?.Invoke(notification); }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 }

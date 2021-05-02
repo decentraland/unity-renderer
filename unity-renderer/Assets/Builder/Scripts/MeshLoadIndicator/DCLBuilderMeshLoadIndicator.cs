@@ -13,7 +13,7 @@ namespace Builder.MeshLoadIndicator
         private void LateUpdate()
         {
             transform.LookAt(transform.position + builderCamera.transform.rotation * Vector3.forward,
-                        builderCamera.transform.rotation * Vector3.up);
+                builderCamera.transform.rotation * Vector3.up);
 
             float dist = GetCameraPlaneDistance(builderCamera, transform.position);
             transform.localScale = new Vector3(RELATIVE_SCALE_RATIO * dist, RELATIVE_SCALE_RATIO * dist, RELATIVE_SCALE_RATIO * dist);
@@ -25,9 +25,6 @@ namespace Builder.MeshLoadIndicator
             return plane.GetDistanceToPoint(objectPosition);
         }
 
-        public void SetCamera(Camera camera)
-        {
-            builderCamera = camera;
-        }
+        public void SetCamera(Camera camera) { builderCamera = camera; }
     }
 }

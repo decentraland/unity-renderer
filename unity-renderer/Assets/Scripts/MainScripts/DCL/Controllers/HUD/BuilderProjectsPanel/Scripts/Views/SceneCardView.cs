@@ -13,24 +13,19 @@ internal class SceneCardView : MonoBehaviour
 
     [SerializeField] private Texture2D defaultThumbnail;
     [Space]
-
     [SerializeField] private RawImageFillParent thumbnail;
     [SerializeField] private TextMeshProUGUI sceneName;
     [Space]
-
     [SerializeField] internal GameObject coordsContainer;
     [SerializeField] private TextMeshProUGUI coordsText;
     [Space]
-
     [SerializeField] internal GameObject sizeContainer;
     [SerializeField] private TextMeshProUGUI sizeText;
     [Space]
-
     [SerializeField] internal Button jumpInButton;
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
     [Space]
-
     [SerializeField] internal GameObject roleOwnerGO;
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
@@ -42,9 +37,9 @@ internal class SceneCardView : MonoBehaviour
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(()=> OnJumpInPressed?.Invoke(sceneData));
-        editorButton.onClick.AddListener(()=> OnEditorPressed?.Invoke(sceneData));
-        contextMenuButton.onClick.AddListener(()=> OnContextMenuPressed?.Invoke(sceneData, this));
+        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData));
+        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData));
+        contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
     }
 
     public void Setup(ISceneData sceneData)
@@ -74,10 +69,7 @@ internal class SceneCardView : MonoBehaviour
         searchInfo.SetName(name);
     }
 
-    public void SetCoords(Vector2Int coords)
-    {
-        coordsText.text = $"{coords.x},{coords.y}";
-    }
+    public void SetCoords(Vector2Int coords) { coordsText.text = $"{coords.x},{coords.y}"; }
 
     public void SetSize(Vector2Int size)
     {
@@ -106,10 +98,7 @@ internal class SceneCardView : MonoBehaviour
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
 
-    public void SetThumbnail(Texture2D thumbnailTexture)
-    {
-        thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
-    }
+    public void SetThumbnail(Texture2D thumbnailTexture) { thumbnail.texture = thumbnailTexture ?? defaultThumbnail; }
 
     public void SetDeployed(bool deployed)
     {
@@ -139,8 +128,5 @@ internal class SceneCardView : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
-    }
+    private void OnDestroy() { AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise); }
 }

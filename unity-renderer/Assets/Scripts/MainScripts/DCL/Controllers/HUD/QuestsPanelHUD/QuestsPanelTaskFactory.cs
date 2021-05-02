@@ -16,9 +16,6 @@ namespace DCL.Huds.QuestsPanel
 
         [SerializeField] private Entry[] entries;
 
-        public GameObject GetPrefab(string type)
-        {
-            return entries.FirstOrDefault(x => x.type == type)?.prefab;
-        }
+        public GameObject GetPrefab(string type) { return entries.FirstOrDefault(x => x.type == type)?.prefab; }
     }
 }

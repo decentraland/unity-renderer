@@ -10,15 +10,9 @@ namespace Tests
     {
         public class PooledObjectInstantiator : IPooledObjectInstantiator
         {
-            public GameObject Instantiate(GameObject go)
-            {
-                return GameObject.Instantiate(go);
-            }
+            public GameObject Instantiate(GameObject go) { return GameObject.Instantiate(go); }
 
-            public bool IsValid(GameObject original)
-            {
-                return original != null;
-            }
+            public bool IsValid(GameObject original) { return original != null; }
         }
 
         [Test]
@@ -69,7 +63,6 @@ namespace Tests
             Assert.AreEqual(0, pool.usedObjectsCount, "Alive objects count should be 0");
             Assert.AreEqual(0, pool.unusedObjectsCount, "Inactive objects count should be 0");
         }
-
 
         [Test]
         public void GetPoolableObject()

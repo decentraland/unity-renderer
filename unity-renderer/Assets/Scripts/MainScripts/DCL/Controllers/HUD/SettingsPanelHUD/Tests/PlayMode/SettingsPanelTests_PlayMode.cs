@@ -63,11 +63,12 @@ namespace SettingsPanelTests
             yield return null;
 
             // Assert
-            panelController.Received(1).AddSection(
-                Arg.Any<SettingsButtonEntry>(),
-                Arg.Any<ISettingsSectionView>(),
-                Arg.Any<ISettingsSectionController>(),
-                Arg.Any<SettingsSectionModel>());
+            panelController.Received(1)
+                           .AddSection(
+                               Arg.Any<SettingsButtonEntry>(),
+                               Arg.Any<ISettingsSectionView>(),
+                               Arg.Any<ISettingsSectionController>(),
+                               Arg.Any<SettingsSectionModel>());
 
             panelController.Received(1).OpenSection(0);
             panelController.Received(1).MarkMenuButtonAsSelected(0);

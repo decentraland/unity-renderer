@@ -27,8 +27,5 @@ internal class SortOrderToggleView : MonoBehaviour, IPointerClickHandler
         isDescending = descending;
     }
 
-    void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
-    {
-        Set(!isDescending);
-    }
+    void IPointerClickHandler.OnPointerClick(PointerEventData eventData) { Set(!isDescending); }
 }

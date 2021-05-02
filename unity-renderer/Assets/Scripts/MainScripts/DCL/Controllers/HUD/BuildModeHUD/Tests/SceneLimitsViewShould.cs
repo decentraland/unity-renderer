@@ -9,22 +9,16 @@ namespace Tests.BuildModeHUDViews
         private SceneLimitsView sceneLimitsView;
 
         [SetUp]
-        public void SetUp()
-        {
-            sceneLimitsView = SceneLimitsView.Create();
-        }
+        public void SetUp() { sceneLimitsView = SceneLimitsView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(sceneLimitsView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(sceneLimitsView.gameObject); }
 
         [Test]
         public void SetUpdateCallbackCorrectly()
         {
             // Arrange
-            UnityAction testAction = () => {};
+            UnityAction testAction = () => { };
 
             // Act
             sceneLimitsView.SetUpdateCallback(testAction);

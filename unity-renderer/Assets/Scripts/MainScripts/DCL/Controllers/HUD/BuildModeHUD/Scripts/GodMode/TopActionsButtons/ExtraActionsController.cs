@@ -17,7 +17,7 @@ public interface IExtraActionsController
 public class ExtraActionsController : IExtraActionsController
 {
     public event Action OnControlsClick,
-                        OnHideUIClick, 
+                        OnHideUIClick,
                         OnTutorialClick;
 
     internal IExtraActionsView extraActionsView;
@@ -44,18 +44,9 @@ public class ExtraActionsController : IExtraActionsController
             extraActionsView.SetActive(isActive);
     }
 
-    public void ControlsClicked()
-    {
-        OnControlsClick?.Invoke();
-    }
+    public void ControlsClicked() { OnControlsClick?.Invoke(); }
 
-    public void HideUIClicked()
-    {
-        OnHideUIClick?.Invoke();
-    }
+    public void HideUIClicked() { OnHideUIClick?.Invoke(); }
 
-    public void TutorialClicked()
-    {
-        OnTutorialClick?.Invoke();
-    }
+    public void TutorialClicked() { OnTutorialClick?.Invoke(); }
 }
