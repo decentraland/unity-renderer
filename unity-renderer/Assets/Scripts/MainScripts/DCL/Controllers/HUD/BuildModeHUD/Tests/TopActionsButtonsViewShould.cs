@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
@@ -9,16 +10,10 @@ namespace Tests.BuildModeHUDViews
         private TopActionsButtonsView topActionsButtonsView;
 
         [SetUp]
-        public void SetUp()
-        {
-            topActionsButtonsView = TopActionsButtonsView.Create();
-        }
+        public void SetUp() { topActionsButtonsView = TopActionsButtonsView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(topActionsButtonsView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(topActionsButtonsView.gameObject); }
 
         [Test]
         public void ConfigureExtraActionsCorrectly()
@@ -160,6 +155,95 @@ namespace Tests.BuildModeHUDViews
 
             // Assert
             Assert.IsTrue(logoutClicked, "logoutClicked is false!");
+        }
+
+        [Test]
+        public void SetTranslateActiveGizmosCorrectly()
+        {
+            //Arrange
+            string gizmosActive = BuilderInWorldSettings.TRANSLATE_GIZMO_NAME;
+
+            // Act
+            topActionsButtonsView.SetGizmosActive(gizmosActive);
+
+            // Assert
+            Assert.AreEqual(topActionsButtonsView.translateGizmosBtnImg.color , topActionsButtonsView.selectedBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.rotateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.scaleGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+        }
+
+        [Test]
+        public void SetRotateActiveGizmosCorrectly()
+        {
+            //Arrange
+            string gizmosActive = BuilderInWorldSettings.ROTATE_GIZMO_NAME;
+
+            // Act
+            topActionsButtonsView.SetGizmosActive(gizmosActive);
+
+            // Assert
+            Assert.AreEqual(topActionsButtonsView.translateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.rotateGizmosBtnImg.color , topActionsButtonsView.selectedBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.scaleGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+        }
+
+        [Test]
+        public void SetScaleActiveGizmosCorrectly()
+        {
+            //Arrange
+            string gizmosActive = BuilderInWorldSettings.SCALE_GIZMO_NAME;
+
+            // Act
+            topActionsButtonsView.SetGizmosActive(gizmosActive);
+
+            // Assert
+            Assert.AreEqual(topActionsButtonsView.translateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.rotateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.scaleGizmosBtnImg.color , topActionsButtonsView.selectedBtnImgColor);
+        }
+
+        [Test]
+        public void SetEmptyGizmosCorrectly()
+        {
+            //Arrange
+            string gizmosActive = BuilderInWorldSettings.EMPTY_GIZMO_NAME;
+
+            // Act
+            topActionsButtonsView.SetGizmosActive(gizmosActive);
+
+            // Assert
+            Assert.AreEqual(topActionsButtonsView.translateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.rotateGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+            Assert.AreEqual(topActionsButtonsView.scaleGizmosBtnImg.color , topActionsButtonsView.normalBtnImgColor);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetActionsInteractable(bool isActive)
+        {
+            //Act
+            topActionsButtonsView.SetActionsInteractable(isActive);
+
+            //Assert
+            Assert.AreEqual(isActive, topActionsButtonsView.resetBtn.IsInteractable());
+            Assert.AreEqual(isActive, topActionsButtonsView.duplicateBtn.IsInteractable());
+            Assert.AreEqual(isActive, topActionsButtonsView.deleteBtn.IsInteractable());
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetSnapMode(bool isActive)
+        {
+            //Arrange
+            Color correctColor = isActive ? topActionsButtonsView.selectedBtnImgColor : topActionsButtonsView.normalBtnImgColor;
+
+            //Act
+            topActionsButtonsView.SetSnapActive(isActive);
+
+            //Assert
+            Assert.AreEqual(topActionsButtonsView.snapModeBtnImg.color , correctColor);
         }
     }
 }

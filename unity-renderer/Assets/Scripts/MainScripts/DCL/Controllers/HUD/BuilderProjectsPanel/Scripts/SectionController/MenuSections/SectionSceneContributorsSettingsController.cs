@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 internal class SectionSceneContributorsSettingsController : SectionBase, ISelectSceneListener, ISectionUpdateSceneContributorsRequester
 {
     public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionSceneContributorsSettingsView";
-    
+
     public event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
 
     private readonly SectionSceneContributorsSettingsView view;
@@ -22,9 +22,8 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
         Object.Instantiate(Resources.Load<SectionSceneContributorsSettingsView>(VIEW_PREFAB_PATH)),
         FriendsController.i
     )
-    {
-    }
-    
+    { }
+
     public SectionSceneContributorsSettingsController(SectionSceneContributorsSettingsView view, IFriendsController friendsController)
     {
         this.view = view;
@@ -42,21 +41,12 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
         friendsSearchPromptController.Dispose();
     }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.SetParent(viewContainer);
-    }
+    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
-    protected override void OnShow()
-    {
-        view.SetActive(true);
-    }
+    protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
-    
+    protected override void OnHide() { view.SetActive(false); }
+
     void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
     {
         sceneId = sceneCardView.sceneData.id;
@@ -69,7 +59,7 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
         {
             if (contributorsList.Count > 0)
                 contributorsList.Clear();
-            
+
             view.SetEmptyList(true);
             view.SetContributorsCount(0);
             return;
@@ -81,12 +71,12 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
             AddContributor(newContributors[i]);
             contributorsList.Remove(newContributors[i]);
         }
-        
+
         for (int i = 0; i < contributorsList.Count; i++)
         {
             view.RemoveUser(contributorsList[i]);
         }
-        
+
         contributorsList = newContributors;
 
         friendsSearchPromptController.SetUsersInRolList(contributorsList);
@@ -122,7 +112,7 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
         contributorsUpdatePayload.contributors = contributorsList.ToArray();
         OnRequestUpdateSceneContributors?.Invoke(sceneId, contributorsUpdatePayload);
     }
-    
+
     void OnRemoveUserPressed(string userId)
     {
         if (!contributorsList.Remove(userId))

@@ -8,10 +8,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Detail Object Culling Size", fileName = "DetailObjectCullingSizeControlController")]
     public class DetailObjectCullingSizeControlController : SliderSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.detailObjectCullingLimit;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.detailObjectCullingLimit; }
 
         public override void UpdateSetting(object newValue)
         {

@@ -12,10 +12,11 @@ public interface ITopActionsButtonsController
     event Action OnDuplicateClick;
     event Action OnDeleteClick;
     event Action OnLogOutClick;
+    event Action OnSnapModeClick;
 
     IExtraActionsController extraActionsController { get; }
 
-    void Initialize(ITopActionsButtonsView topActionsButtonsView, ITooltipController tooltipController, IBuildModeConfirmationModalController buildModeConfirmationModalController);
+    void Initialize(ITopActionsButtonsView topActionsButtonsView, ITooltipController tooltipController);
     void Dispose();
     void ChangeModeClicked();
     void ExtraClicked();
@@ -25,12 +26,14 @@ public interface ITopActionsButtonsController
     void ResetClicked();
     void DuplicateClicked();
     void DeleteClicked();
-    void ShowLogoutConfirmation();
-    void HideLogoutConfirmation(BuildModeModalType modalType);
+    void LogoutClicked();
     void ConfirmLogout(BuildModeModalType modalType);
     void TooltipPointerEntered(BaseEventData eventData, string tooltipText);
     void TooltipPointerExited();
     void SetExtraActionsActive(bool isActive);
+    void SetGizmosActive(string gizmos);
+    void SetActionsInteractable(bool isActive);
+    void SetSnapActive(bool isActive);
 }
 
 public class TopActionsButtonsController : ITopActionsButtonsController
@@ -44,23 +47,17 @@ public class TopActionsButtonsController : ITopActionsButtonsController
     public event Action OnDuplicateClick;
     public event Action OnDeleteClick;
     public event Action OnLogOutClick;
+    public event Action OnSnapModeClick;
 
     public IExtraActionsController extraActionsController { get; private set; }
 
-    private const string EXIT_MODAL_TITLE = "Exiting Builder mode";
-    private const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
-    private const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
-    private const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
-
     internal ITopActionsButtonsView topActionsButtonsView;
     internal ITooltipController tooltipController;
-    internal IBuildModeConfirmationModalController buildModeConfirmationModalController;
 
-    public void Initialize(ITopActionsButtonsView topActionsButtonsView, ITooltipController tooltipController, IBuildModeConfirmationModalController buildModeConfirmationModalController)
+    public void Initialize(ITopActionsButtonsView topActionsButtonsView, ITooltipController tooltipController)
     {
         this.topActionsButtonsView = topActionsButtonsView;
         this.tooltipController = tooltipController;
-        this.buildModeConfirmationModalController = buildModeConfirmationModalController;
 
         topActionsButtonsView.OnChangeModeClicked += ChangeModeClicked;
         topActionsButtonsView.OnExtraClicked += ExtraClicked;
@@ -70,7 +67,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnResetClicked += ResetClicked;
         topActionsButtonsView.OnDuplicateClicked += DuplicateClicked;
         topActionsButtonsView.OnDeleteClicked += DeleteClicked;
-        topActionsButtonsView.OnLogOutClicked += ShowLogoutConfirmation;
+        topActionsButtonsView.OnLogOutClicked += LogoutClicked;
         topActionsButtonsView.OnPointerExit += TooltipPointerExited;
         topActionsButtonsView.OnChangeCameraModePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnTranslatePointerEnter += TooltipPointerEntered;
@@ -81,8 +78,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter += TooltipPointerEntered;
-        buildModeConfirmationModalController.OnCancelExit += HideLogoutConfirmation;
-        buildModeConfirmationModalController.OnConfirmExit += ConfirmLogout;
+        topActionsButtonsView.OnSnapModeClicked += SnapModeClicked;
 
         extraActionsController = new ExtraActionsController();
         topActionsButtonsView.ConfigureExtraActions(extraActionsController);
@@ -99,7 +95,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnResetClicked -= ResetClicked;
         topActionsButtonsView.OnDuplicateClicked -= DuplicateClicked;
         topActionsButtonsView.OnDeleteClicked -= DeleteClicked;
-        topActionsButtonsView.OnLogOutClicked -= ShowLogoutConfirmation;
+        topActionsButtonsView.OnLogOutClicked -= LogoutClicked;
         topActionsButtonsView.OnPointerExit -= TooltipPointerExited;
         topActionsButtonsView.OnChangeCameraModePointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnTranslatePointerEnter -= TooltipPointerEntered;
@@ -110,8 +106,6 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter -= TooltipPointerEntered;
-        buildModeConfirmationModalController.OnCancelExit -= HideLogoutConfirmation;
-        buildModeConfirmationModalController.OnConfirmExit -= ConfirmLogout;
     }
 
     public void ChangeModeClicked() { OnChangeModeClick?.Invoke(); }
@@ -130,23 +124,8 @@ public class TopActionsButtonsController : ITopActionsButtonsController
 
     public void DeleteClicked() { OnDeleteClick?.Invoke(); }
 
-    public void HideLogoutConfirmation(BuildModeModalType modalType)
-    {
-        if (modalType != BuildModeModalType.EXIT)
-            return;
-
-        buildModeConfirmationModalController.SetActive(false, BuildModeModalType.EXIT);
-    }
-
-    public void ShowLogoutConfirmation()
-    {
-        buildModeConfirmationModalController.Configure(
-            EXIT_MODAL_TITLE,
-            EXIT_MODAL_SUBTITLE,
-            EXIT_MODAL_CANCEL_BUTTON,
-            EXIT_MODAL_CONFIRM_BUTTON);
-        buildModeConfirmationModalController.SetActive(true, BuildModeModalType.EXIT);
-    }
+    public void LogoutClicked() { OnLogOutClick?.Invoke(); }
+    public void SnapModeClicked() { OnSnapModeClick?.Invoke(); }
 
     public void ConfirmLogout(BuildModeModalType modalType)
     {
@@ -165,4 +144,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
     public void TooltipPointerExited() { tooltipController.HideTooltip(); }
 
     public void SetExtraActionsActive(bool isActive) { extraActionsController.SetActive(isActive); }
+    public void SetGizmosActive(string gizmos) { topActionsButtonsView.SetGizmosActive(gizmos); }
+    public void SetActionsInteractable(bool isActive) { topActionsButtonsView.SetActionsInteractable(isActive); }
+    public void SetSnapActive(bool isActive) { topActionsButtonsView.SetSnapActive(isActive); }
 }

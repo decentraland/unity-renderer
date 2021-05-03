@@ -139,7 +139,7 @@ internal class ScenesViewController : IScenesViewController
         }
 
         selectedScene = sceneCardView;
-        
+
         if (sceneCardView != null)
         {
             OnSceneSelected?.Invoke(sceneCardView);
@@ -161,13 +161,13 @@ internal class ScenesViewController : IScenesViewController
         OnProjectScenesSet += listener.OnSetScenes;
         listener.OnSetScenes(projectScenes);
     }
-    
+
     void IScenesViewController.AddListener(ISelectSceneListener listener)
     {
         OnSceneSelected += listener.OnSelectScene;
         listener.OnSelectScene(selectedScene);
     }
-    
+
     void IScenesViewController.RemoveListener(IDeployedSceneListener listener)
     {
         OnDeployedSceneAdded -= listener.OnSceneAdded;
@@ -289,16 +289,16 @@ internal class ScenesViewController : IScenesViewController
     {
         SceneCardView sceneCardView = Object.Instantiate(sceneCardViewPrefab);
         ISceneCardView view = sceneCardView;
-        
+
         view.SetActive(false);
         view.ConfigureDefaultParent(defaultParent);
         view.SetToDefaultParent();
-        
+
         view.OnEditorPressed += OnEditorPressed;
         view.OnContextMenuPressed += OnContextMenuPressed;
         view.OnJumpInPressed += OnJumpInPressed;
         view.OnSettingsPressed += OnSceneSettingsPressed;
-        
+
         return view;
     }
 
@@ -309,10 +309,10 @@ internal class ScenesViewController : IScenesViewController
         sceneCardView.OnContextMenuPressed -= OnContextMenuPressed;
         sceneCardView.OnJumpInPressed -= OnJumpInPressed;
         sceneCardView.OnSettingsPressed -= OnSceneSettingsPressed;
-        
+
         sceneCardView.Dispose();
     }
-    
+
     private void OnSceneSettingsPressed(ISceneData sceneData)
     {
         OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}");

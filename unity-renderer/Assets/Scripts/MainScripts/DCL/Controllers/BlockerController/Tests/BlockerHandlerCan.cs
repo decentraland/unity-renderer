@@ -45,10 +45,7 @@ public class BlockerHandlerCan
     }
 
     [TearDown]
-    protected void TearDown()
-    {
-        Object.Destroy(blockersParent);
-    }
+    protected void TearDown() { Object.Destroy(blockersParent); }
 
     [Test]
     public void ShowBlocker()

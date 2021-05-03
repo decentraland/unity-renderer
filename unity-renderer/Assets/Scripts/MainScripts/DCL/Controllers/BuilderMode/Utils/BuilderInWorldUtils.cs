@@ -173,6 +173,29 @@ public static partial class BuilderInWorldUtils
         return viewPortBounds.Contains(camera.WorldToViewportPoint(point));
     }
 
+    public static bool IsBoundInsideCamera(Bounds bound)
+    {
+        Vector3[] points = { bound.max, bound.center, bound.min };
+        return IsPointInsideCamera(points);
+    }
+
+    public static bool IsPointInsideCamera(Vector3[] points)
+    {
+        foreach (Vector3 point in points)
+        {
+            if (IsPointInsideCamera(point))
+                return true;
+        }
+        return false;
+    }
+
+    public static bool IsPointInsideCamera(Vector3 point)
+    {
+        Vector3 topRight = new Vector3(Screen.width, Screen.height, 0);
+        var viewPortBounds = GetViewportBounds(Camera.main, Vector3.zero, topRight);
+        return viewPortBounds.Contains(Camera.main.WorldToViewportPoint(point));
+    }
+
     public static void CopyGameObjectStatus(GameObject gameObjectToCopy, GameObject gameObjectToReceive, bool copyParent = true, bool localRotation = true)
     {
         if (copyParent)
@@ -307,9 +330,9 @@ public static partial class BuilderInWorldUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static void MakeGetCall(string url, Action<string> functionToCall)
+    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall)
     {
-        Environment.i.platform.webRequest.Get(
+        return Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (webRequestResult) =>
             {

@@ -7,8 +7,5 @@ public class MinimapZoom : MonoBehaviour, IScrollHandler
 
     public event System.Action<float> OnZoom;
 
-    public void OnScroll(PointerEventData eventData)
-    {
-        OnZoom?.Invoke(eventData.scrollDelta.y * sensitivity * Time.deltaTime);
-    }
+    public void OnScroll(PointerEventData eventData) { OnZoom?.Invoke(eventData.scrollDelta.y * sensitivity * Time.deltaTime); }
 }

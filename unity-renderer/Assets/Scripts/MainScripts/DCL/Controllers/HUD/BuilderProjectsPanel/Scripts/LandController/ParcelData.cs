@@ -1,6 +1,6 @@
 using System;
 
-[Serializable]    
+[Serializable]
 internal class ParcelData
 {
     public int x;

@@ -15,10 +15,7 @@ namespace Tests
         [VisualTest]
         [NUnit.Framework.Explicit]
         [Category("Explicit")]
-        public IEnumerator AvatarShapeVisualTest_Generate()
-        {
-            yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest1());
-        }
+        public IEnumerator AvatarShapeVisualTest_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest1()); }
 
         [UnityTest]
         [VisualTest]
@@ -43,15 +40,11 @@ namespace Tests
             yield return VisualTestHelpers.TakeSnapshot();
         }
 
-
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
         [Category("Explicit")]
-        public IEnumerator AvatarShapeVisualTest2_Generate()
-        {
-            yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest2());
-        }
+        public IEnumerator AvatarShapeVisualTest2_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest2()); }
 
         [UnityTest]
         [VisualTest]

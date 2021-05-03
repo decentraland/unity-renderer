@@ -10,11 +10,7 @@ public class BuilderInWorldEntityAction
     public object oldValue;
     public object newValue;
 
-
-    public BuilderInWorldEntityAction(string entityId)
-    {
-        this.entityId = entityId;
-    }
+    public BuilderInWorldEntityAction(string entityId) { this.entityId = entityId; }
 
     public BuilderInWorldEntityAction(string entityId, object oldValue, object newValue)
     {
@@ -29,10 +25,7 @@ public class BuilderInWorldEntityAction
         this.newValue = newValue;
     }
 
-    public BuilderInWorldEntityAction(IDCLEntity entity)
-    {
-        this.entityId = entity.entityId;
-    }
+    public BuilderInWorldEntityAction(IDCLEntity entity) { this.entityId = entity.entityId; }
 
     public BuilderInWorldEntityAction(IDCLEntity entity, object oldValue, object newValue)
     {

@@ -38,7 +38,7 @@ namespace DCL.Components
 
         void Update()
         {
-            if(inputDetectionPausedFrames > 0)
+            if (inputDetectionPausedFrames > 0)
             {
                 inputDetectionPausedFrames--;
 

@@ -6,15 +6,9 @@ namespace DCL
 
         private readonly AssetPromise_Texture promise;
 
-        public PromiseLike_Texture(AssetPromise_Texture promiseTexture)
-        {
-            promise = promiseTexture;
-        }
+        public PromiseLike_Texture(AssetPromise_Texture promiseTexture) { promise = promiseTexture; }
 
-        public void Forget()
-        {
-            AssetPromiseKeeper_Texture.i.Forget(promise);
-        }
+        public void Forget() { AssetPromiseKeeper_Texture.i.Forget(promise); }
     }
 
     public class PromiseLike_Gif : IPromiseLike_TextureAsset
@@ -23,14 +17,8 @@ namespace DCL
 
         private readonly AssetPromise_Gif promise;
 
-        public PromiseLike_Gif(AssetPromise_Gif promiseGif)
-        {
-            promise = promiseGif;
-        }
+        public PromiseLike_Gif(AssetPromise_Gif promiseGif) { promise = promiseGif; }
 
-        public void Forget()
-        {
-            AssetPromiseKeeper_Gif.i.Forget(promise);
-        }
+        public void Forget() { AssetPromiseKeeper_Gif.i.Forget(promise); }
     }
 }

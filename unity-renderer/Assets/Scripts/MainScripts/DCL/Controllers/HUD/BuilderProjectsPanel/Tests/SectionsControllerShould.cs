@@ -16,10 +16,7 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            controller.Dispose();
-        }
+        public void TearDown() { controller.Dispose(); }
 
         [Test]
         public void OpenSection()
@@ -47,15 +44,9 @@ namespace Tests
             SectionBase openSection = null;
             SectionBase hiddenSection = null;
 
-            void OnSectionOpen(SectionBase section)
-            {
-                openSection = section;
-            }
+            void OnSectionOpen(SectionBase section) { openSection = section; }
 
-            void OnSectionHide(SectionBase section)
-            {
-                hiddenSection = section;
-            }
+            void OnSectionHide(SectionBase section) { hiddenSection = section; }
 
             controller.OnSectionShow += OnSectionOpen;
             controller.OnSectionHide += OnSectionHide;
@@ -108,21 +99,13 @@ namespace Tests
 
         class Section_Mock : SectionBase
         {
-            public override void SetViewContainer(Transform viewContainer)
-            {
-            }
+            public override void SetViewContainer(Transform viewContainer) { }
 
-            public override void Dispose()
-            {
-            }
+            public override void Dispose() { }
 
-            protected override void OnShow()
-            {
-            }
+            protected override void OnShow() { }
 
-            protected override void OnHide()
-            {
-            }
+            protected override void OnHide() { }
         }
     }
 }

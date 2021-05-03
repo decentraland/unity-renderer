@@ -7,10 +7,7 @@ namespace DCL
     {
         public class Directory : IDirectory
         {
-            public void CreateDirectory(string path)
-            {
-                System.IO.Directory.CreateDirectory(path);
-            }
+            public void CreateDirectory(string path) { System.IO.Directory.CreateDirectory(path); }
 
             public void InitializeDirectory(string path, bool deleteIfExists)
             {
@@ -44,10 +41,7 @@ namespace DCL
                 }
             }
 
-            public bool Exists(string path)
-            {
-                return System.IO.Directory.Exists(path);
-            }
+            public bool Exists(string path) { return System.IO.Directory.Exists(path); }
         }
     }
 }

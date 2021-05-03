@@ -12,13 +12,7 @@ public class AudioEvent_WithPitchIncrement : AudioEvent
         OnPlay += OnEventPlay;
     }
 
-    public void ResetPitch()
-    {
-        SetPitch(initialPitch);
-    }
+    public void ResetPitch() { SetPitch(initialPitch); }
 
-    void OnEventPlay()
-    {
-        SetPitch(pitch + pitchIncrement);
-    }
+    void OnEventPlay() { SetPitch(pitch + pitchIncrement); }
 }

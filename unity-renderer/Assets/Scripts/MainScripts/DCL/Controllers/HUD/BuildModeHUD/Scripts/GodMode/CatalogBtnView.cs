@@ -53,18 +53,9 @@ public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
         BuilderInWorldUtils.RemoveEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
-    public void OnPointerClick(DCLAction_Trigger action)
-    {
-        OnCatalogButtonClick?.Invoke();
-    }
+    public void OnPointerClick(DCLAction_Trigger action) { OnCatalogButtonClick?.Invoke(); }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnShowTooltip?.Invoke(eventData, tooltipText);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
-    public void OnPointerExit()
-    {
-        OnHideTooltip?.Invoke();
-    }
+    public void OnPointerExit() { OnHideTooltip?.Invoke(); }
 }

@@ -35,7 +35,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     const int THMBL_MARKETPLACE_WIDTH = 196;
     const int THMBL_MARKETPLACE_HEIGHT = 143;
     const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
-    
+
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
     public event Action<ISceneData> OnSettingsPressed;
@@ -43,25 +43,20 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     [SerializeField] private Texture2D defaultThumbnail;
     [Space]
-
     [SerializeField] private RawImageFillParent thumbnail;
     [SerializeField] private TextMeshProUGUI sceneName;
     [Space]
-
     [SerializeField] internal GameObject coordsContainer;
     [SerializeField] private TextMeshProUGUI coordsText;
     [Space]
-
     [SerializeField] internal GameObject sizeContainer;
     [SerializeField] private TextMeshProUGUI sizeText;
     [Space]
-
     [SerializeField] internal Button jumpInButton;
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button settingsButton;
     [Space]
-
     [SerializeField] internal GameObject roleOwnerGO;
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
@@ -69,28 +64,28 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     [SerializeField] internal GameObject editorLockedGO;
     [SerializeField] internal GameObject editorLockedTooltipGO;
-    
+
     [SerializeField] internal Animator loadingAnimator;
-    
+
     private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
 
     ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
     ISceneData ISceneCardView.sceneData => sceneData;
     Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
-    
+
     private ISceneData sceneData;
     private AssetPromise_Texture thumbnailPromise;
     private bool isDestroyed = false;
     private Transform defaultParent;
-    private bool isLoadingThumbnail = false; 
+    private bool isLoadingThumbnail = false;
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(()=> OnJumpInPressed?.Invoke(sceneData.coords));
-        editorButton.onClick.AddListener(()=> OnEditorPressed?.Invoke(sceneData.coords));
-        contextMenuButton.onClick.AddListener(()=> OnContextMenuPressed?.Invoke(sceneData, this));
-        settingsButton.onClick.AddListener(()=> OnSettingsPressed?.Invoke(sceneData));
-        
+        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData.coords));
+        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData.coords));
+        contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
+        settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
+
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
     }
@@ -119,7 +114,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         thisView.SetDeployed(sceneData.isDeployed);
         thisView.SetUserRole(sceneData.isOwner, sceneData.isOperator, sceneData.isContributor);
         thisView.SetEditable(sceneData.isEditable);
-        
+
         thisView.searchInfo.SetId(sceneData.id);
     }
 
@@ -155,7 +150,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         isLoadingThumbnail = true;
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
-        
+
         if (thumbnailPromise != null)
         {
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
@@ -164,13 +159,13 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
-            ((ISceneCardView)this).SetThumbnail((Texture2D) null);
+            ((ISceneCardView)this).SetThumbnail((Texture2D)null);
             return;
         }
 
         thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => ((ISceneCardView)this).SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D)null);
 
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
@@ -228,7 +223,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         defaultParent = parent;
     }
-    
+
     void ISceneCardView.SetEditable(bool isEditable)
     {
         editorButton.gameObject.SetActive(isEditable);

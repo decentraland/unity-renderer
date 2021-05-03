@@ -64,20 +64,17 @@ namespace DCL.ABConverter.Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            ResetCacheAndWorkingFolders();
-        }
+        public void TearDown() { ResetCacheAndWorkingFolders(); }
 
         [Test]
         public void PopulateLowercaseMappingsCorrectly()
         {
             var pairs = new List<ContentServerUtils.MappingPair>();
 
-            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "tEsT1"});
-            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "Test2"});
-            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "tesT3"});
-            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "teSt4"});
+            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "tEsT1" });
+            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "Test2" });
+            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "tesT3" });
+            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "teSt4" });
 
             core.PopulateLowercaseMappings(pairs.ToArray());
 
@@ -236,7 +233,7 @@ namespace DCL.ABConverter.Tests
         {
             List<AssetPath> paths = new List<AssetPath>();
 
-            string[] files = {"file1.png", "file2.png", "file3.png", "file4.png"};
+            string[] files = { "file1.png", "file2.png", "file3.png", "file4.png" };
 
             paths.Add(new AssetPath(basePath, hash1, files[0]));
             paths.Add(new AssetPath(basePath, hash2, files[1]));
@@ -277,7 +274,7 @@ namespace DCL.ABConverter.Tests
         {
             List<AssetPath> paths = new List<AssetPath>();
 
-            string[] files = {"file1.bin", "file2.bin", "file3.bin", "file4.bin"};
+            string[] files = { "file1.bin", "file2.bin", "file3.bin", "file4.bin" };
 
             paths.Add(new AssetPath(basePath, hash1, files[0]));
             paths.Add(new AssetPath(basePath, hash2, files[1]));
@@ -304,7 +301,6 @@ namespace DCL.ABConverter.Tests
             Assert.IsFalse(env.file.Exists(paths[3].finalMetaPath));
         }
 
-
         [Test]
         public void DownloadAssetCorrectly()
         {
@@ -326,9 +322,9 @@ namespace DCL.ABConverter.Tests
         {
             ContentServerUtils.MappingPair[] input =
             {
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
-                new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf" },
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin" },
+                new ContentServerUtils.MappingPair { file = "Textures/Test.png", hash = "Test.png" }
             };
 
             core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
@@ -366,9 +362,9 @@ namespace DCL.ABConverter.Tests
         {
             ContentServerUtils.MappingPair[] input =
             {
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
-                new ContentServerUtils.MappingPair {file = "Textures/Test.png", hash = "Test.png"}
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf" },
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin" },
+                new ContentServerUtils.MappingPair { file = "Textures/Test.png", hash = "Test.png" }
             };
 
             core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
@@ -397,8 +393,8 @@ namespace DCL.ABConverter.Tests
         {
             ContentServerUtils.MappingPair[] input =
             {
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf"},
-                new ContentServerUtils.MappingPair {file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin"},
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.gltf", hash = "SimpleCubeWithSharedNormal.gltf" },
+                new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin" },
             };
 
             core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
@@ -414,7 +410,6 @@ namespace DCL.ABConverter.Tests
             LogAssert.Expect(LogType.Error, new Regex(@"^.*?Buffer file not found"));
             LogAssert.Expect(LogType.Error, new Regex(@"^.*?Buffer file not found"));
         }
-
 
         void ResetCacheAndWorkingFolders()
         {

@@ -42,7 +42,7 @@ public class AutoQualitySettingsComponent : MonoBehaviour
 
     private void OnDestroy()
     {
-        if(autoQualityEnabled != null)
+        if (autoQualityEnabled != null)
             autoQualityEnabled.OnChange -= SetAutoSettings;
         Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
     }

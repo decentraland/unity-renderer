@@ -91,10 +91,7 @@ namespace Tests
             Assert.AreEqual(GetFriendsCount(activeCells[BASECOORD_FIRST_CELL]), 0);
         }
 
-        private void SetupFriendController()
-        {
-            friendsController = new FriendsController_Mock();
-        }
+        private void SetupFriendController() { friendsController = new FriendsController_Mock(); }
 
         private void SetupUserProfileController()
         {
@@ -152,11 +149,13 @@ namespace Tests
 
         private void SimulateHotSceneUpdate()
         {
-            var scenes = new HotScenesController.HotSceneInfo[] {
+            var scenes = new HotScenesController.HotSceneInfo[]
+            {
                 new HotScenesController.HotSceneInfo()
                 {
                     baseCoords = BASECOORD_FIRST_CELL,
-                    realms = new HotScenesController.HotSceneInfo.Realm[]{
+                    realms = new HotScenesController.HotSceneInfo.Realm[]
+                    {
                         new HotScenesController.HotSceneInfo.Realm()
                         {
                             layer = "amber",
@@ -172,14 +171,15 @@ namespace Tests
                             usersMax = 50
                         }
                     },
-                    parcels = new Vector2Int[]{ BASECOORD_FIRST_CELL, BASECOORD_FIRST_CELL + new Vector2Int(0,1)},
+                    parcels = new Vector2Int[] { BASECOORD_FIRST_CELL, BASECOORD_FIRST_CELL + new Vector2Int(0, 1) },
                     usersTotalCount = 12
                 },
 
                 new HotScenesController.HotSceneInfo()
                 {
                     baseCoords = BASECOORD_SECOND_CELL,
-                    realms = new HotScenesController.HotSceneInfo.Realm[]{
+                    realms = new HotScenesController.HotSceneInfo.Realm[]
+                    {
                         new HotScenesController.HotSceneInfo.Realm()
                         {
                             layer = "amber",
@@ -188,14 +188,15 @@ namespace Tests
                             usersMax = 50
                         }
                     },
-                    parcels = new Vector2Int[]{ BASECOORD_SECOND_CELL },
+                    parcels = new Vector2Int[] { BASECOORD_SECOND_CELL },
                     usersTotalCount = 1
                 },
 
                 new HotScenesController.HotSceneInfo()
                 {
                     baseCoords = BASECOORD_TEMPTATION,
-                    realms = new HotScenesController.HotSceneInfo.Realm[]{
+                    realms = new HotScenesController.HotSceneInfo.Realm[]
+                    {
                         new HotScenesController.HotSceneInfo.Realm()
                         {
                             layer = "red",
@@ -204,18 +205,22 @@ namespace Tests
                             usersMax = 50
                         }
                     },
-                    parcels = new Vector2Int[]{ BASECOORD_TEMPTATION,
-                                    BASECOORD_TEMPTATION + new Vector2Int(0,1),
-                                    BASECOORD_TEMPTATION + new Vector2Int(0,2)},
+                    parcels = new Vector2Int[]
+                    {
+                        BASECOORD_TEMPTATION,
+                        BASECOORD_TEMPTATION + new Vector2Int(0, 1),
+                        BASECOORD_TEMPTATION + new Vector2Int(0, 2)
+                    },
                     usersTotalCount = 100
                 }
-             };
+            };
 
             string scenesJson = "[";
             for (int i = 0; i < scenes.Length; i++)
             {
                 scenesJson += JsonUtility.ToJson(scenes[i]);
-                if (i != scenes.Length - 1) scenesJson += ",";
+                if (i != scenes.Length - 1)
+                    scenesJson += ",";
             }
             scenesJson += "]";
 

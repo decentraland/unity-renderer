@@ -4,18 +4,9 @@ using UnityEngine;
 
 public class FocusStateBridge : MonoBehaviour
 {
-    public void Awake()
-    {
-        CommonScriptableObjects.focusState.Set(true);
-    }
+    public void Awake() { CommonScriptableObjects.focusState.Set(true); }
 
-    public void ReportFocusOn()
-    {
-        CommonScriptableObjects.focusState.Set(true);
-    }
+    public void ReportFocusOn() { CommonScriptableObjects.focusState.Set(true); }
 
-    public void ReportFocusOff()
-    {
-        CommonScriptableObjects.focusState.Set(false);
-    }
+    public void ReportFocusOff() { CommonScriptableObjects.focusState.Set(false); }
 }

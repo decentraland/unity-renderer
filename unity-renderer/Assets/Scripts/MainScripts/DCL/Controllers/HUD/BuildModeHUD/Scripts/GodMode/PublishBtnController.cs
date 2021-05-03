@@ -37,10 +37,7 @@ public class PublishBtnController : IPublishBtnController
         publishBtnView.OnHideTooltip -= HideTooltip;
     }
 
-    public void Click()
-    {
-        OnClick?.Invoke();
-    }
+    public void Click() { OnClick?.Invoke(); }
 
     public void ShowTooltip(BaseEventData eventData, string tooltipText)
     {
@@ -48,13 +45,7 @@ public class PublishBtnController : IPublishBtnController
         tooltipController.SetTooltipText(tooltipText);
     }
 
-    public void HideTooltip()
-    {
-        tooltipController.HideTooltip();
-    }
+    public void HideTooltip() { tooltipController.HideTooltip(); }
 
-    public void SetInteractable(bool isInteractable)
-    {
-        publishBtnView.SetInteractable(isInteractable);
-    }
+    public void SetInteractable(bool isInteractable) { publishBtnView.SetInteractable(isInteractable); }
 }

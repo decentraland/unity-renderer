@@ -33,13 +33,12 @@ public class WearableItem : Item
     public string description;
     public int issuedId;
 
-
     private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
-
 
     public Representation GetRepresentation(string bodyShapeType)
     {
-        if (representations == null) return null;
+        if (representations == null)
+            return null;
 
         for (int i = 0; i < representations.Length; i++)
         {
@@ -58,7 +57,8 @@ public class WearableItem : Item
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        if (representation == null) return null;
+        if (representation == null)
+            return null;
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
@@ -81,7 +81,8 @@ public class WearableItem : Item
 
     public bool SupportsBodyShape(string bodyShapeType)
     {
-        if (representations == null) return false;
+        if (representations == null)
+            return false;
 
         for (int i = 0; i < representations.Length; i++)
         {
@@ -114,10 +115,7 @@ public class WearableItem : Item
         return representation.overrideHides;
     }
 
-    public bool IsCollectible()
-    {
-        return !string.IsNullOrEmpty(rarity);
-    }
+    public bool IsCollectible() { return !string.IsNullOrEmpty(rarity); }
 
     public string GetName(string langCode = "en")
     {
@@ -147,10 +145,7 @@ public class WearableItem : Item
         return int.MaxValue;
     }
 
-    public string ComposeThumbnailUrl()
-    {
-        return baseUrl + thumbnail;
-    }
+    public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
 
     public static HashSet<string> CompoundHidesList(string bodyShapeId, List<WearableItem> wearables)
     {

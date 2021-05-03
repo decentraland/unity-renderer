@@ -65,17 +65,19 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
             userId = users[2]
         });
 
-        MinimapMetadata.GetMetadata().AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-        {
-            userId = users[0],
-            worldPosition = Vector3.zero
-        });
+        MinimapMetadata.GetMetadata()
+                       .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
+                       {
+                           userId = users[0],
+                           worldPosition = Vector3.zero
+                       });
 
-        MinimapMetadata.GetMetadata().AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-        {
-            userId = users[1],
-            worldPosition = Vector3.zero
-        });
+        MinimapMetadata.GetMetadata()
+                       .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
+                       {
+                           userId = users[1],
+                           worldPosition = Vector3.zero
+                       });
 
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 2, "listView.content.childCount != 2");
         Assert.IsTrue(listView.availableElements.Count == 0, "listView.availableElements.Count != 0");
@@ -89,19 +91,17 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(listView.availableElements.Count == 2, "listView.availableElements.Count != 2");
 
 
-        MinimapMetadata.GetMetadata().AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-        {
-            userId = users[2],
-            worldPosition = Vector3.zero
-        });
+        MinimapMetadata.GetMetadata()
+                       .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
+                       {
+                           userId = users[2],
+                           worldPosition = Vector3.zero
+                       });
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
         Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
 
         yield break;
     }
 
-    int GetVisibleChildren(Transform parent)
-    {
-        return parent.GetComponentsInChildren<UsersAroundListHUDListElementView>(false).Length;
-    }
+    int GetVisibleChildren(Transform parent) { return parent.GetComponentsInChildren<UsersAroundListHUDListElementView>(false).Length; }
 }

@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 internal class SectionLandView : MonoBehaviour, IDisposable
 {
-    public event Action OnOpenMarketplaceRequested; 
-    
+    public event Action OnOpenMarketplaceRequested;
+
     [SerializeField] public LandElementView landElementView;
     [SerializeField] public ScrollRect scrollRect;
     [SerializeField] public GameObject contentContainer;
@@ -19,9 +19,9 @@ internal class SectionLandView : MonoBehaviour, IDisposable
 
     private void Awake()
     {
-        buttonNoLandCTA.onClick.AddListener(()=> OnOpenMarketplaceRequested?.Invoke());
+        buttonNoLandCTA.onClick.AddListener(() => OnOpenMarketplaceRequested?.Invoke());
     }
-    
+
     private void OnDestroy()
     {
         isDestroyed = true;
@@ -33,26 +33,17 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void ResetScrollRect()
-    {
-        scrollRect.verticalNormalizedPosition = 1;
-    }
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
 
-    public Transform GetLandElementsContainer()
-    {
-        return landElementView.GetParent();
-    }
+    public Transform GetLandElementsContainer() { return landElementView.GetParent(); }
 
     public LandElementView GetLandElementeBaseView()
     {
         return landElementView;
     }
-    
+
     public void SetEmpty()
     {
         contentContainer.SetActive(false);
@@ -60,7 +51,7 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(false);
     }
-    
+
     public void SetLoading()
     {
         contentContainer.SetActive(false);
@@ -68,7 +59,7 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(true);
     }
-    
+
     public void SetNoSearchResult()
     {
         contentContainer.SetActive(false);
@@ -76,7 +67,7 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(true);
         loadingAnimationContainer.SetActive(false);
     }
-    
+
     public void SetFilled()
     {
         contentContainer.SetActive(true);
@@ -85,7 +76,7 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         loadingAnimationContainer.SetActive(false);
         ResetScrollRect();
     }
-    
+
     public void Dispose()
     {
         if (!isDestroyed)

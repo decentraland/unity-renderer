@@ -10,10 +10,7 @@ public class ChatController_Mock : IChatController
 
     public double initTime => 0;
 
-    public List<ChatMessage> GetEntries()
-    {
-        return entries;
-    }
+    public List<ChatMessage> GetEntries() { return entries; }
 
     public void RaiseAddMessage(ChatMessage chatMessage)
     {

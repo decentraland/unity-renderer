@@ -1,4 +1,5 @@
 using System;
+using DCL.Configuration;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public interface ITopActionsButtonsView
                  OnDuplicateClicked,
                  OnDeleteClicked,
                  OnLogOutClicked,
+                 OnSnapModeClicked,
                  OnPointerExit;
 
     event Action<BaseEventData, string> OnChangeCameraModePointerEnter,
@@ -24,7 +26,8 @@ public interface ITopActionsButtonsView
                                         OnDuplicatePointerEnter,
                                         OnDeletePointerEnter,
                                         OnMoreActionsPointerEnter,
-                                        OnLogoutPointerEnter;
+                                        OnLogoutPointerEnter,
+                                        OnSnapModePointerEnter;
 
     void ConfigureExtraActions(IExtraActionsController extraActionsController);
     void OnChangeModeClick(DCLAction_Trigger action);
@@ -36,6 +39,9 @@ public interface ITopActionsButtonsView
     void OnRotateClick(DCLAction_Trigger action);
     void OnScaleClick(DCLAction_Trigger action);
     void OnTranslateClick(DCLAction_Trigger action);
+    void SetGizmosActive(string gizmos);
+    void SetActionsInteractable(bool isActive);
+    void SetSnapActive(bool isActive);
 }
 
 public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
@@ -49,6 +55,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
                         OnDuplicateClicked,
                         OnDeleteClicked,
                         OnLogOutClicked,
+                        OnSnapModeClicked,
                         OnPointerExit;
 
     public event Action<BaseEventData, string> OnChangeCameraModePointerEnter,
@@ -59,7 +66,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
                                                OnDuplicatePointerEnter,
                                                OnDeletePointerEnter,
                                                OnMoreActionsPointerEnter,
-                                               OnLogoutPointerEnter;
+                                               OnLogoutPointerEnter,
+                                               OnSnapModePointerEnter;
 
     [Header("Buttons")]
     [SerializeField] internal Button changeModeBtn;
@@ -71,6 +79,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal Button duplicateBtn;
     [SerializeField] internal Button deleteBtn;
     [SerializeField] internal Button logOutBtn;
+    [SerializeField] internal Button snapModeBtn;
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleChangeCameraInputAction;
@@ -91,6 +100,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal EventTrigger deleteEventTrigger;
     [SerializeField] internal EventTrigger moreActionsEventTrigger;
     [SerializeField] internal EventTrigger logoutEventTrigger;
+    [SerializeField] internal EventTrigger snapModeEventTrigger;
 
     [Header("Tooltip Texts")]
     [SerializeField] internal string changeCameraModeTooltipText = "Change Camera (V)";
@@ -102,9 +112,20 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal string deleteTooltipText = "Delete (Del) or (Backspace)";
     [SerializeField] internal string moreActionsTooltipText = "Extra Actions";
     [SerializeField] internal string logoutTooltipText = "Exit from edition";
+    [SerializeField] internal string snapModeTooltipText = "Change snap (O)";
 
     [Header("Sub-Views")]
     [SerializeField] internal ExtraActionsView extraActionsView;
+
+    [Header("Images")]
+    [SerializeField] internal Image translateGizmosBtnImg;
+    [SerializeField] internal Image rotateGizmosBtnImg;
+    [SerializeField] internal Image scaleGizmosBtnImg;
+    [SerializeField] internal Image snapModeBtnImg;
+
+    [Header("Colors")]
+    [SerializeField] internal Color normalBtnImgColor;
+    [SerializeField] internal Color selectedBtnImgColor;
 
     private DCLAction_Trigger dummyActionTrigger = new DCLAction_Trigger();
     internal IExtraActionsController extraActionsController;
@@ -130,6 +151,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         deleteBtn.onClick.AddListener(() => OnDeleteClick(dummyActionTrigger));
         logOutBtn.onClick.AddListener(() => OnLogOutClick(dummyActionTrigger));
         extraBtn.onClick.AddListener(() => OnExtraClick(dummyActionTrigger));
+        snapModeBtn.onClick.AddListener(() => OnSnapModeClick(dummyActionTrigger));
 
         BuilderInWorldUtils.ConfigureEventTrigger(
             changeCameraModeEventTrigger,
@@ -221,7 +243,18 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        toggleChangeCameraInputAction.OnTriggered += OnChangeModeClick;
+        BuilderInWorldUtils.ConfigureEventTrigger(
+            snapModeEventTrigger,
+            EventTriggerType.PointerEnter,
+            (eventData) => OnSnapModePointerEnter?.Invoke(eventData, snapModeTooltipText));
+
+        BuilderInWorldUtils.ConfigureEventTrigger(
+            snapModeEventTrigger,
+            EventTriggerType.PointerExit,
+            (eventData) => OnPointerExit?.Invoke());
+
+        //TODO: This should be reactivate when we activate the first person camera
+        //  toggleChangeCameraInputAction.OnTriggered += OnChangeModeClick;
         toggleTranslateInputAction.OnTriggered += OnTranslateClick;
         toggleRotateInputAction.OnTriggered += OnRotateClick;
         toggleScaleInputAction.OnTriggered += OnScaleClick;
@@ -241,6 +274,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         deleteBtn.onClick.RemoveAllListeners();
         logOutBtn.onClick.RemoveAllListeners();
         extraBtn.onClick.RemoveAllListeners();
+        snapModeBtn.onClick.RemoveAllListeners();
 
         BuilderInWorldUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerEnter);
         BuilderInWorldUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerExit);
@@ -260,6 +294,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         BuilderInWorldUtils.RemoveEventTrigger(moreActionsEventTrigger, EventTriggerType.PointerExit);
         BuilderInWorldUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerEnter);
         BuilderInWorldUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerExit);
+        BuilderInWorldUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerEnter);
+        BuilderInWorldUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerExit);
 
         toggleChangeCameraInputAction.OnTriggered -= OnChangeModeClick;
         toggleTranslateInputAction.OnTriggered -= OnTranslateClick;
@@ -279,48 +315,51 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         this.extraActionsController.Initialize(extraActionsView);
     }
 
-    public void OnChangeModeClick(DCLAction_Trigger action)
+    public void OnChangeModeClick(DCLAction_Trigger action) { OnChangeModeClicked?.Invoke(); }
+
+    public void OnExtraClick(DCLAction_Trigger action) { OnExtraClicked?.Invoke(); }
+
+    public void OnTranslateClick(DCLAction_Trigger action) { OnTranslateClicked?.Invoke(); }
+    public void OnSnapModeClick(DCLAction_Trigger action) { OnSnapModeClicked?.Invoke(); }
+
+    public void SetSnapActive(bool isActive) { snapModeBtnImg.color = isActive ? selectedBtnImgColor : normalBtnImgColor; }
+
+    public void SetGizmosActive(string gizmos)
     {
-        OnChangeModeClicked?.Invoke();
+        translateGizmosBtnImg.color = normalBtnImgColor;
+        rotateGizmosBtnImg.color = normalBtnImgColor;
+        scaleGizmosBtnImg.color = normalBtnImgColor;
+
+        switch (gizmos)
+        {
+            case BuilderInWorldSettings.TRANSLATE_GIZMO_NAME:
+                translateGizmosBtnImg.color = selectedBtnImgColor;
+                break;
+            case BuilderInWorldSettings.ROTATE_GIZMO_NAME:
+                rotateGizmosBtnImg.color = selectedBtnImgColor;
+                break;
+            case BuilderInWorldSettings.SCALE_GIZMO_NAME:
+                scaleGizmosBtnImg.color = selectedBtnImgColor;
+                break;
+        }
     }
 
-    public void OnExtraClick(DCLAction_Trigger action)
+    public void SetActionsInteractable(bool isActive)
     {
-        OnExtraClicked?.Invoke();
+        resetBtn.interactable = isActive;
+        duplicateBtn.interactable = isActive;
+        deleteBtn.interactable = isActive;
     }
 
-    public void OnTranslateClick(DCLAction_Trigger action)
-    {
-        OnTranslateClicked?.Invoke();
-    }
+    public void OnRotateClick(DCLAction_Trigger action) { OnRotateClicked?.Invoke(); }
 
-    public void OnRotateClick(DCLAction_Trigger action)
-    {
-        OnRotateClicked?.Invoke();
-    }
+    public void OnScaleClick(DCLAction_Trigger action) { OnScaleClicked?.Invoke(); }
 
-    public void OnScaleClick(DCLAction_Trigger action)
-    {
-        OnScaleClicked?.Invoke();
-    }
+    public void OnResetClick(DCLAction_Trigger action) { OnResetClicked?.Invoke(); }
 
-    public void OnResetClick(DCLAction_Trigger action)
-    {
-        OnResetClicked?.Invoke();
-    }
+    public void OnDuplicateClick(DCLAction_Trigger action) { OnDuplicateClicked?.Invoke(); }
 
-    public void OnDuplicateClick(DCLAction_Trigger action)
-    {
-        OnDuplicateClicked?.Invoke();
-    }
+    public void OnDeleteClick(DCLAction_Trigger action) { OnDeleteClicked?.Invoke(); }
 
-    public void OnDeleteClick(DCLAction_Trigger action)
-    {
-        OnDeleteClicked?.Invoke();
-    }
-
-    public void OnLogOutClick(DCLAction_Trigger action)
-    {
-        OnLogOutClicked?.Invoke();
-    }
+    public void OnLogOutClick(DCLAction_Trigger action) { OnLogOutClicked?.Invoke(); }
 }

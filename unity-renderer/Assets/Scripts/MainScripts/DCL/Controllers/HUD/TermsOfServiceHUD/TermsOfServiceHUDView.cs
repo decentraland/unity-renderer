@@ -22,7 +22,6 @@ public class TermsOfServiceHUDView : MonoBehaviour
     [SerializeField] internal Button declinedButton;
     [SerializeField] internal Toggle dontShowAgainToggle;
 
-
     [Header("Hyperlinks")]
     [SerializeField] internal Button tosLinkButton;
     [SerializeField] internal Button privacyLinkButton;

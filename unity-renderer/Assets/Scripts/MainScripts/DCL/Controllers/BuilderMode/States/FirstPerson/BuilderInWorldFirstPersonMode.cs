@@ -36,13 +36,15 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         rotationHold.OnStarted += rotationHoldStartDelegate;
         rotationHold.OnFinished += rotationHoldFinishedDelegate;
 
-        builderInputWrapper.OnMouseClick += OnMouseClick;
+        BuilderInWorldInputWrapper.OnMouseClick += OnMouseClick;
     }
 
     private void OnDestroy()
     {
         rotationHold.OnStarted -= rotationHoldStartDelegate;
         rotationHold.OnFinished -= rotationHoldFinishedDelegate;
+
+        BuilderInWorldInputWrapper.OnMouseClick -= OnMouseClick;
     }
 
     void LateUpdate()

@@ -85,10 +85,10 @@ namespace Tests
             sceneInfo.isPOI = true;
             sceneInfo.parcels = new List<Vector2Int>()
             {
-                new Vector2Int() {x = 0, y = 0},
-                new Vector2Int() {x = 0, y = 1},
-                new Vector2Int() {x = 1, y = 0},
-                new Vector2Int() {x = 1, y = 1}
+                new Vector2Int() { x = 0, y = 0 },
+                new Vector2Int() { x = 0, y = 1 },
+                new Vector2Int() { x = 1, y = 0 },
+                new Vector2Int() { x = 1, y = 1 }
             };
 
             MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo);
@@ -98,7 +98,7 @@ namespace Tests
             sceneInfo2.isPOI = false;
             sceneInfo2.parcels = new List<Vector2Int>()
             {
-                new Vector2Int() {x = 5, y = 0},
+                new Vector2Int() { x = 5, y = 0 },
             };
 
             MinimapMetadata.GetMetadata().AddSceneInfo(sceneInfo2);

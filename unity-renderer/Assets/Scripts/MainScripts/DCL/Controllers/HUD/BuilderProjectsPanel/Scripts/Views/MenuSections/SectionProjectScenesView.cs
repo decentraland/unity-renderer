@@ -11,22 +11,16 @@ internal class SectionProjectScenesView : MonoBehaviour, IDisposable
     [SerializeField] public ScrollRect scrollRect;
 
     private bool isDestroyed = false;
-    
+
     public void SetParent(Transform parent)
     {
         transform.SetParent(parent);
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void ResetScrollRect()
-    {
-        scrollRect.verticalNormalizedPosition = 1;
-    }
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
 
     public void Dispose()
     {
@@ -47,8 +41,5 @@ internal class SectionProjectScenesView : MonoBehaviour, IDisposable
         scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
     }
 
-    private void OnScrollValueChanged(Vector2 value)
-    {
-        OnScrollRectValueChanged?.Invoke();
-    }
+    private void OnScrollValueChanged(Vector2 value) { OnScrollRectValueChanged?.Invoke(); }
 }

@@ -41,48 +41,31 @@ namespace VariableTests
             variable.OnChange -= onChange;
         }
     }
+
     public class FloatVariableShould : BaseVariableTest<float, FloatVariable>
     {
         [NUnit.Framework.Test]
-        public void NotCallOnChangedWhenSameValueIsSet()
-        {
-            base.ShouldNotCallOnChangedWhenSameValueIsSet(0, 1);
-        }
+        public void NotCallOnChangedWhenSameValueIsSet() { base.ShouldNotCallOnChangedWhenSameValueIsSet(0, 1); }
 
         [NUnit.Framework.Test]
-        public void VariableValueIsChangedProperly()
-        {
-            base.VariableValueIsChangedProperly(0, 1);
-        }
+        public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(0, 1); }
     }
 
     public class Vector2IntVariableShould : BaseVariableTest<Vector2Int, Vector2IntVariable>
     {
         [NUnit.Framework.Test]
-        public void NotCallOnChangedWhenSameValueIsSet()
-        {
-            base.ShouldNotCallOnChangedWhenSameValueIsSet(new Vector2Int(0, 0), new Vector2Int(1, 1));
-        }
+        public void NotCallOnChangedWhenSameValueIsSet() { base.ShouldNotCallOnChangedWhenSameValueIsSet(new Vector2Int(0, 0), new Vector2Int(1, 1)); }
 
         [NUnit.Framework.Test]
-        public void VariableValueIsChangedProperly()
-        {
-            base.VariableValueIsChangedProperly(new Vector2Int(0, 0), new Vector2Int(1, 1));
-        }
+        public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(new Vector2Int(0, 0), new Vector2Int(1, 1)); }
     }
 
     public class Vector3VariableShould : BaseVariableTest<Vector3, Vector3Variable>
     {
         [NUnit.Framework.Test]
-        public void NotCallOnChangedWhenSameValueIsSet()
-        {
-            base.ShouldNotCallOnChangedWhenSameValueIsSet(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
-        }
+        public void NotCallOnChangedWhenSameValueIsSet() { base.ShouldNotCallOnChangedWhenSameValueIsSet(new Vector3(0, 0, 0), new Vector3(1, 1, 1)); }
 
         [NUnit.Framework.Test]
-        public void VariableValueIsChangedProperly()
-        {
-            base.VariableValueIsChangedProperly(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
-        }
+        public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(new Vector3(0, 0, 0), new Vector3(1, 1, 1)); }
     }
 }

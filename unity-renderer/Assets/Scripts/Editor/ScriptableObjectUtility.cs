@@ -36,9 +36,6 @@ namespace DCL.Helpers
         }
 
         [MenuItem("Assets/Create/Decentraland/DCLComponentFactory")]
-        public static void CreateAsset()
-        {
-            ScriptableObjectUtility.CreateAsset<PoolableComponentFactory>();
-        }
+        public static void CreateAsset() { ScriptableObjectUtility.CreateAsset<PoolableComponentFactory>(); }
     }
 }

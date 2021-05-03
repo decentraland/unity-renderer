@@ -21,10 +21,7 @@ namespace DCL
             Physics.autoSyncTransforms = false;
         }
 
-        public void MarkDirty()
-        {
-            isDirty = true;
-        }
+        public void MarkDirty() { isDirty = true; }
 
         public void Sync()
         {

@@ -46,7 +46,6 @@ namespace AvatarShape_Tests
             return controllers.ToDictionary(x => x.Key, x => new WearableController_Mock(x.Value));
         }
 
-
         public static Dictionary<string, WearableController> GetWearableControllers(AvatarRenderer renderer)
         {
             var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();
@@ -73,7 +72,8 @@ namespace AvatarShape_Tests
         public static BodyShapeController_Mock GetBodyShapeController(AvatarRenderer renderer)
         {
             var bodyShapeController = GetBodyShape(renderer);
-            if (bodyShapeController == null) return null;
+            if (bodyShapeController == null)
+                return null;
 
             return new BodyShapeController_Mock(bodyShapeController);
         }
@@ -89,20 +89,14 @@ namespace AvatarShape_Tests
             return toReturn;
         }
 
-        protected override void OnDestroy()
-        {
-        } //Override OnDestroy to prevent mock renderer from resetting the Avatar
+        protected override void OnDestroy() { } //Override OnDestroy to prevent mock renderer from resetting the Avatar
     }
 
     class WearableController_Mock : WearableController
     {
-        public WearableController_Mock(WearableItem wearableItem) : base(wearableItem)
-        {
-        }
+        public WearableController_Mock(WearableItem wearableItem) : base(wearableItem) { }
 
-        public WearableController_Mock(WearableController original) : base(original)
-        {
-        }
+        public WearableController_Mock(WearableController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;
         public GameObject myAssetContainer => assetContainer;
@@ -111,13 +105,9 @@ namespace AvatarShape_Tests
 
     class BodyShapeController_Mock : BodyShapeController
     {
-        public BodyShapeController_Mock(WearableItem original) : base(original)
-        {
-        }
+        public BodyShapeController_Mock(WearableItem original) : base(original) { }
 
-        public BodyShapeController_Mock(BodyShapeController original) : base(original)
-        {
-        }
+        public BodyShapeController_Mock(BodyShapeController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;
         public GameObject myAssetContainer => this.assetContainer;

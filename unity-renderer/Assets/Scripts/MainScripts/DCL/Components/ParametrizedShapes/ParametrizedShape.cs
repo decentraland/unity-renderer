@@ -73,7 +73,7 @@ namespace DCL.Components
 
             MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshRootGameObject.AddComponent<MeshRenderer>();
-            entity.meshesInfo.renderers = new Renderer[] {meshRenderer};
+            entity.meshesInfo.renderers = new Renderer[] { meshRenderer };
             entity.meshesInfo.currentShape = this;
 
             meshFilter.sharedMesh = currentMesh;
@@ -103,7 +103,8 @@ namespace DCL.Components
 
         void OnShapeDetached(IDCLEntity entity)
         {
-            if (entity == null || entity.meshRootGameObject == null) return;
+            if (entity == null || entity.meshRootGameObject == null)
+                return;
 
             if (attachedEntities.Count == 0)
             {
@@ -160,24 +161,16 @@ namespace DCL.Components
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+                return;
 
             base.AttachTo(entity);
         }
 
-        public override bool IsVisible()
-        {
-            return cachedModel.visible;
-        }
+        public override bool IsVisible() { return cachedModel.visible; }
 
-        public override bool HasCollisions()
-        {
-            return cachedModel.withCollisions;
-        }
+        public override bool HasCollisions() { return cachedModel.withCollisions; }
 
-        protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel)
-        {
-            return true;
-        }
+        protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel) { return true; }
     }
 }

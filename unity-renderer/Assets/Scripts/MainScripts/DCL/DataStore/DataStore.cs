@@ -1,8 +1,14 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
 {
+    public enum AppMode
+    {
+        DEFAULT,
+        BUILDER_IN_WORLD_EDITION
+    }
+
     public class DataStore
     {
         private static DataStore instance = new DataStore();
@@ -20,6 +26,7 @@ namespace DCL
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly DataStore_Player player = new DataStore_Player();
+        public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
 
         public class BuilderInWorld
         {

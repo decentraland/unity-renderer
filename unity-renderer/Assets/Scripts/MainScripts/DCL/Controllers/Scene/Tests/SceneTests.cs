@@ -33,7 +33,7 @@ namespace Tests
 
             string sceneGameObjectNamePrefix = "Global Scene - ";
             string sceneId = "Test Global Scene";
-            sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() {id = sceneId}));
+            sceneController.CreateGlobalScene(JsonUtility.ToJson(new CreateGlobalSceneMessage() { id = sceneId }));
 
             GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
@@ -246,8 +246,8 @@ namespace Tests
 
             //Not really elegant, but does the trick
             var jsonScenes = JsonConvert
-                .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
-                .Select(x => JsonUtility.ToJson(x));
+                             .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
+                             .Select(x => JsonUtility.ToJson(x));
 
             Assert.AreEqual(Environment.i.world.state.loadedScenes.Count, 1);
 

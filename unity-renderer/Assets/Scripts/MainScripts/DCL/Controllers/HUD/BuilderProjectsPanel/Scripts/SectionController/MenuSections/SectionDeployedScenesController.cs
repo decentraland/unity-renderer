@@ -7,9 +7,9 @@ using Object = UnityEngine.Object;
 internal class SectionDeployedScenesController : SectionBase, IDeployedSceneListener, ISectionHideContextMenuRequester
 {
     public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionDeployedScenesView";
-    
+
     public event Action OnRequestContextMenuHide;
-    
+
     public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
     private readonly SectionDeployedScenesView view;
@@ -17,12 +17,11 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
     private readonly ISectionSearchHandler sceneSearchHandler = new SectionSearchHandler();
     private Dictionary<string, ISceneCardView> scenesViews;
 
-    public SectionDeployedScenesController(): this(
+    public SectionDeployedScenesController() : this(
         Object.Instantiate(Resources.Load<SectionDeployedScenesView>(VIEW_PREFAB_PATH))
     )
-    {
-    }
-    
+    { }
+
     public SectionDeployedScenesController(SectionDeployedScenesView view)
     {
         this.view = view;
@@ -31,10 +30,7 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
         sceneSearchHandler.OnResult += OnSearchResult;
     }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.SetParent(viewContainer);
-    }
+    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
     public override void Dispose()
     {
@@ -42,15 +38,9 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
         view.Dispose();
     }
 
-    protected override void OnShow()
-    {
-        view.SetActive(true);
-    }
+    protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
+    protected override void OnHide() { view.SetActive(false); }
 
     void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
     {
@@ -88,7 +78,7 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
         {
             if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView cardView))
                 continue;
-            
+
             cardView.SetActive(true);
             cardView.SetSiblingIndex(i);
         }
@@ -102,7 +92,7 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
             else
             {
                 view.SetEmpty();
-            }            
+            }
         }
         else if (searchInfoScenes.Count == 0)
         {

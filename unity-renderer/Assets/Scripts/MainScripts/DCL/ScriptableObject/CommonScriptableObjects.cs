@@ -14,7 +14,21 @@ public static class NotificationScriptableObjects
 
 public static class AudioScriptableObjects
 {
-    // UI events
+    // Builder
+
+    private static AudioEvent builderEnterEvent;
+    public static AudioEvent builderEnter => CommonScriptableObjects.GetOrLoad(ref builderEnterEvent, "ScriptableObjects/AudioEvents/Builder/BuilderEnter");
+
+    private static AudioEvent builderReadyEvent;
+    public static AudioEvent builderReady => CommonScriptableObjects.GetOrLoad(ref builderReadyEvent, "ScriptableObjects/AudioEvents/Builder/BuilderReady");
+
+    // Common UI
+
+    private static AudioEvent cameraFadeInEvent;
+    public static AudioEvent cameraFadeIn => CommonScriptableObjects.GetOrLoad(ref cameraFadeInEvent, "ScriptableObjects/AudioEvents/HUDCommon/CameraFadeIn");
+
+    private static AudioEvent cameraFadeOutEvent;
+    public static AudioEvent cameraFadeOut => CommonScriptableObjects.GetOrLoad(ref cameraFadeOutEvent, "ScriptableObjects/AudioEvents/HUDCommon/CameraFadeOut");
 
     private static AudioEvent buttonHoverEvent;
     public static AudioEvent buttonHover => CommonScriptableObjects.GetOrLoad(ref buttonHoverEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonHover");
@@ -25,6 +39,12 @@ public static class AudioScriptableObjects
     private static AudioEvent buttonReleaseEvent;
     public static AudioEvent buttonRelease => CommonScriptableObjects.GetOrLoad(ref buttonReleaseEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonRelease");
 
+    private static AudioEvent cancelEvent;
+    public static AudioEvent cancel => CommonScriptableObjects.GetOrLoad(ref cancelEvent, "ScriptableObjects/AudioEvents/HUDCommon/Cancel");
+
+    private static AudioEvent confirmEvent;
+    public static AudioEvent confirm => CommonScriptableObjects.GetOrLoad(ref confirmEvent, "ScriptableObjects/AudioEvents/HUDCommon/Confirm");
+
     private static AudioEvent dialogOpenEvent;
     public static AudioEvent dialogOpen => CommonScriptableObjects.GetOrLoad(ref dialogOpenEvent, "ScriptableObjects/AudioEvents/HUDCommon/DialogOpen");
 
@@ -33,6 +53,9 @@ public static class AudioScriptableObjects
 
     private static AudioEvent enableEvent;
     public static AudioEvent enable => CommonScriptableObjects.GetOrLoad(ref enableEvent, "ScriptableObjects/AudioEvents/HUDCommon/Enable");
+
+    private static AudioEvent errorEvent;
+    public static AudioEvent error => CommonScriptableObjects.GetOrLoad(ref errorEvent, "ScriptableObjects/AudioEvents/HUDCommon/Error");
 
     private static AudioEvent disableEvent;
     public static AudioEvent disable => CommonScriptableObjects.GetOrLoad(ref disableEvent, "ScriptableObjects/AudioEvents/HUDCommon/Disable");
@@ -72,6 +95,9 @@ public static class AudioScriptableObjects
 
     private static AudioEvent UIShowEvent;
     public static AudioEvent UIShow => CommonScriptableObjects.GetOrLoad(ref UIShowEvent, "ScriptableObjects/AudioEvents/HUDCommon/UIUnhide");
+
+    private static AudioEvent tooltipPopupEvent;
+    public static AudioEvent tooltipPopup => CommonScriptableObjects.GetOrLoad(ref tooltipPopupEvent, "ScriptableObjects/AudioEvents/HUDCommon/TooltipPopup");
 }
 
 public static class CommonScriptableObjects
@@ -127,7 +153,6 @@ public static class CommonScriptableObjects
     public static BooleanVariable focusState => GetOrLoad(ref focusStateValue, "ScriptableObjects/FocusState");
     private static BooleanVariable focusStateValue;
 
-
     private static ReadMessagesDictionary lastReadChatMessagesDictionary;
     public static ReadMessagesDictionary lastReadChatMessages => GetOrLoad(ref lastReadChatMessagesDictionary, "ScriptableObjects/LastReadChatMessages");
 
@@ -151,7 +176,6 @@ public static class CommonScriptableObjects
 
     private static BooleanVariable isFullscreenHUDOpenValue;
     public static BooleanVariable isFullscreenHUDOpen => GetOrLoad(ref isFullscreenHUDOpenValue, "ScriptableObjects/IsAvatarHUDOpen");
-
 
     private static BooleanVariable isTaskbarHUDInitializedValue;
     public static BooleanVariable isTaskbarHUDInitialized => GetOrLoad(ref isTaskbarHUDInitializedValue, "ScriptableObjects/IsTaskbarHUDInitialized");

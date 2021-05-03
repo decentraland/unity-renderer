@@ -14,10 +14,7 @@ namespace DCL
         {
             private static int ASSET_REQUEST_RETRY_COUNT = 5;
 
-            public void GetAsync(string url, System.Action<DownloadHandler> OnCompleted, System.Action<string> OnFail)
-            {
-                EditorCoroutineUtility.StartCoroutine(GetAsyncCoroutine(url, OnCompleted, OnFail), this);
-            }
+            public void GetAsync(string url, System.Action<DownloadHandler> OnCompleted, System.Action<string> OnFail) { EditorCoroutineUtility.StartCoroutine(GetAsyncCoroutine(url, OnCompleted, OnFail), this); }
 
             IEnumerator GetAsyncCoroutine(string url, System.Action<DownloadHandler> OnCompleted, System.Action<string> OnFail)
             {
@@ -54,9 +51,7 @@ namespace DCL
                     {
                         req = UnityWebRequest.Get(url);
                         var op = req.SendWebRequest();
-                        while (op.isDone == false)
-                        {
-                        }
+                        while (op.isDone == false) { }
                     }
                     catch (HttpRequestException e)
                     {

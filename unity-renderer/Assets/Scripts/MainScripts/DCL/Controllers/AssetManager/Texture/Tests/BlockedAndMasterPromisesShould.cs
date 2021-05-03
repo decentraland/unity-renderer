@@ -9,9 +9,9 @@ using UnityEngine.TestTools;
 namespace AssetPromiseKeeper_Texture_Tests
 {
     public class BlockedAndMasterPromisesShould : TestsBase_APK<AssetPromiseKeeper_Texture,
-                                                            AssetPromise_Texture,
-                                                            Asset_Texture,
-                                                            AssetLibrary_Texture>
+        AssetPromise_Texture,
+        Asset_Texture,
+        AssetLibrary_Texture>
     {
         protected AssetPromise_Texture CreatePromise(string promiseURL, int wrapmode = -1, int filterMode = -1)
         {

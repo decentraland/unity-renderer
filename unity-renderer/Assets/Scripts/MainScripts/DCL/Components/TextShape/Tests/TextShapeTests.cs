@@ -137,7 +137,7 @@ namespace Tests
         public IEnumerator OpacityIsProcessedCorrectly(float opacity)
         {
             IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = opacity});
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = opacity });
 
             yield return textShapeComponent.routine;
 
@@ -152,7 +152,7 @@ namespace Tests
         public IEnumerator VisibleTrueIsProcessedCorrectly()
         {
             IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = 0.3f, visible = true});
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = true });
 
             yield return textShapeComponent.routine;
 
@@ -168,7 +168,7 @@ namespace Tests
         public IEnumerator VisibleFalseIsProcessedCorrectly()
         {
             IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model {value = "Hello test", opacity = 0.3f, visible = false});
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, new TextShape.Model { value = "Hello test", opacity = 0.3f, visible = false });
 
             yield return textShapeComponent.routine;
 

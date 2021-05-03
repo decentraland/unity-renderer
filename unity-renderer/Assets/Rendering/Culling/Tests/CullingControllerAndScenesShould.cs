@@ -29,7 +29,6 @@ namespace CullingControllerTests
             Assert.IsTrue(settings.enableObjectCulling);
         }
 
-
         [UnityTest]
         public IEnumerator CullMovingEntities()
         {

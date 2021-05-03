@@ -38,8 +38,5 @@ public class ShaderVariantTracker : IDisposable
         return result;
     }
 
-    public void Dispose()
-    {
-        SRPBatchingHelper.OnMaterialProcess -= OnMaterialProcess;
-    }
+    public void Dispose() { SRPBatchingHelper.OnMaterialProcess -= OnMaterialProcess; }
 }

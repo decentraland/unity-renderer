@@ -80,7 +80,8 @@ public class ProfileHUDController : IHUD
         }
     }
 
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { SetVisibility(current); }
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
+
     public void SetVisibility(bool visible)
     {
         view?.SetVisibility(visible);

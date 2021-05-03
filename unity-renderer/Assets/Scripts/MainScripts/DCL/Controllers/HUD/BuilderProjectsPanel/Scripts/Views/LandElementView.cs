@@ -31,7 +31,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
     [SerializeField] private ShowHideAnimator editorLockedTooltipEstate;
     [SerializeField] private ShowHideAnimator editorLockedTooltipSdkScene;
     [SerializeField] internal Animator loadingAnimator;
-    
+
     private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
 
     public ISearchInfo searchInfo { get; } = new SearchInfo();
@@ -42,7 +42,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
     private string thumbnailUrl;
     private AssetPromise_Texture thumbnailPromise;
     private Vector2Int coords;
-    private bool isLoadingThumbnail = false; 
+    private bool isLoadingThumbnail = false;
 
     private void Awake()
     {
@@ -65,16 +65,13 @@ internal class LandElementView : MonoBehaviour, IDisposable
             thumbnailPromise = null;
         }
     }
-    
+
     private void OnEnable()
     {
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
     public void Setup(LandWithAccess land)
     {
@@ -139,10 +136,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
         return transform.parent;
     }
 
-    public void SetParent(Transform parent)
-    {
-        transform.SetParent(parent);
-    }
+    public void SetParent(Transform parent) { transform.SetParent(parent); }
 
     public void SetThumbnail(string url)
     {

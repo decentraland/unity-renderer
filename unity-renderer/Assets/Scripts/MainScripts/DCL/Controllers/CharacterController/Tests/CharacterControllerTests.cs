@@ -12,15 +12,9 @@ namespace Tests
     public class CharacterControllerTests : IntegrationTestSuite_Legacy
     {
         [UnityTest]
-        public IEnumerator CharacterTeleportReposition()
-        {
-            yield return InitCharacterPosition(10, 2, 10);
-        }
+        public IEnumerator CharacterTeleportReposition() { yield return InitCharacterPosition(10, 2, 10); }
 
-        public IEnumerator InitCharacterPosition(float x, float y, float z, bool pauseGravity = true)
-        {
-            yield return InitCharacterPosition(new Vector3(x, y, z), pauseGravity);
-        }
+        public IEnumerator InitCharacterPosition(float x, float y, float z, bool pauseGravity = true) { yield return InitCharacterPosition(new Vector3(x, y, z), pauseGravity); }
 
         public IEnumerator InitCharacterPosition(Vector3 position, bool pauseGravity = true)
         {
@@ -216,7 +210,6 @@ namespace Tests
 
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(dist1, dist2, 1f);
         }
-
 
         [UnityTest]
         [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]

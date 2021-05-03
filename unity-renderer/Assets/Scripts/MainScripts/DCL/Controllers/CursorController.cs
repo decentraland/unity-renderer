@@ -9,10 +9,7 @@ public class CursorController : MonoBehaviour
     public Sprite normalCursor;
     public Sprite hoverCursor;
 
-    void Awake()
-    {
-        i = this;
-    }
+    void Awake() { i = this; }
 
     public void SetNormalCursor()
     {

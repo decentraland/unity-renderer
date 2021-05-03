@@ -162,15 +162,9 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         }
     }
 
-    void OnMuteUser(string userId, bool mute)
-    {
-        OnRequestMuteUser?.Invoke(userId, mute);
-    }
+    void OnMuteUser(string userId, bool mute) { OnRequestMuteUser?.Invoke(userId, mute); }
 
-    void OnMuteGlobal(bool mute)
-    {
-        OnRequestMuteGlobal?.Invoke(mute);
-    }
+    void OnMuteGlobal(bool mute) { OnRequestMuteGlobal?.Invoke(mute); }
 
     void OnUserContextMenu(Vector3 position, string userId)
     {
@@ -184,10 +178,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         availableElements.Enqueue(element);
     }
 
-    void OnModifyListCount()
-    {
-        textPlayersTitle.text = string.Format(playersTextPattern, userElementDictionary.Count);
-    }
+    void OnModifyListCount() { textPlayersTitle.text = string.Format(playersTextPattern, userElementDictionary.Count); }
 
     void CheckListEmptyState()
     {
@@ -202,8 +193,5 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         Settings.i.ApplyGeneralSettings(newSettings);
     }
 
-    void OnSettingsChanged(GeneralSettings settings)
-    {
-        voiceChatSpinBox.SetValue((int)settings.voiceChatAllow, false);
-    }
+    void OnSettingsChanged(GeneralSettings settings) { voiceChatSpinBox.SetValue((int)settings.voiceChatAllow, false); }
 }

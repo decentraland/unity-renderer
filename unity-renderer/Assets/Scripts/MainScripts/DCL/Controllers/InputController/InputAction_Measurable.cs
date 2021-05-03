@@ -29,19 +29,6 @@ public class InputAction_Measurable : ScriptableObject
 
 #if UNITY_EDITOR
 
-    private void OnEnable()
-    {
-        Application.quitting -= CleanUp;
-        Application.quitting += CleanUp;
-    }
-
-    private void CleanUp()
-    {
-        Application.quitting -= CleanUp;
-        if (UnityEditor.AssetDatabase.Contains(this)) //It could happen that the SO has been created in runtime
-            Resources.UnloadAsset(this);
-    }
-
     [UnityEditor.CustomEditor(typeof(InputAction_Measurable), true)]
     internal class InputAction_MeasurableEditor : UnityEditor.Editor
     {

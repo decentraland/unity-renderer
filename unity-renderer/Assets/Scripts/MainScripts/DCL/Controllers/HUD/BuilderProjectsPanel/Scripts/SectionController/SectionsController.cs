@@ -60,9 +60,7 @@ internal class SectionsController : ISectionsController
     /// Ctor
     /// </summary>
     /// <param name="sectionsParent">container for the different sections view</param>
-    public SectionsController(Transform sectionsParent) : this(new SectionFactory(), sectionsParent)
-    {
-    }
+    public SectionsController(Transform sectionsParent) : this(new SectionFactory(), sectionsParent) { }
 
     /// <summary>
     /// Ctor
@@ -119,7 +117,7 @@ internal class SectionsController : ISectionsController
     {
         SetIsLoading(true);
     }
-    
+
     public void SetFetchingDataEnd()
     {
         SetIsLoading(false);
@@ -172,41 +170,38 @@ internal class SectionsController : ISectionsController
         loadedSections.Clear();
     }
 
-    private void OnHideContextMenuRequested()
-    {
-        OnRequestContextMenuHide?.Invoke();
-    }
+    private void OnHideContextMenuRequested() { OnRequestContextMenuHide?.Invoke(); }
 
     private void OnUpdateSceneDataRequested(string id, SceneDataUpdatePayload payload)
     {
         OnRequestUpdateSceneData?.Invoke(id, payload);
     }
-    
+
     private void OnUpdateSceneContributorsRequested(string id, SceneContributorsUpdatePayload payload)
     {
         OnRequestUpdateSceneContributors?.Invoke(id, payload);
     }
-    
+
     private void OnUpdateSceneAdminsRequested(string id, SceneAdminsUpdatePayload payload)
     {
         OnRequestUpdateSceneAdmins?.Invoke(id, payload);
     }
-    
+
     private void OnUpdateSceneBannedUsersRequested(string id, SceneBannedUsersUpdatePayload payload)
     {
         OnRequestUpdateSceneBannedUsers?.Invoke(id, payload);
     }
-    
+
     private void OnOpenUrlRequested(string url)
     {
         OnRequestOpenUrl?.Invoke(url);
     }
-    
+
     private void OnGoToCoordsRequested(Vector2Int coords)
     {
         OnRequestGoToCoords?.Invoke(coords);
     }
-    
+
     private void OnEditSceneAtCoordsRequested(Vector2Int coords)
     {
         OnRequestEditSceneAtCoords?.Invoke(coords);
@@ -225,7 +220,7 @@ internal class SectionsController : ISectionsController
         if (sectionBase is ISectionUpdateSceneDataRequester updateSceneDataRequester)
         {
             updateSceneDataRequester.OnRequestUpdateSceneData += OnUpdateSceneDataRequested;
-        }       
+        }
         if (sectionBase is ISectionUpdateSceneContributorsRequester updateSceneContributorsRequester)
         {
             updateSceneContributorsRequester.OnRequestUpdateSceneContributors += OnUpdateSceneContributorsRequested;

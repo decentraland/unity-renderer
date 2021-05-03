@@ -73,17 +73,11 @@ namespace DCL.Helpers
             return scene.CreateEntity(id);
         }
 
-        public static IDCLEntity CreateSceneEntity(ParcelScene scene, string id)
-        {
-            return scene.CreateEntity(id);
-        }
+        public static IDCLEntity CreateSceneEntity(ParcelScene scene, string id) { return scene.CreateEntity(id); }
 
         public static void RemoveSceneEntity(ParcelScene scene, string id) { scene.RemoveEntity(id); }
 
-        public static void RemoveSceneEntity(ParcelScene scene, IDCLEntity entity)
-        {
-            scene.RemoveEntity(entity.entityId);
-        }
+        public static void RemoveSceneEntity(ParcelScene scene, IDCLEntity entity) { scene.RemoveEntity(entity.entityId); }
 
         public static T EntityComponentCreate<T, K>(ParcelScene scene, IDCLEntity entity, K model,
             CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
@@ -137,10 +131,7 @@ namespace DCL.Helpers
             return component.routine;
         }
 
-        public static void SetEntityParent(ParcelScene scene, IDCLEntity child, IDCLEntity parent)
-        {
-            scene.SetEntityParent(child.entityId, parent.entityId);
-        }
+        public static void SetEntityParent(ParcelScene scene, IDCLEntity child, IDCLEntity parent) { scene.SetEntityParent(child.entityId, parent.entityId); }
 
         public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId) { scene.SetEntityParent(childEntityId, parentEntityId); }
 
@@ -226,15 +217,9 @@ namespace DCL.Helpers
             );
         }
 
-        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, DCLTransform.Model model)
-        {
-            SetEntityTransform(scene, entity, model.position, model.rotation, model.scale);
-        }
+        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, DCLTransform.Model model) { SetEntityTransform(scene, entity, model.position, model.rotation, model.scale); }
 
-        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity)
-        {
-            SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
-        }
+        public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity) { SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one); }
 
         public static void SetEntityTransform(ParcelScene scene, IDCLEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
@@ -272,7 +257,7 @@ namespace DCL.Helpers
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
         {
             IDCLEntity entity = null;
-            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() {src = url}, out entity);
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url,

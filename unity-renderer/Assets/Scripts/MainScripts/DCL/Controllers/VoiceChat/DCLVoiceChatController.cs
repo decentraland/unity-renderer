@@ -4,7 +4,7 @@ namespace DCL
 {
     public class DCLVoiceChatController : MonoBehaviour
     {
-        [Header("InputActions")] 
+        [Header("InputActions")]
         public InputAction_Hold voiceChatAction;
         public InputAction_Trigger voiceChatToggleAction;
 
@@ -31,14 +31,8 @@ namespace DCL
             KernelConfig.i.OnChange -= OnKernelConfigChanged;
         }
 
-        void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-        {
-            EnableVoiceChat(current.comms.voiceChatEnabled);
-        }
+        void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableVoiceChat(current.comms.voiceChatEnabled); }
 
-        void EnableVoiceChat(bool enable)
-        {
-            CommonScriptableObjects.voiceChatDisabled.Set(!enable);
-        }
+        void EnableVoiceChat(bool enable) { CommonScriptableObjects.voiceChatDisabled.Set(!enable); }
     }
 }

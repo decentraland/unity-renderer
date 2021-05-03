@@ -7,23 +7,20 @@ using UnityEngine.EventSystems;
 
 public class BuilderInWorldInputWrapper : MonoBehaviour
 {
-    public LayerMask layerToStopClick;
     public float msClickThreshold = 200;
     public float movementClickThreshold = 50;
 
-    public event Action<int, Vector3> OnMouseClick;
-    public event Action<int, Vector3> OnMouseDown;
-    public event Action<int, Vector3> OnMouseUp;
+    public static event Action<int, Vector3> OnMouseClick;
+    public static event Action<int, Vector3> OnMouseDown;
+    public static event Action<int, Vector3> OnMouseUp;
 
-    public event Action<float> OnMouseWheel;
+    public static event Action<float> OnMouseWheel;
 
-    public event OnMouseDragDelegate OnMouseDrag;
-    public event OnMouseDragDelegateRaw OnMouseDragRaw;
-
+    public static event OnMouseDragDelegate OnMouseDrag;
+    public static event OnMouseDragDelegateRaw OnMouseDragRaw;
 
     public delegate void OnMouseDragDelegate(int buttonId, Vector3 position, float axisX, float axisY);
     public delegate void OnMouseDragDelegateRaw(int buttonId, Vector3 position, float axisX, float axisY);
-
 
     private float lastTimeMouseDown = 0;
     private Vector3 lastMousePosition;
@@ -39,15 +36,18 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
         DCLBuilderInput.OnMouseUp += MouseUp;
     }
 
-    public void StopInput()
+    private void OnDestroy()
     {
-        canInputBeMade = false;
+        DCLBuilderInput.OnMouseDrag -= MouseDrag;
+        DCLBuilderInput.OnMouseRawDrag -= MouseRawDrag;
+        DCLBuilderInput.OnMouseWheel -= MouseWheel;
+        DCLBuilderInput.OnMouseDown -= MouseDown;
+        DCLBuilderInput.OnMouseUp -= MouseUp;
     }
 
-    public void ResumeInput()
-    {
-        canInputBeMade = true;
-    }
+    public void StopInput() { canInputBeMade = false; }
+
+    public void ResumeInput() { canInputBeMade = true; }
 
     private void MouseUp(int buttonId, Vector3 mousePosition)
     {
@@ -56,7 +56,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
         if (!canInputBeMade)
             return;
 
-        if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
+        if (!BuilderInWorldUtils.IsPointerOverUIElement())
         {
             OnMouseUp?.Invoke(buttonId, mousePosition);
             if (Vector3.Distance(mousePosition, lastMousePosition) >= movementClickThreshold)
@@ -75,7 +75,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
 
         if (!canInputBeMade)
             return;
-        if (!currentClickIsOnUi && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
+        if (!currentClickIsOnUi)
             OnMouseDown?.Invoke(buttonId, mousePosition);
     }
 

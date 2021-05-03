@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 2888160
+    totalSpriteSurfaceArea: 2890640
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -83,6 +83,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4b1c9751d9ed642a190d2431fa02b5f8, type: 3}
   - {fileID: 21300000, guid: 35d9dd519b2dd8a47a6f251b25fded0f, type: 3}
   - {fileID: 21300000, guid: 511aa971d8654400498da53ce8f013b7, type: 3}
+  - {fileID: 21300000, guid: 0d4bfb71b11af4dc0967886c03434d5b, type: 3}
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
   - {fileID: 21300000, guid: db7198b10e7b549a68d088ccdf7377cf, type: 3}
   - {fileID: 21300000, guid: a6b6c8b1877c9c7498c971402965bdc0, type: 3}
@@ -113,6 +114,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 73eb02c3697d74008aff9a4139d43c55, type: 3}
   - {fileID: 21300000, guid: cb768af398af844a585c615342f68492, type: 3}
   - {fileID: 21300000, guid: f7c61f14e511e4444929b9c47611edac, type: 3}
+  - {fileID: 21300000, guid: 0822ae34e463d49f49b978299714fd21, type: 3}
   - {fileID: 21300000, guid: 65d50244ec48c4d31b169fe48412f711, type: 3}
   - {fileID: 21300000, guid: 2f8b0284904be4060b916850abd6f9c8, type: 3}
   - {fileID: 21300000, guid: c983eea4ebd9d43579acbb2e5c500480, type: 3}
@@ -126,7 +128,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f7cb20f4d2c0d4811b36bbc75a766342, type: 3}
   - {fileID: 21300000, guid: deb764059d1d1411bbe77fc7a862d919, type: 3}
   - {fileID: 21300000, guid: baeafb15684bb4604bd26954c2fc9240, type: 3}
+  - {fileID: 21300000, guid: c6bfc325bda1f44ba9affb7ecdf26a11, type: 3}
   - {fileID: 21300000, guid: 6fbdd825c58334612a3d1645eba6da25, type: 3}
+  - {fileID: 21300000, guid: 4e9a4135cdf6d42afb73b12a76bf53f2, type: 3}
   - {fileID: 21300000, guid: 4bb84435c63fb4e1f9276314c9e47125, type: 3}
   - {fileID: 21300000, guid: 914d7e458aea54023ade17e08c509416, type: 3}
   - {fileID: 21300000, guid: 3e026055304a14525a6f24ebe12e875f, type: 3}
@@ -161,6 +165,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8cb10138a6a0d47bf9e2eef30242fc29, type: 3}
   - {fileID: 21300000, guid: d6af1b4802f064d6fadd765950b0b2b8, type: 3}
   - {fileID: 21300000, guid: be6cfe489bf6c49f8b192e4043cca7eb, type: 3}
+  - {fileID: 21300000, guid: 9fcda35864c3748cf87d213b8eaf0f72, type: 3}
   - {fileID: 21300000, guid: f02af068e11cb4902a1a4faad10b890a, type: 3}
   - {fileID: 21300000, guid: 88d20368893eb44b4ae7754f29a476c1, type: 3}
   - {fileID: 21300000, guid: fc55de685e0bf440298f2ef454cb99bc, type: 3}
@@ -210,7 +215,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1271588be6ba2490198ab2f9e23b291b, type: 3}
   - {fileID: 21300000, guid: 0829529b4cd624727a16edcc165c4a97, type: 3}
   - {fileID: 21300000, guid: 01894c9b0e4cc4d15a7f0fe26505e2c9, type: 3}
+  - {fileID: 21300000, guid: 386f9e9b4e4fcc34299a279fe4eddeb3, type: 3}
   - {fileID: 21300000, guid: f3e766ab5571e436ebb74c06db87db7b, type: 3}
+  - {fileID: 21300000, guid: da7e5aab6c83c471e9951b0ff723a822, type: 3}
   - {fileID: 21300000, guid: 7bfca4cb270a343c682028817c0d5bf4, type: 3}
   - {fileID: 21300000, guid: fe4a00db663ed4d3abe06167ea5b3317, type: 3}
   - {fileID: 21300000, guid: 07a400eb205264a4f9e2aad5d599b4a3, type: 3}
@@ -274,6 +281,7 @@ SpriteAtlas:
   - ContainerRadius6
   - VoiceChatCross
   - SceneInfoContainer
+  - Button16
   - BlockUser
   - ManaIcon
   - RectangleGreen
@@ -304,6 +312,7 @@ SpriteAtlas:
   - ContainerPassport
   - ContainerShadowRadiusEight
   - Key
+  - DialogCornerRight
   - ConnectionStatus
   - HeaderExternalLink
   - Camera
@@ -317,7 +326,9 @@ SpriteAtlas:
   - JumpInIcon
   - VoiceChatMute
   - DiscordIconHD
+  - Button14
   - ContainerShadowRadiusSix
+  - JumpIconSquare
   - StokeRectRadius12
   - SettingsIconNew
   - MagicSpark
@@ -352,6 +363,7 @@ SpriteAtlas:
   - NightModeIcon
   - NFTStarUniqueContainer
   - ContainerRadius20@2x
+  - Rays
   - ContainerRadius12@2x
   - UIicon
   - AcceptButtonHover
@@ -401,7 +413,9 @@ SpriteAtlas:
   - InteractiveIcon
   - Button8
   - RectRadius12
+  - ContainerQuestEntryLoading
   - ToggleCheckOff
+  - PoapIcon
   - SettingsIcon
   - Compass
   - BackpackIconNew

@@ -14,10 +14,7 @@ public class FriendsController_Mock : IFriendsController
 
     public bool isInitialized => true;
 
-    public Dictionary<string, FriendsController.UserStatus> GetFriends()
-    {
-        return friends;
-    }
+    public Dictionary<string, FriendsController.UserStatus> GetFriends() { return friends; }
 
     public void RaiseUpdateFriendship(string id, FriendshipAction action)
     {
@@ -36,18 +33,9 @@ public class FriendsController_Mock : IFriendsController
         OnUpdateFriendship?.Invoke(id, action);
     }
 
-    public void RaiseUpdateUserStatus(string id, FriendsController.UserStatus userStatus)
-    {
-        OnUpdateUserStatus?.Invoke(id, userStatus);
-    }
+    public void RaiseUpdateUserStatus(string id, FriendsController.UserStatus userStatus) { OnUpdateUserStatus?.Invoke(id, userStatus); }
 
-    public void RaiseOnFriendNotFound(string id)
-    {
-        OnFriendNotFound?.Invoke(id);
-    }
+    public void RaiseOnFriendNotFound(string id) { OnFriendNotFound?.Invoke(id); }
 
-    public void AddFriend(FriendsController.UserStatus newFriend)
-    {
-        friends.Add(newFriend.userId, newFriend);
-    }
+    public void AddFriend(FriendsController.UserStatus newFriend) { friends.Add(newFriend.userId, newFriend); }
 }

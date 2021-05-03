@@ -16,8 +16,5 @@ public static class TestHelpers_Friends
         yield return new WaitUntil(() => hudView.friendsList.creationQueue.Count == 0);
     }
 
-    public static FriendEntry GetEntry(FriendsHUDView hudView, string id)
-    {
-        return hudView.friendsList.GetEntry(id) as FriendEntry;
-    }
+    public static FriendEntry GetEntry(FriendsHUDView hudView, string id) { return hudView.friendsList.GetEntry(id) as FriendEntry; }
 }

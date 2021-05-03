@@ -12,7 +12,7 @@ public class BIWLoadingPlaceHolder : MonoBehaviour
     private const string EXIT_ANIMATION_NAME = "Exit";
 
     private Coroutine checkCoroutine;
-    public void Disspose()
+    public void Dispose()
     {
         if (checkCoroutine != null)
             CoroutineStarter.Stop(checkCoroutine);
@@ -22,6 +22,8 @@ public class BIWLoadingPlaceHolder : MonoBehaviour
 
     public void DestroyAfterAnimation()
     {
+        if (placeHolderAnimator == null)
+            return;
         placeHolderAnimator.SetTrigger(disspose);
 
         foreach (ParticleSystem placeHolderParticleSystem in placeHolderParticleSystems)
@@ -36,11 +38,17 @@ public class BIWLoadingPlaceHolder : MonoBehaviour
         yield return null;
         if (placeHolderAnimator != null)
         {
-            while (!placeHolderAnimator.GetCurrentAnimatorStateInfo(0).IsName(EXIT_ANIMATION_NAME))
+            bool isExitingAnimationActive = false;
+            while (!isExitingAnimationActive)
             {
+                if (placeHolderAnimator != null)
+                    isExitingAnimationActive = placeHolderAnimator.GetCurrentAnimatorStateInfo(0).IsName(EXIT_ANIMATION_NAME);
+                else
+                    isExitingAnimationActive  = true;
                 yield return null;
             }
-            Destroy(gameObject);
+            if (this != null)
+                Destroy(gameObject);
         }
     }
 }

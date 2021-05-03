@@ -22,10 +22,7 @@ public class BuilderInWorldInititalHUDController : IHUD
         view.OnEnterInEditMode += () => CloseBuilderInWorldInitialView();
     }
 
-    public void OpenBuilderInWorldInitialView()
-    {
-        SetVisibility(true);
-    }
+    public void OpenBuilderInWorldInitialView() { SetVisibility(true); }
 
     public void CloseBuilderInWorldInitialView()
     {
@@ -61,10 +58,7 @@ public class BuilderInWorldInititalHUDController : IHUD
         }
     }
 
-    public void ToggleVisibility()
-    {
-        SetVisibility(!IsVisible());
-    }
+    public void ToggleVisibility() { SetVisibility(!IsVisible()); }
 
     public bool IsVisible()
     {

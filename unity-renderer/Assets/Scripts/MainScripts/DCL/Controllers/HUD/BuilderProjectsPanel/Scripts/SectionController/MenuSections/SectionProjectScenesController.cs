@@ -7,9 +7,9 @@ using Object = UnityEngine.Object;
 internal class SectionProjectScenesController : SectionBase, IProjectSceneListener, ISectionHideContextMenuRequester
 {
     public const string VIEW_PREFAB_PATH = "BuilderProjectsPanelMenuSections/SectionProjectScenesView";
-    
+
     public event Action OnRequestContextMenuHide;
-    
+
     public override ISectionSearchHandler searchHandler => sceneSearchHandler;
 
     private readonly SectionProjectScenesView view;
@@ -19,10 +19,9 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
 
     public SectionProjectScenesController() : this(
         Object.Instantiate(Resources.Load<SectionProjectScenesView>(VIEW_PREFAB_PATH))
-        )
-    {
-    }
-    
+    )
+    { }
+
     public SectionProjectScenesController(SectionProjectScenesView view)
     {
         this.view = view;
@@ -31,10 +30,7 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
         sceneSearchHandler.OnResult += OnSearchResult;
     }
 
-    public override void SetViewContainer(Transform viewContainer)
-    {
-        view.SetParent(viewContainer);
-    }
+    public override void SetViewContainer(Transform viewContainer) { view.SetParent(viewContainer); }
 
     public override void Dispose()
     {
@@ -42,15 +38,9 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
         view.Dispose();
     }
 
-    protected override void OnShow()
-    {
-        view.SetActive(true);
-    }
+    protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
+    protected override void OnHide() { view.SetActive(false); }
 
     void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
     {
@@ -88,7 +78,7 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
         {
             if (!scenesViews.TryGetValue(searchInfoScenes[i].id, out ISceneCardView cardView))
                 continue;
-            
+
             cardView.SetActive(true);
             cardView.SetSiblingIndex(i);
         }

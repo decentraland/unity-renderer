@@ -30,10 +30,7 @@ namespace DCL.Components
             public BabylonWrapMode wrap = BabylonWrapMode.CLAMP;
             public FilterMode samplingMode = FilterMode.Bilinear;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         internal WebVideoPlayer texturePlayer;
@@ -48,10 +45,7 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture()
-        {
-            model = new Model();
-        }
+        public DCLVideoTexture() { model = new Model(); }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -156,15 +150,9 @@ namespace DCL.Components
             }
         }
 
-        public float GetVolume()
-        {
-            return ((Model) model).volume;
-        }
+        public float GetVolume() { return ((Model) model).volume; }
 
-        private bool HasTexturePropertiesChanged()
-        {
-            return texture.wrapMode != unityWrap || texture.filterMode != unitySamplingMode;
-        }
+        private bool HasTexturePropertiesChanged() { return texture.wrapMode != unityWrap || texture.filterMode != unitySamplingMode; }
 
         private void ApplyTextureProperties()
         {
@@ -215,9 +203,11 @@ namespace DCL.Components
                         {
                             isVisible = true;
                             var entityDist = materialInfo.Value.GetClosestDistanceSqr(DCLCharacterController.i.transform.position);
-                            if (entityDist < minDistance) minDistance = entityDist;
+                            if (entityDist < minDistance)
+                                minDistance = entityDist;
                             // NOTE: if current minDistance is enough for full volume then there is no need to keep iterating to check distances
-                            if (minDistance <= DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE) break;
+                            if (minDistance <= DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE)
+                                break;
                         }
                     }
                 }
@@ -240,7 +230,8 @@ namespace DCL.Components
 
         private void UpdateVolume()
         {
-            if (texturePlayer == null) return;
+            if (texturePlayer == null)
+                return;
 
             float targetVolume = 0f;
 
@@ -252,21 +243,17 @@ namespace DCL.Components
 
         private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
         {
-            if (scene == null) return false;
-            if (string.IsNullOrEmpty(currentSceneId)) return false;
+            if (scene == null)
+                return false;
+            if (string.IsNullOrEmpty(currentSceneId))
+                return false;
 
             return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
-        {
-            isPlayStateDirty = true;
-        }
+        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords) { isPlayStateDirty = true; }
 
-        private void OnSceneIDChanged(string current, string previous)
-        {
-            isPlayerInScene = IsPlayerInSameSceneAsComponent(current);
-        }
+        private void OnSceneIDChanged(string current, string previous) { isPlayerInScene = IsPlayerInSameSceneAsComponent(current); }
 
         public override void AttachTo(PBRMaterial material)
         {
@@ -346,22 +333,17 @@ namespace DCL.Components
             }
         }
 
-        void OnEntityRemoved(IDCLEntity entity)
-        {
-            isPlayStateDirty = true;
-        }
+        void OnEntityRemoved(IDCLEntity entity) { isPlayStateDirty = true; }
 
-        void OnSettingsChanged(SettingsData.GeneralSettings settings)
-        {
-            UpdateVolume();
-        }
+        void OnSettingsChanged(SettingsData.GeneralSettings settings) { UpdateVolume(); }
 
         public override void Dispose()
         {
             Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
-            if (scene != null) scene.OnEntityRemoved -= OnEntityRemoved;
+            if (scene != null)
+                scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)
             {
                 CoroutineStarter.Stop(texturePlayerUpdateRoutine);
@@ -378,10 +360,7 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        private void OnEntityAttachedMaterial(IDCLEntity entity)
-        {
-            entity.OnShapeUpdated += OnEntityShapeUpdated;
-        }
+        private void OnEntityAttachedMaterial(IDCLEntity entity) { entity.OnShapeUpdated += OnEntityShapeUpdated; }
 
         private void OnEntityDetachedMaterial(IDCLEntity entity)
         {
@@ -391,10 +370,7 @@ namespace DCL.Components
             entity.OnShapeUpdated -= OnEntityShapeUpdated;
         }
 
-        private void OnEntityShapeUpdated(IDCLEntity entity)
-        {
-            isPlayStateDirty = true;
-        }
+        private void OnEntityShapeUpdated(IDCLEntity entity) { isPlayStateDirty = true; }
 
         internal interface MaterialInfo
         {
@@ -419,7 +395,8 @@ namespace DCL.Components
                             if (IsEntityVisible(entity))
                             {
                                 var entityDist = (entity.meshRootGameObject.transform.position - fromPosition).sqrMagnitude;
-                                if (entityDist < dist) dist = entityDist;
+                                if (entityDist < dist)
+                                    dist = entityDist;
                             }
                         }
                     }
@@ -449,36 +426,34 @@ namespace DCL.Components
 
             bool IsEntityVisible(IDCLEntity entity)
             {
-                if (entity.meshesInfo == null) return false;
-                if (entity.meshesInfo.currentShape == null) return false;
+                if (entity.meshesInfo == null)
+                    return false;
+                if (entity.meshesInfo.currentShape == null)
+                    return false;
                 return entity.meshesInfo.currentShape.IsVisible();
             }
 
-            public MaterialComponent(BaseDisposable component)
-            {
-                this.component = component;
-            }
+            public MaterialComponent(BaseDisposable component) { this.component = component; }
         }
 
         struct UIShapeComponent : MaterialInfo
         {
             UIShape shape;
 
-            float MaterialInfo.GetClosestDistanceSqr(Vector3 fromPosition)
-            {
-                return 0;
-            }
+            float MaterialInfo.GetClosestDistanceSqr(Vector3 fromPosition) { return 0; }
 
             bool MaterialInfo.IsVisible()
             {
-                if (!((UIShape.Model) shape.GetModel()).visible) return false;
+                if (!((UIShape.Model) shape.GetModel()).visible)
+                    return false;
                 return IsParentVisible(shape);
             }
 
             bool IsParentVisible(UIShape shape)
             {
                 UIShape parent = shape.parentUIComponent;
-                if (parent == null) return true;
+                if (parent == null)
+                    return true;
                 if (parent.referencesContainer.canvasGroup.alpha == 0)
                 {
                     return false;
@@ -487,10 +462,7 @@ namespace DCL.Components
                 return IsParentVisible(parent);
             }
 
-            public UIShapeComponent(UIShape image)
-            {
-                shape = image;
-            }
+            public UIShapeComponent(UIShape image) { shape = image; }
         }
     }
 }

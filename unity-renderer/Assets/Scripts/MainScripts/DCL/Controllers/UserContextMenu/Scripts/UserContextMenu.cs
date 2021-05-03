@@ -76,15 +76,11 @@ public class UserContextMenu : MonoBehaviour
     private MenuConfigFlags currentConfigFlags;
     private IConfirmationDialog currentConfirmationDialog;
 
-
     /// <summary>
     /// Show context menu
     /// </summary>
     /// <param name="userId"> user id</param>
-    public void Show(string userId)
-    {
-        Show(userId, menuConfigFlags);
-    }
+    public void Show(string userId) { Show(userId, menuConfigFlags); }
 
     /// <summary>
     /// Show context menu
@@ -108,18 +104,12 @@ public class UserContextMenu : MonoBehaviour
     /// Set confirmation popup to reference use
     /// </summary>
     /// <param name="confirmationPopup">confirmation popup reference</param>
-    public void SetConfirmationDialog(IConfirmationDialog confirmationPopup)
-    {
-        this.currentConfirmationDialog = confirmationPopup;
-    }
+    public void SetConfirmationDialog(IConfirmationDialog confirmationPopup) { this.currentConfirmationDialog = confirmationPopup; }
 
     /// <summary>
     /// Hides the context menu.
     /// </summary>
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
+    public void Hide() { gameObject.SetActive(false); }
 
     private void Awake()
     {
@@ -139,10 +129,7 @@ public class UserContextMenu : MonoBehaviour
         messageButton.onClick.AddListener(OnMessageButtonPressed);
     }
 
-    private void Update()
-    {
-        HideIfClickedOutside();
-    }
+    private void Update() { HideIfClickedOutside(); }
 
     private void OnDisable()
     {
@@ -264,10 +251,7 @@ public class UserContextMenu : MonoBehaviour
         Hide();
     }
 
-    private void UpdateBlockButton()
-    {
-        blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT;
-    }
+    private void UpdateBlockButton() { blockText.text = isBlocked ? BLOCK_BTN_UNBLOCK_TEXT : BLOCK_BTN_BLOCK_TEXT; }
 
     private void HideIfClickedOutside()
     {
@@ -418,7 +402,8 @@ public class UserContextMenu : MonoBehaviour
     //This is just to process buttons and container visibility on editor
     private void OnValidate()
     {
-        if (headerContainer == null) return;
+        if (headerContainer == null)
+            return;
         ProcessActiveElements(menuConfigFlags);
     }
 #endif

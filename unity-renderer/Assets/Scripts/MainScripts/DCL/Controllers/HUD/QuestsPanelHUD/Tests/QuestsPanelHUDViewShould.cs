@@ -94,7 +94,7 @@ namespace Tests.QuestsPanelHUD
             Assert.IsTrue(hudView.questEntries.ContainsKey(MOCK_QUEST_ID));
             Assert.AreEqual("newName", hudView.questEntries[MOCK_QUEST_ID].questName.text);
             Assert.AreEqual("newDescription", hudView.questEntries[MOCK_QUEST_ID].description.text);
-            Assert.AreEqual(0.8f, hudView.questEntries[MOCK_QUEST_ID].progressInTitle.fillAmount);
+            Assert.AreEqual(0.8f, hudView.questEntries[MOCK_QUEST_ID].progressInTitle.transform.localScale.x);
         }
 
         [Test]

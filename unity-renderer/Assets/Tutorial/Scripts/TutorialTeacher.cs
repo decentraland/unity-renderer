@@ -49,14 +49,8 @@ namespace DCL.Tutorial
             }
         }
 
-        public void PlaySpeakSound()
-        {
-            audioEventNormal.PlayScheduled(0.4f);
-        }
+        public void PlaySpeakSound() { audioEventNormal.PlayScheduled(0.4f); }
 
-        public void PlayHappySound(float delay)
-        {
-            audioEventHappy.PlayScheduled(delay);
-        }
+        public void PlayHappySound(float delay) { audioEventHappy.PlayScheduled(delay); }
     }
 }

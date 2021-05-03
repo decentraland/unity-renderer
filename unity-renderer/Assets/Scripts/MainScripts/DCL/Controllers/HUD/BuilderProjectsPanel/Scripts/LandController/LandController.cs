@@ -1,7 +1,7 @@
 using System;
 
 internal interface ILandController
-{ 
+{
     event Action<LandWithAccess[]> OnLandsSet;
     void SetLands(LandWithAccess[] lands);
     void AddListener(ILandsListener listener);

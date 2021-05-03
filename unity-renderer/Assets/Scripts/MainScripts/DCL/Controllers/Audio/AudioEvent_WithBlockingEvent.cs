@@ -8,8 +8,10 @@ public class AudioEvent_WithBlockingEvent : AudioEvent
 
     public override void Play(bool oneShot = false)
     {
-        if (blockingEvent == null) return;
-        if (blockingEvent.source == null) return;
+        if (blockingEvent == null)
+            return;
+        if (blockingEvent.source == null)
+            return;
 
         if (!blockingEvent.source.isPlaying)
             base.Play(oneShot);

@@ -31,18 +31,13 @@ namespace DCL.SettingsControls
         /// It should return the stored value of the control.
         /// </summary>
         /// <returns>It can be a bool (for toggle controls), a float (for slider controls) or an int (for spin-box controls).</returns>
-        public virtual object GetStoredValue()
-        {
-            return null;
-        }
+        public virtual object GetStoredValue() { return null; }
 
         /// <summary>
         /// All the needed logic to applying the setting and storing the current value.
         /// </summary>
         /// <param name="newValue">Value of the new state. It can be a bool (for toggle controls), a float (for slider controls) or an int (for spin-box controls).</param>
-        public virtual void UpdateSetting(object newValue)
-        {
-        }
+        public virtual void UpdateSetting(object newValue) { }
 
         /// <summary>
         /// Applies the current control state into the Settings class.
@@ -53,15 +48,9 @@ namespace DCL.SettingsControls
             Settings.i.ApplyQualitySettings(currentQualitySetting);
         }
 
-        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings newGeneralSettings)
-        {
-            currentGeneralSettings = newGeneralSettings;
-        }
+        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings newGeneralSettings) { currentGeneralSettings = newGeneralSettings; }
 
-        private void OnQualitySettingsChanged(SettingsData.QualitySettings newQualitySettings)
-        {
-            currentQualitySetting = newQualitySettings;
-        }
+        private void OnQualitySettingsChanged(SettingsData.QualitySettings newQualitySettings) { currentQualitySetting = newQualitySettings; }
 
         private void OnResetSettingsControl()
         {

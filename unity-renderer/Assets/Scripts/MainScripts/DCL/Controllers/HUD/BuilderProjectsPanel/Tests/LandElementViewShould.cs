@@ -17,10 +17,7 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(view.gameObject);
-        }
+        public void TearDown() { Object.Destroy(view.gameObject); }
 
         [Test]
         public void TriggerCallbacks()
@@ -50,34 +47,34 @@ namespace Tests
             view.buttonOpenInBuilderDapp.onClick.Invoke();
             Assert.IsTrue(triggered, "buttonOpenInBuilderDapp not triggered");
         }
-        
+
         [Test]
         public void SetNameCorrectly()
         {
             const string name = "Temptation";
             view.SetName(name);
-            Assert.AreEqual(name,view.landName.text);
+            Assert.AreEqual(name, view.landName.text);
         }
-        
+
         [Test]
         public void SetSizeCorrectly()
         {
             view.SetSize(1);
-            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 1),view.landSize.text);
+            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 1), view.landSize.text);
             Assert.IsFalse(view.landSizeGO.activeSelf);
-            
+
             view.SetSize(2);
-            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 2),view.landSize.text);
+            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 2), view.landSize.text);
             Assert.IsTrue(view.landSizeGO.activeSelf);
         }
-        
+
         [Test]
         public void SetRoleCorrectly()
         {
             view.SetRole(true);
             Assert.IsTrue(view.roleOwner.activeSelf);
             Assert.IsFalse(view.roleOperator.activeSelf);
-            
+
             view.SetRole(false);
             Assert.IsFalse(view.roleOwner.activeSelf);
             Assert.IsTrue(view.roleOperator.activeSelf);

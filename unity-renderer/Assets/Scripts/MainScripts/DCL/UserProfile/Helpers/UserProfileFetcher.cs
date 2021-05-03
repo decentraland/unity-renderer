@@ -32,15 +32,9 @@ public class UserProfileFetcher : IDisposable
         return promise;
     }
 
-    public UserProfileFetcher()
-    {
-        UserProfileController.userProfilesCatalog.OnAdded += OnProfileAddedToCatalog;
-    }
+    public UserProfileFetcher() { UserProfileController.userProfilesCatalog.OnAdded += OnProfileAddedToCatalog; }
 
-    public void Dispose()
-    {
-        UserProfileController.userProfilesCatalog.OnAdded -= OnProfileAddedToCatalog;
-    }
+    public void Dispose() { UserProfileController.userProfilesCatalog.OnAdded -= OnProfileAddedToCatalog; }
 
     private void OnProfileAddedToCatalog(string userId, UserProfile profile)
     {

@@ -61,8 +61,10 @@ public class NFTPromptHUDView : MonoBehaviour
         content.SetActive(true);
         Utils.UnlockCursor();
 
-        if (fetchNFTRoutine != null) StopCoroutine(fetchNFTRoutine);
-        if (fetchNFTImageRoutine != null) StopCoroutine(fetchNFTImageRoutine);
+        if (fetchNFTRoutine != null)
+            StopCoroutine(fetchNFTRoutine);
+        if (fetchNFTImageRoutine != null)
+            StopCoroutine(fetchNFTImageRoutine);
 
         SetLoading();
 
@@ -78,8 +80,10 @@ public class NFTPromptHUDView : MonoBehaviour
 
         OnDestroy();
 
-        if (fetchNFTRoutine != null) StopCoroutine(fetchNFTRoutine);
-        if (fetchNFTImageRoutine != null) StopCoroutine(fetchNFTImageRoutine);
+        if (fetchNFTRoutine != null)
+            StopCoroutine(fetchNFTRoutine);
+        if (fetchNFTImageRoutine != null)
+            StopCoroutine(fetchNFTImageRoutine);
 
         fetchNFTRoutine = null;
         fetchNFTImageRoutine = null;
@@ -255,7 +259,8 @@ public class NFTPromptHUDView : MonoBehaviour
     private string ShortDecimals(string value, int decimalCount)
     {
         int pointPosition = value.IndexOf('.');
-        if (pointPosition <= 0) return value;
+        if (pointPosition <= 0)
+            return value;
 
         string ret = value.Substring(0, pointPosition + Mathf.Min(value.Length - pointPosition, decimalCount + 1));
 
@@ -293,10 +298,7 @@ public class NFTPromptHUDView : MonoBehaviour
         }
     }
 
-    private void SetSmartBackgroundColor(Texture2D texture)
-    {
-        imageNftBackground.color = texture.GetPixel(0, 0);
-    }
+    private void SetSmartBackgroundColor(Texture2D texture) { imageNftBackground.color = texture.GetPixel(0, 0); }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
     {

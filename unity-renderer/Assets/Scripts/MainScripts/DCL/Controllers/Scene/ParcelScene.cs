@@ -23,10 +23,12 @@ namespace DCL.Controllers
         ContentProvider contentProvider { get; }
         bool isPersistent { get; }
         bool isTestScene { get; }
+        float loadingProgress { get; }
         bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition);
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);
+        void CalculateSceneLoadingState();
     }
 
     public class ParcelScene : MonoBehaviour, IParcelScene
@@ -47,11 +49,13 @@ namespace DCL.Controllers
         public event System.Action OnChanged;
         public event System.Action<LoadParcelScenesMessage.UnityParcelScene> OnSetData;
         public event System.Action<string, ISharedComponent> OnAddSharedComponent;
+        public event System.Action<float> OnLoadingStateUpdated;
 
         public ContentProvider contentProvider { get; protected set; }
 
         public bool isTestScene { get; set; } = false;
         public bool isPersistent { get; set; } = false;
+        public float loadingProgress { get; private set; }
 
         [System.NonSerialized]
         public string sceneName;
@@ -610,12 +614,40 @@ namespace DCL.Controllers
             switch (componentName)
             {
                 case "shape":
-
                     if (entity.meshesInfo.currentShape is BaseShape baseShape)
                     {
                         baseShape.DetachFrom(entity);
                     }
 
+                    return;
+
+                case OnClick.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_CLICK, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_CLICK );
+                        }
+
+                        return;
+                    }
+                case OnPointerDown.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_DOWN, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_DOWN );
+                        }
+                    }
+                    return;
+                case OnPointerUp.NAME:
+                    {
+                        if ( entity.TryGetBaseComponent(CLASS_ID_COMPONENT.UUID_ON_UP, out IEntityComponent component ))
+                        {
+                            Utils.SafeDestroy(component.GetTransform().gameObject);
+                            entity.components.Remove( CLASS_ID_COMPONENT.UUID_ON_UP );
+                        }
+                    }
                     return;
             }
         }
@@ -720,7 +752,7 @@ namespace DCL.Controllers
                     return $"{baseState}:{prettyName} - waiting for init messages...";
                 case SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS:
                     if (disposableComponents != null && disposableComponents.Count > 0)
-                        return $"{baseState}:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count}";
+                        return $"{baseState}:{prettyName} - left to ready:{disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount}/{disposableComponents.Count} ({loadingProgress}%)";
                     else
                         return $"{baseState}:{prettyName} - no components. waiting...";
                 case SceneLifecycleHandler.State.READY:
@@ -730,8 +762,10 @@ namespace DCL.Controllers
             return $"scene:{prettyName} - no state?";
         }
 
-        public void RefreshName()
+        public void RefreshLoadingState()
         {
+            CalculateSceneLoadingState();
+
 #if UNITY_EDITOR
             gameObject.name = GetStateString();
 #endif
@@ -778,6 +812,22 @@ namespace DCL.Controllers
                     Debug.Log("This scene is not waiting for any components. Its current state is " + sceneLifecycleHandler.state);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Calculates the current loading progress of the scene and raise the event OnLoadingStateUpdated with the percentage.
+        /// </summary>
+        public void CalculateSceneLoadingState()
+        {
+            loadingProgress = 0f;
+
+            if (sceneLifecycleHandler.state == SceneLifecycleHandler.State.WAITING_FOR_COMPONENTS ||
+                sceneLifecycleHandler.state == SceneLifecycleHandler.State.READY)
+            {
+                loadingProgress = disposableComponents != null && disposableComponents.Count > 0 ? (disposableComponents.Count - sceneLifecycleHandler.disposableNotReadyCount) * 100f / disposableComponents.Count : 100f;
+            }
+
+            OnLoadingStateUpdated?.Invoke(loadingProgress);
         }
     }
 }

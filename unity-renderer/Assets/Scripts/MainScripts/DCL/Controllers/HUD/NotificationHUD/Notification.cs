@@ -60,7 +60,6 @@ public class Notification : MonoBehaviour
         StopTimer();
     }
 
-
     public void Show(Notification.Model model)
     {
         gameObject.SetActive(true);
@@ -129,10 +128,7 @@ public class Notification : MonoBehaviour
         }
     }
 
-    protected virtual void Dismiss()
-    {
-        Dismiss(false);
-    }
+    protected virtual void Dismiss() { Dismiss(false); }
 
     public void Dismiss(bool instant)
     {

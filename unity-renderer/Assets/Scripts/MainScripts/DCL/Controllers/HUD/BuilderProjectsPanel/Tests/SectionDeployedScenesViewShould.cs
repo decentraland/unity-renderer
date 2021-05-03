@@ -19,16 +19,10 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(view.gameObject);
-        }
+        public void TearDown() { Object.Destroy(view.gameObject); }
 
         [Test]
-        public void HaveScenesContainerEmptyAtInstantiation()
-        {
-            Assert.AreEqual(0, view.scenesCardContainer.childCount);
-        }
+        public void HaveScenesContainerEmptyAtInstantiation() { Assert.AreEqual(0, view.scenesCardContainer.childCount); }
 
         [Test]
         public void ShowCardsInCorrectSortOrder()
@@ -42,16 +36,16 @@ namespace Tests
             for (int i = 0; i < cardsCount; i++)
             {
                 var card = (ISceneCardView)Object.Instantiate(prefab);
-                card.Setup(new SceneData(){size = new Vector2Int(i,i), id = i.ToString()});
+                card.Setup(new SceneData() { size = new Vector2Int(i, i), id = i.ToString() });
                 cardViews.Add(i.ToString(), card);
             }
 
 
             SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
             controller.searchHandler.SetSortType(SectionSearchHandler.SIZE_SORT_TYPE_ASC);
-            
+
             ((IDeployedSceneListener)controller).OnSetScenes(cardViews);
-            
+
             Assert.AreEqual(cardsCount, view.scenesCardContainer.childCount);
 
             var prev = (ISceneCardView)view.scenesCardContainer.GetChild(0).GetComponent<SceneCardView>();
@@ -68,7 +62,7 @@ namespace Tests
             }
             controller.Dispose();
         }
-        
+
         [Test]
         public void ShowEmptyCorrectly()
         {
@@ -78,7 +72,7 @@ namespace Tests
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
             Assert.IsTrue(view.emptyContainer.activeSelf);
         }
-        
+
         [Test]
         public void ShowFilledCorrectly()
         {
@@ -88,7 +82,7 @@ namespace Tests
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
             Assert.IsFalse(view.emptyContainer.activeSelf);
         }
-        
+
         [Test]
         public void ShowNoResultCorrectly()
         {
@@ -97,8 +91,8 @@ namespace Tests
             Assert.IsFalse(view.loadingAnimationContainer.activeSelf);
             Assert.IsTrue(view.noSearchResultContainer.activeSelf);
             Assert.IsFalse(view.emptyContainer.activeSelf);
-        }    
-        
+        }
+
         [Test]
         public void ShowLoadingCorrectly()
         {
@@ -108,13 +102,13 @@ namespace Tests
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
             Assert.IsFalse(view.emptyContainer.activeSelf);
         }
-        
+
         [Test]
         public void SetSectionStateCorrectly()
         {
             SectionDeployedScenesController controller = new SectionDeployedScenesController(view);
             IDeployedSceneListener listener = controller;
-            
+
             controller.SetFetchingDataState(true);
             listener.OnSetScenes(new Dictionary<string, ISceneCardView>());
             Assert.IsTrue(view.loadingAnimationContainer.activeSelf);
@@ -122,11 +116,11 @@ namespace Tests
             controller.SetFetchingDataState(false);
             listener.OnSetScenes(new Dictionary<string, ISceneCardView>());
             Assert.IsTrue(view.emptyContainer.activeSelf);
-            
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>(){{"1", Substitute.For<ISceneCardView>()}, {"2", Substitute.For<ISceneCardView>()}});
+
+            listener.OnSetScenes(new Dictionary<string, ISceneCardView>() { { "1", Substitute.For<ISceneCardView>() }, { "2", Substitute.For<ISceneCardView>() } });
             Assert.IsTrue(view.contentContainer.activeSelf);
 
-            listener.OnSetScenes(new Dictionary<string, ISceneCardView>(){{"1", Substitute.For<ISceneCardView>()}});
+            listener.OnSetScenes(new Dictionary<string, ISceneCardView>() { { "1", Substitute.For<ISceneCardView>() } });
             Assert.IsTrue(view.contentContainer.activeSelf);
 
             controller.Dispose();

@@ -31,7 +31,7 @@ namespace Tests
             Assert.AreEqual(1, view.GetLandElementsContainer().childCount);
             Assert.NotNull(view.landElementView);
         }
-        
+
         [Test]
         public void SetEmptyCorrectly()
         {
@@ -41,7 +41,7 @@ namespace Tests
             Assert.IsFalse(view.loadingAnimationContainer.activeSelf);
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
         }
-        
+
         [Test]
         public void SetNotEmptyCorrectly()
         {
@@ -51,7 +51,7 @@ namespace Tests
             Assert.IsFalse(view.loadingAnimationContainer.activeSelf);
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
         }
-        
+
         [Test]
         public void SetNoSearchResultCorrectly()
         {
@@ -61,7 +61,7 @@ namespace Tests
             Assert.IsFalse(view.loadingAnimationContainer.activeSelf);
             Assert.IsTrue(view.noSearchResultContainer.activeSelf);
         }
-        
+
         [Test]
         public void SetLoadingCorrectly()
         {
@@ -71,16 +71,16 @@ namespace Tests
             Assert.IsTrue(view.loadingAnimationContainer.activeSelf);
             Assert.IsFalse(view.noSearchResultContainer.activeSelf);
         }
-        
+
         [Test]
         public void ShowAndHideCorrectly()
         {
             SectionLandController controller = new SectionLandController(view);
             controller.SetVisible(true);
-            
+
             controller.SetVisible(false);
             Assert.IsFalse(view.gameObject.activeSelf);
-            
+
             controller.SetVisible(true);
             Assert.IsTrue(view.gameObject.activeSelf);
             controller.Dispose();
@@ -92,11 +92,11 @@ namespace Tests
             SectionLandController controller = new SectionLandController(view);
             ILandsListener landsListener = controller;
 
-            landsListener.OnSetLands(new [] { CreateLandData("1"), CreateLandData("2") });
+            landsListener.OnSetLands(new[] { CreateLandData("1"), CreateLandData("2") });
             Assert.AreEqual(2, GetVisibleChildrenAmount(view.GetLandElementsContainer()));
             Assert.IsTrue(view.contentContainer.activeSelf);
 
-            landsListener.OnSetLands(new [] { CreateLandData("1") });
+            landsListener.OnSetLands(new[] { CreateLandData("1") });
             Assert.AreEqual(1, GetVisibleChildrenAmount(view.GetLandElementsContainer()));
             Assert.IsTrue(view.contentContainer.activeSelf);
 
@@ -118,11 +118,11 @@ namespace Tests
             ILandsListener landsListener = controller;
             LandElementView landElementView = view.GetLandElementeBaseView();
 
-            landsListener.OnSetLands(new [] { CreateLandData("1", startingName) });
+            landsListener.OnSetLands(new[] { CreateLandData("1", startingName) });
             Assert.AreEqual(1, GetVisibleChildrenAmount(view.GetLandElementsContainer()));
             Assert.AreEqual(startingName, landElementView.landName.text);
 
-            landsListener.OnSetLands(new [] { CreateLandData("1", updatedName) });
+            landsListener.OnSetLands(new[] { CreateLandData("1", updatedName) });
             Assert.AreEqual(1, GetVisibleChildrenAmount(view.GetLandElementsContainer()));
             Assert.AreEqual(updatedName, landElementView.landName.text);
 
@@ -145,7 +145,7 @@ namespace Tests
                 }
             );
         }
-        
+
         private LandWithAccess CreateLandData(string id, string name)
         {
             return new LandWithAccess(
@@ -156,6 +156,6 @@ namespace Tests
                     parcels = new List<Parcel>()
                 }
             );
-        }        
+        }
     }
 }
