@@ -9,6 +9,10 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
     
     [SerializeField] public Transform scenesCardContainer;
     [SerializeField] public ScrollRect scrollRect;
+    [SerializeField] internal GameObject contentContainer;
+    [SerializeField] internal GameObject emptyContainer;
+    [SerializeField] internal GameObject noSearchResultContainer;
+    [SerializeField] internal GameObject loadingAnimationContainer;
 
     private bool isDestroyed = false;
     
@@ -26,6 +30,44 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
     public void ResetScrollRect()
     {
         scrollRect.verticalNormalizedPosition = 1;
+    }
+
+    public void SetEmpty()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(true);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+    }
+    
+    public void SetLoading()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(true);
+    }
+    
+    public void SetNoSearchResult()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(true);
+        loadingAnimationContainer.SetActive(false);
+    }
+    
+    public void SetFilled()
+    {
+        contentContainer.SetActive(true);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+        ResetScrollRect();
+    }
+
+    public Transform GetCardsContainer()
+    {
+        return scenesCardContainer;
     }
 
     public void Dispose()

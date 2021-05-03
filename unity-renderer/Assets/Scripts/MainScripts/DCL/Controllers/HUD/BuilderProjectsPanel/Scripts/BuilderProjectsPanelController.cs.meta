@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-client/Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Scripts/BuilderProjectsPanelController.cs.meta
+guid: 620a67827f61b44b095d618825c7d7fa
+=======
+guid: dbcf479da5c585940a83dd2feb2c1636
+>>>>>>> 545821505e4507f4c7d64d7eb4745f244a2cde6f:unity-client/Assets/Scripts/MainScripts/DCL/Controllers/BuilderMode/Controllers/BIWSaveController.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

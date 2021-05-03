@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-client/Assets/Scripts/MainScripts/DCL/Bridges/BuilderProjectsPanelBridge/BuilderProjectsPanelBridge.cs.meta
+guid: 1dfafa4b40a1345b793561fb107ba11f
+=======
+guid: 58a3b71159459ce4c83e066451aa4566
+>>>>>>> 545821505e4507f4c7d64d7eb4745f244a2cde6f:unity-client/Assets/Scripts/MainScripts/DCL/Components/UUIDComponent/Tests/UUIDComponentShould.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

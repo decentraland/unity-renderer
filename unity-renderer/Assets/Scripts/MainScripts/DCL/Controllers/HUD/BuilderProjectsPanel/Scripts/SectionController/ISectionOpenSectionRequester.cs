@@ -2,5 +2,5 @@ using System;
 
 internal interface ISectionOpenSectionRequester
 {
-    event Action<SectionsController.SectionId> OnRequestOpenSection;
+    event Action<SectionId> OnRequestOpenSection;
 }

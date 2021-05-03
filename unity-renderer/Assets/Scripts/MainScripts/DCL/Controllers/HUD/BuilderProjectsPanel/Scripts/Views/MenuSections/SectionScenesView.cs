@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class SectionScenesView : MonoBehaviour
+public class SectionScenesView : MonoBehaviour, IDisposable
 {
     [Header("Cards Containers")]
     [SerializeField] internal Transform deployedSceneContainer;
@@ -18,4 +19,19 @@ public class SectionScenesView : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] internal Button btnInWorldViewAll;
     [SerializeField] internal Button btnProjectsViewAll;
+
+    private bool isDestroyed = false;
+
+    private void OnDestroy()
+    {
+        isDestroyed = true;
+    }
+
+    public void Dispose()
+    {
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
+    }
 }

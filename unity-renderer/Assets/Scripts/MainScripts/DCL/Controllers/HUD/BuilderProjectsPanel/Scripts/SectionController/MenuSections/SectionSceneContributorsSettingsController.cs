@@ -57,7 +57,7 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
         view.SetActive(false);
     }
     
-    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView)
+    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
     {
         sceneId = sceneCardView.sceneData.id;
         UpdateContributors(sceneCardView.sceneData.contributors);

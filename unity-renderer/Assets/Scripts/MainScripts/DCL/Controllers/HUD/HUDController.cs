@@ -94,6 +94,7 @@ public class HUDController : MonoBehaviour
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public QuestsNotificationsHUDController questsNotificationsHUD => GetHUDElement(HUDElementID.QUESTS_NOTIFICATIONS) as QuestsNotificationsHUDController;
+    public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -175,7 +176,8 @@ public class HUDController : MonoBehaviour
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
         QUESTS_NOTIFICATIONS = 28,
-        COUNT = 29
+        BUILDER_PROJECTS_PANEL = 29,
+        COUNT = 30
     }
 
     [System.Serializable]
@@ -325,8 +327,6 @@ public class HUDController : MonoBehaviour
                             DCL.Environment.i.world.state);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
-                        taskbarHud.AddBuilderInWorldWindow(builderInWorldInititalHud);
-
 
                         if (!string.IsNullOrEmpty(extraPayload))
                         {
@@ -419,6 +419,14 @@ public class HUDController : MonoBehaviour
                 if(configuration.active)
                     questsNotificationsHUD.Initialize(QuestsController.i);
                 break;
+            case HUDElementID.BUILDER_PROJECTS_PANEL:
+                CreateHudElement<BuilderProjectsPanelController>(configuration, hudElementId);
+                if (configuration.active)
+                {
+                    builderProjectsPanelController.Initialize();
+                    taskbarHud.SetBuilderInWorldStatus(true);
+                }
+                break;            
         }
 
         var hudElement = GetHUDElement(hudElementId);

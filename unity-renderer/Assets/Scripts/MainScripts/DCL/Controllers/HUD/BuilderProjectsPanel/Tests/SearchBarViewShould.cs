@@ -123,13 +123,13 @@ namespace Tests
             Assert.IsFalse(contributorON);
 
             view.operatorToggle.isOn = true;
-            Assert.IsTrue(ownerON);
+            Assert.IsFalse(ownerON);
             Assert.IsTrue(operatorON);
             Assert.IsFalse(contributorON);
 
             view.contributorToggle.isOn = true;
-            Assert.IsTrue(ownerON);
-            Assert.IsTrue(operatorON);
+            Assert.IsFalse(ownerON);
+            Assert.IsFalse(operatorON);
             Assert.IsTrue(contributorON);
 
             view.ownerToggle.isOn = false;
@@ -184,27 +184,6 @@ namespace Tests
 
             Assert.AreEqual(sortTypes[0], selectedSort);
             Assert.AreEqual(sortTypes[0], view.sortTypeLabel.text);
-        }
-
-        [Test]
-        public void TriggerSortOrderCallback()
-        {
-            bool ascending = false;
-
-            var handler = Substitute.For<ISectionSearchHandler>();
-            handler.WhenForAnyArgs(a => a.SetSortOrder(false))
-                .Do(info =>
-                {
-                    ascending = info.Arg<bool>();
-                });
-
-            view.SetSearchBar(handler, null);
-
-            view.sortOrderToggle.Set(true);
-            Assert.IsTrue(ascending);
-
-            view.sortOrderToggle.Set(false);
-            Assert.IsFalse(ascending);
         }
     }
 }

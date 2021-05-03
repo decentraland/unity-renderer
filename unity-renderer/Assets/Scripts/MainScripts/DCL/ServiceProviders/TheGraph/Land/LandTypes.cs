@@ -35,7 +35,6 @@ public class Land
     public List<string> operators;
 }
 
-
 [Serializable]
 internal class LandQueryResultWrapped
 {
@@ -103,7 +102,7 @@ internal class OwnerData : OwnerAddressData
 [Serializable]
 internal class OwnerAuthorizationData
 {
-    public string @operator; 
+    public string @operator;
     public bool isApproved;
     public string tokenAddress;
 }

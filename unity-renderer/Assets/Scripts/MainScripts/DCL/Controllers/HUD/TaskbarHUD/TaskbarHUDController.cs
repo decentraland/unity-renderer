@@ -26,7 +26,6 @@ public class TaskbarHUDController : IHUD
     public SettingsPanelHUDController settingsPanelHud;
     public ExploreHUDController exploreHud;
     public HelpAndSupportHUDController helpAndSupportHud;
-    public BuilderInWorldInititalHUDController builderInWorldInitialHUDController;
 
     IMouseCatcher mouseCatcher;
     IChatController chatController;
@@ -235,13 +234,13 @@ public class TaskbarHUDController : IHUD
 
     private void View_OnBuilderInWorldToggleOn()
     {
-        builderInWorldInitialHUDController.OpenBuilderInWorldInitialView();
+        OnBuilderProjectsPanelTriggered(true, false);
         OnAnyTaskbarButtonClicked?.Invoke();
     }
 
     private void View_OnBuilderInWorldToggleOff()
     {
-        builderInWorldInitialHUDController.CloseBuilderInWorldInitialView();
+        OnBuilderProjectsPanelTriggered(false, true);
     }
 
     private void View_OnExploreToggleOn()
@@ -278,6 +277,10 @@ public class TaskbarHUDController : IHUD
     public void SetBuilderInWorldStatus(bool isActive)
     {
         view.SetBuilderInWorldStatus(isActive);
+        DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
+
+        if (isActive)
+            DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnBuilderProjectsPanelTriggered;
     }
 
     public void SetQuestsPanelStatus(bool isActive)
@@ -305,19 +308,6 @@ public class TaskbarHUDController : IHUD
 
         view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false);
-    }
-
-    public void AddBuilderInWorldWindow(BuilderInWorldInititalHUDController controller)
-    {
-        if (controller == null)
-        {
-            Debug.LogWarning("AddBuilderInWorldWindow >>> Controller doesn't exit yet!");
-            return;
-        }
-
-        builderInWorldInitialHUDController = controller;
-
-        builderInWorldInitialHUDController.OnClose += () => { view.builderInWorldButton.SetToggleState(false, false); };
     }
 
     public void OpenFriendsWindow()
@@ -529,6 +519,7 @@ public class TaskbarHUDController : IHUD
         }
 
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
+        DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
     }
 
     public void SetVisibility(bool visible)
@@ -632,5 +623,16 @@ public class TaskbarHUDController : IHUD
     public void KillPortableExperience(string portableExperienceSceneIdToKill)
     {
         WebInterface.KillPortableExperience(portableExperienceSceneIdToKill);
+    }
+    
+    private void OnBuilderProjectsPanelTriggered(bool isOn, bool prev)
+    {
+        if (isOn)
+        {
+            OnAnyTaskbarButtonClicked?.Invoke();
+        }
+
+        DataStore.i.HUDs.builderProjectsPanelVisible.Set(isOn);
+        view.builderInWorldButton.SetToggleState(isOn, false);
     }
 }

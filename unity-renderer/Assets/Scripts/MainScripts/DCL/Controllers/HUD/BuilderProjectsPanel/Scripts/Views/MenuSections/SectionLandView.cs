@@ -5,14 +5,23 @@ using UnityEngine.UI;
 
 internal class SectionLandView : MonoBehaviour, IDisposable
 {
+    public event Action OnOpenMarketplaceRequested; 
+    
     [SerializeField] public LandElementView landElementView;
     [SerializeField] public ScrollRect scrollRect;
     [SerializeField] public GameObject contentContainer;
     [SerializeField] public GameObject emptyContainer;
+    [SerializeField] public GameObject loadingAnimationContainer;
+    [SerializeField] public GameObject noSearchResultContainer;
     [SerializeField] public Button buttonNoLandCTA;
 
     private bool isDestroyed = false;
 
+    private void Awake()
+    {
+        buttonNoLandCTA.onClick.AddListener(()=> OnOpenMarketplaceRequested?.Invoke());
+    }
+    
     private void OnDestroy()
     {
         isDestroyed = true;
@@ -43,11 +52,38 @@ internal class SectionLandView : MonoBehaviour, IDisposable
     {
         return landElementView;
     }
-
-    public void SetEmpty(bool isEmpty)
+    
+    public void SetEmpty()
     {
-        emptyContainer.SetActive(isEmpty);
-        contentContainer.SetActive(!isEmpty);
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(true);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+    }
+    
+    public void SetLoading()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(true);
+    }
+    
+    public void SetNoSearchResult()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(true);
+        loadingAnimationContainer.SetActive(false);
+    }
+    
+    public void SetFilled()
+    {
+        contentContainer.SetActive(true);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+        ResetScrollRect();
     }
     
     public void Dispose()

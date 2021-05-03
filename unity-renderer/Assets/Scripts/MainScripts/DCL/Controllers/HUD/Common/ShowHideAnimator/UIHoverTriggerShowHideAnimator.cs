@@ -16,6 +16,11 @@ public class UIHoverTriggerShowHideAnimator : MonoBehaviour, IPointerEnterHandle
     [SerializeField] float setHideDelay = 0;
 
     Coroutine delayRoutine = null;
+    
+    public void SetShowHideAnimator(ShowHideAnimator showHideAnimator)
+    {
+        this.showHideAnimator = showHideAnimator;
+    }
 
     void Awake()
     {

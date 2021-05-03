@@ -1,5 +1,6 @@
 {
     "name": "HUD",
+    "rootNamespace": "",
     "references": [
         "GUID:555c1f3c6d18648df910b7a1de75b424",
         "GUID:1de3566cccb280f4a982c59ad0d08c96",
@@ -49,7 +50,8 @@
         "GUID:9b06d63e1a13bc34c995683595d8d849",
         "GUID:1439e22829093664b93bd5e3d50e94ec",
         "GUID:c2a88b8610e96f6428ff1dfa31b5fbee",
-        "GUID:81c84e9f4c9563d4c9a070af7f0070e0"
+        "GUID:81c84e9f4c9563d4c9a070af7f0070e0",
+        "GUID:64cd69d7e3e2a4a62a0cdc5de451ef12"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

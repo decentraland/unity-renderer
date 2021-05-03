@@ -2,7 +2,7 @@
 
 internal interface IDeployedSceneListener
 {
-    void OnSetScenes(Dictionary<string, SceneCardView> scenes);
-    void OnSceneAdded(SceneCardView scene);
-    void OnSceneRemoved(SceneCardView scene);
+    void OnSetScenes(Dictionary<string, ISceneCardView> scenes);
+    void OnSceneAdded(ISceneCardView scene);
+    void OnSceneRemoved(ISceneCardView scene);
 }

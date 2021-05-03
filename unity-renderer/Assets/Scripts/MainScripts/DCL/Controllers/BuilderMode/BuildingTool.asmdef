@@ -1,5 +1,6 @@
 {
     "name": "BuilderInWorld",
+    "rootNamespace": "",
     "references": [
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
         "GUID:4307f53044263cf4b835bd812fc161a4",
@@ -41,7 +42,8 @@
         "GUID:4623a7b5e6ee6e24c833abc6c810140f",
         "GUID:23950f8e80ae4d342afbe5bb22539b00",
         "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
-        "GUID:1dd0780aa6be12b428c8005d0bee46b8"
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:c6bd0bfc5ddce41fa8c1488f7cb3a889"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

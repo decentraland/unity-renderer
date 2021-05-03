@@ -93,6 +93,7 @@ public class BuilderInWorldController : MonoBehaviour
             initialLoadingController.OnCancelLoading -= ExitEditMode;
             initialLoadingController.Dispose();
         }
+        BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         CleanItems();
@@ -166,6 +167,8 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
+        
+        BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
         ConfigureLoadingController();
         InitControllers();
@@ -530,6 +533,14 @@ public class BuilderInWorldController : MonoBehaviour
                 sceneToEdit = scene;
                 break;
             }
+        }
+    }
+    
+    private void OnPlayerTeleportedToEditScene(Vector2Int coords)
+    {
+        if (activeFeature)
+        {
+            TryStartEnterEditMode();
         }
     }
 }

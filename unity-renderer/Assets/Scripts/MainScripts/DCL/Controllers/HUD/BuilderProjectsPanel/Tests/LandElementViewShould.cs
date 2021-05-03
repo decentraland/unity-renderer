@@ -28,10 +28,12 @@ namespace Tests
             bool triggered = false;
 
             void OnCallback(string value) { triggered = true; }
+            void OnCallbackVector2(Vector2Int value) { triggered = true; }
 
-            view.OnEditorPressed += OnCallback;
+            view.OnEditorPressed += OnCallbackVector2;
             view.OnSettingsPressed += OnCallback;
-            view.OnJumpInPressed += OnCallback;
+            view.OnOpenInDappPressed += OnCallback;
+            view.OnJumpInPressed += OnCallbackVector2;
 
             view.buttonEditor.onClick.Invoke();
             Assert.IsTrue(triggered, "OnEditorPressed not triggered");
@@ -43,6 +45,10 @@ namespace Tests
             triggered = false;
             view.buttonJumpIn.onClick.Invoke();
             Assert.IsTrue(triggered, "OnJumpInPressed not triggered");
+            
+            triggered = false;
+            view.buttonOpenInBuilderDapp.onClick.Invoke();
+            Assert.IsTrue(triggered, "buttonOpenInBuilderDapp not triggered");
         }
         
         [Test]

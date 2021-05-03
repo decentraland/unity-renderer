@@ -1,5 +1,6 @@
 {
     "name": "BuilderInWorldPanelBridge",
+    "rootNamespace": "",
     "references": [
         "GUID:99f1c728107724153bc9c17f979d04ea"
     ],

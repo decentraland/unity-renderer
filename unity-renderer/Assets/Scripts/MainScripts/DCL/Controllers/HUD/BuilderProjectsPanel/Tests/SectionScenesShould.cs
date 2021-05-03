@@ -9,7 +9,7 @@ namespace Tests
     public class SectionScenesShould
     {
         private SectionScenesController sectionController;
-        private ScenesViewController scenesController;
+        private IScenesViewController scenesController;
 
         [SetUp]
         public void SetUp()
@@ -21,18 +21,8 @@ namespace Tests
             sectionController = new SectionScenesController();
             scenesController = new ScenesViewController(sceneCardPrefab);
 
-            IDeployedSceneListener deployedSceneListener = sectionController;
-            IProjectSceneListener projectSceneListener = sectionController;
-
-            scenesController.OnDeployedSceneAdded += deployedSceneListener.OnSceneAdded;
-            scenesController.OnDeployedSceneRemoved += deployedSceneListener.OnSceneRemoved;
-            scenesController.OnDeployedScenesSet += deployedSceneListener.OnSetScenes;
-            scenesController.OnProjectSceneAdded += projectSceneListener.OnSceneAdded;
-            scenesController.OnProjectSceneRemoved += projectSceneListener.OnSceneRemoved;
-            scenesController.OnProjectScenesSet += projectSceneListener.OnSetScenes;
-
-            deployedSceneListener.OnSetScenes(scenesController.deployedScenes);
-            projectSceneListener.OnSetScenes(scenesController.projectScenes);
+            scenesController.AddListener((IDeployedSceneListener)sectionController);
+            scenesController.AddListener((IProjectSceneListener)sectionController);
         }
 
         [TearDown]

@@ -67,7 +67,7 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
     {
         view.SetActive(false);
     }
-    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView)
+    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
     {
         SetSceneData(sceneCardView.sceneData);
     }
