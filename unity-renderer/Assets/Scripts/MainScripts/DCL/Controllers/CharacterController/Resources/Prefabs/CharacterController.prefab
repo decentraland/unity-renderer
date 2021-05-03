@@ -56,6 +56,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -80,6 +81,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3711435650905816617
 GameObject:
   m_ObjectHideFlags: 0
@@ -92,6 +94,7 @@ GameObject:
   - component: {fileID: 4484426042789304097}
   - component: {fileID: 8727652042400483852}
   - component: {fileID: 2374946182991755626}
+  - component: {fileID: 1065171216395579169}
   m_Layer: 15
   m_Name: AvatarRenderer
   m_TagString: Untagged
@@ -162,9 +165,6 @@ MonoBehaviour:
   eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
-  useFx: 1
-  fxSpawnPrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
-    type: 3}
 --- !u!114 &2374946182991755626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,6 +177,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4efd5242010312149afedadae5a61e12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1065171216395579169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3711435650905816617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3e9d3552a3df854f9c68d0fc753626c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatarVisualCue: 1
+  particlePrefab: {fileID: 6770550120539757041, guid: 672039325d1b74c9aab6155bf97154bd,
+    type: 3}
+  followAvatar: 0
 --- !u!1 &4323503760844960451
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,6 +503,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -511,6 +528,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &433841667687764817
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -533,6 +551,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -548,6 +571,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -560,16 +588,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6559289174053957746, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
         type: 3}
