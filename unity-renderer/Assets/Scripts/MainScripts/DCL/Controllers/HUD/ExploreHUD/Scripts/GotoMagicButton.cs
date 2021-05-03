@@ -14,10 +14,7 @@ internal class GotoMagicButton : MonoBehaviour, IPointerEnterHandler, IPointerEx
         buttonAnimator.SetTrigger("Normal");
     }
 
-    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-    {
-        OnGotoMagicPressed?.Invoke();
-    }
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData) { OnGotoMagicPressed?.Invoke(); }
 
     void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
     {

@@ -64,10 +64,7 @@ namespace DCL.Components
             OnSuccess?.Invoke(this);
         }
 
-        public void OnEntityCleanup(ICleanableEventDispatcher source)
-        {
-            Unload();
-        }
+        public void OnEntityCleanup(ICleanableEventDispatcher source) { Unload(); }
 
         public override void Unload()
         {
@@ -75,9 +72,6 @@ namespace DCL.Components
             this.entity.OnCleanupEvent -= OnEntityCleanup;
         }
 
-        public override string ToString()
-        {
-            return $"LoadWrapper ... {loadHelper.ToString()}";
-        }
+        public override string ToString() { return $"LoadWrapper ... {loadHelper.ToString()}"; }
     }
 }

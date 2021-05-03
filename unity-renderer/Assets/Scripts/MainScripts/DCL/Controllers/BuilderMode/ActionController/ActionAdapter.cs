@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ActionAdapter : MonoBehaviour
 {
-    public Image actionImg,notDoneImg;
+    public Image actionImg, notDoneImg;
 
     public Sprite moveSprite,
                   rotateSprite,
@@ -36,7 +36,7 @@ public class ActionAdapter : MonoBehaviour
             case BuildInWorldCompleteAction.ActionType.CREATE:
                 actionImg.sprite = createdSprite;
                 break;
-        
+
             default:
                 actionImg.enabled = false;
                 break;
@@ -46,13 +46,7 @@ public class ActionAdapter : MonoBehaviour
         RefreshIsDone();
     }
 
-    public void RefreshIsDone()
-    {
-        notDoneImg.enabled = !action.isDone;
-    }
+    public void RefreshIsDone() { notDoneImg.enabled = !action.isDone; }
 
-    public void Selected()
-    {
-        OnActionSelected?.Invoke(action, this);
-    }
+    public void Selected() { OnActionSelected?.Invoke(action, this); }
 }

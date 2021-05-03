@@ -28,6 +28,7 @@ public class HotScenesController : MonoBehaviour
             public int usersMax;
             public Vector2Int[] userParcels;
         }
+
         public string id;
         public string name;
         public string creator;
@@ -47,10 +48,7 @@ public class HotScenesController : MonoBehaviour
         public HotSceneInfo[] scenesInfo;
     }
 
-    void Awake()
-    {
-        i = this;
-    }
+    void Awake() { i = this; }
 
     public void UpdateHotScenesList(string json)
     {

@@ -41,17 +41,14 @@ public class BuilderInWorldNFTController
         userProfile.OnUpdate += (x) => FetchNftsFromOwner();
     }
 
-    public void ClearNFTs()
-    {
-        nftsAlreadyInUse.Clear();
-    }
+    public void ClearNFTs() { nftsAlreadyInUse.Clear(); }
 
     public bool IsNFTInUse(string id)
     {
         if (desactivateNFT)
             return false;
 
-        foreach(NFTInfo info in nftsAlreadyInUse)
+        foreach (NFTInfo info in nftsAlreadyInUse)
         {
             if (info.assetContract.address == id)
                 return true;
@@ -66,18 +63,17 @@ public class BuilderInWorldNFTController
 
         foreach (NFTInfo info in nftOwner.assets)
         {
-            if (info.assetContract.address != id) continue;
-            if (!nftsAlreadyInUse.Contains(info)) continue;
+            if (info.assetContract.address != id)
+                continue;
+            if (!nftsAlreadyInUse.Contains(info))
+                continue;
 
             nftsAlreadyInUse.Remove(info);
             OnNFTUsageChange?.Invoke();
         }
     }
 
-    public List<NFTInfo> GetNfts()
-    {
-        return nftOwner.assets;
-    }
+    public List<NFTInfo> GetNfts() { return nftOwner.assets; }
 
     public void UseNFT(string id)
     {
@@ -86,8 +82,10 @@ public class BuilderInWorldNFTController
 
         foreach (NFTInfo info in nftOwner.assets)
         {
-            if (info.assetContract.address != id) continue;
-            if (nftsAlreadyInUse.Contains(info)) continue;
+            if (info.assetContract.address != id)
+                continue;
+            if (nftsAlreadyInUse.Contains(info))
+                continue;
 
             nftsAlreadyInUse.Add(info);
             OnNFTUsageChange?.Invoke();
@@ -97,7 +95,8 @@ public class BuilderInWorldNFTController
 
     private void FetchNftsFromOwner()
     {
-        if (fechNftsCoroutine != null) CoroutineStarter.Stop(fechNftsCoroutine);
+        if (fechNftsCoroutine != null)
+            CoroutineStarter.Stop(fechNftsCoroutine);
         fechNftsCoroutine = CoroutineStarter.Start(FetchNfts());
     }
 
@@ -116,13 +115,13 @@ public class BuilderInWorldNFTController
         string userId = userProfile.ethAddress;
 
         yield return NFTHelper.FetchNFTsFromOwner(userId, (nftOwner) =>
-        {
-            NftsFeteched(nftOwner);
-        },
-        (error) =>
-        {
-            desactivateNFT = true;
-            Debug.Log($"error getting NFT from owner:  {error}");
-        });
+            {
+                NftsFeteched(nftOwner);
+            },
+            (error) =>
+            {
+                desactivateNFT = true;
+                Debug.Log($"error getting NFT from owner:  {error}");
+            });
     }
 }

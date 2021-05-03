@@ -94,7 +94,8 @@ public class TeleportPromptHUDController : IHUD
             if (isNow || startsToday)
             {
                 string eventStatus = EVENT_STRING_LIVE;
-                if (!isNow && startsToday) eventStatus = string.Format(EVENT_STRING_TODAY, eventStart);
+                if (!isNow && startsToday)
+                    eventStatus = string.Format(EVENT_STRING_TODAY, eventStart);
                 view.SetEventInfo(eventData.name, eventStatus, eventData.total_attendees);
             }
         }

@@ -30,10 +30,7 @@ public class PortableExperienceContextMenu : MonoBehaviour
         killButton.onClick.AddListener(KillPortableExperience);
     }
 
-    private void OnDestroy()
-    {
-        killButton.onClick.RemoveListener(KillPortableExperience);
-    }
+    private void OnDestroy() { killButton.onClick.RemoveListener(KillPortableExperience); }
 
     internal void ShowMenu(bool visible, bool instant = false)
     {

@@ -13,10 +13,7 @@ internal class SectionLandView : MonoBehaviour, IDisposable
 
     private bool isDestroyed = false;
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+    private void OnDestroy() { isDestroyed = true; }
 
     public void SetParent(Transform parent)
     {
@@ -24,32 +21,20 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void ResetScrollRect()
-    {
-        scrollRect.verticalNormalizedPosition = 1;
-    }
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
 
-    public Transform GetLandElementsContainer()
-    {
-        return landElementView.GetParent();
-    }
+    public Transform GetLandElementsContainer() { return landElementView.GetParent(); }
 
-    public LandElementView GetLandElementeBaseView()
-    {
-        return landElementView;
-    }
+    public LandElementView GetLandElementeBaseView() { return landElementView; }
 
     public void SetEmpty(bool isEmpty)
     {
         emptyContainer.SetActive(isEmpty);
         contentContainer.SetActive(!isEmpty);
     }
-    
+
     public void Dispose()
     {
         if (!isDestroyed)

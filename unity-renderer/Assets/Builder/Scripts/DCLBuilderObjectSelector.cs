@@ -212,10 +212,7 @@ namespace Builder
             }
         }
 
-        private void OnSceneChanged(ParcelScene scene)
-        {
-            currentScene = scene;
-        }
+        private void OnSceneChanged(ParcelScene scene) { currentScene = scene; }
 
         private void OnBuilderSelectEntity(string[] entitiesId)
         {
@@ -243,10 +240,7 @@ namespace Builder
             }
         }
 
-        private void OnGizmoTransform(string gizmoType)
-        {
-            isSelectionTransformed = true;
-        }
+        private void OnGizmoTransform(string gizmoType) { isSelectionTransformed = true; }
 
         private void OnGizmoTransformEnded(string gizmoType)
         {
@@ -258,10 +252,7 @@ namespace Builder
             isSelectionTransformed = false;
         }
 
-        private void OnObjectsDrag()
-        {
-            isSelectionTransformed = true;
-        }
+        private void OnObjectsDrag() { isSelectionTransformed = true; }
 
         private void OnObjectsDragEnd()
         {
@@ -273,10 +264,7 @@ namespace Builder
             isSelectionTransformed = false;
         }
 
-        private bool CanSelect(DCLBuilderEntity entity)
-        {
-            return entity.hasGizmoComponent;
-        }
+        private bool CanSelect(DCLBuilderEntity entity) { return entity.hasGizmoComponent; }
 
         private void MarkSelected(DCLBuilderEntity entity)
         {
@@ -355,10 +343,7 @@ namespace Builder
             }
         }
 
-        private void SelectionParentCreate()
-        {
-            selectedEntitiesParent = new GameObject("BuilderSelectedEntitiesParent").GetComponent<Transform>();
-        }
+        private void SelectionParentCreate() { selectedEntitiesParent = new GameObject("BuilderSelectedEntitiesParent").GetComponent<Transform>(); }
 
         private void SelectionParentReset()
         {
@@ -379,12 +364,18 @@ namespace Builder
             for (int i = selectedEntitiesParent.childCount - 1; i >= 0; i--)
             {
                 entitiyTransform = selectedEntitiesParent.GetChild(i);
-                if (entitiyTransform.position.x < min.x) min.x = entitiyTransform.position.x;
-                if (entitiyTransform.position.y < min.y) min.y = entitiyTransform.position.y;
-                if (entitiyTransform.position.z < min.z) min.z = entitiyTransform.position.z;
-                if (entitiyTransform.position.x > max.x) max.x = entitiyTransform.position.x;
-                if (entitiyTransform.position.y > max.y) max.y = entitiyTransform.position.y;
-                if (entitiyTransform.position.z > max.z) max.z = entitiyTransform.position.z;
+                if (entitiyTransform.position.x < min.x)
+                    min.x = entitiyTransform.position.x;
+                if (entitiyTransform.position.y < min.y)
+                    min.y = entitiyTransform.position.y;
+                if (entitiyTransform.position.z < min.z)
+                    min.z = entitiyTransform.position.z;
+                if (entitiyTransform.position.x > max.x)
+                    max.x = entitiyTransform.position.x;
+                if (entitiyTransform.position.y > max.y)
+                    max.y = entitiyTransform.position.y;
+                if (entitiyTransform.position.z > max.z)
+                    max.z = entitiyTransform.position.z;
 
                 children.Add(entitiyTransform);
                 SelectionParentRemoveEntity(entitiyTransform);
@@ -400,25 +391,13 @@ namespace Builder
             }
         }
 
-        private void SelectionParentAddEntity(DCLBuilderEntity entity)
-        {
-            SelectionParentAddEntity(entity.transform);
-        }
+        private void SelectionParentAddEntity(DCLBuilderEntity entity) { SelectionParentAddEntity(entity.transform); }
 
-        private void SelectionParentAddEntity(Transform entityTransform)
-        {
-            entityTransform.SetParent(selectedEntitiesParent, true);
-        }
+        private void SelectionParentAddEntity(Transform entityTransform) { entityTransform.SetParent(selectedEntitiesParent, true); }
 
-        private void SelectionParentRemoveEntity(EditableEntity entity)
-        {
-            SelectionParentRemoveEntity(entity.transform);
-        }
+        private void SelectionParentRemoveEntity(EditableEntity entity) { SelectionParentRemoveEntity(entity.transform); }
 
-        private void SelectionParentRemoveEntity(Transform entityTransform)
-        {
-            entityTransform.SetParent(currentScene.transform, true);
-        }
+        private void SelectionParentRemoveEntity(Transform entityTransform) { entityTransform.SetParent(currentScene.transform, true); }
 
         private void SelectionParentRemoveAllEntities()
         {
@@ -428,10 +407,7 @@ namespace Builder
             }
         }
 
-        private bool SelectionParentHasChild(Transform transform)
-        {
-            return transform.parent == selectedEntitiesParent;
-        }
+        private bool SelectionParentHasChild(Transform transform) { return transform.parent == selectedEntitiesParent; }
 
         private RaycastHit CompareSelectionHit(RaycastHit[] hits)
         {
@@ -467,10 +443,7 @@ namespace Builder
             return closestHit;
         }
 
-        private bool IsGizmoHit(RaycastHit hit)
-        {
-            return hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>() != null;
-        }
+        private bool IsGizmoHit(RaycastHit hit) { return hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>() != null; }
 
         private bool IsEntityHitAndSelected(RaycastHit hit)
         {

@@ -37,10 +37,7 @@ namespace DCL.SettingsControls
             downsampleField = settings.GetType().GetField("Downsample", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.ssaoQuality;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.ssaoQuality; }
 
         public override void UpdateSetting(object newValue)
         {

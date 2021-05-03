@@ -9,7 +9,6 @@ public class TutorialStep_Catalog : TutorialStep
     [SerializeField] AudioEvent audioEventSuccess;
     bool isCatalogOpen = false;
 
-
     public override void OnStepStart()
     {
         base.OnStepStart();
@@ -23,7 +22,6 @@ public class TutorialStep_Catalog : TutorialStep
 
         HUDController.i.builderInWorldMainHud.OnCatalogOpen -= CatalogOpened;
     }
-
 
     void CatalogOpened()
     {

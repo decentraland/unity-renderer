@@ -23,5 +23,5 @@ public class NFTShapeConfig : ScriptableObject
         if (UnityEditor.AssetDatabase.Contains(this))
             Resources.UnloadAsset(this);
     }
-#endif    
+#endif
 }

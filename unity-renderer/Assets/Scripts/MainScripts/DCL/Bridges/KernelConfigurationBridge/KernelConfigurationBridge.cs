@@ -2,8 +2,5 @@
 
 public class KernelConfigurationBridge : MonoBehaviour
 {
-    public void SetKernelConfiguration(string json)
-    {
-        KernelConfig.i.Set(json);
-    }
+    public void SetKernelConfiguration(string json) { KernelConfig.i.Set(json); }
 }

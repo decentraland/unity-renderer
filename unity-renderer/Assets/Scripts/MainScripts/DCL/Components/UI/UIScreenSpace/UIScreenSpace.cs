@@ -26,10 +26,7 @@ namespace DCL.Components
             model = new Model();
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_SCREEN_SPACE_SHAPE; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -37,9 +34,7 @@ namespace DCL.Components
                 "Aborted UIScreenShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         private bool initialized = false;
 
@@ -87,10 +82,7 @@ namespace DCL.Components
             }
         }
 
-        private void AllUIHidden_OnChange(bool current, bool previous)
-        {
-            UpdateCanvasVisibility();
-        }
+        private void AllUIHidden_OnChange(bool current, bool previous) { UpdateCanvasVisibility(); }
 
         private void UpdateCanvasVisibility()
         {

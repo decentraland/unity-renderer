@@ -63,15 +63,9 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         menuButton.gameObject.SetActive(false);
     }
 
-    protected virtual void OnDisable()
-    {
-        OnPointerExit(null);
-    }
+    protected virtual void OnDisable() { OnPointerExit(null); }
 
-    protected void OnDestroy()
-    {
-        model.OnTextureUpdateEvent -= OnAvatarImageChange;
-    }
+    protected void OnDestroy() { model.OnTextureUpdateEvent -= OnAvatarImageChange; }
 
     public virtual void Populate(Model model)
     {
@@ -92,8 +86,5 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         playerBlockedImage.enabled = model.blocked;
     }
 
-    private void OnAvatarImageChange(Texture2D texture)
-    {
-        playerImage.texture = texture;
-    }
+    private void OnAvatarImageChange(Texture2D texture) { playerImage.texture = texture; }
 }

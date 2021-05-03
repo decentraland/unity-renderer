@@ -111,10 +111,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent()
-        {
-            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
-        }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE); }
 
         [UnityTest]
         public IEnumerator TestOnClickEvent()

@@ -34,10 +34,7 @@ namespace DCL
 
         Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
-        public static PoolableComponentFactory Create()
-        {
-            return Resources.Load("RuntimeComponentFactory") as PoolableComponentFactory;
-        }
+        public static PoolableComponentFactory Create() { return Resources.Load("RuntimeComponentFactory") as PoolableComponentFactory; }
 
         public void EnsureFactoryDictionary()
         {
@@ -86,10 +83,7 @@ namespace DCL
             }
         }
 
-        private Pool GetPoolForItem(Item item)
-        {
-            return PoolManager.i.GetPool(GetIdForPool(item));
-        }
+        private Pool GetPoolForItem(Item item) { return PoolManager.i.GetPool(GetIdForPool(item)); }
 
         private object GetIdForPool(Item item)
         {

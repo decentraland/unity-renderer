@@ -49,10 +49,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
-    void Awake()
-    {
-        i = this;
-    }
+    void Awake() { i = this; }
 
     private const bool KERNEL_CAN_REMOVE_ENTRIES = false;
     public bool isInitialized { get; private set; } = false;
@@ -93,7 +90,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public UserStatus GetUserStatus(string userId)
     {
         if (!friends.ContainsKey(userId))
-            return new UserStatus() {userId = userId, friendshipStatus = FriendshipStatus.NONE};
+            return new UserStatus() { userId = userId, friendshipStatus = FriendshipStatus.NONE };
 
         return friends[userId];
     }
@@ -103,15 +100,9 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public event Action<string> OnFriendNotFound;
     public event Action OnInitialized;
 
-    public Dictionary<string, UserStatus> GetFriends()
-    {
-        return new Dictionary<string, UserStatus>(friends);
-    }
+    public Dictionary<string, UserStatus> GetFriends() { return new Dictionary<string, UserStatus>(friends); }
 
-    public void FriendNotFound(string name)
-    {
-        OnFriendNotFound?.Invoke(name);
-    }
+    public void FriendNotFound(string name) { OnFriendNotFound?.Invoke(name); }
 
     public void InitializeFriends(string json)
     {
@@ -123,7 +114,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         foreach (var userId in msg.currentFriends)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                {action = FriendshipAction.APPROVED, userId = userId});
+                { action = FriendshipAction.APPROVED, userId = userId });
             if (!processedIds.Contains(userId))
                 processedIds.Add(userId);
         }
@@ -131,7 +122,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         foreach (var userId in msg.requestedFrom)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                {action = FriendshipAction.REQUESTED_FROM, userId = userId});
+                { action = FriendshipAction.REQUESTED_FROM, userId = userId });
             if (!processedIds.Contains(userId))
                 processedIds.Add(userId);
         }
@@ -139,7 +130,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         foreach (var userId in msg.requestedTo)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                {action = FriendshipAction.REQUESTED_TO, userId = userId});
+                { action = FriendshipAction.REQUESTED_TO, userId = userId });
             if (!processedIds.Contains(userId))
                 processedIds.Add(userId);
         }
@@ -161,7 +152,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
             if (KERNEL_CAN_REMOVE_ENTRIES)
             {
                 UpdateFriendshipStatus(new FriendshipUpdateStatusMessage()
-                    {action = FriendshipAction.NONE, userId = userId});
+                    { action = FriendshipAction.NONE, userId = userId });
             }
 
             if (friends.ContainsKey(userId))
@@ -189,7 +180,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
     {
         UserStatus newUserStatus = JsonUtility.FromJson<UserStatus>(json);
 
-        if (!friends.ContainsKey(newUserStatus.userId)) return;
+        if (!friends.ContainsKey(newUserStatus.userId))
+            return;
 
         // Kernel doesn't send the friendship status on this call, we have to keep it or it gets defaulted
         newUserStatus.friendshipStatus = friends[newUserStatus.userId].friendshipStatus;

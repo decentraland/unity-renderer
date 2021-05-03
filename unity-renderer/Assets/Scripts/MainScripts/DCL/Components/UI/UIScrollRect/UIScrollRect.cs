@@ -27,18 +27,12 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public string OnChanged;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public override string referencesContainerPrefabName => "UIScrollRect";
 
-        public UIScrollRect()
-        {
-            model = new Model();
-        }
+        public UIScrollRect() { model = new Model(); }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -46,9 +40,7 @@ namespace DCL.Components
                 "Aborted UIScrollRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override void OnChildAttached(UIShape parent, UIShape childComponent)
         {
@@ -88,7 +80,6 @@ namespace DCL.Components
             referencesContainer.fitter.RefreshRecursively();
         }
 
-
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             UIScrollRectRefContainer rc = referencesContainer;
@@ -115,10 +106,7 @@ namespace DCL.Components
             return null;
         }
 
-        void OnChanged(Vector2 scrollingValues)
-        {
-            WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, 0);
-        }
+        void OnChanged(Vector2 scrollingValues) { WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, 0); }
 
         public override void Dispose()
         {

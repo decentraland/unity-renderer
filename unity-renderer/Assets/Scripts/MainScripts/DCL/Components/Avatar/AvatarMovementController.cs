@@ -30,7 +30,6 @@ namespace DCL
         Vector3 currentPosition
         {
             get { return currentWorldPosition; }
-
             set
             {
                 currentWorldPosition = value;
@@ -40,20 +39,14 @@ namespace DCL
 
         Vector3 currentWorldPosition = Vector3.zero;
 
-        Quaternion currentRotation
-        {
-            get { return avatarTransform.rotation; }
-            set { avatarTransform.rotation = value; }
-        }
+        Quaternion currentRotation { get { return avatarTransform.rotation; } set { avatarTransform.rotation = value; } }
 
         Vector3 targetPosition;
         Quaternion targetRotation;
 
         float movementSpeed = SPEED_SLOW;
 
-        public void OnPoolGet()
-        {
-        }
+        public void OnPoolGet() { }
 
         public void OnPoolRelease()
         {
@@ -61,20 +54,11 @@ namespace DCL
             currentWorldPosition = Vector3.zero;
         }
 
-        void OnEnable()
-        {
-            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-        }
+        void OnEnable() { CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition; }
 
-        void OnDisable()
-        {
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-        }
+        void OnDisable() { CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition; }
 
-        void OnWorldReposition(Vector3 current, Vector3 previous)
-        {
-            avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition);
-        }
+        void OnWorldReposition(Vector3 current, Vector3 previous) { avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition); }
 
         public void OnTransformChanged(DCLTransform.Model model)
         {
@@ -115,7 +99,6 @@ namespace DCL
             }
         }
 
-
         void UpdateLerp(float deltaTime)
         {
             if (Vector3.SqrMagnitude(currentPosition - targetPosition) < SPEED_EPSILON)
@@ -128,10 +111,7 @@ namespace DCL
             UpdateMovement(deltaTime);
         }
 
-        private void UpdateRotation(float deltaTime, Quaternion targetRotation)
-        {
-            currentRotation = Quaternion.Slerp(currentRotation, targetRotation, ROTATION_SPEED * deltaTime);
-        }
+        private void UpdateRotation(float deltaTime, Quaternion targetRotation) { currentRotation = Quaternion.Slerp(currentRotation, targetRotation, ROTATION_SPEED * deltaTime); }
 
         private void UpdateMovement(float deltaTime)
         {
@@ -164,7 +144,8 @@ namespace DCL
 
         void Update()
         {
-            if (avatarTransformValue == null) return;
+            if (avatarTransformValue == null)
+                return;
 
             UpdateLerp(Time.deltaTime);
         }

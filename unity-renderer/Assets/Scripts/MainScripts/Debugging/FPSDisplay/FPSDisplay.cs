@@ -20,10 +20,7 @@ namespace DCL.FPSDisplay
             StartCoroutine(UpdateLabelLoop());
         }
 
-        private void OnDisable()
-        {
-            StopAllCoroutines();
-        }
+        private void OnDisable() { StopAllCoroutines(); }
 
         private IEnumerator UpdateLabelLoop()
         {

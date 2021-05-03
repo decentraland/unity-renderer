@@ -23,8 +23,5 @@ public class QuestsBridge : MonoBehaviour
         QuestsController.i.RemoveQuest(quest);
     }
 
-    private void OnDestroy()
-    {
-        QuestsController.i?.Dispose();
-    }
+    private void OnDestroy() { QuestsController.i?.Dispose(); }
 }

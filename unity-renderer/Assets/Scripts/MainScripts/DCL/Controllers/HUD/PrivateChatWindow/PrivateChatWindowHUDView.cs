@@ -24,15 +24,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour
 
     public string userId { get; internal set; }
 
-    void Awake()
-    {
-        chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
-    }
+    void Awake() { chatHudView.OnSendMessage += ChatHUDView_OnSendMessage; }
 
-    void OnEnable()
-    {
-        DCL.Helpers.Utils.ForceUpdateLayout(transform as RectTransform);
-    }
+    void OnEnable() { DCL.Helpers.Utils.ForceUpdateLayout(transform as RectTransform); }
 
     public static PrivateChatWindowHUDView Create(PrivateChatWindowHUDController controller)
     {
@@ -51,7 +45,8 @@ public class PrivateChatWindowHUDView : MonoBehaviour
 
     public void ChatHUDView_OnSendMessage(ChatMessage message)
     {
-        if (string.IsNullOrEmpty(message.body)) return;
+        if (string.IsNullOrEmpty(message.body))
+            return;
 
         message.messageType = ChatMessage.Type.PRIVATE;
         message.recipient = controller.conversationUserName;
@@ -71,15 +66,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour
         OnClose?.Invoke();
     }
 
-    public void ConfigureTitle(string targetUserName)
-    {
-        windowTitleText.text = targetUserName;
-    }
+    public void ConfigureTitle(string targetUserName) { windowTitleText.text = targetUserName; }
 
-    public void ConfigureProfilePicture(Texture2D texture)
-    {
-        profilePictureImage.texture = texture;
-    }
+    public void ConfigureProfilePicture(Texture2D texture) { profilePictureImage.texture = texture; }
 
     public void ConfigureUserId(string userId)
     {

@@ -53,18 +53,9 @@ public class InspectorBtnView : MonoBehaviour, IInspectorBtnView
         BuilderInWorldUtils.RemoveEventTrigger(inspectorButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
-    public void OnPointerClick(DCLAction_Trigger action)
-    {
-        OnInspectorButtonClick?.Invoke();
-    }
+    public void OnPointerClick(DCLAction_Trigger action) { OnInspectorButtonClick?.Invoke(); }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnShowTooltip?.Invoke(eventData, tooltipText);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
-    public void OnPointerExit()
-    {
-        OnHideTooltip?.Invoke();
-    }
+    public void OnPointerExit() { OnHideTooltip?.Invoke(); }
 }

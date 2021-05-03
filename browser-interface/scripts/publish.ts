@@ -19,7 +19,7 @@ async function checkFiles() {
   console.assert(packageJson.typings, "package.json must contain typings file")
   ensureFileExists(DIST_ROOT, packageJson.main)
   ensureFileExists(DIST_ROOT, packageJson.typings)
-  ensureFileExists(DIST_ROOT, "UnityLoader.js")
+  ensureFileExists(DIST_ROOT, "unity.loader.js")
 }
 
 export async function publish(npmTags: string[], access: string, workingDirectory: string): Promise<string> {

@@ -66,18 +66,13 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
     private static void OnReceiveCopyInput()
     {
         // NOTE: here we set the flag that a copy input was performed to be used in OnBeforeRender function
-        if (i != null) i.copyInput = true;
+        if (i != null)
+            i.copyInput = true;
     }
 
-    public ClipboardWebGL()
-    {
-        Application.onBeforeRender += OnBeforeRender;
-    }
+    public ClipboardWebGL() { Application.onBeforeRender += OnBeforeRender; }
 
-    public void Dispose()
-    {
-        Application.onBeforeRender -= OnBeforeRender;
-    }
+    public void Dispose() { Application.onBeforeRender -= OnBeforeRender; }
 
     void IClipboardHandler.Initialize(Action<string, bool> onRead)
     {
@@ -85,15 +80,9 @@ internal class ClipboardWebGL : Singleton<ClipboardWebGL>, IClipboardHandler, ID
         initialize(OnReceiveReadText, OnReceivePasteInput, OnReceiveCopyInput);
     }
 
-    void IClipboardHandler.RequestWriteText(string text)
-    {
-        writeText(text);
-    }
+    void IClipboardHandler.RequestWriteText(string text) { writeText(text); }
 
-    void IClipboardHandler.RequestGetText()
-    {
-        readText();
-    }
+    void IClipboardHandler.RequestGetText() { readText(); }
 
     void OnBeforeRender()
     {

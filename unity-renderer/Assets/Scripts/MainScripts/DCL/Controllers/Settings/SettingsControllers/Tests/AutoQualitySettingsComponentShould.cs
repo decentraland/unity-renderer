@@ -97,7 +97,7 @@ namespace Tests
             int initialIndex = qualities.Length / 2;
             controller.currentQualityIndex = initialIndex;
 
-            float belowAcceptableFPS = controller.targetFPS * Mathf.Lerp( 0,AutoQualityCappedFPSController.STAY_MARGIN, 0.5f);
+            float belowAcceptableFPS = controller.targetFPS * Mathf.Lerp( 0, AutoQualityCappedFPSController.STAY_MARGIN, 0.5f);
             controller.fpsEvaluations.Clear();
             controller.fpsEvaluations.AddRange(Enumerable.Repeat(belowAcceptableFPS, AutoQualityCappedFPSController.EVALUATIONS_SIZE));
 
@@ -134,7 +134,7 @@ namespace Tests
         }
     }
 
-     public class AutoQualityUncappedFPSControllerShould : IntegrationTestSuite_Legacy
+    public class AutoQualityUncappedFPSControllerShould : IntegrationTestSuite_Legacy
     {
         private AutoQualityUncappedFPSController controller;
         private QualitySettingsData qualities;

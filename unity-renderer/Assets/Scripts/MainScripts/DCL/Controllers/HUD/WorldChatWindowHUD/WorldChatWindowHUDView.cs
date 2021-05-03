@@ -38,10 +38,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
     }
 
-    private void Initialize()
-    {
-        this.closeButton.onClick.AddListener(OnCloseButtonPressed);
-    }
+    private void Initialize() { this.closeButton.onClick.AddListener(OnCloseButtonPressed); }
 
     public void OnCloseButtonPressed()
     {
@@ -67,10 +64,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         OnActivatePreview?.Invoke();
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        DeactivatePreview();
-    }
+    public void OnPointerClick(PointerEventData eventData) { DeactivatePreview(); }
 
     public void OnTextInputValueChanged(string text)
     {
@@ -78,7 +72,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
             chatHudView.inputField.text = lastInputText;
         else
             lastInputText = chatHudView.inputField.text;
-        
+
 
         if (!string.IsNullOrEmpty(controller.lastPrivateMessageReceivedSender) && text == "/r ")
         {

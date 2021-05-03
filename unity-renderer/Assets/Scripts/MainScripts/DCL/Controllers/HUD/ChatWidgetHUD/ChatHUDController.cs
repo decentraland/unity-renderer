@@ -33,15 +33,9 @@ public class ChatHUDController : IDisposable
         closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
     }
 
-    void View_OnPressPrivateMessage(string friendUserId)
-    {
-        OnPressPrivateMessage?.Invoke(friendUserId);
-    }
+    void View_OnPressPrivateMessage(string friendUserId) { OnPressPrivateMessage?.Invoke(friendUserId); }
 
-    private void ContextMenu_OnShowMenu()
-    {
-        view.OnMessageCancelHover();
-    }
+    private void ContextMenu_OnShowMenu() { view.OnMessageCancelHover(); }
 
     private void OnCloseButtonPressed(DCLAction_Trigger action)
     {

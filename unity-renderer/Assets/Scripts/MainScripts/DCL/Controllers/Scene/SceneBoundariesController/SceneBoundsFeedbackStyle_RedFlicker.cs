@@ -15,10 +15,7 @@ namespace DCL.Controllers
             public MeshesInfo meshesInfo;
             public System.Action OnResetMaterials;
 
-            public InvalidMeshInfo(MeshesInfo meshesInfo)
-            {
-                this.meshesInfo = meshesInfo;
-            }
+            public InvalidMeshInfo(MeshesInfo meshesInfo) { this.meshesInfo = meshesInfo; }
 
             public void ResetMaterials(MeshesInfo meshesInfo)
             {
@@ -28,7 +25,8 @@ namespace DCL.Controllers
 
             public void ResetMaterials()
             {
-                if (meshesInfo.meshRootGameObject == null) return;
+                if (meshesInfo.meshRootGameObject == null)
+                    return;
 
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
@@ -61,10 +59,7 @@ namespace DCL.Controllers
             invalidSubMeshMaterial = Resources.Load(INVALID_SUBMESH_MATERIAL_NAME) as Material;
         }
 
-        public void OnRendererExitBounds(Renderer renderer)
-        {
-            invalidSubmeshes.Add(renderer);
-        }
+        public void OnRendererExitBounds(Renderer renderer) { invalidSubmeshes.Add(renderer); }
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
@@ -79,7 +74,8 @@ namespace DCL.Controllers
 
         void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
         {
-            if (meshesInfo == null || WasGameObjectInAValidPosition(meshesInfo.innerGameObject)) return;
+            if (meshesInfo == null || WasGameObjectInAValidPosition(meshesInfo.innerGameObject))
+                return;
 
             PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(meshesInfo.meshRootGameObject);
 
@@ -102,7 +98,8 @@ namespace DCL.Controllers
 
         void AddInvalidMeshEffect(MeshesInfo meshesInfo)
         {
-            if (!WasGameObjectInAValidPosition(meshesInfo.innerGameObject)) return;
+            if (!WasGameObjectInAValidPosition(meshesInfo.innerGameObject))
+                return;
 
             InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(meshesInfo);
 
@@ -144,10 +141,7 @@ namespace DCL.Controllers
             invalidMeshesInfo.Add(meshesInfo.innerGameObject, invalidMeshInfo);
         }
 
-        public bool WasGameObjectInAValidPosition(GameObject gameObject)
-        {
-            return !invalidMeshesInfo.ContainsKey(gameObject);
-        }
+        public bool WasGameObjectInAValidPosition(GameObject gameObject) { return !invalidMeshesInfo.ContainsKey(gameObject); }
 
         public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
         {

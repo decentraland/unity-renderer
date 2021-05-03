@@ -12,8 +12,5 @@ public class TMPFontOnToggle : UIToggle
 
     public TMP_FontAsset offFont;
 
-    protected override void OnValueChanged(bool isOn)
-    {
-        targetText.font = isOn ? onFont : offFont;
-    }
+    protected override void OnValueChanged(bool isOn) { targetText.font = isOn ? onFont : offFont; }
 }

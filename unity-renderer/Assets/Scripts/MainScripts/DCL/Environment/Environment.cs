@@ -80,10 +80,7 @@ namespace DCL
         /// <summary>
         /// Dispose() all the current environment systems.
         /// </summary>
-        public static void Dispose()
-        {
-            i?.Dispose();
-        }
+        public static void Dispose() { i?.Dispose(); }
 
         public class Model
         {

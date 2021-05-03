@@ -17,15 +17,13 @@ namespace DCL.SettingsControls
 
             lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
 
-            if (lightweightRenderPipelineAsset == null) return;
+            if (lightweightRenderPipelineAsset == null)
+                return;
 
             lwrpaShadowResolutionField = lightweightRenderPipelineAsset.GetType().GetField("m_MainLightShadowmapResolution", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
-        public override object GetStoredValue()
-        {
-            return (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - 8;
-        }
+        public override object GetStoredValue() { return (int)Mathf.Log((int)currentQualitySetting.shadowResolution, 2) - 8; }
 
         public override void UpdateSetting(object newValue)
         {

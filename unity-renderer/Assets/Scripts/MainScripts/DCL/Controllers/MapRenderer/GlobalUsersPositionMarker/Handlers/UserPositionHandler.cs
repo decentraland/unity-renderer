@@ -15,10 +15,7 @@ internal class UserPositionHandler : IDisposable
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoords;
     }
 
-    public void Dispose()
-    {
-        CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoords;
-    }
+    public void Dispose() { CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoords; }
 
     private void OnPlayerCoords(Vector2Int current, Vector2Int prev)
     {

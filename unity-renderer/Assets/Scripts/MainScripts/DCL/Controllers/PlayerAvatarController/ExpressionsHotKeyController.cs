@@ -52,8 +52,5 @@ public class ExpressionsHotKeyController : MonoBehaviour
         sendKissExpression.inputAction.OnTriggered += sendKissDelegate;
     }
 
-    private void ExpressionCalled(string id)
-    {
-        ownUserProfile.SetAvatarExpression(id);
-    }
+    private void ExpressionCalled(string id) { ownUserProfile.SetAvatarExpression(id); }
 }

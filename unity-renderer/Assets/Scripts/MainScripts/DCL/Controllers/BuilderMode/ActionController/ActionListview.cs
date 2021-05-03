@@ -8,7 +8,6 @@ public class ActionListview : ListView<BuildInWorldCompleteAction>
 
     public System.Action<BuildInWorldCompleteAction> OnActionSelected;
 
-
     List<ActionAdapter> actionList = new List<ActionAdapter>();
     public override void AddAdapters()
     {
@@ -20,10 +19,7 @@ public class ActionListview : ListView<BuildInWorldCompleteAction>
         }
     }
 
-    public void ActionSelected(BuildInWorldCompleteAction action, ActionAdapter adapter)
-    {
-        OnActionSelected?.Invoke(action);
-    }
+    public void ActionSelected(BuildInWorldCompleteAction action, ActionAdapter adapter) { OnActionSelected?.Invoke(action); }
 
     public override void RemoveAdapters()
     {
@@ -41,7 +37,7 @@ public class ActionListview : ListView<BuildInWorldCompleteAction>
 
     public void RefreshInfo()
     {
-        foreach(ActionAdapter adapter in actionList)
+        foreach (ActionAdapter adapter in actionList)
         {
             adapter.RefreshIsDone();
         }

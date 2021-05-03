@@ -21,14 +21,12 @@ namespace AssetPromiseKeeper_Tests
             yield break;
         }
 
-
         [UnityTearDown]
         protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
             yield break;
         }
-
 
         protected abstract AssetPromiseType CreatePromise();
 
@@ -78,7 +76,6 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom.asset == null);
             keeper.library.Cleanup();
         }
-
 
         [UnityTest]
         public IEnumerator AnyAssetIsLoadedAndThenUnloaded()

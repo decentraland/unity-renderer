@@ -58,25 +58,29 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
     public void ProcessCurrentMessagesOnControllerInitialize()
     {
         IChatController chatController = Substitute.For<IChatController>();
-        chatController.GetEntries().ReturnsForAnyArgs(new List<ChatMessage>
-        {
-            new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
-            new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
-        });
+        chatController.GetEntries()
+                      .ReturnsForAnyArgs(new List<ChatMessage>
+                      {
+                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message1"),
+                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message2"),
+                          new ChatMessage(ChatMessage.Type.PRIVATE, testProfileModel.userId, "message3"),
+                      });
         InitializeChatWindowController(chatController);
 
         Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
         Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
         Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
         Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
     }
@@ -97,15 +101,18 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         Assert.AreEqual(3, controller.view.chatHudView.entries.Count);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(0).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(0).senderId);
         Assert.AreEqual("message1", GetViewEntryModel(0).bodyText);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(1).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(1).senderId);
         Assert.AreEqual("message2", GetViewEntryModel(1).bodyText);
 
-        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);;
+        Assert.AreEqual(ChatMessage.Type.PRIVATE, GetViewEntryModel(2).messageType);
+        ;
         Assert.AreEqual(testProfileModel.userId, GetViewEntryModel(2).senderId);
         Assert.AreEqual("message3", GetViewEntryModel(2).bodyText);
     }
@@ -130,7 +137,7 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() {body = "test message", recipient = "testUser"});
+        controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
         Assert.IsTrue(messageWasSent);
         Assert.AreEqual("", controller.view.chatHudView.inputField.text);
         WebInterface.OnMessageFromEngine -= messageCallback;
@@ -194,8 +201,5 @@ public class PrivateChatWindowHUDShould : IntegrationTestSuite_Legacy
         NotificationsController.i.Dispose();
     }
 
-    private ChatEntry.Model GetViewEntryModel(int index)
-    {
-        return controller.view.chatHudView.entries[index].model;
-    }
+    private ChatEntry.Model GetViewEntryModel(int index) { return controller.view.chatHudView.entries[index].model; }
 }

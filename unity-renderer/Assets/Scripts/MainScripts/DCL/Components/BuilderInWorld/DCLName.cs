@@ -18,23 +18,14 @@ public class DCLName : BaseDisposable
     {
         public string value;
 
-        public override BaseModel GetDataFromJSON(string json)
-        {
-            return Utils.SafeFromJson<Model>(json);
-        }
+        public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
     }
 
-    public DCLName()
-    {
-        model = new Model();
-    }
+    public DCLName() { model = new Model(); }
 
     private string oldName;
 
-    public override int GetClassId()
-    {
-        return (int) CLASS_ID.NAME;
-    }
+    public override int GetClassId() { return (int) CLASS_ID.NAME; }
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
     {

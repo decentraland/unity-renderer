@@ -8,16 +8,10 @@ namespace Tests.BuildModeHUDViews
         private ShortcutsView shortcutsView;
 
         [SetUp]
-        public void SetUp()
-        {
-            shortcutsView = ShortcutsView.Create();
-        }
+        public void SetUp() { shortcutsView = ShortcutsView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(shortcutsView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(shortcutsView.gameObject); }
 
         [Test]
         [TestCase(true)]

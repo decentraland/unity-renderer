@@ -10,16 +10,10 @@ namespace InputController_Tests
         private InputAction_Trigger action;
 
         [SetUp]
-        public void SetUp()
-        {
-            action = ScriptableObject.CreateInstance<InputAction_Trigger>();
-        }
+        public void SetUp() { action = ScriptableObject.CreateInstance<InputAction_Trigger>(); }
 
         [Test]
-        public void Have_WasTriggeredThisFrame_Off_ByDefault()
-        {
-            Assert.IsFalse(action.WasTriggeredThisFrame());
-        }
+        public void Have_WasTriggeredThisFrame_Off_ByDefault() { Assert.IsFalse(action.WasTriggeredThisFrame()); }
 
         [Test]
         public void Have_WasTriggeredThisFrame_On_AfterRaisingInTheSameFrame()
@@ -70,16 +64,10 @@ namespace InputController_Tests
         private InputAction_Hold action;
 
         [SetUp]
-        public void SetUp()
-        {
-            action = ScriptableObject.CreateInstance<InputAction_Hold>();
-        }
+        public void SetUp() { action = ScriptableObject.CreateInstance<InputAction_Hold>(); }
 
         [Test]
-        public void BeOffByDefault()
-        {
-            Assert.IsFalse(action.isOn);
-        }
+        public void BeOffByDefault() { Assert.IsFalse(action.isOn); }
 
         [Test]
         public void CallStartedEvent()
@@ -132,16 +120,10 @@ namespace InputController_Tests
         private InputAction_Measurable action;
 
         [SetUp]
-        public void SetUp()
-        {
-            action = ScriptableObject.CreateInstance<InputAction_Measurable>();
-        }
+        public void SetUp() { action = ScriptableObject.CreateInstance<InputAction_Measurable>(); }
 
         [Test]
-        public void Return_0_AsDefaultValue()
-        {
-            Assert.AreEqual(0, action.GetValue());
-        }
+        public void Return_0_AsDefaultValue() { Assert.AreEqual(0, action.GetValue()); }
 
         [Test]
         [TestCase(1)]

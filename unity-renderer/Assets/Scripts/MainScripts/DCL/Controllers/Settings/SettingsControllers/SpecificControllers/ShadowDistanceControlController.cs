@@ -17,10 +17,7 @@ namespace DCL.SettingsControls
             lightweightRenderPipelineAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
         }
 
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.shadowDistance;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.shadowDistance; }
 
         public override void UpdateSetting(object newValue)
         {

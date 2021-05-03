@@ -24,7 +24,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(10, 50, -90);
                 Vector3 scale = new Vector3(0.7f, 0.7f, 0.7f);
 
-                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
+                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
@@ -47,7 +47,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(101, 51, -91);
                 Vector3 scale = new Vector3(1.7f, 3.7f, -0.7f);
 
-                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
+                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 
@@ -70,7 +70,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(0, 0, 0);
                 Vector3 scale = new Vector3(1, 1, 1);
 
-                var transformModel = new DCLTransform.Model {position = position, rotation = rotationQuaternion, scale = scale};
+                var transformModel = new DCLTransform.Model { position = position, rotation = rotationQuaternion, scale = scale };
 
                 TestHelpers.SetEntityTransform(scene, entity, transformModel);
 

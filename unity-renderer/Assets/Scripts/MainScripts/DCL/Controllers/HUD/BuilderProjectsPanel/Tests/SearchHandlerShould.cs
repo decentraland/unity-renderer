@@ -11,21 +11,21 @@ namespace Tests
         {
             List<SearchItem_Mock> list = new List<SearchItem_Mock>
             {
-                new SearchItem_Mock(new[] {"temptation", "good"}),
-                new SearchItem_Mock(new[] {"temporal", "variable"}),
-                new SearchItem_Mock(new[] {"20 degrees", "temperature"}),
-                new SearchItem_Mock(new[] {"I dont", "know"}),
-                new SearchItem_Mock(new[] {"empty"})
+                new SearchItem_Mock(new[] { "temptation", "good" }),
+                new SearchItem_Mock(new[] { "temporal", "variable" }),
+                new SearchItem_Mock(new[] { "20 degrees", "temperature" }),
+                new SearchItem_Mock(new[] { "I dont", "know" }),
+                new SearchItem_Mock(new[] { "empty" })
             };
 
             const string searchText = "temp";
             var result = SearchHelper.Search(searchText, list);
 
-            Assert.IsTrue(result.Contains(list[0]),$"keywords {list[0]} should appear while searching {searchText}");
-            Assert.IsTrue(result.Contains(list[1]),$"keywords {list[1]} should appear while searching {searchText}");
-            Assert.IsTrue(result.Contains(list[2]),$"keywords {list[2]} should appear while searching {searchText}");
-            Assert.IsFalse(result.Contains(list[3]),$"keywords {list[3]} shouldn't appear while searching {searchText}");
-            Assert.IsFalse(result.Contains(list[4]),$"keywords {list[4]} shouldn't appear while searching {searchText}");
+            Assert.IsTrue(result.Contains(list[0]), $"keywords {list[0]} should appear while searching {searchText}");
+            Assert.IsTrue(result.Contains(list[1]), $"keywords {list[1]} should appear while searching {searchText}");
+            Assert.IsTrue(result.Contains(list[2]), $"keywords {list[2]} should appear while searching {searchText}");
+            Assert.IsFalse(result.Contains(list[3]), $"keywords {list[3]} shouldn't appear while searching {searchText}");
+            Assert.IsFalse(result.Contains(list[4]), $"keywords {list[4]} shouldn't appear while searching {searchText}");
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Tests
                 new SortItem_Mock(2)
             };
 
-            SearchHelper.Sort("",list,true);
+            SearchHelper.Sort("", list, true);
 
             var prev = list[0].value;
             for (int i = 1; i < list.Count; i++)
@@ -51,7 +51,7 @@ namespace Tests
                 prev = list[i].value;
             }
 
-            SearchHelper.Sort("",list,false);
+            SearchHelper.Sort("", list, false);
 
             prev = list[0].value;
             for (int i = 1; i < list.Count; i++)
@@ -75,7 +75,7 @@ namespace Tests
             bool filterByOddValue = false;
 
             var searchHandler = new SearchHandler<ItemForHandler_Mock>(
-                sortingTypes: new []{"NAME","VALUE"},
+                sortingTypes: new [] { "NAME", "VALUE" },
                 filterPredicate: (item =>
                 {
                     int expected = filterByOddValue ? 0 : 1;
@@ -85,6 +85,7 @@ namespace Tests
             searchHandler.SetSearchableList(list);
 
             bool filteredByOddCalled = false;
+
             void ResultFilterOdd(List<ItemForHandler_Mock> oddFiltered)
             {
                 filteredByOddCalled = true;
@@ -112,11 +113,12 @@ namespace Tests
             };
 
             var searchHandler = new SearchHandler<ItemForHandler_Mock>(
-                sortingTypes: new []{"NAME","VALUE"},filterPredicate: null);
+                sortingTypes: new [] { "NAME", "VALUE" }, filterPredicate: null);
 
             searchHandler.SetSearchableList(list);
 
             bool sortCalled = false;
+
             void ResultFilterOdd(List<ItemForHandler_Mock> sortedList)
             {
                 sortCalled = true;
@@ -135,25 +137,16 @@ namespace Tests
         {
             public string[] keywords { get; }
 
-            public SearchItem_Mock(string[] keywords)
-            {
-                this.keywords = keywords;
-            }
+            public SearchItem_Mock(string[] keywords) { this.keywords = keywords; }
 
-            public override string ToString()
-            {
-                return String.Join(",", keywords);
-            }
+            public override string ToString() { return String.Join(",", keywords); }
         }
 
         class SortItem_Mock : ISortable<SortItem_Mock>
         {
             public int value;
 
-            public SortItem_Mock(int someValue)
-            {
-                value = someValue;
-            }
+            public SortItem_Mock(int someValue) { value = someValue; }
 
             public int Compare(string sortType, bool isDescendingOrder, SortItem_Mock other)
             {
@@ -165,10 +158,7 @@ namespace Tests
                 return value - other.value;
             }
 
-            public override string ToString()
-            {
-                return value.ToString();
-            }
+            public override string ToString() { return value.ToString(); }
         }
 
         class ItemForHandler_Mock : ISearchable, ISortable<ItemForHandler_Mock>
@@ -179,7 +169,7 @@ namespace Tests
 
             public ItemForHandler_Mock(string name, int someValue)
             {
-                keywords = new[] {name};
+                keywords = new[] { name };
                 this.value = someValue;
                 this.name = name;
             }
@@ -189,8 +179,8 @@ namespace Tests
                 switch (sortType)
                 {
                     case "NAME":
-                        return isDescendingOrder ?
-                            String.Compare(keywords[0], other.keywords[0], StringComparison.Ordinal)
+                        return isDescendingOrder
+                            ? String.Compare(keywords[0], other.keywords[0], StringComparison.Ordinal)
                             : String.Compare(other.keywords[0], keywords[0], StringComparison.Ordinal);
                     case "VALUE":
                         return isDescendingOrder ? value.CompareTo(other.value) : other.value.CompareTo(other);

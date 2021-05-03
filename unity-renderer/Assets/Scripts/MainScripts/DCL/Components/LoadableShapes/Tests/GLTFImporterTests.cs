@@ -93,7 +93,6 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
         UnityEngine.Assertions.Assert.AreEqual(2, PersistentAssetCache.StreamCacheByUri.Count, "Buffer cache is colliding!");
     }
 
-
     [UnityTest]
     public IEnumerator CurvesAreOptimizedCorrectly()
     {

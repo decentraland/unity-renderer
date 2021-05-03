@@ -44,13 +44,7 @@ internal class ViewPool<T> : IDisposable where T : MonoBehaviour
         pooledHotScenCells.Enqueue(cellView);
     }
 
-    public Queue<T>.Enumerator GetEnumerator()
-    {
-        return pooledHotScenCells.GetEnumerator();
-    }
+    public Queue<T>.Enumerator GetEnumerator() { return pooledHotScenCells.GetEnumerator(); }
 
-    T CreateView()
-    {
-        return GameObject.Instantiate(baseView, baseView.transform.parent);
-    }
+    T CreateView() { return GameObject.Instantiate(baseView, baseView.transform.parent); }
 }

@@ -6,8 +6,5 @@ using UnityEngine;
 /// </summary>
 public class ExpandableAttribute : PropertyAttribute
 {
-	public ExpandableAttribute()
-	{
-
-	}
+    public ExpandableAttribute() { }
 }

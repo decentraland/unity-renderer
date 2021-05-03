@@ -12,10 +12,7 @@ public class UISizeFitter : MonoBehaviour
 
     RectTransform canvasChildHookRT;
 
-    public void Refresh()
-    {
-        FitSizeToChildren(adjustWidth, adjustHeight);
-    }
+    public void Refresh() { FitSizeToChildren(adjustWidth, adjustHeight); }
 
     void EnsureCanvasChildHookRectTransform()
     {
@@ -149,16 +146,10 @@ public class UISizeFitter : MonoBehaviour
         }
     }
 
-    public void RefreshRecursively(Transform startTransform = null)
-    {
-        Utils.InverseTransformChildTraversal<UISizeFitter>(RefreshRecursively_Node, transform);
-    }
+    public void RefreshRecursively(Transform startTransform = null) { Utils.InverseTransformChildTraversal<UISizeFitter>(RefreshRecursively_Node, transform); }
 
 #if UNITY_EDITOR
-    private void Awake()
-    {
-        forceRefresh = false;
-    }
+    private void Awake() { forceRefresh = false; }
 
     //NOTE(Brian): Only used for debugging
     public bool forceRefresh = false;

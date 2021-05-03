@@ -114,8 +114,5 @@ public class UnreadWorldNotificationBadgeShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(false, unreadWorldNotificationBadge.notificationContainer.activeSelf, "Notificaton container should be deactivated");
     }
 
-    private static void ReadLastMessages()
-    {
-        CommonScriptableObjects.lastReadWorldChatMessages.Set(System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-    }
+    private static void ReadLastMessages() { CommonScriptableObjects.lastReadWorldChatMessages.Set(System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()); }
 }

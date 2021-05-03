@@ -33,7 +33,8 @@ public static class AvatarUtils
             {
                 Material m = sharedMats[i1];
 
-                if (m == null) continue;
+                if (m == null)
+                    continue;
 
                 string materialName = m.name.ToLower();
 

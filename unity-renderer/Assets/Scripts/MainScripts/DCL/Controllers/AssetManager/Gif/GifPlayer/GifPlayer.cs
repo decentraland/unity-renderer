@@ -20,14 +20,9 @@ namespace DCL
         private Coroutine updateRoutine = null;
         private float currentTimeDelay = 0;
 
-        public GifPlayer(Asset_Gif asset)
-        {
-            SetGif(asset);
-        }
+        public GifPlayer(Asset_Gif asset) { SetGif(asset); }
 
-        public GifPlayer()
-        {
-        }
+        public GifPlayer() { }
 
         /// <summary>
         /// Set gif asset for the player
@@ -75,10 +70,7 @@ namespace DCL
             }
         }
 
-        public void Dispose()
-        {
-            Stop();
-        }
+        public void Dispose() { Stop(); }
 
         private IEnumerator UpdateRoutine()
         {
@@ -89,10 +81,7 @@ namespace DCL
             }
         }
 
-        private bool IsValidAsset()
-        {
-            return gifAsset?.frames != null && gifAsset.frames.Length > 0;
-        }
+        private bool IsValidAsset() { return gifAsset?.frames != null && gifAsset.frames.Length > 0; }
 
         private void UpdateFrame()
         {

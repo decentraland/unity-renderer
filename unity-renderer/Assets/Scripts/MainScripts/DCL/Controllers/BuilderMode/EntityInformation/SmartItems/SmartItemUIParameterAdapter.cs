@@ -27,24 +27,18 @@ public class SmartItemUIParameterAdapter : MonoBehaviour
         SetInfo();
     }
 
-    public virtual void SetInfo()
-    {
+    public virtual void SetInfo() { }
 
-    }
-
-    public virtual void ChangeParameter()
-    {
-        OnParameterChange?.Invoke(currentParameter);
-    }
+    public virtual void ChangeParameter() { OnParameterChange?.Invoke(currentParameter); }
 
     protected virtual void SetParameterValue(object value)
     {
-        if (currentValues.ContainsKey(KEY_NAME))        
+        if (currentValues.ContainsKey(KEY_NAME))
             currentValues[KEY_NAME] = value;
-        
-        else       
+
+        else
             currentValues.Add(KEY_NAME, value);
-        
+
     }
 
     protected virtual object GetParameterValue()
@@ -54,7 +48,7 @@ public class SmartItemUIParameterAdapter : MonoBehaviour
 
         if (!string.IsNullOrEmpty(currentParameter.@default))
             return currentParameter.@default;
-        
+
         return null;
     }
 }

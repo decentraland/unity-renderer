@@ -78,9 +78,6 @@ namespace Tests
         }
 
         [Test]
-        public void MinimapHUD_OptionsPanel()
-        {
-            Assert.IsNotNull(controller);
-        }
+        public void MinimapHUD_OptionsPanel() { Assert.IsNotNull(controller); }
     }
 }

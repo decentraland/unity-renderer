@@ -40,7 +40,8 @@ namespace DCL
             });
             scrollRect.onValueChanged.AddListener((x) =>
             {
-                if (!isOpen) return;
+                if (!isOpen)
+                    return;
 
                 MapRenderer.i.atlas.UpdateCulling();
                 toastView.OnCloseClick();
@@ -48,7 +49,8 @@ namespace DCL
 
             toggleNavMapDelegate = (x) =>
             {
-                if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap();
+                if (!Input.GetKeyDown(KeyCode.Escape) || isOpen)
+                    ToggleNavMap();
             };
 
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
@@ -77,7 +79,8 @@ namespace DCL
 
         internal void ToggleNavMap(bool ignoreCursorLock = false)
         {
-            if (MapRenderer.i == null) return;
+            if (MapRenderer.i == null)
+                return;
 
             scrollRect.StopMovement();
 

@@ -32,7 +32,7 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator ResetMaterialCorrectlyWhenInvalidEntitiesAreRemoved()
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
@@ -46,7 +46,7 @@ namespace SceneBoundariesCheckerTests
 
             SBC_Asserts.AssertMeshIsValid(entity.meshesInfo);
             // Move object to surpass the scene boundaries
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(18, 1, 18)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
 
             yield return null;
 
@@ -60,7 +60,7 @@ namespace SceneBoundariesCheckerTests
 
             var entity2 = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.SetEntityTransform(scene, entity2, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity2, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
             TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
@@ -76,81 +76,45 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode()
-        {
-            yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene);
-        }
+        public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.PShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode()
-        {
-            yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene);
-        }
+        public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
         [Explicit("Test taking too long")]
         [Category("Explicit")]
-        public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode()
-        {
-            yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene);
-        }
+        public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        public IEnumerator PShapeIsInvalidatedWhenLeavingBoundsDebugMode()
-        {
-            yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene);
-        }
+        public IEnumerator PShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode()
-        {
-            yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene);
-        }
+        public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
         [Explicit("Test taking too long")]
         [Category("Explicit")]
-        public IEnumerator NFTShapeIsInvalidatedWhenLeavingBoundsDebugMode()
-        {
-            yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene);
-        }
+        public IEnumerator NFTShapeIsInvalidatedWhenLeavingBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        public IEnumerator PShapeIsResetWhenReenteringBoundsDebugMode()
-        {
-            yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene);
-        }
+        public IEnumerator PShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
         [Explicit("Test taking too long")]
         [Category("Explicit")]
-        public IEnumerator NFTShapeIsResetWhenReenteringBoundsDebugMode()
-        {
-            yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene);
-        }
+        public IEnumerator NFTShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
-        public IEnumerator ChildShapeIsEvaluatedDebugMode()
-        {
-            yield return SBC_Asserts.ChildShapeIsEvaluated(scene);
-        }
+        public IEnumerator ChildShapeIsEvaluatedDebugMode() { yield return SBC_Asserts.ChildShapeIsEvaluated(scene); }
 
         [UnityTest]
-        public IEnumerator ChildShapeIsEvaluatedOnShapelessParentDebugMode()
-        {
-            yield return SBC_Asserts.ChildShapeIsEvaluatedOnShapelessParent(scene);
-        }
+        public IEnumerator ChildShapeIsEvaluatedOnShapelessParentDebugMode() { yield return SBC_Asserts.ChildShapeIsEvaluatedOnShapelessParent(scene); }
 
         [UnityTest]
-        public IEnumerator HeightIsEvaluatedDebugMode()
-        {
-            yield return SBC_Asserts.HeightIsEvaluated(scene);
-        }
+        public IEnumerator HeightIsEvaluatedDebugMode() { yield return SBC_Asserts.HeightIsEvaluated(scene); }
 
         [UnityTest]
-        public IEnumerator GLTFShapeIsResetWhenReenteringBoundsDebugMode()
-        {
-            yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene);
-        }
+        public IEnumerator GLTFShapeIsResetWhenReenteringBoundsDebugMode() { yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene); }
     }
 }

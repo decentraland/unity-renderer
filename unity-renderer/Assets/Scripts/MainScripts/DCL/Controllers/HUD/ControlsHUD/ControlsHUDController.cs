@@ -67,10 +67,7 @@ public class ControlsHUDController : IHUD
         }
     }
 
-    public void ToggleVisibility()
-    {
-        SetVisibility(!IsVisible());
-    }
+    public void ToggleVisibility() { SetVisibility(!IsVisible()); }
 
     public bool IsVisible()
     {
@@ -87,8 +84,5 @@ public class ControlsHUDController : IHUD
         SetVisibility(false);
     }
 
-    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous)
-    {
-        view?.voiceChatButton.SetActive(current.comms.voiceChatEnabled);
-    }
+    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { view?.voiceChatButton.SetActive(current.comms.voiceChatEnabled); }
 }

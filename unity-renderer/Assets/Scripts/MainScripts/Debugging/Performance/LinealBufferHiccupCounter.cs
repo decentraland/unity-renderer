@@ -12,15 +12,9 @@ namespace DCL.FPSDisplay
         public int HiccupsCountInBuffer { get => hiccupsCountInBuffer; private set => hiccupsCountInBuffer = value; }
         public float HiccupsSum { get => hiccupsSum; set => hiccupsSum = value; }
 
-        public float CurrentFPSCount()
-        {
-            return counter.CurrentFPSCount();
-        }
+        public float CurrentFPSCount() { return counter.CurrentFPSCount(); }
 
-        public float GetTotalSeconds()
-        {
-            return bufferCount;
-        }
+        public float GetTotalSeconds() { return bufferCount; }
 
         public void AddDeltaTime(float valueInSeconds)
         {
@@ -40,19 +34,10 @@ namespace DCL.FPSDisplay
             counter.AddDeltaTime(valueInSeconds);
         }
 
-        public int CurrentHiccupCount()
-        {
-            return hiccupsCountInBuffer;
-        }
+        public int CurrentHiccupCount() { return hiccupsCountInBuffer; }
 
-        private bool IsHiccup(float value)
-        {
-            return value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
-        }
+        private bool IsHiccup(float value) { return value > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS; }
 
-        public float GetHiccupSum()
-        {
-            return hiccupsSum;
-        }
+        public float GetHiccupSum() { return hiccupsSum; }
     }
 }

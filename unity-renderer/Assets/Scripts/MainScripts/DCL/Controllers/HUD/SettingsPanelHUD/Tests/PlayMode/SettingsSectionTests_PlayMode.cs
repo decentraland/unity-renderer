@@ -56,10 +56,11 @@ namespace SettingsSectionTests
             yield return null;
 
             // Assert
-            sectionController.Received(1).AddWidget(
-                Arg.Any<ISettingsWidgetView>(),
-                Arg.Any<ISettingsWidgetController>(),
-                Arg.Any<SettingsWidgetModel>());
+            sectionController.Received(1)
+                             .AddWidget(
+                                 Arg.Any<ISettingsWidgetView>(),
+                                 Arg.Any<ISettingsWidgetController>(),
+                                 Arg.Any<SettingsWidgetModel>());
         }
     }
 }

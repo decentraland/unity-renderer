@@ -36,15 +36,9 @@ namespace DCL.Components
         public TMP_InputField inputField => referencesContainer.inputField;
         public RectTransform rectTransform => referencesContainer.rectTransform;
 
-        public UIInputText()
-        {
-            model = new Model();
-        }
+        public UIInputText() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_INPUT_TEXT_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_INPUT_TEXT_SHAPE; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -52,9 +46,7 @@ namespace DCL.Components
                 "Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -92,10 +84,7 @@ namespace DCL.Components
             Interface.WebInterface.ReportOnFocusEvent(scene.sceneData.id, model.onFocus);
         }
 
-        public void OnChanged(string changedText)
-        {
-            Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText);
-        }
+        public void OnChanged(string changedText) { Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, changedText); }
 
         public void OnBlur(string call)
         {

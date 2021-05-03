@@ -82,10 +82,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent()
-        {
-            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
-        }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK); }
 
         [UnityTest]
         public IEnumerator NormalizedSize()
@@ -404,9 +401,9 @@ namespace Tests
             Assert.AreEqual(150f, uiContainerStack.childHookRectTransform.rect.width, 0.01f);
             Assert.AreEqual(
                 childComponent1.referencesContainer.rectTransform.rect.height + childComponent2.referencesContainer
-                                                                                  .rectTransform.rect.height
+                                                                                               .rectTransform.rect.height
                                                                               + childComponent3.referencesContainer
-                                                                                  .rectTransform.rect.height,
+                                                                                               .rectTransform.rect.height,
                 uiContainerStack.childHookRectTransform.rect.height, 0.01f);
 
             screenSpaceShape.Dispose();

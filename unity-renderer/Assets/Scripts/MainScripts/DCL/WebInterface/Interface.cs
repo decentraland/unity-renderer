@@ -107,6 +107,13 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class AllScenesEvent<T>
+        {
+            public string eventType;
+            public T payload;
+        }
+
+        [System.Serializable]
         public class UUIDEvent<TPayload>
             where TPayload : class, new()
         {
@@ -166,6 +173,7 @@ namespace DCL.Interface
         {
             public ACTION_BUTTON buttonId = ACTION_BUTTON.POINTER;
         }
+
         [System.Serializable]
         public class SendChatMessageEvent
         {
@@ -635,6 +643,15 @@ namespace DCL.Interface
             SendMessage("SceneEvent", sceneEvent);
         }
 
+        private static void SendAllScenesEvent<T>(string eventType, T payload)
+        {
+            AllScenesEvent<T> allScenesEvent = new AllScenesEvent<T>();
+            allScenesEvent.eventType = eventType;
+            allScenesEvent.payload = payload;
+
+            SendMessage("AllScenesEvent", allScenesEvent);
+        }
+
         public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight)
         {
             positionPayload.position = position;
@@ -643,11 +660,11 @@ namespace DCL.Interface
 
             SendMessage("ReportPosition", positionPayload);
         }
-        
+
         public static void ReportCameraChanged(CameraMode.ModeId cameraMode)
         {
             cameraModePayload.cameraMode = cameraMode;
-            SendMessage("ReportCameraMode", cameraModePayload);
+            SendAllScenesEvent("cameraModeChanged", cameraModePayload);
         }
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }

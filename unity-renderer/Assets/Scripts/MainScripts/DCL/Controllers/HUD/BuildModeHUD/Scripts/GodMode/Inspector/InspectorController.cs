@@ -123,13 +123,7 @@ public class InspectorController : IInspectorController
         }
     }
 
-    public void EntityRename(DCLBuilderInWorldEntity entity, string newName)
-    {
-        OnEntityRename?.Invoke(entity, newName);
-    }
+    public void EntityRename(DCLBuilderInWorldEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
 
-    public void SetCloseButtonsAction(UnityAction call)
-    {
-        inspectorView.SetCloseButtonsAction(call);
-    }
+    public void SetCloseButtonsAction(UnityAction call) { inspectorView.SetCloseButtonsAction(call); }
 }

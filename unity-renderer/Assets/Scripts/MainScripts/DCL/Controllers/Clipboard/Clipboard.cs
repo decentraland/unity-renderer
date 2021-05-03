@@ -39,10 +39,7 @@ public class Clipboard : IClipboard
     /// Push a string value to the clipboard
     /// </summary>
     /// <param name="text">string to store</param>
-    public void WriteText(string text)
-    {
-        handler?.RequestWriteText(text);
-    }
+    public void WriteText(string text) { handler?.RequestWriteText(text); }
 
     /// <summary>
     /// Request the string stored at the clipboard

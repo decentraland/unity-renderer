@@ -24,15 +24,12 @@ internal class SectionSceneContributorsSettingsView : MonoBehaviour, IDisposable
 
     private void Awake()
     {
-        addUserButton.onClick.AddListener(()=> OnSearchUserButtonPressed?.Invoke());
+        addUserButton.onClick.AddListener(() => OnSearchUserButtonPressed?.Invoke());
         PoolView(userElementView);
         contributorLabelFormat = labelContributor.text;
     }
 
-    private void OnDestroy()
-    {
-        isDestroyed  = true;
-    }
+    private void OnDestroy() { isDestroyed  = true; }
 
     public void Dispose()
     {
@@ -48,16 +45,10 @@ internal class SectionSceneContributorsSettingsView : MonoBehaviour, IDisposable
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public UsersSearchPromptView GetSearchPromptView()
-    {
-        return usersSearchPromptView;
-    }
-    
+    public UsersSearchPromptView GetSearchPromptView() { return usersSearchPromptView; }
+
     public void SetEmptyList(bool isEmpty)
     {
         usersContainer.gameObject.SetActive(!isEmpty);
@@ -73,10 +64,7 @@ internal class SectionSceneContributorsSettingsView : MonoBehaviour, IDisposable
         }
     }
 
-    public void SetContributorsCount(int count)
-    {
-        labelContributor.text = string.Format(contributorLabelFormat, count);
-    }
+    public void SetContributorsCount(int count) { labelContributor.text = string.Format(contributorLabelFormat, count); }
 
     public UserElementView AddUser(string userId)
     {
@@ -90,7 +78,7 @@ internal class SectionSceneContributorsSettingsView : MonoBehaviour, IDisposable
             view.SetActive(true);
             userElementViews.Add(userId, view);
         }
-        
+
         bool isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
         view.SetBlocked(isBlocked);
         return view;

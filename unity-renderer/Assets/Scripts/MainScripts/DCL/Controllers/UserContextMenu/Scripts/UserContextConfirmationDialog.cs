@@ -8,29 +8,28 @@ public class UserContextConfirmationDialog : MonoBehaviour, IConfirmationDialog
     public Button cancelButton;
     public Button confirmButton;
 
-    public void Awake()
-    {
+    public void Awake() { }
 
-    }
-
-    public void SetText(string text)
-    {
-        dialogText.text = text;
-    }
+    public void SetText(string text) { dialogText.text = text; }
 
     public void Show(System.Action onConfirm = null, System.Action onCancel = null)
     {
         confirmButton.onClick.RemoveAllListeners();
-        confirmButton.onClick.AddListener(() => { onConfirm?.Invoke(); Hide(); });
+        confirmButton.onClick.AddListener(() =>
+        {
+            onConfirm?.Invoke();
+            Hide();
+        });
 
         cancelButton.onClick.RemoveAllListeners();
-        cancelButton.onClick.AddListener(() => { onCancel?.Invoke(); Hide(); });
+        cancelButton.onClick.AddListener(() =>
+        {
+            onCancel?.Invoke();
+            Hide();
+        });
 
         gameObject.SetActive(true);
     }
 
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
+    public void Hide() { gameObject.SetActive(false); }
 }

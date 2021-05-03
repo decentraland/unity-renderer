@@ -8,16 +8,10 @@ namespace Tests.BuildModeHUDViews
         private TooltipView tooltipView;
 
         [SetUp]
-        public void SetUp()
-        {
-            tooltipView = TooltipView.Create();
-        }
+        public void SetUp() { tooltipView = TooltipView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(tooltipView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(tooltipView.gameObject); }
 
         [Test]
         public void SetTooltipPositionProperly()

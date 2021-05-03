@@ -8,14 +8,10 @@ public class BuilderInWorldInititalHUDView : MonoBehaviour
 {
     public Button enterEditModeBtn;
 
-
     public event Action OnEnterInEditMode;
 
     [SerializeField] internal ShowHideAnimator showHideAnimator;
 
-    private void Start()
-    {
-        enterEditModeBtn.onClick.AddListener(() => OnEnterInEditMode?.Invoke());
-    }
+    private void Start() { enterEditModeBtn.onClick.AddListener(() => OnEnterInEditMode?.Invoke()); }
 
 }

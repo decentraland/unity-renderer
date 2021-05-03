@@ -5,20 +5,11 @@ public class UIHoverObjectToggler : MonoBehaviour, IPointerEnterHandler, IPointe
 {
     public GameObject[] targetObjects;
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        SetObjectsActiveState(true);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { SetObjectsActiveState(true); }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        SetObjectsActiveState(false);
-    }
+    public void OnPointerExit(PointerEventData eventData) { SetObjectsActiveState(false); }
 
-    void OnDisable()
-    {
-        OnPointerExit(null);
-    }
+    void OnDisable() { OnPointerExit(null); }
 
     void SetObjectsActiveState(bool newState)
     {

@@ -64,10 +64,7 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     private MouseCatcher mouseCatcher;
     private List<string> loadedWearables = new List<string>();
 
-    public static PlayerInfoCardHUDView CreateView()
-    {
-        return Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<PlayerInfoCardHUDView>();
-    }
+    public static PlayerInfoCardHUDView CreateView() { return Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<PlayerInfoCardHUDView>(); }
 
     public void Initialize(UnityAction cardClosedCallback,
         UnityAction reportPlayerCallback,
@@ -178,29 +175,31 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         ClearCollectibles();
 
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                currentUserProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                loadedWearables.AddRange(ownedWearables.Select(x => x.id));
+                         .Then((ownedWearables) =>
+                         {
+                             currentUserProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             loadedWearables.AddRange(ownedWearables.Select(x => x.id));
 
-                var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
-                for (int index = 0; index < collectiblesIds.Length; index++)
-                {
-                    string collectibleId = collectiblesIds[index];
-                    CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
-                    if (collectible == null) continue;
+                             var collectiblesIds = currentUserProfile.GetInventoryItemsIds();
+                             for (int index = 0; index < collectiblesIds.Length; index++)
+                             {
+                                 string collectibleId = collectiblesIds[index];
+                                 CatalogController.wearableCatalog.TryGetValue(collectibleId, out WearableItem collectible);
+                                 if (collectible == null)
+                                     continue;
 
-                    var playerInfoCollectible =
-                        collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
-                            wearablesContainer.transform);
-                    if (playerInfoCollectible == null) continue;
-                    playerInfoCollectibles.Add(playerInfoCollectible);
-                    playerInfoCollectible.Initialize(collectible);
-                }
+                                 var playerInfoCollectible =
+                                     collectiblesFactory.Instantiate<PlayerInfoCollectibleItem>(collectible.rarity,
+                                         wearablesContainer.transform);
+                                 if (playerInfoCollectible == null)
+                                     continue;
+                                 playerInfoCollectibles.Add(playerInfoCollectible);
+                                 playerInfoCollectible.Initialize(collectible);
+                             }
 
-                emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
-            })
-            .Catch((error) => Debug.Log(error));
+                             emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
+                         })
+                         .Catch((error) => Debug.Log(error));
 
         SetIsBlocked(IsBlocked(userProfile.userId));
 
@@ -281,17 +280,14 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         for (int i = 0; i < ownUserProfile.blocked.Count; i++)
         {
-            if (ownUserProfile.blocked[i] == userId) return true;
+            if (ownUserProfile.blocked[i] == userId)
+                return true;
         }
 
         return false;
     }
 
-    private void OnPointerDown()
-    {
-        hideCardButton.onClick.Invoke();
-    }
-
+    private void OnPointerDown() { hideCardButton.onClick.Invoke(); }
 
     private void OnDestroy()
     {

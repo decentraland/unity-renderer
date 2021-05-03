@@ -37,15 +37,9 @@ public class PlayerInfoCardHUDController : IHUD
         toggleWorldChatTrigger.OnTriggered += OnCloseButtonPressed;
     }
 
-    public void CloseCard()
-    {
-        currentPlayerId.Set(null);
-    }
+    public void CloseCard() { currentPlayerId.Set(null); }
 
-    private void OnCloseButtonPressed(DCLAction_Trigger action = DCLAction_Trigger.CloseWindow)
-    {
-        CloseCard();
-    }
+    private void OnCloseButtonPressed(DCLAction_Trigger action = DCLAction_Trigger.CloseWindow) { CloseCard(); }
 
     private void AddPlayerAsFriend()
     {
@@ -131,15 +125,9 @@ public class PlayerInfoCardHUDController : IHUD
         }
     }
 
-    private void SetUserProfile(UserProfile userProfile)
-    {
-        view.SetUserProfile(userProfile);
-    }
+    private void SetUserProfile(UserProfile userProfile) { view.SetUserProfile(userProfile); }
 
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisibility(visible);
-    }
+    public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
     private void BlockPlayer()
     {
@@ -165,10 +153,7 @@ public class PlayerInfoCardHUDController : IHUD
         WebInterface.SendUnblockPlayer(currentUserProfile.userId);
     }
 
-    private void ReportPlayer()
-    {
-        WebInterface.SendReportPlayer(currentPlayerId);
-    }
+    private void ReportPlayer() { WebInterface.SendReportPlayer(currentPlayerId); }
 
     public void Dispose()
     {
