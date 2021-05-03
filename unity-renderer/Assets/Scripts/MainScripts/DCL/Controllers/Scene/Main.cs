@@ -75,6 +75,7 @@ namespace DCL
 
         private void Update()
         {
+            Environment.i.platform.idleChecker.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
         }
