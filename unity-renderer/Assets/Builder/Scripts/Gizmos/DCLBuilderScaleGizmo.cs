@@ -27,7 +27,7 @@ namespace Builder.Gizmos
             if (axis == axisProportionalScale)
             {
                 scaleDirection = Vector3.one;
-                float inputDirection = lastMousePosition.y - initialMousePosition.y;
+                float inputDirection = (lastMousePosition.x - initialMousePosition.x) + (lastMousePosition.y - initialMousePosition.y);
                 if (inputDirection < 0)
                 {
                     scaleDirection = -Vector3.one;
@@ -45,7 +45,7 @@ namespace Builder.Gizmos
 
             Vector3 newScale = entityTransform.localScale + scaleDirection * axisValue;
 
-            if (Mathf.Abs(newScale.x) < MINIMUN_SCALE_ALLOWED || Mathf.Abs(newScale.y) < MINIMUN_SCALE_ALLOWED || Mathf.Abs(newScale.y) < MINIMUN_SCALE_ALLOWED)
+            if (Mathf.Abs(newScale.x) < MINIMUN_SCALE_ALLOWED || Mathf.Abs(newScale.y) < MINIMUN_SCALE_ALLOWED)
             {
                 newScale += scaleDirection * MINIMUN_SCALE_ALLOWED;
             }
