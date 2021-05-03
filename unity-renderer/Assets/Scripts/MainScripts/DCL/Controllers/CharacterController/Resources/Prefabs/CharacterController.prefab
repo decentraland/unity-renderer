@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1248863400464373723}
   - component: {fileID: 8793224560918383839}
   - component: {fileID: 8678918551075693098}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: DebugCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8727652042400483852}
   - component: {fileID: 2374946182991755626}
   - component: {fileID: 1065171216395579169}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: AvatarRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2958890434058661020}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: AvatarEntityReference
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4710899382381041556}
   - component: {fileID: 7115442889188564318}
-  m_Layer: 21
+  m_Layer: 16
   m_Name: AvatarCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +277,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7578571033673015707}
   - component: {fileID: 8788203599366875970}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: FirstPersonCameraEntityReference
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 8548425888172674288}
   - component: {fileID: 8920001334808305060}
   - component: {fileID: 8266689621276731347}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: CharacterController
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -459,7 +459,7 @@ GameObject:
   - component: {fileID: 1424557512169414994}
   - component: {fileID: 4416837006943311263}
   - component: {fileID: 433841667687764817}
-  m_Layer: 15
+  m_Layer: 16
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -608,6 +608,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AvatarAudioHandler
+      objectReference: {fileID: 0}
+    - target: {fileID: 7634936388402793545, guid: d3178cc2fd4e9c84d8c74c3984a0b853,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3178cc2fd4e9c84d8c74c3984a0b853, type: 3}

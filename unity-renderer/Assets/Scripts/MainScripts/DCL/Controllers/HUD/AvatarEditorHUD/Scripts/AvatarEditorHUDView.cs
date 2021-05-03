@@ -353,15 +353,9 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         doneButton.interactable = true;
         controller.SaveAvatar(face, face128, face256, body);
-
-        characterPreviewController.ResetRenderersLayer();
     }
 
-    private void OnSnapshotsFailed()
-    {
-        doneButton.interactable = true;
-        characterPreviewController.ResetRenderersLayer();
-    }
+    private void OnSnapshotsFailed() { doneButton.interactable = true; }
 
     public void SetVisibility(bool visible)
     {

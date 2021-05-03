@@ -21,6 +21,7 @@ namespace DCL
         public Vector3? initialLocalPosition;
         public Quaternion? initialLocalRotation;
         public Vector3? initialLocalScale;
+        public int? layer;
 
         public bool forceNewInstance;
 
@@ -46,6 +47,9 @@ namespace DCL
             {
                 t.localScale = initialLocalScale.Value;
             }
+
+            if (layer.HasValue)
+                Utils.SetLayerRecursively(t, layer.Value);
         }
 
         public void ApplyAfterLoad(Transform transform) { ApplyAfterLoad(new List<Renderer>(transform.GetComponentsInChildren<Renderer>(true))); }

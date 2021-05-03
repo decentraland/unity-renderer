@@ -613,5 +613,18 @@ namespace DCL.Helpers
 
             return renderer.bounds;
         }
+
+        /// <summary>
+        /// Set a layer to the given transform and its child
+        /// </summary>
+        /// <param name="transform"></param>
+        public static void SetLayerRecursively(Transform transform, int layer)
+        {
+            transform.gameObject.layer = layer;
+            foreach (Transform child in transform)
+            {
+                SetLayerRecursively(child, layer);
+            }
+        }
     }
 }
