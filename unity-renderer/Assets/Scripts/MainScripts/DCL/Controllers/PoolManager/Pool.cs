@@ -16,7 +16,6 @@ namespace DCL
     {
         public delegate void OnReleaseAllDlg(Pool pool);
 
-        public const int PREWARM_ACTIVE_MULTIPLIER = 2;
         public object id;
         public GameObject original;
         public GameObject container;
@@ -44,9 +43,15 @@ namespace DCL
 
         public int objectsCount => unusedObjectsCount + usedObjectsCount;
 
-        public int unusedObjectsCount { get { return unusedObjects.Count; } }
+        public int unusedObjectsCount
+        {
+            get { return unusedObjects.Count; }
+        }
 
-        public int usedObjectsCount { get { return usedObjects.Count; } }
+        public int usedObjectsCount
+        {
+            get { return usedObjects.Count; }
+        }
 
         public Pool(string name, int maxPrewarmCount)
         {
@@ -72,18 +77,7 @@ namespace DCL
 
         public PoolableObject Get()
         {
-            if (PoolManager.i.initializing)
-            {
-                int count = usedObjectsCount;
-
-                for (int i = unusedObjectsCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
-                {
-                    Instantiate();
-                }
-
-                Instantiate();
-            }
-            else if (unusedObjects.Count == 0)
+            if (unusedObjectsCount == 0)
             {
                 Instantiate();
             }
@@ -126,7 +120,7 @@ namespace DCL
                 gameObject = GameObject.Instantiate(original);
 
             gameObject.SetActive(true);
-
+            
             return gameObject;
         }
 
@@ -315,7 +309,10 @@ namespace DCL
             return false;
         }
 
-        public bool IsValid() { return original != null; }
+        public bool IsValid()
+        {
+            return original != null;
+        }
 
 #if UNITY_EDITOR
         // In production it will always be false
