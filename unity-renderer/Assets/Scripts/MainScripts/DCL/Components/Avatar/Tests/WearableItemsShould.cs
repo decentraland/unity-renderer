@@ -65,7 +65,7 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] {sunglasses.category};
+            bandana.hides = new[] {sunglasses.data.category};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
@@ -102,7 +102,7 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] {sunglasses.category};
+            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] {sunglasses.data.category};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
@@ -121,7 +121,7 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] {sunglasses.category};
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] {sunglasses.data.category};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;

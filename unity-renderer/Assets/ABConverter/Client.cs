@@ -347,7 +347,7 @@ namespace DCL.ABConverter
             EnsureEnvironment();
 
             List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
-                                                .Where(x => x.category == WearableLiterals.Categories.BODY_SHAPE)
+                                                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
@@ -371,7 +371,7 @@ namespace DCL.ABConverter
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
             List<WearableItem> avatarItemList = GetAvatarMappingList("https://wearable-api.decentraland.org/v2/collections")
-                                                .Where(x => x.category != WearableLiterals.Categories.BODY_SHAPE)
+                                                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
@@ -430,7 +430,7 @@ namespace DCL.ABConverter
 
             foreach (var wearable in wearableItems)
             {
-                foreach (var representation in wearable.representations)
+                foreach (var representation in wearable.data.representations)
                 {
                     foreach (var datum in representation.contents)
                     {

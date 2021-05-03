@@ -74,7 +74,7 @@ namespace AvatarEditorHUD_Tests
                 }
             }, false);
 
-            var categoriesEquiped = controller.myModel.wearables.Select(x => x.category).ToArray();
+            var categoriesEquiped = controller.myModel.wearables.Select(x => x.data.category).ToArray();
             foreach (string category in controller.myCategoriesThatMustHaveSelection)
             {
                 if (category != "body_shape")
@@ -237,7 +237,7 @@ namespace AvatarEditorHUD_Tests
             controller.RandomizeWearables();
 
             Assert.AreEqual(WearableLiterals.BodyShapes.FEMALE, controller.myModel.bodyShape.id);
-            var categoriesEquiped = controller.myModel.wearables.Select(x => x.category).ToArray();
+            var categoriesEquiped = controller.myModel.wearables.Select(x => x.data.category).ToArray();
             foreach (string category in categoriesEquiped)
             {
                 Assert.Contains(category, controller.myCategoriesToRandomize);

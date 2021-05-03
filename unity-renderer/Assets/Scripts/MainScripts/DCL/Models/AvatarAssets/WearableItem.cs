@@ -16,9 +16,15 @@ public class WearableItem : Item
         public string[] overrideReplaces;
     }
 
-    public Representation[] representations;
-    public string category;
-    public string[] tags;
+    [Serializable]
+    public class Data
+    {
+        public Representation[] representations;
+        public string category;
+        public string[] tags;
+    }
+
+    public Data data;
 
     public string baseUrl;
     public string baseUrlBundles;
@@ -39,13 +45,13 @@ public class WearableItem : Item
 
     public Representation GetRepresentation(string bodyShapeType)
     {
-        if (representations == null) return null;
+        if (data?.representations == null) return null;
 
-        for (int i = 0; i < representations.Length; i++)
+        for (int i = 0; i < data.representations.Length; i++)
         {
-            if (representations[i].bodyShapes.Contains(bodyShapeType))
+            if (data.representations[i].bodyShapes.Contains(bodyShapeType))
             {
-                return representations[i];
+                return data.representations[i];
             }
         }
 
@@ -81,11 +87,11 @@ public class WearableItem : Item
 
     public bool SupportsBodyShape(string bodyShapeType)
     {
-        if (representations == null) return false;
+        if (data?.representations == null) return false;
 
-        for (int i = 0; i < representations.Length; i++)
+        for (int i = 0; i < data.representations.Length; i++)
         {
-            if (representations[i].bodyShapes.Contains(bodyShapeType))
+            if (data.representations[i].bodyShapes.Contains(bodyShapeType))
             {
                 return true;
             }
@@ -160,7 +166,7 @@ public class WearableItem : Item
         {
             var wearableItem = wearables[i];
 
-            if (result.Contains(wearableItem.category)) //Skip hidden elements to avoid two elements hiding each other
+            if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
             var wearableHidesList = wearableItem.GetHidesList(bodyShapeId);

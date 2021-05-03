@@ -69,7 +69,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
             }, false);
-            var category = catalog.Get(wearableId).category;
+            var category = catalog.Get(wearableId).data.category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
@@ -98,7 +98,7 @@ namespace AvatarEditorHUD_Tests
                 }
             }, false);
 
-            var category = catalog.Get(wearableId).category;
+            var category = catalog.Get(wearableId).data.category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
             var selector = controller.myView.selectorsByCategory[category];
@@ -150,7 +150,7 @@ namespace AvatarEditorHUD_Tests
         {
             WearableItem dummyItem = CreateDummyNFT(rarity);
 
-            var selector = controller.myView.selectorsByCategory[dummyItem.category];
+            var selector = controller.myView.selectorsByCategory[dummyItem.data.category];
             var itemToggleObject = selector.itemToggles[dummyItem.id].gameObject;
 
             var originalName = selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
@@ -163,7 +163,7 @@ namespace AvatarEditorHUD_Tests
         {
             WearableItem dummyItem = CreateDummyNFT(WearableLiterals.ItemRarity.EPIC);
 
-            var itemToggle = controller.myView.selectorsByCategory[dummyItem.category].itemToggles[dummyItem.id];
+            var itemToggle = controller.myView.selectorsByCategory[dummyItem.data.category].itemToggles[dummyItem.id];
             var nftInfo = (itemToggle as NFTItemToggle)?.nftItemInfo;
 
             Assert.NotNull(nftInfo);
@@ -249,17 +249,19 @@ namespace AvatarEditorHUD_Tests
             {
                 id = "dummyItem",
                 rarity = rarity,
-                category = WearableLiterals.Categories.EYES,
                 description = "My Description",
                 issuedId = 1,
-                representations = new[]
-                {
-                    new WearableItem.Representation()
+                data = new WearableItem.Data() {
+                    category = WearableLiterals.Categories.EYES,
+                    tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
+                    representations = new[]
                     {
-                        bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
+                        new WearableItem.Representation()
+                        {
+                            bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
+                        }
                     }
                 },
-                tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
                 i18n = new[] {new i18n() {code = "en", text = "Dummy Item"}}
             };
 

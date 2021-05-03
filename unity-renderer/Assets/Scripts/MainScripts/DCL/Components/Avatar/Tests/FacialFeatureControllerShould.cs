@@ -47,14 +47,16 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem fakeWearable = new WearableItem
             {
-                category = WearableLiterals.Categories.EYES,
                 baseUrl = "http://nothing_here.nope",
-                representations = new []
-                {
-                    new WearableItem.Representation
+                data = new WearableItem.Data() {
+                    category = WearableLiterals.Categories.EYES,
+                    representations = new []
                     {
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                        contents = new [] { new ContentServerUtils.MappingPair{file = "fake.png", hash = "nope"}, new ContentServerUtils.MappingPair{file = "fake_mask.png", hash = "nope2"} },
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                            contents = new [] { new ContentServerUtils.MappingPair{file = "fake.png", hash = "nope"}, new ContentServerUtils.MappingPair{file = "fake_mask.png", hash = "nope2"} },
+                        }
                     }
                 }
             };
@@ -75,14 +77,16 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem fakeWearable = new WearableItem
             {
-                category = WearableLiterals.Categories.EYES,
                 baseUrl = "http://nothing_here.nope",
-                representations = new []
-                {
-                    new WearableItem.Representation
+                data = new WearableItem.Data() {
+                    category = WearableLiterals.Categories.EYES,
+                    representations = new []
                     {
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                        contents = new ContentServerUtils.MappingPair[0],
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                            contents = new ContentServerUtils.MappingPair[0],
+                        }
                     }
                 }
             };

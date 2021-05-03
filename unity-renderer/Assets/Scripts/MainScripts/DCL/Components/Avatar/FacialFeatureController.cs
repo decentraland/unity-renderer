@@ -48,7 +48,7 @@ public class FacialFeatureController
         if (baseMaterialCopy == null)
             baseMaterialCopy = new Material(baseMaterial);
 
-        switch (wearableItem.category)
+        switch (wearableItem.data.category)
         {
             case WearableLiterals.Categories.EYES:
                 bodyShape.SetupEyes(baseMaterialCopy, mainTexture, maskTexture, color);

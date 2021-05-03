@@ -71,7 +71,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.replaces = new[] {sunglasses.category};
+            bandana.replaces = new[] {sunglasses.data.category};
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -103,7 +103,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] {sunglasses.category};
+            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] {sunglasses.data.category};
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -119,7 +119,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideReplaces = new[] {sunglasses.category};
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideReplaces = new[] {sunglasses.data.category};
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

@@ -263,7 +263,7 @@ namespace DCL
                 if (wearable == null)
                     continue;
 
-                unusedCategories.Remove(wearable.category);
+                unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
                     if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
@@ -274,7 +274,7 @@ namespace DCL
                 else
                 {
                     AddWearableController(wearable);
-                    if (wearable.category != Categories.EYES && wearable.category != Categories.MOUTH && wearable.category != Categories.EYEBROWS)
+                    if (wearable.data.category != Categories.EYES && wearable.data.category != Categories.MOUTH && wearable.data.category != Categories.EYEBROWS)
                         wearablesIsDirty = true;
                 }
             }
@@ -405,7 +405,7 @@ namespace DCL
         {
             if (wearable == null)
                 return;
-            switch (wearable.category)
+            switch (wearable.data.category)
             {
                 case Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, eyeMaterial);

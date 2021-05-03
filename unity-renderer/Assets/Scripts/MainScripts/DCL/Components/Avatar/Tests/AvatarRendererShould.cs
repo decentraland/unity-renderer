@@ -271,7 +271,7 @@ namespace AvatarShape_Tests
         {
             catalog.Get(id).hides = new string[] { };
             catalog.Get(id).replaces = new string[] { };
-            foreach (WearableItem.Representation representation in catalog.Get(id).representations)
+            foreach (WearableItem.Representation representation in catalog.Get(id).data.representations)
             {
                 representation.overrideHides = new string[] { };
                 representation.overrideReplaces = new string[] { };

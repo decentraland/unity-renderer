@@ -16,7 +16,7 @@ public class WearableController
     protected RendereableAssetLoadHelper loader;
 
     public string id => wearable.id;
-    public string category => wearable.category;
+    public string category => wearable.data.category;
 
     public GameObject assetContainer => loader?.loadedAsset;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
@@ -196,7 +196,7 @@ public class WearableController
 
     public virtual void UpdateVisibility(HashSet<string> hiddenList)
     {
-        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.category));
+        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category));
     }
 
     public bool IsLoadedForBodyShape(string bodyShapeId)
@@ -204,6 +204,6 @@ public class WearableController
         if (loader == null || !isReady || lastMainFileLoaded == null)
             return false;
 
-        return wearable.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
+        return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
     }
 }

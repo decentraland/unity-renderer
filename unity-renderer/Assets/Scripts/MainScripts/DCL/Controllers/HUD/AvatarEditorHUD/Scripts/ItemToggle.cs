@@ -80,7 +80,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         if (toReplace.Count == 1)
         {
             WearableItem w = toReplace[0];
-            if (w.category == wearableItem.category) return;
+            if (w.data.category == wearableItem.data.category) return;
         }
 
         warningPanel.SetActive(true);

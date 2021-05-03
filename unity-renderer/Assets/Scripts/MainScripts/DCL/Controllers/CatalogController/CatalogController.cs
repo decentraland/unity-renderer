@@ -3,7 +3,6 @@ using DCL.Helpers;
 using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
-using static DCL.Interface.WebInterface;
 
 public class CatalogController : MonoBehaviour
 {
@@ -139,6 +138,9 @@ public class CatalogController : MonoBehaviour
 
     public static Promise<WearableItem> RequestWearable(string wearableId)
     {
+        if (VERBOSE)
+            Debug.Log("request wearables: " + wearableId);
+        
         Promise<WearableItem> promiseResult;
 
         if (wearableCatalog.TryGetValue(wearableId, out WearableItem wearable))
