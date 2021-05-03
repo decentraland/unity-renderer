@@ -71,9 +71,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal PreviewCameraRotation characterPreviewRotation;
 
     [SerializeField]
-    internal GameObject loadingPanel;
-
-    [SerializeField]
     internal Button randomizeButton;
 
     [SerializeField]
@@ -268,24 +265,15 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (avatarModel?.wearables == null)
             return;
 
-        SetLoadingPanel(true);
         doneButton.interactable = false;
         characterPreviewController.UpdateModel(avatarModel,
             () =>
             {
-                SetLoadingPanel(false);
-
                 if (doneButton != null)
                     doneButton.interactable = true;
 
                 OnAvatarAppear?.Invoke(avatarModel);
             });
-    }
-
-    private void SetLoadingPanel(bool active)
-    {
-        if (loadingPanel != null)
-            loadingPanel.SetActive(active);
     }
 
     public void AddWearable(WearableItem wearableItem, int amount)
