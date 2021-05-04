@@ -38,10 +38,7 @@ internal class SceneInfoView : MonoBehaviour
         Show();
     }
 
-    public void Hide()
-    {
-        Hide(false);
-    }
+    public void Hide() { Hide(false); }
 
     public void Hide(bool instant)
     {
@@ -142,10 +139,7 @@ internal class SceneInfoView : MonoBehaviour
         }
     }
 
-    void OnHidden(ShowHideAnimator animator)
-    {
-        baseSceneView = null;
-    }
+    void OnHidden(ShowHideAnimator animator) { baseSceneView = null; }
 
     void OnInfoButtonPointerDown(HotSceneCellView sceneView)
     {
@@ -162,23 +156,11 @@ internal class SceneInfoView : MonoBehaviour
         }
     }
 
-    void OnInfoButtonPointerExit()
-    {
-        Hide();
-    }
+    void OnInfoButtonPointerExit() { Hide(); }
 
-    void OnPointerEnter()
-    {
-        Show();
-    }
+    void OnPointerEnter() { Show(); }
 
-    void OnPointerExit()
-    {
-        Hide();
-    }
+    void OnPointerExit() { Hide(); }
 
-    void OnJumpIn(Vector2Int coords, string serverName, string layerName)
-    {
-        gameObject.SetActive(false);
-    }
+    void OnJumpIn(Vector2Int coords, string serverName, string layerName) { gameObject.SetActive(false); }
 }

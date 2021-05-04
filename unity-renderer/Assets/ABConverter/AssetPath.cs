@@ -5,7 +5,6 @@ using UnityEditor.Experimental.TerrainAPI;
 using UnityEngine.Networking;
 using MappingPair = DCL.ContentServerUtils.MappingPair;
 
-
 namespace DCL.ABConverter
 {
     public class AssetPath
@@ -18,7 +17,7 @@ namespace DCL.ABConverter
         public AssetPath(string basePath, string hash, string file)
         {
             this.basePath = basePath;
-            this.pair = new MappingPair {hash = hash, file = file};
+            this.pair = new MappingPair { hash = hash, file = file };
         }
 
         public AssetPath(string basePath, MappingPair pair)
@@ -39,9 +38,6 @@ namespace DCL.ABConverter
 
         public string finalMetaPath => Path.ChangeExtension(finalPath, "meta");
 
-        public override string ToString()
-        {
-            return $"hash:{hash} - file:{file}";
-        }
+        public override string ToString() { return $"hash:{hash} - file:{file}"; }
     }
 }

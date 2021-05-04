@@ -15,12 +15,12 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
         public System.Action OnResetMaterials;
 
         public InvalidMeshInfo(MeshesInfo meshesInfo) { this.meshesInfo = meshesInfo; }
-        
+
         public void ResetMaterials()
         {
             if (meshesInfo.meshRootGameObject == null)
                 return;
-            
+
             int wireframeObjectscount = wireframeObjects.Count;
             for (int i = 0; i < wireframeObjectscount; i++)
             {
@@ -32,15 +32,12 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
     }
 
     const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
-    
+
     Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
     HashSet<Renderer> invalidSubmeshes = new HashSet<Renderer>();
     private readonly List<MeshesInfo> currentMeshesInvalidated = new List<MeshesInfo>();
-    
-    public SceneBoundsFeedbackStyle_BIW()
-    {
-        invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
-    }
+
+    public SceneBoundsFeedbackStyle_BIW() { invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>(); }
 
     public void OnRendererExitBounds(Renderer renderer) { invalidSubmeshes.Add(renderer); }
 
@@ -83,7 +80,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
     void AddInvalidMeshEffect(MeshesInfo meshesInfo)
     {
-        if(currentMeshesInvalidated.Contains(meshesInfo))
+        if (currentMeshesInvalidated.Contains(meshesInfo))
             return;
         if (!WasGameObjectInAValidPosition(meshesInfo.innerGameObject))
             return;
@@ -112,7 +109,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
             invalidMeshInfo.wireframeObjects.Add(wireframeObject);
         }
-        
+
         currentMeshesInvalidated.Add(meshesInfo);
         invalidMeshesInfo.Add(meshesInfo.innerGameObject, invalidMeshInfo);
     }

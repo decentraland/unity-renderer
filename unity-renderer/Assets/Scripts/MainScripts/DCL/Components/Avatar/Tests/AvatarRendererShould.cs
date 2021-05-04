@@ -31,8 +31,7 @@ namespace AvatarShape_Tests
                 skinColor = Color.white,
                 bodyShape = WearableLiterals.BodyShapes.FEMALE,
                 wearables = new List<string>()
-                {
-                }
+                    { }
             };
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
@@ -70,7 +69,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarRenderer.SetVisibility(true);
 
             bool ready = false;
@@ -89,7 +88,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarRenderer.SetVisibility(false);
 
             bool ready = false;
@@ -108,7 +107,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -127,7 +126,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -136,7 +135,6 @@ namespace AvatarShape_Tests
 
             Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).myAssetRenderers.All(x => !x.enabled));
         }
-
 
         [UnityTest]
         [Category("Explicit")]
@@ -147,7 +145,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -166,7 +164,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -184,9 +182,9 @@ namespace AvatarShape_Tests
             //Clean hides/replaces to avoid interferences
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
-            catalog.Get(SUNGLASSES_ID).hides = new [] { WearableLiterals.Misc.HEAD};
+            catalog.Get(SUNGLASSES_ID).hides = new [] { WearableLiterals.Misc.HEAD };
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -207,7 +205,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -255,7 +253,7 @@ namespace AvatarShape_Tests
 
             var wearableController = avatarRenderer.wearableControllers.Values.FirstOrDefault(x => x.id == wearableId);
             Assert.NotNull(wearableController);
-            Assert.AreEqual("M_Feet_Espadrilles.glb" ,wearableController.lastMainFileLoaded);
+            Assert.AreEqual("M_Feet_Espadrilles.glb" , wearableController.lastMainFileLoaded);
 
             avatarModel.bodyShape = WearableLiterals.BodyShapes.FEMALE;
             ready = false;
@@ -264,7 +262,7 @@ namespace AvatarShape_Tests
 
             wearableController = avatarRenderer.wearableControllers.Values.FirstOrDefault(x => x.id == wearableId);
             Assert.NotNull(wearableController);
-            Assert.AreEqual("Feet_XmasSockets.glb" ,wearableController.lastMainFileLoaded);
+            Assert.AreEqual("Feet_XmasSockets.glb" , wearableController.lastMainFileLoaded);
         }
 
         private void CleanWearableHidesAndReplaces(string id)
@@ -298,8 +296,7 @@ namespace AvatarShape_Tests
                 skinColor = Color.white,
                 bodyShape = WearableLiterals.BodyShapes.FEMALE,
                 wearables = new List<string>()
-                {
-                }
+                    { }
             };
 
             AvatarAssetsTestHelpers.CreateTestCatalogLocal();

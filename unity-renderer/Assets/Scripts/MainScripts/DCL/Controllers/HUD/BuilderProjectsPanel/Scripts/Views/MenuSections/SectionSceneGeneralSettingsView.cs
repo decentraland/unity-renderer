@@ -7,7 +7,7 @@ using UnityEngine.UI;
 internal class SectionSceneGeneralSettingsView : MonoBehaviour
 {
     public event Action OnApplyChanges;
-    
+
     [SerializeField] internal TMP_InputField nameInputField;
     [SerializeField] internal TMP_InputField descriptionInputField;
     [SerializeField] internal TMP_Text nameCharCount;
@@ -26,80 +26,35 @@ internal class SectionSceneGeneralSettingsView : MonoBehaviour
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
-    
-    public void SetName(string sceneName)
-    {
-        nameInputField.text = sceneName;
-    }
-    
-    public void SetDescription(string sceneDescription)
-    {
-        descriptionInputField.text = sceneDescription;
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void SetConfigurationActive(bool active)
-    {
-        configurationContainer.SetActive(active);
-    }
+    public void SetName(string sceneName) { nameInputField.text = sceneName; }
 
-    public void SetPermissionsActive(bool active)
-    {
-        permissionsContainer.SetActive(active);
-    }
+    public void SetDescription(string sceneDescription) { descriptionInputField.text = sceneDescription; }
 
-    public void SetAllowVoiceChat(bool allow)
-    {
-        toggleVoiceChat.isOn = allow;
-    }
+    public void SetConfigurationActive(bool active) { configurationContainer.SetActive(active); }
 
-    public void SetAllowTriggerEmotes(bool allow)
-    {
-        toggleEmotes.isOn = allow;
-    }
+    public void SetPermissionsActive(bool active) { permissionsContainer.SetActive(active); }
 
-    public void SetAllowMovePlayer(bool allow)
-    {
-        toggleMovePlayer.isOn = allow;
-    }
+    public void SetAllowVoiceChat(bool allow) { toggleVoiceChat.isOn = allow; }
 
-    public void SetMatureContent(bool mature)
-    {
-        toggleMatureContent.isOn = mature;
-    }
-    
-    public string GetName()
-    {
-        return nameInputField.text;
-    }
-    
-    public string GetDescription()
-    {
-        return descriptionInputField.text;
-    }
+    public void SetAllowTriggerEmotes(bool allow) { toggleEmotes.isOn = allow; }
 
-    public bool GetAllowVoiceChat()
-    {
-        return toggleVoiceChat.isOn;
-    }
+    public void SetAllowMovePlayer(bool allow) { toggleMovePlayer.isOn = allow; }
 
-    public bool GetAllowTriggerEmotes()
-    {
-        return toggleEmotes.isOn;
-    }
+    public void SetMatureContent(bool mature) { toggleMatureContent.isOn = mature; }
 
-    public bool GetAllowMovePlayer()
-    {
-        return toggleMovePlayer.isOn;
-    }
+    public string GetName() { return nameInputField.text; }
 
-    public bool GetMatureContent()
-    {
-        return toggleMatureContent.isOn;
-    }
+    public string GetDescription() { return descriptionInputField.text; }
+
+    public bool GetAllowVoiceChat() { return toggleVoiceChat.isOn; }
+
+    public bool GetAllowTriggerEmotes() { return toggleEmotes.isOn; }
+
+    public bool GetAllowMovePlayer() { return toggleMovePlayer.isOn; }
+
+    public bool GetMatureContent() { return toggleMatureContent.isOn; }
 
     private void Awake()
     {
@@ -110,7 +65,7 @@ internal class SectionSceneGeneralSettingsView : MonoBehaviour
         descriptionInputField.onValueChanged.AddListener(value =>
         {
             descriptionCharCount.text = $"{value.Length}/{descriptionInputField.characterLimit}";
-        });        
-        applyButton.onClick.AddListener(()=> OnApplyChanges?.Invoke());
+        });
+        applyButton.onClick.AddListener(() => OnApplyChanges?.Invoke());
     }
 }

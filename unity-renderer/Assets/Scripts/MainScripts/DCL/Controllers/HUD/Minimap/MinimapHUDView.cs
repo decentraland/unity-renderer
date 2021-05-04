@@ -66,10 +66,7 @@ public class MinimapHUDView : MonoBehaviour
         playerPositionText.text = model.playerPosition;
     }
 
-    public void ToggleOptions()
-    {
-        optionsPanel.SetActive(!optionsPanel.activeSelf);
-    }
+    public void ToggleOptions() { optionsPanel.SetActive(!optionsPanel.activeSelf); }
 
     public void SetVisibility(bool visible)
     {

@@ -19,21 +19,12 @@ namespace DCL.Components
             public float? radius;
             public float arc = 360f;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public CylinderShape()
-        {
-            model = new Model();
-        }
+        public CylinderShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.CYLINDER_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.CYLINDER_SHAPE; }
 
         public override Mesh GenerateGeometry()
         {
@@ -43,7 +34,8 @@ namespace DCL.Components
 
         protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
         {
-            if (currentMesh == null) return true;
+            if (currentMesh == null)
+                return true;
 
             Model newCylinderModel = newModel as Model;
             var model = (Model) this.model;

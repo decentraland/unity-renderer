@@ -12,10 +12,7 @@ public class VisualTestController : MonoBehaviour
     public bool snapshotsAreBaseline = false;
     public bool instantiateSceneObjects = true;
 
-    private void Awake()
-    {
-        i = this;
-    }
+    private void Awake() { i = this; }
 
     IEnumerator Start()
     {

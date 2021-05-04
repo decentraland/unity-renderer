@@ -4,7 +4,7 @@ using UnityEngine;
 using static ProtocolV2;
 
 [System.Serializable]
-public class EntityData 
+public class EntityData
 {
     public string entityId;
     public TransformComponent transformComponent;
@@ -12,7 +12,6 @@ public class EntityData
 
     public List<GenericComponent> components = new List<GenericComponent>();
     public List<GenericComponent> sharedComponents = new List<GenericComponent>();
-
 
     [System.Serializable]
     public class TransformComponent

@@ -21,10 +21,7 @@ namespace DCL.Components
 
             public bool castShadows = true;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public Material material;
@@ -45,15 +42,9 @@ namespace DCL.Components
             model = new Model();
         }
 
-        new public Model GetModel()
-        {
-            return (Model) model;
-        }
+        new public Model GetModel() { return (Model) model; }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.BASIC_MATERIAL;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.BASIC_MATERIAL; }
 
         public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
         {
@@ -142,7 +133,7 @@ namespace DCL.Components
 
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {
-                    matTransition.finalMaterials = new Material[] {material};
+                    matTransition.finalMaterials = new Material[] { material };
                     matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
                 }
 

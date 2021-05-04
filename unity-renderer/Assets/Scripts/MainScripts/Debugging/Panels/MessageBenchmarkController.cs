@@ -88,10 +88,7 @@ namespace DCL
         List<Rows> rowsList;
         Dictionary<string, Rows> stringToRow;
 
-        public float messagesTotalTime
-        {
-            get { return logicTotalTime + decodeTotalTime; }
-        }
+        public float messagesTotalTime { get { return logicTotalTime + decodeTotalTime; } }
 
         private float logicTotalTime;
         private float decodeTotalTime;
@@ -158,10 +155,7 @@ namespace DCL
             stringToRow.Add("Misc", Rows.MISC);
         }
 
-        private void Awake()
-        {
-            i = this;
-        }
+        private void Awake() { i = this; }
 
         public void StartProfiling()
         {
@@ -371,15 +365,9 @@ namespace DCL
             statsPanel.SetCellText((int) x, (int) y, result.ToString("N3", CultureInfo.InvariantCulture) + "ms");
         }
 
-        private void OnMessageWillDequeue(string obj)
-        {
-            CountMessage(obj, -1);
-        }
+        private void OnMessageWillDequeue(string obj) { CountMessage(obj, -1); }
 
-        private void OnMessageWillQueue(string obj)
-        {
-            CountMessage(obj, 1);
-        }
+        private void OnMessageWillQueue(string obj) { CountMessage(obj, 1); }
 
         void CountMessage(string obj, int delta)
         {
@@ -434,10 +422,7 @@ namespace DCL
             }
         }
 
-        private bool DictionaryContainsColumn(Dictionary<(Columns, Rows), float> dictionary, Columns col)
-        {
-            return dictionary.Any(x => x.Key.Item1 == col);
-        }
+        private bool DictionaryContainsColumn(Dictionary<(Columns, Rows), float> dictionary, Columns col) { return dictionary.Any(x => x.Key.Item1 == col); }
 
         private bool DictionaryContainsRow(Dictionary<(Columns, Rows), float> dictionary, Columns col, Rows row)
         {

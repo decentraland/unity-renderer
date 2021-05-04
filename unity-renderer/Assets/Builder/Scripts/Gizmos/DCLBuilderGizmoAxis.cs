@@ -16,19 +16,14 @@ namespace Builder.Gizmos
 
         private DCLBuilderGizmo gizmo = null;
 
-        public void SetGizmo(DCLBuilderGizmo parentGizmo)
-        {
-            gizmo = parentGizmo;
-        }
+        public void SetGizmo(DCLBuilderGizmo parentGizmo) { gizmo = parentGizmo; }
 
-        public DCLBuilderGizmo GetGizmo()
-        {
-            return gizmo;
-        }
+        public DCLBuilderGizmo GetGizmo() { return gizmo; }
 
         public void SetColorHighlight()
         {
-            if (props == null) return;
+            if (props == null)
+                return;
 
             objectRenderer.GetPropertyBlock(props);
             props.SetColor(colorPropertyID, highLightColor);
@@ -38,7 +33,8 @@ namespace Builder.Gizmos
 
         public void SetColorDefault()
         {
-            if (props == null) return;
+            if (props == null)
+                return;
 
             objectRenderer.GetPropertyBlock(props);
             props.SetColor(colorPropertyID, defaultColor);

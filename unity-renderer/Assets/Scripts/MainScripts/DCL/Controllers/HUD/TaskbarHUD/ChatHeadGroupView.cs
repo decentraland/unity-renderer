@@ -120,10 +120,7 @@ public class ChatHeadGroupView : MonoBehaviour
         }
     }
 
-    private void OnToggleOn(TaskbarButton head)
-    {
-        OnHeadToggleOn?.Invoke(head);
-    }
+    private void OnToggleOn(TaskbarButton head) { OnHeadToggleOn?.Invoke(head); }
 
     private void OnToggleOff(TaskbarButton head)
     {
@@ -195,7 +192,7 @@ public class ChatHeadGroupView : MonoBehaviour
 
         if (saveStatusInStorage)
         {
-            CommonScriptableObjects.latestOpenChats.Add(new LatestOpenChatsList.Model {userId = userId, lastTimestamp = timestamp});
+            CommonScriptableObjects.latestOpenChats.Add(new LatestOpenChatsList.Model { userId = userId, lastTimestamp = timestamp });
             SaveLatestOpenChats();
         }
 
@@ -225,10 +222,7 @@ public class ChatHeadGroupView : MonoBehaviour
         SetParentContainerAsDirty();
     }
 
-    internal void RemoveChatHead(string userId, bool forceLayoutUpdate = true)
-    {
-        RemoveChatHead(chatHeads.FirstOrDefault(x => x.profile.userId == userId), true, forceLayoutUpdate);
-    }
+    internal void RemoveChatHead(string userId, bool forceLayoutUpdate = true) { RemoveChatHead(chatHeads.FirstOrDefault(x => x.profile.userId == userId), true, forceLayoutUpdate); }
 
     internal void RemoveChatHead(ChatHeadButton chatHead, bool saveStatusInStorage = true, bool forceLayoutUpdate = true)
     {
@@ -303,8 +297,5 @@ public class ChatHeadGroupView : MonoBehaviour
         }
     }
 
-    private void SetParentContainerAsDirty()
-    {
-        this.enabled = true;
-    }
+    private void SetParentContainerAsDirty() { this.enabled = true; }
 }

@@ -20,7 +20,8 @@ namespace DCL.Helpers
 
         private void PrepareCache()
         {
-            if (cachedItems != null) return;
+            if (cachedItems != null)
+                return;
 
             cachedItems = new Dictionary<string, GameObject>();
             for (int i = 0; i < items.Length; i++)

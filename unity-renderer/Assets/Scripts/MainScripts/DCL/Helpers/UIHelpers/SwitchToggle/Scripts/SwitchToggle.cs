@@ -20,8 +20,5 @@ public class SwitchToggle : Toggle
         OnValueChanged(this.isOn);
     }
 
-    private void OnValueChanged(bool value)
-    {
-        switchAnimator.SetBool(animatorOnBoolean, value);
-    }
+    private void OnValueChanged(bool value) { switchAnimator.SetBool(animatorOnBoolean, value); }
 }

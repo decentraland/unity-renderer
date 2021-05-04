@@ -36,10 +36,7 @@ public class CatalogBtnController : ICatalogBtnController
         catalogBtnView.OnHideTooltip -= HideTooltip;
     }
 
-    public void Click()
-    {
-        OnClick?.Invoke();
-    }
+    public void Click() { OnClick?.Invoke(); }
 
     public void ShowTooltip(BaseEventData eventData, string tooltipText)
     {
@@ -47,8 +44,5 @@ public class CatalogBtnController : ICatalogBtnController
         tooltipController.SetTooltipText(tooltipText);
     }
 
-    public void HideTooltip()
-    {
-        tooltipController.HideTooltip();
-    }
+    public void HideTooltip() { tooltipController.HideTooltip(); }
 }

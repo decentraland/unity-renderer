@@ -7,15 +7,9 @@ namespace DCL
     {
         public class AssetDatabase : IAssetDatabase
         {
-            public void Refresh(ImportAssetOptions options = ImportAssetOptions.Default)
-            {
-                UnityEditor.AssetDatabase.Refresh(options);
-            }
+            public void Refresh(ImportAssetOptions options = ImportAssetOptions.Default) { UnityEditor.AssetDatabase.Refresh(options); }
 
-            public void SaveAssets()
-            {
-                UnityEditor.AssetDatabase.SaveAssets();
-            }
+            public void SaveAssets() { UnityEditor.AssetDatabase.SaveAssets(); }
 
             public void ImportAsset(string fullPath, ImportAssetOptions options = ImportAssetOptions.Default)
             {
@@ -36,10 +30,7 @@ namespace DCL
                 return UnityEditor.AssetDatabase.MoveAsset(assetPathSrc, assetPathDst);
             }
 
-            public void ReleaseCachedFileHandles()
-            {
-                UnityEditor.AssetDatabase.ReleaseCachedFileHandles();
-            }
+            public void ReleaseCachedFileHandles() { UnityEditor.AssetDatabase.ReleaseCachedFileHandles(); }
 
             public T LoadAssetAtPath<T>(string fullPath)
                 where T : Object
@@ -48,10 +39,7 @@ namespace DCL
                 return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath);
             }
 
-            public string GetAssetPath(Object asset)
-            {
-                return ABConverter.PathUtils.AssetPathToFullPath(UnityEditor.AssetDatabase.GetAssetPath(asset));
-            }
+            public string GetAssetPath(Object asset) { return ABConverter.PathUtils.AssetPathToFullPath(UnityEditor.AssetDatabase.GetAssetPath(asset)); }
 
             public string AssetPathToGUID(string fullPath)
             {

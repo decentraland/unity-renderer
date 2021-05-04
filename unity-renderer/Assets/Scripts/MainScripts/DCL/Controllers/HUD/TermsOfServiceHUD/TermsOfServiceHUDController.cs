@@ -24,7 +24,6 @@ public class TermsOfServiceHUDController : IHUD
         view.Initialize(SendAgreed, SendDeclined, OpenToS, OpenPrivacyPolicy, OpenContactEmail);
     }
 
-
     public void ShowTermsOfService(Model model)
     {
         this.model = model;
@@ -69,10 +68,7 @@ public class TermsOfServiceHUDController : IHUD
             WebInterface.OpenURL($"mailto:{model.emailContactURL}");
     }
 
-    public void SetVisibility(bool visible)
-    {
-        view.gameObject.SetActive(visible);
-    }
+    public void SetVisibility(bool visible) { view.gameObject.SetActive(visible); }
 
     public void Dispose()
     {

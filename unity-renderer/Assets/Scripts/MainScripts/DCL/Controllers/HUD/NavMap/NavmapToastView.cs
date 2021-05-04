@@ -29,10 +29,7 @@ namespace DCL
 
         public System.Action OnGotoClicked;
 
-        public bool isOpen
-        {
-            get { return gameObject.activeInHierarchy; }
-        }
+        public bool isOpen { get { return gameObject.activeInHierarchy; } }
 
         private void Awake()
         {
@@ -113,7 +110,8 @@ namespace DCL
 
         public void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            if (!isOpen) return;
+            if (!isOpen)
+                return;
 
             bool updatedCurrentLocationInfo = false;
             foreach (Vector2Int parcel in sceneInfo.parcels)
@@ -131,7 +129,8 @@ namespace DCL
 
         void PositionToast(Vector2Int coordinates)
         {
-            if (toastContainer == null || rectTransform == null) return;
+            if (toastContainer == null || rectTransform == null)
+                return;
 
             // position the toast over the parcel parcelHighlightImage so that we can easily check with LOCAL pos info where it is on the screen
             toastContainer.position = MapRenderer.i.parcelHighlightImage.transform.position;

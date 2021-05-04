@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
-internal class UsersSearchPromptController: IDisposable
+internal class UsersSearchPromptController : IDisposable
 {
     private const int MAX_USERS_RESULT = 10;
-    
+
     public event Action<string> OnRemoveUser;
     public event Action<string> OnAddUser;
-    
+
     private readonly UsersSearchPromptView view;
     internal readonly UsersSearchUserViewsHandler userViewsHandler;
     private readonly UsersSearcher usersSearcher;
 
     internal Promise<UserProfileModel[]> usersSearchPromise = null;
-    
+
     public UsersSearchPromptController(UsersSearchPromptView promptView)
     {
         view = promptView;
         view.SetIdleSearchTime(1.5f);
-        
+
         userViewsHandler = new UsersSearchUserViewsHandler(view.GetUsersBaseElement(), view.GetUserElementsParent());
         usersSearcher = new UsersSearcher();
 
@@ -29,7 +29,7 @@ internal class UsersSearchPromptController: IDisposable
         userViewsHandler.OnAddUser += OnAddUserPressed;
         userViewsHandler.OnRemoveUser += OnRemoveUserPressed;
     }
-    
+
     public void Dispose()
     {
         view.OnSearchText -= OnSearchText;
@@ -55,10 +55,7 @@ internal class UsersSearchPromptController: IDisposable
         usersSearchPromise?.Dispose();
     }
 
-    public void SetUsersInRolList(List<string> usersId)
-    {
-        userViewsHandler.SetUsersInRolList(usersId);
-    }
+    public void SetUsersInRolList(List<string> usersId) { userViewsHandler.SetUsersInRolList(usersId); }
 
     private void OnSearchText(string searchText)
     {
@@ -82,18 +79,9 @@ internal class UsersSearchPromptController: IDisposable
             });
     }
 
-    private void OnShouldHidePrompt()
-    {
-        Hide();
-    }
+    private void OnShouldHidePrompt() { Hide(); }
 
-    private void OnAddUserPressed(string userId)
-    {
-        OnAddUser?.Invoke(userId);
-    }
-    
-    private void OnRemoveUserPressed(string userId)
-    {
-        OnRemoveUser?.Invoke(userId);
-    }
+    private void OnAddUserPressed(string userId) { OnAddUser?.Invoke(userId); }
+
+    private void OnRemoveUserPressed(string userId) { OnRemoveUser?.Invoke(userId); }
 }

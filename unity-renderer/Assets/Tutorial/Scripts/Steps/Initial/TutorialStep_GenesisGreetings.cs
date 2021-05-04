@@ -49,10 +49,7 @@ namespace DCL.Tutorial
             }
         }
 
-        public override IEnumerator OnStepExecute()
-        {
-            yield return new WaitUntil(() => stepIsFinished);
-        }
+        public override IEnumerator OnStepExecute() { yield return new WaitUntil(() => stepIsFinished); }
 
         public override IEnumerator OnStepPlayHideAnimation()
         {
@@ -66,9 +63,6 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
         }
 
-        private void OnOkButtonClick()
-        {
-            stepIsFinished = true;
-        }
+        private void OnOkButtonClick() { stepIsFinished = true; }
     }
 }

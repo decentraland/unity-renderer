@@ -132,7 +132,7 @@ namespace DCL
                 {
                     new HotScenesController.HotSceneInfo.Realm()
                     {
-                        userParcels = new Vector2Int[] {coords},
+                        userParcels = new Vector2Int[] { coords },
                         usersCount = 1
                     }
                 },

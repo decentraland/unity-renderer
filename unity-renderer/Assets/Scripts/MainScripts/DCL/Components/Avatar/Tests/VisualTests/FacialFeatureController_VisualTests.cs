@@ -15,10 +15,7 @@ namespace Tests
         [VisualTest]
         [Explicit]
         [Category("Explicit")]
-        public IEnumerator MouthWithMask_Generate()
-        {
-            yield return VisualTestHelpers.GenerateBaselineForTest(MouthWithMask());
-        }
+        public IEnumerator MouthWithMask_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(MouthWithMask()); }
 
         [UnityTest]
         [VisualTest]

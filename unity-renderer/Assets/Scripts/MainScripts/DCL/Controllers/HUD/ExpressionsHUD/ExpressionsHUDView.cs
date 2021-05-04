@@ -22,10 +22,7 @@ public class ExpressionsHUDView : MonoBehaviour
     [SerializeField] internal InputAction_Trigger openExpressionsAction;
     [SerializeField] internal RawImage avatarPic;
 
-    public static ExpressionsHUDView Create()
-    {
-        return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<ExpressionsHUDView>();
-    }
+    public static ExpressionsHUDView Create() { return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<ExpressionsHUDView>(); }
 
     void OnOpenExpressions(DCLAction_Trigger trigger)
     {
@@ -61,7 +58,8 @@ public class ExpressionsHUDView : MonoBehaviour
 
     public void UpdateAvatarSprite(Texture2D avatarTexture)
     {
-        if (avatarTexture == null) return;
+        if (avatarTexture == null)
+            return;
 
         avatarPic.texture = avatarTexture;
     }
@@ -92,25 +90,13 @@ public class ExpressionsHUDView : MonoBehaviour
         AudioScriptableObjects.dialogClose.Play(true);
     }
 
-    public bool IsContentVisible()
-    {
-        return content.gameObject.activeSelf;
-    }
+    public bool IsContentVisible() { return content.gameObject.activeSelf; }
 
-    public void SetVisiblity(bool visible)
-    {
-        gameObject.SetActive(visible);
-    }
+    public void SetVisiblity(bool visible) { gameObject.SetActive(visible); }
 
-    public bool IsVisible()
-    {
-        return gameObject.activeSelf;
-    }
+    public bool IsVisible() { return gameObject.activeSelf; }
 
-    public void OnDestroy()
-    {
-        CleanUp();
-    }
+    public void OnDestroy() { CleanUp(); }
 
     public void CleanUp()
     {

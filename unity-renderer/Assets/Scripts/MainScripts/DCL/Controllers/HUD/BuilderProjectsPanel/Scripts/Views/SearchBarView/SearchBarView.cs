@@ -49,10 +49,7 @@ internal class SearchBarView : MonoBehaviour
         sortDropdown.OnSortTypeSelected += OnSortTypeSelected;
     }
 
-    public void SetResultCount(int count)
-    {
-        resultLabel.text = string.Format(resultFormat, count);
-    }
+    public void SetResultCount(int count) { resultLabel.text = string.Format(resultFormat, count); }
 
     public void ShowFilters(bool filterOwner, bool filterOperator, bool filterContributor)
     {
@@ -61,10 +58,7 @@ internal class SearchBarView : MonoBehaviour
         contributorToggle.gameObject.SetActive(filterContributor);
     }
 
-    public void SetSortTypes(string[] types)
-    {
-        sortDropdown.AddSortType(types);
-    }
+    public void SetSortTypes(string[] types) { sortDropdown.AddSortType(types); }
 
     private void OnSortButtonPressed()
     {
@@ -98,10 +92,7 @@ internal class SearchBarView : MonoBehaviour
         ReportFilter();
     }
 
-    private void ReportFilter()
-    {
-        searchHandler?.SetFilter(filterOwner, filterOperator, filterContributor);
-    }
+    private void ReportFilter() { searchHandler?.SetFilter(filterOwner, filterOperator, filterContributor); }
 
     public void SetSearchBar(ISectionSearchHandler handler, SearchBarConfig config)
     {

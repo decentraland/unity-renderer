@@ -19,15 +19,9 @@ public class ShowHideUIByTrigger : MonoBehaviour
         SetUIVisibility(!CommonScriptableObjects.allUIHidden.Get());
     }
 
-    private void OnDestroy()
-    {
-        CommonScriptableObjects.allUIHidden.OnChange -= AllUIVisible_OnChange;
-    }
+    private void OnDestroy() { CommonScriptableObjects.allUIHidden.OnChange -= AllUIVisible_OnChange; }
 
-    private void AllUIVisible_OnChange(bool current, bool previous)
-    {
-        SetUIVisibility(!current);
-    }
+    private void AllUIVisible_OnChange(bool current, bool previous) { SetUIVisibility(!current); }
 
     private void SetUIVisibility(bool isVisible)
     {

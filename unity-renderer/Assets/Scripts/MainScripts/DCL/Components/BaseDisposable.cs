@@ -34,10 +34,7 @@ namespace DCL.Components
 
         protected BaseModel model;
 
-        public HashSet<IDCLEntity> GetAttachedEntities()
-        {
-            return attachedEntities;
-        }
+        public HashSet<IDCLEntity> GetAttachedEntities() { return attachedEntities; }
 
         public virtual void UpdateFromJSON(string json) { UpdateFromModel(model.GetDataFromJSON(json)); }
 
@@ -68,10 +65,7 @@ namespace DCL.Components
             OnAttach?.Invoke(entity);
         }
 
-        private void OnEntityRemoved(IDCLEntity entity)
-        {
-            DetachFrom(entity);
-        }
+        private void OnEntityRemoved(IDCLEntity entity) { DetachFrom(entity); }
 
         public virtual void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
         {

@@ -45,10 +45,7 @@ namespace DCL.SettingsPanelHUD.Widgets
             CreateControls();
         }
 
-        private void OnDestroy()
-        {
-            CommonSettingsPanelEvents.OnRefreshAllWidgetsSize -= AdjustWidgetHeight;
-        }
+        private void OnDestroy() { CommonSettingsPanelEvents.OnRefreshAllWidgetsSize -= AdjustWidgetHeight; }
 
         private void CreateControls()
         {

@@ -312,8 +312,6 @@ public class TaskbarHUDView : MonoBehaviour
 
     public void SetVisibility(bool visible) { gameObject.SetActive(visible); }
 
-    public void SetExploreInteractable(bool isInteractable) { exploreButton.SetInteractable(isInteractable); }
-
     private void OnDestroy()
     {
         if (chatHeadsGroup != null)

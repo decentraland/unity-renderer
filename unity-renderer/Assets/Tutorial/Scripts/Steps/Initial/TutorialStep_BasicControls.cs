@@ -47,9 +47,6 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 
-        private void OnOkButtonClick()
-        {
-            stepIsFinished = true;
-        }
+        private void OnOkButtonClick() { stepIsFinished = true; }
     }
 }

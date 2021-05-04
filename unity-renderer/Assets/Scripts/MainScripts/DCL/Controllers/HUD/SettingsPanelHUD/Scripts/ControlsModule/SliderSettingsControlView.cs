@@ -56,10 +56,7 @@ namespace DCL.SettingsPanelHUD.Controls
         /// Overrides the text of the label associated to the slider.
         /// </summary>
         /// <param name="text">New label text.</param>
-        public void OverrideIndicatorLabel(string text)
-        {
-            indicatorLabel.text = text;
-        }
+        public void OverrideIndicatorLabel(string text) { indicatorLabel.text = text; }
 
         public override void RefreshControl()
         {
@@ -80,9 +77,6 @@ namespace DCL.SettingsPanelHUD.Controls
                 * (1 - 0) + 0; //(value - from1) / (to1 - from1) * (to2 - from2) + from2
         }
 
-        private float RemapNormalizedValueToSlider(float value)
-        {
-            return Mathf.Lerp(slider.minValue, slider.maxValue, value);
-        }
+        private float RemapNormalizedValueToSlider(float value) { return Mathf.Lerp(slider.minValue, slider.maxValue, value); }
     }
 }

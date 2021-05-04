@@ -109,10 +109,7 @@ namespace DCL
             return false;
         }
 
-        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true)
-        {
-            ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
-        }
+        public void ConfigureColliders(IDCLEntity entity, bool hasCollision = true, bool filterByColliderName = true) { ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity); }
 
         public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, IDCLEntity entity = null, int colliderLayer = -1)
         {

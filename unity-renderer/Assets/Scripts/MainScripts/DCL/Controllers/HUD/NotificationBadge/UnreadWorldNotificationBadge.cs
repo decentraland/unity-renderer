@@ -26,10 +26,7 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        Initialize(ChatController.i);
-    }
+    private void Start() { Initialize(ChatController.i); }
 
     /// <summary>
     /// Prepares the notification badge for listening to the world chat
@@ -80,9 +77,10 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
 
     private void UpdateUnreadMessages()
     {
-        currentUnreadMessages = currentChatController.GetEntries().Count(
-            msg => msg.messageType == ChatMessage.Type.PUBLIC &&
-            msg.timestamp > (ulong)currentTimestampReading);
+        currentUnreadMessages = currentChatController.GetEntries()
+                                                     .Count(
+                                                         msg => msg.messageType == ChatMessage.Type.PUBLIC &&
+                                                                msg.timestamp > (ulong)currentTimestampReading);
     }
 
     private void RefreshNotificationBadge()

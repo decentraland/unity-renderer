@@ -11,9 +11,9 @@ public class SmartItemListView : MonoBehaviour
 
     List<GameObject> childrenList = new List<GameObject>();
 
-    public void SetSmartItemParameters(SmartItemParameter[] parameters, Dictionary<object,object> smartItemValues)
+    public void SetSmartItemParameters(SmartItemParameter[] parameters, Dictionary<object, object> smartItemValues)
     {
-        for(int i = 0; i <childrenList.Count;i++)
+        for (int i = 0; i < childrenList.Count; i++)
         {
             Destroy(childrenList[i]);
         }
@@ -27,20 +27,17 @@ public class SmartItemListView : MonoBehaviour
         }
     }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
-    {
-        this.entitiesList = BuilderInWorldUtils.RemoveGroundEntities(entitiesList);
-    }
+    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.entitiesList = BuilderInWorldUtils.RemoveGroundEntities(entitiesList); }
 
     void InstantiateParameter(SmartItemParameter parameter, Dictionary<object, object> smartItemValues, SmartItemUIParameterAdapter parameterAdapterPrefab)
     {
         SmartItemUIParameterAdapter parameterAdapter = Instantiate(parameterAdapterPrefab.gameObject, transform).GetComponent<SmartItemUIParameterAdapter>();
 
         IEntityListHandler entityListHanlder = parameterAdapter.GetComponent<IEntityListHandler>();
-        if(entityListHanlder != null)
+        if (entityListHanlder != null)
             entityListHanlder.SetEntityList(entitiesList);
 
-        parameterAdapter.SetParameter(parameter,smartItemValues);
+        parameterAdapter.SetParameter(parameter, smartItemValues);
         childrenList.Add(parameterAdapter.gameObject);
     }
 }

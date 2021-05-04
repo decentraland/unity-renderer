@@ -73,8 +73,5 @@ internal class EmailPromptHUDView : MonoBehaviour
         showHideAnimator.OnWillFinishStart -= OnWillFinishStart;
     }
 
-    bool IsValidEmail(string email)
-    {
-        return emailRegex.IsMatch(email);
-    }
+    bool IsValidEmail(string email) { return emailRegex.IsMatch(email); }
 }

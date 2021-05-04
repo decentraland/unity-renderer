@@ -28,10 +28,7 @@ namespace DCL
         public int pendingInitMessagesCount;
         public long processedInitMessagesCount;
 
-        public bool isRunning
-        {
-            get { return mainCoroutine != null; }
-        }
+        public bool isRunning { get { return mainCoroutine != null; } }
 
         public bool paused { get; set; }
 
@@ -61,10 +58,7 @@ namespace DCL
 
         bool populateBusesDirty = true;
 
-        public void MarkBusesDirty()
-        {
-            populateBusesDirty = true;
-        }
+        public void MarkBusesDirty() { populateBusesDirty = true; }
 
         public void PopulateBusesToBeProcessed()
         {
@@ -168,11 +162,7 @@ namespace DCL
             messagingControllers.Clear();
         }
 
-
-        public bool ContainsController(string sceneId)
-        {
-            return messagingControllers.ContainsKey(sceneId);
-        }
+        public bool ContainsController(string sceneId) { return messagingControllers.ContainsKey(sceneId); }
 
         public void AddController(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false)
         {
@@ -218,15 +208,9 @@ namespace DCL
             controller.Dispose();
         }
 
-        public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage)
-        {
-            messagingControllers[queuedMessage.sceneId].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId);
-        }
+        public void Enqueue(bool isUiBus, QueuedSceneMessage_Scene queuedMessage) { messagingControllers[queuedMessage.sceneId].Enqueue(isUiBus, queuedMessage, out MessagingBusType busId); }
 
-        public void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage)
-        {
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage);
-        }
+        public void ForceEnqueueToGlobal(MessagingBusType busId, QueuedSceneMessage queuedMessage) { messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage); }
 
         public void SetSceneReady(string sceneId)
         {
@@ -307,9 +291,12 @@ namespace DCL
             if (controller == null || !controller.enabled)
                 return;
 
-            if (controller.uiBus.pendingMessagesCount != 0) return;
-            if (controller.initBus.pendingMessagesCount != 0) return;
-            if (controller.systemBus.pendingMessagesCount != 0) return;
+            if (controller.uiBus.pendingMessagesCount != 0)
+                return;
+            if (controller.initBus.pendingMessagesCount != 0)
+                return;
+            if (controller.systemBus.pendingMessagesCount != 0)
+                return;
 
             controller.enabled = false;
         }

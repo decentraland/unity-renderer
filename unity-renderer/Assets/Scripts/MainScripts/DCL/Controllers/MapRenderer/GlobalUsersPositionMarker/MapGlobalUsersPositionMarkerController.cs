@@ -44,11 +44,12 @@ namespace DCL
             userPositionHandler.OnPlayerCoordsChanged += OnPlayerCoordsChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRenderStateChanged;
 
-            KernelConfig.i.EnsureConfigInitialized().Then(config =>
-            {
-                commsRadius = (int) config.comms.commRadius + COMMS_RADIUS_THRESHOLD;
-                OnPlayerCoordsChanged(userPositionHandler.playerCoords);
-            });
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            commsRadius = (int) config.comms.commRadius + COMMS_RADIUS_THRESHOLD;
+                            OnPlayerCoordsChanged(userPositionHandler.playerCoords);
+                        });
             OnRenderStateChanged(CommonScriptableObjects.rendererState.Get(), false);
         }
 
@@ -73,15 +74,9 @@ namespace DCL
             userPositionHandler.Dispose();
         }
 
-        private void OnScenesFetched(List<HotScenesController.HotSceneInfo> sceneList)
-        {
-            markersHandler.SetMarkers(sceneList);
-        }
+        private void OnScenesFetched(List<HotScenesController.HotSceneInfo> sceneList) { markersHandler.SetMarkers(sceneList); }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords)
-        {
-            markersHandler.SetExclusionArea(coords, commsRadius);
-        }
+        private void OnPlayerCoordsChanged(Vector2Int coords) { markersHandler.SetExclusionArea(coords, commsRadius); }
 
         private void OnRenderStateChanged(bool current, bool prev)
         {

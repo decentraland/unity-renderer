@@ -100,7 +100,7 @@ namespace Tests
             Assert.AreEqual(10f, uiTextShape.referencesContainer.text.margin.y);
             Assert.AreEqual(30f, uiTextShape.referencesContainer.text.margin.z);
             Assert.AreEqual(20f, uiTextShape.referencesContainer.text.margin.w);
-            
+
             yield return TestHelpers.SharedComponentUpdate<UIText>(uiTextShape,
                 new UIText.Model
                 {
@@ -108,7 +108,7 @@ namespace Tests
                     positionX = new UIValue(80),
                     positionY = new UIValue(80),
                 });
-                
+
             Assert.AreEqual(80f, uiTextShape.model.positionX.value);
             Assert.AreEqual(80f, uiTextShape.model.positionY.value);
         }
@@ -176,9 +176,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator AddedCorrectlyOnInvisibleParent()
-        {
-            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
-        }
+        public IEnumerator AddedCorrectlyOnInvisibleParent() { yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE); }
     }
 }

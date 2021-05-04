@@ -23,8 +23,7 @@ namespace AssetPromiseKeeper_Mock_Tests
                 {
                     loadedAsset = x;
                 }
-            ;
-
+                ;
 
 
             keeper.Keep(prom);
@@ -92,7 +91,11 @@ namespace AssetPromiseKeeper_Mock_Tests
             bool masterSuccessCalled = false;
             bool masterFailCalled = false;
 
-            prom.OnSuccessEvent += (x) => { asset = x; masterSuccessCalled = true; };
+            prom.OnSuccessEvent += (x) =>
+            {
+                asset = x;
+                masterSuccessCalled = true;
+            };
             prom.OnFailEvent += (x) => { masterFailCalled = true; };
 
             AssetPromise_Mock_Alt_Loading_Approach prom2 = new AssetPromise_Mock_Alt_Loading_Approach();
@@ -207,7 +210,6 @@ namespace AssetPromiseKeeper_Mock_Tests
                     loadedAsset = x;
                     id = loadedAsset.id;
                 };
-
 
 
             keeper.Keep(prom);

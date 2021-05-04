@@ -15,15 +15,9 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
     private Dictionary<DCLBuilderInWorldEntity, Sprite> entitySpriteDict = new Dictionary<DCLBuilderInWorldEntity, Sprite>();
     private Dictionary<string, DCLBuilderInWorldEntity> entityPromiseKeeperDict = new Dictionary<string, DCLBuilderInWorldEntity>();
 
-    private void Start()
-    {
-        dropDown.onValueChanged.AddListener(OnValueChange);
-    }
+    private void Start() { dropDown.onValueChanged.AddListener(OnValueChange); }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
-    {
-        this.entitiesList = entitiesList;
-    }
+    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.entitiesList = entitiesList; }
 
     public override void SetInfo()
     {
@@ -41,7 +35,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         dropDown.ClearOptions();
 
         dropDown.options = new List<TMP_Dropdown.OptionData>();
-      
+
         List<TMP_Dropdown.OptionData> optionsList = new List<TMP_Dropdown.OptionData>();
         foreach (DCLBuilderInWorldEntity entity in entitiesList)
         {

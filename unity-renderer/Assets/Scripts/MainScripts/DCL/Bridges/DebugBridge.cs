@@ -15,30 +15,15 @@ namespace DCL
     {
         // Beware this SetDebug() may be called before Awake() somehow...
         [ContextMenu("Set Debug mode")]
-        public void SetDebug()
-        {
-            Environment.i.platform.debugController.SetDebug();
-        }
+        public void SetDebug() { Environment.i.platform.debugController.SetDebug(); }
 
-        public void HideFPSPanel()
-        {
-            Environment.i.platform.debugController.HideFPSPanel();
-        }
+        public void HideFPSPanel() { Environment.i.platform.debugController.HideFPSPanel(); }
 
-        public void ShowFPSPanel()
-        {
-            Environment.i.platform.debugController.ShowFPSPanel();
-        }
+        public void ShowFPSPanel() { Environment.i.platform.debugController.ShowFPSPanel(); }
 
-        public void SetSceneDebugPanel()
-        {
-            Environment.i.platform.debugController.SetSceneDebugPanel();
-        }
+        public void SetSceneDebugPanel() { Environment.i.platform.debugController.SetSceneDebugPanel(); }
 
-        public void SetEngineDebugPanel()
-        {
-            Environment.i.platform.debugController.SetEngineDebugPanel();
-        }
+        public void SetEngineDebugPanel() { Environment.i.platform.debugController.SetEngineDebugPanel(); }
 
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
@@ -56,10 +41,7 @@ namespace DCL
             Debug.unityLogger.logEnabled = prevLogValue;
         }
 
-        public void SetDisableAssetBundles()
-        {
-            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
-        }
+        public void SetDisableAssetBundles() { RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY; }
 
         [ContextMenu("Dump Renderers Lockers Info")]
         public void DumpRendererLockersInfo()

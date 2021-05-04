@@ -8,15 +8,9 @@ namespace DCL.SettingsControls
     public class SpinBoxSettingsControlController : SettingsControlController
     {
         public event Action<string[]> OnSetLabels;
-        protected void RaiseOnOverrideIndicatorLabel(string[] labels)
-        {
-            OnSetLabels?.Invoke(labels);
-        }
+        protected void RaiseOnOverrideIndicatorLabel(string[] labels) { OnSetLabels?.Invoke(labels); }
 
         public event Action<string> OnCurrentLabelChange;
-        protected void RaiseOnCurrentLabelChange(string newCurrentLabel)
-        {
-            OnCurrentLabelChange?.Invoke(newCurrentLabel);
-        }
+        protected void RaiseOnCurrentLabelChange(string newCurrentLabel) { OnCurrentLabelChange?.Invoke(newCurrentLabel); }
     }
 }

@@ -11,17 +11,14 @@ namespace DCL
         //TODO(Brian): Evaluate if we can use mocking library to replace this mock
         public class AssetDatabase : IAssetDatabase
         {
-            private static Logger logger = new Logger("Mocked.AssetDatabase") {verboseEnabled = false};
+            private static Logger logger = new Logger("Mocked.AssetDatabase") { verboseEnabled = false };
 
             public HashSet<string> importedAssets = new HashSet<string>();
             public HashSet<string> savedAssets = new HashSet<string>();
 
             private IFile file;
 
-            public AssetDatabase(IFile file)
-            {
-                this.file = file;
-            }
+            public AssetDatabase(IFile file) { this.file = file; }
 
             public void Refresh(ImportAssetOptions options = ImportAssetOptions.Default)
             {
@@ -88,9 +85,7 @@ namespace DCL
                 return "Error";
             }
 
-            public void ReleaseCachedFileHandles()
-            {
-            }
+            public void ReleaseCachedFileHandles() { }
 
             public T LoadAssetAtPath<T>(string path) where T : Object
             {
@@ -109,25 +104,13 @@ namespace DCL
                 return null;
             }
 
-            public string GetAssetPath(Object asset)
-            {
-                return "";
-            }
+            public string GetAssetPath(Object asset) { return ""; }
 
-            public string AssetPathToGUID(string path)
-            {
-                return "";
-            }
+            public string AssetPathToGUID(string path) { return ""; }
 
-            public string GetTextMetaFilePathFromAssetPath(string path)
-            {
-                return Path.ChangeExtension(path, ".meta");
-            }
+            public string GetTextMetaFilePathFromAssetPath(string path) { return Path.ChangeExtension(path, ".meta"); }
 
-            public AssetImporter GetImporterAtPath(string path)
-            {
-                return null;
-            }
+            public AssetImporter GetImporterAtPath(string path) { return null; }
         }
     }
 }

@@ -28,7 +28,6 @@ public class MessageOfTheDayConfig
     public Button[] buttons;
 }
 
-
 public class WelcomeHUDController : IHUD
 {
     const float POPUP_DELAY = 2;
@@ -62,10 +61,7 @@ public class WelcomeHUDController : IHUD
             ResetPopupDelayed();
     }
 
-    internal void Close()
-    {
-        SetVisibility(false);
-    }
+    internal void Close() { SetVisibility(false); }
 
     internal virtual void OnConfirmPressed(int buttonIndex)
     {
@@ -78,10 +74,7 @@ public class WelcomeHUDController : IHUD
         }
     }
 
-    void OnClosePressed()
-    {
-        Close();
-    }
+    void OnClosePressed() { Close(); }
 
     public void Dispose()
     {
@@ -120,10 +113,7 @@ public class WelcomeHUDController : IHUD
         });
     }
 
-    void StartPopupRoutine()
-    {
-        showPopupDelayedRoutine = CoroutineStarter.Start(ShowPopupDelayed(POPUP_DELAY));
-    }
+    void StartPopupRoutine() { showPopupDelayedRoutine = CoroutineStarter.Start(ShowPopupDelayed(POPUP_DELAY)); }
 
     void StopPopupRoutine()
     {

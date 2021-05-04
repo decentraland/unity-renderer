@@ -9,16 +9,10 @@ namespace Tests.BuildModeHUDViews
         private PublishBtnView publishBtnView;
 
         [SetUp]
-        public void SetUp()
-        {
-            publishBtnView = PublishBtnView.Create();
-        }
+        public void SetUp() { publishBtnView = PublishBtnView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(publishBtnView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(publishBtnView.gameObject); }
 
         [Test]
         public void OnPointerClickCorrectly()

@@ -63,14 +63,17 @@ namespace Tests
         public void ReactToPlayerCoordsChange()
         {
             const string sceneName = "SCENE_NAME";
-            MinimapMetadata.GetMetadata().AddSceneInfo(
-                new MinimapMetadata.MinimapSceneInfo{
-                    parcels = new List<Vector2Int> {
-                        new Vector2Int(-77,-77)
-                    },
-                    name = sceneName
-                });
-            CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77,-77));
+            MinimapMetadata.GetMetadata()
+                           .AddSceneInfo(
+                               new MinimapMetadata.MinimapSceneInfo
+                               {
+                                   parcels = new List<Vector2Int>
+                                   {
+                                       new Vector2Int(-77, -77)
+                                   },
+                                   name = sceneName
+                               });
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77, -77));
             Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
             Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);
         }

@@ -5,9 +5,7 @@ using UnityEngine.Events;
 public class SpinBoxPresetted : MonoBehaviour
 {
     [System.Serializable]
-    public class OnValueChanged : UnityEvent<int>
-    {
-    }
+    public class OnValueChanged : UnityEvent<int> { }
 
     [Header("References")]
     [SerializeField] TMPro.TextMeshProUGUI textLabel = null;
@@ -25,23 +23,9 @@ public class SpinBoxPresetted : MonoBehaviour
 
     private int currentValue;
 
-    public int value
-    {
-        get
-        {
-            return currentValue;
-        }
-        set
-        {
-            SetValue(value);
-        }
-    }
+    public int value { get { return currentValue; } set { SetValue(value); } }
 
-    public string label
-    {
-        get { return textLabel.text; }
-        set { OverrideCurrentLabel(value); }
-    }
+    public string label { get { return textLabel.text; } set { OverrideCurrentLabel(value); } }
 
     void Awake()
     {
@@ -50,10 +34,7 @@ public class SpinBoxPresetted : MonoBehaviour
         SetValue(startingValue, false);
     }
 
-    public void SetLabels(string[] labels)
-    {
-        this.labels = labels;
-    }
+    public void SetLabels(string[] labels) { this.labels = labels; }
 
     public void SetValue(int value, bool raiseValueChangedEvent = true)
     {
@@ -65,7 +46,8 @@ public class SpinBoxPresetted : MonoBehaviour
         textLabel.text = labels[value];
         currentValue = (int)value;
         startingValue = currentValue;
-        if (raiseValueChangedEvent) onValueChanged?.Invoke(value);
+        if (raiseValueChangedEvent)
+            onValueChanged?.Invoke(value);
 
         if (!loop)
         {
@@ -74,10 +56,7 @@ public class SpinBoxPresetted : MonoBehaviour
         }
     }
 
-    public void OverrideCurrentLabel(string text)
-    {
-        textLabel.text = text;
-    }
+    public void OverrideCurrentLabel(string text) { textLabel.text = text; }
 
     public void IncreaseValue()
     {

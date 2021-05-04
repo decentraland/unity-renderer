@@ -33,7 +33,7 @@ public class UsersSearchBridge : MonoBehaviour, IUsersSearchBridge
     public void SetENSOwnerQueryResult(string payload)
     {
         ResultPayload result = Utils.SafeFromJson<ResultPayload>(payload);
-        
+
         UserProfileModel[] profiles = null;
         if (result.success && result.profiles.Length > 0)
         {

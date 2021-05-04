@@ -10,7 +10,7 @@ internal class LandSearchHandler : ISectionSearchHandler
 
     public event Action OnUpdated;
     public event Action<List<LandSearchInfo>> OnResult;
-    
+
     string[] ISectionSearchHandler.sortTypes => landSortTypes;
     string ISectionSearchHandler.searchString => landSearchHandler.currentSearchString;
     bool ISectionSearchHandler.filterOwner => filterOwner;

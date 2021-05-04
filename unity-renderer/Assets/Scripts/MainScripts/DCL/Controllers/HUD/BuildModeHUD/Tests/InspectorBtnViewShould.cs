@@ -9,16 +9,10 @@ namespace Tests.BuildModeHUDViews
         private InspectorBtnView inspectorBtnView;
 
         [SetUp]
-        public void SetUp()
-        {
-            inspectorBtnView = InspectorBtnView.Create();
-        }
+        public void SetUp() { inspectorBtnView = InspectorBtnView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(inspectorBtnView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(inspectorBtnView.gameObject); }
 
         [Test]
         public void OnPointerClickCorrectly()

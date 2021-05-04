@@ -24,7 +24,9 @@ internal abstract class SectionBase : IDisposable
             return;
 
         isVisible = visible;
-        if (visible) OnShow();
-        else OnHide();
+        if (visible)
+            OnShow();
+        else
+            OnHide();
     }
 }

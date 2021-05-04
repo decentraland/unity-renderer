@@ -15,7 +15,6 @@ namespace Builder
         public static Action<DCLBuilderEntity> OnEntityTransformUpdated;
         public static Action<DCLBuilderEntity> OnEntityAddedWithTransform;
 
-
         public bool hasGizmoComponent
         {
             get
@@ -142,21 +141,16 @@ namespace Builder
             }
         }
 
-        public bool HasShape()
-        {
-            return isShapeComponentSet;
-        }
+        public bool HasShape() { return isShapeComponentSet; }
 
-        public bool HasRenderer()
-        {
-            return rootEntity.meshesInfo != null && rootEntity.meshesInfo.renderers != null;
-        }
+        public bool HasRenderer() { return rootEntity.meshesInfo != null && rootEntity.meshesInfo.renderers != null; }
 
         public void SetOnShapeLoaded(Action onShapeLoad)
         {
             if (HasShape())
             {
-                if (onShapeLoad != null) onShapeLoad();
+                if (onShapeLoad != null)
+                    onShapeLoad();
             }
             else
             {

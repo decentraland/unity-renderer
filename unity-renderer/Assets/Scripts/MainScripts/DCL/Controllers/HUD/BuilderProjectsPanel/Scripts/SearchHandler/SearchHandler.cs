@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class SearchHandler<T> where T: ISearchable, ISortable<T>
+public class SearchHandler<T> where T : ISearchable, ISortable<T>
 {
     public event Action<List<T>> OnSearchChanged;
 
@@ -27,8 +27,8 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
         this.currentFilterPredicate = filterPredicate;
         this.currentSortingType = sortingTypes?[0];
     }
-    
-    public SearchHandler(): this(null, null) { }
+
+    public SearchHandler() : this(null, null) { }
 
     public void SetSearchableList(List<T> list)
     {
@@ -80,7 +80,7 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
             onResult?.Invoke(null);
             return;
         }
-        
+
         if (searchStringChanged)
         {
             searchResult = string.IsNullOrEmpty(currentSearchString) ? originalList : SearchHelper.Search(currentSearchString, originalList);
@@ -133,15 +133,9 @@ public class SearchHandler<T> where T: ISearchable, ISortable<T>
         GetResult(OnSearchChanged);
     }
 
-    public bool Match(T item)
-    {
-        return MatchSearch(item) && MatchFilter(item);
-    }
+    public bool Match(T item) { return MatchSearch(item) && MatchFilter(item); }
 
-    private bool MatchSearch(T item)
-    {
-        return SearchHelper.SearchMatchItem(currentSearchString, item);
-    }
+    private bool MatchSearch(T item) { return SearchHelper.SearchMatchItem(currentSearchString, item); }
 
     private bool MatchFilter(T item)
     {

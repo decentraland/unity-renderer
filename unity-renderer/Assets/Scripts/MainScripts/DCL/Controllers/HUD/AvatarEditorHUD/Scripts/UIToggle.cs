@@ -28,10 +28,7 @@ public abstract class UIToggle : MonoBehaviour
         toggle.onValueChanged.AddListener(OnValueChanged);
     }
 
-    private void OnDestroy()
-    {
-        toggle.onValueChanged.RemoveListener(OnValueChanged);
-    }
+    private void OnDestroy() { toggle.onValueChanged.RemoveListener(OnValueChanged); }
 
     protected abstract void OnValueChanged(bool isOn);
 }

@@ -21,7 +21,7 @@ public class CameraStateTPS : CameraStateBase
     protected Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     protected Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
     protected Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
-    
+
     public float rotationLerpSpeed = 10;
 
     public override void Init(Camera camera)
@@ -39,15 +39,9 @@ public class CameraStateTPS : CameraStateBase
         base.Init(camera);
     }
 
-    private void OnEnable()
-    {
-        CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera;
-    }
+    private void OnEnable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera; }
 
-    private void OnDisable()
-    {
-        CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera;
-    }
+    private void OnDisable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera; }
 
     void UpdateMovingPlatformCamera(bool isOnMovingPlatform, bool wasOnMovingPlatform)
     {
@@ -129,10 +123,7 @@ public class CameraStateTPS : CameraStateBase
         }
     }
 
-    public override Vector3 OnGetRotation()
-    {
-        return new Vector3(defaultVirtualCameraAsFreeLook.m_YAxis.Value, defaultVirtualCameraAsFreeLook.m_XAxis.Value, 0);
-    }
+    public override Vector3 OnGetRotation() { return new Vector3(defaultVirtualCameraAsFreeLook.m_YAxis.Value, defaultVirtualCameraAsFreeLook.m_XAxis.Value, 0); }
 
     public override void OnSetRotation(CameraController.SetRotationPayload payload)
     {

@@ -178,13 +178,10 @@ internal class HotSceneCellView : MonoBehaviour
 
         FetchThumbnail(sceneInfo.thumbnail,
             onFail: () => FetchThumbnail(MapUtils.GetMarketPlaceThumbnailUrl(sceneInfo.parcels, THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR),
-            onFail: () => SetThumbnail(errorThumbnail.texture)));
+                onFail: () => SetThumbnail(errorThumbnail.texture)));
     }
 
-    private void FetchThumbnail(string url, Action onFail)
-    {
-        thumbnailHandler.FetchThumbnail(url, SetThumbnail, onFail);
-    }
+    private void FetchThumbnail(string url, Action onFail) { thumbnailHandler.FetchThumbnail(url, SetThumbnail, onFail); }
 
     private void SetThumbnail(Texture2D texture)
     {

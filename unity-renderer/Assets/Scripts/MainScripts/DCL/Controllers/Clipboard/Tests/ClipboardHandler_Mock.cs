@@ -9,15 +9,9 @@ internal class ClipboardHandler_Mock : IClipboardHandler
 
     private float delayForReadRequest = 0;
     private string errorInReadRequest = "";
-    void IClipboardHandler.Initialize(Action<string, bool> onRead)
-    {
-        OnRead = onRead;
-    }
+    void IClipboardHandler.Initialize(Action<string, bool> onRead) { OnRead = onRead; }
 
-    void IClipboardHandler.RequestWriteText(string text)
-    {
-        textInClipboard = text;
-    }
+    void IClipboardHandler.RequestWriteText(string text) { textInClipboard = text; }
 
     void IClipboardHandler.RequestGetText()
     {
@@ -25,14 +19,15 @@ internal class ClipboardHandler_Mock : IClipboardHandler
 
         if (delayForReadRequest > 0)
         {
-            Task.Delay(Mathf.FloorToInt(delayForReadRequest * 1000)).ContinueWith((task) =>
-            {
-                OnRead?.Invoke(isError? errorInReadRequest : textInClipboard, isError);
-            });
+            Task.Delay(Mathf.FloorToInt(delayForReadRequest * 1000))
+                .ContinueWith((task) =>
+                {
+                    OnRead?.Invoke(isError ? errorInReadRequest : textInClipboard, isError);
+                });
         }
         else
         {
-            OnRead?.Invoke(isError? errorInReadRequest : textInClipboard, isError);
+            OnRead?.Invoke(isError ? errorInReadRequest : textInClipboard, isError);
         }
     }
 

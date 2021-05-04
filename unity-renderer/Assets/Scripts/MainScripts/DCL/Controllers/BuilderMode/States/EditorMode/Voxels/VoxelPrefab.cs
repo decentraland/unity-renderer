@@ -24,8 +24,5 @@ public class VoxelPrefab : MonoBehaviour
         this.isAvailable = isAvailable;
     }
 
-    public bool IsAvailable()
-    {
-        return isAvailable;
-    }
+    public bool IsAvailable() { return isAvailable; }
 }

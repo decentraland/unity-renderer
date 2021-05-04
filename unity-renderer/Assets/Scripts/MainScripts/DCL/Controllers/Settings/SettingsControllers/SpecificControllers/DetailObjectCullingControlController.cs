@@ -6,10 +6,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Detail Object Culling", fileName = "DetailObjectCullingControlController")]
     public class DetailObjectCullingControlController : ToggleSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.enableDetailObjectCulling;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.enableDetailObjectCulling; }
 
         public override void UpdateSetting(object newValue)
         {

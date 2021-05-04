@@ -12,7 +12,7 @@ public class PrivateChatEntryBackgroundFitter : MonoBehaviour
     void Update()
     {
         Vector2 textSize = new Vector2(messageText.bounds.size.x + messageText.margin.x + messageText.margin.z,
-                                    messageText.bounds.size.y + messageText.margin.y * 2);
+            messageText.bounds.size.y + messageText.margin.y * 2);
 
         messageText.transform.localPosition = new Vector3(leftMessage ? (messageText.margin.x + messageText.margin.z) / 2 : 0f, messageText.transform.localPosition.y, 0);
 

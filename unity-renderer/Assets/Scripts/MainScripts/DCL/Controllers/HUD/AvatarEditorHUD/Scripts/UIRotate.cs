@@ -8,8 +8,5 @@ public class UIRotate : MonoBehaviour
 
     public Vector3 angularVelocity;
 
-    private void Update()
-    {
-        rectTransform.Rotate(angularVelocity * Time.deltaTime);
-    }
+    private void Update() { rectTransform.Rotate(angularVelocity * Time.deltaTime); }
 }

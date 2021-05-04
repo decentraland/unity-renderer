@@ -22,10 +22,7 @@ namespace DCL
 
         private Coroutine autoCleanupCoroutine;
 
-        public void Initialize()
-        {
-            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
-        }
+        public void Initialize() { autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup()); }
 
         public void Dispose()
         {
@@ -39,10 +36,7 @@ namespace DCL
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChange;
         }
 
-        public MemoryManager()
-        {
-            CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
-        }
+        public MemoryManager() { CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange; }
 
         private void OnRendererStateChange(bool isEnable, bool prevState)
         {

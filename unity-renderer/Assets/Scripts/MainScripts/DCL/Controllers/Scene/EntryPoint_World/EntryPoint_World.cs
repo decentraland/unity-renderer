@@ -246,22 +246,13 @@ public class EntryPoint_World
     }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetEntityId(string id)
-    {
-        currentEntityId = id;
-    }
+    internal static void SetEntityId(string id) { currentEntityId = id; }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetSceneId(string id)
-    {
-        currentSceneId = id;
-    }
+    internal static void SetSceneId(string id) { currentSceneId = id; }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
-    internal static void SetTag(string id)
-    {
-        currentTag = id;
-    }
+    internal static void SetTag(string id) { currentTag = id; }
 
     [MonoPInvokeCallback(typeof(JS_Delegate_V))]
     internal static void CreateEntity()
@@ -323,7 +314,6 @@ public class EntryPoint_World
 
         return message;
     }
-
 
     [DllImport("__Internal")]
     private static extern void SetCallback_CreateEntity(JS_Delegate_V callback);

@@ -1,3 +1,1 @@
-public interface IRaycastPointerHandler
-{
-}
+public interface IRaycastPointerHandler { }

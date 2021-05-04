@@ -58,7 +58,6 @@ public class ShowHideAnimator : MonoBehaviour
             animator.Update(10);
     }
 
-
     public void AnimEvent_HideFinished()
     {
         OnWillFinishHide?.Invoke(this);
@@ -69,10 +68,7 @@ public class ShowHideAnimator : MonoBehaviour
         }
     }
 
-    public void AnimEvent_ShowFinished()
-    {
-        OnWillFinishStart?.Invoke(this);
-    }
+    public void AnimEvent_ShowFinished() { OnWillFinishStart?.Invoke(this); }
 
     private void OnEnable()
     {

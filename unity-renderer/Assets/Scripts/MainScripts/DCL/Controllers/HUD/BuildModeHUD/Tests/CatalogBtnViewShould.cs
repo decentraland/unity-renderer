@@ -9,16 +9,10 @@ namespace Tests.BuildModeHUDViews
         private CatalogBtnView catalogBtnView;
 
         [SetUp]
-        public void SetUp()
-        {
-            catalogBtnView = CatalogBtnView.Create();
-        }
+        public void SetUp() { catalogBtnView = CatalogBtnView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(catalogBtnView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(catalogBtnView.gameObject); }
 
         [Test]
         public void OnPointerClickCorrectly()

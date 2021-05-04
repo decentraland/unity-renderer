@@ -125,6 +125,7 @@ public class TaskbarHUDController : IHUD
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
     }
+
     private void View_OnQuestPanelToggled(bool value) { DataStore.i.HUDs.questsPanelVisible.Set(value); }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
@@ -567,8 +568,4 @@ public class TaskbarHUDController : IHUD
     private void SceneController_OnNewPortableExperienceSceneRemoved(string portableExperienceSceneIdToRemove) { view.RemovePortableExperienceElement(portableExperienceSceneIdToRemove); }
 
     public void KillPortableExperience(string portableExperienceSceneIdToKill) { WebInterface.KillPortableExperience(portableExperienceSceneIdToKill); }
-
-    public void SetExploreInteractable(bool isInteractable) { view.SetExploreInteractable(isInteractable); }
-
-    public void SetMoreTutorialInteractable(bool isInteractable) { view.moreMenu.SetTutorialInteractable(isInteractable); }
 }
