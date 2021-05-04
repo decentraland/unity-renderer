@@ -10,8 +10,9 @@ echo "Main plaza deployment: $SCENE_ID"
 
 # Parameters are passed as ENV vars
 export SCENE_ID
-export OUTPUT_DIR=ab-output
-export LOCAL_LOG_FILE=ab-logs.txt
-export CONTENT_URL=https://peer.decentraland.org/lambdas/contentv2/contents/
+export OUTPUT_DIR="$(pwd)/ab-output"
+export LOCAL_LOG_FILE="$(pwd)/ab-logs.txt"
+export CONTENT_URL="https://peer.decentraland.org/lambdas/contentv2/contents/"
+
 # call the conversor
 bash ./convert-asset-bundles.sh
