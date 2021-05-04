@@ -1,3 +1,5 @@
+using DCL;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -10,6 +12,7 @@ public class TaskbarButton : MonoBehaviour
     public ShowHideAnimator lineOnIndicator;
     public Image iconImage;
     public Color notInteractableColor;
+    public List<AppMode> compatibleModes;
 
     public event System.Action<TaskbarButton> OnToggleOn;
     public event System.Action<TaskbarButton> OnToggleOff;
@@ -26,7 +29,14 @@ public class TaskbarButton : MonoBehaviour
 
         if (iconImage != null)
             originalIconColor = iconImage.color;
+
+        DataStore.i.appMode.OnChange += AppMode_OnChange;
+        AppMode_OnChange(DataStore.i.appMode.Get(), AppMode.DEFAULT);
     }
+
+    private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
+
+    private void AppMode_OnChange(AppMode currentMode, AppMode previousMode) { SetInteractable(compatibleModes.Contains(currentMode)); }
 
     private void OnToggleButtonClick() { SetToggleState(!toggledOn); }
 
@@ -69,7 +79,7 @@ public class TaskbarButton : MonoBehaviour
             lineOffIndicator.SetActive(!on);
     }
 
-    public void SetInteractable(bool isInteractable)
+    private void SetInteractable(bool isInteractable)
     {
         toggleButton.interactable = isInteractable;
 
