@@ -19,8 +19,7 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
 
     public SectionSceneGeneralSettingsController() : this(
         Object.Instantiate(Resources.Load<SectionSceneGeneralSettingsView>(VIEW_PREFAB_PATH))
-    )
-    { }
+    ) { }
 
     public SectionSceneGeneralSettingsController(SectionSceneGeneralSettingsView view)
     {
@@ -69,15 +68,15 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
         string[] permissions = null;
         if (view.GetAllowMovePlayer() && view.GetAllowTriggerEmotes())
         {
-            permissions = new[] { PERMISSION_MOVE_PLAYER, PERMISSION_TRIGGER_EMOTES };
+            permissions = new [] { PERMISSION_MOVE_PLAYER, PERMISSION_TRIGGER_EMOTES };
         }
         else if (view.GetAllowMovePlayer())
         {
-            permissions = new[] { PERMISSION_MOVE_PLAYER };
+            permissions = new [] { PERMISSION_MOVE_PLAYER };
         }
         else if (view.GetAllowTriggerEmotes())
         {
-            permissions = new[] { PERMISSION_TRIGGER_EMOTES };
+            permissions = new [] { PERMISSION_TRIGGER_EMOTES };
         }
         sceneDataUpdatePayload.requiredPermissions = permissions;
         OnRequestUpdateSceneData?.Invoke(sceneData.id, sceneDataUpdatePayload);

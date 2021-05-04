@@ -75,6 +75,7 @@ namespace Tests
             Assert.IsFalse(cardView.roleOperatorGO.activeSelf, "Operator role tag should not be displayed");
             Assert.IsFalse(cardView.roleOwnerGO.activeSelf, "Owner role tag should not be displayed");
         }
+
         [Test]
         public void DisplayCorrectlyWhenSceneIsNotEditable()
         {
@@ -92,6 +93,7 @@ namespace Tests
             Assert.IsFalse(cardView.editorButton.gameObject.activeSelf, "Editor button should not be active");
             Assert.IsTrue(cardView.editorLockedGO.activeSelf, "Editor locked indicator should be active");
         }
+
         [Test]
         public void DisplayCorrectlyWhenSceneIsEditable()
         {

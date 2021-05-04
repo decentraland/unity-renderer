@@ -21,8 +21,7 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
     public SectionSceneContributorsSettingsController() : this(
         Object.Instantiate(Resources.Load<SectionSceneContributorsSettingsView>(VIEW_PREFAB_PATH)),
         FriendsController.i
-    )
-    { }
+    ) { }
 
     public SectionSceneContributorsSettingsController(SectionSceneContributorsSettingsView view, IFriendsController friendsController)
     {

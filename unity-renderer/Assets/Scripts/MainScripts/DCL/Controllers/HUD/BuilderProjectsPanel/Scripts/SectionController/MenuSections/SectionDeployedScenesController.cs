@@ -19,8 +19,7 @@ internal class SectionDeployedScenesController : SectionBase, IDeployedSceneList
 
     public SectionDeployedScenesController() : this(
         Object.Instantiate(Resources.Load<SectionDeployedScenesView>(VIEW_PREFAB_PATH))
-    )
-    { }
+    ) { }
 
     public SectionDeployedScenesController(SectionDeployedScenesView view)
     {

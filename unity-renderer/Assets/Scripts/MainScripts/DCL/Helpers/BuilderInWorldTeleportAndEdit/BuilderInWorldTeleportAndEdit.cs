@@ -15,6 +15,7 @@ public static class BuilderInWorldTeleportAndEdit
     {
         if (inProgress)
             return false;
+
         CoroutineStarter.Start(TeleportAndEditRoutine(targetCoords));
         return true;
     }

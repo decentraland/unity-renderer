@@ -36,6 +36,7 @@ public static class DeployedScenesFetcher
                     {
                         if (landsReceived[i].parcels == null)
                             continue;
+
                         parcels.AddRange(landsReceived[i].parcels.Select(parcel => $"{parcel.x},{parcel.y}"));
                     }
                     getOwnedParcelsPromise.Resolve(parcels.ToArray());

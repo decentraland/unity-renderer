@@ -19,8 +19,7 @@ internal class SectionProjectScenesController : SectionBase, IProjectSceneListen
 
     public SectionProjectScenesController() : this(
         Object.Instantiate(Resources.Load<SectionProjectScenesView>(VIEW_PREFAB_PATH))
-    )
-    { }
+    ) { }
 
     public SectionProjectScenesController(SectionProjectScenesView view)
     {
