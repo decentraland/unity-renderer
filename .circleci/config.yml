@@ -131,6 +131,7 @@ jobs:
             - ./unity-renderer/test-results
             - ./unity-renderer/editmode-logs.txt
             - ./unity-renderer/playmode-logs.txt
+            - ./unity-renderer/ab-logs.txt
             - ./unity-renderer/playmode-results.xml
             - ./unity-renderer/CodeCoverage
             - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
@@ -191,6 +192,14 @@ jobs:
             bash ./ci-asset-bundle-test.sh
             exit $?
           no_output_timeout: 30m
+      - run:
+          name: Cat logs
+          when: always
+          command: cat ./unity-renderer/ab-logs.txt
+      - run:
+          name: Print files
+          command: find ./unity-renderer/ab-output
+          when: always
       - save_cache: *SAVE_CHECKSUM_CACHE
       - store_artifacts:
           name: Store logs
