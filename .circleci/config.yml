@@ -304,7 +304,7 @@ workflows:
       - asset-bundle-tests:
           <<: *all_branches_and_tags
           requires:
-            - build-unity
+            - checkout
       - editmode-tests:
           # <<: *all_branches_and_tags
           filters:

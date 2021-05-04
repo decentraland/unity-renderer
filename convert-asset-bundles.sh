@@ -19,4 +19,6 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' "$UNITY_PATH/Edit
   -baseUrl "$CONTENT_URL" \
   -output "$OUTPUT_DIR"
 
-export UNITY_EXIT_CODE=$?
+UNITY_EXIT_CODE=$?
+
+exit $UNITY_EXIT_CODE
