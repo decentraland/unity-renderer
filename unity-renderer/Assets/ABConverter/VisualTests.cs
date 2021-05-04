@@ -13,6 +13,8 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
+        // TODO(menduz): this abPath MUST match the `-output PATH` passed as editor argument
+        // to generate the AB
         static readonly string abPath = Application.dataPath + "/../AssetBundles/";
         static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
