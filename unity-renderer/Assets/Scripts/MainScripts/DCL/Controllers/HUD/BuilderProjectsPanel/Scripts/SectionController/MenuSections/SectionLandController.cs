@@ -11,7 +11,7 @@ internal class SectionLandController : SectionBase, ILandsListener
 
     private readonly SectionLandView view;
 
-    private readonly LandSearchHandler landSearchHandler = new LandSearchHandler();
+    private readonly ISectionSearchHandler landSearchHandler = new SectionSearchHandler();
     private readonly Dictionary<string, LandElementView> landElementViews = new Dictionary<string, LandElementView>();
     private readonly Queue<LandElementView> landElementViewsPool = new Queue<LandElementView>();
 
@@ -68,7 +68,7 @@ internal class SectionLandController : SectionBase, ILandsListener
         landSearchHandler.SetSearchableList(landElementViews.Values.Select(scene => scene.searchInfo).ToList());
     }
 
-    private void OnSearchResult(List<LandSearchInfo> searchInfoLands)
+    private void OnSearchResult(List<ISearchInfo> searchInfoLands)
     {
         if (landElementViews == null)
             return;
