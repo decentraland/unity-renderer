@@ -173,6 +173,9 @@ public class BIWCreatorController : BIWController
 
     public void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
+        if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
+            return;
+
         BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
         entity.OnShapeFinishLoading += OnShapeLoadFinish;
