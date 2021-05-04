@@ -95,7 +95,7 @@ jobs:
 
             # hash pipeline files
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
-      - restore_cache:
+      - restore_cache: &RESTORE_CHECKSUM_CACHE
           name: Restore hashed files if they exist
           keys:
             - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -124,13 +124,17 @@ jobs:
           path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: ./unity-renderer/test-results
-      - save_cache:
+      - save_cache: &SAVE_CHECKSUM_CACHE
           name: Store test cache
           key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
           paths:
             - ./unity-renderer/test-results
             - ./unity-renderer/editmode-logs.txt
+            - ./unity-renderer/playmode-logs.txt
+            - ./unity-renderer/playmode-results.xml
+            - ./unity-renderer/CodeCoverage
             - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+            - ./unity-renderer/Builds/
       - store_artifacts:
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
@@ -142,10 +146,7 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_CHECKSUM_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run playmode tests
@@ -169,18 +170,34 @@ jobs:
       - store_artifacts:
           name: Store test coverage
           path: ./unity-renderer/CodeCoverage
-      - save_cache:
-          name: Store test cache
-          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/test-results
-            - ./unity-renderer/playmode-logs.txt
-            - ./unity-renderer/playmode-results.xml
-            - ./unity-renderer/CodeCoverage
-            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+      - save_cache: *SAVE_CHECKSUM_CACHE
       - store_artifacts:
           name: Store visual tests result as artifacts
           path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
+
+
+  asset-bundle-tests:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache: *RESTORE_CHECKSUM_CACHE
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Run AB tests
+          command: |
+            bash ./ci-asset-bundle-test.sh
+            exit $?
+          no_output_timeout: 30m
+      - save_cache: *SAVE_CHECKSUM_CACHE
+      - store_artifacts:
+          name: Store logs
+          path: ./unity-renderer/ab-logs.txt
+      - store_artifacts:
+          name: Store visual tests result as artifacts
+          path: ./unity-renderer/ab
 
   build-unity:
     <<: *working_directory_root
@@ -189,10 +206,7 @@ jobs:
     steps:
       - <<: *attach_root
       - run: *HASH_UNITY_FILES
-      - restore_cache:
-          name: Restore hashed files if they exist
-          keys:
-            - unity-build-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_CHECKSUM_CACHE
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
@@ -207,11 +221,7 @@ jobs:
                 done
                 cat ./unity-renderer/build-logs.txt
             fi;
-      - save_cache:
-          name: Store decentraland-renderer build
-          key: unity-build-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/Builds/
+      - save_cache: *SAVE_CHECKSUM_CACHE
       - store_artifacts:
           path: ./unity-renderer/Builds/
           destination: Builds
@@ -291,6 +301,10 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - checkout
+      - asset-bundle-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - build-unity
       - editmode-tests:
           # <<: *all_branches_and_tags
           filters:
