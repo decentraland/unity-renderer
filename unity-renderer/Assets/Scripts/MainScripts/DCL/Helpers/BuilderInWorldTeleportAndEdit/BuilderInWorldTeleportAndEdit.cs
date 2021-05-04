@@ -15,7 +15,6 @@ public static class BuilderInWorldTeleportAndEdit
     {
         if (inProgress)
             return false;
-        
         CoroutineStarter.Start(TeleportAndEditRoutine(targetCoords));
         return true;
     }
@@ -24,24 +23,21 @@ public static class BuilderInWorldTeleportAndEdit
     {
         inProgress = true;
         OnTeleportStart?.Invoke(targetCoords);
-        
+
         bool isPlayerTeleported = false;
 
-        void OnPlayerTeleportToNewPosition(Vector3 current, Vector3 prev)
-        {
-            isPlayerTeleported = true;
-        }
+        void OnPlayerTeleportToNewPosition(Vector3 current, Vector3 prev) { isPlayerTeleported = true; }
 
         DataStore.i.player.lastTeleportPosition.OnChange += OnPlayerTeleportToNewPosition;
 
         WebInterface.GoTo(targetCoords.x, targetCoords.y);
-        
+
         yield return new WaitUntil(() => isPlayerTeleported);
         DataStore.i.player.lastTeleportPosition.OnChange -= OnPlayerTeleportToNewPosition;
-        
+
         yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
         yield return null;
-        
+
         inProgress = false;
         OnTeleportEnd?.Invoke(targetCoords);
     }

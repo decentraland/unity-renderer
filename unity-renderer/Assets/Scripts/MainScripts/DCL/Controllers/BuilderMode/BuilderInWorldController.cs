@@ -6,6 +6,7 @@ using DCL.Tutorial;
 using UnityEngine;
 using Environment = DCL.Environment;
 using System;
+using DCL;
 
 public class BuilderInWorldController : MonoBehaviour
 {
@@ -97,6 +98,8 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
         }
+
+        BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         if (initialLoadingController != null)
         {
@@ -587,6 +590,14 @@ public class BuilderInWorldController : MonoBehaviour
 
                 break;
             }
+        }
+    }
+
+    private void OnPlayerTeleportedToEditScene(Vector2Int coords)
+    {
+        if (activeFeature)
+        {
+            TryStartEnterEditMode();
         }
     }
 

@@ -104,7 +104,6 @@ public class TheGraph : ITheGraph
     {
         bool hasException = false;
         List<Land> lands = null;
-        
         try
         {
             LandQueryResultWrapped result = JsonUtility.FromJson<LandQueryResultWrapped>(jsonValue);

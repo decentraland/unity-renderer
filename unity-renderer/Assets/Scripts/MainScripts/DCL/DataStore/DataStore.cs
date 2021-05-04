@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -27,6 +27,7 @@ namespace DCL
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly DataStore_Player player = new DataStore_Player();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
+        public readonly DataStore_Player player = new DataStore_Player();
 
         public class BuilderInWorld
         {
@@ -52,7 +53,7 @@ namespace DCL
         public class DataStore_Player
         {
             // NOTE: set when character is teleported (DCLCharacterController - Teleport)
-            public readonly BaseTriggerVariable<Vector3> lastTeleportPosition = new BaseTriggerVariable<Vector3>(Vector3.zero);
+            public readonly BaseVariable<Vector3> lastTeleportPosition = new BaseVariable<Vector3>(Vector3.zero);
         }
     }
 }

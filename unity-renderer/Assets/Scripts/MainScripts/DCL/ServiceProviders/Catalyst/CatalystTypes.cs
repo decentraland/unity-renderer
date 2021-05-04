@@ -99,6 +99,24 @@ public class CatalystSceneEntityMetadata
         public Layout layout;
     }    
 
+    [Serializable]
+    public class Source
+    {
+        [Serializable]
+        public class Layout
+        {
+            public string rows;
+            public string cols;
+        }
+
+        public int version;
+        public string origin;
+        public string projectId;
+        public Vector2Int point;
+        public string rotation;
+        public Layout layout;
+    }
+
     public Display display;
     public Contact contact;
     public Scene scene;

@@ -228,7 +228,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnPositionSet.Invoke(characterPosition);
         }
-        DataStore.i.player.lastTeleportPosition.Set(newPosition);
+        DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
         {
