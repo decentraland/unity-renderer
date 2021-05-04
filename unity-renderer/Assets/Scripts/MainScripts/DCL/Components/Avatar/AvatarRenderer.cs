@@ -316,7 +316,6 @@ namespace DCL
 
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
-            CleanUpUnusedItems();
 
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
@@ -338,6 +337,8 @@ namespace DCL
             {
                 wearableController.UpdateVisibility(hiddenList);
             }
+
+            CleanUpUnusedItems();
 
             isLoading = false;
 
