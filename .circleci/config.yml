@@ -196,8 +196,8 @@ jobs:
           name: Store logs
           path: ./unity-renderer/ab-logs.txt
       - store_artifacts:
-          name: Store visual tests result as artifacts
-          path: ./unity-renderer/ab
+          name: Store AB converter results
+          path: ./unity-renderer/ab-output
 
   build-unity:
     <<: *working_directory_root
