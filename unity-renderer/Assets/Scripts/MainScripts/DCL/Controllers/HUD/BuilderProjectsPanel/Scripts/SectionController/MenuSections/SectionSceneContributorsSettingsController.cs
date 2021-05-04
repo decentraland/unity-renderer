@@ -46,7 +46,7 @@ internal class SectionSceneContributorsSettingsController : SectionBase, ISelect
 
     protected override void OnHide() { view.SetActive(false); }
 
-    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView)
+    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
     {
         sceneId = sceneCardView.sceneData.id;
         UpdateContributors(sceneCardView.sceneData.contributors);
