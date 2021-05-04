@@ -22,7 +22,7 @@ internal class SectionSearchHandler : ISectionSearchHandler
     private bool filterOwner = false;
     private bool filterOperator = false;
     private bool filterContributor = false;
-    
+
     string[] ISectionSearchHandler.sortTypes => scenesSortTypes;
     string ISectionSearchHandler.searchString => scenesSearchHandler.currentSearchString;
     bool ISectionSearchHandler.filterOwner => filterOwner;
