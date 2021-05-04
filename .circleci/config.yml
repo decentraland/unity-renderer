@@ -195,15 +195,21 @@ jobs:
       - run:
           name: Cat logs
           when: always
-          command: cat ./unity-renderer/ab-logs.txt
+          command: cat $(pwd)/ab-logs.txt
       - run:
           name: Print files
           command: find ./unity-renderer/ab-output
           when: always
+      - run:
+          name: Print files (failed)
+          command: |
+            pwd
+            find .
+          when: on_fail
       - save_cache: *SAVE_CHECKSUM_CACHE
       - store_artifacts:
           name: Store logs
-          path: ./unity-renderer/ab-logs.txt
+          path: ./ab-logs.txt
       - store_artifacts:
           name: Store AB converter results
           path: ./unity-renderer/ab-output
