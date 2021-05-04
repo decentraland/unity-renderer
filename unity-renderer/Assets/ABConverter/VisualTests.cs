@@ -213,7 +213,7 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
@@ -238,7 +238,7 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
