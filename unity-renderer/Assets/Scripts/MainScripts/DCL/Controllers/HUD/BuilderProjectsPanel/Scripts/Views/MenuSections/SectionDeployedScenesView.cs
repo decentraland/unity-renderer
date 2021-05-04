@@ -33,7 +33,6 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(false);
     }
-    
     public void SetLoading()
     {
         contentContainer.SetActive(false);
@@ -41,7 +40,6 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(false);
         loadingAnimationContainer.SetActive(true);
     }
-    
     public void SetNoSearchResult()
     {
         contentContainer.SetActive(false);
@@ -49,7 +47,6 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         noSearchResultContainer.SetActive(true);
         loadingAnimationContainer.SetActive(false);
     }
-    
     public void SetFilled()
     {
         contentContainer.SetActive(true);
@@ -59,10 +56,7 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         ResetScrollRect();
     }
 
-    public Transform GetCardsContainer()
-    {
-        return scenesCardContainer;
-    }
+    public Transform GetCardsContainer() { return scenesCardContainer; }
 
     public void Dispose()
     {

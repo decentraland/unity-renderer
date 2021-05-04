@@ -30,10 +30,7 @@ internal class SectionProjectScenesView : MonoBehaviour, IDisposable
         }
     }
 
-    private void Awake()
-    {
-        scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
-    }
+    private void Awake() { scrollRect.onValueChanged.AddListener(OnScrollValueChanged); }
 
     private void OnDestroy()
     {

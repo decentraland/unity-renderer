@@ -34,31 +34,19 @@ internal class SearchInfo : ISearchInfo
     private int size;
     private string[] keywords;
 
-    public SearchInfo()
-    {
-        keywords = new string[2];
-    }
+    public SearchInfo() { keywords = new string[2]; }
 
-    void ISearchInfo.SetId(string id)
-    {
-        this.id = id;
-    }
-    
+    void ISearchInfo.SetId(string id) { this.id = id; }
+
     void ISearchInfo.SetName(string name)
     {
         this.name = name;
         keywords[0] = name;
     }
 
-    void ISearchInfo.SetSize(int size)
-    {
-        this.size = size;
-    }
+    void ISearchInfo.SetSize(int size) { this.size = size; }
 
-    void ISearchInfo.SetCoords(string coords)
-    {
-        keywords[1] = coords;
-    }
+    void ISearchInfo.SetCoords(string coords) { keywords[1] = coords; }
 
     void ISearchInfo.SetRole(bool isOwner)
     {

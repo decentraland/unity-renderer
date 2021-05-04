@@ -61,7 +61,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
     [Space]
-
     [SerializeField] internal GameObject editorLockedGO;
     [SerializeField] internal GameObject editorLockedTooltipGO;
 
@@ -90,10 +89,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         editorLockedTooltipGO.SetActive(false);
     }
 
-    private void OnEnable()
-    {
-        loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
-    }
+    private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
 
     void ISceneCardView.Setup(ISceneData sceneData)
     {
@@ -159,13 +155,13 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
-            ((ISceneCardView)this).SetThumbnail((Texture2D)null);
+            ((ISceneCardView)this).SetThumbnail((Texture2D) null);
             return;
         }
 
         thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
         thumbnailPromise.OnSuccessEvent += texture => ((ISceneCardView)this).SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D)null);
+        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
 
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
@@ -205,24 +201,12 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
         }
     }
 
-    void ISceneCardView.SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    void ISceneCardView.SetActive(bool active) { gameObject.SetActive(active); }
 
-    void ISceneCardView.SetSiblingIndex(int index)
-    {
-        transform.SetSiblingIndex(index);
-    }
-    void ISceneCardView.SetToDefaultParent()
-    {
-        transform.SetParent(defaultParent);
-    }
+    void ISceneCardView.SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
+    void ISceneCardView.SetToDefaultParent() { transform.SetParent(defaultParent); }
 
-    void ISceneCardView.ConfigureDefaultParent(Transform parent)
-    {
-        defaultParent = parent;
-    }
+    void ISceneCardView.ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
 
     void ISceneCardView.SetEditable(bool isEditable)
     {

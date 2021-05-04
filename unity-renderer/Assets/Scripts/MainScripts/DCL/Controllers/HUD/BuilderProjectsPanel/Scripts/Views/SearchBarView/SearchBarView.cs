@@ -45,10 +45,7 @@ internal class SearchBarView : MonoBehaviour
         sortDropdown.OnSortTypeSelected += OnSortTypeSelected;
     }
 
-    public void SetResultCount(int count)
-    {
-        resultLabel.text = string.Format(RESULT_FORMAT, count);
-    }
+    public void SetResultCount(int count) { resultLabel.text = string.Format(RESULT_FORMAT, count); }
 
     public void ShowFilters(bool filterOwner, bool filterOperator, bool filterContributor)
     {

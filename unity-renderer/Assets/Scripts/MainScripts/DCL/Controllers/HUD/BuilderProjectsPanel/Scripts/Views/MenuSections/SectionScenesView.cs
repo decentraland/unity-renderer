@@ -22,10 +22,7 @@ public class SectionScenesView : MonoBehaviour, IDisposable
 
     private bool isDestroyed = false;
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+    private void OnDestroy() { isDestroyed = true; }
 
     public void Dispose()
     {

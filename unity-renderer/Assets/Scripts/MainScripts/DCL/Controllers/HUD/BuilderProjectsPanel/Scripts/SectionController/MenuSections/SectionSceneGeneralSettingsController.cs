@@ -56,15 +56,8 @@ internal class SectionSceneGeneralSettingsController : SectionBase, ISelectScene
 
     protected override void OnShow() { view.SetActive(true); }
 
-    protected override void OnHide()
-    {
-        view.SetActive(false);
-    }
-
-    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
-    {
-        SetSceneData(sceneCardView.sceneData);
-    }
+    protected override void OnHide() { view.SetActive(false); }
+    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView) { SetSceneData(sceneCardView.sceneData); }
 
     void OnApplyChanges()
     {

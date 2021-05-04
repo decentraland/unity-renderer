@@ -46,10 +46,7 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         view.transform.ResetLocalTRS();
     }
 
-    public override void Dispose()
-    {
-        view.Dispose();
-    }
+    public override void Dispose() { view.Dispose(); }
 
     protected override void OnShow() { view.gameObject.SetActive(true); }
 

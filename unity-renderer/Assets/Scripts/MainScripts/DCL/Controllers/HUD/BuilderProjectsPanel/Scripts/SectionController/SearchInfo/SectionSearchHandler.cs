@@ -8,8 +8,11 @@ internal class SectionSearchHandler : ISectionSearchHandler
     public const string SIZE_SORT_TYPE_ASC = "Size Asc";
     public const string SIZE_SORT_TYPE_DESC = "Size Desc";
 
-    private readonly string[] scenesSortTypes = { NAME_SORT_TYPE_ASC, NAME_SORT_TYPE_DESC, 
-        SIZE_SORT_TYPE_ASC, SIZE_SORT_TYPE_DESC };
+    private readonly string[] scenesSortTypes =
+    {
+        NAME_SORT_TYPE_ASC, NAME_SORT_TYPE_DESC,
+        SIZE_SORT_TYPE_ASC, SIZE_SORT_TYPE_DESC
+    };
 
     public event Action OnUpdated;
     public event Action<List<ISearchInfo>> OnResult;
@@ -49,20 +52,11 @@ internal class SectionSearchHandler : ISectionSearchHandler
         };
     }
 
-    void ISectionSearchHandler.SetSearchableList(List<ISearchInfo> list)
-    {
-        scenesSearchHandler.SetSearchableList(list);
-    }
+    void ISectionSearchHandler.SetSearchableList(List<ISearchInfo> list) { scenesSearchHandler.SetSearchableList(list); }
 
-    void ISectionSearchHandler.AddItem(ISearchInfo item)
-    {
-        scenesSearchHandler.AddItem(item);
-    }
+    void ISectionSearchHandler.AddItem(ISearchInfo item) { scenesSearchHandler.AddItem(item); }
 
-    void ISectionSearchHandler.RemoveItem(ISearchInfo item)
-    {
-        scenesSearchHandler.RemoveItem(item);
-    }
+    void ISectionSearchHandler.RemoveItem(ISearchInfo item) { scenesSearchHandler.RemoveItem(item); }
 
     void ISectionSearchHandler.SetFilter(bool isOwner, bool isOperator, bool isContributor)
     {
@@ -72,13 +66,7 @@ internal class SectionSearchHandler : ISectionSearchHandler
         scenesSearchHandler.NotifyFilterChanged();
     }
 
-    void ISectionSearchHandler.SetSortType(string sortType)
-    {
-        scenesSearchHandler.NotifySortTypeChanged(sortType);
-    }
+    void ISectionSearchHandler.SetSortType(string sortType) { scenesSearchHandler.NotifySortTypeChanged(sortType); }
 
-    void ISectionSearchHandler.SetSearchString(string searchText)
-    {
-        scenesSearchHandler.NotifySearchChanged(searchText);
-    }
+    void ISectionSearchHandler.SetSearchString(string searchText) { scenesSearchHandler.NotifySearchChanged(searchText); }
 }

@@ -26,7 +26,6 @@ internal interface IScenesViewController : IDisposable
     void RemoveListener(ISelectSceneListener listener);
 }
 
-
 /// <summary>
 /// This class is responsible for receiving a list of scenes and merge it with the previous list
 /// discriminating deployed and project scenes and triggering events when a new set of scenes arrive or
@@ -180,10 +179,7 @@ internal class ScenesViewController : IScenesViewController
         OnProjectSceneRemoved -= listener.OnSceneRemoved;
         OnProjectScenesSet -= listener.OnSetScenes;
     }
-    void IScenesViewController.RemoveListener(ISelectSceneListener listener)
-    {
-        OnSceneSelected -= listener.OnSelectScene;
-    }
+    void IScenesViewController.RemoveListener(ISelectSceneListener listener) { OnSceneSelected -= listener.OnSelectScene; }
 
     public void Dispose()
     {
@@ -313,8 +309,5 @@ internal class ScenesViewController : IScenesViewController
         sceneCardView.Dispose();
     }
 
-    private void OnSceneSettingsPressed(ISceneData sceneData)
-    {
-        OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}");
-    }
+    private void OnSceneSettingsPressed(ISceneData sceneData) { OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}"); }
 }
