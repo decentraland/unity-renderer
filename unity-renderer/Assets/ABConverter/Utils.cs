@@ -286,13 +286,13 @@ namespace DCL.ABConverter
             /// <param name="pairsToSearch">The MappingPair list to be filtered and converted</param>
             /// <param name="extensions">An array detailing the extensions to filter them</param>
             /// <returns>A dictionary that maps hashes to mapping pairs</returns>
-            public static List<AssetPath> GetPathsFromPairs(string basePath, MappingPair[] pairsToSearch, string[] extensions)
+            public static List<AssetPath> GetPathsFromPairs(string basePath, ContentServerUtils.MappingPair[] pairsToSearch, string[] extensions)
             {
                 var tmpResult = new Dictionary<(string, string), AssetPath>();
 
                 for (int i = 0; i < pairsToSearch.Length; i++)
                 {
-                    MappingPair mappingPair = pairsToSearch[i];
+                    ContentServerUtils.MappingPair mappingPair = pairsToSearch[i];
 
                     bool hasExtension = extensions.Any((x) => mappingPair.file.ToLower().EndsWith(x));
 

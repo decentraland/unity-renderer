@@ -2,16 +2,25 @@ using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class WearableItem : Item
 {
     [Serializable]
+    public class MappingPair
+    {
+        public string key;
+        public string hash;
+    }
+
+    [Serializable]
     public class Representation
     {
         public string[] bodyShapes;
         public string mainFile;
-        public ContentServerUtils.MappingPair[] contents;
+        public ContentServerUtils.MappingPair[] contentsMapping => contents.Select(content => new ContentServerUtils.MappingPair(){file = content.key, hash = content.hash}).ToArray();
+        public MappingPair[] contents;
         public string[] overrideHides;
         public string[] overrideReplaces;
     }
@@ -68,7 +77,7 @@ public class WearableItem : Item
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
-            var contentProvider = CreateContentProvider(baseUrl, representation.contents.ToList());
+            var contentProvider = CreateContentProvider(baseUrl, representation.contentsMapping.ToList());
             contentProvider.BakeHashes();
             cachedContentProviers.Add(bodyShapeType, contentProvider);
         }

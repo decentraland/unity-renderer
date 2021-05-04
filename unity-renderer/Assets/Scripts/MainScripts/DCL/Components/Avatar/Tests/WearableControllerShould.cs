@@ -56,7 +56,7 @@ namespace AvatarShape_Tests
                     representations = new []{ new WearableItem.Representation
                     {
                         mainFile = "NothingHere",
-                        contents = new [] { new ContentServerUtils.MappingPair{file = "NothingHere", hash = "NothingHere"} },
+                        contents = new [] { new WearableItem.MappingPair{key = "NothingHere", hash = "NothingHere"} },
                         bodyShapes = new [] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE}
                     }}
                 }

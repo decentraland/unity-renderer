@@ -16,7 +16,7 @@ public static class AvatarAssetsTestHelpers
             {
                 rep.contents = rep.contents.Select((x) =>
                 {
-                    x.hash = x.file;
+                    x.hash = x.key;
                     return x;
                 }).ToArray();
             }

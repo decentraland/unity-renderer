@@ -55,7 +55,7 @@ namespace AvatarShape_Tests
                         new WearableItem.Representation
                         {
                             bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                            contents = new [] { new ContentServerUtils.MappingPair{file = "fake.png", hash = "nope"}, new ContentServerUtils.MappingPair{file = "fake_mask.png", hash = "nope2"} },
+                            contents = new [] { new WearableItem.MappingPair{key = "fake.png", hash = "nope"}, new WearableItem.MappingPair{key = "fake_mask.png", hash = "nope2"} },
                         }
                     }
                 }
@@ -85,7 +85,7 @@ namespace AvatarShape_Tests
                         new WearableItem.Representation
                         {
                             bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                            contents = new ContentServerUtils.MappingPair[0],
+                            contents = new WearableItem.MappingPair[0],
                         }
                     }
                 }

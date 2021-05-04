@@ -432,7 +432,7 @@ namespace DCL.ABConverter
             {
                 foreach (var representation in wearable.data.representations)
                 {
-                    foreach (var datum in representation.contents)
+                    foreach (var datum in representation.contentsMapping)
                     {
                         result.Add(datum);
                     }
