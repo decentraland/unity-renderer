@@ -32,16 +32,15 @@ namespace DCL.Components
             {
                 if (colliders != null && colliders.Length > 0)
                     DestroyColliders();
-                
+
                 return;
             }
 
             if (AreCollidersCreated(rendererList))
                 return;
-            
 
             IShape shape = entity.meshesInfo.currentShape;
-            
+
             ownerEntity = entity;
 
             DestroyColliders();
@@ -105,7 +104,7 @@ namespace DCL.Components
                 if (!foundChildCollider)
                     return false;
             }
-            
+
             return true;
         }
 
