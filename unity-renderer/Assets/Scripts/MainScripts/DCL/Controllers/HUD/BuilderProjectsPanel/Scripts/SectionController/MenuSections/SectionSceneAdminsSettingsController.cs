@@ -58,7 +58,7 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
 
     protected override void OnHide() { view.SetActive(false); }
 
-    void ISelectSceneListener.OnSelectScene(SceneCardView sceneCardView)
+    void ISelectSceneListener.OnSelectScene(ISceneCardView sceneCardView)
     {
         sceneId = sceneCardView.sceneData.id;
         SetAdmins(sceneCardView.sceneData.admins);

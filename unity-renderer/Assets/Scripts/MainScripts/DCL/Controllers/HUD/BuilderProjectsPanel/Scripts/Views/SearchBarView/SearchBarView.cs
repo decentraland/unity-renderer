@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,17 +12,17 @@ internal class SearchBarConfig
 
 internal class SearchBarView : MonoBehaviour
 {
+    private const string RESULT_FORMAT = "Results ({0})";
+
     [SerializeField] internal SearchInputField inputField;
     [SerializeField] internal Button sortButton;
     [SerializeField] internal TextMeshProUGUI sortTypeLabel;
-    [SerializeField] internal SortOrderToggleView sortOrderToggle;
     [SerializeField] internal Toggle ownerToggle;
     [SerializeField] internal Toggle operatorToggle;
     [SerializeField] internal Toggle contributorToggle;
     [SerializeField] private TextMeshProUGUI resultLabel;
     [SerializeField] internal SortDropdownView sortDropdown;
 
-    private string resultFormat;
     private bool filterOwner = false;
     private bool filterOperator = false;
     private bool filterContributor = false;
@@ -32,8 +31,6 @@ internal class SearchBarView : MonoBehaviour
 
     private void Awake()
     {
-        resultFormat = resultLabel.text;
-
         sortButton.onClick.AddListener(OnSortButtonPressed);
 
         ownerToggle.onValueChanged.AddListener(OnToggleOwner);
@@ -45,11 +42,10 @@ internal class SearchBarView : MonoBehaviour
         filterContributor = contributorToggle.isOn;
 
         inputField.OnSearchText += text => searchHandler?.SetSearchString(text);
-        sortOrderToggle.OnToggle += isDescending => searchHandler?.SetSortOrder(isDescending);
         sortDropdown.OnSortTypeSelected += OnSortTypeSelected;
     }
 
-    public void SetResultCount(int count) { resultLabel.text = string.Format(resultFormat, count); }
+    public void SetResultCount(int count) { resultLabel.text = string.Format(RESULT_FORMAT, count); }
 
     public void ShowFilters(bool filterOwner, bool filterOperator, bool filterContributor)
     {
@@ -125,8 +121,6 @@ internal class SearchBarView : MonoBehaviour
         filterOwner = handler.filterOwner;
         filterOperator = handler.filterOperator;
         filterContributor = handler.filterContributor;
-
-        sortOrderToggle.SetWithoutNotify(handler.descendingSortOrder);
 
         sortTypeLabel.text = handler.sortType;
         inputField.inputField.SetTextWithoutNotify(handler.searchString);
