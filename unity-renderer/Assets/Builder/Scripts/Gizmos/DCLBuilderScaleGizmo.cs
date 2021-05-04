@@ -26,11 +26,11 @@ namespace Builder.Gizmos
         public override float TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
         {
             // In order to avoid to make the scale of each selected entity dependent of the 'entityTransform' parent,
-            // we temporally move all entities to the local position (0,0,0) before calculate the new scale.
+            // we temporally move all entities to the same position as 'entityTransform' before calculate the new scale.
             foreach (Transform entity in entityTransform)
             {
                 entitiesOriginalPositions.Add(entity, entity.transform.position);
-                entity.transform.localPosition = Vector3.zero;
+                entity.transform.position = entityTransform.position;
             }
 
             Vector3 scaleDirection = GetScaleDirection(entityTransform, axis);
