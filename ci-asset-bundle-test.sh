@@ -12,7 +12,7 @@ pwd
 
 # Parameters are passed as ENV vars
 export SCENE_ID
-export OUTPUT_DIR=ab-output
+export OUTPUT_DIR=AssetBundles
 export LOCAL_LOG_FILE="$(pwd)/ab-logs.txt"
 export CONTENT_URL="https://peer.decentraland.org/lambdas/contentv2/contents/"
 

@@ -198,7 +198,7 @@ jobs:
           command: cat $(pwd)/ab-logs.txt
       - run:
           name: Print files
-          command: find ./unity-renderer/ab-output
+          command: find ./unity-renderer/AssetBundles
           when: always
       - run:
           name: Print files (failed)
@@ -212,7 +212,7 @@ jobs:
           path: ./ab-logs.txt
       - store_artifacts:
           name: Store AB converter results
-          path: ./unity-renderer/ab-output
+          path: ./unity-renderer/AssetBundles
 
   build-unity:
     <<: *working_directory_root
