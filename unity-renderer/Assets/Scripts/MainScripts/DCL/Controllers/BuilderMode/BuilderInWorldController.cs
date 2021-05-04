@@ -76,7 +76,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     void Start()
     {
-        KernelConfig.i.EnsureConfigInitialized().Then(config => EnableFeature(config.features.enableBuilderInWorld));
+        KernelConfig.i.EnsureConfigInitialized().Then(config =>  EnableFeature(config.features.enableBuilderInWorld));
         KernelConfig.i.OnChange += OnKernelConfigChanged;
     }
 
@@ -106,7 +106,6 @@ public class BuilderInWorldController : MonoBehaviour
             initialLoadingController.OnCancelLoading -= CancelLoading;
             initialLoadingController.Dispose();
         }
-        BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         CleanItems();
@@ -604,12 +603,4 @@ public class BuilderInWorldController : MonoBehaviour
     private void UpdateCatalogLoadingProgress(float catalogLoadingProgress) { initialLoadingController.SetPercentage(catalogLoadingProgress / 2); }
 
     private void UpdateSceneLoadingProgress(float sceneLoadingProgress) { initialLoadingController.SetPercentage(50f + (sceneLoadingProgress / 2)); }
-
-    private void OnPlayerTeleportedToEditScene(Vector2Int coords)
-    {
-        if (activeFeature)
-        {
-            TryStartEnterEditMode();
-        }
-    }
 }

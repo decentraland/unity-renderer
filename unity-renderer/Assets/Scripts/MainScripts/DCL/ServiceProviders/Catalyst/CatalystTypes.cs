@@ -41,20 +41,20 @@ public class CatalystSceneEntityMetadata
         public string description;
         public string navmapThumbnail;
     }
-    
+
     [Serializable]
     public class Contact
     {
         public string name;
     }
-    
+
     [Serializable]
     public class Scene
     {
         public string @base;
         public string[] parcels;
     }
-    
+
     [Serializable]
     public class Policy
     {
@@ -63,7 +63,7 @@ public class CatalystSceneEntityMetadata
         public bool voiceEnabled;
         public string[] blacklist;
     }
-    
+
     [Serializable]
     public class SpawnPoint
     {
@@ -80,24 +80,6 @@ public class CatalystSceneEntityMetadata
         public Vector3 position;
         public Vector3 cameraTarget;
     }
-    
-    [Serializable]
-    public class Source
-    {
-        [Serializable]
-        public class Layout
-        {
-            public string rows;
-            public string cols;
-        }
-        
-        public int version;
-        public string origin;
-        public string projectId;
-        public Vector2Int point;
-        public string rotation;
-        public Layout layout;
-    }    
 
     [Serializable]
     public class Source

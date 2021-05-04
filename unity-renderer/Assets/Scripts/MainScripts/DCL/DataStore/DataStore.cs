@@ -25,7 +25,6 @@ namespace DCL
         public readonly DataStore_Quests Quests = new DataStore_Quests();
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
-        public readonly DataStore_Player player = new DataStore_Player();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly DataStore_Player player = new DataStore_Player();
 
