@@ -447,7 +447,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
-        StartBiwControllers();
+        EnterBiwControllers();
         Environment.i.world.sceneController.ActivateBuilderInWorldEditScene();
 
         initialLoadingController.SetPercentage(100f);
@@ -552,7 +552,7 @@ public class BuilderInWorldController : MonoBehaviour
         OnExitEditMode?.Invoke();
     }
 
-    public void StartBiwControllers()
+    public void EnterBiwControllers()
     {
         biwModeController.EnterEditMode(sceneToEdit);
         builderInWorldEntityHandler.EnterEditMode(sceneToEdit);
@@ -562,6 +562,7 @@ public class BuilderInWorldController : MonoBehaviour
         bIWInputHandler.EnterEditMode(sceneToEdit);
         outlinerController.EnterEditMode(sceneToEdit);
         biwSaveController.EnterEditMode(sceneToEdit);
+        actionController.EnterEditMode(sceneToEdit);
     }
 
     public void ExitBiwControllers()
@@ -574,6 +575,7 @@ public class BuilderInWorldController : MonoBehaviour
         bIWInputHandler.ExitEditMode();
         outlinerController.ExitEditMode();
         biwSaveController.ExitEditMode();
+        actionController.ExitEditMode();
     }
 
     public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
