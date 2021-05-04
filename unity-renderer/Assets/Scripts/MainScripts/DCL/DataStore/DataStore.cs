@@ -1,3 +1,4 @@
+﻿using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -25,6 +26,7 @@ namespace DCL
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
+        public readonly DataStore_Player player = new DataStore_Player();
 
         public class BuilderInWorld
         {
@@ -44,6 +46,13 @@ namespace DCL
         public class DataStore_HUDs
         {
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
+        }
+
+        public class DataStore_Player
+        {
+            // NOTE: set when character is teleported (DCLCharacterController - Teleport)
+            public readonly BaseVariable<Vector3> lastTeleportPosition = new BaseVariable<Vector3>(Vector3.zero);
         }
     }
 }
