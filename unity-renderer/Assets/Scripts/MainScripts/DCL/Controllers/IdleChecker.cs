@@ -33,11 +33,12 @@ namespace DCL
         {
             OnChangeStatus -= callback;
         }
-        
+
         public void Initialize()
         {
             lastActivityTime = Time.time;
         }
+
         public void Dispose()
         {
             
