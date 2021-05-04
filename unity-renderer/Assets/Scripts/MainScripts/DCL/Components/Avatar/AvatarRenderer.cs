@@ -314,10 +314,9 @@ namespace DCL
                 yield return null;
             }
 
-            CleanUpUnusedItems();
-            if (bodyShapeController != null && bodyShapeController.isReady)
-                bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
+
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
+            CleanUpUnusedItems();
 
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
