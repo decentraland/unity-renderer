@@ -15,14 +15,13 @@ public class ToggleActiveGameObject : MonoBehaviour
         targetToggle.onValueChanged.AddListener(UpdateState);
     }
 
-    protected void Start()
-    {
-        UpdateState(targetToggle.isOn);
-    }
+    protected void Start() { UpdateState(targetToggle.isOn); }
 
     private void UpdateState(bool isOn)
     {
-        if (activeOn) activeOn.gameObject.SetActive(isOn);
-        if (activeOff) activeOff.gameObject.SetActive(!isOn);
+        if (activeOn)
+            activeOn.gameObject.SetActive(isOn);
+        if (activeOff)
+            activeOff.gameObject.SetActive(!isOn);
     }
 }

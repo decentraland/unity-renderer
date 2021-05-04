@@ -266,18 +266,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             Vector3 destination;
             Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
 
-
             if (isSnapActive)
             {
                 currentPoint.x = Mathf.Round(currentPoint.x / snapDragFactor) * snapDragFactor;
                 currentPoint.z = Mathf.Round(currentPoint.z / snapDragFactor) * snapDragFactor;
-                destination = currentPoint;
-            }
-            else
-            {
-                destination = currentPoint - dragStartedPoint + editionGO.transform.position;
             }
 
+            destination = currentPoint - dragStartedPoint + editionGO.transform.position;
             editionGO.transform.position = destination;
             dragStartedPoint = currentPoint;
         }

@@ -17,15 +17,12 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            UnityEngine.Object.Destroy(contextMenu.gameObject);
-        }
+        public void TearDown() { UnityEngine.Object.Destroy(contextMenu.gameObject); }
 
         [Test]
         public void ShowOptionsForOwnerDeployedScene()
         {
-            contextMenu.Show("", isSceneDeployed:true, isOwnerOrOperator:true, isContributor:false);
+            contextMenu.Show("", isSceneDeployed: true, isOwnerOrOperator: true, isContributor: false);
 
             Assert.IsFalse(contextMenu.deleteButton.gameObject.activeSelf, "Option should not be displayed");
             Assert.IsFalse(contextMenu.shareButton.gameObject.activeSelf, "Option should not be displayed");
@@ -41,7 +38,7 @@ namespace Tests
         [Test]
         public void ShowOptionsForContributorDeployedScene()
         {
-            contextMenu.Show("", isSceneDeployed:true, isOwnerOrOperator:false, isContributor:true);
+            contextMenu.Show("", isSceneDeployed: true, isOwnerOrOperator: false, isContributor: true);
 
             Assert.IsFalse(contextMenu.deleteButton.gameObject.activeSelf, "Option should not be displayed");
             Assert.IsFalse(contextMenu.shareButton.gameObject.activeSelf, "Option should not be displayed");
@@ -57,7 +54,7 @@ namespace Tests
         [Test]
         public void ShowOptionsForOwnerProjectScene()
         {
-            contextMenu.Show("", isSceneDeployed:false, isOwnerOrOperator:true, isContributor:false);
+            contextMenu.Show("", isSceneDeployed: false, isOwnerOrOperator: true, isContributor: false);
 
             Assert.IsFalse(contextMenu.quitContributorButton.gameObject.activeSelf, "Option should not be displayed");
             Assert.IsFalse(contextMenu.duplicateAsProjectButton.gameObject.activeSelf, "Option should not be displayed");
@@ -73,7 +70,7 @@ namespace Tests
         [Test]
         public void ShowOptionsForContributorProjectScene()
         {
-            contextMenu.Show("", isSceneDeployed:false, isOwnerOrOperator:false, isContributor:true);
+            contextMenu.Show("", isSceneDeployed: false, isOwnerOrOperator: false, isContributor: true);
 
             Assert.IsFalse(contextMenu.duplicateAsProjectButton.gameObject.activeSelf, "Option should not be displayed");
             Assert.IsFalse(contextMenu.unpublishButton.gameObject.activeSelf, "Option should not be displayed");

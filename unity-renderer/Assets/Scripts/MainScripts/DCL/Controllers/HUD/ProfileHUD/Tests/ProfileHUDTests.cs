@@ -77,7 +77,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
             hasClaimedName = true
         };
         UserProfile profile = UserProfile.GetOwnUserProfile();
-        profile.UpdateData(profileModel,false);
+        profile.UpdateData(profileModel, false);
 
         for (int i = 0; i < controller.view.hideOnNameClaimed.Length; i++)
         {
@@ -87,7 +87,7 @@ public class ProfileHUDTests : IntegrationTestSuite_Legacy
 
         profileModel.name += "#1234";
         profileModel.hasClaimedName = false;
-        profile.UpdateData(profileModel,true);
+        profile.UpdateData(profileModel, true);
 
         for (int i = 0; i < controller.view.hideOnNameClaimed.Length; i++)
         {

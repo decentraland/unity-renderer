@@ -62,7 +62,8 @@ public class MaterialTransitionController : MonoBehaviour
 
     public void PopulateTargetRendererWithMaterial(Material[] newMaterials, bool updateCulling = false)
     {
-        if (newMaterials == null) return;
+        if (newMaterials == null)
+            return;
 
         Material material;
         for (int i = 0; i < newMaterials.Length; i++)
@@ -264,15 +265,9 @@ public class MaterialTransitionController : MonoBehaviour
         materialReady = true;
     }
 
-    public float GetLowerBoundsY(Renderer targetRenderer)
-    {
-        return targetRenderer.bounds.min.y - fadeThickness;
-    }
+    public float GetLowerBoundsY(Renderer targetRenderer) { return targetRenderer.bounds.min.y - fadeThickness; }
 
-    public float GetTopBoundsY(Renderer targetRenderer)
-    {
-        return targetRenderer.bounds.max.y + fadeThickness;
-    }
+    public float GetTopBoundsY(Renderer targetRenderer) { return targetRenderer.bounds.max.y + fadeThickness; }
 
     public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20, float delay = 0)
     {

@@ -10,10 +10,7 @@ public class CameraControllerAudioHandler : MonoBehaviour
     [SerializeField]
     AudioEvent eventCameraFadeIn, eventCameraFadeOut;
 
-    private void Awake()
-    {
-        cameraController.onSetCameraMode += OnSetCameraMode;
-    }
+    private void Awake() { cameraController.onSetCameraMode += OnSetCameraMode; }
 
     void OnSetCameraMode(CameraMode.ModeId mode)
     {

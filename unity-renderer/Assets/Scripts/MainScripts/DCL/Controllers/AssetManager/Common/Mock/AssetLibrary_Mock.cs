@@ -60,9 +60,6 @@ namespace DCL
             }
         }
 
-        public override void Cleanup()
-        {
-            throw new NotImplementedException();
-        }
+        public override void Cleanup() { throw new NotImplementedException(); }
     }
 }

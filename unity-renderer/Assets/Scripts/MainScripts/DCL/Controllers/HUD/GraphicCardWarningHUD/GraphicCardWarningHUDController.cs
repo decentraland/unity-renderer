@@ -1,4 +1,3 @@
-
 public class GraphicCardWarningHUDController : IHUD
 {
     private const string GRAPHIC_CARD_MESSAGE = "Your machine is not using a dedicated graphics card to run Decentraland. This might lead to performance issues. Check your browser and OS configuration.";
@@ -23,14 +22,15 @@ public class GraphicCardWarningHUDController : IHUD
                 CommonScriptableObjects.tutorialActive.OnChange += TutorialActiveChanged;
             else
                 CommonScriptableObjects.rendererState.OnChange += RendererStateChanged;
-            
+
         }
 
     }
 
     private void TutorialActiveChanged(bool newState, bool oldState)
     {
-        if (newState) return;
+        if (newState)
+            return;
 
         CommonScriptableObjects.tutorialActive.OnChange -= TutorialActiveChanged;
         TryShowNotification();
@@ -38,7 +38,8 @@ public class GraphicCardWarningHUDController : IHUD
 
     private void RendererStateChanged(bool newState, bool oldState)
     {
-        if (!newState) return;
+        if (!newState)
+            return;
 
         CommonScriptableObjects.rendererState.OnChange -= RendererStateChanged;
         TryShowNotification();

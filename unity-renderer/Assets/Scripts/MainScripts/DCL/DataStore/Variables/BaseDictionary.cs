@@ -10,11 +10,7 @@ public class BaseDictionary<TKey, TValue> : IBaseDictionary<TKey, TValue>
 
     internal readonly Dictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
 
-    public TValue this[TKey key]
-    {
-        get => dictionary[key];
-        set => dictionary[key] = value;
-    }
+    public TValue this[TKey key] { get => dictionary[key]; set => dictionary[key] = value; }
 
     public BaseDictionary() { }
     public BaseDictionary(IEnumerable<(TKey, TValue)> elements)

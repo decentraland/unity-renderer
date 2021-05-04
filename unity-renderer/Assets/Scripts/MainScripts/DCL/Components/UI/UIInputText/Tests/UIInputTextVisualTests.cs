@@ -12,10 +12,7 @@ public class UIInputTextVisualTests : UIVisualTestsBase
     [Explicit]
     [VisualTest]
     [Category("Explicit")]
-    public IEnumerator UIInputTextVisualTests_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(UIInputTextTest1());
-    }
+    public IEnumerator UIInputTextVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIInputTextTest1()); }
 
     [UnityTest]
     [VisualTest]

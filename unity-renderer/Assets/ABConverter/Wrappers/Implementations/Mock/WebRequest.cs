@@ -12,15 +12,9 @@ namespace DCL
         {
             public string mockedText;
 
-            protected override string GetText()
-            {
-                return mockedText;
-            }
+            protected override string GetText() { return mockedText; }
 
-            protected override byte[] GetData()
-            {
-                return Encoding.UTF8.GetBytes(mockedText);
-            }
+            protected override byte[] GetData() { return Encoding.UTF8.GetBytes(mockedText); }
         }
 
         public class WebRequest : IWebRequest

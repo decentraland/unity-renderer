@@ -46,10 +46,10 @@ namespace DCL.Tests
 
             ITheGraph theGraph = Substitute.For<ITheGraph>();
             serviceProviders.theGraph.Returns(theGraph);
-            
+
             ICatalyst catalyst = Substitute.For<ICatalyst>();
             serviceProviders.catalyst.Returns(catalyst);
-            
+
             return serviceProviders;
         }
     }

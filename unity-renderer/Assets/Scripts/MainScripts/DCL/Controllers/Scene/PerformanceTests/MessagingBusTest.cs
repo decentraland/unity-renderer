@@ -40,18 +40,18 @@ namespace MessagingBusTest
         public void MeasureTimeToEnqueueThousandMessages()
         {
             Measure.Method(() =>
-                {
-                    for (var i = 0; i < 1000; i++)
-                    {
-                        EnqueueNextMessage();
-                    }
-                })
-                .SetUp(() => SetupTests())
-                .WarmupCount(3)
-                .MeasurementCount(10)
-                .IterationsPerMeasurement(10)
-                .GC()
-                .Run();
+                   {
+                       for (var i = 0; i < 1000; i++)
+                       {
+                           EnqueueNextMessage();
+                       }
+                   })
+                   .SetUp(() => SetupTests())
+                   .WarmupCount(3)
+                   .MeasurementCount(10)
+                   .IterationsPerMeasurement(10)
+                   .GC()
+                   .Run();
         }
 
         [Test, Performance]
@@ -60,27 +60,27 @@ namespace MessagingBusTest
             controller.StartBus(MessagingBusType.INIT);
 
             Measure.Method(() =>
-                {
-                    var processed = controller.initBus.processedMessagesCount;
-                    Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
-                    while (controller.initBus.processedMessagesCount < processed + 1000)
-                    {
-                        controller.initBus.ProcessQueue(0.1f, out _);
-                    }
-                })
-                .SetUp(() =>
-                {
-                    SetupTests();
-                    for (var i = 0; i < 1001; i++)
-                    {
-                        EnqueueNextMessage();
-                    }
-                })
-                .WarmupCount(3)
-                .MeasurementCount(10)
-                .IterationsPerMeasurement(10)
-                .GC()
-                .Run();
+                   {
+                       var processed = controller.initBus.processedMessagesCount;
+                       Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
+                       while (controller.initBus.processedMessagesCount < processed + 1000)
+                       {
+                           controller.initBus.ProcessQueue(0.1f, out _);
+                       }
+                   })
+                   .SetUp(() =>
+                   {
+                       SetupTests();
+                       for (var i = 0; i < 1001; i++)
+                       {
+                           EnqueueNextMessage();
+                       }
+                   })
+                   .WarmupCount(3)
+                   .MeasurementCount(10)
+                   .IterationsPerMeasurement(10)
+                   .GC()
+                   .Run();
         }
 
         private void EnqueueNextMessage()
@@ -89,10 +89,7 @@ namespace MessagingBusTest
             controller.Enqueue(false, queuedMessage, out _);
         }
 
-        private string SceneMessagesPath()
-        {
-            return Application.dataPath + "/" + dataSource;
-        }
+        private string SceneMessagesPath() { return Application.dataPath + "/" + dataSource; }
 
         private void SetupDataFile()
         {
@@ -165,13 +162,13 @@ namespace MessagingBusTest
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity {entityId = entityId},
+                payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity {entityId = entityId},
+                payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
@@ -188,20 +185,20 @@ namespace MessagingBusTest
 
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity {entityId = entityId},
+                payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.RemoveEntity() {entityId = entityId},
+                payload = new Protocol.RemoveEntity() { entityId = entityId },
                 type = QueuedSceneMessage.Type.SCENE_MESSAGE,
                 method = MessagingTypes.ENTITY_DESTROY,
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
             });
             bus.Enqueue(new QueuedSceneMessage_Scene
             {
-                payload = new Protocol.CreateEntity {entityId = entityId},
+                payload = new Protocol.CreateEntity { entityId = entityId },
                 message = QueuedSceneMessage.Type.SCENE_MESSAGE.ToString(),
                 tag = "entity_1"
             }, QueueMode.Lossy);

@@ -16,7 +16,7 @@ internal class ScenesViewController : IDisposable
     public event Action<Dictionary<string, SceneCardView>> OnProjectScenesSet;
     public event Action<SceneCardView> OnProjectSceneAdded;
     public event Action<SceneCardView> OnProjectSceneRemoved;
-    public event Action<SceneCardView> OnSceneSelected; 
+    public event Action<SceneCardView> OnSceneSelected;
 
     public Dictionary<string, SceneCardView> deployedScenes { private set; get; } = new Dictionary<string, SceneCardView>();
     public Dictionary<string, SceneCardView> projectScenes { private set; get; } = new Dictionary<string, SceneCardView>();
@@ -30,10 +30,7 @@ internal class ScenesViewController : IDisposable
     /// Ctor
     /// </summary>
     /// <param name="sceneCardViewPrefab">prefab for scene's card</param>
-    public ScenesViewController(SceneCardView sceneCardViewPrefab)
-    {
-        this.sceneCardViewPrefab = sceneCardViewPrefab;
-    }
+    public ScenesViewController(SceneCardView sceneCardViewPrefab) { this.sceneCardViewPrefab = sceneCardViewPrefab; }
 
     /// <summary>
     /// Set current user scenes (deployed and projects)
@@ -107,7 +104,7 @@ internal class ScenesViewController : IDisposable
         }
 
         selectedScene = sceneCardView;
-        
+
         if (sceneCardView != null)
         {
             OnSceneSelected?.Invoke(sceneCardView);
@@ -221,8 +218,5 @@ internal class ScenesViewController : IDisposable
         return sceneCardView;
     }
 
-    private void DestroyCardView(SceneCardView sceneCardView)
-    {
-        Object.Destroy(sceneCardView.gameObject);
-    }
+    private void DestroyCardView(SceneCardView sceneCardView) { Object.Destroy(sceneCardView.gameObject); }
 }

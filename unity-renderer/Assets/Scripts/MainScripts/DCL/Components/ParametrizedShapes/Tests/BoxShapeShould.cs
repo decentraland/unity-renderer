@@ -19,11 +19,11 @@ public class BoxShapeShould : IntegrationTestSuite_Legacy
         yield break;
     }
 
-
     [UnityTest]
     public IEnumerator UpdateUVsCorrectly()
     {
-        float[] uvs = new float[] {
+        float[] uvs = new float[]
+        {
             0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
             0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,
             0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1,

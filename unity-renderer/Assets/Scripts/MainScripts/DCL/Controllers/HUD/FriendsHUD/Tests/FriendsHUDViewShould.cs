@@ -70,7 +70,6 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(controller.view.friendsList.onlineFriendsList.container, entry2.transform.parent);
     }
 
-
     [Test]
     public void RemoveFriendCorrectly()
     {
@@ -126,7 +125,6 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(1, view.friendsList.onlineFriendsList.Count());
         Assert.AreEqual(1, view.friendsList.offlineFriendsList.Count());
     }
-
 
     [UnityTest]
     public IEnumerator OpenContextMenuProperly()
@@ -233,10 +231,7 @@ public class FriendsHUDViewShould : IntegrationTestSuite_Legacy
         controller.view.friendsList.CreateOrUpdateEntryDeferred(id, model1);
     }
 
-    FriendEntry GetFriendEntry(string id)
-    {
-        return controller.view.friendsList.GetEntry(id) as FriendEntry;
-    }
+    FriendEntry GetFriendEntry(string id) { return controller.view.friendsList.GetEntry(id) as FriendEntry; }
 
     FriendRequestEntry CreateFriendRequestEntry(string id, string name, bool isReceived)
     {

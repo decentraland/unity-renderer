@@ -78,10 +78,7 @@ public class CameraController : MonoBehaviour
         camera.enabled = !visibleState;
     }
 
-    private void OnRenderingStateChanged(bool enabled, bool prevState)
-    {
-        camera.enabled = enabled;
-    }
+    private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled; }
 
     private void CameraBlocked_OnChange(bool current, bool previous)
     {
@@ -108,16 +105,13 @@ public class CameraController : MonoBehaviour
         currentCameraState.OnUnselect();
         CommonScriptableObjects.cameraMode.Set(newMode);
         currentCameraState.OnSelect();
-        
+
         DCL.Interface.WebInterface.ReportCameraChanged(newMode);
 
         onSetCameraMode.Invoke(newMode);
     }
 
-    private void OnWorldReposition(Vector3 newValue, Vector3 oldValue)
-    {
-        transform.position += newValue - oldValue;
-    }
+    private void OnWorldReposition(Vector3 newValue, Vector3 oldValue) { transform.position += newValue - oldValue; }
 
     private void Update()
     {
@@ -135,10 +129,7 @@ public class CameraController : MonoBehaviour
         currentCameraState?.OnSetRotation(payload);
     }
 
-    public void SetRotation(float x, float y, float z, Vector3? cameraTarget = null)
-    {
-        currentCameraState?.OnSetRotation(new SetRotationPayload() { x = x, y = y, z = z, cameraTarget = cameraTarget });
-    }
+    public void SetRotation(float x, float y, float z, Vector3? cameraTarget = null) { currentCameraState?.OnSetRotation(new SetRotationPayload() { x = x, y = y, z = z, cameraTarget = cameraTarget }); }
 
     public Vector3 GetRotation()
     {
@@ -148,11 +139,7 @@ public class CameraController : MonoBehaviour
         return Vector3.zero;
     }
 
-
-    public Vector3 GetPosition()
-    {
-        return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition;
-    }
+    public Vector3 GetPosition() { return CinemachineCore.Instance.GetActiveBrain(0).ActiveVirtualCamera.State.FinalPosition; }
 
     private void OnDestroy()
     {

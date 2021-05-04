@@ -3,20 +3,14 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AssetPromise_Gif: AssetPromise<Asset_Gif>
+    public class AssetPromise_Gif : AssetPromise<Asset_Gif>
     {
         private readonly string url;
         private Coroutine loadingRoutine;
 
-        public AssetPromise_Gif(string url)
-        {
-            this.url = url;
-        }
+        public AssetPromise_Gif(string url) { this.url = url; }
 
-        public override object GetId()
-        {
-            return url;
-        }
+        public override object GetId() { return url; }
 
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
@@ -31,10 +25,7 @@ namespace DCL
                     }, OnFail));
         }
 
-        protected override void OnCancelLoading()
-        {
-            CoroutineStarter.Stop(loadingRoutine);
-        }
+        protected override void OnCancelLoading() { CoroutineStarter.Stop(loadingRoutine); }
 
         protected override bool AddToLibrary()
         {
@@ -47,12 +38,8 @@ namespace DCL
             return true;
         }
 
-        protected override void OnBeforeLoadOrReuse()
-        {
-        }
+        protected override void OnBeforeLoadOrReuse() { }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-        }
+        protected override void OnAfterLoadOrReuse() { }
     }
 }

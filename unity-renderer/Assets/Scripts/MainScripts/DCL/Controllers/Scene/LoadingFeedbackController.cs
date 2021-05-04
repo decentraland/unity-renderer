@@ -47,10 +47,7 @@ public class LoadingFeedbackController : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
-    private void SceneController_OnNewSceneAdded(ParcelScene scene)
-    {
-        scene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
-    }
+    private void SceneController_OnNewSceneAdded(ParcelScene scene) { scene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed; }
 
     private void Scene_OnStateRefreshed(ParcelScene scene)
     {
@@ -84,15 +81,9 @@ public class LoadingFeedbackController : MonoBehaviour
         }
     }
 
-    private void GLTFComponent_OnDownloadingProgressUpdate()
-    {
-        RefreshFeedbackMessage();
-    }
+    private void GLTFComponent_OnDownloadingProgressUpdate() { RefreshFeedbackMessage(); }
 
-    private void AssetPromise_AB_OnDownloadingProgressUpdate()
-    {
-        RefreshFeedbackMessage();
-    }
+    private void AssetPromise_AB_OnDownloadingProgressUpdate() { RefreshFeedbackMessage(); }
 
     private void RefreshFeedbackMessage()
     {

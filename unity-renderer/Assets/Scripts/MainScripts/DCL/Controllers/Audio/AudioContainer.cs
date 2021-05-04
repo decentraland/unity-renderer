@@ -6,9 +6,7 @@ using System.Collections.Generic;
 public class AudioContainer : MonoBehaviour
 {
     [System.Serializable]
-    public class AudioEventList : ReorderableArray<AudioEvent>
-    {
-    }
+    public class AudioEventList : ReorderableArray<AudioEvent> { }
 
     public bool instantiateEvents = false;
     public AudioMixerGroup audioMixerGroup;
@@ -33,7 +31,7 @@ public class AudioContainer : MonoBehaviour
 
         if (instantiateEvents)
         {
-            for(int i = 0; i < audioEvents.Count; i++)
+            for (int i = 0; i < audioEvents.Count; i++)
             {
                 string str = audioEvents[i].name;
                 AudioEvent instance = Instantiate(audioEvents[i]);

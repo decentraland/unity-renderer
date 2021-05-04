@@ -2,6 +2,7 @@ using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+
 public class ChatEntryShould : IntegrationTestSuite_Legacy
 {
     ChatEntry entry;
@@ -15,7 +16,6 @@ public class ChatEntryShould : IntegrationTestSuite_Legacy
         entry = go.GetComponent<ChatEntry>();
         yield break;
     }
-
 
     protected override IEnumerator TearDown()
     {

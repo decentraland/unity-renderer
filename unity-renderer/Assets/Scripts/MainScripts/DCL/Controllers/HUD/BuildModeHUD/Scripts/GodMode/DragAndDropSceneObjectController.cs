@@ -22,13 +22,7 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
         dragAndDropSceneObjectView.OnDrop += Drop;
     }
 
-    public void Dispose()
-    {
-        dragAndDropSceneObjectView.OnDrop -= Drop;
-    }
+    public void Dispose() { dragAndDropSceneObjectView.OnDrop -= Drop; }
 
-    public void Drop()
-    {
-        OnDrop?.Invoke();
-    }
+    public void Drop() { OnDrop?.Invoke(); }
 }

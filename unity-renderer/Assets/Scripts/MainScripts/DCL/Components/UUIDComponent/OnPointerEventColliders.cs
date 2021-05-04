@@ -32,7 +32,7 @@ namespace DCL.Components
                 return;
 
             IShape shape = entity.meshesInfo.currentShape;
-            
+
             ownerEntity = entity;
 
             DestroyColliders();

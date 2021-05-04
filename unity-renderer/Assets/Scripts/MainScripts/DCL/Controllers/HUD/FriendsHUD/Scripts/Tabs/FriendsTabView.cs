@@ -38,7 +38,8 @@ public class FriendsTabView : FriendsTabViewBase
 
     protected override bool CreateEntry(string userId)
     {
-        if (!base.CreateEntry(userId)) return false;
+        if (!base.CreateEntry(userId))
+            return false;
 
         var entry = GetEntry(userId) as FriendEntry;
 
@@ -94,7 +95,8 @@ public class FriendsTabView : FriendsTabViewBase
 
     protected override void OnPressDeleteButton(string userId)
     {
-        if (string.IsNullOrEmpty(userId)) return;
+        if (string.IsNullOrEmpty(userId))
+            return;
 
         FriendEntryBase friendEntryToDelete = GetEntry(userId);
         if (friendEntryToDelete != null)
@@ -149,7 +151,7 @@ public class FriendsTabView : FriendsTabViewBase
 
     public void CreateOrUpdateEntryDeferred(string userId, FriendEntryBase.Model model)
     {
-        if(creationQueue.ContainsKey(userId))
+        if (creationQueue.ContainsKey(userId))
             creationQueue[userId] = model;
         else
             creationQueue.Add(userId, model);

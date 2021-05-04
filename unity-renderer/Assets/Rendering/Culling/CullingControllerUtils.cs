@@ -64,11 +64,7 @@ namespace DCL.Rendering
             return shouldHaveShadow;
         }
 
-
-        internal static bool TestAvatarShadowRule(CullingControllerProfile profile, float avatarDistance)
-        {
-            return avatarDistance < profile.maxShadowDistanceForAvatars;
-        }
+        internal static bool TestAvatarShadowRule(CullingControllerProfile profile, float avatarDistance) { return avatarDistance < profile.maxShadowDistanceForAvatars; }
 
         /// <summary>
         /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
@@ -140,10 +136,7 @@ namespace DCL.Rendering
         /// 
         /// This is a lazy approximation and most likely will need some refinement in the future.
         /// </remarks>
-        internal static float ComputeShadowMapTexelSize(float boundsSize, float shadowDistance, float shadowMapRes)
-        {
-            return boundsSize / shadowDistance * shadowMapRes;
-        }
+        internal static float ComputeShadowMapTexelSize(float boundsSize, float shadowDistance, float shadowMapRes) { return boundsSize / shadowDistance * shadowMapRes; }
 
         public static void DrawBounds(Bounds b, Color color, float delay = 0)
         {

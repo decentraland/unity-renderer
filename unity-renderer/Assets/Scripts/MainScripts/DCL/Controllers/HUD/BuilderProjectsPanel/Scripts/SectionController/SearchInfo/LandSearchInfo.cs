@@ -12,10 +12,7 @@ internal class LandSearchInfo : ISearchable, ISortable<LandSearchInfo>
 
     public string[] keywords { get; }
 
-    public LandSearchInfo()
-    {
-        keywords = new string[2];
-    }
+    public LandSearchInfo() { keywords = new string[2]; }
 
     public void SetName(string name)
     {

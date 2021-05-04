@@ -49,31 +49,25 @@ public class SmartItemSliderParameter : SmartItemUIParameterAdapter
     private void SetSliderText(float value)
     {
         float convertedValue = ConvertSliderValueToParameterValue(value);
-        valueTxt.text = convertedValue.ToString();     
+        valueTxt.text = convertedValue.ToString();
     }
 
-    private float ConvertSliderValueToParameterValue(float value)
-    {
-        return minValue + value * stepSum;
-    }
+    private float ConvertSliderValueToParameterValue(float value) { return minValue + value * stepSum; }
 
-    private int ConvertParameterValueToSliderValue(float value)
-    {
-        return (int)Mathf.Abs((value - minValue) / stepSum);
-    }
+    private int ConvertParameterValueToSliderValue(float value) { return (int)Mathf.Abs((value - minValue) / stepSum); }
 
     protected override object GetParameterValue()
     {
         object value = base.GetParameterValue();
         float sliderValue;
 
-        float.TryParse(currentParameter.min, out sliderValue);     
-  
-        if(value is string stringValue)
+        float.TryParse(currentParameter.min, out sliderValue);
+
+        if (value is string stringValue)
         {
             if (!string.IsNullOrEmpty(stringValue))
             {
-                if(float.TryParse(stringValue, out float defaultValue))
+                if (float.TryParse(stringValue, out float defaultValue))
                     return defaultValue;
             }
             else

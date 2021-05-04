@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 internal class SectionScenesController : SectionBase, IDeployedSceneListener, IProjectSceneListener, ISectionOpenSectionRequester
 {
     public event Action<SectionsController.SectionId> OnRequestOpenSection;
-    
+
     internal const int MAX_CARDS = 3;
     internal readonly SectionScenesView view;
 
@@ -34,8 +34,8 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         var prefab = Resources.Load<SectionScenesView>("BuilderProjectsPanelMenuSections/SectionScenesView");
         view = Object.Instantiate(prefab);
 
-        view.btnProjectsViewAll.onClick.AddListener(()=> OnRequestOpenSection?.Invoke(SectionsController.SectionId.SCENES_PROJECT));
-        view.btnInWorldViewAll.onClick.AddListener(()=> OnRequestOpenSection?.Invoke(SectionsController.SectionId.SCENES_DEPLOYED));
+        view.btnProjectsViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionsController.SectionId.SCENES_PROJECT));
+        view.btnInWorldViewAll.onClick.AddListener(() => OnRequestOpenSection?.Invoke(SectionsController.SectionId.SCENES_DEPLOYED));
 
         sceneSearchHandler.OnResult += OnSearchResult;
     }
@@ -46,15 +46,9 @@ internal class SectionScenesController : SectionBase, IDeployedSceneListener, IP
         view.transform.ResetLocalTRS();
     }
 
-    public override void Dispose()
-    {
-        Object.Destroy(view.gameObject);
-    }
+    public override void Dispose() { Object.Destroy(view.gameObject); }
 
-    protected override void OnShow()
-    {
-        view.gameObject.SetActive(true);
-    }
+    protected override void OnShow() { view.gameObject.SetActive(true); }
 
     protected override void OnHide()
     {

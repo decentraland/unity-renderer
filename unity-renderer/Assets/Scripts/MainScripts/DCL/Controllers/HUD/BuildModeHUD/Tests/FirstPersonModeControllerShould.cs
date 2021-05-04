@@ -18,10 +18,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            firstPersonModeController.Dispose();
-        }
+        public void TearDown() { firstPersonModeController.Dispose(); }
 
         [Test]
         public void ClickCorrectly()

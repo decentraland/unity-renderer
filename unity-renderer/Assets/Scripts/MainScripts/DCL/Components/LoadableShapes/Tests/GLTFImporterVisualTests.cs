@@ -13,10 +13,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ProcessTextureOffsetAndScale_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTextureOffsetAndScale());
-    }
+    public IEnumerator ProcessTextureOffsetAndScale_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTextureOffsetAndScale()); }
 
     [UnityTest]
     [VisualTest]
@@ -45,10 +42,7 @@ public class GLTFImporterVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator ProcessTexturesUVs_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTexturesUVs());
-    }
+    public IEnumerator ProcessTexturesUVs_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(ProcessTexturesUVs()); }
 
     [UnityTest]
     [VisualTest]

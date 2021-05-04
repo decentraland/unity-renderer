@@ -30,9 +30,9 @@ namespace AvatarAssets_Test
                 {
                     new WearableItem.Representation()
                     {
-                        bodyShapes = new []{"bodyShape1"},
+                        bodyShapes = new [] { "bodyShape1" },
                         overrideReplaces = new [] { "override1", "override2", "override3" },
-                    } 
+                    }
                 }
             };
 
@@ -43,7 +43,7 @@ namespace AvatarAssets_Test
             Assert.AreEqual("category3", replaces[2]);
         }
     }
-    
+
     public class OverrideReplacesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
@@ -56,9 +56,9 @@ namespace AvatarAssets_Test
                 {
                     new WearableItem.Representation()
                     {
-                        bodyShapes = new []{"bodyShape1"},
+                        bodyShapes = new [] { "bodyShape1" },
                         overrideReplaces = new [] { "override1", "override2", "override3" },
-                    } 
+                    }
                 }
             };
 
@@ -69,7 +69,7 @@ namespace AvatarAssets_Test
             Assert.AreEqual("override3", replaces[2]);
         }
     }
-    
+
     public class GeneralHidesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
@@ -97,9 +97,9 @@ namespace AvatarAssets_Test
                 {
                     new WearableItem.Representation()
                     {
-                        bodyShapes = new []{"bodyShape1"},
+                        bodyShapes = new [] { "bodyShape1" },
                         overrideHides = new [] { "override1", "override2", "override3" },
-                    } 
+                    }
                 }
             };
 
@@ -110,7 +110,7 @@ namespace AvatarAssets_Test
             Assert.AreEqual("category3", hides[2]);
         }
     }
-    
+
     public class OverrideHidesListShould : IntegrationTestSuite_Legacy
     {
         [Test]
@@ -123,9 +123,9 @@ namespace AvatarAssets_Test
                 {
                     new WearableItem.Representation()
                     {
-                        bodyShapes = new []{"bodyShape1"},
+                        bodyShapes = new [] { "bodyShape1" },
                         overrideHides = new [] { "override1", "override2", "override3" },
-                    } 
+                    }
                 }
             };
 

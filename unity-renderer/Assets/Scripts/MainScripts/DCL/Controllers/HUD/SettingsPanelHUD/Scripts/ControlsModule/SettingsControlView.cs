@@ -100,9 +100,7 @@ namespace DCL.SettingsPanelHUD.Controls
             Settings.i.OnResetAllSettings -= OnResetSettingsControl;
         }
 
-        public virtual void RefreshControl()
-        {
-        }
+        public virtual void RefreshControl() { }
 
         /// <summary>
         /// It will be triggered when the CONTROL state changes and will execute the main flow of the CONTROL controller: OnControlChanged(), ApplySettings() and PostApplySettings().
@@ -154,20 +152,11 @@ namespace DCL.SettingsPanelHUD.Controls
                 SetControlActive(!current);
         }
 
-        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings obj)
-        {
-            RefreshControl();
-        }
+        private void OnGeneralSettingsChanged(SettingsData.GeneralSettings obj) { RefreshControl(); }
 
-        private void OnQualitySettingsChanged(SettingsData.QualitySettings obj)
-        {
-            RefreshControl();
-        }
+        private void OnQualitySettingsChanged(SettingsData.QualitySettings obj) { RefreshControl(); }
 
-        private void OnResetSettingsControl()
-        {
-            RefreshControl();
-        }
+        private void OnResetSettingsControl() { RefreshControl(); }
 
         private void SetEnabled(bool enabled)
         {

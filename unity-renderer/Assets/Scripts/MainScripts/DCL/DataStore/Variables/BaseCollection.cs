@@ -10,19 +10,11 @@ public class BaseCollection<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
     internal readonly List<T> list = new List<T>();
 
     public BaseCollection() { }
-    public BaseCollection(IEnumerable<T> elements)
-    {
-        list = new List<T>(elements);
-    }
-
+    public BaseCollection(IEnumerable<T> elements) { list = new List<T>(elements); }
 
     public IEnumerable<T> Get() => list;
 
-    public T this[int index]
-    {
-        get => list[index];
-        set => list[index] = value;
-    }
+    public T this[int index] { get => list[index]; set => list[index] = value; }
 
     public void Set(IEnumerable<T> elements)
     {
@@ -59,8 +51,5 @@ public class BaseCollection<T> : IBaseCollection<T>, IEquatable<IEnumerable<T>>
 
     public bool Contains(T element) => list.Contains(element);
 
-    public virtual bool Equals(IEnumerable<T> other)
-    {
-        return EqualityComparer<IEnumerable<T>>.Default.Equals(list, other);
-    }
+    public virtual bool Equals(IEnumerable<T> other) { return EqualityComparer<IEnumerable<T>>.Default.Equals(list, other); }
 }

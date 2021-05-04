@@ -9,25 +9,13 @@ public class ToggleSpriteSwap : MonoBehaviour
     public Sprite spriteOff;
     private Toggle targetToggle;
 
-    private void Awake()
-    {
-        targetToggle = GetComponent<Toggle>();
-    }
+    private void Awake() { targetToggle = GetComponent<Toggle>(); }
 
-    protected void Start()
-    {
-        SetSprite(targetToggle.isOn);
-    }
+    protected void Start() { SetSprite(targetToggle.isOn); }
 
-    private void OnEnable()
-    {
-        targetToggle.onValueChanged.AddListener(SetSprite);
-    }
+    private void OnEnable() { targetToggle.onValueChanged.AddListener(SetSprite); }
 
-    private void OnDisable()
-    {
-        targetToggle.onValueChanged.RemoveListener(SetSprite);
-    }
+    private void OnDisable() { targetToggle.onValueChanged.RemoveListener(SetSprite); }
 
     private void SetSprite(bool newEnabled)
     {

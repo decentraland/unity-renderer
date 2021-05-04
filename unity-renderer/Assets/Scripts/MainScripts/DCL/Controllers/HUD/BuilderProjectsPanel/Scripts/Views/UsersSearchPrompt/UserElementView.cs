@@ -12,10 +12,10 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
         USER_ID = 0,
         USER_NAME
     }
-        
-    public event Action<string> OnAddPressed; 
-    public event Action<string> OnRemovePressed; 
-    
+
+    public event Action<string> OnAddPressed;
+    public event Action<string> OnRemovePressed;
+
     [SerializeField] internal bool alwaysAsHighlighted;
     [SerializeField] internal RawImage userThumbnail;
     [SerializeField] internal TextMeshProUGUI textUserName;
@@ -35,8 +35,8 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
 
     private void Awake()
     {
-        addButton.onClick.AddListener(()=> OnAddPressed?.Invoke(userId));
-        removeButton.onClick.AddListener(()=> OnRemovePressed?.Invoke(userId));
+        addButton.onClick.AddListener(() => OnAddPressed?.Invoke(userId));
+        removeButton.onClick.AddListener(() => OnRemovePressed?.Invoke(userId));
         SetAlwaysHighlighted(alwaysAsHighlighted);
     }
 
@@ -83,7 +83,7 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
     public void SetUserProfile(UserProfileModel profileModel)
     {
         profile = null;
-        
+
         var prevThumbnailPromise = thumbnailPromise;
         if (profileModel.snapshots?.face256 != null)
         {
@@ -93,52 +93,34 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
             AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
         }
         AssetPromiseKeeper_Texture.i.Forget(prevThumbnailPromise);
-        
+
         SetUserId(profileModel.userId);
         SetUserName(profileModel.name);
     }
 
-    public void SetParent(Transform parent)
-    {
-        transform.SetParent(parent);
-    }
+    public void SetParent(Transform parent) { transform.SetParent(parent); }
 
-    public Transform GetParent()
-    {
-        return transform.parent;
-    }
+    public Transform GetParent() { return transform.parent; }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void SetOrder(int order)
-    {
-        transform.SetSiblingIndex(order);
-    }
+    public void SetOrder(int order) { transform.SetSiblingIndex(order); }
 
     public void SetUserId(string userId)
     {
         this.userId = userId;
         searchKeywords[(int)KeywordIndex.USER_ID] = userId;
     }
-    
+
     public void SetUserName(string userName)
     {
         textUserName.text = userName;
         searchKeywords[(int)KeywordIndex.USER_NAME] = userName;
     }
 
-    public void SetThumbnail(Texture thumbnail)
-    {
-        userThumbnail.texture = thumbnail;
-    }
+    public void SetThumbnail(Texture thumbnail) { userThumbnail.texture = thumbnail; }
 
-    public void SetBlocked(bool isBlocked)
-    {
-        blocked.gameObject.SetActive(isBlocked);
-    }
+    public void SetBlocked(bool isBlocked) { blocked.gameObject.SetActive(isBlocked); }
 
     public void SetIsAdded(bool isAdded)
     {
@@ -188,10 +170,10 @@ internal class UserElementView : MonoBehaviour, ISearchable, ISortable<UserEleme
     int ISortable<UserElementView>.Compare(string sortType, bool isDescendingOrder, UserElementView other)
     {
         //NOTE: for now we only sort by name
-        return String.CompareOrdinal(searchKeywords[(int)KeywordIndex.USER_NAME], 
+        return String.CompareOrdinal(searchKeywords[(int)KeywordIndex.USER_NAME],
             other.searchKeywords[(int)KeywordIndex.USER_NAME]);
     }
-    
+
     void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
     {
         if (alwaysAsHighlighted)

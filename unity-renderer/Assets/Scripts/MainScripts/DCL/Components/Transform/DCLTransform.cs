@@ -24,9 +24,7 @@ namespace DCL.Components
 
         public static Model model = new Model();
 
-        public void Cleanup()
-        {
-        }
+        public void Cleanup() { }
 
         public string componentName { get; } = "Transform";
         public IParcelScene scene { get; private set; }
@@ -63,14 +61,9 @@ namespace DCL.Components
             }
         }
 
-        public IEnumerator ApplyChanges(BaseModel model)
-        {
-            return null;
-        }
+        public IEnumerator ApplyChanges(BaseModel model) { return null; }
 
-        public void RaiseOnAppliedChanges()
-        {
-        }
+        public void RaiseOnAppliedChanges() { }
 
         public bool IsValid() => true;
         public BaseModel GetModel() => DCLTransform.model;

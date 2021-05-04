@@ -8,15 +8,15 @@ internal class UsersSearchUserViewsHandler : IDisposable
 {
     public event Action<string> OnRemoveUser;
     public event Action<string> OnAddUser;
-    
+
     internal readonly Dictionary<string, UserElementView> userElementViews = new Dictionary<string, UserElementView>();
     private readonly Queue<UserElementView> viewPool = new Queue<UserElementView>();
 
     private readonly UserElementView userElementViewBase;
     private readonly Transform elementsParent;
-    
+
     private List<string> usersInRolList;
-    
+
     public int userElementViewCount => userElementViews.Count;
 
     public UsersSearchUserViewsHandler(UserElementView userElementViewBase, Transform elementsParent)
@@ -25,7 +25,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         this.elementsParent = elementsParent;
         PoolUserView(userElementViewBase);
     }
-    
+
     public void Dispose()
     {
         foreach (UserElementView userView in userElementViews.Values)
@@ -39,14 +39,14 @@ internal class UsersSearchUserViewsHandler : IDisposable
             viewPool.Dequeue().Dispose();
         }
     }
-    
+
     public void SetUserViewsList(List<UserProfile> profiles)
     {
         UserProfile profile;
         for (int i = 0; i < profiles.Count; i++)
         {
             profile = profiles[i];
-            if (profile == null) 
+            if (profile == null)
                 continue;
 
             SetUserViewList(profile.userId,
@@ -56,18 +56,18 @@ internal class UsersSearchUserViewsHandler : IDisposable
                 });
         }
     }
-    
+
     public void SetUserViewsList(UserProfileModel[] profiles)
     {
         List<UserElementView> newUserList = new List<UserElementView>();
-        
+
         UserProfileModel profile;
         for (int i = 0; i < profiles.Length; i++)
         {
             profile = profiles[i];
-            if (profile == null) 
+            if (profile == null)
                 continue;
-            
+
             var userElementView = SetUserViewList(profile.userId,
                 view =>
                 {
@@ -92,7 +92,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         {
             return;
         }
-        
+
         foreach (UserElementView userElementView in userElementViews.Values)
         {
             userElementView.SetActive(false);
@@ -113,10 +113,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
         }
     }
 
-    public List<UserElementView> GetUserElementViews()
-    {
-        return userElementViews.Values.ToList();
-    }
+    public List<UserElementView> GetUserElementViews() { return userElementViews.Values.ToList(); }
 
     private void PoolUserView(UserElementView userView)
     {
@@ -137,7 +134,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
             userView = Object.Instantiate(userElementViewBase, elementsParent);
         }
         userView.ClearThumbnail();
-        
+
         userView.OnAddPressed -= OnAddUserPressed;
         userView.OnRemovePressed -= OnRemoveUserPressed;
         userView.OnAddPressed += OnAddUserPressed;
@@ -145,7 +142,7 @@ internal class UsersSearchUserViewsHandler : IDisposable
 
         return userView;
     }
-    
+
     private UserElementView SetUserViewList(string userId, Action<UserElementView> OnAddNewElement)
     {
         bool isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
@@ -158,19 +155,13 @@ internal class UsersSearchUserViewsHandler : IDisposable
             userElementView.SetAlwaysHighlighted(true);
             userElementViews.Add(userId, userElementView);
         }
-        
+
         userElementView.SetBlocked(isBlocked);
         userElementView.SetIsAdded(isAddedRol);
         return userElementView;
     }
-    
-    void OnAddUserPressed(string userId)
-    {
-        OnAddUser?.Invoke(userId);
-    }
-    
-    void OnRemoveUserPressed(string userId)
-    {
-        OnRemoveUser?.Invoke(userId);
-    }
+
+    void OnAddUserPressed(string userId) { OnAddUser?.Invoke(userId); }
+
+    void OnRemoveUserPressed(string userId) { OnRemoveUser?.Invoke(userId); }
 }

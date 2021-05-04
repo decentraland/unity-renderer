@@ -6,10 +6,7 @@ internal class ExclusionArea
     public Vector2Int position;
     public int area;
 
-    public bool Contains(Vector2Int coords)
-    {
-        return (coords - position).sqrMagnitude <= area * area;
-    }
+    public bool Contains(Vector2Int coords) { return (coords - position).sqrMagnitude <= area * area; }
 }
 
 internal class ParcelData
@@ -33,7 +30,8 @@ internal class ScenesFilter
         List<ParcelData> result = new List<ParcelData>(maxMarkers);
         List<ParcelData> rawParcelCoords = GetRawParcelCoords(hotScenesList);
         float stepAmount = rawParcelCoords.Count / (float)maxMarkers;
-        if (stepAmount < 1) stepAmount = 1;
+        if (stepAmount < 1)
+            stepAmount = 1;
 
         float lastIndex = -1;
         for (float step = 0; step < rawParcelCoords.Count; step += stepAmount)
@@ -62,7 +60,8 @@ internal class ScenesFilter
         for (int sceneIdx = 0; sceneIdx < scenesCount; sceneIdx++)
         {
             sceneInfo = hotScenesList[sceneIdx];
-            if (sceneInfo.usersTotalCount <= 0) continue;
+            if (sceneInfo.usersTotalCount <= 0)
+                continue;
 
             for (int realmIdx = 0; realmIdx < sceneInfo.realms.Length; realmIdx++)
             {

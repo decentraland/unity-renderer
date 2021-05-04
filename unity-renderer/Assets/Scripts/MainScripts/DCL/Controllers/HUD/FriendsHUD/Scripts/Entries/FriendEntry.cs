@@ -25,8 +25,5 @@ public class FriendEntry : FriendEntryBase
         jumpInButton.OnClick += () => OnJumpInClick?.Invoke(this);
     }
 
-    public override void Populate(Model model)
-    {
-        base.Populate(model);
-    }
+    public override void Populate(Model model) { base.Populate(model); }
 }

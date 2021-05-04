@@ -11,7 +11,7 @@ namespace SettingsWidgetTests
 
     public class SettingsWidgetShould_EditMode
     {
-		[Test]
+        [Test]
         public void AddControlCorrectly()
         {
             // Arrange
@@ -31,9 +31,10 @@ namespace SettingsWidgetTests
             widgetController.AddControl(newControlView, newControlController, newControlConfig);
 
             // Assert
-            newControlView.Received(1).Initialize(
-                newControlConfig,
-                newControlController);
+            newControlView.Received(1)
+                          .Initialize(
+                              newControlConfig,
+                              newControlController);
 
             Assert.Contains(newControlView, widgetController.controls, "The new control should be contained in the control list.");
         }

@@ -79,7 +79,6 @@ public class DCLCharacterController : MonoBehaviour
     public static System.Action<DCLCharacterPosition> OnPositionSet;
     public event System.Action<float> OnUpdateFinish;
 
-
     // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake
     public DCL.Models.IDCLEntity avatarReference { get; private set; }
     public DCL.Models.IDCLEntity firstPersonCameraReference { get; private set; }
@@ -142,8 +141,8 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        avatarReference = new DCL.Models.DecentralandEntity {gameObject = avatarGameObject};
-        firstPersonCameraReference = new DCL.Models.DecentralandEntity {gameObject = firstPersonCameraGameObject};
+        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
+        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
     }
 
     private void SubscribeToInput()
@@ -216,7 +215,6 @@ public class DCLCharacterController : MonoBehaviour
         lastPosition = transform.position;
     }
 
-
     public void Teleport(string teleportPayload)
     {
         ResetGround();
@@ -230,6 +228,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnPositionSet.Invoke(characterPosition);
         }
+        DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
         {
@@ -238,15 +237,9 @@ public class DCLCharacterController : MonoBehaviour
     }
 
     [System.Obsolete("SetPosition is deprecated, please use Teleport instead.", true)]
-    public void SetPosition(string positionVector)
-    {
-        Teleport(positionVector);
-    }
+    public void SetPosition(string positionVector) { Teleport(positionVector); }
 
-    public void SetEnabled(bool enabled)
-    {
-        this.enabled = enabled;
-    }
+    public void SetEnabled(bool enabled) { this.enabled = enabled; }
 
     bool Moved(Vector3 previousPosition, bool useThreshold = false)
     {
@@ -372,7 +365,8 @@ public class DCLCharacterController : MonoBehaviour
 
     void Jump()
     {
-        if (isJumping) return;
+        if (isJumping)
+            return;
 
         isJumping = true;
         isGrounded = false;
@@ -500,13 +494,7 @@ public class DCLCharacterController : MonoBehaviour
         velocity.y = 0f;
     }
 
-    public void ResumeGravity()
-    {
-        gravity = originalGravity;
-    }
+    public void ResumeGravity() { gravity = originalGravity; }
 
-    void OnRenderingStateChanged(bool isEnable, bool prevState)
-    {
-        SetEnabled(isEnable);
-    }
+    void OnRenderingStateChanged(bool isEnable, bool prevState) { SetEnabled(isEnable); }
 }

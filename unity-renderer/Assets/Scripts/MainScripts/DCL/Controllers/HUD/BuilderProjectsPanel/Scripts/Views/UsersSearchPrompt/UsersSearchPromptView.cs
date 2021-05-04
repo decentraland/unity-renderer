@@ -3,9 +3,9 @@ using UnityEngine;
 
 internal class UsersSearchPromptView : MonoBehaviour, IDisposable
 {
-    public event Action<string> OnSearchText; 
-    public event Action OnShouldHide; 
-    
+    public event Action<string> OnSearchText;
+    public event Action OnShouldHide;
+
     [SerializeField] internal SearchInputField searchInputField;
     [SerializeField] private GameObject emptyListGO;
     [SerializeField] internal Transform friendListParent;
@@ -14,7 +14,7 @@ internal class UsersSearchPromptView : MonoBehaviour, IDisposable
 
     private bool isDestroyed = false;
     private RectTransform rectTransform;
-    
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -28,11 +28,8 @@ internal class UsersSearchPromptView : MonoBehaviour, IDisposable
         searchInputField.OnSearchText -= OnSearch;
         isDestroyed = true;
     }
-    
-    private void Update()
-    {
-        HideIfClickedOutside();
-    }
+
+    private void Update() { HideIfClickedOutside(); }
 
     public void Dispose()
     {
@@ -41,27 +38,18 @@ internal class UsersSearchPromptView : MonoBehaviour, IDisposable
             Destroy(gameObject);
         }
     }
-    
+
     public void SetFriendListEmpty(bool isEmpty)
     {
         emptyListGO.SetActive(isEmpty);
         friendListParent.gameObject.SetActive(!isEmpty);
     }
 
-    public void ClearSearch()
-    {
-        searchInputField.ClearSearch();
-    }
+    public void ClearSearch() { searchInputField.ClearSearch(); }
 
-    public UserElementView GetUsersBaseElement()
-    {
-        return userElementBase;
-    }
+    public UserElementView GetUsersBaseElement() { return userElementBase; }
 
-    public Transform GetUserElementsParent()
-    {
-        return friendListParent;
-    }
+    public Transform GetUserElementsParent() { return friendListParent; }
 
     public void Show()
     {
@@ -73,31 +61,16 @@ internal class UsersSearchPromptView : MonoBehaviour, IDisposable
         showHideAnimator.Show();
     }
 
-    public void Hide()
-    {
-        showHideAnimator.Hide();
-    }
+    public void Hide() { showHideAnimator.Hide(); }
 
-    public void SetIdleSearchTime(float idleSearchTime)
-    {
-        searchInputField.SetIdleSearchTime(idleSearchTime);
-    }
+    public void SetIdleSearchTime(float idleSearchTime) { searchInputField.SetIdleSearchTime(idleSearchTime); }
 
-    public void ShowSearchSpinner()
-    {
-        searchInputField.ShowSearchSpinner();
-    }
-    
-    public void ShowClearButton()
-    {
-        searchInputField.ShowSearchClearButton();
-    }
+    public void ShowSearchSpinner() { searchInputField.ShowSearchSpinner(); }
 
-    private void OnSearch(string value)
-    {
-        OnSearchText?.Invoke(value);
-    }
-    
+    public void ShowClearButton() { searchInputField.ShowSearchClearButton(); }
+
+    private void OnSearch(string value) { OnSearchText?.Invoke(value); }
+
     private void HideIfClickedOutside()
     {
         if (Input.GetMouseButtonDown(0) &&

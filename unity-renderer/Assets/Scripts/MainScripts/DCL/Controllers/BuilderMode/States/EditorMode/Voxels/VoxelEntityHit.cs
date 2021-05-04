@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoxelEntityHit 
+public class VoxelEntityHit
 {
     public DCLBuilderInWorldEntity entityHitted;
     public Vector3Int hitVector;
@@ -21,9 +21,9 @@ public class VoxelEntityHit
         Vector3 min = entityHitted.rootEntity.meshesInfo.mergedBounds.min;
         Vector3 max = entityHitted.rootEntity.meshesInfo.mergedBounds.max;
 
-        if (Mathf.Abs(min.x -hit.point.x) < HIT_VECTOR_SENSITIVITY)
+        if (Mathf.Abs(min.x - hit.point.x) < HIT_VECTOR_SENSITIVITY)
         {
-            hitVector = Vector3Int.left;        
+            hitVector = Vector3Int.left;
         }
         else if (Mathf.Abs(max.x - hit.point.x) < HIT_VECTOR_SENSITIVITY)
         {
@@ -31,7 +31,7 @@ public class VoxelEntityHit
         }
         else if (Mathf.Abs(min.y - hit.point.y) < HIT_VECTOR_SENSITIVITY)
         {
-            hitVector = Vector3Int.down;       
+            hitVector = Vector3Int.down;
         }
         else if (Mathf.Abs(max.y - hit.point.y) < HIT_VECTOR_SENSITIVITY)
         {

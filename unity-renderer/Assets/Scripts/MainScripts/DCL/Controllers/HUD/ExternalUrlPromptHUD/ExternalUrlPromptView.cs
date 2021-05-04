@@ -32,13 +32,7 @@ public class ExternalUrlPromptView : MonoBehaviour
         trustToggle.isOn = false;
     }
 
-    private void Dismiss()
-    {
-        resultCallback?.Invoke(ResultType.CANCELED);
-    }
+    private void Dismiss() { resultCallback?.Invoke(ResultType.CANCELED); }
 
-    private void Approve()
-    {
-        resultCallback?.Invoke(trustToggle.isOn ? ResultType.APPROVED_TRUSTED : ResultType.APPROVED);
-    }
+    private void Approve() { resultCallback?.Invoke(trustToggle.isOn ? ResultType.APPROVED_TRUSTED : ResultType.APPROVED); }
 }

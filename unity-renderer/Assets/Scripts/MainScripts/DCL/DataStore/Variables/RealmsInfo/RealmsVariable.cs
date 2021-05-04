@@ -4,10 +4,7 @@ namespace Variables.RealmsInfo
 {
     public class RealmsVariable : BaseVariable<RealmModel[]>
     {
-        public override bool Equals(RealmModel[] other)
-        {
-            return value == other;
-        }
+        public override bool Equals(RealmModel[] other) { return value == other; }
     }
 
     [Serializable]

@@ -47,9 +47,9 @@ namespace DCL
 
         private InputController_Legacy()
         {
-            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.MOUSE, buttonNum = 0, buttonId = WebInterface.ACTION_BUTTON.POINTER, useRaycast = true});
-            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true});
-            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true});
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.MOUSE, buttonNum = 0, buttonId = WebInterface.ACTION_BUTTON.POINTER, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true });
         }
 
         public void AddListener(WebInterface.ACTION_BUTTON buttonId, Action<WebInterface.ACTION_BUTTON, EVENT, bool> callback)
@@ -104,14 +104,16 @@ namespace DCL
                 switch (btnMap.type)
                 {
                     case BUTTON_TYPE.MOUSE:
-                        if (CommonScriptableObjects.allUIHidden.Get()) break;
+                        if (CommonScriptableObjects.allUIHidden.Get())
+                            break;
                         if (Input.GetMouseButtonDown(btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast);
                         else if (Input.GetMouseButtonUp(btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast);
                         break;
                     case BUTTON_TYPE.KEYBOARD:
-                        if (CommonScriptableObjects.allUIHidden.Get()) break;
+                        if (CommonScriptableObjects.allUIHidden.Get())
+                            break;
                         if (Input.GetKeyDown((KeyCode) btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast);
                         else if (Input.GetKeyUp((KeyCode) btnMap.buttonNum))

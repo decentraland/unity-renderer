@@ -27,7 +27,7 @@ public class UsersSearcherTests
 
         Assert.IsFalse(firstSearchCalled);
         Assert.IsTrue(secondSearchCalled);
-        
+
         searcher.Dispose();
     }
 
@@ -36,13 +36,13 @@ public class UsersSearcherTests
     {
         const string VAL1 = "first";
         const string VAL2 = "second";
-        
+
         var bridge = Substitute.For<IUsersSearchBridge>();
         var searcher1 = new UsersSearcher(bridge);
         var searcher2 = new UsersSearcher(bridge);
 
         string firstSearchValue = string.Empty;
-        string secondSearchValue= string.Empty;
+        string secondSearchValue = string.Empty;
 
         searcher1.SearchUser("TheRealPravus", 1)
                  .Then(profiles =>
@@ -61,7 +61,7 @@ public class UsersSearcherTests
         Assert.AreNotEqual(firstSearchValue, secondSearchValue);
         Assert.AreEqual(VAL1, firstSearchValue);
         Assert.AreEqual(VAL2, secondSearchValue);
-        
+
         searcher1.Dispose();
         searcher2.Dispose();
     }

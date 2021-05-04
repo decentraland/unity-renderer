@@ -8,7 +8,7 @@ internal class UsersSearchFriendsHandler : IDisposable
     public bool isFriendlistDirty { private set; get; }
 
     private readonly IFriendsController friendsController;
-    
+
     private bool waitingFriendsInitialize;
     private Promise<Dictionary<string, FriendsController.UserStatus>> friendListPromise;
 
@@ -42,13 +42,13 @@ internal class UsersSearchFriendsHandler : IDisposable
             waitingFriendsInitialize = false;
             friendListPromise.Resolve(friendsController.GetFriends());
         }
-        
+
         if (waitingFriendsInitialize)
         {
             waitingFriendsInitialize = false;
             friendsController.OnInitialized += OnFriendsInitialized;
         }
-        
+
         return friendListPromise;
     }
 
@@ -75,13 +75,13 @@ internal class UsersSearchFriendsHandler : IDisposable
     {
         if (!friendsController.isInitialized)
             return;
-        
+
         if (friendshipAction == FriendshipAction.APPROVED)
         {
             isFriendlistDirty = true;
             return;
         }
-        
+
         if (friendshipAction == FriendshipAction.DELETED)
         {
             isFriendlistDirty = true;

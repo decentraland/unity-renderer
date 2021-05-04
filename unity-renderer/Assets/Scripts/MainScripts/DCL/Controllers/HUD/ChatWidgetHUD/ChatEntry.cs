@@ -75,8 +75,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         {
             userString = $"<b>From {chatEntryModel.senderName}:</b>";
         }
-        else
-        if (chatEntryModel.subType == Model.SubType.PRIVATE_TO)
+        else if (chatEntryModel.subType == Model.SubType.PRIVATE_TO)
         {
             userString = $"<b>To {chatEntryModel.recipientName}:</b>";
         }
@@ -176,7 +175,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     {
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            if (model.messageType != ChatMessage.Type.PRIVATE) return;
+            if (model.messageType != ChatMessage.Type.PRIVATE)
+                return;
 
             OnPress?.Invoke(model.otherUserId);
         }
@@ -190,10 +190,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         }
     }
 
-    public void OnPointerEnter(PointerEventData pointerEventData)
-    {
-        hoverPanelTimer = timeToHoverPanel;
-    }
+    public void OnPointerEnter(PointerEventData pointerEventData) { hoverPanelTimer = timeToHoverPanel; }
 
     public void OnPointerExit(PointerEventData pointerEventData)
     {
@@ -202,10 +199,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         OnCancelHover?.Invoke();
     }
 
-    void OnDisable()
-    {
-        OnPointerExit(null);
-    }
+    void OnDisable() { OnPointerExit(null); }
 
     public void SetFadeout(bool enabled)
     {
@@ -233,7 +227,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     void Fade()
     {
-        if (!fadeEnabled) return;
+        if (!fadeEnabled)
+            return;
 
         //NOTE(Brian): Small offset using normalized Y so we keep the cascade effect
         double yOffset = (transform as RectTransform).anchoredPosition.y / (double)Screen.height * 2.0;
@@ -254,7 +249,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     void ProcessHoverPanelTimer()
     {
-        if (hoverPanelTimer <= 0f) return;
+        if (hoverPanelTimer <= 0f)
+            return;
 
         hoverPanelTimer -= Time.deltaTime;
         if (hoverPanelTimer <= 0f)

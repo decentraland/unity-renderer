@@ -85,7 +85,6 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
     }
 
-
     [UnityTest]
     public IEnumerator GetReplacedWhenAnotherMaterialIsAttached()
     {

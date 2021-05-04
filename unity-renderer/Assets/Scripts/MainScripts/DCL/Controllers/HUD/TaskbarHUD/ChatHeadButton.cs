@@ -48,18 +48,9 @@ public class ChatHeadButton : TaskbarButton, IPointerEnterHandler, IPointerExitH
             profile.OnFaceSnapshotReadyEvent -= Profile_OnFaceSnapshotReadyEvent;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        labelContainer.Show();
-    }
+    public void OnPointerEnter(PointerEventData eventData) { labelContainer.Show(); }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        labelContainer.Hide();
-    }
+    public void OnPointerExit(PointerEventData eventData) { labelContainer.Hide(); }
 
-    public void SetOnlineStatus(bool isOnline)
-    {
-        onlineStatusIndicator.color = isOnline ? onlineColor : offlineColor;
-    }
+    public void SetOnlineStatus(bool isOnline) { onlineStatusIndicator.color = isOnline ? onlineColor : offlineColor; }
 }

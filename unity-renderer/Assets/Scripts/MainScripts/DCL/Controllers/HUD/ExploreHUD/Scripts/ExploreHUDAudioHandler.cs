@@ -27,12 +27,9 @@ public class ExploreHUDAudioHandler : MonoBehaviour
 
     void OnMagicButtonExit()
     {
-        if (magicPointerEnterLastPlayed < Time.fixedTime -0.3f)
+        if (magicPointerEnterLastPlayed < Time.fixedTime - 0.3f)
             eventMagicPointerExit.Play(true);
     }
 
-    void OnMagicButtonPressed()
-    {
-        eventMagicButtonPressed.Play(true);
-    }
+    void OnMagicButtonPressed() { eventMagicButtonPressed.Play(true); }
 }

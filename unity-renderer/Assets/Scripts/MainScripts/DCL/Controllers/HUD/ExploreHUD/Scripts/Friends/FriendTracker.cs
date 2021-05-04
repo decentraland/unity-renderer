@@ -16,10 +16,7 @@ class FriendTracker
         this.backgroundColor = backgroundColor;
     }
 
-    public void SetStatus(FriendsController.UserStatus newStatus)
-    {
-        status = newStatus;
-    }
+    public void SetStatus(FriendsController.UserStatus newStatus) { status = newStatus; }
 
     public void AddListener(TrackedSceneInfo listener)
     {
@@ -34,10 +31,7 @@ class FriendTracker
         friendListeners.Remove(listener);
     }
 
-    public bool HasListeners()
-    {
-        return friendListeners.Count > 0;
-    }
+    public bool HasListeners() { return friendListeners.Count > 0; }
 
     public bool HasChangedLocation(Vector2Int coords)
     {

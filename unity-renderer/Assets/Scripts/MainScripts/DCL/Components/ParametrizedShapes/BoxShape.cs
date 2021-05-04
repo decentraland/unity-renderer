@@ -12,24 +12,15 @@ namespace DCL.Components
         {
             public float[] uvs;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public BoxShape()
-        {
-            model = new Model();
-        }
+        public BoxShape() { model = new Model(); }
 
         public static Mesh cubeMesh = null;
         private static int cubeMeshRefCount = 0;
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.BOX_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.BOX_SHAPE; }
 
         public override Mesh GenerateGeometry()
         {

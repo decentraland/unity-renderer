@@ -49,10 +49,7 @@ namespace DCL.SettingsPanelHUD.Sections
         /// Adds an action to execute when the button is clicked.
         /// </summary>
         /// <param name="action">Action to execute.</param>
-        public void ConfigureAction(UnityAction action)
-        {
-            button.onClick.AddListener(action);
-        }
+        public void ConfigureAction(UnityAction action) { button.onClick.AddListener(action); }
 
         /// <summary>
         /// Mark this button as selected. It will change the visual aspect of the button.

@@ -63,7 +63,7 @@ namespace DCL.ABConverter
         public Core(Environment env, Client.Settings settings = null)
         {
             this.env = env;
-            
+
             this.settings = settings?.Clone() ?? new Client.Settings();
 
             finalDownloadedPath = PathUtils.FixDirectorySeparator(Config.DOWNLOADED_PATH_ROOT + Config.DASH);
@@ -94,10 +94,10 @@ namespace DCL.ABConverter
             startTime = Time.realtimeSinceStartup;
 
             log.Info($"Conversion start... free space in disk: {PathUtils.GetFreeSpace()}");
-            
+
             InitializeDirectoryPaths(settings.clearDirectoriesOnStart);
             PopulateLowercaseMappings(rawContents);
-            
+
             float timer = Time.realtimeSinceStartup;
             bool shouldGenerateAssetBundles = generateAssetBundles;
             bool assetsAlreadyDumped = false;
@@ -135,7 +135,7 @@ namespace DCL.ABConverter
                         AssetBundleManifest manifest;
 
                         state.step = State.Step.BUILDING_ASSET_BUNDLES;
-                        
+
                         if (BuildAssetBundles(out manifest))
                         {
                             CleanAssetBundleFolder(manifest.GetAllAssetBundles());
@@ -170,10 +170,10 @@ namespace DCL.ABConverter
                         OnFinish: (skippedAssetsCount) =>
                         {
                             this.skippedAssets = skippedAssetsCount;
-                    
+
                             if (this.skippedAssets > 0)
                                 state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
-                    
+
                             OnFinish?.Invoke(state.lastErrorCode);
                         }));
                 }
@@ -188,8 +188,9 @@ namespace DCL.ABConverter
 
         public void ConvertDumpedAssets(Action<ErrorCodes> OnFinish = null)
         {
-            if (!BuildAssetBundles(out AssetBundleManifest manifest)) return;
-            
+            if (!BuildAssetBundles(out AssetBundleManifest manifest))
+                return;
+
             CleanAssetBundleFolder(manifest.GetAllAssetBundles());
 
             EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets(
@@ -197,10 +198,10 @@ namespace DCL.ABConverter
                 OnFinish: (skippedAssetsCount) =>
                 {
                     this.skippedAssets = skippedAssetsCount;
-                    
+
                     if (this.skippedAssets > 0)
                         state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
-                    
+
                     OnFinish?.Invoke(state.lastErrorCode);
                 }));
         }
@@ -373,7 +374,7 @@ namespace DCL.ABConverter
             PersistentAssetCache.StreamCacheByUri.Clear();
 
             log.Verbose("Start injecting stuff into " + gltfPath.hash);
-            
+
             //NOTE(Brian): Prepare gltfs gathering its dependencies first and filling the importer's static cache.
             foreach (var texturePath in texturePaths)
             {
@@ -481,13 +482,13 @@ namespace DCL.ABConverter
                 {
                     texImporter.crunchedCompression = true;
                     texImporter.textureCompression = TextureImporterCompression.CompressedHQ;
-                    
+
                     ReduceTextureSizeIfNeeded(assetPath.hash + "/" + assetPath.hash + Path.GetExtension(assetPath.file), MAX_TEXTURE_SIZE);
                 }
                 else
                 {
                     env.assetDatabase.ImportAsset(assetPath.finalPath, ImportAssetOptions.ForceUpdate);
-                    env.assetDatabase.SaveAssets();   
+                    env.assetDatabase.SaveAssets();
                 }
 
                 SetDeterministicAssetDatabaseGuid(assetPath);
@@ -497,27 +498,27 @@ namespace DCL.ABConverter
 
             return result;
         }
-        
+
         private void ReduceTextureSizeIfNeeded(string texturePath, float maxSize)
         {
             string finalTexturePath = finalDownloadedPath + texturePath;
-            
+
             byte[] image = File.ReadAllBytes(finalTexturePath);
-            
+
             var tmpTex = new Texture2D(1, 1);
-            
+
             if (!ImageConversion.LoadImage(tmpTex, image))
                 return;
-            
+
             float factor = 1.0f;
             int width = tmpTex.width;
             int height = tmpTex.height;
-            
+
             float maxTextureSize = maxSize;
-            
+
             if (width < maxTextureSize && height < maxTextureSize)
                 return;
-            
+
             if (width >= height)
             {
                 factor = (float)maxTextureSize / width;
@@ -526,13 +527,13 @@ namespace DCL.ABConverter
             {
                 factor = (float)maxTextureSize / height;
             }
-            
+
             Texture2D dstTex = TextureHelpers.Resize(tmpTex, (int)(width * factor), (int)(height * factor));
             byte[] endTex = ImageConversion.EncodeToPNG(dstTex);
             UnityEngine.Object.DestroyImmediate(tmpTex);
-            
+
             File.WriteAllBytes(finalTexturePath, endTex);
-            
+
             AssetDatabase.ImportAsset(finalDownloadedAssetDbPath + texturePath, ImportAssetOptions.ForceUpdate);
             AssetDatabase.SaveAssets();
         }
@@ -580,9 +581,9 @@ namespace DCL.ABConverter
 
             if (!env.directory.Exists(outputPathDir))
                 env.directory.CreateDirectory(outputPathDir);
-                
+
             env.file.WriteAllBytes(outputPath, assetData);
-                
+
             env.assetDatabase.ImportAsset(outputPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
 
             return outputPath;
@@ -594,7 +595,7 @@ namespace DCL.ABConverter
         /// </summary>
         /// <param name="gltfPath">GLTF path of the gltf that will pick up the references</param>
         /// <param name="texturePath">Texture path of the texture to be injected</param>
-        internal void RetrieveAndInjectTexture(AssetPath gltfPath, AssetPath texturePath) 
+        internal void RetrieveAndInjectTexture(AssetPath gltfPath, AssetPath texturePath)
         {
             string finalPath = texturePath.finalPath;
 
@@ -603,7 +604,7 @@ namespace DCL.ABConverter
 
             Texture2D t2d = env.assetDatabase.LoadAssetAtPath<Texture2D>(finalPath);
 
-            if (t2d == null)    
+            if (t2d == null)
                 return;
 
             string relativePath = ABConverter.PathUtils.GetRelativePathTo(gltfPath.file, texturePath.file);
@@ -628,7 +629,7 @@ namespace DCL.ABConverter
 
             Stream stream = env.file.OpenRead(finalPath);
             string relativePath = ABConverter.PathUtils.GetRelativePathTo(gltfPath.file, bufferPath.file);
-                
+
             // NOTE(Brian): This cache will be used by the GLTF importer when seeking streams. This way the importer will
             //              consume the asset bundle dependencies instead of trying to create new streams.
             PersistentAssetCache.AddBuffer(relativePath, gltfPath.finalPath, stream);
@@ -766,19 +767,19 @@ namespace DCL.ABConverter
             }
         }
 
-            /// <summary>
-            /// This method tags the main shader, so all the asset bundles don't contain repeated shader assets.
-            /// This way we save the big Shader.Parse and gpu compiling performance overhead and make
-            /// the bundles a bit lighter.
-            /// </summary>
-            private void MarkShaderAssetBundle()
-            {
-                //NOTE(Brian): The shader asset bundle that's going to be generated doesn't need to be really used,
-                //             as we are going to use the embedded one, so we are going to just delete it after the
-                //             generation ended.
-                var mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
-                ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
-            }
+        /// <summary>
+        /// This method tags the main shader, so all the asset bundles don't contain repeated shader assets.
+        /// This way we save the big Shader.Parse and gpu compiling performance overhead and make
+        /// the bundles a bit lighter.
+        /// </summary>
+        private void MarkShaderAssetBundle()
+        {
+            //NOTE(Brian): The shader asset bundle that's going to be generated doesn't need to be really used,
+            //             as we are going to use the embedded one, so we are going to just delete it after the
+            //             generation ended.
+            var mainShader = Shader.Find("DCL/Universal Render Pipeline/Lit");
+            ABConverter.Utils.MarkAssetForAssetBundleBuild(env.assetDatabase, mainShader, MAIN_SHADER_AB_NAME);
+        }
 
         internal virtual void InitializeDirectoryPaths(bool deleteIfExists)
         {

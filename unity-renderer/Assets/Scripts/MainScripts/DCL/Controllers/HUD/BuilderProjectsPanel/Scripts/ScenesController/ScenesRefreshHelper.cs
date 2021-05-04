@@ -33,15 +33,9 @@ internal class ScenesRefreshHelper
         return oldProjectsScenes.ContainsKey(sceneData.id);
     }
 
-    public bool IsSceneUpdate(ISceneData sceneData)
-    {
-        return WasDeployedScene(sceneData) || WasProjectScene(sceneData);
-    }
+    public bool IsSceneUpdate(ISceneData sceneData) { return WasDeployedScene(sceneData) || WasProjectScene(sceneData); }
 
-    public bool IsSceneDeployStatusChanged(ISceneData sceneData)
-    {
-        return (!sceneData.isDeployed && WasDeployedScene(sceneData)) || (sceneData.isDeployed && WasProjectScene(sceneData));
-    }
+    public bool IsSceneDeployStatusChanged(ISceneData sceneData) { return (!sceneData.isDeployed && WasDeployedScene(sceneData)) || (sceneData.isDeployed && WasProjectScene(sceneData)); }
 
     public Dictionary<string, SceneCardView> GetOldDictionary(ISceneData sceneData)
     {

@@ -16,28 +16,13 @@ internal class SectionProjectScenesView : MonoBehaviour
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
-    public void ResetScrollRect()
-    {
-        scrollRect.verticalNormalizedPosition = 1;
-    }
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
 
-    private void Awake()
-    {
-        scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
-    }
+    private void Awake() { scrollRect.onValueChanged.AddListener(OnScrollValueChanged); }
 
-    private void OnDestroy()
-    {
-        scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
-    }
+    private void OnDestroy() { scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged); }
 
-    private void OnScrollValueChanged(Vector2 value)
-    {
-        OnScrollRectValueChanged?.Invoke();
-    }
+    private void OnScrollValueChanged(Vector2 value) { OnScrollRectValueChanged?.Invoke(); }
 }

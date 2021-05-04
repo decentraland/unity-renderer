@@ -82,7 +82,7 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
     {
         backgroundImage.texture = assetTexture.texture;
 
-        if(useImageNativeSize)
+        if (useImageNativeSize)
             backgroundImage.SetNativeSize();
     }
 
@@ -107,11 +107,11 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
             GameObject buttonGO = Instantiate(buttonPrefab, buttonsParent);
 
             Button_OnPointerDown button = buttonGO.GetComponentInChildren<Button_OnPointerDown>();
-            if(button != null)
+            if (button != null)
                 button.onPointerDown += () => buttonsCallback?.Invoke(index);
 
             TextMeshProUGUI caption = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
-            if(caption != null)
+            if (caption != null)
                 caption.text = buttons[i].caption;
 
             Image buttonImage = buttonGO.GetComponentInChildren<Image>();
@@ -122,7 +122,7 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
 
     private void ClearButtons()
     {
-        for(int i = buttonsParent.childCount -1; i >= 0; i--)
+        for (int i = buttonsParent.childCount - 1; i >= 0; i--)
         {
             Destroy(buttonsParent.GetChild(i).gameObject);
         }
@@ -154,10 +154,7 @@ public class WelcomeHUDView : MonoBehaviour, IWelcomeHUDView
         }
     }
 
-    public void SetVisible(bool visible)
-    {
-        gameObject.SetActive(visible);
-    }
+    public void SetVisible(bool visible) { gameObject.SetActive(visible); }
 
     private void OnDestroy()
     {

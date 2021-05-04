@@ -45,7 +45,6 @@ namespace DCL
         HashSet<AssetPromiseType> waitingPromises = new HashSet<AssetPromiseType>();
         public int waitingPromisesCount => waitingPromises.Count;
 
-
         //NOTE(Brian): List of promises waiting for assets not in library.
         Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
@@ -59,10 +58,7 @@ namespace DCL
 
         float startTime;
 
-        public bool IsBlocked(AssetPromiseType promise)
-        {
-            return blockedPromises.Contains(promise);
-        }
+        public bool IsBlocked(AssetPromiseType promise) { return blockedPromises.Contains(promise); }
 
         public string GetMasterState(AssetPromiseType promise)
         {
@@ -122,11 +118,11 @@ namespace DCL
                 waitingPromises.Add(promise);
                 masterPromiseById.Add(id, promise);
             }
-            
+
             promise.library = library;
             promise.OnPreFinishEvent += OnRequestCompleted;
             promise.Load();
-            
+
             return promise;
         }
 
@@ -202,7 +198,6 @@ namespace DCL
             }
         }
 
-
         private IEnumerator ProcessBlockedPromisesDeferred(AssetPromiseType loadedPromise)
         {
             object loadedPromiseId = loadedPromise.GetId();
@@ -249,7 +244,6 @@ namespace DCL
             if (masterToBlockedPromises.ContainsKey(loadedPromiseId))
                 masterToBlockedPromises.Remove(loadedPromiseId);
         }
-
 
         private IEnumerator SkipFrameIfOverBudget()
         {
@@ -366,8 +360,6 @@ namespace DCL
             library.Cleanup();
         }
 
-        protected virtual void OnSilentForget(AssetPromiseType promise)
-        {
-        }
+        protected virtual void OnSilentForget(AssetPromiseType promise) { }
     }
 }

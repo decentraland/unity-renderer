@@ -6,20 +6,11 @@ namespace Tests
 {
     public class IntegrationTestSuite
     {
-        protected virtual WorldRuntimeContext CreateRuntimeContext()
-        {
-            return DCL.Tests.WorldRuntimeContextFactory.CreateMocked();
-        }
+        protected virtual WorldRuntimeContext CreateRuntimeContext() { return DCL.Tests.WorldRuntimeContextFactory.CreateMocked(); }
 
-        protected virtual PlatformContext CreatePlatformContext()
-        {
-            return DCL.Tests.PlatformContextFactory.CreateMocked();
-        }
+        protected virtual PlatformContext CreatePlatformContext() { return DCL.Tests.PlatformContextFactory.CreateMocked(); }
 
-        protected virtual MessagingContext CreateMessagingContext()
-        {
-            return DCL.Tests.MessagingContextFactory.CreateMocked();
-        }
+        protected virtual MessagingContext CreateMessagingContext() { return DCL.Tests.MessagingContextFactory.CreateMocked(); }
 
         [UnitySetUp]
         protected virtual IEnumerator SetUp()

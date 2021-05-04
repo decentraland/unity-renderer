@@ -3,18 +3,14 @@ using UnityEngine.UI;
 
 public class ColorToggle : UIButton
 {
-    public Color color
-    {
-        get;
-        private set;
-    }
+    public Color color { get; private set; }
 
     [SerializeField]
     private Image colorPicker;
-    
+
     [SerializeField]
     private Image selectionHighlight;
-    
+
     private bool selectedValue;
 
     public bool selected
@@ -26,7 +22,7 @@ public class ColorToggle : UIButton
             selectionHighlight.enabled = selectedValue;
         }
     }
-    
+
     public event System.Action<ColorToggle> OnClicked;
 
     private new void Awake()
@@ -37,7 +33,7 @@ public class ColorToggle : UIButton
             OnClicked = null;
         };
     }
-    
+
     public void Initialize(Color c, bool on)
     {
         color = c;
@@ -45,8 +41,5 @@ public class ColorToggle : UIButton
         selected = on;
     }
 
-    protected override void OnClick()
-    {
-        OnClicked?.Invoke(this);
-    }
+    protected override void OnClick() { OnClicked?.Invoke(this); }
 }

@@ -18,9 +18,7 @@ namespace Builder
         };
 
         [System.Serializable]
-        private class OnEntityLoadingEvent : DCL.Interface.WebInterface.UUIDEvent<EntityLoadingPayload>
-        {
-        };
+        private class OnEntityLoadingEvent : DCL.Interface.WebInterface.UUIDEvent<EntityLoadingPayload> { };
 
         [System.Serializable]
         private class EntitiesOutOfBoundariesEventPayload
@@ -70,7 +68,8 @@ namespace Builder
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
             onGetLoadingEntity.payload.type = "onEntityLoading";
-            if (LOG_MESSAGES) Debug.Log($"SEND: OnEntityLoadingEvent {entity.entityId}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: OnEntityLoadingEvent {entity.entityId}");
             WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
         }
 
@@ -79,39 +78,44 @@ namespace Builder
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
             onGetLoadingEntity.payload.type = "onEntityFinishLoading";
-            if (LOG_MESSAGES) Debug.Log($"SEND: onEntityFinishLoading {entity.entityId}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: onEntityFinishLoading {entity.entityId}");
             WebInterface.SendSceneEvent(entity.scene.sceneData.id, "uuidEvent", onGetLoadingEntity);
         }
 
         public void SendEntitiesOutOfBoundaries(string[] entitiesId, string sceneId)
         {
             outOfBoundariesEventPayload.entities = entitiesId;
-            if (LOG_MESSAGES) Debug.Log($"SEND: entitiesOutOfBoundaries {outOfBoundariesEventPayload.entities.Length}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: entitiesOutOfBoundaries {outOfBoundariesEventPayload.entities.Length}");
             WebInterface.SendSceneEvent<EntitiesOutOfBoundariesEventPayload>(sceneId, "entitiesOutOfBoundaries", outOfBoundariesEventPayload);
         }
 
         public void SendBuilderSceneStart(string sceneId)
         {
-            if (LOG_MESSAGES) Debug.Log($"SEND: BuilderSceneStartEvent {sceneId}");
-            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() {sceneId = sceneId});
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: BuilderSceneStartEvent {sceneId}");
+            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneId = sceneId });
         }
 
         public void SendCameraTargetPosition(Vector3 targetPosition, string promiseId)
         {
             onReportCameraTarget.cameraTarget = targetPosition;
             onReportCameraTarget.id = promiseId;
-            if (LOG_MESSAGES) Debug.Log($"SEND: ReportBuilderCameraTarget {targetPosition}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: ReportBuilderCameraTarget {targetPosition}");
             WebInterface.SendMessage("ReportBuilderCameraTarget", onReportCameraTarget);
         }
 
         public void SendEntitySelected(EditableEntity entity, string gizmoType, string sceneId)
         {
             onGizmoEventPayload.type = "gizmoSelected";
-            onGizmoEventPayload.entities = entity ? new string[] {entity.rootEntity.entityId} : null;
+            onGizmoEventPayload.entities = entity ? new string[] { entity.rootEntity.entityId } : null;
             onGizmoEventPayload.gizmoType = gizmoType != null ? gizmoType : DCLGizmos.Gizmo.NONE;
             onGizmoEventPayload.transforms = null;
 
-            if (LOG_MESSAGES) Debug.Log($"SEND: NotifyGizmosSelectedEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: NotifyGizmosSelectedEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
             WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
         }
 
@@ -133,7 +137,8 @@ namespace Builder
                 };
             }
 
-            if (LOG_MESSAGES) Debug.Log($"SEND: NotifyGizmosTransformEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
+            if (LOG_MESSAGES)
+                Debug.Log($"SEND: NotifyGizmosTransformEvent {JsonUtility.ToJson(onGizmoEventPayload)}");
             WebInterface.SendSceneEvent(sceneId, "gizmoEvent", onGizmoEventPayload);
         }
     }

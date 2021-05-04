@@ -9,17 +9,9 @@ public class ListVariable_Legacy<T> : ScriptableObject
     private event Added OnAddedElementValue;
     private event Removed OnRemovedElementValue;
 
-    public virtual event Added OnAdded
-    {
-        add => OnAddedElementValue += value;
-        remove => OnAddedElementValue -= value;
-    }
+    public virtual event Added OnAdded { add => OnAddedElementValue += value; remove => OnAddedElementValue -= value; }
 
-    public virtual event Removed OnRemoved
-    {
-        add => OnRemovedElementValue += value;
-        remove => OnRemovedElementValue -= value;
-    }
+    public virtual event Removed OnRemoved { add => OnRemovedElementValue += value; remove => OnRemovedElementValue -= value; }
 
     [SerializeField] protected List<T> list = new List<T>();
 
@@ -40,7 +32,8 @@ public class ListVariable_Legacy<T> : ScriptableObject
 
     public void Remove(T value)
     {
-        if (!list.Contains(value)) return;
+        if (!list.Contains(value))
+            return;
 
         list.Remove(value);
         OnRemovedElementValue?.Invoke(value);
@@ -55,15 +48,9 @@ public class ListVariable_Legacy<T> : ScriptableObject
         }
     }
 
-    public T Get(int index)
-    {
-        return list.Count >= index + 1 ? list[index] : default(T);
-    }
+    public T Get(int index) { return list.Count >= index + 1 ? list[index] : default(T); }
 
-    public List<T> GetList()
-    {
-        return list;
-    }
+    public List<T> GetList() { return list; }
 
     public void Clear()
     {

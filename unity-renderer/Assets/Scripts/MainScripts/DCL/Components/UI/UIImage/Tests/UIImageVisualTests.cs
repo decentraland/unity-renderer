@@ -13,10 +13,7 @@ public class UIImageVisualTests : UIVisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator UIImageVisualTests_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(UIImageTest1());
-    }
+    public IEnumerator UIImageVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIImageTest1()); }
 
     [UnityTest]
     [VisualTest]

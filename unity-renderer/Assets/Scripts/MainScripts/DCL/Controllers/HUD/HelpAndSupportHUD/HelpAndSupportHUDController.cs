@@ -4,15 +4,9 @@ namespace DCL.HelpAndSupportHUD
     {
         public HelpAndSupportHUDView view { private set; get; }
 
-        public HelpAndSupportHUDController()
-        {
-            view = HelpAndSupportHUDView.Create();
-        }
+        public HelpAndSupportHUDController() { view = HelpAndSupportHUDView.Create(); }
 
-        public void SetVisibility(bool visible)
-        {
-            view.SetVisibility(visible);
-        }
+        public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
         public void Dispose()
         {

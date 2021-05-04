@@ -49,7 +49,7 @@ namespace DCL.Huds.QuestsTracker
 
         public void UpdateQuest(string questId, bool hasProgressed)
         {
-            if(hasProgressed || currentEntries.ContainsKey(questId))
+            if (hasProgressed || currentEntries.ContainsKey(questId))
                 AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
         }
 

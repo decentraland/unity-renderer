@@ -17,10 +17,7 @@ namespace DCL
     {
         public object id { get; internal set; }
 
-        public virtual object Clone()
-        {
-            return this.MemberwiseClone();
-        }
+        public virtual object Clone() { return this.MemberwiseClone(); }
 
         public abstract void Cleanup();
     }
