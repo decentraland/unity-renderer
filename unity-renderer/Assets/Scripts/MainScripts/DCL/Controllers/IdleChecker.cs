@@ -18,10 +18,10 @@ namespace DCL
     
     public class IdleChecker : IIdleChecker
     {
-        Vector3 _lastMouseCoordinate = Vector3.zero;
-        private int _maxTime = 60;
-        private float _lastActivityTime = 0.0f;
-        private bool _isIdle = false;
+        Vector3 lastMouseCoordinate = Vector3.zero;
+        private int maxTime = 60;
+        private float lastActivityTime = 0.0f;
+        private bool idle = false;
         public event IIdleChecker.ChangeStatus OnChangeStatus;
 
         public void Subscribe(IIdleChecker.ChangeStatus callback)
@@ -36,7 +36,7 @@ namespace DCL
         
         public void Initialize()
         {
-            _lastActivityTime = Time.time;
+            lastActivityTime = Time.time;
         }
         public void Dispose()
         {
@@ -45,27 +45,27 @@ namespace DCL
         
         public void SetMaxTime(int time)
         {
-            _maxTime = time;
+            maxTime = time;
         }
 
         public int GetMaxTime()
         {
-            return _maxTime;
+            return maxTime;
         }
 
         public void Update() {
-            Vector3 mouseDelta = Input.mousePosition - _lastMouseCoordinate;
+            Vector3 mouseDelta = Input.mousePosition - lastMouseCoordinate;
             
             bool mouseMoved = mouseDelta.x < 0;
                 
             if (Input.anyKey || mouseMoved)
             {
-                _lastActivityTime = Time.time;
+                lastActivityTime = Time.time;
             }
             
-            _lastMouseCoordinate = Input.mousePosition;
+            lastMouseCoordinate = Input.mousePosition;
         
-            if (_isIdle)
+            if (idle)
             {
                 if (!IdleCheck())
                     SetIdleState(false);
@@ -79,18 +79,18 @@ namespace DCL
     
         private void SetIdleState(bool status)
         {
-            _isIdle = status;
+            idle = status;
 
-            OnChangeStatus?.Invoke(_isIdle);
+            OnChangeStatus?.Invoke(idle);
             
-            DCL.Interface.WebInterface.ReportIdleStateChanged(_isIdle);
+            DCL.Interface.WebInterface.ReportIdleStateChanged(idle);
         }
 
-        private bool IdleCheck() { return Time.time - _lastActivityTime > _maxTime; }
+        private bool IdleCheck() { return Time.time - lastActivityTime > maxTime; }
 
         public bool isIdle()
         {
-            return _isIdle;
+            return idle;
         }
     }
 }
