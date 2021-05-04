@@ -2,6 +2,12 @@ using Variables.RealmsInfo;
 
 namespace DCL
 {
+    public enum AppMode
+    {
+        DEFAULT,
+        BUILDER_IN_WORLD_EDITION
+    }
+
     public class DataStore
     {
         private static DataStore instance = new DataStore();
@@ -18,6 +24,7 @@ namespace DCL
         public readonly DataStore_Quests Quests = new DataStore_Quests();
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
+        public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
 
         public class BuilderInWorld
         {
