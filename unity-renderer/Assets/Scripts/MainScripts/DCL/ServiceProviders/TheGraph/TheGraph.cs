@@ -102,21 +102,30 @@ public class TheGraph : ITheGraph
 
     private void ProcessReceivedLandsData(Promise<List<Land>> landPromise, string jsonValue, string lowerCaseAddress, bool cache)
     {
+        bool hasException = false;
+        List<Land> lands = null;
+
         try
         {
             LandQueryResultWrapped result = JsonUtility.FromJson<LandQueryResultWrapped>(jsonValue);
-            List<Land> lands = LandHelper.ConvertQueryResult(result.data, lowerCaseAddress);
+            lands = LandHelper.ConvertQueryResult(result.data, lowerCaseAddress);
 
             if (cache)
             {
                 landQueryCache[lowerCaseAddress] = new QueryLandCache() { lands = lands, lastUpdate = Time.unscaledTime };
             }
-
-            landPromise.Resolve(lands);
         }
         catch (Exception exception)
         {
             landPromise.Reject(exception.Message);
+            hasException = true;
+        }
+        finally
+        {
+            if (!hasException)
+            {
+                landPromise.Resolve(lands);
+            }
         }
     }
 }
