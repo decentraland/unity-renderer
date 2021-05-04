@@ -142,7 +142,7 @@ namespace DCL
                 var currentId = ids[i];
                 var wearable = wearableControllers[currentId];
 
-                if (!model.wearables.Contains(wearable.id))
+                if (!model.wearables.Contains(wearable.id) || !wearable.IsLoadedForBodyShape(model.bodyShape))
                 {
                     wearable.CleanUp();
                     wearableControllers.Remove(currentId);
@@ -254,12 +254,15 @@ namespace DCL
             {
                 //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
                 if (bodyShapeController.isReady)
+                {
                     bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+                }
             }
 
             bool wearablesIsDirty = false;
             HashSet<string> unusedCategories = new HashSet<string>(Categories.ALL);
             int wearableCount = resolvedWearables.Count;
+
             for (int index = 0; index < wearableCount; index++)
             {
                 WearableItem wearable = resolvedWearables[index];
@@ -267,12 +270,9 @@ namespace DCL
                     continue;
 
                 unusedCategories.Remove(wearable.category);
-                if (wearableControllers.ContainsKey(wearable))
+                if (wearableControllers.ContainsKey(wearable) && wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
                 {
-                    if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
-                        UpdateWearableController(wearable);
-                    else
-                        wearableControllers[wearable].CleanUp();
+                    UpdateWearableController(wearable);
                 }
                 else
                 {
@@ -298,7 +298,6 @@ namespace DCL
                 }
             }
 
-            CleanUpUnusedItems();
 
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
@@ -315,8 +314,10 @@ namespace DCL
                 yield return null;
             }
 
+            CleanUpUnusedItems();
+            if (bodyShapeController != null && bodyShapeController.isReady)
+                bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
-
 
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
