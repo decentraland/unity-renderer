@@ -54,7 +54,8 @@ namespace DCL
             return maxTime;
         }
 
-        public void Update() {
+        public void Update()
+        {
             Vector3 mouseDelta = Input.mousePosition - lastMouseCoordinate;
             
             bool mouseMoved = mouseDelta.x < 0;
