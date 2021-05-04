@@ -759,6 +759,7 @@ namespace Tests
 
             Assert.IsTrue(eventTriggered1);
 
+
             // turn shape invisible
             TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(new {visible = false}));
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);

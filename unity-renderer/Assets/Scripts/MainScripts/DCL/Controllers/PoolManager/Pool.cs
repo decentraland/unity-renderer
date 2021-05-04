@@ -167,6 +167,7 @@ namespace DCL
 
 #if UNITY_EDITOR
             RefreshName();
+            
 #endif
         }
 

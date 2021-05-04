@@ -95,6 +95,7 @@ namespace Tests
             yield return new WaitUntil(() => gltfShapeLoader1.alreadyLoaded);
             yield return null;
             
+            
             Pool pool = PoolManager.i.GetPool(shapeModel.src.ToLower());
             
             Assert.IsTrue(pool.unusedObjectsCount == 0);

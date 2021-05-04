@@ -149,6 +149,7 @@ namespace Tests
             
             // 4. Check the same colliders were kept 
             Assert.IsTrue(pointerEventColliders == onPointerDownComponent.pointerEventHandler.eventColliders.colliders);
+            
         }
         
         [UnityTest]

@@ -38,6 +38,7 @@ namespace DCL.Components
 
             if (AreCollidersCreated(rendererList))
                 return;
+            
 
             IShape shape = entity.meshesInfo.currentShape;
             

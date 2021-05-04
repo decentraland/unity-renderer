@@ -52,6 +52,7 @@ namespace DCL.Components
             base.DetachFrom(entity, typeof(BaseShape));
             
             entity.OnShapeUpdated?.Invoke(entity);
+            
         }
 
         public virtual bool IsVisible()
