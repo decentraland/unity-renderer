@@ -27,7 +27,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
     [SerializeField] internal Button buttonJumpIn;
     [SerializeField] internal Button buttonEditor;
 
-    public LandSearchInfo searchInfo { get; } = new LandSearchInfo();
+    public ISearchInfo searchInfo { get; } = new SearchInfo();
 
     private bool isDestroyed = false;
     private string landId;
@@ -53,7 +53,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
     public void SetId(string id)
     {
         landId = id;
-        searchInfo.id = id;
+        searchInfo.SetId(id);
     }
 
     public string GetId() { return landId; }

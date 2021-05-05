@@ -6,7 +6,7 @@ namespace Tests
 {
     public class ScenesViewControllerShould
     {
-        private ScenesViewController scenesViewController;
+        private IScenesViewController scenesViewController;
         private Listener_Mock listenerMock;
 
         [SetUp]
@@ -116,7 +116,7 @@ namespace Tests
             removedScenes.Clear();
         }
 
-        void IDeployedSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+        void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
@@ -125,19 +125,19 @@ namespace Tests
             }
         }
 
-        void IDeployedSceneListener.OnSceneAdded(SceneCardView scene)
+        void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene)
         {
             addedScenes.Add(scene.sceneData.id);
             deployedScenes.Add(scene.sceneData.id);
         }
 
-        void IDeployedSceneListener.OnSceneRemoved(SceneCardView scene)
+        void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene)
         {
             removedScenes.Add(scene.sceneData.id);
             deployedScenes.Remove(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+        void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
@@ -146,13 +146,13 @@ namespace Tests
             }
         }
 
-        void IProjectSceneListener.OnSceneAdded(SceneCardView scene)
+        void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
         {
             addedScenes.Add(scene.sceneData.id);
             projectScenes.Add(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSceneRemoved(SceneCardView scene)
+        void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
         {
             removedScenes.Add(scene.sceneData.id);
             projectScenes.Remove(scene.sceneData.id);
