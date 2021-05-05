@@ -169,10 +169,7 @@ namespace DCL.ABConverter
                         env: env,
                         OnFinish: (skippedAssetsCount) =>
                         {
-                            this.skippedAssets = skippedAssetsCount;
-
-                            if (this.skippedAssets > 0)
-                                state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
+                            ProcessSkippedAssets(skippedAssetsCount);
 
                             OnFinish?.Invoke(state.lastErrorCode);
                         }));
@@ -197,13 +194,23 @@ namespace DCL.ABConverter
                 env: env,
                 OnFinish: (skippedAssetsCount) =>
                 {
-                    this.skippedAssets = skippedAssetsCount;
-
-                    if (this.skippedAssets > 0)
-                        state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
+                    ProcessSkippedAssets(skippedAssetsCount);
 
                     OnFinish?.Invoke(state.lastErrorCode);
                 }));
+        }
+
+        private void ProcessSkippedAssets(int skippedAssetsCount)
+        {
+            if (skippedAssetsCount <= 0)
+                return;
+
+            skippedAssets = skippedAssetsCount;
+
+            if (skippedAssets >= totalAssets)
+                state.lastErrorCode = ErrorCodes.ASSET_BUNDLE_BUILD_FAIL;
+            else
+                state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
         }
 
         /// <summary>

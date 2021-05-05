@@ -13,11 +13,9 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        // TODO(menduz): this abPath MUST match the `-output PATH` passed as editor argument
-        // to generate the AB
-        static readonly string abPath = Application.dataPath + "/../AssetBundles/";
         static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
+        static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
         /// <summary>
@@ -26,12 +24,18 @@ namespace DCL.ABConverter
         /// </summary>
         public static IEnumerator TestConvertedAssets(Environment env = null, Action<int> OnFinish = null)
         {
-            // TODO(mendez): @pravusjif please do somehting like this here
-            // if (Utils.ParseOption(commandLineArgs, Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
-            // {
-            //     VisualTests.abPath = outputPath[0] + "/";
-            // }
-            // TODO(mendez): fail test early if folder VisualTests.abPath does not exist
+            if (Utils.ParseOption(Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+            {
+                abPath = outputPath[0] + "/";
+            }
+
+            if (!System.IO.Directory.Exists(abPath))
+            {
+                Debug.Log($"Visual Test Detection: ABs path '{abPath}' doesn't exist...");
+                SkipAllAssets();
+                OnFinish?.Invoke(skippedAssets);
+                yield break;
+            }
 
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
@@ -46,7 +50,7 @@ namespace DCL.ABConverter
             if (gltfs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated GLTFs...");
-                skippedAssets++;
+                SkipAllAssets();
                 OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
@@ -74,7 +78,7 @@ namespace DCL.ABConverter
             if (abs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated ABs...");
-                skippedAssets++;
+                SkipAllAssets();
                 OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
@@ -123,6 +127,11 @@ namespace DCL.ABConverter
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);
         }
+
+        /// <summary>
+        /// Set skippedAssets to the amount of target assets
+        /// </summary>
+        private static void SkipAllAssets() { skippedAssets = AssetDatabase.FindAssets($"t:GameObject", new[] { "Assets/_Downloaded" }).Length; }
 
         /// <summary>
         /// Position camera based on renderer bounds and take snapshot
