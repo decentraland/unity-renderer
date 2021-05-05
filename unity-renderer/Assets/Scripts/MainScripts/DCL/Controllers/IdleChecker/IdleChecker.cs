@@ -5,7 +5,6 @@ namespace DCL
     public interface IIdleChecker
     {
         void Initialize();
-        void Dispose();
         void SetMaxTime(int time);
         int GetMaxTime();
         bool isIdle();
@@ -39,11 +38,6 @@ namespace DCL
             lastActivityTime = Time.time;
         }
 
-        public void Dispose()
-        {
-            
-        }
-        
         public void SetMaxTime(int time)
         {
             maxTime = time;
@@ -57,9 +51,9 @@ namespace DCL
         public void Update()
         {
             Vector3 mouseDelta = Input.mousePosition - lastMouseCoordinate;
-            
-            bool mouseMoved = mouseDelta.x < 0;
-                
+
+            bool mouseMoved = mouseDelta.sqrMagnitude > 0.0001f;
+
             if (Input.anyKey || mouseMoved)
             {
                 lastActivityTime = Time.time;

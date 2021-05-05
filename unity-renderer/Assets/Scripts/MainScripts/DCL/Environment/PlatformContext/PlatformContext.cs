@@ -47,7 +47,6 @@ namespace DCL
             debugController.Dispose();
             webRequest.Dispose();
             serviceProviders.Dispose();
-            idleChecker.Dispose();
         }
     }
 }
