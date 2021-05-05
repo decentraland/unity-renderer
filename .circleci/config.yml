@@ -134,11 +134,11 @@ jobs:
             - ./unity-renderer/ab-logs.txt
             - ./unity-renderer/playmode-results.xml
             - ./unity-renderer/CodeCoverage
-            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+            - ./unity-renderer/TestResources/VisualTests
             - ./unity-renderer/Builds/
-      - store_artifacts:
+      - store_artifacts: &STORE_VISUAL_TESTS
           name: Store visual tests result as artifacts
-          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
+          path: ./unity-renderer/TestResources/VisualTests
 
   playmode-tests:
     <<: *working_directory_root
@@ -172,9 +172,7 @@ jobs:
           name: Store test coverage
           path: ./unity-renderer/CodeCoverage
       - save_cache: *SAVE_CHECKSUM_CACHE
-      - store_artifacts:
-          name: Store visual tests result as artifacts
-          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
+      - store_artifacts: *STORE_VISUAL_TESTS
 
 
   asset-bundle-tests:
@@ -198,7 +196,7 @@ jobs:
           command: cat $(pwd)/ab-logs.txt
       - run:
           name: Print files
-          command: find ./unity-renderer/AssetBundles
+          command: find ./unity-renderer/ab-output
           when: always
       - run:
           name: Print files (failed)
@@ -212,7 +210,8 @@ jobs:
           path: ./ab-logs.txt
       - store_artifacts:
           name: Store AB converter results
-          path: ./unity-renderer/AssetBundles
+          path: ./unity-renderer/ab-output
+      - store_artifacts: *STORE_VISUAL_TESTS
 
   build-unity:
     <<: *working_directory_root
