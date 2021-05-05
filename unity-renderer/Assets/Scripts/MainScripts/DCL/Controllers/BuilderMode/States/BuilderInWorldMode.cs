@@ -80,6 +80,8 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void SetDuplicationOffset(float offset) { }
 
+    public virtual void EntityDoubleClick(DCLBuilderInWorldEntity entity) { }
+    
     public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
         CenterGameObjectToEdit();
