@@ -157,7 +157,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (mouseMainBtnPressed && isSquareMultiSelectionInputActive)
         {
             var rect = BuilderInWorldUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
-            BuilderInWorldUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.5f));
+            BuilderInWorldUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
             BuilderInWorldUtils.DrawScreenRectBorder(rect, 1, Color.white);
         }
     }
@@ -543,7 +543,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
 
         if (!isMultiSelectionActive && !selectedEntity.IsNew)
-            LookAtEntity(selectedEntity.rootEntity);
+            TryLookAtEntity(selectedEntity.rootEntity);
 
         snapGO.transform.SetParent(null);
         if (selectedEntity.isVoxel && selectedEntities.Count == 0)
@@ -564,6 +564,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         isPlacingNewObject = false;
         DesactivateVoxelMode();
+    }
+
+    public override void EntityDoubleClick(DCLBuilderInWorldEntity entity)
+    {
+        base.EntityDoubleClick(entity);
+        LookAtEntity(entity.rootEntity);
     }
 
     private void UpdateActionsInteractable()
@@ -607,13 +613,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
-    public void LookAtEntity(IDCLEntity entity)
+    public void TryLookAtEntity(IDCLEntity entity)
     {
         if (entity.meshRootGameObject == null
             || entity.meshesInfo == null
             || BuilderInWorldUtils.IsBoundInsideCamera(entity.meshesInfo.mergedBounds))
             return;
 
+        LookAtEntity(entity);
+    }
+
+    public void LookAtEntity(IDCLEntity entity)
+    {
         Vector3 pointToLook = entity.gameObject.transform.position;
         if (entity.meshesInfo.renderers.Length > 0)
         {
@@ -649,11 +660,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             if (selectedEntities.Count > 0 )
                 gizmoManager.ShowGizmo();
         }
-        else
-        {
-            gizmoManager.HideGizmo(true);
-            HUDController.i.builderInWorldMainHud?.SetGizmosActive(BuilderInWorldSettings.EMPTY_GIZMO_NAME);
-        }
+        //TODO: Free-Movement tool, This could be re-enabled in the future so let the code there 
+        // else
+        // {
+        //     gizmoManager.HideGizmo(true);
+        //     HUDController.i.builderInWorldMainHud?.SetGizmosActive(BuilderInWorldSettings.EMPTY_GIZMO_NAME);
+        // }
     }
 
     void OnGizmosTransformStart(string gizmoType)
