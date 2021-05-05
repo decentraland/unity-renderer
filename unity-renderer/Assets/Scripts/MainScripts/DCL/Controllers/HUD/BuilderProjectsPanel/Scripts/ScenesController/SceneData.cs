@@ -77,4 +77,52 @@ internal class SceneData : ISceneData
     string ISceneData.projectId => projectId;
 
     public SceneData() { }
+
+    public SceneData(DeployedScene deployedScene)
+    {
+        coords = deployedScene.@base;
+        id = deployedScene.id;
+        name = deployedScene.title;
+        description = deployedScene.description;
+        thumbnailUrl = deployedScene.navmapThumbnail;
+        isOwner = deployedScene?.land.role == LandRole.OWNER;
+        isOperator = !isOwner;
+        isContributor = false;
+        isDeployed = true;
+        authorName = deployedScene.author;
+        requiredPermissions = deployedScene.requiredPermissions;
+        bannedUsers = deployedScene.bannedUsers;
+        isEditable = deployedScene.source != DeployedScene.Source.SDK;
+        parcels = deployedScene.parcels;
+        projectId = deployedScene.projectId;
+
+        isMatureContent = false;
+        if (!string.IsNullOrEmpty(deployedScene.contentRating))
+        {
+            isMatureContent = deployedScene.contentRating.Equals("M", StringComparison.OrdinalIgnoreCase)
+                              || deployedScene.contentRating.Equals("AO", StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (deployedScene.parcels.Length < 2)
+        {
+            size = new Vector2Int(1, 1);
+        }
+        else
+        {
+            int minX = deployedScene.parcels[0].x;
+            int maxX = deployedScene.parcels[0].x;
+            int minY = deployedScene.parcels[0].y;
+            int maxY = deployedScene.parcels[0].y;
+
+            for (int i = 1; i < deployedScene.parcels.Length; i++)
+            {
+                minX = Mathf.Min(minX, deployedScene.parcels[i].x);
+                minY = Mathf.Min(minY, deployedScene.parcels[i].y);
+                maxX = Mathf.Max(maxX, deployedScene.parcels[i].x);
+                maxY = Mathf.Max(maxY, deployedScene.parcels[i].y);
+            }
+
+            size = new Vector2Int(Mathf.Abs(maxX - minX), Mathf.Abs(maxY - minY));
+        }
+    }
 }
