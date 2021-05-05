@@ -33,9 +33,21 @@ public class BIWFloorHandler : BIWController
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
 
-    private void Start() { meshLoadIndicator.SetCamera(Camera.main); }
+    private void Start()
+    {
+        builderInWorldEntityHandler.OnEntityDeleted += BuilderInWorldEntityHandler_OnEntityDeleted;
 
-    private void OnDestroy() { Clean(); }
+        meshLoadIndicator.SetCamera(Camera.main);
+    }
+
+    private void OnDestroy()
+    {
+        builderInWorldEntityHandler.OnEntityDeleted -= BuilderInWorldEntityHandler_OnEntityDeleted;
+
+        Clean();
+    }
+
+    private void BuilderInWorldEntityHandler_OnEntityDeleted(string entityId) { dclBuilderMeshLoadIndicatorController.HideIndicator(entityId); }
 
     public void Clean()
     {
