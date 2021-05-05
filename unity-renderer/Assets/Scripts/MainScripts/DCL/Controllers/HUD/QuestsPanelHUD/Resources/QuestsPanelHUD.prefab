@@ -1605,6 +1605,7 @@ MonoBehaviour:
   questsContainerSeparators: {fileID: 4996008226977011765}
   questPrefab: {fileID: 2532896406451422614, guid: 8bd29b995100830478dcf38add8603b8,
     type: 3}
+  noQuestsTitle: {fileID: 4278032742898827637}
   questPopup: {fileID: 3086571990075737089}
   closeButton: {fileID: 4187908059406395967}
   dynamicScrollSensitivity: {fileID: 470867549076507343}
