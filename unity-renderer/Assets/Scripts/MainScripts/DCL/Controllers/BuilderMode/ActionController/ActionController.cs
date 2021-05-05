@@ -2,10 +2,11 @@ using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 using static BuildInWorldCompleteAction;
 
-public class ActionController : MonoBehaviour
+public class ActionController : BIWController
 {
     public static bool VERBOSE = false;
 
@@ -14,10 +15,16 @@ public class ActionController : MonoBehaviour
 
     public System.Action OnUndo, OnRedo;
 
-    List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
+    readonly List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
 
     int currentUndoStepIndex = 0;
     int currentRedoStepIndex = 0;
+
+    public override void EnterEditMode(ParcelScene scene)
+    {
+        base.EnterEditMode(scene);
+        actionsMade.Clear();
+    }
 
     public void Clear()
     {
