@@ -1,22 +1,30 @@
 using System;
 
-internal class LandController
+internal interface ILandController
 {
-    public event Action<LandData[]> OnLandsSet;
+    event Action<LandWithAccess[]> OnLandsSet;
+    void SetLands(LandWithAccess[] lands);
+    void AddListener(ILandsListener listener);
+    void RemoveListener(ILandsListener listener);
+}
 
-    private LandData[] userLands = null;
+internal class LandController : ILandController
+{
+    public event Action<LandWithAccess[]> OnLandsSet;
 
-    public void SetLands(LandData[] lands)
+    private LandWithAccess[] userLands = null;
+
+    void ILandController.SetLands(LandWithAccess[] lands)
     {
         userLands = lands;
         OnLandsSet?.Invoke(lands);
     }
 
-    public void AddListener(ILandsListener listener)
+    void ILandController.AddListener(ILandsListener listener)
     {
         OnLandsSet += listener.OnSetLands;
         listener.OnSetLands(userLands);
     }
 
-    public void RemoveListener(ILandsListener listener) { OnLandsSet -= listener.OnSetLands; }
+    void ILandController.RemoveListener(ILandsListener listener) { OnLandsSet -= listener.OnSetLands; }
 }
