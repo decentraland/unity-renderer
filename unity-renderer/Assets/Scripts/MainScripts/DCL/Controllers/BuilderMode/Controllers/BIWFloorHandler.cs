@@ -33,9 +33,21 @@ public class BIWFloorHandler : BIWController
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
 
-    private void Start() { meshLoadIndicator.SetCamera(Camera.main); }
+    private void Start()
+    {
+        builderInWorldEntityHandler.OnEntityDeleted += BuilderInWorldEntityHandler_OnEntityDeleted;
 
-    private void OnDestroy() { Clean(); }
+        meshLoadIndicator.SetCamera(Camera.main);
+    }
+
+    private void OnDestroy()
+    {
+        builderInWorldEntityHandler.OnEntityDeleted -= BuilderInWorldEntityHandler_OnEntityDeleted;
+
+        Clean();
+    }
+
+    private void BuilderInWorldEntityHandler_OnEntityDeleted(string entityId) { dclBuilderMeshLoadIndicatorController.HideIndicator(entityId); }
 
     public void Clean()
     {
@@ -92,7 +104,6 @@ public class BIWFloorHandler : BIWController
         {
             DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(floorSceneObject, WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel), false, true);
             decentralandEntity.rootEntity.OnShapeUpdated += OnFloorLoaded;
-            dclBuilderMeshLoadIndicatorController.HideAllIndicators();
             dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
 
             GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
