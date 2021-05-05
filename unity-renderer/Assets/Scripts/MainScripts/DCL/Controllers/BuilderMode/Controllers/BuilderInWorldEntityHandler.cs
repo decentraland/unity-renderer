@@ -56,6 +56,9 @@ public class BuilderInWorldEntityHandler : BIWController
     public event Action OnEntitySelected;
     public event Action<List<DCLBuilderInWorldEntity>> OnDeleteSelectedEntities;
 
+    private DCLBuilderInWorldEntity lastClickedEntity;
+    private float lastTimeEntityClicked;
+
     private void Start()
     {
         hideSelectedEntitiesDelegate = (action) => ChangeShowStateSelectedEntities();
@@ -294,6 +297,12 @@ public class BuilderInWorldEntityHandler : BIWController
 
             if (!entityToSelect.IsLocked)
                 ChangeEntitySelectStatus(entityToSelect);
+
+            if (entityToSelect == lastClickedEntity && (lastTimeEntityClicked + BuilderInWorldSettings.MOUSE_MS_DOUBLE_CLICK_THRESHOLD / 1000f) >= Time.realtimeSinceStartup )
+                biwModeController.EntityDoubleClick(entityToSelect);
+
+            lastClickedEntity = entityToSelect;
+            lastTimeEntityClicked = Time.realtimeSinceStartup;
         }
         else if (!isMultiSelectionActive)
         {
@@ -471,6 +480,8 @@ public class BuilderInWorldEntityHandler : BIWController
     public DCLBuilderInWorldEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
+        //Note: If the entity contains the name component, we don't want to copy the name
+        entity.RemoveSharedComponent(typeof(DCLName), false);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(entity);
@@ -500,12 +511,10 @@ public class BuilderInWorldEntityHandler : BIWController
             sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
-
         foreach (ProtocolV2.GenericComponent component in data.sharedComponents)
         {
             sceneToEdit.SharedComponentAttach(newEntity.entityId, component.classId);
         }
-
 
         if (data.nftComponent != null)
         {
@@ -518,7 +527,16 @@ public class BuilderInWorldEntityHandler : BIWController
             sceneToEdit.SharedComponentAttach(newEntity.entityId, nftShape.id);
         }
 
-        SetupEntityToEdit(newEntity, true);
+        var convertedEntity = SetupEntityToEdit(newEntity, true);
+
+        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
+            gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
+
+        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
+            nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
+
+
+        biwCreatorController.CreateLoadingObject(convertedEntity);
         EntityListChanged();
 
         return newEntity;
