@@ -684,6 +684,8 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection = true)
     {
+        OnEntityDeleted?.Invoke(entityToDelete.rootEntity.entityId);
+
         if (entityToDelete.IsSelected && checkSelection)
             DeselectEntity(entityToDelete);
 
@@ -710,7 +712,6 @@ public class BuilderInWorldEntityHandler : BIWController
         hudController?.RefreshCatalogAssetPack();
         EntityListChanged();
         builderInWorldBridge?.RemoveEntityOnKernel(idToRemove, sceneToEdit);
-        OnEntityDeleted?.Invoke(entityToDelete.rootEntity.entityId);
     }
 
     public void DeleteSingleEntity(DCLBuilderInWorldEntity entityToDelete)
