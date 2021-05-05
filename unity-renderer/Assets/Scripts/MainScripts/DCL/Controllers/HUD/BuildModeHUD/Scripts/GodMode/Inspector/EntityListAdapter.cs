@@ -57,7 +57,11 @@ public class EntityListAdapter : MonoBehaviour
         GetThumbnail(entitySceneObject);
     }
 
-    public void SelectOrDeselect() { OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this); }
+    public void SelectOrDeselect()
+    {
+        if (currentEntity.IsVisible)
+            OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
+    }
 
     public void ShowOrHide() { OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this); }
 
@@ -124,7 +128,13 @@ public class EntityListAdapter : MonoBehaviour
         entityThumbnailImg.texture = texture.texture;
     }
 
-    public void Rename(string newName) { OnEntityRename?.Invoke(currentEntity, newName); }
+    public void Rename(string newName)
+    {
+        if (!string.IsNullOrEmpty(newName))
+            OnEntityRename?.Invoke(currentEntity, newName);
+        else
+            nameInputField.text = currentEntity.GetDescriptiveName();
+    }
 
     public void AllowNameEdition(bool isAllowed) { nameInputField.enabled = isAllowed; }
 
