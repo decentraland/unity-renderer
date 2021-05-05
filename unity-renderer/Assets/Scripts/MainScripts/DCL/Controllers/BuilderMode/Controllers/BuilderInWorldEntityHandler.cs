@@ -512,12 +512,10 @@ public class BuilderInWorldEntityHandler : BIWController
             sceneToEdit.EntityComponentCreateOrUpdateWithModel(newEntity.entityId, (CLASS_ID_COMPONENT) component.componentId, component.data);
         }
 
-
         foreach (ProtocolV2.GenericComponent component in data.sharedComponents)
         {
             sceneToEdit.SharedComponentAttach(newEntity.entityId, component.classId);
         }
-
 
         if (data.nftComponent != null)
         {
@@ -530,7 +528,16 @@ public class BuilderInWorldEntityHandler : BIWController
             sceneToEdit.SharedComponentAttach(newEntity.entityId, nftShape.id);
         }
 
-        SetupEntityToEdit(newEntity, true);
+        var convertedEntity = SetupEntityToEdit(newEntity, true);
+
+        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.GLTF_SHAPE, out var gltfComponent))
+            gltfComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
+
+        if (convertedEntity.rootEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out var nftComponent))
+            nftComponent.CallWhenReady(convertedEntity.ShapeLoadFinish);
+
+
+        biwCreatorController.CreateLoadingObject(convertedEntity);
         EntityListChanged();
 
         return newEntity;
