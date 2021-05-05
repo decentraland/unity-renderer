@@ -21,6 +21,7 @@ namespace DCL.Configuration
 
         //Inputs
         public static float MOUSE_THRESHOLD_FOR_DRAG = 15f;
+        public static float MOUSE_MS_DOUBLE_CLICK_THRESHOLD = 500f;
 
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";

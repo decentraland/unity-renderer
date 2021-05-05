@@ -55,37 +55,37 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IDeployedSceneListener,
         projectsToggle.gameObject.SetActive(projectScenesCount > 0);
     }
 
-    void IDeployedSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+    void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
     {
         deployedScenesCount = scenes.Count;
         SubmenuScenesDirty();
     }
 
-    void IProjectSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+    void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
     {
         projectScenesCount = scenes.Count;
         SubmenuScenesDirty();
     }
 
-    void IDeployedSceneListener.OnSceneAdded(SceneCardView scene)
+    void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene)
     {
         deployedScenesCount++;
         SubmenuScenesDirty();
     }
 
-    void IProjectSceneListener.OnSceneAdded(SceneCardView scene)
+    void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
     {
         projectScenesCount++;
         SubmenuScenesDirty();
     }
 
-    void IDeployedSceneListener.OnSceneRemoved(SceneCardView scene)
+    void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene)
     {
         deployedScenesCount--;
         SubmenuScenesDirty();
     }
 
-    void IProjectSceneListener.OnSceneRemoved(SceneCardView scene)
+    void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
     {
         projectScenesCount--;
         SubmenuScenesDirty();

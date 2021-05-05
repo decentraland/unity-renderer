@@ -140,6 +140,8 @@ public class BIWModeController : BIWController
 
     public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
 
+    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity);}
+    
     public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 
     public Vector3 GetModeCreationEntryPoint()
