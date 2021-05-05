@@ -26,6 +26,13 @@ namespace DCL.ABConverter
         /// </summary>
         public static IEnumerator TestConvertedAssets(Environment env = null, Action<int> OnFinish = null)
         {
+            // TODO(mendez): @pravusjif please do somehting like this here
+            // if (Utils.ParseOption(commandLineArgs, Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+            // {
+            //     VisualTests.abPath = outputPath[0] + "/";
+            // }
+            // TODO(mendez): fail test early if folder VisualTests.abPath does not exist
+
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
             EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
