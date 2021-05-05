@@ -470,13 +470,13 @@ public class BuilderInWorldController : MonoBehaviour
 
         isBuilderInWorldActivated = true;
 
+        previousSkyBoxMaterial = RenderSettings.skybox;
+        RenderSettings.skybox = skyBoxMaterial;
+
         foreach (var groundVisual in groundVisualsGO)
         {
             groundVisual.SetActive(false);
         }
-
-        previousSkyBoxMaterial = RenderSettings.skybox;
-        RenderSettings.skybox = skyBoxMaterial;
 
         OnEnterEditMode?.Invoke();
     }
