@@ -133,7 +133,13 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
 
     public void EndChangingName() { OnEndChangingName?.Invoke(); }
 
-    public void ChangeEntityName(string newName) { OnNameChange?.Invoke(currentEntity, newName); }
+    public void ChangeEntityName(string newName)
+    {
+        if (!string.IsNullOrEmpty(newName))
+            OnNameChange?.Invoke(currentEntity, newName);
+        else
+            SetNameIFText(currentEntity.GetDescriptiveName());
+    }
 
     public void Disable() { OnDisable?.Invoke(); }
 

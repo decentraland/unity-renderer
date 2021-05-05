@@ -124,6 +124,9 @@ namespace Builder.MeshLoadIndicator
 
         public void HideAllIndicators()
         {
+            if (indicatorsInUse == null)
+                return;
+
             for (int i = 0; i < indicatorsInUse.Count; i++)
             {
                 indicatorsInUse[i].gameObject.SetActive(false);
