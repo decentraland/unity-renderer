@@ -659,7 +659,7 @@ public class BuilderInWorldEntityHandler : BIWController
         }
 
         foreach (DCLBuilderInWorldEntity entity in entitiesToDelete)
-            DeleteEntity(entity);
+            DeleteEntity(entity, false);
     }
 
     public void DeleteEntity(string entityId)
@@ -670,7 +670,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete) { DeleteEntity(entityToDelete, true); }
 
-    public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection = true)
+    public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection)
     {
         if (entityToDelete.IsSelected && checkSelection)
             DeselectEntity(entityToDelete);

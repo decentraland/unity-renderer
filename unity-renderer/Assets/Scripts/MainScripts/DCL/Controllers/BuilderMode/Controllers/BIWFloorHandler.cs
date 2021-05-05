@@ -20,9 +20,8 @@ public class BIWFloorHandler : BIWController
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
     public DCLBuilderMeshLoadIndicator meshLoadIndicator;
-    public BuilderInWorldBridge builderInWorldBridge;
     public BIWCreatorController biwCreatorController;
-    public BuilderInWorldController builderInWorldController;
+    public BIWSaveController biwSaveController;
 
     [Header("Prefabs")]
     public GameObject floorPrefab;
@@ -47,6 +46,7 @@ public class BIWFloorHandler : BIWController
 
     public void ChangeFloor(CatalogItem newFloorObject)
     {
+        biwSaveController.SetSaveActivation(false);
         CatalogItem lastFloor = lastFloorCalalogItemUsed;
         if (lastFloor == null)
             lastFloor = FindCurrentFloorCatalogItem();
@@ -59,6 +59,8 @@ public class BIWFloorHandler : BIWController
 
         buildAction.CreateChangeFloorAction(lastFloor, newFloorObject);
         actionController.AddAction(buildAction);
+
+        biwSaveController.SetSaveActivation(true, true);
     }
 
     public CatalogItem FindCurrentFloorCatalogItem()
