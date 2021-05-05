@@ -55,6 +55,7 @@ public class BuilderInWorldEntityHandler : BIWController
     public event Action<DCLBuilderInWorldEntity> OnEntityDeselected;
     public event Action OnEntitySelected;
     public event Action<List<DCLBuilderInWorldEntity>> OnDeleteSelectedEntities;
+    public event Action<string> OnEntityDeleted;
 
     private DCLBuilderInWorldEntity lastClickedEntity;
     private float lastTimeEntityClicked;
@@ -690,6 +691,8 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection = true)
     {
+        OnEntityDeleted?.Invoke(entityToDelete.rootEntity.entityId);
+
         if (entityToDelete.IsSelected && checkSelection)
             DeselectEntity(entityToDelete);
 
