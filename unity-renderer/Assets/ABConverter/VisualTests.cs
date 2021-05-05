@@ -26,7 +26,13 @@ namespace DCL.ABConverter
         {
             if (Utils.ParseOption(Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
             {
-                abPath = outputPath[0] + "/";
+                abPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), outputPath[0] + "/");
+
+                Debug.Log($"Visual Test Detection: -output PATH param found, setting ABPath as '{abPath}'");
+            }
+            else
+            {
+                Debug.Log($"Visual Test Detection: -output PATH param NOT found, setting ABPath as '{abPath}'");
             }
 
             if (!System.IO.Directory.Exists(abPath))
