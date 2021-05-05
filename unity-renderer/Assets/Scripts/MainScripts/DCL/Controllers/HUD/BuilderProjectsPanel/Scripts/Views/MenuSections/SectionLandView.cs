@@ -7,13 +7,13 @@ internal class SectionLandView : MonoBehaviour, IDisposable
 {
     public event Action OnOpenMarketplaceRequested;
 
-    [SerializeField] public LandElementView landElementView;
-    [SerializeField] public ScrollRect scrollRect;
-    [SerializeField] public GameObject contentContainer;
-    [SerializeField] public GameObject emptyContainer;
-    [SerializeField] public GameObject loadingAnimationContainer;
-    [SerializeField] public GameObject noSearchResultContainer;
-    [SerializeField] public Button buttonNoLandCTA;
+    [SerializeField] internal LandElementView landElementView;
+    [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] internal GameObject contentContainer;
+    [SerializeField] internal GameObject emptyContainer;
+    [SerializeField] internal GameObject loadingAnimationContainer;
+    [SerializeField] internal GameObject noSearchResultContainer;
+    [SerializeField] internal Button buttonNoLandCTA;
 
     private bool isDestroyed = false;
 
