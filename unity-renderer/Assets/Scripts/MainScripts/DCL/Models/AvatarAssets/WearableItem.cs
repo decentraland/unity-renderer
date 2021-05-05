@@ -19,7 +19,6 @@ public class WearableItem : Item
     {
         public string[] bodyShapes;
         public string mainFile;
-        public ContentServerUtils.MappingPair[] contentsMapping => contents.Select(content => new ContentServerUtils.MappingPair(){file = content.key, hash = content.hash}).ToArray();
         public MappingPair[] contents;
         public string[] overrideHides;
         public string[] overrideReplaces;
@@ -77,7 +76,7 @@ public class WearableItem : Item
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
-            var contentProvider = CreateContentProvider(baseUrl, representation.contentsMapping.ToList());
+            var contentProvider = CreateContentProvider(baseUrl, representation.contents);
             contentProvider.BakeHashes();
             cachedContentProviers.Add(bodyShapeType, contentProvider);
         }
@@ -85,12 +84,12 @@ public class WearableItem : Item
         return cachedContentProviers[bodyShapeType];
     }
 
-    protected virtual ContentProvider CreateContentProvider(string baseUrl, List<ContentServerUtils.MappingPair> contents)
+    protected virtual ContentProvider CreateContentProvider(string baseUrl, MappingPair[] contents)
     {
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair(){file = mapping.key, hash = mapping.hash}).ToList()
         };
     }
 

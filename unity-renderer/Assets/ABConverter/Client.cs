@@ -432,9 +432,9 @@ namespace DCL.ABConverter
             {
                 foreach (var representation in wearable.data.representations)
                 {
-                    foreach (var datum in representation.contentsMapping)
+                    foreach (var datum in representation.contents)
                     {
-                        result.Add(datum);
+                        result.Add(new ContentServerUtils.MappingPair(){file = datum.key, hash = datum.hash});
                     }
                 }
             }

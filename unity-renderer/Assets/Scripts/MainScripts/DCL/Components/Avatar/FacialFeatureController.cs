@@ -77,10 +77,10 @@ public class FacialFeatureController
 
         var representation = wearableItem.GetRepresentation(bodyShape.bodyShapeId);
 
-        string mainTextureHash = representation?.contentsMapping?.FirstOrDefault(x => x.file == representation?.mainFile)?.hash;
+        string mainTextureHash = representation?.contents?.FirstOrDefault(x => x.key == representation?.mainFile)?.hash;
         if (mainTextureHash == null)
-            mainTextureHash = representation?.contentsMapping?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
-        string maskhash = representation?.contentsMapping?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
+            mainTextureHash = representation?.contents?.FirstOrDefault(x => !x.key.ToLower().Contains("_mask.png"))?.hash;
+        string maskhash = representation?.contents?.FirstOrDefault(x => x.key.ToLower().Contains("_mask.png"))?.hash;
 
         if (!string.IsNullOrEmpty(mainTextureHash))
         {
