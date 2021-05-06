@@ -111,6 +111,19 @@ public class BuilderInWorldMode : MonoBehaviour
         }
     }
 
+    public virtual void MouseClickDetected()
+    {
+        DCLBuilderInWorldEntity entityToSelect = builderInWorldEntityHandler.GetEntityOnPointer();
+        if (entityToSelect != null)
+        {
+            builderInWorldEntityHandler.EntityClicked(entityToSelect);
+        }
+        else if (!isMultiSelectionActive)
+        {
+            builderInWorldEntityHandler.DeselectEntities();
+        }
+    }
+
     public virtual void CreatedEntity(DCLBuilderInWorldEntity createdEntity) { isNewObjectPlaced = true; }
 
     public virtual void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)

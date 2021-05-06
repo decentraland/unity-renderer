@@ -2,35 +2,35 @@
 
 internal interface ISectionFactory
 {
-    SectionBase GetSectionController(SectionsController.SectionId id);
+    SectionBase GetSectionController(SectionId id);
 }
 
 internal class SectionFactory : ISectionFactory
 {
-    SectionBase ISectionFactory.GetSectionController(SectionsController.SectionId id)
+    SectionBase ISectionFactory.GetSectionController(SectionId id)
     {
         SectionBase result = null;
         switch (id)
         {
-            case SectionsController.SectionId.SCENES_MAIN:
+            case SectionId.SCENES_MAIN:
                 result = new SectionScenesController();
                 break;
-            case SectionsController.SectionId.SCENES_DEPLOYED:
+            case SectionId.SCENES_DEPLOYED:
                 result = new SectionDeployedScenesController();
                 break;
-            case SectionsController.SectionId.SCENES_PROJECT:
+            case SectionId.SCENES_PROJECT:
                 result = new SectionProjectScenesController();
                 break;
-            case SectionsController.SectionId.LAND:
+            case SectionId.LAND:
                 result = new SectionLandController();
                 break;
-            case SectionsController.SectionId.SETTINGS_PROJECT_GENERAL:
+            case SectionId.SETTINGS_PROJECT_GENERAL:
                 result = new SectionSceneGeneralSettingsController();
                 break;
-            case SectionsController.SectionId.SETTINGS_PROJECT_CONTRIBUTORS:
+            case SectionId.SETTINGS_PROJECT_CONTRIBUTORS:
                 result = new SectionSceneContributorsSettingsController();
                 break;
-            case SectionsController.SectionId.SETTINGS_PROJECT_ADMIN:
+            case SectionId.SETTINGS_PROJECT_ADMIN:
                 result = new SectionSceneAdminsSettingsController();
                 break;
         }

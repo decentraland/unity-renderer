@@ -157,6 +157,9 @@ namespace DCL.Models
                 if (kvp.Value == null)
                     continue;
 
+                if (kvp.Value is ICleanable cleanableComponent)
+                    cleanableComponent.Cleanup();
+
                 if (!(kvp.Value is IPoolableObjectContainer poolableContainer))
                     continue;
 
