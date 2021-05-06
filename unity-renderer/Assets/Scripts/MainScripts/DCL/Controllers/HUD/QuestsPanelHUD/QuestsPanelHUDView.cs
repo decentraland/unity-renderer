@@ -26,6 +26,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] private RectTransform completedQuestsContainer;
         [SerializeField] private GameObject questsContainerSeparators;
         [SerializeField] private GameObject questPrefab;
+        [SerializeField] private GameObject noQuestsTitle;
         [SerializeField] internal QuestsPanelPopup questPopup;
         [SerializeField] private Button closeButton;
         [SerializeField] private DynamicScrollSensitivity dynamicScrollSensitivity;
@@ -51,6 +52,7 @@ namespace DCL.Huds.QuestsPanel
         public void Awake()
         {
             questPopup.gameObject.SetActive(false);
+            noQuestsTitle.SetActive(false);
             closeButton.onClick.AddListener(() => DataStore.i.HUDs.questsPanelVisible.Set(false));
         }
 
@@ -110,6 +112,7 @@ namespace DCL.Huds.QuestsPanel
                 questPopup.Close();
 
             questsContainerSeparators.SetActive(completedQuestsContainer.childCount > 0);
+            noQuestsTitle.SetActive(availableQuestsContainer.childCount == 0 );
             layoutRebuildRequested = true;
         }
 
@@ -124,6 +127,7 @@ namespace DCL.Huds.QuestsPanel
             questEntries.Clear();
             questsToBeAdded.Clear();
             questsContainerSeparators.SetActive(completedQuestsContainer.childCount > 0);
+            noQuestsTitle.SetActive(availableQuestsContainer.childCount == 0 );
             layoutRebuildRequested = true;
         }
 
@@ -186,6 +190,7 @@ namespace DCL.Huds.QuestsPanel
             }
 
             questsContainerSeparators.SetActive(completedQuestsContainer.childCount > 0);
+            noQuestsTitle.SetActive(availableQuestsContainer.childCount == 0 );
         }
 
         public void SetVisibility(bool active)
