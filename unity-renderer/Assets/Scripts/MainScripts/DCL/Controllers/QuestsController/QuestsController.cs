@@ -57,15 +57,18 @@ namespace DCL.QuestsController
         /// <param name="parsedQuests"></param>
         public void InitializeQuests(List<QuestModel> parsedQuests)
         {
+            List<QuestModel> filteredQuests = parsedQuests.Where(x => x.sections != null && x.sections.Length > 0).ToList();
+            if (filteredQuests.Count == 0) //We ignore quests without sections/tasks
+                return;
+
             var questsToUnpin = parsedQuests.Where(x => !x.canBePinned).Select(x => x.id);
             foreach (string questId in questsToUnpin)
             {
                 pinnedQuests.Remove(questId);
             }
 
-            parsedQuests.ForEach(RestoreProgressFlags);
-            //We ignore quests without sections/tasks
-            quests.Set(parsedQuests.Where(x => x.sections != null && x.sections.Length > 0).Select(x => (x.id, x)));
+            filteredQuests.ForEach(RestoreProgressFlags);
+            quests.Set(filteredQuests.Select(x => (x.id, x)));
         }
 
         /// <summary>
