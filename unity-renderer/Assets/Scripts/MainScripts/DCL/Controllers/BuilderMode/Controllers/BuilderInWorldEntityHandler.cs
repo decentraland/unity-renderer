@@ -273,8 +273,13 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public DCLBuilderInWorldEntity GetEntityOnPointer()
     {
+        Camera camera = Camera.main;
+
+        if (camera == null)
+            return null;
+
         RaycastHit hit;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(biwModeController.GetMousePosition());
+        UnityEngine.Ray ray = camera.ScreenPointToRay(biwModeController.GetMousePosition());
         float distanceToSelect = biwModeController.GetMaxDistanceToSelectEntities();
 
         if (Physics.Raycast(ray, out hit, distanceToSelect, layerToRaycast))
