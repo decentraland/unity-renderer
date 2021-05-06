@@ -30,6 +30,9 @@ internal interface ISceneData
 [Serializable]
 internal class SceneData : ISceneData
 {
+    private const string CONTENT_MATURE_SYMBOL = "M";
+    private const string CONTENT_ADULTS_ONLY_SYMBOL = "AO";
+
     public Vector2Int coords;
     public Vector2Int size;
     public string id;
@@ -99,8 +102,8 @@ internal class SceneData : ISceneData
         isMatureContent = false;
         if (!string.IsNullOrEmpty(deployedScene.contentRating))
         {
-            isMatureContent = deployedScene.contentRating.Equals("M", StringComparison.OrdinalIgnoreCase)
-                              || deployedScene.contentRating.Equals("AO", StringComparison.OrdinalIgnoreCase);
+            isMatureContent = deployedScene.contentRating.Equals(CONTENT_MATURE_SYMBOL, StringComparison.OrdinalIgnoreCase)
+                              || deployedScene.contentRating.Equals(CONTENT_ADULTS_ONLY_SYMBOL, StringComparison.OrdinalIgnoreCase);
         }
 
         if (deployedScene.parcels.Length < 2)
