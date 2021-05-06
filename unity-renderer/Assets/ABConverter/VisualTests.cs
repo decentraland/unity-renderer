@@ -47,7 +47,6 @@ namespace DCL.ABConverter
 
             var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
-            yield return new WaitForSeconds(10f);
 
             VisualTestHelpers.baselineImagesPath += "ABConverter/";
             VisualTestHelpers.testImagesPath += "ABConverter/";
@@ -63,10 +62,22 @@ namespace DCL.ABConverter
                 yield break;
             }
 
+            // Take prewarm snapshot to make sure the scene is correctly loaded
+            yield return TakeObjectSnapshot(new GameObject(), $"ABConverter_Warmup.png");
+
             VisualTestHelpers.generateBaseline = true;
 
             foreach (GameObject go in gltfs)
             {
+                go.SetActive(false);
+            }
+
+            foreach (GameObject go in gltfs)
+            {
+                go.SetActive(true);
+
+                yield return TakeObjectSnapshot(go, $"ABConverter_{go.name}.png");
+
                 go.SetActive(false);
             }
 
