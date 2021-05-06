@@ -8,7 +8,7 @@ public interface ITopActionsButtonsController
     event Action OnTranslateClick;
     event Action OnRotateClick;
     event Action OnScaleClick;
-    event Action OnResetClick;
+    event Action OnUndoClick;
     event Action OnDuplicateClick;
     event Action OnDeleteClick;
     event Action OnLogOutClick;

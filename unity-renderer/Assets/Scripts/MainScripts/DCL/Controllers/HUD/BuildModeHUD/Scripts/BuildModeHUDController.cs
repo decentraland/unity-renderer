@@ -166,6 +166,7 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.OnLogOutClick += ExitStart;
         controllers.topActionsButtonsController.extraActionsController.OnControlsClick += ChangeVisibilityOfControls;
         controllers.topActionsButtonsController.extraActionsController.OnHideUIClick += ChangeVisibilityOfUI;
+        controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
     }
 
