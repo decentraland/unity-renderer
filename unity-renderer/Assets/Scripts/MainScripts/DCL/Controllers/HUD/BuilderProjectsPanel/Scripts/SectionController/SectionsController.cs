@@ -2,10 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+internal enum SectionId
+{
+    SCENES_MAIN,
+    SCENES_DEPLOYED,
+    SCENES_PROJECT,
+    LAND,
+    SETTINGS_PROJECT_GENERAL,
+    SETTINGS_PROJECT_CONTRIBUTORS,
+    SETTINGS_PROJECT_ADMIN
+}
+
+internal interface ISectionsController : IDisposable
+{
+    event Action<SectionBase> OnSectionLoaded;
+    event Action<SectionBase> OnSectionShow;
+    event Action<SectionBase> OnSectionHide;
+    event Action OnRequestContextMenuHide;
+    event Action<SectionId> OnOpenSectionId;
+    event Action<string, SceneDataUpdatePayload> OnRequestUpdateSceneData;
+    event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
+    event Action<string, SceneAdminsUpdatePayload> OnRequestUpdateSceneAdmins;
+    event Action<string, SceneBannedUsersUpdatePayload> OnRequestUpdateSceneBannedUsers;
+    event Action<string> OnRequestOpenUrl;
+    event Action<Vector2Int> OnRequestGoToCoords;
+    event Action<Vector2Int> OnRequestEditSceneAtCoords;
+    void OpenSection(SectionId id);
+    void SetFetchingDataStart();
+    void SetFetchingDataEnd();
+}
+
 /// <summary>
 /// This class is in charge of handling open/close of the different menu sections
 /// </summary>
-internal class SectionsController : IDisposable
+internal class SectionsController : ISectionsController
 {
     public event Action<SectionBase> OnSectionLoaded;
     public event Action<SectionBase> OnSectionShow;
@@ -16,22 +46,15 @@ internal class SectionsController : IDisposable
     public event Action<string, SceneContributorsUpdatePayload> OnRequestUpdateSceneContributors;
     public event Action<string, SceneAdminsUpdatePayload> OnRequestUpdateSceneAdmins;
     public event Action<string, SceneBannedUsersUpdatePayload> OnRequestUpdateSceneBannedUsers;
+    public event Action<string> OnRequestOpenUrl;
+    public event Action<Vector2Int> OnRequestGoToCoords;
+    public event Action<Vector2Int> OnRequestEditSceneAtCoords;
 
     private Dictionary<SectionId, SectionBase> loadedSections = new Dictionary<SectionId, SectionBase>();
     private Transform sectionsParent;
     private ISectionFactory sectionFactory;
     private SectionBase currentOpenSection;
-
-    public enum SectionId
-    {
-        SCENES_MAIN,
-        SCENES_DEPLOYED,
-        SCENES_PROJECT,
-        LAND,
-        SETTINGS_PROJECT_GENERAL,
-        SETTINGS_PROJECT_CONTRIBUTORS,
-        SETTINGS_PROJECT_ADMIN
-    }
+    private bool isLoading = false;
 
     /// <summary>
     /// Ctor
@@ -66,6 +89,7 @@ internal class SectionsController : IDisposable
         if (section != null)
         {
             section.SetViewContainer(sectionsParent);
+            section.SetFetchingDataState(isLoading);
             SubscribeEvents(section);
         }
 
@@ -86,6 +110,22 @@ internal class SectionsController : IDisposable
         if (success)
         {
             OnOpenSectionId?.Invoke(id);
+        }
+    }
+
+    public void SetFetchingDataStart() { SetIsLoading(true); }
+
+    public void SetFetchingDataEnd() { SetIsLoading(false); }
+
+    private void SetIsLoading(bool isLoading)
+    {
+        this.isLoading = isLoading;
+        using (var iterator = loadedSections.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.SetFetchingDataState(isLoading);
+            }
         }
     }
 
@@ -134,6 +174,12 @@ internal class SectionsController : IDisposable
 
     private void OnUpdateSceneBannedUsersRequested(string id, SceneBannedUsersUpdatePayload payload) { OnRequestUpdateSceneBannedUsers?.Invoke(id, payload); }
 
+    private void OnOpenUrlRequested(string url) { OnRequestOpenUrl?.Invoke(url); }
+
+    private void OnGoToCoordsRequested(Vector2Int coords) { OnRequestGoToCoords?.Invoke(coords); }
+
+    private void OnEditSceneAtCoordsRequested(Vector2Int coords) { OnRequestEditSceneAtCoords?.Invoke(coords); }
+
     private void SubscribeEvents(SectionBase sectionBase)
     {
         if (sectionBase is ISectionOpenSectionRequester openSectionRequester)
@@ -159,6 +205,18 @@ internal class SectionsController : IDisposable
         if (sectionBase is ISectionUpdateSceneBannedUsersRequester updateSceneBannedUsersRequester)
         {
             updateSceneBannedUsersRequester.OnRequestUpdateSceneBannedUsers += OnUpdateSceneBannedUsersRequested;
+        }
+        if (sectionBase is ISectionOpenURLRequester openURLRequester)
+        {
+            openURLRequester.OnRequestOpenUrl += OnOpenUrlRequested;
+        }
+        if (sectionBase is ISectionGotoCoordsRequester goToRequester)
+        {
+            goToRequester.OnRequestGoToCoords += OnGoToCoordsRequested;
+        }
+        if (sectionBase is ISectionEditSceneAtCoordsRequester editSceneRequester)
+        {
+            editSceneRequester.OnRequestEditSceneAtCoords += OnEditSceneAtCoordsRequested;
         }
     }
 }
