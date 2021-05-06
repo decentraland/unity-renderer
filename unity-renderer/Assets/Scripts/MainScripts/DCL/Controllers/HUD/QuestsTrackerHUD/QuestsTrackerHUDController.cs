@@ -36,7 +36,7 @@ namespace DCL.Huds.QuestsTracker
             if (!quests.TryGetValue(questId, out QuestModel model) || model.status == QuestsLiterals.Status.BLOCKED)
                 return;
 
-            if (!model.TryGetReward(rewardId, out var reward))
+            if (!model.TryGetReward(rewardId, out QuestReward reward))
                 return;
             view?.AddReward(questId, reward);
         }
