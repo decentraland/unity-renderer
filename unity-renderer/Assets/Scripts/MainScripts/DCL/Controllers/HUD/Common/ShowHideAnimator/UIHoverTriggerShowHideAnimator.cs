@@ -22,6 +22,8 @@ public class UIHoverTriggerShowHideAnimator : MonoBehaviour, IPointerEnterHandle
         this.showHideAnimator = showHideAnimator;
     }
 
+    public void SetShowHideAnimator(ShowHideAnimator showHideAnimator) { this.showHideAnimator = showHideAnimator; }
+
     void Awake()
     {
         if (hideAnimatorOnAwake)

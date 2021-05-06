@@ -151,6 +151,8 @@ public class BIWModeController : BIWController
         return Vector3.zero;
     }
 
+    public virtual void MouseClickDetected() { currentActiveMode?.MouseClickDetected(); }
+
     private void ChangeSnapMode()
     {
         SetSnapActive(!isSnapActive);
