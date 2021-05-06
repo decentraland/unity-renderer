@@ -45,7 +45,8 @@ namespace DCL.ABConverter
 
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
-            EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            yield return new WaitUntil(() => scene.isLoaded);
 
             VisualTestHelpers.baselineImagesPath += "ABConverter/";
             VisualTestHelpers.testImagesPath += "ABConverter/";
