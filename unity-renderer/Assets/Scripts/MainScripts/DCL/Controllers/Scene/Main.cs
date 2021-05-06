@@ -44,6 +44,7 @@ namespace DCL
                 Environment.SetupWithBuilders(worldRuntimeBuilder: RuntimeContextBuilder);
             }
 
+            Debug.unityLogger.logEnabled = true;
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;
