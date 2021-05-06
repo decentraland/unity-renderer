@@ -115,8 +115,6 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     public List<Dictionary<string, List<CatalogItem>>> FilterAssets(string nameToFilter)
     {
-        Debug.Log($"SANTI ------------> catalog items: [{DataStore.i.builderInWorld.catalogItemDict.GetValues().Count}]");
-        Debug.Log($"SANTI ------------> nameToFilter: [{nameToFilter}]");
         filterObjects.Clear();
         foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
         {
@@ -143,17 +141,13 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     private bool MatchtFilter(CatalogItem catalogItem, string nameToFilter)
     {
-        //if (catalogItem.category.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0  ||
-        //    catalogItem.name.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0)
-        //    return  true;
-        if (catalogItem.category.ToLower().Contains(nameToFilter.ToLower()) ||
-            catalogItem.name.ToLower().Contains(nameToFilter.ToLower()))
+        if (catalogItem.category.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1 ||
+            catalogItem.name.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1)
             return true;
 
         foreach (string tag in catalogItem.tags)
         {
-            //if (tag.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0 )
-            if (tag.ToLower().Contains(nameToFilter.ToLower()))
+            if (tag.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1 )
                 return true;
         }
 
