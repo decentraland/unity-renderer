@@ -1,6 +1,6 @@
 {
     "name": "QuestsControllerTests",
-    "rootNamespace": "UNITY_INCLUDE_TESTS",
+    "rootNamespace": "",
     "references": [
         "GUID:9b06d63e1a13bc34c995683595d8d849",
         "GUID:28f74c468a54948bfa9f625c5d428f56",
@@ -16,8 +16,10 @@
         "System.Threading.Tasks.Extensions.dll",
         "NSubstitute.dll"
     ],
-    "autoReferenced": true,
-    "defineConstraints": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
