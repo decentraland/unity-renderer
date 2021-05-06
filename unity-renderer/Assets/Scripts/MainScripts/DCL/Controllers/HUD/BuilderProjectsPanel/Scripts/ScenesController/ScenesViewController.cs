@@ -309,5 +309,9 @@ internal class ScenesViewController : IScenesViewController
         sceneCardView.Dispose();
     }
 
-    private void OnSceneSettingsPressed(ISceneData sceneData) { OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}"); }
+    private void OnSceneSettingsPressed(ISceneData sceneData)
+    {
+        string tld = KernelConfig.i.Get()?.tld == "org" ? "org" : "io";
+        OnRequestOpenUrl?.Invoke($"https://builder.decentraland.{tld}/scenes/{sceneData.projectId}");
+    }
 }
