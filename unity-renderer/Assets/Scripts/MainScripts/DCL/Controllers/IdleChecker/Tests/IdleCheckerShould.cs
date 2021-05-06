@@ -19,6 +19,7 @@ namespace Tests
         public IEnumerator BeIdleInOneSecond()
         {
             idleChecker = new IdleChecker();
+            idleChecker.Initialize();
             idleChecker.SetMaxTime(1); // MaxTime in one second for the test
             idleChecker.Update();
             
