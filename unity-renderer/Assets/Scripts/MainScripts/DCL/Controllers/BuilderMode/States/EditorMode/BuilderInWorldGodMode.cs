@@ -243,6 +243,16 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
     }
 
+    public override void MouseClickDetected()
+    {
+        if (isPlacingNewObject)
+        {
+            builderInWorldEntityHandler.DeselectEntities();
+            return;
+        }
+        base.MouseClickDetected();
+    }
+
     #region Mouse
 
     private void OnInputMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -517,7 +527,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.CreatedEntity(createdEntity);
 
         if (!createdEntity.isFloor)
+        {
             isPlacingNewObject = true;
+            outlinerController.SetOutlineCheckActive(false);
+        }
 
         gizmoManager.HideGizmo();
         if (createdEntity.isVoxel)
@@ -562,6 +575,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             UpdateActionsInteractable();
         }
 
+        if (isPlacingNewObject)
+            outlinerController.SetOutlineCheckActive(true);
         isPlacingNewObject = false;
         DesactivateVoxelMode();
     }
