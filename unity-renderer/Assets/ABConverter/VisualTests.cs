@@ -47,6 +47,7 @@ namespace DCL.ABConverter
 
             var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
+            yield return new WaitForSeconds(10f);
 
             VisualTestHelpers.baselineImagesPath += "ABConverter/";
             VisualTestHelpers.testImagesPath += "ABConverter/";
