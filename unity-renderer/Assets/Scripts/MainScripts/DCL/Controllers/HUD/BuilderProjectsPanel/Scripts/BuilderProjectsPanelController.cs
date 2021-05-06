@@ -13,6 +13,7 @@ public class BuilderProjectsPanelController : IHUD
 {
     private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
     private const string TESTING_TLD = "org";
+    private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
 
     internal readonly IBuilderProjectsPanelView view;
 
@@ -32,7 +33,7 @@ public class BuilderProjectsPanelController : IHUD
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
     public BuilderProjectsPanelController() : this(
-        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>("BuilderProjectsPanel"))) { }
+        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
 
     internal BuilderProjectsPanelController(IBuilderProjectsPanelView view)
     {
