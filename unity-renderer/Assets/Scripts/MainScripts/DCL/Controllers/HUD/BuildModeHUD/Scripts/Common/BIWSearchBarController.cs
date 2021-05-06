@@ -141,13 +141,13 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     private bool MatchtFilter(CatalogItem catalogItem, string nameToFilter)
     {
-        if (catalogItem.category.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0 ||
-            catalogItem.name.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0)
+        if (catalogItem.category.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1 ||
+            catalogItem.name.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1)
             return true;
 
         foreach (string tag in catalogItem.tags)
         {
-            if (tag.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (tag.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1)
             {
                 return true;
             }
