@@ -200,13 +200,16 @@ jobs:
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
                 (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
-                pid=`cat /tmp/workspace/build.pid`
+                pid=$(cat /tmp/workspace/build.pid)
                 while [ -e /proc/$pid -a /proc/$pid/exe ]; do
                     echo "Running Unity Build..."
                     sleep 60
                 done
-                cat ./unity-renderer/build-logs.txt
+                wait "${pid}"
             fi;
+      - run:
+          name: Print build logs
+          command: cat ./unity-renderer/build-logs.txt
       - save_cache:
           name: Store decentraland-renderer build
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
@@ -229,6 +232,18 @@ jobs:
           root: *working_directory
           paths:
             - ./unity-renderer/Builds
+      - run:
+          name: Check there are build artifacts
+          command: |
+            if [ -z "$(ls -A "./unity-renderer/Builds")" ]; then
+              echo "directory ./unity-renderer/Builds is empty"
+              exit 1
+            fi
+      - run:
+          name: Print all files (in failure)
+          when: on_fail
+          command: |
+            find "./unity-renderer"
 
   build-js-interface:
     <<: *working_directory_root
