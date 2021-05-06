@@ -54,13 +54,13 @@ Then, on the Unity editor, click on `Assets > Reimport All`
 
 To test against a build made on this repository, you can use a link with this format:
 
-    https://play.decentraland.zone/?index.html&renderer=urn:decentraland:off-chain:renderer-artifacts:<branch-name>
+    https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:<branch-name>
 
 Note that using this approach, the Unity builds will run against kernel `master` HEAD.
 
 If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
 
-    https://play.decentraland.zone/branch/<kernel-branch-name>/?index.html&renderer=urn:decentraland:off-chain:renderer-artifacts:<unity-branch-name>
+    https://play.decentraland.zone/branch/<kernel-branch-name>/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:<unity-branch-name>
 
 If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
 

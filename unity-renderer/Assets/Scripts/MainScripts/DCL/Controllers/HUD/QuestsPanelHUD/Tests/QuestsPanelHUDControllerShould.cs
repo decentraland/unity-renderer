@@ -98,6 +98,80 @@ namespace Tests.QuestsPanelHUD
             hudView.Received().RequestAddOrUpdateQuest("newQuest2");
         }
 
+        [Test]
+        public void NotShowNotStartedSecretQuests_Add()
+        {
+            hudController.Initialize(questsController);
+            DataStore.i.Quests.quests.Set(new List<(string, QuestModel)>
+            {
+                ("newQuest1", new QuestModel
+                {
+                    id = "newQuest1",
+                    status = QuestsLiterals.Status.NOT_STARTED,
+                    visibility = QuestsLiterals.Visibility.SECRET
+                }),
+            });
+
+            hudView.DidNotReceive().RequestAddOrUpdateQuest("newQuest1");
+        }
+
+        [Test]
+        public void ShowNewStartedSecretQuests_Add()
+        {
+            hudController.Initialize(questsController);
+            DataStore.i.Quests.quests.Set(new List<(string, QuestModel)>
+            {
+                ("newQuest1", new QuestModel
+                {
+                    id = "newQuest1",
+                    status = QuestsLiterals.Status.ON_GOING,
+                    visibility = QuestsLiterals.Visibility.SECRET
+                }),
+            });
+
+            hudView.Received().RequestAddOrUpdateQuest("newQuest1");
+        }
+
+        [Test]
+        public void NotShowNotStartedSecretQuests_Update()
+        {
+            DataStore.i.Quests.quests.Set(new List<(string, QuestModel)>
+            {
+                ("newQuest1", new QuestModel
+                {
+                    id = "newQuest1",
+                    status = QuestsLiterals.Status.NOT_STARTED,
+                    visibility = QuestsLiterals.Visibility.VISIBLE
+                }),
+            });
+
+            hudController.Initialize(questsController);
+            hudView.ClearReceivedCalls();
+            DataStore.i.Quests.quests["newQuest1"].visibility = QuestsLiterals.Visibility.SECRET;
+            questsController.OnQuestUpdated += Raise.Event<QuestUpdated>("newQuest1", true);
+            hudView.DidNotReceive().RequestAddOrUpdateQuest("newQuest1");
+        }
+
+        [Test]
+        public void ShowNewStartedSecretQuests_Update()
+        {
+            DataStore.i.Quests.quests.Set(new List<(string, QuestModel)>
+            {
+                ("newQuest1", new QuestModel
+                {
+                    id = "newQuest1",
+                    status = QuestsLiterals.Status.NOT_STARTED,
+                    visibility = QuestsLiterals.Visibility.SECRET
+                }),
+            });
+
+            hudController.Initialize(questsController);
+            hudView.ClearReceivedCalls();
+            DataStore.i.Quests.quests["newQuest1"].status = QuestsLiterals.Status.NOT_STARTED;
+            questsController.OnQuestUpdated += Raise.Event<QuestUpdated>("newQuest1", true);
+            hudView.DidNotReceive().RequestAddOrUpdateQuest("newQuest1");
+        }
+
         [TearDown]
         public void TearDown() { DataStore.Clear(); }
     }

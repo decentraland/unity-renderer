@@ -160,7 +160,6 @@ public class BIWCreatorController : BIWController
 
         lastCatalogItemCreated = catalogItem;
 
-        entity.OnShapeFinishLoading += OnShapeLoadFinish;
         builderInWorldEntityHandler.EntityListChanged();
         builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
         OnInputDone?.Invoke();
@@ -172,10 +171,14 @@ public class BIWCreatorController : BIWController
 
     public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
 
-    private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
+    public void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
+        if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
+            return;
+
         BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
+        entity.OnShapeFinishLoading += OnShapeLoadFinish;
     }
 
     private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)

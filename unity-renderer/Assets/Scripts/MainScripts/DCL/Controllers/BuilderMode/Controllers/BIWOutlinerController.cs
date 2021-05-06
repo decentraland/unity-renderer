@@ -154,6 +154,10 @@ public class BIWOutlinerController : BIWController
     public void DeactivateBuilderInWorldCamera()
     {
         Camera camera = Camera.main;
+
+        if (camera == null)
+            return;
+
         DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
         if (outliner != null)
         {
