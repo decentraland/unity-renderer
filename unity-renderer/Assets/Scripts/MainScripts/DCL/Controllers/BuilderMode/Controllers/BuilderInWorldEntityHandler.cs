@@ -55,7 +55,7 @@ public class BuilderInWorldEntityHandler : BIWController
     public event Action<DCLBuilderInWorldEntity> OnEntityDeselected;
     public event Action OnEntitySelected;
     public event Action<List<DCLBuilderInWorldEntity>> OnDeleteSelectedEntities;
-    public event Action<string> OnEntityDeleted;
+    public event Action<DCLBuilderInWorldEntity> OnEntityDeleted;
 
     private DCLBuilderInWorldEntity lastClickedEntity;
     private float lastTimeEntityClicked;
@@ -620,7 +620,7 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
         {
-            DCLBuilderInWorldEntity entityToEdit = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(entity.gameObject);
+            DCLBuilderInWorldEntity entityToEdit = entity.gameObject.AddComponent<DCLBuilderInWorldEntity>();
             entityToEdit.Init(entity, editMaterial);
             convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
             entity.OnRemoved += RemoveConvertedEntity;
@@ -691,7 +691,6 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection)
     {
-        OnEntityDeleted?.Invoke(entityToDelete.rootEntity.entityId);
 
         if (entityToDelete.IsSelected && checkSelection)
             DeselectEntity(entityToDelete);
@@ -711,11 +710,11 @@ public class BuilderInWorldEntityHandler : BIWController
         entityToDelete.rootEntity.OnRemoved -= RemoveConvertedEntity;
         entityToDelete.Delete();
         string idToRemove = entityToDelete.rootEntity.entityId;
-        currentActiveMode?.OnDeleteEntity(entityToDelete);
+        OnEntityDeleted?.Invoke(entityToDelete);
         biwCreatorController.RemoveLoadingObjectInmediate(entityToDelete.rootEntity.entityId);
-        Destroy(entityToDelete);
         if (sceneToEdit.entities.ContainsKey(idToRemove))
             sceneToEdit.RemoveEntity(idToRemove, true);
+        Destroy(entityToDelete);
         hudController?.RefreshCatalogAssetPack();
         EntityListChanged();
         builderInWorldBridge?.RemoveEntityOnKernel(idToRemove, sceneToEdit);

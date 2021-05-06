@@ -34,19 +34,22 @@ public class BIWFloorHandler : BIWController
 
     private void Start()
     {
-        builderInWorldEntityHandler.OnEntityDeleted += BuilderInWorldEntityHandler_OnEntityDeleted;
-
+        builderInWorldEntityHandler.OnEntityDeleted += OnFloorEntityDeleted;
         meshLoadIndicator.SetCamera(Camera.main);
     }
 
     private void OnDestroy()
     {
-        builderInWorldEntityHandler.OnEntityDeleted -= BuilderInWorldEntityHandler_OnEntityDeleted;
+        builderInWorldEntityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
 
         Clean();
     }
 
-    private void BuilderInWorldEntityHandler_OnEntityDeleted(string entityId) { dclBuilderMeshLoadIndicatorController.HideIndicator(entityId); }
+    private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)
+    {
+        if (entity.isFloor)
+            RemovePlaceHolder(entity);
+    }
 
     public void Clean()
     {
@@ -110,16 +113,16 @@ public class BIWFloorHandler : BIWController
 
             GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
             floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
-            decentralandEntity.OnShapeFinishLoading += OnShapeLoadFinish;
+            decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
         }
 
         builderInWorldEntityHandler.DeselectEntities();
         lastFloorCalalogItemUsed = floorSceneObject;
     }
 
-    private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)
+    private void RemovePlaceHolder(DCLBuilderInWorldEntity entity)
     {
-        entity.OnShapeFinishLoading -= OnShapeLoadFinish;
+        entity.OnShapeFinishLoading -= RemovePlaceHolder;
         RemovePlaceHolder(entity.rootEntity.entityId);
     }
 

@@ -44,7 +44,10 @@ public class BuilderInWorldMode : MonoBehaviour
 
         this.selectedEntities = selectedEntities;
         gameObject.SetActive(false);
+        builderInWorldEntityHandler.OnEntityDeleted += OnDeleteEntity;
     }
+
+    private void OnDestroy() { builderInWorldEntityHandler.OnEntityDeleted -= OnDeleteEntity; }
 
     public virtual void Activate(ParcelScene scene)
     {
@@ -81,7 +84,7 @@ public class BuilderInWorldMode : MonoBehaviour
     public virtual void SetDuplicationOffset(float offset) { }
 
     public virtual void EntityDoubleClick(DCLBuilderInWorldEntity entity) { }
-    
+
     public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
         CenterGameObjectToEdit();
