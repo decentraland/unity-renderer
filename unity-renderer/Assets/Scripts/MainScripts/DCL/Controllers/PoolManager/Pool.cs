@@ -16,6 +16,7 @@ namespace DCL
     {
         public delegate void OnReleaseAllDlg(Pool pool);
 
+        public const int PREWARM_ACTIVE_MULTIPLIER = 2;
         public object id;
         public GameObject original;
         public GameObject container;
@@ -71,7 +72,19 @@ namespace DCL
 
         public PoolableObject Get()
         {
-            if (unusedObjectsCount == 0)
+            // These extra instantiations during initialization are to populate pools that will be used a lot later  
+            if (PoolManager.i.initializing)
+            {
+                int count = usedObjectsCount;
+
+                for (int i = unusedObjectsCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
+                {
+                    Instantiate();
+                }
+
+                Instantiate();
+            }
+            else if (unusedObjects.Count == 0)
             {
                 Instantiate();
             }
