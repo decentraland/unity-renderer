@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine;
 using UnityEngine.UI;
 
 internal class SceneCardViewContextMenu : MonoBehaviour

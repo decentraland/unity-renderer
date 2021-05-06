@@ -305,6 +305,7 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.BuildEditModeTranslate:
                     InputProcessor.FromKey(action, KeyCode.G, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeRotate:
                     InputProcessor.FromKey(action, KeyCode.R, modifiers: InputProcessor.Modifier.FocusNotInInput);
