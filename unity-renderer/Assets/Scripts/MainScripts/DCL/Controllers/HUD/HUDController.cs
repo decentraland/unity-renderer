@@ -385,7 +385,6 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<GraphicCardWarningHUDController>(configuration, hudElementId);
                 break;
             case HUDElementID.BUILDER_IN_WORLD_MAIN:
-                taskbarHud.SetBuilderInWorldStatus(true);
                 CreateHudElement<BuildModeHUDController>(configuration, hudElementId);
                 if (configuration.active)
                     builderInWorldMainHud.Initialize();
