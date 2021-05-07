@@ -67,7 +67,22 @@ namespace DCL.ABConverter
             this.settings = settings?.Clone() ?? new Client.Settings();
 
             finalDownloadedPath = PathUtils.FixDirectorySeparator(Config.DOWNLOADED_PATH_ROOT + Config.DASH);
+
+            if (Utils.ParseOption(Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+            {
+                // TODO: should we update the finalDownloadedAssetDbPath too ??
+                settings.finalAssetBundlePath =  System.IO.Path.Combine(Directory.GetCurrentDirectory(), outputPath[0] + "/");
+                // finalDownloadedAssetDbPath = settings.finalAssetBundlePath;
+
+                Debug.Log($"ABConverter Core: -output PATH param found, setting final ABPath as '{settings.finalAssetBundlePath}'");
+            }
+            else
+            {
+                Debug.Log($"ABConverter Core: -output PATH param NOT found, setting final ABPath as '{settings.finalAssetBundlePath}'");
+            }
+
             finalDownloadedAssetDbPath = PathUtils.FixDirectorySeparator(Config.ASSET_BUNDLES_PATH_ROOT + Config.DASH);
+
             log.verboseEnabled = this.settings.verbose;
 
             state.step = State.Step.IDLE;
@@ -169,10 +184,7 @@ namespace DCL.ABConverter
                         env: env,
                         OnFinish: (skippedAssetsCount) =>
                         {
-                            this.skippedAssets = skippedAssetsCount;
-
-                            if (this.skippedAssets > 0)
-                                state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
+                            ProcessSkippedAssets(skippedAssetsCount);
 
                             OnFinish?.Invoke(state.lastErrorCode);
                         }));
@@ -197,13 +209,23 @@ namespace DCL.ABConverter
                 env: env,
                 OnFinish: (skippedAssetsCount) =>
                 {
-                    this.skippedAssets = skippedAssetsCount;
-
-                    if (this.skippedAssets > 0)
-                        state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
+                    ProcessSkippedAssets(skippedAssetsCount);
 
                     OnFinish?.Invoke(state.lastErrorCode);
                 }));
+        }
+
+        private void ProcessSkippedAssets(int skippedAssetsCount)
+        {
+            if (skippedAssetsCount <= 0)
+                return;
+
+            skippedAssets = skippedAssetsCount;
+
+            if (skippedAssets >= totalAssets)
+                state.lastErrorCode = ErrorCodes.ASSET_BUNDLE_BUILD_FAIL;
+            else
+                state.lastErrorCode = ErrorCodes.SOME_ASSET_BUNDLES_SKIPPED;
         }
 
         /// <summary>
