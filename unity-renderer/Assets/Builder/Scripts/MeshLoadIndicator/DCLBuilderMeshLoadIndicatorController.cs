@@ -110,6 +110,9 @@ namespace Builder.MeshLoadIndicator
 
         public void HideIndicator(string entityId)
         {
+            if (indicatorsInUse == null)
+                return;
+
             for (int i = 0; i < indicatorsInUse.Count; i++)
             {
                 if (indicatorsInUse[i].loadingEntityId == entityId)
