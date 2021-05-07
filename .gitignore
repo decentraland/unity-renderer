@@ -45,6 +45,7 @@ Assets/Plugins/Editor/JetBrains/
 Assembly-UnityScript.unityProj
 
 debug.log
+ab-logs.txt
 Logs/Packages-Update.log
 
 browser-interface/dist
