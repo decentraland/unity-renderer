@@ -8,8 +8,6 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     const float WALK_INTERVAL_SEC = 0.37f, RUN_INTERVAL_SEC = 0.25f;
     float nextFootstepTime = 0f;
 
-    bool isVisible = true;
-
     AudioEvent footstepJump;
     AudioEvent footstepLand;
     AudioEvent footstepWalk;
@@ -17,12 +15,15 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     AudioEvent clothesRustleShort;
 
     GameObject rendererContainer;
-    Renderer rend;
+    new Renderer renderer;
+
     AvatarAnimatorLegacy.BlackBoard blackBoard;
     bool isGroundedPrevious = true;
 
     public AvatarAnimatorLegacy avatarAnimatorLegacy;
     bool globalRendererIsReady;
+
+    private Camera mainCamera;
 
     private void Start()
     {
@@ -77,7 +78,7 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         }
 
         // Simulate footsteps when avatar is not visible
-        if (rend != null)
+        if (renderer != null)
         {
             SimulateFootsteps();
         }
@@ -86,21 +87,29 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
             if (rendererContainer != null)
             {
                 //NOTE(Mordi): The renderer takes a while to get ready, so we need to check it continually until it can be fetched
-                rend = rendererContainer.GetComponent<Renderer>();
+                renderer = rendererContainer.GetComponent<Renderer>();
             }
         }
-        
+
         isGroundedPrevious = blackBoard.isGrounded;
     }
 
     bool AvatarIsInView()
     {
-        if (rend.isVisible)
+        if (renderer.isVisible)
             return true;
 
         // NOTE(Mordi): In some cases, the renderer will report false even if the avatar is visible.
         // Therefore we must check whether or not the avatar is in the camera's view.
-        Vector3 point = Camera.main.WorldToViewportPoint(transform.position);
+
+        if ( mainCamera == null )
+            mainCamera = Camera.main;
+
+        if (mainCamera == null)
+            return false;
+
+        Vector3 point = mainCamera.WorldToViewportPoint(transform.position);
+
         if (point.z > 0f)
         {
             if (point.x >= 0f && point.x <= 1f)
@@ -125,16 +134,20 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
                 {
                     if (footstepRun != null)
                         footstepRun.Play(true);
+
                     if (clothesRustleShort != null)
                         clothesRustleShort.Play(true);
+
                     nextFootstepTime = Time.time + RUN_INTERVAL_SEC;
                 }
                 else
                 {
                     if (footstepWalk != null)
                         footstepWalk.Play(true);
+
                     if (clothesRustleShort != null)
                         clothesRustleShort.PlayScheduled(Random.Range(0.05f, 0.1f));
+
                     nextFootstepTime = Time.time + WALK_INTERVAL_SEC;
                 }
             }
