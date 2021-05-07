@@ -14,7 +14,8 @@ namespace DCL
                 parcelScenesCleaner: new ParcelScenesCleaner(),
                 debugController: new DebugController(),
                 webRequest: WebRequestController.Create(),
-                serviceProviders: new ServiceProviders());
+                serviceProviders: new ServiceProviders(),
+                idleChecker: new IdleChecker());
         }
     }
 }
