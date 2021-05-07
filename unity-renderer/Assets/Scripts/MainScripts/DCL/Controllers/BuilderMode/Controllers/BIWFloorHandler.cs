@@ -20,9 +20,8 @@ public class BIWFloorHandler : BIWController
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
     public DCLBuilderMeshLoadIndicator meshLoadIndicator;
-    public BuilderInWorldBridge builderInWorldBridge;
     public BIWCreatorController biwCreatorController;
-    public BuilderInWorldController builderInWorldController;
+    public BIWSaveController biwSaveController;
 
     [Header("Prefabs")]
     public GameObject floorPrefab;
@@ -35,19 +34,22 @@ public class BIWFloorHandler : BIWController
 
     private void Start()
     {
-        builderInWorldEntityHandler.OnEntityDeleted += BuilderInWorldEntityHandler_OnEntityDeleted;
-
+        builderInWorldEntityHandler.OnEntityDeleted += OnFloorEntityDeleted;
         meshLoadIndicator.SetCamera(Camera.main);
     }
 
     private void OnDestroy()
     {
-        builderInWorldEntityHandler.OnEntityDeleted -= BuilderInWorldEntityHandler_OnEntityDeleted;
+        builderInWorldEntityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
 
         Clean();
     }
 
-    private void BuilderInWorldEntityHandler_OnEntityDeleted(string entityId) { dclBuilderMeshLoadIndicatorController.HideIndicator(entityId); }
+    private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)
+    {
+        if (entity.isFloor)
+            RemovePlaceHolder(entity);
+    }
 
     public void Clean()
     {
@@ -59,6 +61,7 @@ public class BIWFloorHandler : BIWController
 
     public void ChangeFloor(CatalogItem newFloorObject)
     {
+        biwSaveController.SetSaveActivation(false);
         CatalogItem lastFloor = lastFloorCalalogItemUsed;
         if (lastFloor == null)
             lastFloor = FindCurrentFloorCatalogItem();
@@ -71,6 +74,8 @@ public class BIWFloorHandler : BIWController
 
         buildAction.CreateChangeFloorAction(lastFloor, newFloorObject);
         actionController.AddAction(buildAction);
+
+        biwSaveController.SetSaveActivation(true, true);
     }
 
     public CatalogItem FindCurrentFloorCatalogItem()
@@ -108,16 +113,16 @@ public class BIWFloorHandler : BIWController
 
             GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
             floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
-            decentralandEntity.OnShapeFinishLoading += OnShapeLoadFinish;
+            decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
         }
 
         builderInWorldEntityHandler.DeselectEntities();
         lastFloorCalalogItemUsed = floorSceneObject;
     }
 
-    private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)
+    private void RemovePlaceHolder(DCLBuilderInWorldEntity entity)
     {
-        entity.OnShapeFinishLoading -= OnShapeLoadFinish;
+        entity.OnShapeFinishLoading -= RemovePlaceHolder;
         RemovePlaceHolder(entity.rootEntity.entityId);
     }
 

@@ -13,6 +13,7 @@ public class BIWSaveController : BIWController
     public BuilderInWorldBridge builderInWorldBridge;
 
     private float nextTimeToSave;
+    private bool canActivateSave = true;
 
     public override void Init()
     {
@@ -29,7 +30,14 @@ public class BIWSaveController : BIWController
         nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
     }
 
-    public bool CanSave() { return DCLTime.realtimeSinceStartup >= nextTimeToSave && isEditModeActive; }
+    public void SetSaveActivation(bool isActive, bool tryToSave = false)
+    {
+        canActivateSave = isActive;
+        if (tryToSave)
+            TryToSave();
+    }
+
+    public bool CanSave() { return DCLTime.realtimeSinceStartup >= nextTimeToSave && isEditModeActive && canActivateSave; }
 
     public void TryToSave()
     {
@@ -39,7 +47,7 @@ public class BIWSaveController : BIWController
 
     public void ForceSave()
     {
-        if (!isEditModeActive)
+        if (!isEditModeActive || !canActivateSave)
             return;
 
         builderInWorldBridge.SaveSceneState(sceneToEdit);
