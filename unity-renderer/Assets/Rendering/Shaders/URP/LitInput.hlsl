@@ -5,6 +5,7 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
+#include "Constants.hlsl"
 
 #if defined(_DETAIL_MULX2) || defined(_DETAIL_SCALED)
 #define _DETAIL
@@ -130,6 +131,10 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 
 half SampleOcclusion(float2 uv)
 {
+    // No occlusion for transparent surfaces. They don't render normals.
+    if (_Surface == SURFACE_TRANSPARENT)
+        return 1.0;
+         
 #ifdef _OCCLUSIONMAP
 // TODO: Controls things like these by exposing SHADER_QUALITY levels (low, medium, high)
 #if defined(SHADER_API_GLES)

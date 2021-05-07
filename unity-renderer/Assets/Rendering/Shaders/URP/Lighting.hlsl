@@ -11,6 +11,8 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceData.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
+#include "Constants.hlsl"
+
 // If lightmap is not defined than we evaluate GI (ambient + probes) from SH
 // We might do it fully or partially in vertex to save shader ALU
 #if !defined(LIGHTMAP_ON)
@@ -474,6 +476,9 @@ struct AmbientOcclusionFactor
 
 half SampleAmbientOcclusion(float2 normalizedScreenSpaceUV)
 {
+    if (_Surface == SURFACE_TRANSPARENT)
+        return 1;
+        
     float2 uv = UnityStereoTransformScreenSpaceTex(normalizedScreenSpaceUV);
     return SAMPLE_TEXTURE2D_X(_ScreenSpaceOcclusionTexture, sampler_ScreenSpaceOcclusionTexture, uv).x;
 }
