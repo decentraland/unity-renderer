@@ -115,10 +115,11 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     public List<Dictionary<string, List<CatalogItem>>> FilterAssets(string nameToFilter)
     {
+        StringComparison comparison = StringComparison.OrdinalIgnoreCase;
         filterObjects.Clear();
         foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
         {
-            if (!MatchtFilter(catalogItem, nameToFilter))
+            if (!MatchtFilter(catalogItem, nameToFilter, comparison))
                 continue;
 
             bool foundCategory = false;
@@ -139,15 +140,21 @@ public class BIWSearchBarController : IBIWSearchBarController
         return filterObjects;
     }
 
-    private bool MatchtFilter(CatalogItem catalogItem, string nameToFilter)
+    private bool MatchtFilter(CatalogItem catalogItem, string nameToFilter, StringComparison comparison)
     {
-        if (catalogItem.category.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1 ||
-            catalogItem.name.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1)
+        string nameToFilterToLower = nameToFilter.ToLower();
+
+        // NOTE: Due to an Unity known issue, the use of 'StringComparison.OrdinalIgnoreCase' in WebGL is case sensitive when shouldn't be.
+        // Absurd as it may seem, Unity says it is working in this way "by design", so it seems they're not going to fix it.
+        // A work-around is to use '.ToLower()' in both strings.
+        // More info: https://issuetracker.unity3d.com/issues/webgl-build-system-dot-stringcomparison-dot-ordinalignorecase-is-case-sensitive
+        if (catalogItem.category.ToLower().IndexOf(nameToFilterToLower, comparison) != -1 ||
+            catalogItem.name.ToLower().IndexOf(nameToFilterToLower, comparison) != -1)
             return true;
 
         foreach (string tag in catalogItem.tags)
         {
-            if (tag.IndexOf(nameToFilter, StringComparison.OrdinalIgnoreCase) != -1)
+            if (tag.ToLower().IndexOf(nameToFilterToLower, comparison) != -1)
             {
                 return true;
             }
