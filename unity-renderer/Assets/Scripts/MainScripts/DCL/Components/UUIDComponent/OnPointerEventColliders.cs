@@ -11,7 +11,7 @@ namespace DCL.Components
     {
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
-        Collider[] colliders;
+        internal Collider[] colliders;
         Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
 
         public string GetMeshName(Collider collider)
@@ -29,6 +29,14 @@ namespace DCL.Components
             Renderer[] rendererList = entity?.meshesInfo?.renderers;
 
             if (rendererList == null || rendererList.Length == 0)
+            {
+                if (colliders != null && colliders.Length > 0)
+                    DestroyColliders();
+
+                return;
+            }
+
+            if (AreCollidersCreated(rendererList))
                 return;
 
             IShape shape = entity.meshesInfo.currentShape;
@@ -73,6 +81,33 @@ namespace DCL.Components
             return meshCollider;
         }
 
+        private bool AreCollidersCreated(Renderer[] rendererList)
+        {
+            if (colliders == null || colliders.Length == 0)
+                return false;
+
+            if (rendererList.Length != colliders.Length)
+                return false;
+
+            for (int i = 0; i < rendererList.Length; i++)
+            {
+                bool foundChildCollider = false;
+                for (int j = 0; j < colliders.Length; j++)
+                {
+                    if (colliders[j].transform.parent == rendererList[i].transform)
+                    {
+                        foundChildCollider = true;
+                        break;
+                    }
+                }
+
+                if (!foundChildCollider)
+                    return false;
+            }
+
+            return true;
+        }
+
         public void Dispose() { DestroyColliders(); }
 
         void DestroyColliders()
@@ -87,6 +122,8 @@ namespace DCL.Components
                 if (collider != null)
                     UnityEngine.Object.Destroy(collider.gameObject);
             }
+
+            colliders = null;
         }
     }
 }
