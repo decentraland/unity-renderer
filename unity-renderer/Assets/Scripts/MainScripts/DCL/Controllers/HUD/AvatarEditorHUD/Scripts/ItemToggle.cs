@@ -17,6 +17,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
     [SerializeField] internal TextMeshProUGUI amountText;
 
@@ -45,6 +46,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         if (selectionHighlight != null)
             selectionHighlight.enabled = isSelected;
     }
+
+    public void SetLoadingSpinner(bool isActive) { loadingSpinner?.SetActive(isActive); }
 
     protected new virtual void Awake()
     {

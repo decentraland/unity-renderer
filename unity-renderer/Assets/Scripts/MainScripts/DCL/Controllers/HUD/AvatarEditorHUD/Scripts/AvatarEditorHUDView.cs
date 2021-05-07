@@ -95,6 +95,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
+    private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
 
     public event System.Action<AvatarModel> OnAvatarAppear;
     public event System.Action<bool> OnSetVisibility;
@@ -222,16 +223,38 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.SetBodyShape(bodyShape.id);
     }
 
-    public void SelectWearable(WearableItem wearable)
+    public void EquipWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.category].Select(wearable.id);
+        SetWearableLoadingSpinner(wearable, true);
         collectiblesItemSelector.Select(wearable.id);
     }
 
-    public void UnselectWearable(WearableItem wearable)
+    public void UnequipWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.category].Unselect(wearable.id);
+        SetWearableLoadingSpinner(wearable, false);
         collectiblesItemSelector.Unselect(wearable.id);
+    }
+
+    internal void SetWearableLoadingSpinner(WearableItem wearable, bool isActive)
+    {
+        selectorsByCategory[wearable.category].SetWearableLoadingSpinner(wearable.id, isActive);
+        collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, isActive);
+        if (isActive)
+            wearablesWithLoadingSpinner.Add(wearable);
+        else
+            wearablesWithLoadingSpinner.Remove(wearable);
+    }
+
+    internal void ClearWearablesLoadingSpinner()
+    {
+        foreach (WearableItem wearable in wearablesWithLoadingSpinner)
+        {
+            selectorsByCategory[wearable.category].SetWearableLoadingSpinner(wearable.id, false);
+            collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, false);
+        }
+        wearablesWithLoadingSpinner.Clear();
     }
 
     public void SelectHairColor(Color hairColor) { hairColorSelector.Select(hairColor); }
@@ -273,6 +296,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                     doneButton.interactable = true;
 
                 OnAvatarAppear?.Invoke(avatarModel);
+                ClearWearablesLoadingSpinner();
             });
     }
 

@@ -270,9 +270,13 @@ namespace DCL
                     continue;
 
                 unusedCategories.Remove(wearable.category);
-                if (wearableControllers.ContainsKey(wearable) && wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
+
+                if (wearableControllers.ContainsKey(wearable))
                 {
-                    UpdateWearableController(wearable);
+                    if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
+                        UpdateWearableController(wearable);
+                    else
+                        wearableControllers[wearable].CleanUp();
                 }
                 else
                 {

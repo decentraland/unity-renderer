@@ -124,6 +124,13 @@ public class ItemSelector : MonoBehaviour
             toggle.selected = true;
     }
 
+    public void SetWearableLoadingSpinner(string wearableID, bool isActive)
+    {
+        ItemToggle toggle = GetItemToggleByID(wearableID);
+        if (toggle != null)
+            toggle.SetLoadingSpinner(isActive);
+    }
+
     public void Unselect(string itemID)
     {
         ItemToggle toggle = GetItemToggleByID(itemID);
