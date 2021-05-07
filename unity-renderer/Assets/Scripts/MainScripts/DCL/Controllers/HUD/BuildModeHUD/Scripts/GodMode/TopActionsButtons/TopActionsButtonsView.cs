@@ -42,6 +42,8 @@ public interface ITopActionsButtonsView
     void OnTranslateClick(DCLAction_Trigger action);
     void SetGizmosActive(string gizmos);
     void SetActionsInteractable(bool isActive);
+    void SetUndoInteractable(bool isActive);
+    void SetRedoInteractable(bool isActive);
     void SetSnapActive(bool isActive);
 }
 
@@ -366,6 +368,10 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         duplicateBtn.interactable = isActive;
         deleteBtn.interactable = isActive;
     }
+
+    public void SetUndoInteractable(bool isActive) { undoBtn.interactable = isActive; }
+
+    public void SetRedoInteractable(bool isActive) { redoBtn.interactable = isActive; }
 
     public void OnRotateClick(DCLAction_Trigger action) { OnRotateClicked?.Invoke(); }
 

@@ -92,14 +92,28 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void ClickOnResetCorrectly()
+        public void ClickOnUndoCorrectly()
         {
             // Arrange
             bool clicked = false;
-            topActionsButtonsController.OnResetClick += () => { clicked = true; };
+            topActionsButtonsController.OnUndoClick += () => { clicked = true; };
 
             // Act
-            topActionsButtonsController.ResetClicked();
+            topActionsButtonsController.UndoClicked();
+
+            // Assert
+            Assert.IsTrue(clicked, "The clicked is false!");
+        }
+
+        [Test]
+        public void ClickOnRedoCorrectly()
+        {
+            // Arrange
+            bool clicked = false;
+            topActionsButtonsController.OnRedoClick += () => { clicked = true; };
+
+            // Act
+            topActionsButtonsController.RedoClicked();
 
             // Assert
             Assert.IsTrue(clicked, "The clicked is false!");

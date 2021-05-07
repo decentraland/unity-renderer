@@ -4,9 +4,9 @@ namespace DCL.Configuration
 {
     public static class BuilderInWorldSettings
     {
-        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.org/v1/storage/contents/";
-        public const string BASE_URL_ASSETS_PACK = "https://builder-api.decentraland.org/v1/assetPacks";
-        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.org/v1/storage/assetPacks/";
+        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.io/v1/storage/contents/";
+        public const string BASE_URL_ASSETS_PACK = "https://builder-api.decentraland.io/v1/assetPacks";
+        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.io/v1/storage/assetPacks/";
 
         public static readonly int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
         public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");

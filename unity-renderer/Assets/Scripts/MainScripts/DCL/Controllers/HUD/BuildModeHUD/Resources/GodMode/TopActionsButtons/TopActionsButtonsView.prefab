@@ -887,7 +887,8 @@ MonoBehaviour:
   translateBtn: {fileID: 3820961471278150080}
   rotateBtn: {fileID: 3820961472385422874}
   scaleBtn: {fileID: 3820961472348082252}
-  resetBtn: {fileID: 3820961471574413565}
+  undoBtn: {fileID: 3820961471574413565}
+  redoBtn: {fileID: 3052169535672528431}
   duplicateBtn: {fileID: 3820961471389997161}
   deleteBtn: {fileID: 3820961471485577506}
   logOutBtn: {fileID: 8929500230923893616}
@@ -900,8 +901,6 @@ MonoBehaviour:
     type: 2}
   toggleScaleInputAction: {fileID: 11400000, guid: 9e5ca5b6a25bef24eaa80d22ea3959ae,
     type: 2}
-  toggleResetInputAction: {fileID: 11400000, guid: 9d995e577b758d248b97f78c9825d831,
-    type: 2}
   toggleDuplicateInputAction: {fileID: 11400000, guid: 43948507e81566e499e81e633a1dcf23,
     type: 2}
   toggleDeleteInputAction: {fileID: 11400000, guid: 9ec10551302c6334da92572890605db3,
@@ -910,7 +909,8 @@ MonoBehaviour:
   translateEventTrigger: {fileID: 3820961471278150093}
   rotateEventTrigger: {fileID: 3820961472385422855}
   scaleEventTrigger: {fileID: 3820961472348082250}
-  resetEventTrigger: {fileID: 3820961471574413567}
+  undoEventTrigger: {fileID: 3820961471574413567}
+  redoEventTrigger: {fileID: 8860970556398268412}
   duplicateEventTrigger: {fileID: 3820961471389997162}
   deleteEventTrigger: {fileID: 3820961471485577507}
   moreActionsEventTrigger: {fileID: 8221625501305900034}
@@ -920,7 +920,8 @@ MonoBehaviour:
   translateTooltipText: Translate (G)
   rotateTooltipText: Rotate (R)
   scaleTooltipText: Scale (S)
-  resetTooltipText: Reset
+  undoTooltipText: Undo (Shift+Z)
+  redoTooltipText: Redo (Shift+Y)
   duplicateTooltipText: Duplicate (D)
   deleteTooltipText: Delete (Del) or (Backspace)
   moreActionsTooltipText: Extra Actions
