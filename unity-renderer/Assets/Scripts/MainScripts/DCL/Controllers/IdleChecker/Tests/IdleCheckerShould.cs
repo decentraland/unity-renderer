@@ -15,7 +15,7 @@ namespace Tests
     {
         private IIdleChecker idleChecker;
 
-        [Test(ExpectedResult = (IEnumerator)null)]
+        [UnityTest]
         public IEnumerator BeIdleInOneSecond()
         {
             idleChecker = new IdleChecker();
