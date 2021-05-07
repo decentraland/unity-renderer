@@ -2631,7 +2631,7 @@ MonoBehaviour:
   dclBuilderMeshLoadIndicatorController: {fileID: 4453536760248188691}
   meshLoadIndicator: {fileID: 4025507285860166352}
   biwCreatorController: {fileID: 2072020105617305708}
-  biwSaveController: {fileID: 0}
+  biwSaveController: {fileID: 6802675824613373767}
   floorPrefab: {fileID: 3848538323447533592, guid: ea1dee13f58202f409bb86c92a202112,
     type: 3}
 --- !u!1001 &1309221167772459722
