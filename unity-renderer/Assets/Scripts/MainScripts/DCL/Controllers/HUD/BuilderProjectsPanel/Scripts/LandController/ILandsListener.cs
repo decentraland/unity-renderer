@@ -1,4 +1,4 @@
 internal interface ILandsListener
 {
-    void OnSetLands(LandData[] lands);
+    void OnSetLands(LandWithAccess[] lands);
 }

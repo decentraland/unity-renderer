@@ -183,18 +183,7 @@ public class BIWInputHandler : BIWController
         actionController.TryToUndoAction();
     }
 
-    private void MouseClickDetected()
-    {
-        DCLBuilderInWorldEntity entityToSelect = builderInWorldEntityHandler.GetEntityOnPointer();
-        if (entityToSelect != null)
-        {
-            builderInWorldEntityHandler.EntityClicked(entityToSelect);
-        }
-        else if (!isMultiSelectionActive)
-        {
-            builderInWorldEntityHandler.DeselectEntities();
-        }
-    }
+    private void MouseClickDetected() { biwModeController.MouseClickDetected(); }
 
     private void InputDone() { nexTimeToReceiveInput = Time.timeSinceLevelLoad + msBetweenInputInteraction / 1000; }
 

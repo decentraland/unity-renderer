@@ -80,6 +80,8 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void SetDuplicationOffset(float offset) { }
 
+    public virtual void EntityDoubleClick(DCLBuilderInWorldEntity entity) { }
+    
     public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
     {
         CenterGameObjectToEdit();
@@ -103,6 +105,19 @@ public class BuilderInWorldMode : MonoBehaviour
             {
                 entity.rootEntity.gameObject.transform.SetParent(editionGO.transform);
             }
+        }
+    }
+
+    public virtual void MouseClickDetected()
+    {
+        DCLBuilderInWorldEntity entityToSelect = builderInWorldEntityHandler.GetEntityOnPointer();
+        if (entityToSelect != null)
+        {
+            builderInWorldEntityHandler.EntityClicked(entityToSelect);
+        }
+        else if (!isMultiSelectionActive)
+        {
+            builderInWorldEntityHandler.DeselectEntities();
         }
     }
 
