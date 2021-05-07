@@ -395,6 +395,17 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class SystemInfoReportPayload
+        {
+            public string graphicsDeviceName = SystemInfo.graphicsDeviceName;
+            public string graphicsDeviceVersion = SystemInfo.graphicsDeviceVersion;
+            public int graphicsMemorySize = SystemInfo.graphicsMemorySize;
+            public string processorType = SystemInfo.processorType;
+            public int processorCount = SystemInfo.processorCount;
+            public int systemMemorySize = SystemInfo.systemMemorySize;
+        }
+        
+        [System.Serializable]
         public class PerformanceHiccupPayload
         {
             public int hiccupsInThousandFrames;
@@ -937,6 +948,11 @@ namespace DCL.Interface
                 hiccupsTime = hiccupsTime,
                 totalTime = totalTime
             });
+        }
+
+        public static void SendSystemInfoReport()
+        {
+            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
         }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)

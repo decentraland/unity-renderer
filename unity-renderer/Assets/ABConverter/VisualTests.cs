@@ -13,9 +13,9 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        static readonly string abPath = Application.dataPath + "/../AssetBundles/";
         static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
         static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
+        static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
         /// <summary>
@@ -24,9 +24,29 @@ namespace DCL.ABConverter
         /// </summary>
         public static IEnumerator TestConvertedAssets(Environment env = null, Action<int> OnFinish = null)
         {
+            if (Utils.ParseOption(Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+            {
+                abPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), outputPath[0] + "/");
+
+                Debug.Log($"Visual Test Detection: -output PATH param found, setting ABPath as '{abPath}'");
+            }
+            else
+            {
+                Debug.Log($"Visual Test Detection: -output PATH param NOT found, setting ABPath as '{abPath}'");
+            }
+
+            if (!System.IO.Directory.Exists(abPath))
+            {
+                Debug.Log($"Visual Test Detection: ABs path '{abPath}' doesn't exist...");
+                SkipAllAssets();
+                OnFinish?.Invoke(skippedAssets);
+                yield break;
+            }
+
             Debug.Log("Visual Test Detection: Starting converted assets testing...");
 
-            EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
+            yield return new WaitUntil(() => scene.isLoaded);
 
             VisualTestHelpers.baselineImagesPath += "ABConverter/";
             VisualTestHelpers.testImagesPath += "ABConverter/";
@@ -37,15 +57,27 @@ namespace DCL.ABConverter
             if (gltfs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated GLTFs...");
-                skippedAssets++;
+                SkipAllAssets();
                 OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
+
+            // Take prewarm snapshot to make sure the scene is correctly loaded
+            yield return TakeObjectSnapshot(new GameObject(), $"ABConverter_Warmup.png");
 
             VisualTestHelpers.generateBaseline = true;
 
             foreach (GameObject go in gltfs)
             {
+                go.SetActive(false);
+            }
+
+            foreach (GameObject go in gltfs)
+            {
+                go.SetActive(true);
+
+                yield return TakeObjectSnapshot(go, $"ABConverter_{go.name}.png");
+
                 go.SetActive(false);
             }
 
@@ -65,7 +97,7 @@ namespace DCL.ABConverter
             if (abs.Length == 0)
             {
                 Debug.Log("Visual Test Detection: no instantiated ABs...");
-                skippedAssets++;
+                SkipAllAssets();
                 OnFinish?.Invoke(skippedAssets);
                 yield break;
             }
@@ -114,6 +146,11 @@ namespace DCL.ABConverter
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);
         }
+
+        /// <summary>
+        /// Set skippedAssets to the amount of target assets
+        /// </summary>
+        private static void SkipAllAssets() { skippedAssets = AssetDatabase.FindAssets($"t:GameObject", new[] { "Assets/_Downloaded" }).Length; }
 
         /// <summary>
         /// Position camera based on renderer bounds and take snapshot
@@ -213,7 +250,7 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
@@ -238,7 +275,7 @@ namespace DCL.ABConverter
                 string path = abPath + hash;
                 var req = UnityWebRequestAssetBundle.GetAssetBundle(path);
 
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX || SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
                     req.url = req.url.Replace("http://localhost", "file:///");
 
                 req.SendWebRequest();
