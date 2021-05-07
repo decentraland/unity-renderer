@@ -1,3 +1,4 @@
+using System.Collections;
 using DCL;
 using DCL.Huds.QuestsPanel;
 using NUnit.Framework;
@@ -78,6 +79,10 @@ namespace Tests.QuestsPanelHUD
             Assert.IsTrue(hudView.questEntries.ContainsKey(MOCK_QUEST_ID));
             Assert.AreEqual("name", hudView.questEntries[MOCK_QUEST_ID].questName.text);
             Assert.AreEqual("description", hudView.questEntries[MOCK_QUEST_ID].description.text);
+            Assert.IsTrue(hudView.questEntries[MOCK_QUEST_ID].progressInTitle.gameObject.activeSelf);
+            Assert.IsFalse(hudView.questEntries[MOCK_QUEST_ID].completedProgressInTitle.gameObject.activeSelf);
+            Assert.IsFalse(hudView.questEntries[MOCK_QUEST_ID].completedMarkInTitle.gameObject.activeSelf);
+            Assert.AreEqual(0f, hudView.questEntries[MOCK_QUEST_ID].progressInTitle.transform.localScale.x);
         }
 
         [Test]
@@ -94,7 +99,29 @@ namespace Tests.QuestsPanelHUD
             Assert.IsTrue(hudView.questEntries.ContainsKey(MOCK_QUEST_ID));
             Assert.AreEqual("newName", hudView.questEntries[MOCK_QUEST_ID].questName.text);
             Assert.AreEqual("newDescription", hudView.questEntries[MOCK_QUEST_ID].description.text);
+            Assert.IsTrue(hudView.questEntries[MOCK_QUEST_ID].progressInTitle.gameObject.activeSelf);
+            Assert.IsFalse(hudView.questEntries[MOCK_QUEST_ID].completedProgressInTitle.gameObject.activeSelf);
+            Assert.IsFalse(hudView.questEntries[MOCK_QUEST_ID].completedMarkInTitle.gameObject.activeSelf);
             Assert.AreEqual(0.8f, hudView.questEntries[MOCK_QUEST_ID].progressInTitle.transform.localScale.x);
+        }
+
+        [Test]
+        public void AddOrUpdateQuestCompletedProperly()
+        {
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].name = "newName";
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].description = "newDescription";
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].tasks[0].progress = 1f;
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].sections[0].progress = 1f;
+            DataStore.i.Quests.quests[MOCK_QUEST_ID].status = QuestsLiterals.Status.COMPLETED;
+
+            hudView.AddOrUpdateQuest(MOCK_QUEST_ID);
+
+            Assert.AreEqual(1, hudView.questEntries.Count);
+            Assert.IsTrue(hudView.questEntries.ContainsKey(MOCK_QUEST_ID));
+            Assert.AreEqual("newName", hudView.questEntries[MOCK_QUEST_ID].questName.text);
+            Assert.AreEqual("newDescription", hudView.questEntries[MOCK_QUEST_ID].description.text);
+            Assert.IsTrue(hudView.questEntries[MOCK_QUEST_ID].completedProgressInTitle.gameObject.activeSelf);
+            Assert.IsTrue(hudView.questEntries[MOCK_QUEST_ID].completedMarkInTitle.gameObject.activeSelf);
         }
 
         [Test]
@@ -130,6 +157,40 @@ namespace Tests.QuestsPanelHUD
             hudView.ShowQuestPopup(MOCK_QUEST_ID);
 
             Assert.IsTrue(hudView.questPopup.gameObject.activeSelf);
+        }
+
+        [UnityTest]
+        public IEnumerator OrderQuests()
+        {
+            DataStore.i.Quests.quests.Add("0", new QuestModel { id = "0", sections = new [] { new QuestSection { id = "0_0", tasks = new [] { new QuestTask { id = "0_0_0" } } } } });
+            DataStore.i.Quests.quests.Add("1", new QuestModel { id = "1", sections = new [] { new QuestSection { id = "1_0", tasks = new [] { new QuestTask { id = "1_0_0" } } } } });
+            DataStore.i.Quests.quests.Add("2", new QuestModel { id = "2", sections = new [] { new QuestSection { id = "2_0", tasks = new [] { new QuestTask { id = "2_0_0" } } } }, status = QuestsLiterals.Status.COMPLETED });
+            DataStore.i.Quests.quests.Add("3", new QuestModel { id = "3", sections = new [] { new QuestSection { id = "3_0", tasks = new [] { new QuestTask { id = "3_0_0" } } } } });
+            /* Order should be
+             * Available
+             * 0
+             * 1
+             * 3
+             *
+             * Completed
+             * 2
+             */
+
+            hudView.AddOrUpdateQuest("0");
+            hudView.AddOrUpdateQuest("1");
+            hudView.AddOrUpdateQuest("2");
+            hudView.AddOrUpdateQuest("3");
+
+            yield return null;
+
+            Assert.AreEqual(0, hudView.questEntries["0"].transform.GetSiblingIndex());
+            Assert.AreEqual(1, hudView.questEntries["1"].transform.GetSiblingIndex());
+            Assert.AreEqual(2, hudView.questEntries["3"].transform.GetSiblingIndex());
+            Assert.AreEqual(0, hudView.questEntries["2"].transform.GetSiblingIndex());
+            Assert.AreEqual(hudView.availableQuestsContainer, hudView.questEntries["0"].transform.parent);
+            Assert.AreEqual(hudView.availableQuestsContainer, hudView.questEntries["1"].transform.parent);
+            Assert.AreEqual(hudView.availableQuestsContainer, hudView.questEntries["3"].transform.parent);
+            Assert.AreEqual(hudView.completedQuestsContainer, hudView.questEntries["2"].transform.parent);
         }
 
         [TearDown]
