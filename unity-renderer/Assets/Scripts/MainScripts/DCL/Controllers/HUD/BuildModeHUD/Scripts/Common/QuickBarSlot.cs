@@ -11,13 +11,18 @@ public class QuickBarSlot : MonoBehaviour
     public bool isEmpty => !image.enabled;
     public Transform slotTransform => transform;
 
-    public void SetTexture(Texture texture)
+    public void SetTexture(Texture texture, bool makeCopy = true)
     {
-        image.texture = texture;
+        image.texture = makeCopy ? TextureHelpers.CopyTexture((Texture2D)texture) : texture;
         image.enabled = true;
     }
 
-    public void SetEmpty() { image.enabled = false; }
+    public void SetEmpty()
+    {
+        image.enabled = false;
+        Destroy(image.texture);
+        image.texture = null;
+    }
 
     public void EnableDragMode()
     {
