@@ -13,11 +13,7 @@ public class QuickBarSlot : MonoBehaviour
 
     public void SetTexture(Texture texture)
     {
-        Texture2D original = texture as Texture2D;
-        Texture2D copy = new Texture2D(original.width, original.height, original.format, false);
-        Graphics.CopyTexture(original, 0, 0, 0, 0, original.width, original.height, copy, 0, 0, 0, 0);
-
-        image.texture = copy;
+        image.texture = TextureHelpers.CopyTexture((Texture2D)texture);
         image.enabled = true;
     }
 
