@@ -49,10 +49,10 @@ namespace Tests
             Assert.AreEqual("Temp", controller.userViewsHandler.userElementViews["1"].textUserName.text);
             Assert.AreEqual("ta", controller.userViewsHandler.userElementViews["2"].textUserName.text);
             Assert.AreEqual("tion", controller.userViewsHandler.userElementViews["3"].textUserName.text);
-            
+
             controller.Dispose();
         }
-        
+
         [Test]
         public void SearchFriendsCorrectly()
         {
@@ -81,7 +81,7 @@ namespace Tests
 
             controller.Dispose();
         }
-        
+
         [Test]
         public void ShowIfFriendsIsAddedToRolCorrectly()
         {
@@ -102,7 +102,7 @@ namespace Tests
 
             FriendsSearchPromptController controller = new FriendsSearchPromptController(promptView, friendsController);
             controller.Show();
-            controller.SetUsersInRolList(new List<string>(){"1"});
+            controller.SetUsersInRolList(new List<string>() { "1" });
 
             Assert.IsTrue(controller.userViewsHandler.userElementViews["1"].removeButton.gameObject.activeSelf);
             Assert.IsTrue(controller.userViewsHandler.userElementViews["2"].addButton.gameObject.activeSelf);
@@ -110,7 +110,7 @@ namespace Tests
 
             controller.Dispose();
         }
-        
+
         [Test]
         public void TriggerAddButtonCorrectlyOnClick()
         {
@@ -126,18 +126,15 @@ namespace Tests
 
             bool triggered = false;
 
-            void OnButtonPressed(string id)
-            {
-                triggered = id == "1";
-            }
+            void OnButtonPressed(string id) { triggered = id == "1"; }
 
             controller.userViewsHandler.userElementViews["1"].OnAddPressed += OnButtonPressed;
             controller.userViewsHandler.userElementViews["1"].addButton.onClick.Invoke();
 
             Assert.IsTrue(triggered);
             controller.Dispose();
-        }   
-        
+        }
+
         [Test]
         public void TriggerRemoveButtonCorrectlyOnClick()
         {
@@ -153,18 +150,15 @@ namespace Tests
 
             bool triggered = false;
 
-            void OnButtonPressed(string id)
-            {
-                triggered = id == "1";
-            }
+            void OnButtonPressed(string id) { triggered = id == "1"; }
 
             controller.userViewsHandler.userElementViews["1"].OnRemovePressed += OnButtonPressed;
             controller.userViewsHandler.userElementViews["1"].removeButton.onClick.Invoke();
 
             Assert.IsTrue(triggered);
             controller.Dispose();
-        }  
-        
+        }
+
         [Test]
         public void SearchUserCorrectly()
         {
@@ -173,9 +167,9 @@ namespace Tests
             promptView.searchInputField.OnSubmit("Temp");
             controller.usersSearchPromise.Resolve(new []
             {
-                new UserProfileModel(){userId = "Temp"},
-                new UserProfileModel(){userId = "ta"},
-                new UserProfileModel(){userId = "tion"},
+                new UserProfileModel() { userId = "Temp" },
+                new UserProfileModel() { userId = "ta" },
+                new UserProfileModel() { userId = "tion" },
             });
 
             Assert.AreEqual(3, promptView.friendListParent.childCount);

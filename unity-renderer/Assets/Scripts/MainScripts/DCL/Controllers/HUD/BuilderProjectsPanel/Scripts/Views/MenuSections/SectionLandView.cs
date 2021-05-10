@@ -5,18 +5,21 @@ using UnityEngine.UI;
 
 internal class SectionLandView : MonoBehaviour, IDisposable
 {
-    [SerializeField] public LandElementView landElementView;
-    [SerializeField] public ScrollRect scrollRect;
-    [SerializeField] public GameObject contentContainer;
-    [SerializeField] public GameObject emptyContainer;
-    [SerializeField] public Button buttonNoLandCTA;
+    public event Action OnOpenMarketplaceRequested;
+
+    [SerializeField] internal LandElementView landElementView;
+    [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] internal GameObject contentContainer;
+    [SerializeField] internal GameObject emptyContainer;
+    [SerializeField] internal GameObject loadingAnimationContainer;
+    [SerializeField] internal GameObject noSearchResultContainer;
+    [SerializeField] internal Button buttonNoLandCTA;
 
     private bool isDestroyed = false;
 
-    private void OnDestroy()
-    {
-        isDestroyed = true;
-    }
+    private void Awake() { buttonNoLandCTA.onClick.AddListener(() => OnOpenMarketplaceRequested?.Invoke()); }
+
+    private void OnDestroy() { isDestroyed = true; }
 
     public void SetParent(Transform parent)
     {
@@ -24,32 +27,47 @@ internal class SectionLandView : MonoBehaviour, IDisposable
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
+    public void SetActive(bool active) { gameObject.SetActive(active); }
+
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
+
+    public Transform GetLandElementsContainer() { return landElementView.GetParent(); }
+
+    public LandElementView GetLandElementeBaseView() { return landElementView; }
+
+    public void SetEmpty()
     {
-        gameObject.SetActive(active);
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(true);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
     }
 
-    public void ResetScrollRect()
+    public void SetLoading()
     {
-        scrollRect.verticalNormalizedPosition = 1;
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(true);
     }
 
-    public Transform GetLandElementsContainer()
+    public void SetNoSearchResult()
     {
-        return landElementView.GetParent();
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(true);
+        loadingAnimationContainer.SetActive(false);
     }
 
-    public LandElementView GetLandElementeBaseView()
+    public void SetFilled()
     {
-        return landElementView;
+        contentContainer.SetActive(true);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+        ResetScrollRect();
     }
 
-    public void SetEmpty(bool isEmpty)
-    {
-        emptyContainer.SetActive(isEmpty);
-        contentContainer.SetActive(!isEmpty);
-    }
-    
     public void Dispose()
     {
         if (!isDestroyed)

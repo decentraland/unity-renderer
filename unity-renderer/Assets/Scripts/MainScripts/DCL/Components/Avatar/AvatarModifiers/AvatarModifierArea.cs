@@ -16,11 +16,8 @@ public class AvatarModifierArea : BaseComponent
         // TODO: Change to TriggerArea and handle deserialization with subclasses
         public BoxTriggerArea area;
         public string[] modifiers;
-        
-        public override BaseModel GetDataFromJSON(string json)
-        {
-            return Utils.SafeFromJson<Model>(json);
-        }
+
+        public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
     }
 
     private Model cachedModel = new Model();
@@ -57,11 +54,11 @@ public class AvatarModifierArea : BaseComponent
     private void OnDestroy()
     {
         var toRemove = new HashSet<GameObject>();
-        if(avatarsInArea != null)
+        if (avatarsInArea != null)
             toRemove.UnionWith(avatarsInArea);
 
         var currentInArea = DetectAllAvatarsInArea();
-        if(currentInArea != null)
+        if (currentInArea != null)
             toRemove.UnionWith(currentInArea);
 
         RemoveAllModifiers(toRemove);
@@ -79,10 +76,10 @@ public class AvatarModifierArea : BaseComponent
         if (AreSetEquals(avatarsInArea, newAvatarsInArea))
             return;
 
-        if(avatarsInArea == null)
+        if (avatarsInArea == null)
             avatarsInArea = new HashSet<GameObject>();
 
-        if(newAvatarsInArea == null)
+        if (newAvatarsInArea == null)
             newAvatarsInArea = new HashSet<GameObject>();
 
         // Call event for avatars that just entered the area
@@ -123,10 +120,7 @@ public class AvatarModifierArea : BaseComponent
         return cachedModel.area?.DetectAvatars(center, rotation);
     }
 
-    private void RemoveAllModifiers()
-    {
-        RemoveAllModifiers(DetectAllAvatarsInArea());
-    }
+    private void RemoveAllModifiers() { RemoveAllModifiers(DetectAllAvatarsInArea()); }
 
     private void RemoveAllModifiers(HashSet<GameObject> avatars)
     {
@@ -161,8 +155,5 @@ public class AvatarModifierArea : BaseComponent
         }
     }
 
-    public override int GetClassId()
-    {
-        return (int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA;
-    }
+    public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_MODIFIER_AREA; }
 }

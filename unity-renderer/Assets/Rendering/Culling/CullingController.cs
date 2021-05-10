@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -64,9 +64,7 @@ namespace DCL.Rendering
             );
         }
 
-        public CullingController()
-        {
-        }
+        public CullingController() { }
 
         public CullingController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
         {
@@ -101,7 +99,7 @@ namespace DCL.Rendering
                 return;
 
             RaiseDataReport();
-            profiles = new List<CullingControllerProfile> {settings.rendererProfile, settings.skinnedRendererProfile};
+            profiles = new List<CullingControllerProfile> { settings.rendererProfile, settings.skinnedRendererProfile };
             updateCoroutine = CoroutineStarter.Start(UpdateCoroutine());
         }
 
@@ -346,7 +344,8 @@ namespace DCL.Rendering
 
             for (var i = 0; i < skinnedRenderers?.Length; i++)
             {
-                skinnedRenderers[i].updateWhenOffscreen = true;
+                if (skinnedRenderers[i] != null)
+                    skinnedRenderers[i].updateWhenOffscreen = true;
             }
 
             for (var i = 0; i < animations?.Length; i++)
@@ -385,28 +384,19 @@ namespace DCL.Rendering
         /// <summary>
         /// Method suscribed to playerUnityPosition change
         /// </summary>
-        private void OnPlayerUnityPositionChange(Vector3 previous, Vector3 current)
-        {
-            playerPositionDirty = true;
-        }
+        private void OnPlayerUnityPositionChange(Vector3 previous, Vector3 current) { playerPositionDirty = true; }
 
         /// <summary>
         /// Sets the scene objects dirtiness.
         /// In the next update iteration, all the scene objects are going to be gathered.
         /// This method has performance impact.
         /// </summary>
-        public void MarkDirty()
-        {
-            objectPositionsDirty = true;
-        }
+        public void MarkDirty() { objectPositionsDirty = true; }
 
         /// <summary>
         /// Gets the scene objects dirtiness.
         /// </summary>
-        public bool IsDirty()
-        {
-            return objectPositionsDirty;
-        }
+        public bool IsDirty() { return objectPositionsDirty; }
 
         /// <summary>
         /// Set settings. This will dirty the scene objects and has performance impact.
@@ -424,10 +414,7 @@ namespace DCL.Rendering
         /// Get current settings copy. If you need to modify it, you must set them via SetSettings afterwards.
         /// </summary>
         /// <returns>Current settings object copy.</returns>
-        public CullingControllerSettings GetSettingsCopy()
-        {
-            return settings.Clone();
-        }
+        public CullingControllerSettings GetSettingsCopy() { return settings.Clone(); }
 
         /// <summary>
         /// Enable or disable object visibility culling.
@@ -491,10 +478,7 @@ namespace DCL.Rendering
         /// <summary>
         /// Returns true if the culling loop is running
         /// </summary>
-        public bool IsRunning()
-        {
-            return updateCoroutine != null;
-        }
+        public bool IsRunning() { return updateCoroutine != null; }
 
         /// <summary>
         /// Draw debug gizmos on the scene view.

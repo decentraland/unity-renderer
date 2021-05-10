@@ -1,5 +1,6 @@
 {
     "name": "TaskbarHUD",
+    "rootNamespace": "",
     "references": [
         "GUID:6c83ec3e64bad1743a40f7646cd964a4",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
@@ -31,7 +32,10 @@
         "GUID:a3ceb534947fac14da25035bc5c24788",
         "GUID:82873c2d9c9cbe94391e6b33e5153865",
         "GUID:760a1d365aad58044916992b072cf2a6",
-        "GUID:28f74c468a54948bfa9f625c5d428f56"
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:81a6b1347b86bfe4aa02ed089ff533c1",
+        "GUID:99cea83ca76dcd846abed7e61a8c90bd",
+        "GUID:9b06d63e1a13bc34c995683595d8d849"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

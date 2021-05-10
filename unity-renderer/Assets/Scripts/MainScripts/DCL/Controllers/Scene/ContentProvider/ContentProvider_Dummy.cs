@@ -4,10 +4,7 @@ namespace DCL
 {
     public class ContentProvider_Dummy : ContentProvider
     {
-        public override bool HasContentsUrl(string url)
-        {
-            return !string.IsNullOrEmpty(url);
-        }
+        public override bool HasContentsUrl(string url) { return !string.IsNullOrEmpty(url); }
 
         public override bool TryGetContentsUrl(string url, out string result)
         {

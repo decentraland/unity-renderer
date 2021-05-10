@@ -17,10 +17,7 @@ public class InputAction_Trigger : ScriptableObject
 
     private int triggeredInFrame = -1;
 
-    public bool WasTriggeredThisFrame()
-    {
-        return triggeredInFrame == Time.frameCount;
-    }
+    public bool WasTriggeredThisFrame() { return triggeredInFrame == Time.frameCount; }
 
     public void RaiseOnTriggered()
     {
@@ -31,19 +28,6 @@ public class InputAction_Trigger : ScriptableObject
     #region Editor
 
 #if UNITY_EDITOR
-
-    private void OnEnable()
-    {
-        Application.quitting -= CleanUp;
-        Application.quitting += CleanUp;
-    }
-
-    private void CleanUp()
-    {
-        Application.quitting -= CleanUp;
-        if (UnityEditor.AssetDatabase.Contains(this)) //It could happen that the SO has been created in runtime
-            Resources.UnloadAsset(this);
-    }
 
     [UnityEditor.CustomEditor(typeof(InputAction_Trigger), true)]
     internal class InputAction_TriggerEditor : UnityEditor.Editor

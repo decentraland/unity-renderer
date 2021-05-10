@@ -15,10 +15,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            extraActionsController.Dispose();
-        }
+        public void TearDown() { extraActionsController.Dispose(); }
 
         [Test]
         [TestCase(true)]

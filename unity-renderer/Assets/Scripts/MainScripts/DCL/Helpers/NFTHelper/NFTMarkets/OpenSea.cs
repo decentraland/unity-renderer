@@ -13,7 +13,6 @@ namespace DCL.Helpers.NFT.Markets
         Dictionary<string, NFTInfo> cachedResponses = new Dictionary<string, NFTInfo>();
         Dictionary<string, NFTOwner> ownerCachedResponses = new Dictionary<string, NFTOwner>();
 
-
         IEnumerator INFTMarket.FetchNFTsFromOwner(string assetContractAddress, Action<NFTOwner> onSuccess, Action<string> onError)
         {
             string ownerId = assetContractAddress;
@@ -39,8 +38,6 @@ namespace DCL.Helpers.NFT.Markets
                     onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress} {error}");
                 });
         }
-
-
 
         IEnumerator INFTMarket.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
@@ -68,12 +65,12 @@ namespace DCL.Helpers.NFT.Markets
                 });
         }
 
-        private NFTOwner ResponseToNFTOwner(string ethAddress,AssetsResponse response)
+        private NFTOwner ResponseToNFTOwner(string ethAddress, AssetsResponse response)
         {
             NFTOwner ownerInfo = NFTOwner.defaultNFTOwner;
             ownerInfo.ethAddress = ethAddress;
 
-            foreach(AssetResponse assetResponse in response.assets)
+            foreach (AssetResponse assetResponse in response.assets)
             {
                 ownerInfo.assets.Add(ResponseToNFTInfo(assetResponse));
             }
@@ -142,7 +139,8 @@ namespace DCL.Helpers.NFT.Markets
 
         private string PriceToFloatingPointString(OpenSea_Internal.AssetSaleInfo saleInfo)
         {
-            if (saleInfo.payment_token == null) return null;
+            if (saleInfo.payment_token == null)
+                return null;
             return PriceToFloatingPointString(saleInfo.total_price, saleInfo.payment_token);
         }
 

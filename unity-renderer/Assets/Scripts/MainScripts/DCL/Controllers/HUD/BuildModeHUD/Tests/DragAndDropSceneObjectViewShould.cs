@@ -8,16 +8,10 @@ namespace Tests.BuildModeHUDViews
         private DragAndDropSceneObjectView dragAndDropSceneObjectView;
 
         [SetUp]
-        public void SetUp()
-        {
-            dragAndDropSceneObjectView = DragAndDropSceneObjectView.Create();
-        }
+        public void SetUp() { dragAndDropSceneObjectView = DragAndDropSceneObjectView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(dragAndDropSceneObjectView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(dragAndDropSceneObjectView.gameObject); }
 
         [Test]
         public void DropCorrectly()

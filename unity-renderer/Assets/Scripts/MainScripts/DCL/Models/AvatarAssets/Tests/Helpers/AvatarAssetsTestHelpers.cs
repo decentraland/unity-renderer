@@ -11,16 +11,6 @@ public static class AvatarAssetsTestHelpers
         foreach (var wearableItem in wearables)
         {
             wearableItem.baseUrl = Utils.GetTestsAssetsPath() + "/Avatar/Assets/";
-
-            foreach (var rep in wearableItem.data.representations)
-            {
-                rep.contents = rep.contents.Select((x) =>
-                {
-                    x.hash = x.key;
-                    return x;
-                }).ToArray();
-            }
-
             wearableItem.thumbnail = "";
         }
 

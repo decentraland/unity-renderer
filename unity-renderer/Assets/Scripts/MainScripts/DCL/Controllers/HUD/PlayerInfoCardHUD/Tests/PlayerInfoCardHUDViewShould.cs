@@ -47,10 +47,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void BeCreatedProperly()
-    {
-        Assert.IsNotNull(view);
-    }
+    public void BeCreatedProperly() { Assert.IsNotNull(view); }
 
     [Test]
     public void InitializeProperly()
@@ -132,11 +129,7 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         }
     }
 
-
-    private PlayerInfoCardHUDView.TabsMapping GetTabMapping(PlayerInfoCardHUDView.Tabs tab)
-    {
-        return view.tabsMapping.First(x => x.tab == tab);
-    }
+    private PlayerInfoCardHUDView.TabsMapping GetTabMapping(PlayerInfoCardHUDView.Tabs tab) { return view.tabsMapping.First(x => x.tab == tab); }
 
     private WearableItem CreateMockWearableByRarity(string rarity)
     {

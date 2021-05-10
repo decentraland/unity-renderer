@@ -18,6 +18,17 @@ references:
         #                          ~~~~~~~~~~~~~~ <- repo name
         #                                         ~~~~~~~~~~~~~~ <- folder name
 
+  .cached_paths: &CACHED_PATHS
+    - ./unity-renderer/test-results
+    - ./unity-renderer/editmode-logs.txt
+    - ./unity-renderer/playmode-logs.txt
+    - ./unity-renderer/build-logs.txt
+    - ./unity-renderer/ab-logs.txt
+    - ./unity-renderer/playmode-results.xml
+    - ./unity-renderer/CodeCoverage
+    - ./unity-renderer/TestResources/VisualTests
+    - ./unity-renderer/Builds/
+
   .unity_image: &unity_image
     - image: decentraland/renderer-build:2020.3.0
       environment:
@@ -91,12 +102,11 @@ jobs:
           name: Get the hash of source files
           command: |
             # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Plugins*' \) \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
 
             # hash pipeline files
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
       - restore_cache:
-          name: Restore hashed files if they exist
           keys:
             - unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: &RESTORE_LIBRARY_CACHE
@@ -124,16 +134,13 @@ jobs:
           path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: ./unity-renderer/test-results
-      - save_cache:
-          name: Store test cache
-          key: unity-editmode-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/test-results
-            - ./unity-renderer/editmode-logs.txt
-            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
-      - store_artifacts:
+      - save_cache: &SAVE_CHECKSUM_CACHE_EDITMODE
+          name: Store editmode cache
+          key: unity-editmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
+      - store_artifacts: &STORE_VISUAL_TESTS
           name: Store visual tests result as artifacts
-          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
+          path: ./unity-renderer/TestResources/VisualTests
 
   playmode-tests:
     <<: *working_directory_root
@@ -145,7 +152,7 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-playmode-{{ checksum "../.unitysources-checksum" }}
+            - unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Run playmode tests
@@ -171,16 +178,53 @@ jobs:
           path: ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
-          key: unity-playmode-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/test-results
-            - ./unity-renderer/playmode-logs.txt
-            - ./unity-renderer/playmode-results.xml
-            - ./unity-renderer/CodeCoverage
-            - ./unity-renderer/TestResources/VisualTests/CurrentTestImages/*.png
+          key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
+      - store_artifacts: *STORE_VISUAL_TESTS
+
+  asset-bundle-tests:
+    <<: *working_directory_root
+    resource_class: xlarge
+    docker: *unity_image
+    steps:
+      - <<: *attach_root
+      - run: *HASH_UNITY_FILES
+      - restore_cache:
+          name: Restore hashed files if they exist
+          keys:
+            - unity-ab-2020-3-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache: *RESTORE_LIBRARY_CACHE
+      - run:
+          name: Run AB tests
+          command: |
+            bash ./ci-asset-bundle-test.sh
+            exit $?
+          no_output_timeout: 30m
+      - run:
+          name: Cat logs
+          when: always
+          command: cat $(pwd)/ab-logs.txt
+      - run:
+          name: Print files
+          command: find ./unity-renderer/ab-output
+          when: always
+      - run:
+          name: Print files (failed)
+          command: |
+            pwd
+            find .
+          when: on_fail
+      - save_cache:
+          name: Store test cache
+          key: unity-ab-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
       - store_artifacts:
-          name: Store visual tests result as artifacts
-          path: ./unity-renderer/TestResources/VisualTests/CurrentTestImages
+          name: Store logs
+          path: ./ab-logs.txt
+      - store_artifacts:
+          name: Store AB converter results
+          path: ./unity-renderer/ab-output
+      - store_artifacts: *STORE_VISUAL_TESTS
 
   build-unity:
     <<: *working_directory_root
@@ -192,32 +236,33 @@ jobs:
       - restore_cache:
           name: Restore hashed files if they exist
           keys:
-            - unity-build-{{ checksum "../.unitysources-checksum" }}
+            - unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
       - restore_cache: *RESTORE_LIBRARY_CACHE
       - run:
           name: Build Unity Project
+          no_output_timeout: 30m
           command: |
-            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -e "./unity-renderer/build-logs.txt" ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 mkdir -p ${BUILD_PATH}
-                (./ci-build.sh & echo $! > /tmp/workspace/build.pid &)
-                pid=`cat /tmp/workspace/build.pid`
-                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
-                    echo "Running Unity Build..."
-                    sleep 60
-                done
-                cat ./unity-renderer/build-logs.txt
+
+                ./ci-build.sh
+            else
+              echo "Skipping build, using cached artifacts."
             fi;
+      - run:
+          name: Print build logs
+          command: cat ./unity-renderer/build-logs.txt
+          when: always
       - save_cache:
-          name: Store decentraland-renderer build
-          key: unity-build-{{ checksum "../.unitysources-checksum" }}
-          paths:
-            - ./unity-renderer/Builds/
+          name: Store test cache
+          key: unity-build-2020-3-{{ checksum "../.unitysources-checksum" }}
+          paths: *CACHED_PATHS
       - store_artifacts:
           path: ./unity-renderer/Builds/
           destination: Builds
       - save_cache:
           name: Store library
-          key: library-2020-3-{{ .Branch }}-{{ epoch }}
+          key: library-2020-3-{{ .Branch }}
           paths:
             - ./unity-renderer/Library
       - store_artifacts:
@@ -229,6 +274,18 @@ jobs:
           root: *working_directory
           paths:
             - ./unity-renderer/Builds
+      - run:
+          name: Check there are build artifacts
+          command: |
+            if [ -z "$(ls -A "./unity-renderer/Builds")" ]; then
+              echo "directory ./unity-renderer/Builds is empty"
+              exit 1
+            fi
+      - run:
+          name: Print all files (in failure)
+          when: on_fail
+          command: |
+            find "./unity-renderer"
 
   build-js-interface:
     <<: *working_directory_root
@@ -288,6 +345,10 @@ workflows:
           <<: *all_branches_and_tags
 
       - playmode-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
+      - asset-bundle-tests:
           <<: *all_branches_and_tags
           requires:
             - checkout

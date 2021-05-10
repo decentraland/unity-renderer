@@ -116,10 +116,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase("dcl://base-avatars/bee_t_shirt")]
         [TestCase("dcl://base-avatars/m_mountainshoes.glb")]
         [TestCase("dcl://base-avatars/moptop")]
-        public void NotAdd_BaseWearables_ToCollectibles(string wearableId)
-        {
-            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
-        }
+        public void NotAdd_BaseWearables_ToCollectibles(string wearableId) { Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId)); }
 
         [Test]
         [TestCase("dcl://halloween_2019/sad_clown_upper_body")]
@@ -256,13 +253,12 @@ namespace AvatarEditorHUD_Tests
                     tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
                     representations = new[]
                     {
-                        new WearableItem.Representation()
-                        {
-                            bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
+                        new WearableItem.Representation(){
+                            bodyShapes = new[] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE },
                         }
                     }
                 },
-                i18n = new[] {new i18n() {code = "en", text = "Dummy Item"}}
+                i18n = new[] { new i18n() { code = "en", text = "Dummy Item" } }
             };
 
             userProfile.SetInventory(new[] { dummyItem.id });

@@ -71,26 +71,20 @@ namespace Tests
             controller.SetAdmins(new [] { "1" });
 
             bool triggered = false;
-            void UpdateAdmins(string sceneId, SceneAdminsUpdatePayload payload)
-            {
-                triggered = true;
-            }
+            void UpdateAdmins(string sceneId, SceneAdminsUpdatePayload payload) { triggered = true; }
 
             controller.OnRequestUpdateSceneAdmins += UpdateAdmins;
             view.adminsElementViews["1"].removeButton.onClick.Invoke();
             Assert.IsTrue(triggered);
         }
-        
+
         [Test]
         public void TriggerUpdateBannedUsersCorrectly()
         {
             controller.SetBannedUsers(new [] { "11" });
 
             bool triggered = false;
-            void UpdateBanned(string sceneId, SceneBannedUsersUpdatePayload payload)
-            {
-                triggered = true;
-            }
+            void UpdateBanned(string sceneId, SceneBannedUsersUpdatePayload payload) { triggered = true; }
 
             controller.OnRequestUpdateSceneBannedUsers += UpdateBanned;
             view.bannedUsersElementViews["11"].removeButton.onClick.Invoke();

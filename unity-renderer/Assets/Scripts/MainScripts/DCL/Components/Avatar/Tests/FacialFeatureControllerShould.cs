@@ -52,10 +52,13 @@ namespace AvatarShape_Tests
                     category = WearableLiterals.Categories.EYES,
                     representations = new []
                     {
-                        new WearableItem.Representation
-                        {
+                        new WearableItem.Representation(){
                             bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                            contents = new [] { new WearableItem.MappingPair{key = "fake.png", hash = "nope"}, new WearableItem.MappingPair{key = "fake_mask.png", hash = "nope2"} },
+                            contents = new []
+                            {
+                                new WearableItem.MappingPair { key = "fake.png", hash = "nope" }, 
+                                new WearableItem.MappingPair { key = "fake_mask.png", hash = "nope2" }
+                            },
                         }
                     }
                 }

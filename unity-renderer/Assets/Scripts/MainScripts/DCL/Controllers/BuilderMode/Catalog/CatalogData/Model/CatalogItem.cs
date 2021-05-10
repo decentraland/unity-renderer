@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CatalogItem 
+public class CatalogItem
 {
     public enum ItemType
     {
@@ -24,7 +24,6 @@ public class CatalogItem
     public string category;
     public string categoryName;
     public Dictionary<string, string> contents;
-
 
     public SceneObject.ObjectMetrics metrics;
     public SmartItemParameter[] parameters;
@@ -50,7 +49,7 @@ public class CatalogItem
     {
         if (actions.Length > 0)
             return true;
-        
+
         return false;
     }
 }

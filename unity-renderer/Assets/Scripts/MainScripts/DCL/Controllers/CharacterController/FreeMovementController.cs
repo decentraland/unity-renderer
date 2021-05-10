@@ -16,8 +16,6 @@ public class FreeMovementController : MonoBehaviour
 
     [System.NonSerialized] public CharacterController characterController;
 
-
-
     bool isSprinting = false;
     bool isActive;
 
@@ -33,26 +31,13 @@ public class FreeMovementController : MonoBehaviour
     [SerializeField] private InputAction_Measurable characterYAxis;
     [SerializeField] private InputAction_Measurable characterXAxis;
 
+    private void Awake() { characterController = GetComponent<CharacterController>(); }
 
-    private void Awake()
-    {
-        characterController = GetComponent<CharacterController>();
-    }
+    public bool IsActive() { return isActive; }
 
-    public bool IsActive()
-    {
-        return isActive;
-    }
+    public void SetActive(bool _isActive) { isActive = _isActive; }
 
-    public void SetActive(bool _isActive)
-    {
-        isActive = _isActive;
-    }
-
-    public Vector3 CalculateMovement()
-    {
-        return FreeMovement();
-    }
+    public Vector3 CalculateMovement() { return FreeMovement(); }
 
     Vector3 FreeMovement()
     {
@@ -82,12 +67,14 @@ public class FreeMovementController : MonoBehaviour
                 forwardTarget -= xzPlaneRight;
 
 
-            if (Input.GetKey(KeyCode.Space)) forwardTarget += Vector3.up;
-            else if (Input.GetKey(KeyCode.X)) forwardTarget += Vector3.down;
+            if (Input.GetKey(KeyCode.Space))
+                forwardTarget += Vector3.up;
+            else if (Input.GetKey(KeyCode.X))
+                forwardTarget += Vector3.down;
 
             forwardTarget.Normalize();
 
-       
+
             velocity += forwardTarget * speed;
             CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
 

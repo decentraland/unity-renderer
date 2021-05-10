@@ -38,10 +38,7 @@ public class ChatController : MonoBehaviour, IChatController
         OnAddMessage?.Invoke(message);
     }
 
-    public List<ChatMessage> GetEntries()
-    {
-        return new List<ChatMessage>(entries);
-    }
+    public List<ChatMessage> GetEntries() { return new List<ChatMessage>(entries); }
 
     [ContextMenu("Fake Private Message")]
     public void FakePrivateMessage()

@@ -16,25 +16,13 @@ internal class SearchInputField : MonoBehaviour
     private Coroutine searchWhileTypingRoutine;
     private float lastValueChangeTime = 0;
 
-    public void ShowSearchSpinner()
-    {
-        SetTypingMode();
-    }
+    public void ShowSearchSpinner() { SetTypingMode(); }
 
-    public void ShowSearchClearButton()
-    {
-        SetSearchMode();
-    }
+    public void ShowSearchClearButton() { SetSearchMode(); }
 
-    public void ClearSearch()
-    {
-        OnClear();
-    }
+    public void ClearSearch() { OnClear(); }
 
-    public void SetIdleSearchTime(float idleSearchTime)
-    {
-        idleTimeToTriggerSearch = idleSearchTime;
-    }
+    public void SetIdleSearchTime(float idleSearchTime) { idleTimeToTriggerSearch = idleSearchTime; }
 
     private void Awake()
     {
@@ -49,7 +37,7 @@ internal class SearchInputField : MonoBehaviour
     {
         if (idleTimeToTriggerSearch < 0)
             return;
-        
+
         lastValueChangeTime = Time.unscaledTime;
         StartSearchWhileTyping();
     }

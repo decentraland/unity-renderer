@@ -70,9 +70,6 @@ namespace DCL.Rendering
         /// Returns a clone of this object.
         /// </summary>
         /// <returns>The clone.</returns>
-        public CullingControllerProfile Clone()
-        {
-            return this.MemberwiseClone() as CullingControllerProfile;
-        }
+        public CullingControllerProfile Clone() { return this.MemberwiseClone() as CullingControllerProfile; }
     }
 }

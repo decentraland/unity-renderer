@@ -6,11 +6,7 @@ using UnityEngine;
 public class FriendsHUDController : IHUD
 {
     internal const string PLAYER_PREFS_SEEN_FRIEND_COUNT = "SeenFriendsCount";
-    public FriendsHUDView view
-    {
-        get;
-        private set;
-    }
+    public FriendsHUDView view { get; private set; }
 
     IFriendsController friendsController;
     public event System.Action<string> OnPressWhisper;
@@ -87,10 +83,7 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnRequestSent(string userId)
-    {
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO });
-    }
+    private void Entry_OnRequestSent(string userId) { WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO }); }
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
     {
@@ -121,10 +114,7 @@ public class FriendsHUDController : IHUD
         view.friendRequestsList.UpdateEntry(userId, model);
     }
 
-    void OnFriendNotFound(string name)
-    {
-        view.friendRequestsList.DisplayFriendUserNotFound();
-    }
+    void OnFriendNotFound(string name) { view.friendRequestsList.DisplayFriendUserNotFound(); }
 
     private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
@@ -221,10 +211,7 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void Entry_OnWhisper(FriendEntry entry)
-    {
-        OnPressWhisper?.Invoke(entry.userId);
-    }
+    private void Entry_OnWhisper(FriendEntry entry) { OnPressWhisper?.Invoke(entry.userId); }
 
     private void Entry_OnDelete(string userId)
     {

@@ -12,10 +12,7 @@ public class UIContainerRectVisualTests : UIVisualTestsBase
     [Explicit]
     [VisualTest]
     [Category("Explicit")]
-    public IEnumerator UIContainerRectVisualTests_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(UIContainerRectTest1());
-    }
+    public IEnumerator UIContainerRectVisualTests_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(UIContainerRectTest1()); }
 
     [UnityTest]
     [VisualTest]

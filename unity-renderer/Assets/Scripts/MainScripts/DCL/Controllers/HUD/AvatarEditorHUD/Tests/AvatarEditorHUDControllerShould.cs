@@ -1,4 +1,5 @@
 using AvatarShape_Tests;
+using DCL;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -40,6 +41,7 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
             controller.SetVisibility(true);
+            DataStore.i.isPlayerRendererLoaded.Set(true);
 
             userProfile.UpdateData(new UserProfileModel()
             {

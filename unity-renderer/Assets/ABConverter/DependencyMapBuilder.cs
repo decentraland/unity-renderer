@@ -38,12 +38,13 @@ namespace DCL.ABConverter
                     deps = deps.Where(s => s != exceptions).ToArray();
 
                     depMap.dependencies = deps.Select((x) =>
-                    {
-                        if (hashLowercaseToHashProper.ContainsKey(x))
-                            return hashLowercaseToHashProper[x];
-                        else
-                            return x;
-                    }).ToArray();
+                                              {
+                                                  if (hashLowercaseToHashProper.ContainsKey(x))
+                                                      return hashLowercaseToHashProper[x];
+                                                  else
+                                                      return x;
+                                              })
+                                              .ToArray();
                 }
 
                 string json = JsonUtility.ToJson(depMap);

@@ -13,7 +13,8 @@
         "MessagingContext",
         "WebRequest",
         "ServiceProviders",
-        "TheGraph"
+        "TheGraph",
+        "Catalyst"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

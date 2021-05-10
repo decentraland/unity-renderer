@@ -40,6 +40,10 @@ public class PublishPopupView : MonoBehaviour, IPublishPopupView
 
     private void OnDestroy() { closeButton.onClick.RemoveListener(CloseModal); }
 
+    private void OnEnable() { AudioScriptableObjects.dialogOpen.Play(); }
+
+    private void OnDisable() { AudioScriptableObjects.dialogClose.Play(); }
+
     public void PublishStart()
     {
         gameObject.SetActive(true);
@@ -48,6 +52,8 @@ public class PublishPopupView : MonoBehaviour, IPublishPopupView
         closeButton.gameObject.SetActive(false);
         errorDetailsText.gameObject.SetActive(false);
         titleText.text = TITLE_INITIAL_MESSAGE;
+
+        AudioScriptableObjects.enable.Play();
     }
 
     public void PublishEnd(bool isOk, string message)

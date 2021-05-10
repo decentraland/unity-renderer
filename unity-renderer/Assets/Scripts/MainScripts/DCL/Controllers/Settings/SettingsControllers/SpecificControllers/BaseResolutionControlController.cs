@@ -6,10 +6,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Base Resolution", fileName = "BaseResolutionControlController")]
     public class BaseResolutionControlController : SpinBoxSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return (int)currentQualitySetting.baseResolution;
-        }
+        public override object GetStoredValue() { return (int)currentQualitySetting.baseResolution; }
 
         public override void UpdateSetting(object newValue)
         {

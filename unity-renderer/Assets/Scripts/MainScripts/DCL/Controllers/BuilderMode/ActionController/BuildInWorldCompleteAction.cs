@@ -23,12 +23,12 @@ public class BuildInWorldCompleteAction
     public event OnApplyValueDelegate OnApplyValue;
 
     List<BuilderInWorldEntityAction> entityApplied = new List<BuilderInWorldEntityAction>();
-    
+
     public void Redo()
     {
-        foreach(BuilderInWorldEntityAction action in entityApplied)
+        foreach (BuilderInWorldEntityAction action in entityApplied)
         {
-            ApplyValue(action.entityId,action.newValue, false);
+            ApplyValue(action.entityId, action.newValue, false);
         }
         isDone = true;
     }
@@ -44,10 +44,7 @@ public class BuildInWorldCompleteAction
 
     }
 
-    void ApplyValue(string entityToApply, object value, bool isUndo)
-    {
-        OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo);
-    }
+    void ApplyValue(string entityToApply, object value, bool isUndo) { OnApplyValue?.Invoke(entityToApply, value, actionType, isUndo); }
 
     public void CreateChangeFloorAction(CatalogItem oldFloor, CatalogItem newFloor)
     {
@@ -64,12 +61,9 @@ public class BuildInWorldCompleteAction
         CreateAction(list, type);
     }
 
-    public void CreateActionType(List<BuilderInWorldEntityAction> entitiesActions, ActionType type)
-    {
-        CreateAction(entitiesActions, type);
-    }
+    public void CreateActionType(List<BuilderInWorldEntityAction> entitiesActions, ActionType type) { CreateAction(entitiesActions, type); }
 
-    void CreateAction(List<BuilderInWorldEntityAction> entitiesActions,ActionType type)
+    void CreateAction(List<BuilderInWorldEntityAction> entitiesActions, ActionType type)
     {
         actionType = type;
         entityApplied = entitiesActions;

@@ -15,15 +15,15 @@ public class ClipboardTests
 
         var promise = clipboard.ReadText();
         promise.Then(value =>
-            {
-                Assert.IsNull(promise.error);
-                Assert.IsNotNull(promise.value);
-                Assert.IsTrue(value == firstText);
-            })
-            .Catch(error =>
-            {
-                Assert.Fail("it shouldn't call this");
-            });
+               {
+                   Assert.IsNull(promise.error);
+                   Assert.IsNotNull(promise.value);
+                   Assert.IsTrue(value == firstText);
+               })
+               .Catch(error =>
+               {
+                   Assert.Fail("it shouldn't call this");
+               });
         yield return promise;
 
         Assert.IsNull(promise.error);
@@ -35,15 +35,15 @@ public class ClipboardTests
 
         promise = clipboard.ReadText();
         promise.Then(value =>
-            {
-                Assert.Fail("it shouldn't call this");
-            })
-            .Catch(error =>
-            {
-                Assert.IsNull(promise.value);
-                Assert.IsNotNull(promise.error);
-                Assert.IsTrue(error == errorText);
-            });
+               {
+                   Assert.Fail("it shouldn't call this");
+               })
+               .Catch(error =>
+               {
+                   Assert.IsNull(promise.value);
+                   Assert.IsNotNull(promise.error);
+                   Assert.IsTrue(error == errorText);
+               });
 
         Assert.IsNull(promise.value);
         Assert.IsNotNull(promise.error);

@@ -116,5 +116,20 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.AreEqual(isActive, sceneCatalogView.gameObject.activeSelf, "The catalog has not been activated properly!");
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShowBackButton(bool isActive)
+        {
+            // Arrange
+            sceneCatalogView.backgBtn.gameObject.SetActive(!isActive);
+
+            // Act
+            sceneCatalogView.ShowBackButton(isActive);
+
+            // Assert
+            Assert.AreEqual(isActive, sceneCatalogView.backgBtn.gameObject.activeSelf, "The back button has not been activated properly!");
+        }
     }
 }

@@ -29,6 +29,7 @@ public class BIWModeController : BIWController
     internal InputAction_Trigger toggleSnapModeInputAction;
 
     public Action OnInputDone;
+    public event Action<EditModeState, EditModeState> OnChangedEditModeState;
 
     private EditModeState currentEditModeState = EditModeState.Inactive;
 
@@ -82,6 +83,7 @@ public class BIWModeController : BIWController
         {
             HUDController.i.builderInWorldMainHud.OnChangeModeAction += ChangeAdvanceMode;
             HUDController.i.builderInWorldMainHud.OnResetAction += ResetScaleAndRotation;
+            HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
     }
 
@@ -103,9 +105,9 @@ public class BIWModeController : BIWController
         BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
     }
 
-    public override void EnterEditMode(ParcelScene parcelScene)
+    public override void EnterEditMode(ParcelScene scene)
     {
-        base.EnterEditMode(parcelScene);
+        base.EnterEditMode(scene);
         if (currentActiveMode == null)
             SetBuildMode(EditModeState.GodMode);
     }
@@ -138,6 +140,8 @@ public class BIWModeController : BIWController
 
     public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
 
+    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity);}
+    
     public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 
     public Vector3 GetModeCreationEntryPoint()
@@ -147,10 +151,17 @@ public class BIWModeController : BIWController
         return Vector3.zero;
     }
 
+    public virtual void MouseClickDetected() { currentActiveMode?.MouseClickDetected(); }
+
     private void ChangeSnapMode()
     {
         SetSnapActive(!isSnapActive);
         InputDone();
+
+        if (isSnapActive)
+            AudioScriptableObjects.enable.Play();
+        else
+            AudioScriptableObjects.disable.Play();
     }
 
     public void SetSnapActive(bool isActive)
@@ -174,6 +185,8 @@ public class BIWModeController : BIWController
 
     public void SetBuildMode(EditModeState state)
     {
+        EditModeState previousState = currentEditModeState;
+
         if (currentActiveMode != null)
             currentActiveMode.Deactivate();
 
@@ -203,5 +216,7 @@ public class BIWModeController : BIWController
             currentActiveMode.SetSnapActive(isSnapActive);
             builderInWorldEntityHandler.SetActiveMode(currentActiveMode);
         }
+
+        OnChangedEditModeState?.Invoke(previousState, state);
     }
 }

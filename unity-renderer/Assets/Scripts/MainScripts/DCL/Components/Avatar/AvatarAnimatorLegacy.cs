@@ -63,10 +63,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
     AvatarAnimationsVariable currentAnimations;
     bool isOwnPlayer = false;
 
-    public void Start()
-    {
-        OnPoolGet();
-    }
+    public void Start() { OnPoolGet(); }
 
     public void OnPoolGet()
     {
@@ -94,10 +91,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
         }
     }
 
-    void Update()
-    {
-        Update(Time.deltaTime);
-    }
+    void Update() { Update(Time.deltaTime); }
 
     void Update(float deltaTime)
     {
@@ -247,16 +241,14 @@ public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
 
     public void Reset()
     {
-        if (animation == null) return;
+        if (animation == null)
+            return;
 
         //It will set the animation to the first frame, but due to the nature of the script and its Update. It wont stop the animation from playing
         animation.Stop();
     }
 
-    public void SetIdleFrame()
-    {
-        animation.Play(baseClipsIds.idle);
-    }
+    public void SetIdleFrame() { animation.Play(baseClipsIds.idle); }
 
     public void BindBodyShape(Animation animation, string bodyShapeType, Transform target)
     {

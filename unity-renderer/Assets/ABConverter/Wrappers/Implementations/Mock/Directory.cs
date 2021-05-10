@@ -18,10 +18,7 @@ namespace DCL
                 mockedDirs.Add(path, path);
             }
 
-            public void InitializeDirectory(string path, bool deleteIfExists)
-            {
-                Delete(path);
-            }
+            public void InitializeDirectory(string path, bool deleteIfExists) { Delete(path); }
 
             public void Delete(string path, bool recursive = true)
             {
@@ -29,10 +26,7 @@ namespace DCL
                     mockedDirs.Remove(path);
             }
 
-            public bool Exists(string path)
-            {
-                return mockedDirs.ContainsKey(path);
-            }
+            public bool Exists(string path) { return mockedDirs.ContainsKey(path); }
         }
     }
 }

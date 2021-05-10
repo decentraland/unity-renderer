@@ -14,16 +14,10 @@ namespace DCL.Tutorial_Tests
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
 
         [SetUp]
-        public void SetUp()
-        {
-            CreateAndConfigureTutorial();
-        }
+        public void SetUp() { CreateAndConfigureTutorial(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            DestroyTutorial();
-        }
+        public void TearDown() { DestroyTutorial(); }
 
         [UnityTest]
         public IEnumerator ExecuteTutorialStepsFromGenesisPlazaCorrectly()
@@ -245,10 +239,7 @@ namespace DCL.Tutorial_Tests
             return newStep;
         }
 
-        private void WaitForOnStepStart()
-        {
-            CheckRunningStep();
-        }
+        private void WaitForOnStepStart() { CheckRunningStep(); }
 
         private IEnumerator WaitForOnStepExecute()
         {

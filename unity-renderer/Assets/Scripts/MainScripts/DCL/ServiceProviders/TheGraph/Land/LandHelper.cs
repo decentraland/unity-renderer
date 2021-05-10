@@ -77,10 +77,12 @@ internal static class LandHelper
             operators = new List<string>()
         };
 
-        if (int.TryParse(parcel.x, out int x))
+        if (int.TryParse(parcel.x, out int x) && int.TryParse(parcel.y, out int y))
+        {
             result.x = x;
-        if (int.TryParse(parcel.y, out int y))
             result.y = y;
+            result.parcels = new List<Parcel>() { new Parcel() { id = CoordsToId(parcel.x, parcel.y), x = x, y = y } };
+        }
 
         if (!string.IsNullOrEmpty(parcel.updateOperator))
         {

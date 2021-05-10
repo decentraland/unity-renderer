@@ -14,9 +14,7 @@ public class MinimapHUDController : IHUD
     public RectTransform minimapTooltipReference { get => view.minimapTooltipReference; }
     public RectTransform usersAroundTooltipReference { get => view.usersAroundTooltipReference; }
 
-    public MinimapHUDController() : this(new MinimapHUDModel())
-    {
-    }
+    public MinimapHUDController() : this(new MinimapHUDModel()) { }
 
     public MinimapHUDController(MinimapHUDModel model)
     {
@@ -78,15 +76,9 @@ public class MinimapHUDController : IHUD
         view?.UpdateData(model);
     }
 
-    public void AddZoomDelta(float delta)
-    {
-        minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta));
-    }
+    public void AddZoomDelta(float delta) { minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta)); }
 
-    public void ToggleOptions()
-    {
-        view.ToggleOptions();
-    }
+    public void ToggleOptions() { view.ToggleOptions(); }
 
     public void AddBookmark()
     {
@@ -103,15 +95,9 @@ public class MinimapHUDController : IHUD
             WebInterface.SendReportScene(currentSceneId);
     }
 
-    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus)
-    {
-        SetVisibility(current);
-    }
+    public void ChangeVisibilityForBuilderInWorld(bool current, bool previus) { view.gameObject.SetActive(current); }
 
-    public void SetVisibility(bool visible)
-    {
-        view.SetVisibility(visible);
-    }
+    public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
     /// <summary>
     /// Enable user's around button/indicator that shows the amount of users around player

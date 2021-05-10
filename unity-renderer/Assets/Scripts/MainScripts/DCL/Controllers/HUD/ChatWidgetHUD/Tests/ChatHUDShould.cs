@@ -18,10 +18,7 @@ public class ChatHUDShould : IntegrationTestSuite_Legacy
 
     ChatMessage lastMsgSent;
 
-    void OnSendMessage(ChatMessage msg)
-    {
-        lastMsgSent = msg;
-    }
+    void OnSendMessage(ChatMessage msg) { lastMsgSent = msg; }
 
     protected override IEnumerator TearDown()
     {

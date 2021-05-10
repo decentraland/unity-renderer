@@ -1,4 +1,5 @@
 using AvatarShape_Tests;
+using DCL;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace AvatarEditorHUD_Tests
             catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
+            DataStore.i.isPlayerRendererLoaded.Set(true);
         }
 
         [UnityTearDown]
@@ -71,7 +73,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.data.replaces = new[] {sunglasses.data.category};
+            bandana.data.replaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -86,8 +88,8 @@ namespace AvatarEditorHUD_Tests
             var sunglasses = catalog.Get(sunglassesId);
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
-            
-            bandana.data.replaces = new[] {"NonExistentCategory"};
+
+            bandana.data.replaces = new[] { "NonExistentCategory" };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -103,7 +105,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] {sunglasses.data.category};
+            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -119,7 +121,8 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideReplaces = new[] {sunglasses.data.category};
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE)
+                   .overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

@@ -283,15 +283,9 @@ internal class ProfileHUDView : MonoBehaviour
         copyToast.Hide();
     }
 
-    private void OnEnable()
-    {
-        closeAction.OnTriggered += closeActionDelegate;
-    }
+    private void OnEnable() { closeAction.OnTriggered += closeActionDelegate; }
 
-    private void OnDisable()
-    {
-        closeAction.OnTriggered -= closeActionDelegate;
-    }
+    private void OnDisable() { closeAction.OnTriggered -= closeActionDelegate; }
 
     internal void SetBackpackButtonVisibility(bool visible)
     {
@@ -317,20 +311,11 @@ internal class ProfileHUDView : MonoBehaviour
         }
     }
 
-    private void UpdateCharLimit(string newValue)
-    {
-        textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}";
-    }
+    private void UpdateCharLimit(string newValue) { textCharLimit.text = $"{newValue.Length}/{inputName.characterLimit}"; }
 
-    internal void SetProfileName(string newName)
-    {
-        textName.text = newName;
-    }
+    internal void SetProfileName(string newName) { textName.text = newName; }
 
-    internal void SetNameRegex(string namePattern)
-    {
-        nameRegex = new Regex(namePattern);
-    }
+    internal void SetNameRegex(string namePattern) { nameRegex = new Regex(namePattern); }
 
     internal bool IsValidAvatarName(string name)
     {

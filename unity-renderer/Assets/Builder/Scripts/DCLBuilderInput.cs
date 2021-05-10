@@ -25,10 +25,11 @@ namespace Builder
 
         private void Update()
         {
-            
+
             for (int i = 0; i <= 2; i++)
             {
-                if (HasMouseButtonInput(i)) break;
+                if (HasMouseButtonInput(i))
+                    break;
             }
 
             UpdateMouseWheelInput();

@@ -32,55 +32,25 @@ public class AvatarAnimationEventAudioHandler : MonoBehaviour
         blowKiss = audioContainer.GetEvent("ExpressionBlowKiss");
     }
 
-    public void AnimEvent_FootstepLight()
-    {
-        TryPlayingEvent(footstepLight);
-    }
+    public void AnimEvent_FootstepLight() { TryPlayingEvent(footstepLight); }
 
-    public void AnimEvent_FootstepSlide()
-    {
-        TryPlayingEvent(footstepSlide);
-    }
+    public void AnimEvent_FootstepSlide() { TryPlayingEvent(footstepSlide); }
 
-    public void AnimEvent_FootstepWalk()
-    {
-        TryPlayingEvent(footstepWalk);
-    }
+    public void AnimEvent_FootstepWalk() { TryPlayingEvent(footstepWalk); }
 
-    public void AnimEvent_FootstepRun()
-    {
-        TryPlayingEvent(footstepRun);
-    }
+    public void AnimEvent_FootstepRun() { TryPlayingEvent(footstepRun); }
 
-    public void AnimEvent_FootstepJump()
-    {
-        TryPlayingEvent(footstepJump);
-    }
+    public void AnimEvent_FootstepJump() { TryPlayingEvent(footstepJump); }
 
-    public void AnimEvent_FootstepLand()
-    {
-        TryPlayingEvent(footstepLand);
-    }
+    public void AnimEvent_FootstepLand() { TryPlayingEvent(footstepLand); }
 
-    public void AnimEvent_ClothesRustleShort()
-    {
-        TryPlayingEvent(clothesRustleShort);
-    }
+    public void AnimEvent_ClothesRustleShort() { TryPlayingEvent(clothesRustleShort); }
 
-    public void AnimEvent_Clap()
-    {
-        TryPlayingEvent(clap);
-    }
+    public void AnimEvent_Clap() { TryPlayingEvent(clap); }
 
-    public void AnimEvent_ThrowMoney()
-    {
-        TryPlayingEvent(throwMoney);
-    }
+    public void AnimEvent_ThrowMoney() { TryPlayingEvent(throwMoney); }
 
-    public void AnimEvent_BlowKiss()
-    {
-        TryPlayingEvent(blowKiss);
-    }
+    public void AnimEvent_BlowKiss() { TryPlayingEvent(blowKiss); }
 
     void TryPlayingEvent(AudioEvent audioEvent)
     {

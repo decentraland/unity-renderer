@@ -15,8 +15,5 @@ public class WearableItemDummy : WearableItem
         };
     }
 
-    public WearableItemDummy Clone()
-    {
-        return (WearableItemDummy)MemberwiseClone();
-    }
+    public WearableItemDummy Clone() { return (WearableItemDummy)MemberwiseClone(); }
 }

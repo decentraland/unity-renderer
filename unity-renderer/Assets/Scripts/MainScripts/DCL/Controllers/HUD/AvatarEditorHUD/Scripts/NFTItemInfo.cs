@@ -95,10 +95,7 @@ public class NFTItemInfo : MonoBehaviour
             GetThumbnail();
     }
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetActive(bool active) { gameObject.SetActive(active); }
 
     private void UpdateItemThumbnail(Asset_Texture texture)
     {
@@ -127,13 +124,7 @@ public class NFTItemInfo : MonoBehaviour
         thumbnailPromise = null;
     }
 
-    private void OnEnable()
-    {
-        GetThumbnail();
-    }
+    private void OnEnable() { GetThumbnail(); }
 
-    private void OnDisable()
-    {
-        ForgetThumbnail();
-    }
+    private void OnDisable() { ForgetThumbnail(); }
 }

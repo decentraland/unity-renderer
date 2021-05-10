@@ -51,7 +51,6 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(po.isInsidePool, "Asset should be inside pool!");
         }
 
-
         [UnityTest]
         public IEnumerator AnyAssetIsLoadedAndThenUnloaded()
         {

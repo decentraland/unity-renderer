@@ -15,7 +15,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
     Button randomizeButton;
     [SerializeField]
     AudioEvent eventMusic, eventRarity, eventAvatarAppear, eventReactionMale, eventReactionFemale, eventWearableClothing, eventWearableEyewear, eventWearableJewelry,
-        eventWearableFootwear, eventWearableHair, eventWearableHatMask, eventWearableRarity;
+               eventWearableFootwear, eventWearableHair, eventWearableHatMask, eventWearableRarity;
 
     WearableItem lastSelectedWearable = null;
     bool hasClickedRandomize = false, wearableIsSameAsPrevious = false;
@@ -40,10 +40,12 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
     {
         CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
         wearableIsSameAsPrevious = (wearable == lastSelectedWearable);
-        if (wearableIsSameAsPrevious) return;
+        if (wearableIsSameAsPrevious)
+            return;
 
         lastSelectedWearable = wearable;
-        if (wearable == null) return;
+        if (wearable == null)
+            return;
 
         switch (wearable.data.category)
         {
@@ -91,20 +93,11 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         }
     }
 
-    void OnEyeColorChanged(Color color)
-    {
-        ResetLastClickedWearable();
-    }
+    void OnEyeColorChanged(Color color) { ResetLastClickedWearable(); }
 
-    void OnSkinColorChanged(Color color)
-    {
-        ResetLastClickedWearable();
-    }
+    void OnSkinColorChanged(Color color) { ResetLastClickedWearable(); }
 
-    void OnHairColorChanged(Color color)
-    {
-        ResetLastClickedWearable();
-    }
+    void OnHairColorChanged(Color color) { ResetLastClickedWearable(); }
 
     void OnClickRandomize()
     {
@@ -112,14 +105,12 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         ResetLastClickedWearable();
     }
 
-    void ResetLastClickedWearable()
-    {
-        lastSelectedWearable = null;
-    }
+    void ResetLastClickedWearable() { lastSelectedWearable = null; }
 
     void OnAvatarAppear(AvatarModel model)
     {
-        if (!view.isOpen) return;
+        if (!view.isOpen)
+            return;
 
         eventAvatarAppear.Play(true);
 

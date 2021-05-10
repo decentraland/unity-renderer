@@ -51,10 +51,10 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     public void TestActivationScaleGizmos()
     {
         //Act
-        gizmosController.SetGizmoType(BuilderInWorldSettings.SCLAE_GIZMO_NAME);
+        gizmosController.SetGizmoType(BuilderInWorldSettings.SCALE_GIZMO_NAME);
 
         //Assert
-        Assert.AreEqual(gizmosController.GetSelectedGizmo(), BuilderInWorldSettings.SCLAE_GIZMO_NAME);
+        Assert.AreEqual(gizmosController.GetSelectedGizmo(), BuilderInWorldSettings.SCALE_GIZMO_NAME);
     }
 
     [Test]
@@ -83,7 +83,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     public void TestScaleGizmosType()
     {
         //Arrange
-        gizmosController.SetGizmoType(BuilderInWorldSettings.SCLAE_GIZMO_NAME);
+        gizmosController.SetGizmoType(BuilderInWorldSettings.SCALE_GIZMO_NAME);
         DCLBuilderGizmo gizmo = gizmosController.activeGizmo;
 
         //Assert

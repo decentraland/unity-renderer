@@ -107,6 +107,13 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class AllScenesEvent<T>
+        {
+            public string eventType;
+            public T payload;
+        }
+
+        [System.Serializable]
         public class UUIDEvent<TPayload>
             where TPayload : class, new()
         {
@@ -125,6 +132,18 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
 
+        [System.Serializable]
+        public class CameraModePayload
+        {
+            public CameraMode.ModeId cameraMode;
+        };
+        
+        [System.Serializable]
+        public class IdleStateChangedPayload
+        {
+            public bool isIdle;
+        };
+        
         [System.Serializable]
         public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
@@ -376,8 +395,22 @@ namespace DCL.Interface
         {
             public string samples;
             public bool fpsIsCapped;
+            public int hiccupsInThousandFrames;
+            public float hiccupsTime;
+            public float totalTime;
         }
 
+        [System.Serializable]
+        public class SystemInfoReportPayload
+        {
+            public string graphicsDeviceName = SystemInfo.graphicsDeviceName;
+            public string graphicsDeviceVersion = SystemInfo.graphicsDeviceVersion;
+            public int graphicsMemorySize = SystemInfo.graphicsMemorySize;
+            public string processorType = SystemInfo.processorType;
+            public int processorCount = SystemInfo.processorCount;
+            public int systemMemorySize = SystemInfo.systemMemorySize;
+        }
+        
         [System.Serializable]
         public class PerformanceHiccupPayload
         {
@@ -582,6 +615,8 @@ namespace DCL.Interface
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
+        private static CameraModePayload cameraModePayload = new CameraModePayload();
+        private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnPointerDownEvent onPointerDownEvent = new OnPointerDownEvent();
@@ -626,6 +661,15 @@ namespace DCL.Interface
             SendMessage("SceneEvent", sceneEvent);
         }
 
+        private static void SendAllScenesEvent<T>(string eventType, T payload)
+        {
+            AllScenesEvent<T> allScenesEvent = new AllScenesEvent<T>();
+            allScenesEvent.eventType = eventType;
+            allScenesEvent.payload = payload;
+
+            SendMessage("AllScenesEvent", allScenesEvent);
+        }
+
         public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight)
         {
             positionPayload.position = position;
@@ -633,6 +677,18 @@ namespace DCL.Interface
             positionPayload.playerHeight = playerHeight;
 
             SendMessage("ReportPosition", positionPayload);
+        }
+
+        public static void ReportCameraChanged(CameraMode.ModeId cameraMode)
+        {
+            cameraModePayload.cameraMode = cameraMode;
+            SendAllScenesEvent("cameraModeChanged", cameraModePayload);
+        }
+        
+        public static void ReportIdleStateChanged(bool isIdle)
+        {
+            idleStateChangedPayload.isIdle = isIdle;
+            SendAllScenesEvent("idleStateChanged", idleStateChangedPayload);
         }
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }
@@ -895,23 +951,21 @@ namespace DCL.Interface
 
         public static void SaveUserTutorialStep(int newTutorialStep) { SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep }); }
 
-        public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap)
+        public static void SendPerformanceReport(string encodedFrameTimesInMS, bool usingFPSCap, int hiccupsInThousandFrames, float hiccupsTime, float totalTime)
         {
             SendMessage("PerformanceReport", new PerformanceReportPayload()
             {
                 samples = encodedFrameTimesInMS,
-                fpsIsCapped = usingFPSCap
-            });
-        }
-
-        public static void SendPerformanceHiccupReport(int hiccupsInThousandFrames, float hiccupsTime, float totalTime)
-        {
-            SendMessage("PerformanceHiccupReport", new PerformanceHiccupPayload()
-            {
+                fpsIsCapped = usingFPSCap,
                 hiccupsInThousandFrames = hiccupsInThousandFrames,
                 hiccupsTime = hiccupsTime,
                 totalTime = totalTime
             });
+        }
+
+        public static void SendSystemInfoReport()
+        {
+            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
         }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
@@ -1121,5 +1175,7 @@ namespace DCL.Interface
             stringPayload.value = userId;
             SendMessage("RequestUserProfile", stringPayload);
         }
+
+        public static void ReportAvatarFatalError() { SendMessage("ReportAvatarFatalError"); }
     }
 }

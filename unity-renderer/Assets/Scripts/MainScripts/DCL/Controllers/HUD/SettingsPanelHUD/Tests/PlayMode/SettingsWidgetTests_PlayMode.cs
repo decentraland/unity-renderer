@@ -71,10 +71,11 @@ namespace SettingsWidgetTests
             yield return null;
 
             // Assert
-            widgetController.Received(1).AddControl(
-                Arg.Any<ISettingsControlView>(),
-                Arg.Any<SettingsControlController>(),
-                Arg.Any<SettingsControlModel>());
+            widgetController.Received(1)
+                            .AddControl(
+                                Arg.Any<ISettingsControlView>(),
+                                Arg.Any<SettingsControlController>(),
+                                Arg.Any<SettingsControlModel>());
         }
     }
 }

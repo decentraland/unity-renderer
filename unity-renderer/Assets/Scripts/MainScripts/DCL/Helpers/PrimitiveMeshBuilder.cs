@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 /*
 * PrimitiveMeshBuilder originated in the DecentralandUnityPlugin that can be found at:
 * https://github.com/fairwood/DecentralandUnityPlugin

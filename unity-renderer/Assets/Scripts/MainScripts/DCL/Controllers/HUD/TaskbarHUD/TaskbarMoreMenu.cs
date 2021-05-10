@@ -181,10 +181,7 @@ public class TaskbarMoreMenu : MonoBehaviour
         }
     }
 
-    internal void ShowTutorialButton(bool visible)
-    {
-        tutorialButton.gameObject.SetActive(visible);
-    }
+    internal void ShowTutorialButton(bool visible) { tutorialButton.gameObject.SetActive(visible); }
 
     private void ToggleCollapseBar()
     {

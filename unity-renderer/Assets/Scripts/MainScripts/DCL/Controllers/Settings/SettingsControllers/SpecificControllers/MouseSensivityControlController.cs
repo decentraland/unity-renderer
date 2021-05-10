@@ -23,10 +23,7 @@ namespace DCL.SettingsControls
             povCamera = GeneralSettingsReferences.i.firstPersonCamera.GetCinemachineComponent<CinemachinePOV>();
         }
 
-        public override object GetStoredValue()
-        {
-            return currentGeneralSettings.mouseSensitivity;
-        }
+        public override object GetStoredValue() { return currentGeneralSettings.mouseSensitivity; }
 
         public override void UpdateSetting(object newValue)
         {

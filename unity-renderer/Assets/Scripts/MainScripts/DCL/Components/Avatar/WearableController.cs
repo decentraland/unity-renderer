@@ -29,10 +29,7 @@ public class WearableController
 
     internal string lastMainFileLoaded = null;
 
-    public WearableController(WearableItem wearableItem)
-    {
-        this.wearable = wearableItem;
-    }
+    public WearableController(WearableItem wearableItem) { this.wearable = wearableItem; }
 
     protected WearableController(WearableController original)
     {
@@ -142,7 +139,8 @@ public class WearableController
 
     public void SetAnimatorBones(SkinnedMeshRenderer skinnedMeshRenderer)
     {
-        if (!boneRetargetingDirty || assetContainer == null) return;
+        if (!boneRetargetingDirty || assetContainer == null)
+            return;
 
         SkinnedMeshRenderer[] skinnedRenderers = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>();
 
@@ -190,14 +188,9 @@ public class WearableController
         }
     }
 
-    protected virtual void PrepareWearable(GameObject assetContainer)
-    {
-    }
+    protected virtual void PrepareWearable(GameObject assetContainer) { }
 
-    public virtual void UpdateVisibility(HashSet<string> hiddenList)
-    {
-        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category));
-    }
+    public virtual void UpdateVisibility(HashSet<string> hiddenList) { SetAssetRenderersEnabled(!hiddenList.Contains(wearable.data.category)); }
 
     public bool IsLoadedForBodyShape(string bodyShapeId)
     {

@@ -45,14 +45,12 @@ public class PrivateChatWindowHUDController : IHUD
         SetVisibility(false);
     }
 
-    void View_OnPressBack()
-    {
-        OnPressBack?.Invoke();
-    }
+    void View_OnPressBack() { OnPressBack?.Invoke(); }
 
     public void Configure(string newConversationUserId)
     {
-        if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == conversationUserId) return;
+        if (string.IsNullOrEmpty(newConversationUserId) || newConversationUserId == conversationUserId)
+            return;
 
         UserProfile newConversationUserProfile = UserProfileController.userProfilesCatalog.Get(newConversationUserId);
 
@@ -74,7 +72,8 @@ public class PrivateChatWindowHUDController : IHUD
 
     public void SendChatMessage(ChatMessage message)
     {
-        if (string.IsNullOrEmpty(conversationUserName)) return;
+        if (string.IsNullOrEmpty(conversationUserName))
+            return;
 
         bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body) && !string.IsNullOrEmpty(message.recipient);
 
@@ -84,7 +83,8 @@ public class PrivateChatWindowHUDController : IHUD
             view.chatHudView.FocusInputField();
         }
 
-        if (!isValidMessage) return;
+        if (!isValidMessage)
+            return;
 
         // If Kernel allowed for private messages without the whisper param we could avoid this line
         message.body = $"/w {message.recipient} {message.body}";
@@ -94,7 +94,8 @@ public class PrivateChatWindowHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
-        if (view.gameObject.activeSelf == visible) return;
+        if (view.gameObject.activeSelf == visible)
+            return;
 
         view.gameObject.SetActive(visible);
 
@@ -127,7 +128,8 @@ public class PrivateChatWindowHUDController : IHUD
 
     void OnAddMessage(ChatMessage message)
     {
-        if (!IsMessageFomCurrentConversation(message)) return;
+        if (!IsMessageFomCurrentConversation(message))
+            return;
 
         view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
 
@@ -138,10 +140,7 @@ public class PrivateChatWindowHUDController : IHUD
         }
     }
 
-    bool IsMessageFomCurrentConversation(ChatMessage message)
-    {
-        return message.messageType == ChatMessage.Type.PRIVATE && (message.sender == conversationUserId || message.recipient == conversationUserId);
-    }
+    bool IsMessageFomCurrentConversation(ChatMessage message) { return message.messageType == ChatMessage.Type.PRIVATE && (message.sender == conversationUserId || message.recipient == conversationUserId); }
 
     public void ForceFocus()
     {

@@ -5,9 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsPanelHUD
 {
     [System.Serializable]
-    public class SettingsSectionList : ReorderableArray<SettingsSectionModel>
-    {
-    }
+    public class SettingsSectionList : ReorderableArray<SettingsSectionModel> { }
 
     /// <summary>
     /// Model that represents the main settings panel. It contains a list of SECTIONS.

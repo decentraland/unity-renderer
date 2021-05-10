@@ -141,7 +141,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         controller.CleanItems();
         foreach (var placeHolder in GameObject.FindObjectsOfType<BIWLoadingPlaceHolder>())
         {
-            placeHolder.Disspose();
+            placeHolder.Dispose();
         }
 
         yield return base.TearDown();

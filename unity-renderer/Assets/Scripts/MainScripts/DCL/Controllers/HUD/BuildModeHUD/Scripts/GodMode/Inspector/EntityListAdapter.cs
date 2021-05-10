@@ -59,23 +59,15 @@ public class EntityListAdapter : MonoBehaviour
 
     public void SelectOrDeselect()
     {
-        OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
+        if (currentEntity.IsVisible)
+            OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
     }
 
-    public void ShowOrHide()
-    {
-        OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this);
-    }
+    public void ShowOrHide() { OnActionInvoked?.Invoke(EntityAction.SHOW, currentEntity, this); }
 
-    public void LockOrUnlock()
-    {
-        OnActionInvoked?.Invoke(EntityAction.LOCK, currentEntity, this);
-    }
+    public void LockOrUnlock() { OnActionInvoked?.Invoke(EntityAction.LOCK, currentEntity, this); }
 
-    public void DeleteEntity()
-    {
-        OnActionInvoked?.Invoke(EntityAction.DELETE, currentEntity, this);
-    }
+    public void DeleteEntity() { OnActionInvoked?.Invoke(EntityAction.DELETE, currentEntity, this); }
 
     void SetInfo(DCLBuilderInWorldEntity entityToEdit)
     {
@@ -136,12 +128,15 @@ public class EntityListAdapter : MonoBehaviour
         entityThumbnailImg.texture = texture.texture;
     }
 
-    public void Rename(string newName) { OnEntityRename?.Invoke(currentEntity, newName); }
-
-    public void AllowNameEdition(bool isAllowed)
+    public void Rename(string newName)
     {
-        nameInputField.enabled = isAllowed;
+        if (!string.IsNullOrEmpty(newName))
+            OnEntityRename?.Invoke(currentEntity, newName);
+        else
+            nameInputField.text = currentEntity.GetDescriptiveName();
     }
+
+    public void AllowNameEdition(bool isAllowed) { nameInputField.enabled = isAllowed; }
 
     void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)
     {

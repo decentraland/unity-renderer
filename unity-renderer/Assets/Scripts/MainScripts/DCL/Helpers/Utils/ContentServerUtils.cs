@@ -51,7 +51,6 @@ namespace DCL
             ORG,
         }
 
-
         public static string GetTldString(ApiTLD tld)
         {
             switch (tld)
@@ -78,7 +77,6 @@ namespace DCL
 
             return customBaseUrl;
         }
-
 
         public static string GetScenesAPIUrl(ApiTLD env, int x1, int y1, int width, int height)
         {

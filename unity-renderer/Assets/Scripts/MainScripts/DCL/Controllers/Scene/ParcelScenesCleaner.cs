@@ -52,10 +52,7 @@ namespace DCL
 
         Coroutine removeEntitiesCoroutine;
 
-        public void Start()
-        {
-            removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine());
-        }
+        public void Start() { removeEntitiesCoroutine = CoroutineStarter.Start(CleanupEntitiesCoroutine()); }
 
         public void Stop()
         {
@@ -83,15 +80,9 @@ namespace DCL
 
         // When removing all entities from a scene, we need to separate the root entities, as stated in ParcelScene,
         // to avoid traversing a lot of child entities in the same frame and other problems
-        public void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity)
-        {
-            rootEntitiesMarkedForCleanup.Enqueue(new MarkedEntityInfo(scene, entity));
-        }
+        public void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity) { rootEntitiesMarkedForCleanup.Enqueue(new MarkedEntityInfo(scene, entity)); }
 
-        public void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId)
-        {
-            disposableComponentsMarkedForCleanup.Enqueue(new MarkedSharedComponentInfo(scene, componentId));
-        }
+        public void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId) { disposableComponentsMarkedForCleanup.Enqueue(new MarkedSharedComponentInfo(scene, componentId)); }
 
         public void ForceCleanup()
         {

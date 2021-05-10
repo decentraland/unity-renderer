@@ -25,18 +25,9 @@ public class ControlsHUDView : MonoBehaviour
         closeAction.OnTriggered -= OnCloseActionTriggered;
     }
 
-    private void OnToggleActionTriggered(DCLAction_Trigger action)
-    {
-        onToggleActionTriggered?.Invoke();
-    }
+    private void OnToggleActionTriggered(DCLAction_Trigger action) { onToggleActionTriggered?.Invoke(); }
 
-    private void OnCloseActionTriggered(DCLAction_Trigger action)
-    {
-        Close(false);
-    }
+    private void OnCloseActionTriggered(DCLAction_Trigger action) { Close(false); }
 
-    private void Close(bool closedByButtonPress)
-    {
-        onCloseActionTriggered?.Invoke(closedByButtonPress);
-    }
+    private void Close(bool closedByButtonPress) { onCloseActionTriggered?.Invoke(closedByButtonPress); }
 }

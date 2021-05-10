@@ -30,10 +30,7 @@ public class SceneLimitsController : ISceneLimitsController
         sceneLimitsView.SetUpdateCallback(UpdateInfo);
     }
 
-    public void Dispose()
-    {
-        sceneLimitsView.OnToggleSceneLimitsInfo -= ToggleSceneLimitsInfo;
-    }
+    public void Dispose() { sceneLimitsView.OnToggleSceneLimitsInfo -= ToggleSceneLimitsInfo; }
 
     public void SetParcelScene(ParcelScene parcelScene)
     {
@@ -162,10 +159,14 @@ public class SceneLimitsController : ISceneLimitsController
 
         foreach (Vector2Int vector in parcelsPoints)
         {
-            if (vector.x < minX) minX = vector.x;
-            if (vector.y < minY) minY = vector.y;
-            if (vector.x > maxX) maxX = vector.x;
-            if (vector.y > maxY) maxY = vector.y;
+            if (vector.x < minX)
+                minX = vector.x;
+            if (vector.y < minY)
+                minY = vector.y;
+            if (vector.x > maxX)
+                maxX = vector.x;
+            if (vector.y > maxY)
+                maxY = vector.y;
         }
 
         if (maxX - minX != maxY - minY)

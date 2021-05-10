@@ -18,21 +18,12 @@ public class DCLLockedOnEdit : BaseDisposable
     {
         public bool isLocked;
 
-        public override BaseModel GetDataFromJSON(string json)
-        {
-            return Utils.SafeFromJson<Model>(json);
-        }
+        public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
     }
 
-    public DCLLockedOnEdit()
-    {
-        model = new Model();
-    }
+    public DCLLockedOnEdit() { model = new Model(); }
 
-    public override int GetClassId()
-    {
-        return (int) CLASS_ID.LOCKED_ON_EDIT;
-    }
+    public override int GetClassId() { return (int) CLASS_ID.LOCKED_ON_EDIT; }
 
     public void SetIsLocked(bool value)
     {

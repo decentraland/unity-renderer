@@ -7,7 +7,7 @@ public class RaycastPointerClickProxy : MonoBehaviour, IRaycastPointerClickHandl
 
     public void OnPointerClick()
     {
-        if(!Cursor.visible)
+        if (!Cursor.visible)
             OnClick?.Invoke();
     }
 }

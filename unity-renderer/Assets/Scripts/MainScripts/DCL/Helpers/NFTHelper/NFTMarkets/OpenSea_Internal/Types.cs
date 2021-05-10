@@ -39,7 +39,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         public long? owner = null;
         public string schema_name;
         public string symbol;
-        public long? total_supply = null;
+        public string total_supply = null;
         public string description;
         public string external_link;
         public string image_url;

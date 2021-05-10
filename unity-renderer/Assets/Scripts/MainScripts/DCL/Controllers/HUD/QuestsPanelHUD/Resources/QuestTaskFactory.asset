@@ -19,3 +19,6 @@ MonoBehaviour:
   - type: numeric
     prefab: {fileID: 4080155017753360023, guid: 07732aefe3d85304b8270c2d4aefb6b6,
       type: 3}
+  - type: step-based
+    prefab: {fileID: 4080155017753360023, guid: 07732aefe3d85304b8270c2d4aefb6b6,
+      type: 3}

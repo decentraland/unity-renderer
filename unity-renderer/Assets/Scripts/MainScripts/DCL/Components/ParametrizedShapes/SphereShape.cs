@@ -10,21 +10,12 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : BaseShape.Model
         {
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public SphereShape()
-        {
-            model = new Model();
-        }
+        public SphereShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.SPHERE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.SPHERE_SHAPE; }
 
         public static Mesh mesh = null;
         private static int meshUses = 0;
@@ -50,9 +41,6 @@ namespace DCL.Components
             }
         }
 
-        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
-        {
-            return currentMesh == null;
-        }
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel) { return currentMesh == null; }
     }
 }

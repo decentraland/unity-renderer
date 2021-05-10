@@ -16,10 +16,7 @@ namespace DCL.Components
             public bool playing = false;
             public float volume = 1;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         private void Awake() { model = new Model(); }
@@ -29,8 +26,8 @@ namespace DCL.Components
         private bool isDestroyed = false;
         private Model prevModel = new Model();
 
-        new public Model GetModel() { return (Model) model;}
-        
+        new public Model GetModel() { return (Model) model; }
+
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
@@ -67,8 +64,10 @@ namespace DCL.Components
 
         private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
         {
-            if (scene == null) return false;
-            if (string.IsNullOrEmpty(currentSceneId)) return false;
+            if (scene == null)
+                return false;
+            if (string.IsNullOrEmpty(currentSceneId))
+                return false;
             return (scene.sceneData.id == currentSceneId) || (scene is GlobalScene globalScene && globalScene.isPortableExperience);
         }
 
@@ -99,15 +98,14 @@ namespace DCL.Components
 
             if (forceStateUpdate)
             {
-                if (isPlaying) StartStreaming();
-                else StopStreaming();
+                if (isPlaying)
+                    StartStreaming();
+                else
+                    StopStreaming();
             }
         }
 
-        private void OnSceneChanged(string sceneId, string prevSceneId)
-        {
-            UpdatePlayingState(false);
-        }
+        private void OnSceneChanged(string sceneId, string prevSceneId) { UpdatePlayingState(false); }
 
         private void OnRendererStateChanged(bool isEnable, bool prevState)
         {
@@ -157,9 +155,6 @@ namespace DCL.Components
             }
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.AUDIO_STREAM;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AUDIO_STREAM; }
     }
 }

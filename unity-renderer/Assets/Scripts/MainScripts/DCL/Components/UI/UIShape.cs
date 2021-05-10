@@ -41,7 +41,8 @@ namespace DCL.Components
 
         public float GetScaledValue(float parentSize)
         {
-            if (type == Unit.PIXELS) return value;
+            if (type == Unit.PIXELS)
+                return value;
 
             // Prevent division by zero
             if (parentSize <= Mathf.Epsilon)
@@ -55,26 +56,13 @@ namespace DCL.Components
         where ReferencesContainerType : UIReferencesContainer
         where ModelType : UIShape.Model
     {
-        public UIShape()
-        {
-        }
+        public UIShape() { }
 
-        new public ModelType model
-        {
-            get { return base.model as ModelType; }
-            set { base.model = value; }
-        }
+        new public ModelType model { get { return base.model as ModelType; } set { base.model = value; } }
 
-        new public ReferencesContainerType referencesContainer
-        {
-            get { return base.referencesContainer as ReferencesContainerType; }
-            set { base.referencesContainer = value; }
-        }
+        new public ReferencesContainerType referencesContainer { get { return base.referencesContainer as ReferencesContainerType; } set { base.referencesContainer = value; } }
 
-        public override ComponentUpdateHandler CreateUpdateHandler()
-        {
-            return new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this);
-        }
+        public override ComponentUpdateHandler CreateUpdateHandler() { return new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this); }
 
         bool raiseOnAttached;
         bool firstApplyChangesCall;
@@ -155,10 +143,7 @@ namespace DCL.Components
             public bool isPointerBlocker = true;
             public string onClick;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public override string componentName => GetDebugName();
@@ -168,15 +153,9 @@ namespace DCL.Components
 
         public UIShape parentUIComponent { get; protected set; }
 
-        public UIShape()
-        {
-            model = new Model();
-        }
+        public UIShape() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_IMAGE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
         public string GetDebugName()
         {
@@ -191,10 +170,7 @@ namespace DCL.Components
             }
         }
 
-        public override IEnumerator ApplyChanges(BaseModel newJson)
-        {
-            return null;
-        }
+        public override IEnumerator ApplyChanges(BaseModel newJson) { return null; }
 
         internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
@@ -387,7 +363,6 @@ namespace DCL.Components
             return parent;
         }
 
-
         protected void ConfigureAlignment(LayoutGroup layout)
         {
             Model model = (Model) this.model;
@@ -459,12 +434,8 @@ namespace DCL.Components
             base.Dispose();
         }
 
-        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent)
-        {
-        }
+        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
 
-        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent)
-        {
-        }
+        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
     }
 }

@@ -26,10 +26,7 @@ namespace DCL.Helpers
 
         private static Shader mainShader;
 
-        public static string ComputeHash(Material mat)
-        {
-            return mat.ComputeCRC().ToString();
-        }
+        public static string ComputeHash(Material mat) { return mat.ComputeCRC().ToString(); }
 
         static Shader EnsureMainShader()
         {

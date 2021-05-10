@@ -52,25 +52,19 @@ public class CharacterPreviewController : MonoBehaviour
     {
         cameraFocusLookUp = new Dictionary<CameraFocus, Transform>()
         {
-            {CameraFocus.DefaultEditing, defaultEditingTemplate},
-            {CameraFocus.FaceEditing, faceEditingTemplate},
-            {CameraFocus.FaceSnapshot, faceSnapshotTemplate},
-            {CameraFocus.BodySnapshot, bodySnapshotTemplate},
+            { CameraFocus.DefaultEditing, defaultEditingTemplate },
+            { CameraFocus.FaceEditing, faceEditingTemplate },
+            { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
+            { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
         var cullingSettings = DCL.Environment.i.platform.cullingController.GetSettingsCopy();
         cullingSettings.ignoredLayersMask |= 1 << CHARACTER_PREVIEW_LAYER;
         DCL.Environment.i.platform.cullingController.SetSettings(cullingSettings);
     }
 
-    public void UpdateModel(AvatarModel newModel, Action onDone)
-    {
-        updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone));
-    }
+    public void UpdateModel(AvatarModel newModel, Action onDone) { updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone)); }
 
-    private void OnDestroy()
-    {
-        CoroutineStarter.Stop(updateModelRoutine);
-    }
+    private void OnDestroy() { CoroutineStarter.Stop(updateModelRoutine); }
 
     private IEnumerator UpdateModelRoutine(AvatarModel newModel, Action onDone)
     {
@@ -100,10 +94,7 @@ public class CharacterPreviewController : MonoBehaviour
         }
     }
 
-    public void ResetRenderersLayer()
-    {
-        SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_DEFAULT_LAYER);
-    }
+    public void ResetRenderersLayer() { SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_DEFAULT_LAYER); }
 
     public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
     {
@@ -158,10 +149,7 @@ public class CharacterPreviewController : MonoBehaviour
 
     private Coroutine cameraTransitionCoroutine;
 
-    public void SetFocus(CameraFocus focus, bool useTransition = true)
-    {
-        SetFocus(cameraFocusLookUp[focus], useTransition);
-    }
+    public void SetFocus(CameraFocus focus, bool useTransition = true) { SetFocus(cameraFocusLookUp[focus], useTransition); }
 
     private void SetFocus(Transform transform, bool useTransition = true)
     {
@@ -199,8 +187,5 @@ public class CharacterPreviewController : MonoBehaviour
         cameraTransitionCoroutine = null;
     }
 
-    public void Rotate(float rotationVelocity)
-    {
-        avatarRenderer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up);
-    }
+    public void Rotate(float rotationVelocity) { avatarRenderer.transform.Rotate(Time.deltaTime * rotationVelocity * Vector3.up); }
 }

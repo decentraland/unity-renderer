@@ -54,10 +54,7 @@ public class KernelConfig
     /// Get Kernel Configuration
     /// </summary>
     /// <returns>Kernel Configuration</returns>
-    public KernelConfigModel Get()
-    {
-        return value;
-    }
+    public KernelConfigModel Get() { return value; }
 
     /// <summary>
     /// Get a promise that is resolved when KernelConfig is initialized.

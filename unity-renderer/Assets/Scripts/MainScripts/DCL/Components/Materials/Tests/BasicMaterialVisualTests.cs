@@ -12,10 +12,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator CastShadowFalseShouldWork_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowFalseShouldWork());
-    }
+    public IEnumerator CastShadowFalseShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowFalseShouldWork()); }
 
     [UnityTest]
     [VisualTest]
@@ -44,10 +41,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator CastShadowTrueShouldWork_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowTrueShouldWork());
-    }
+    public IEnumerator CastShadowTrueShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(CastShadowTrueShouldWork()); }
 
     [UnityTest]
     [VisualTest]

@@ -27,36 +27,23 @@ namespace DCL.Components
                 public bool looping = true;
                 public bool shouldReset = false;
 
-                public DCLAnimationState Clone()
-                {
-                    return (DCLAnimationState) this.MemberwiseClone();
-                }
+                public DCLAnimationState Clone() { return (DCLAnimationState) this.MemberwiseClone(); }
             }
 
             public DCLAnimationState[] states;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         [System.NonSerialized]
         public Animation animComponent = null;
 
-        Model.DCLAnimationState[] previousState;
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
 
-        private void Awake()
-        {
-            model = new Model();
-        }
+        private void Awake() { model = new Model(); }
 
-        private void OnDestroy()
-        {
-            entity.OnShapeUpdated -= OnComponentUpdated;
-        }
+        private void OnDestroy() { entity.OnShapeUpdated -= OnComponentUpdated; }
 
         public override IEnumerator ApplyChanges(BaseModel model)
         {
@@ -68,24 +55,20 @@ namespace DCL.Components
             return null;
         }
 
-        new public Model GetModel()
-        {
-            return (Model) model;
-        }
+        new public Model GetModel() { return (Model) model; }
 
-        private void OnComponentUpdated(IDCLEntity e)
-        {
-            UpdateAnimationState();
-        }
+        private void OnComponentUpdated(IDCLEntity e) { UpdateAnimationState(); }
 
         private void Initialize()
         {
-            if (entity == null || animComponent != null) return;
+            if (entity == null || animComponent != null)
+                return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             animComponent = transform.parent.GetComponentInChildren<Animation>(true);
 
-            if (animComponent == null) return;
+            if (animComponent == null)
+                return;
 
             clipNameToClip.Clear();
             clipToState.Clear();
@@ -135,23 +118,17 @@ namespace DCL.Components
                     state.clipReference = unityState.clip;
 
                     if (state.shouldReset)
-                    {
                         ResetAnimation(state);
-                    }
 
                     if (state.playing)
                     {
                         if (!animComponent.IsPlaying(state.clip))
-                        {
                             animComponent.Play(state.clip);
-                        }
                     }
                     else
                     {
                         if (animComponent.IsPlaying(state.clip))
-                        {
                             animComponent.Stop(state.clip);
-                        }
                     }
                 }
             }
@@ -186,9 +163,6 @@ namespace DCL.Components
             return null;
         }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.ANIMATOR;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.ANIMATOR; }
     }
 }

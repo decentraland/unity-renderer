@@ -6,7 +6,8 @@ public interface IExtraActionsView
 {
     event Action OnControlsClicked,
                  OnHideUIClicked,
-                 OnTutorialClicked;
+                 OnTutorialClicked,
+                 OnResetClicked;
 
     void OnControlsClick(DCLAction_Trigger action);
     void OnHideUIClick(DCLAction_Trigger action);
@@ -18,12 +19,14 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 {
     public event Action OnControlsClicked,
                         OnHideUIClicked,
-                        OnTutorialClicked;
+                        OnTutorialClicked,
+                        OnResetClicked;
 
     [Header("Buttons")]
     [SerializeField] internal Button hideUIBtn;
     [SerializeField] internal Button controlsBtn;
     [SerializeField] internal Button tutorialBtn;
+    [SerializeField] internal Button resetBtn;
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
@@ -45,6 +48,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     {
         hideUIBtn.onClick.AddListener(() => OnHideUIClick(dummyActionTrigger));
         controlsBtn.onClick.AddListener(() => OnControlsClick(dummyActionTrigger));
+        resetBtn.onClick.AddListener(() => OnResetClicked?.Invoke());
         tutorialBtn.onClick.AddListener(OnTutorialClick);
 
         toggleUIVisibilityInputAction.OnTriggered += OnHideUIClick;
@@ -55,6 +59,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     {
         hideUIBtn.onClick.RemoveAllListeners();
         controlsBtn.onClick.RemoveAllListeners();
+        resetBtn.onClick.RemoveAllListeners();
         tutorialBtn.onClick.RemoveListener(OnTutorialClick);
 
         toggleUIVisibilityInputAction.OnTriggered -= OnHideUIClick;
@@ -63,21 +68,13 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
     public void SetActive(bool isActive)
     {
-        gameObject.SetActive(isActive);
+        if (gameObject.activeSelf != isActive)
+            gameObject.SetActive(isActive);
     }
 
-    public void OnControlsClick(DCLAction_Trigger action)
-    {
-        OnControlsClicked?.Invoke();
-    }
+    public void OnControlsClick(DCLAction_Trigger action) { OnControlsClicked?.Invoke(); }
 
-    public void OnHideUIClick(DCLAction_Trigger action)
-    {
-        OnHideUIClicked?.Invoke();
-    }
+    public void OnHideUIClick(DCLAction_Trigger action) { OnHideUIClicked?.Invoke(); }
 
-    public void OnTutorialClick()
-    {
-        OnTutorialClicked?.Invoke();
-    }
+    public void OnTutorialClick() { OnTutorialClicked?.Invoke(); }
 }

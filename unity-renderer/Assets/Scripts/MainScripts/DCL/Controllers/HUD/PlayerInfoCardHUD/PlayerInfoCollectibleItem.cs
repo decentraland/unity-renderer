@@ -14,7 +14,8 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
     {
         this.collectible = collectible;
 
-        if (this.collectible == null) return;
+        if (this.collectible == null)
+            return;
 
         if (gameObject.activeInHierarchy)
             GetThumbnail();
@@ -22,7 +23,8 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
 
     private void OnEnable()
     {
-        if (collectible == null) return;
+        if (collectible == null)
+            return;
 
         GetThumbnail();
     }
@@ -33,7 +35,7 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
         {
             ForgetThumbnail();
 
-            if(thumbnail.sprite != null && finishedLoading)
+            if (thumbnail.sprite != null && finishedLoading)
                 Destroy(thumbnail.sprite);
         }
     }
@@ -47,10 +49,7 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
         thumbnailPromise = newThumbnailPromise;
     }
 
-    private void ForgetThumbnail()
-    {
-        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
-    }
+    private void ForgetThumbnail() { ThumbnailsManager.ForgetThumbnail(thumbnailPromise); }
 
     private void OnThumbnailReady(Asset_Texture texture)
     {

@@ -52,13 +52,16 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem unexistentWearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
-                    representations = new []{ new WearableItem.Representation
+                data = new WearableItem.Data(){
+                    representations = new []
                     {
-                        mainFile = "NothingHere",
-                        contents = new [] { new WearableItem.MappingPair{key = "NothingHere", hash = "NothingHere"} },
-                        bodyShapes = new [] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE}
-                    }}
+                        new WearableItem.Representation
+                        {
+                            mainFile = "NothingHere",
+                            contents = new [] { new WearableItem.MappingPair { key = "NothingHere", hash = "NothingHere" } },
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE }
+                        }
+                    }
                 }
             };
             WearableController wearable = new WearableController(unexistentWearableItem);
@@ -139,7 +142,7 @@ namespace AvatarShape_Tests
             skinnedMeshRenderer.enabled = true;
 
             //Act
-            wearable.UpdateVisibility(new HashSet<string> {wearable.wearable.data.category});
+            wearable.UpdateVisibility(new HashSet<string> { wearable.wearable.data.category });
 
             //Assert
             Assert.IsFalse(skinnedMeshRenderer.enabled);

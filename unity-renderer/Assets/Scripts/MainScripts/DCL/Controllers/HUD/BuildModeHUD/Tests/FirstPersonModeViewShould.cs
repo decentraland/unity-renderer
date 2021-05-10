@@ -9,16 +9,10 @@ namespace Tests.BuildModeHUDViews
         private FirstPersonModeView firstPersonModeView;
 
         [SetUp]
-        public void SetUp()
-        {
-            firstPersonModeView = FirstPersonModeView.Create();
-        }
+        public void SetUp() { firstPersonModeView = FirstPersonModeView.Create(); }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(firstPersonModeView.gameObject);
-        }
+        public void TearDown() { Object.Destroy(firstPersonModeView.gameObject); }
 
         [Test]
         public void OnPointerClickCorrectly()

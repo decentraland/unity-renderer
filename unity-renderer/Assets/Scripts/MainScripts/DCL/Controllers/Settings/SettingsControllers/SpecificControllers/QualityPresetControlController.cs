@@ -15,10 +15,7 @@ namespace DCL.SettingsControls
             SetupQualityPresetLabels();
         }
 
-        public override object GetStoredValue()
-        {
-            return GetCurrentStoredValue();
-        }
+        public override object GetStoredValue() { return GetCurrentStoredValue(); }
 
         public override void UpdateSetting(object newValue)
         {
