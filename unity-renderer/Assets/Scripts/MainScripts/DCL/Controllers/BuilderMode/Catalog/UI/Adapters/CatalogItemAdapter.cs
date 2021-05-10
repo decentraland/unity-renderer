@@ -134,7 +134,7 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
         if (thumbnailImg != null)
         {
             thumbnailImg.enabled = true;
-            thumbnailImg.texture = TextureHelpers.CopyTexture(texture.texture);
+            thumbnailImg.texture = texture.texture;
             favImg.gameObject.SetActive(true);
 
             if (gameObject.activeInHierarchy && ItemAdapterIsOnScreen())
