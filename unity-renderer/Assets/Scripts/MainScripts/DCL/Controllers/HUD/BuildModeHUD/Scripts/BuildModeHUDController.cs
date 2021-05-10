@@ -13,6 +13,8 @@ public class BuildModeHUDController : IHUD
     public event Action OnRotateSelectedAction;
     public event Action OnScaleSelectedAction;
     public event Action OnResetAction;
+    public event Action OnUndoAction;
+    public event Action OnRedoAction;
     public event Action OnDuplicateSelectedAction;
     public event Action OnDeleteSelectedAction;
     public event Action OnEntityListVisible;
@@ -159,13 +161,15 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.OnTranslateClick += () => OnTranslateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnRotateClick += () => OnRotateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnScaleClick += () => OnScaleSelectedAction?.Invoke();
-        controllers.topActionsButtonsController.OnResetClick += () => OnResetAction?.Invoke();
+        controllers.topActionsButtonsController.OnUndoClick += () => OnUndoAction?.Invoke();
+        controllers.topActionsButtonsController.OnRedoClick += () => OnRedoAction?.Invoke();
         controllers.topActionsButtonsController.OnDuplicateClick += () => OnDuplicateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnDeleteClick += () => OnDeleteSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnSnapModeClick += () => OnChangeSnapModeAction?.Invoke();
         controllers.topActionsButtonsController.OnLogOutClick += ExitStart;
         controllers.topActionsButtonsController.extraActionsController.OnControlsClick += ChangeVisibilityOfControls;
         controllers.topActionsButtonsController.extraActionsController.OnHideUIClick += ChangeVisibilityOfUI;
+        controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
     }
 
@@ -438,6 +442,9 @@ public class BuildModeHUDController : IHUD
     public void SetActionsButtonsInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetActionsInteractable(isInteractable); }
 
     public void SetSnapModeActive(bool isActive) { controllers.topActionsButtonsController.SetSnapActive(isActive); }
+
+    public void SetUndoButtonInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetUndoInteractable(isInteractable); }
+    public void SetRedoButtonInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetRedoInteractable(isInteractable); }
 
     #endregion
 
