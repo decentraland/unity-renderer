@@ -102,17 +102,31 @@ namespace Tests.BuildModeHUDViews
         }
 
         [Test]
-        public void ClickOnResetCorrectly()
+        public void ClickOnUndoCorrectly()
         {
             // Arrange
-            bool resetClicked = false;
-            topActionsButtonsView.OnResetClicked += () => resetClicked = true;
+            bool undoClicked = false;
+            topActionsButtonsView.OnUndoClicked += () => undoClicked = true;
 
             // Act
-            topActionsButtonsView.OnResetClick(new DCLAction_Trigger());
+            topActionsButtonsView.OnUndoClick();
 
             // Assert
-            Assert.IsTrue(resetClicked, "resetClicked is false!");
+            Assert.IsTrue(undoClicked, "undoClicked is false!");
+        }
+
+        [Test]
+        public void ClickOnRedoCorrectly()
+        {
+            // Arrange
+            bool redoClicked = false;
+            topActionsButtonsView.OnRedoClicked += () => redoClicked = true;
+
+            // Act
+            topActionsButtonsView.OnRedoClick();
+
+            // Assert
+            Assert.IsTrue(redoClicked, "undoClicked is false!");
         }
 
         [Test]
@@ -225,8 +239,6 @@ namespace Tests.BuildModeHUDViews
             //Act
             topActionsButtonsView.SetActionsInteractable(isActive);
 
-            //Assert
-            Assert.AreEqual(isActive, topActionsButtonsView.resetBtn.IsInteractable());
             Assert.AreEqual(isActive, topActionsButtonsView.duplicateBtn.IsInteractable());
             Assert.AreEqual(isActive, topActionsButtonsView.deleteBtn.IsInteractable());
         }

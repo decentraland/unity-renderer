@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-internal class LeftMenuButtonToggleView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+internal class LeftMenuButtonToggleView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public event Action<bool> OnToggleValueChanged;
+    public static event Action<LeftMenuButtonToggleView> OnToggleOn;
+
+    [Header("Action")]
+    [SerializeField] public SectionId openSection;
 
     [Header("Settings")]
     [SerializeField] private Color colorBackgroundDefault;
@@ -17,9 +21,51 @@ internal class LeftMenuButtonToggleView : MonoBehaviour, IPointerEnterHandler, I
     [Header("References")]
     [SerializeField] private Image imageBackground;
     [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private Toggle toggle;
 
-    public bool isOn { set { toggle.isOn = value; } get { return toggle.isOn; } }
+    public bool isOn
+    {
+        set
+        {
+            if (isToggleOn == value)
+                return;
+
+            SetIsOnWithoutNotify(value);
+
+            if (value)
+            {
+                OnToggleOn?.Invoke(this);
+            }
+        }
+        get { return isToggleOn; }
+    }
+
+    private bool isToggleOn = false;
+    private bool isSetup = false;
+
+    public void Setup()
+    {
+        if (isSetup)
+            return;
+
+        isSetup = true;
+        OnToggleOn += OnReceiveToggleOn;
+    }
+
+    public void SetIsOnWithoutNotify(bool value)
+    {
+        isToggleOn = value;
+
+        if (isToggleOn)
+        {
+            SetSelectColor();
+        }
+        else
+        {
+            SetDefaultColor();
+        }
+    }
+
+    private void OnDestroy() { OnToggleOn -= OnReceiveToggleOn; }
 
     void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
     {
@@ -37,30 +83,12 @@ internal class LeftMenuButtonToggleView : MonoBehaviour, IPointerEnterHandler, I
         SetDefaultColor();
     }
 
-    private void Awake()
-    {
-        toggle.onValueChanged.AddListener(value =>
-        {
-            if (value)
-                SetSelectColor();
-            else
-                SetDefaultColor();
-
-            OnToggleValueChanged?.Invoke(value);
-        });
-    }
-
-    private void Start()
+    void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
         if (isOn)
-        {
-            SetSelectColor();
-        }
-        else
-        {
-            SetDefaultColor();
-        }
-        OnToggleValueChanged?.Invoke(isOn);
+            return;
+
+        isOn = true;
     }
 
     private void SetSelectColor()
@@ -73,5 +101,16 @@ internal class LeftMenuButtonToggleView : MonoBehaviour, IPointerEnterHandler, I
     {
         imageBackground.color = colorBackgroundDefault;
         text.color = colorTextDefault;
+    }
+
+    private void OnReceiveToggleOn(LeftMenuButtonToggleView toggle)
+    {
+        if (!isOn)
+            return;
+
+        if (toggle != this)
+        {
+            isOn = false;
+        }
     }
 }

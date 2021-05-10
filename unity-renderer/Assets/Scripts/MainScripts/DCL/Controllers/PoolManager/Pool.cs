@@ -72,6 +72,7 @@ namespace DCL
 
         public PoolableObject Get()
         {
+            // These extra instantiations during initialization are to populate pools that will be used a lot later  
             if (PoolManager.i.initializing)
             {
                 int count = usedObjectsCount;

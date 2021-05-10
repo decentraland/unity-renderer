@@ -299,7 +299,6 @@ public class SceneCatalogController : ISceneCatalogController
         if (sceneCatalogView.catalogAssetPackList != null)
         {
             sceneCatalogView.catalogAssetPackList.SetAssetPackStyle();
-            sceneCatalogView.catalogAssetPackList.SetContent(BIWCatalogManager.GetCatalogItemPackList());
             sceneCatalogView.catalogAssetPackList.gameObject.SetActive(true);
         }
         isShowingAssetPacks = true;

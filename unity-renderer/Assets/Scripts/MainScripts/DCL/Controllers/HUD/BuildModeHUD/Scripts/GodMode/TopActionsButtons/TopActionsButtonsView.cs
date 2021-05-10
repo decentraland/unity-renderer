@@ -11,7 +11,8 @@ public interface ITopActionsButtonsView
                  OnTranslateClicked,
                  OnRotateClicked,
                  OnScaleClicked,
-                 OnResetClicked,
+                 OnUndoClicked,
+                 OnRedoClicked,
                  OnDuplicateClicked,
                  OnDeleteClicked,
                  OnLogOutClicked,
@@ -22,7 +23,8 @@ public interface ITopActionsButtonsView
                                         OnTranslatePointerEnter,
                                         OnRotatePointerEnter,
                                         OnScalePointerEnter,
-                                        OnResetPointerEnter,
+                                        OnUndoPointerEnter,
+                                        OnRedoPointerEnter,
                                         OnDuplicatePointerEnter,
                                         OnDeletePointerEnter,
                                         OnMoreActionsPointerEnter,
@@ -35,12 +37,13 @@ public interface ITopActionsButtonsView
     void OnDuplicateClick(DCLAction_Trigger action);
     void OnExtraClick(DCLAction_Trigger action);
     void OnLogOutClick(DCLAction_Trigger action);
-    void OnResetClick(DCLAction_Trigger action);
     void OnRotateClick(DCLAction_Trigger action);
     void OnScaleClick(DCLAction_Trigger action);
     void OnTranslateClick(DCLAction_Trigger action);
     void SetGizmosActive(string gizmos);
     void SetActionsInteractable(bool isActive);
+    void SetUndoInteractable(bool isActive);
+    void SetRedoInteractable(bool isActive);
     void SetSnapActive(bool isActive);
 }
 
@@ -51,7 +54,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
                         OnTranslateClicked,
                         OnRotateClicked,
                         OnScaleClicked,
-                        OnResetClicked,
+                        OnUndoClicked,
+                        OnRedoClicked,
                         OnDuplicateClicked,
                         OnDeleteClicked,
                         OnLogOutClicked,
@@ -62,7 +66,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
                                                OnTranslatePointerEnter,
                                                OnRotatePointerEnter,
                                                OnScalePointerEnter,
-                                               OnResetPointerEnter,
+                                               OnUndoPointerEnter,
+                                               OnRedoPointerEnter,
                                                OnDuplicatePointerEnter,
                                                OnDeletePointerEnter,
                                                OnMoreActionsPointerEnter,
@@ -75,7 +80,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal Button translateBtn;
     [SerializeField] internal Button rotateBtn;
     [SerializeField] internal Button scaleBtn;
-    [SerializeField] internal Button resetBtn;
+    [SerializeField] internal Button undoBtn;
+    [SerializeField] internal Button redoBtn;
     [SerializeField] internal Button duplicateBtn;
     [SerializeField] internal Button deleteBtn;
     [SerializeField] internal Button logOutBtn;
@@ -86,7 +92,6 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal InputAction_Trigger toggleTranslateInputAction;
     [SerializeField] internal InputAction_Trigger toggleRotateInputAction;
     [SerializeField] internal InputAction_Trigger toggleScaleInputAction;
-    [SerializeField] internal InputAction_Trigger toggleResetInputAction;
     [SerializeField] internal InputAction_Trigger toggleDuplicateInputAction;
     [SerializeField] internal InputAction_Trigger toggleDeleteInputAction;
 
@@ -95,7 +100,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal EventTrigger translateEventTrigger;
     [SerializeField] internal EventTrigger rotateEventTrigger;
     [SerializeField] internal EventTrigger scaleEventTrigger;
-    [SerializeField] internal EventTrigger resetEventTrigger;
+    [SerializeField] internal EventTrigger undoEventTrigger;
+    [SerializeField] internal EventTrigger redoEventTrigger;
     [SerializeField] internal EventTrigger duplicateEventTrigger;
     [SerializeField] internal EventTrigger deleteEventTrigger;
     [SerializeField] internal EventTrigger moreActionsEventTrigger;
@@ -107,7 +113,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal string translateTooltipText = "Translate (M)";
     [SerializeField] internal string rotateTooltipText = "Rotate (R)";
     [SerializeField] internal string scaleTooltipText = "Scale (G)";
-    [SerializeField] internal string resetTooltipText = "Reset (Control+R)";
+    [SerializeField] internal string undoTooltipText = "Undo (Shift+Z)";
+    [SerializeField] internal string redoTooltipText = "Redo (Shift+Y)";
     [SerializeField] internal string duplicateTooltipText = "Duplicate (Control+D)";
     [SerializeField] internal string deleteTooltipText = "Delete (Del) or (Backspace)";
     [SerializeField] internal string moreActionsTooltipText = "Extra Actions";
@@ -146,7 +153,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         translateBtn.onClick.AddListener(() => OnTranslateClick(dummyActionTrigger));
         rotateBtn.onClick.AddListener(() => OnRotateClick(dummyActionTrigger));
         scaleBtn.onClick.AddListener(() => OnScaleClick(dummyActionTrigger));
-        resetBtn.onClick.AddListener(() => OnResetClick(dummyActionTrigger));
+        undoBtn.onClick.AddListener(OnUndoClick);
+        redoBtn.onClick.AddListener(OnRedoClick);
         duplicateBtn.onClick.AddListener(() => OnDuplicateClick(dummyActionTrigger));
         deleteBtn.onClick.AddListener(() => OnDeleteClick(dummyActionTrigger));
         logOutBtn.onClick.AddListener(() => OnLogOutClick(dummyActionTrigger));
@@ -194,12 +202,22 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
             (eventData) => OnPointerExit?.Invoke());
 
         BuilderInWorldUtils.ConfigureEventTrigger(
-            resetEventTrigger,
+            undoEventTrigger,
             EventTriggerType.PointerEnter,
-            (eventData) => OnResetPointerEnter?.Invoke(eventData, resetTooltipText));
+            (eventData) => OnUndoPointerEnter?.Invoke(eventData, undoTooltipText));
 
         BuilderInWorldUtils.ConfigureEventTrigger(
-            resetEventTrigger,
+            undoEventTrigger,
+            EventTriggerType.PointerExit,
+            (eventData) => OnPointerExit?.Invoke());
+
+        BuilderInWorldUtils.ConfigureEventTrigger(
+            redoEventTrigger,
+            EventTriggerType.PointerEnter,
+            (eventData) => OnRedoPointerEnter?.Invoke(eventData, redoTooltipText));
+
+        BuilderInWorldUtils.ConfigureEventTrigger(
+            redoEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
@@ -258,7 +276,6 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         toggleTranslateInputAction.OnTriggered += OnTranslateClick;
         toggleRotateInputAction.OnTriggered += OnRotateClick;
         toggleScaleInputAction.OnTriggered += OnScaleClick;
-        toggleResetInputAction.OnTriggered += OnResetClick;
         toggleDuplicateInputAction.OnTriggered += OnDuplicateClick;
         toggleDeleteInputAction.OnTriggered += OnDeleteClick;
     }
@@ -269,7 +286,8 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         translateBtn.onClick.RemoveAllListeners();
         rotateBtn.onClick.RemoveAllListeners();
         scaleBtn.onClick.RemoveAllListeners();
-        resetBtn.onClick.RemoveAllListeners();
+        undoBtn.onClick.RemoveAllListeners();
+        redoBtn.onClick.RemoveAllListeners();
         duplicateBtn.onClick.RemoveAllListeners();
         deleteBtn.onClick.RemoveAllListeners();
         logOutBtn.onClick.RemoveAllListeners();
@@ -284,8 +302,10 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         BuilderInWorldUtils.RemoveEventTrigger(rotateEventTrigger, EventTriggerType.PointerExit);
         BuilderInWorldUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerEnter);
         BuilderInWorldUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(resetEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(resetEventTrigger, EventTriggerType.PointerExit);
+        BuilderInWorldUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerEnter);
+        BuilderInWorldUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerExit);
+        BuilderInWorldUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerEnter);
+        BuilderInWorldUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerExit);
         BuilderInWorldUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerEnter);
         BuilderInWorldUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerExit);
         BuilderInWorldUtils.RemoveEventTrigger(deleteEventTrigger, EventTriggerType.PointerEnter);
@@ -301,7 +321,6 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         toggleTranslateInputAction.OnTriggered -= OnTranslateClick;
         toggleRotateInputAction.OnTriggered -= OnRotateClick;
         toggleScaleInputAction.OnTriggered -= OnScaleClick;
-        toggleResetInputAction.OnTriggered -= OnResetClick;
         toggleDuplicateInputAction.OnTriggered -= OnDuplicateClick;
         toggleDeleteInputAction.OnTriggered -= OnDeleteClick;
 
@@ -346,16 +365,20 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
 
     public void SetActionsInteractable(bool isActive)
     {
-        resetBtn.interactable = isActive;
         duplicateBtn.interactable = isActive;
         deleteBtn.interactable = isActive;
     }
+
+    public void SetUndoInteractable(bool isActive) { undoBtn.interactable = isActive; }
+
+    public void SetRedoInteractable(bool isActive) { redoBtn.interactable = isActive; }
 
     public void OnRotateClick(DCLAction_Trigger action) { OnRotateClicked?.Invoke(); }
 
     public void OnScaleClick(DCLAction_Trigger action) { OnScaleClicked?.Invoke(); }
 
-    public void OnResetClick(DCLAction_Trigger action) { OnResetClicked?.Invoke(); }
+    public void OnUndoClick() { OnUndoClicked?.Invoke(); }
+    public void OnRedoClick() { OnRedoClicked?.Invoke(); }
 
     public void OnDuplicateClick(DCLAction_Trigger action) { OnDuplicateClicked?.Invoke(); }
 
