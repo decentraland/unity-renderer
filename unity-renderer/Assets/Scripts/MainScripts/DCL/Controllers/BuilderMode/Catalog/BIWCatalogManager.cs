@@ -46,7 +46,7 @@ public static class BIWCatalogManager
             }
         }
 
-        return assetPacks;
+        return assetPacks.OrderBy(x => x.title).ToList();
     }
 
     public static List<CatalogItemPack> GetCatalogItemPacksFilteredByCategories()
@@ -93,7 +93,7 @@ public static class BIWCatalogManager
                 }
             }
         }
-        return assetPackDic.Values.ToList();
+        return assetPackDic.Values.OrderBy(x => x.title).ToList();
     }
 
     public static void AddSceneObject(SceneObject sceneObject)

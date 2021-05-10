@@ -1,5 +1,3 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +21,21 @@ public class BIWSearchBarView : MonoBehaviour , IBIWSearchBarView
     [Header("Prefab References")]
     [SerializeField] internal TMP_InputField searchInputField;
     [SerializeField] internal Button smartItemButton;
+
+    private void Awake()
+    {
+        if (searchInputField.placeholder != null)
+        {
+            searchInput.onSelect.AddListener((x) => searchInputField.placeholder.gameObject.SetActive(false));
+            searchInput.onDeselect.AddListener((x) => searchInputField.placeholder.gameObject.SetActive(true));
+        }
+    }
+
+    private void OnDestroy()
+    {
+        searchInput.onSelect.RemoveAllListeners();
+        searchInput.onDeselect.RemoveAllListeners();
+    }
 
     public void SetSmartItemPressStatus(bool isPressed) { smartItemBtn.image.color = isPressed ? smartItemPressedBtnColor : smartItemNormalBtnColor; }
 
