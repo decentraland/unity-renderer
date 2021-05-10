@@ -4,7 +4,8 @@ public interface IExtraActionsController
 {
     event Action OnControlsClick,
                  OnHideUIClick,
-                 OnTutorialClick;
+                 OnTutorialClick,
+                 OnResetClick;
 
     void Initialize(IExtraActionsView extraActionsView);
     void Dispose();
@@ -18,7 +19,8 @@ public class ExtraActionsController : IExtraActionsController
 {
     public event Action OnControlsClick,
                         OnHideUIClick,
-                        OnTutorialClick;
+                        OnTutorialClick,
+                        OnResetClick;
 
     internal IExtraActionsView extraActionsView;
 
@@ -29,6 +31,7 @@ public class ExtraActionsController : IExtraActionsController
         extraActionsView.OnControlsClicked += ControlsClicked;
         extraActionsView.OnHideUIClicked += HideUIClicked;
         extraActionsView.OnTutorialClicked += TutorialClicked;
+        extraActionsView.OnResetClicked += ResetClicked;
     }
 
     public void Dispose()
@@ -36,6 +39,7 @@ public class ExtraActionsController : IExtraActionsController
         extraActionsView.OnControlsClicked -= ControlsClicked;
         extraActionsView.OnHideUIClicked -= HideUIClicked;
         extraActionsView.OnTutorialClicked -= TutorialClicked;
+        extraActionsView.OnResetClicked -= ResetClicked;
     }
 
     public void SetActive(bool isActive)
@@ -43,6 +47,8 @@ public class ExtraActionsController : IExtraActionsController
         if (extraActionsView != null)
             extraActionsView.SetActive(isActive);
     }
+
+    public void ResetClicked() { OnResetClick?.Invoke(); }
 
     public void ControlsClicked() { OnControlsClick?.Invoke(); }
 

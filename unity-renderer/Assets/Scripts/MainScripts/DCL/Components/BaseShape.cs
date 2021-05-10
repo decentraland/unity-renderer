@@ -43,6 +43,8 @@ namespace DCL.Components
             entity.meshesInfo.currentShape = null;
 
             base.DetachFrom(entity, typeof(BaseShape));
+
+            entity.OnShapeUpdated?.Invoke(entity);
         }
 
         public virtual bool IsVisible() { return false; }

@@ -1,6 +1,11 @@
 using DCL;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Components;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
 

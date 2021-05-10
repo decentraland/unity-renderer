@@ -15,7 +15,8 @@ namespace DCL.Tests
             IParcelScenesCleaner parcelScenesCleaner = null,
             IDebugController debugController = null,
             IWebRequestController webRequestController = null,
-            IServiceProviders serviceProviders = null)
+            IServiceProviders serviceProviders = null,
+            IIdleChecker idleChecker = null)
         {
             return new PlatformContext(
                 memoryManager: memoryManager ?? Substitute.For<IMemoryManager>(),
@@ -25,7 +26,8 @@ namespace DCL.Tests
                 parcelScenesCleaner: parcelScenesCleaner ?? Substitute.For<ParcelScenesCleaner>(),
                 debugController: debugController ?? Substitute.For<IDebugController>(),
                 webRequest: webRequestController ?? GetWebRequestControllerMock(),
-                serviceProviders: serviceProviders ?? GetServiceProvidersMock());
+                serviceProviders: serviceProviders ?? GetServiceProvidersMock(),
+                idleChecker: idleChecker ?? Substitute.For<IIdleChecker>());
         }
 
         private static IWebRequestController GetWebRequestControllerMock()
