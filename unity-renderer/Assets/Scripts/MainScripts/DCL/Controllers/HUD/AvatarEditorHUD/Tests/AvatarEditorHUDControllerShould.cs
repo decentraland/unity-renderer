@@ -11,8 +11,8 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDControllerShould : IntegrationTestSuite_Legacy
     {
-        private const string EYEBROWS_ID = "dcl://base-avatars/f_eyebrows_01";
-        private const string FEMALE_CATGLASSES_ID = "dcl://base-avatars/f_glasses_cat_style";
+        private const string EYEBROWS_ID = "urn:decentraland:off-chain:base-avatars:f_eyebrows_01";
+        private const string FEMALE_CATGLASSES_ID = "urn:decentraland:off-chain:base-avatars:f_glasses_cat_style";
 
         private UserProfile userProfile;
         private AvatarEditorHUDController_Mock controller;
@@ -121,12 +121,12 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>()
                     {
                         EYEBROWS_ID,
-                        "dcl://base-avatars/f_eyes_00",
-                        "dcl://base-avatars/bear_slippers",
-                        "dcl://base-avatars/f_african_leggins",
-                        "dcl://base-avatars/f_mouth_00",
-                        "dcl://base-avatars/blue_bandana",
-                        "dcl://base-avatars/bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:f_eyes_00",
+                        "urn:decentraland:off-chain:base-avatars:bear_slippers",
+                        "urn:decentraland:off-chain:base-avatars:f_african_leggins",
+                        "urn:decentraland:off-chain:base-avatars:f_mouth_00",
+                        "urn:decentraland:off-chain:base-avatars:blue_bandana",
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
@@ -150,12 +150,12 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>()
                     {
                         EYEBROWS_ID,
-                        "dcl://base-avatars/f_eyes_00",
-                        "dcl://base-avatars/bear_slippers",
-                        "dcl://base-avatars/f_african_leggins",
-                        "dcl://base-avatars/f_mouth_00",
-                        "dcl://base-avatars/blue_bandana",
-                        "dcl://base-avatars/bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:f_eyes_00",
+                        "urn:decentraland:off-chain:base-avatars:bear_slippers",
+                        "urn:decentraland:off-chain:base-avatars:f_african_leggins",
+                        "urn:decentraland:off-chain:base-avatars:f_mouth_00",
+                        "urn:decentraland:off-chain:base-avatars:blue_bandana",
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
@@ -259,12 +259,12 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>()
                     {
                         EYEBROWS_ID,
-                        "dcl://base-avatars/f_eyes_00",
-                        "dcl://base-avatars/bear_slippers",
-                        "dcl://base-avatars/f_african_leggins",
-                        "dcl://base-avatars/f_mouth_00",
-                        "dcl://base-avatars/blue_bandana",
-                        "dcl://base-avatars/bee_t_shirt"
+                        "urn:decentraland:off-chain:base-avatars:f_eyes_00",
+                        "urn:decentraland:off-chain:base-avatars:bear_slippers",
+                        "urn:decentraland:off-chain:base-avatars:f_african_leggins",
+                        "urn:decentraland:off-chain:base-avatars:f_mouth_00",
+                        "urn:decentraland:off-chain:base-avatars:blue_bandana",
+                        "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
                     },
                     skinColor = skinColorList.colors[0],
                     hairColor = hairColorList.colors[0],
@@ -273,13 +273,13 @@ namespace AvatarEditorHUD_Tests
             }, false);
 
             controller.WearableClicked(WearableLiterals.BodyShapes.MALE);
-            controller.WearableClicked("dcl://base-avatars/eyebrows_01");
-            controller.WearableClicked("dcl://base-avatars/eyes_00");
-            controller.WearableClicked("dcl://base-avatars/bear_slippers");
-            controller.WearableClicked("dcl://base-avatars/basketball_shorts");
-            controller.WearableClicked("dcl://base-avatars/mouth_00");
-            controller.WearableClicked("dcl://base-avatars/blue_bandana");
-            controller.WearableClicked("dcl://base-avatars/black_jacket");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:eyebrows_01");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:eyes_00");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:bear_slippers");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:basketball_shorts");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:mouth_00");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:blue_bandana");
+            controller.WearableClicked("urn:decentraland:off-chain:base-avatars:black_jacket");
 
             controller.SaveAvatar(Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture, Texture2D.whiteTexture);
 

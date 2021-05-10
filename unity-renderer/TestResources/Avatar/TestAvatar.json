@@ -1,18 +1,18 @@
 {
   "name": "Test",
-  "bodyShape": "dcl://base-avatars/BaseFemale",
+  "bodyShape": "urn:decentraland:off-chain:base-avatars:BaseFemale",
   "skinColor": "#FFe5c7",
   "hairColor": "#5b310f",
   "eyeColor": "#3ba050",
   "wearables": [
-    "dcl://base-avatars/f_eyebrows_00",
-    "dcl://base-avatars/f_eyes_00",
-    "dcl://base-avatars/black_sun_glasses",
-    "dcl://base-avatars/bear_slippers",
-    "dcl://base-avatars/hair_anime_01",
-    "dcl://base-avatars/f_african_leggins",
-    "dcl://base-avatars/f_mouth_00",
-    "dcl://base-avatars/blue_bandana",
-    "dcl://base-avatars/bee_t_shirt"
+    "urn:decentraland:off-chain:base-avatars:f_eyebrows_00",
+    "urn:decentraland:off-chain:base-avatars:f_eyes_00",
+    "urn:decentraland:off-chain:base-avatars:black_sun_glasses",
+    "urn:decentraland:off-chain:base-avatars:bear_slippers",
+    "urn:decentraland:off-chain:base-avatars:hair_anime_01",
+    "urn:decentraland:off-chain:base-avatars:f_african_leggins",
+    "urn:decentraland:off-chain:base-avatars:f_mouth_00",
+    "urn:decentraland:off-chain:base-avatars:blue_bandana",
+    "urn:decentraland:off-chain:base-avatars:bee_t_shirt"
   ]
 }

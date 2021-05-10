@@ -10,8 +10,8 @@ namespace AvatarShape_Tests
 {
     public class FacialFeatureControllerShould : IntegrationTestSuite_Legacy
     {
-        private const string EYES_ID = "dcl://base-avatars/f_eyes_01";
-        private const string DRACULA_MOUTH_ID = "dcl://base-avatars/dracula_mouth";
+        private const string EYES_ID = "urn:decentraland:off-chain:base-avatars:f_eyes_01";
+        private const string DRACULA_MOUTH_ID = "urn:decentraland:off-chain:base-avatars:dracula_mouth";
         private BaseDictionary<string, WearableItem> catalog;
         private IBodyShapeController bodyShapeController;
 
@@ -48,15 +48,17 @@ namespace AvatarShape_Tests
             WearableItem fakeWearable = new WearableItem
             {
                 baseUrl = "http://nothing_here.nope",
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     category = WearableLiterals.Categories.EYES,
                     representations = new []
                     {
-                        new WearableItem.Representation(){
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
                             contents = new []
                             {
-                                new WearableItem.MappingPair { key = "fake.png", hash = "nope" }, 
+                                new WearableItem.MappingPair { key = "fake.png", hash = "nope" },
                                 new WearableItem.MappingPair { key = "fake_mask.png", hash = "nope2" }
                             },
                         }
@@ -81,7 +83,8 @@ namespace AvatarShape_Tests
             WearableItem fakeWearable = new WearableItem
             {
                 baseUrl = "http://nothing_here.nope",
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     category = WearableLiterals.Categories.EYES,
                     representations = new []
                     {
@@ -109,6 +112,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(DRACULA_MOUTH_ID, out WearableItem wereableItem);
+
             FacialFeatureController controller = new FacialFeatureController(wereableItem, new Material(Shader.Find("DCL/Unlit Cutout Tinted")));
 
             //Act

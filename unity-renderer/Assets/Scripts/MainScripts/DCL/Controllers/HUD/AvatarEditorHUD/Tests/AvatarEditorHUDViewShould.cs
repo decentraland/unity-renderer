@@ -55,8 +55,8 @@ namespace AvatarEditorHUD_Tests
         }
 
         [Test]
-        [TestCase("dcl://base-avatars/f_african_leggins", WearableLiterals.BodyShapes.FEMALE)]
-        [TestCase("dcl://base-avatars/eyebrows_02", WearableLiterals.BodyShapes.MALE)]
+        [TestCase("urn:decentraland:off-chain:base-avatars:f_african_leggins", WearableLiterals.BodyShapes.FEMALE)]
+        [TestCase("urn:decentraland:off-chain:base-avatars:eyebrows_02", WearableLiterals.BodyShapes.MALE)]
         public void Activate_CompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
         {
             userProfile.UpdateData(new UserProfileModel()
@@ -83,8 +83,8 @@ namespace AvatarEditorHUD_Tests
         }
 
         [Test]
-        [TestCase("dcl://base-avatars/f_african_leggins", WearableLiterals.BodyShapes.MALE)]
-        [TestCase("dcl://base-avatars/eyebrows_02", WearableLiterals.BodyShapes.FEMALE)]
+        [TestCase("urn:decentraland:off-chain:base-avatars:f_african_leggins", WearableLiterals.BodyShapes.MALE)]
+        [TestCase("urn:decentraland:off-chain:base-avatars:eyebrows_02", WearableLiterals.BodyShapes.FEMALE)]
         public void NotCreate_IncompatibleWithBodyShape_ItemToggle(string wearableId, string bodyShape)
         {
             userProfile.UpdateData(new UserProfileModel()
@@ -112,14 +112,14 @@ namespace AvatarEditorHUD_Tests
         }
 
         [Test]
-        [TestCase("dcl://base-avatars/f_mouth_00")]
-        [TestCase("dcl://base-avatars/bee_t_shirt")]
-        [TestCase("dcl://base-avatars/m_mountainshoes.glb")]
-        [TestCase("dcl://base-avatars/moptop")]
+        [TestCase("urn:decentraland:off-chain:base-avatars:f_mouth_00")]
+        [TestCase("urn:decentraland:off-chain:base-avatars:bee_t_shirt")]
+        [TestCase("urn:decentraland:off-chain:base-avatars:m_mountainshoes.glb")]
+        [TestCase("urn:decentraland:off-chain:base-avatars:moptop")]
         public void NotAdd_BaseWearables_ToCollectibles(string wearableId) { Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId)); }
 
         [Test]
-        [TestCase("dcl://halloween_2019/sad_clown_upper_body")]
+        [TestCase("urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body")]
         public void Add_Exclusives_ToCollectibles(string wearableId)
         {
             userProfile.SetInventory(new[] { wearableId });
@@ -172,7 +172,7 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void NotShowAmmountIfOnlyOneItemIsPossesed()
         {
-            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
             userProfile.SetInventory(new[] { wearableId });
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -195,7 +195,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase(10)]
         public void ShowAndUpdateAmount(int amount)
         {
-            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
             userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -221,7 +221,7 @@ namespace AvatarEditorHUD_Tests
         [TestCase(10)]
         public void ShowAndUpdateAmountInCollectibleTab(int amount)
         {
-            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            var wearableId = "urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body";
             userProfile.SetInventory(Enumerable.Repeat(wearableId, amount).ToArray());
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -248,12 +248,14 @@ namespace AvatarEditorHUD_Tests
                 rarity = rarity,
                 description = "My Description",
                 issuedId = 1,
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     category = WearableLiterals.Categories.EYES,
-                    tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
+                    tags = new[] { WearableLiterals.Tags.EXCLUSIVE },
                     representations = new[]
                     {
-                        new WearableItem.Representation(){
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new[] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE },
                         }
                     }

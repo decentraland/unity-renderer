@@ -11,7 +11,7 @@ namespace AvatarShape_Tests
 {
     public class WearableControllerShould : IntegrationTestSuite_Legacy
     {
-        private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
+        private const string SUNGLASSES_ID = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
 
         private BaseDictionary<string, WearableItem> catalog;
         private Transform wearableHolder;
@@ -52,7 +52,8 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem unexistentWearableItem = new WearableItem
             {
-                data = new WearableItem.Data(){
+                data = new WearableItem.Data()
+                {
                     representations = new []
                     {
                         new WearableItem.Representation
