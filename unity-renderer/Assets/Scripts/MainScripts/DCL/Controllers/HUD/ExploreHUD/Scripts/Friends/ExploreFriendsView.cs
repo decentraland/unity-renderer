@@ -44,10 +44,7 @@ internal class ExploreFriendsView : MonoBehaviour
         }
     }
 
-    void OnHeadHoverExit()
-    {
-        showHideAnimator.Hide();
-    }
+    void OnHeadHoverExit() { showHideAnimator.Hide(); }
 
     void Awake()
     {

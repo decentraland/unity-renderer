@@ -131,8 +131,5 @@ public class UnreadNotificationBadgeShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("1", unreadNotificationBadge.notificationText.text, "Notification text should be 1");
     }
 
-    private static void ReadLastMessages(string userId)
-    {
-        CommonScriptableObjects.lastReadChatMessages.Add(userId, System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-    }
+    private static void ReadLastMessages(string userId) { CommonScriptableObjects.lastReadChatMessages.Add(userId, System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()); }
 }

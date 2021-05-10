@@ -20,40 +20,19 @@ namespace DCL
                 }
             }
 
-            public bool Exists(string path)
-            {
-                return System.IO.File.Exists(path);
-            }
+            public bool Exists(string path) { return System.IO.File.Exists(path); }
 
-            public void Copy(string srcPath, string dstPath)
-            {
-                System.IO.File.Copy(srcPath, dstPath);
-            }
+            public void Copy(string srcPath, string dstPath) { System.IO.File.Copy(srcPath, dstPath); }
 
-            public void Move(string srcPath, string dstPath)
-            {
-                System.IO.File.Move(srcPath, dstPath);
-            }
+            public void Move(string srcPath, string dstPath) { System.IO.File.Move(srcPath, dstPath); }
 
-            public string ReadAllText(string path)
-            {
-                return System.IO.File.ReadAllText(path);
-            }
+            public string ReadAllText(string path) { return System.IO.File.ReadAllText(path); }
 
-            public void WriteAllText(string path, string text)
-            {
-                System.IO.File.WriteAllText(path, text);
-            }
+            public void WriteAllText(string path, string text) { System.IO.File.WriteAllText(path, text); }
 
-            public void WriteAllBytes(string path, byte[] bytes)
-            {
-                System.IO.File.WriteAllBytes(path, bytes);
-            }
+            public void WriteAllBytes(string path, byte[] bytes) { System.IO.File.WriteAllBytes(path, bytes); }
 
-            public Stream OpenRead(string path)
-            {
-                return System.IO.File.OpenRead(path);
-            }
+            public Stream OpenRead(string path) { return System.IO.File.OpenRead(path); }
         }
     }
 }

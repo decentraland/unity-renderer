@@ -21,7 +21,7 @@ internal class FriendTrackerController : IDisposable
         }
         else
         {
-            this.friendColors = new Color[] {Color.white};
+            this.friendColors = new Color[] { Color.white };
         }
 
         if (!friendsController.isInitialized)

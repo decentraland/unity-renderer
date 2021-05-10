@@ -8,11 +8,7 @@ public class EditableEntity : MonoBehaviour
 {
     public IDCLEntity rootEntity { protected set; get; }
 
-    public virtual void SetSelectLayer()
-    {
-    }
+    public virtual void SetSelectLayer() { }
 
-    public virtual void SetDefaultLayer()
-    {
-    }
+    public virtual void SetDefaultLayer() { }
 }

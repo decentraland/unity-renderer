@@ -9,14 +9,11 @@ public class BIWController : MonoBehaviour
 
     protected bool isEditModeActive = false;
 
-    public virtual void Init()
-    {
-        isEditModeActive = false;
-    }
+    public virtual void Init() { isEditModeActive = false; }
 
-    public virtual void EnterEditMode(ParcelScene sceneToEdit)
+    public virtual void EnterEditMode(ParcelScene scene)
     {
-        this.sceneToEdit = sceneToEdit;
+        this.sceneToEdit = scene;
         isEditModeActive = true;
     }
 
@@ -33,8 +30,5 @@ public class BIWController : MonoBehaviour
         FrameUpdate();
     }
 
-    protected virtual void FrameUpdate()
-    {
-
-    }
+    protected virtual void FrameUpdate() { }
 }

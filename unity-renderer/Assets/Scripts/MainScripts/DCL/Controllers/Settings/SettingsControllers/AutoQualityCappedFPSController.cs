@@ -28,7 +28,8 @@ public class AutoQualityCappedFPSController : IAutoQualityController
 
     public int EvaluateQuality(PerformanceMetricsData metrics)
     {
-        if (metrics == null) return currentQualityIndex;
+        if (metrics == null)
+            return currentQualityIndex;
 
         fpsEvaluations.Add(metrics.fpsCount);
         if (fpsEvaluations.Count <= EVALUATIONS_SIZE)
@@ -51,8 +52,5 @@ public class AutoQualityCappedFPSController : IAutoQualityController
         return currentQualityIndex;
     }
 
-    public void ResetEvaluation()
-    {
-        fpsEvaluations.Clear();
-    }
+    public void ResetEvaluation() { fpsEvaluations.Clear(); }
 }

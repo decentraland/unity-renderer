@@ -165,20 +165,6 @@ namespace Tests.BuildModeHUDViews
         }
 
         [Test]
-        public void SetTitleTextCorrectly()
-        {
-            // Arrange
-            string newText = "Test text";
-            entityInformationView.titleTxt.text = "";
-
-            // Act
-            entityInformationView.SeTitleText(newText);
-
-            // Assert
-            Assert.AreEqual(newText, entityInformationView.titleTxt.text, "The title text does not match!");
-        }
-
-        [Test]
         public void SeEntityLimitsLeftTextCorrectly()
         {
             // Arrange
@@ -240,6 +226,41 @@ namespace Tests.BuildModeHUDViews
 
             // Assert
             Assert.AreEqual(isActive, entityInformationView.gameObject.activeSelf, "The active property does not match!");
+        }
+
+        [Test]
+        [TestCase(1)]
+        [TestCase(5)]
+        public void UpdateEntitiesSelectionCorrectly(int numberOfSelectedEntities)
+        {
+            // Arrange
+            if (numberOfSelectedEntities > 1)
+            {
+                entityInformationView.individualEntityPanel.SetActive(true);
+                entityInformationView.multipleEntitiesPanel.SetActive(false);
+                entityInformationView.multipleEntitiesText.text = "";
+            }
+            else
+            {
+                entityInformationView.individualEntityPanel.SetActive(false);
+                entityInformationView.multipleEntitiesPanel.SetActive(true);
+            }
+
+            // Act
+            entityInformationView.UpdateEntitiesSelection(numberOfSelectedEntities);
+
+            // Assert
+            if (numberOfSelectedEntities > 1)
+            {
+                Assert.IsFalse(entityInformationView.individualEntityPanel.activeInHierarchy, "The active property does not match!");
+                Assert.IsTrue(entityInformationView.multipleEntitiesPanel.activeInHierarchy, "The active property does not match!");
+                Assert.IsNotEmpty(entityInformationView.multipleEntitiesText.text, "The multipleEntitiesText text is empty!");
+            }
+            else
+            {
+                Assert.IsTrue(entityInformationView.individualEntityPanel.activeInHierarchy, "The active property does not match!");
+                Assert.IsFalse(entityInformationView.multipleEntitiesPanel.activeInHierarchy, "The active property does not match!");
+            }
         }
     }
 }

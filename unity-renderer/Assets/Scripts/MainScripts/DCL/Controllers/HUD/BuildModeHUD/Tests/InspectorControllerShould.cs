@@ -18,10 +18,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            inspectorController.Dispose();
-        }
+        public void TearDown() { inspectorController.Dispose(); }
 
         [Test]
         public void OpenEntityListCorrectly()
@@ -114,8 +111,8 @@ namespace Tests.BuildModeHUDControllers
             DCLBuilderInWorldEntity returnedEntity = null;
             string returnedText = "";
 
-            inspectorController.OnEntityRename += (entity, name) => 
-            { 
+            inspectorController.OnEntityRename += (entity, name) =>
+            {
                 returnedEntity = entity;
                 returnedText = name;
             };

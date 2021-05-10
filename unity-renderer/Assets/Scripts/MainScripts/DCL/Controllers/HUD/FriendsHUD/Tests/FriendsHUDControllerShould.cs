@@ -103,10 +103,7 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void HandleUsernameErrorCorrectly()
-    {
-        friendsController.RaiseOnFriendNotFound("test");
-    }
+    public void HandleUsernameErrorCorrectly() { friendsController.RaiseOnFriendNotFound("test"); }
 
     [Test]
     public void SendFriendRequestCorrectly()
@@ -132,7 +129,6 @@ public class FriendsHUDControllerShould : IntegrationTestSuite_Legacy
 
         WebInterface.OnMessageFromEngine -= callback;
     }
-
 
     [UnityTest]
     public IEnumerator ReactCorrectlyToFriendApproved()

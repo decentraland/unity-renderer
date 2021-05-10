@@ -7,10 +7,7 @@ internal class AnimationHandler
 
     private readonly Animator animator;
 
-    public AnimationHandler(Animator animator)
-    {
-        this.animator = animator;
-    }
+    public AnimationHandler(Animator animator) { this.animator = animator; }
 
     public void SetLoaded()
     {

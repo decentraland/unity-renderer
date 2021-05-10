@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 [System.Serializable]
 public class SceneObject
 {
@@ -41,23 +40,11 @@ public class SceneObject
 
     private string baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
 
-    public string GetComposedThumbnailUrl()
-    {
-        return baseUrl + thumbnail;
-    }
+    public string GetComposedThumbnailUrl() { return baseUrl + thumbnail; }
 
-    public void SetBaseURL(string newUrl)
-    {
-        baseUrl = newUrl;
-    }
+    public void SetBaseURL(string newUrl) { baseUrl = newUrl; }
 
-    public string GetBaseURL()
-    {
-        return baseUrl;
-    }
+    public string GetBaseURL() { return baseUrl; }
 
-    public bool IsSmartItem()
-    {
-        return !string.IsNullOrEmpty(script);
-    }
+    public bool IsSmartItem() { return !string.IsNullOrEmpty(script); }
 }

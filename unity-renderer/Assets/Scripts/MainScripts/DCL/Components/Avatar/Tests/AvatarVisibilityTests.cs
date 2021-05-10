@@ -27,10 +27,7 @@ namespace Tests
         }
 
         [TearDown]
-        protected void TearDown()
-        {
-            Object.Destroy(parentGameObject);
-        }
+        protected void TearDown() { Object.Destroy(parentGameObject); }
 
         [Test]
         public void DeactivateGameObjectsWhenVisibilityIsSetToFalse()

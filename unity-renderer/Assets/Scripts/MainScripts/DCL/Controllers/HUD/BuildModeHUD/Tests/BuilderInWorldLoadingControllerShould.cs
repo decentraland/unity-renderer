@@ -18,15 +18,13 @@ namespace Tests.BuildModeHUDControllers
         public void TearDown() { builderInWorldLoadingController.Dispose(); }
 
         [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void ShowCorrectly(bool showTips)
+        public void ShowCorrectly()
         {
             // Act
-            builderInWorldLoadingController.Show(showTips);
+            builderInWorldLoadingController.Show();
 
             // Assert
-            builderInWorldLoadingController.initialLoadingView.Received(1).Show(showTips);
+            builderInWorldLoadingController.initialLoadingView.Received(1).Show();
         }
 
         [Test]
@@ -51,6 +49,19 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(loadingCanceled, "loadingCanceled is false!");
+        }
+
+        [Test]
+        public void SetPercentageCorrectly()
+        {
+            // Arrange
+            float testPercentage = 15.3f;
+
+            // Act
+            builderInWorldLoadingController.SetPercentage(testPercentage);
+
+            // Assert
+            builderInWorldLoadingController.initialLoadingView.Received(1).SetPercentage(testPercentage);
         }
     }
 }

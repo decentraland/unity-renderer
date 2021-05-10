@@ -9,10 +9,7 @@ public class NotificationBadge : MonoBehaviour
     [SerializeField] private GameObject notificationContainer;
 
     public int finalValue { get; private set; }
-    private void Start()
-    {
-        Initialize();
-    }
+    private void Start() { Initialize(); }
 
     public void Initialize()
     {

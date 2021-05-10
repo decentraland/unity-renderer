@@ -39,10 +39,7 @@ namespace DCL.Controllers
         private IBlockerAnimationHandler animationHandler;
         private Transform parent;
 
-        public void Initialize(IBlockerAnimationHandler animationHandler)
-        {
-            this.animationHandler = animationHandler;
-        }
+        public void Initialize(IBlockerAnimationHandler animationHandler) { this.animationHandler = animationHandler; }
 
         public BlockerInstanceHandler()
         {
@@ -112,10 +109,7 @@ namespace DCL.Controllers
             pool.ForcePrewarm();
         }
 
-        public void SetParent(Transform parent)
-        {
-            this.parent = parent;
-        }
+        public void SetParent(Transform parent) { this.parent = parent; }
 
         public void HideBlocker(Vector2Int coords, bool instant = false)
         {
@@ -140,11 +134,7 @@ namespace DCL.Controllers
             blockers.Remove(coords);
         }
 
-
-        public Dictionary<Vector2Int, PoolableObject> GetBlockers()
-        {
-            return new Dictionary<Vector2Int, PoolableObject>(blockers);
-        }
+        public Dictionary<Vector2Int, PoolableObject> GetBlockers() { return new Dictionary<Vector2Int, PoolableObject>(blockers); }
 
         public void DestroyAllBlockers()
         {

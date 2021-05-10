@@ -17,10 +17,7 @@ namespace CullingControllerTests
         public CullingController cullingController;
 
         [SetUp]
-        public void SetUp()
-        {
-            cullingController = CreateMockedCulledController(null, null, null);
-        }
+        public void SetUp() { cullingController = CreateMockedCulledController(null, null, null); }
 
         private static CullingController CreateMockedCulledController(UniversalRenderPipelineAsset urpAsset, CullingControllerSettings settings, ICullingObjectsTracker cullingObjectsTracker = null)
         {
@@ -29,16 +26,13 @@ namespace CullingControllerTests
                 settings ?? new CullingControllerSettings(),
                 cullingObjectsTracker ?? new CullingObjectsTracker());
 
-            result.SetSettings(new CullingControllerSettings() {maxTimeBudget = float.MaxValue});
+            result.SetSettings(new CullingControllerSettings() { maxTimeBudget = float.MaxValue });
 
             return result;
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            cullingController.Dispose();
-        }
+        public void TearDown() { cullingController.Dispose(); }
 
         [Test]
         public void ReturnCopyWhenGetSettingsIsCalled()

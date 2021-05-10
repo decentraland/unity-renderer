@@ -15,10 +15,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            shortcutsController.Dispose();
-        }
+        public void TearDown() { shortcutsController.Dispose(); }
 
         [Test]
         [TestCase(true)]

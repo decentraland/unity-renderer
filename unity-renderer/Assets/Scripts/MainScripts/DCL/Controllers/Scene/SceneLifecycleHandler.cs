@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DCL.Components;
 using DCL.Models;
 using UnityEngine;
@@ -61,7 +61,7 @@ namespace DCL.Controllers
         private void OnSceneSetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
             state = State.WAITING_FOR_INIT_MESSAGES;
-            owner.RefreshName();
+            owner.RefreshLoadingState();
 
 #if UNITY_EDITOR
             DebugConfig debugConfig = DataStore.i.debugConfig;
@@ -95,7 +95,7 @@ namespace DCL.Controllers
             }
 
             OnStateRefreshed?.Invoke(owner);
-            owner.RefreshName();
+            owner.RefreshLoadingState();
         }
 
         public void SetInitMessagesDone()
@@ -110,7 +110,7 @@ namespace DCL.Controllers
             }
 
             state = State.WAITING_FOR_COMPONENTS;
-            owner.RefreshName();
+            owner.RefreshLoadingState();
 
             if (disposableNotReadyCount > 0)
             {
@@ -143,7 +143,7 @@ namespace DCL.Controllers
             state = State.READY;
 
             Environment.i.world.sceneController.SendSceneReady(owner.sceneData.id);
-            owner.RefreshName();
+            owner.RefreshLoadingState();
 
             OnSceneReady?.Invoke(owner);
         }

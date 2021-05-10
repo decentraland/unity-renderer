@@ -21,10 +21,7 @@ public class StatsPanel : MonoBehaviour
         public int x;
         public int y;
 
-        public bool Equals(CellMap other)
-        {
-            return x == other.x && y == other.y;
-        }
+        public bool Equals(CellMap other) { return x == other.x && y == other.y; }
 
         public override int GetHashCode()
         {
@@ -46,15 +43,9 @@ public class StatsPanel : MonoBehaviour
 
     CellMap tmpCellMap = new CellMap();
 
-    private void OnEnable()
-    {
-        StartCoroutine(UpdatePanel());
-    }
+    private void OnEnable() { StartCoroutine(UpdatePanel()); }
 
-    private void OnDisable()
-    {
-        StopCoroutine(UpdatePanel());
-    }
+    private void OnDisable() { StopCoroutine(UpdatePanel()); }
 
     public void SetCellText(int x, int y, string text, bool instantUpdate = false)
     {
@@ -130,10 +121,7 @@ public class StatsPanel : MonoBehaviour
         row.gameObject.SetActive(false);
     }
 
-    private bool DictionaryContainsColumn(Dictionary<(int, int), Text> dictionary, int col)
-    {
-        return dictionary.Any(x => x.Key.Item1 == col);
-    }
+    private bool DictionaryContainsColumn(Dictionary<(int, int), Text> dictionary, int col) { return dictionary.Any(x => x.Key.Item1 == col); }
 
     private bool DictionaryContainsColAndRow(Dictionary<(int, int), Text> dictionary, int col, int row)
     {

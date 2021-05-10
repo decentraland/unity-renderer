@@ -15,6 +15,13 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialController : MonoBehaviour
     {
+        [System.Serializable]
+        public class TutorialInitializationMessage
+        {
+            public string fromDeepLink;
+            public string enableNewTutorialCamera;
+        }
+
         [Flags]
         public enum TutorialFinishStep
         {
@@ -41,12 +48,11 @@ namespace DCL.Tutorial
 
         public static TutorialController i { get; private set; }
 
-        public HUDController hudController
-        {
-            get => HUDController.i;
-        }
+        public HUDController hudController { get => HUDController.i; }
 
         public int currentStepIndex { get; private set; }
+        public event Action OnTutorialEnabled;
+        public event Action OnTutorialDisabled;
 
         private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
 
@@ -158,7 +164,13 @@ namespace DCL.Tutorial
                 CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
 
             if (debugRunTutorial)
-                SetTutorialEnabled(debugOpenedFromDeepLink.ToString());
+            {
+                SetTutorialEnabled(JsonUtility.ToJson(new TutorialInitializationMessage
+                {
+                    fromDeepLink = debugOpenedFromDeepLink.ToString(),
+                    enableNewTutorialCamera = false.ToString()
+                }));
+            }
         }
 
         private void OnDestroy()
@@ -176,32 +188,39 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = false;
         }
 
-        public void SetTutorialEnabled(string fromDeepLink)
+        public void SetTutorialEnabled(string json)
         {
-            SetupTutorial(fromDeepLink, TutorialType.Initial);
+            TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
+            SetupTutorial(msg.fromDeepLink, msg.enableNewTutorialCamera, TutorialType.Initial);
         }
 
-        public void SetTutorialEnabledForUsersThatAlreadyDidTheTutorial()
+        public void SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(string json)
         {
+            TutorialInitializationMessage msg = JsonUtility.FromJson<TutorialInitializationMessage>(json);
+
             // TODO (Santi): This a TEMPORAL fix. It will be removed when we refactorize the tutorial system in order to make it compatible with incremental features.
             if (PlayerPrefsUtils.GetInt(PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED) == 1)
                 return;
 
-            SetupTutorial(false.ToString(), TutorialType.Initial, true);
+            SetupTutorial(false.ToString(), msg.enableNewTutorialCamera, TutorialType.Initial, true);
         }
 
-        public void SetBuilderInWorldTutorialEnabled()
-        {
-            SetupTutorial(false.ToString(), TutorialType.BuilderInWorld);
-        }
+        public void SetBuilderInWorldTutorialEnabled() { SetupTutorial(false.ToString(), false.ToString(), TutorialType.BuilderInWorld); }
 
         /// <summary>
         /// Enables the tutorial controller and waits for the RenderingState is enabled to start to execute the corresponding tutorial steps.
         /// </summary>
-        void SetupTutorial(string fromDeepLink, TutorialType tutorialType, bool userAlreadyDidTheTutorial = false)
+        void SetupTutorial(string fromDeepLink, string enableNewTutorialCamera, TutorialType tutorialType, bool userAlreadyDidTheTutorial = false)
         {
             if (isRunning)
                 return;
+
+            if (Convert.ToBoolean(enableNewTutorialCamera))
+            {
+                eagleCamInitPosition = new Vector3(15, 115, -30);
+                eagleCamInitLookAtPoint = new Vector3(16, 105, 6);
+                eagleCamRotationActived = false;
+            }
 
             isRunning = true;
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
@@ -223,6 +242,8 @@ namespace DCL.Tutorial
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             else
                 OnRenderingStateChanged(true, false);
+
+            OnTutorialEnabled?.Invoke();
         }
 
         /// <summary>
@@ -263,6 +284,8 @@ namespace DCL.Tutorial
             RestoreCullingSettings();
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
+
+            OnTutorialDisabled?.Invoke();
         }
 
         /// <summary>
@@ -346,19 +369,13 @@ namespace DCL.Tutorial
         /// Plays a specific animation on the tutorial teacher.
         /// </summary>
         /// <param name="animation">Animation to apply.</param>
-        public void PlayTeacherAnimation(TutorialTeacher.TeacherAnimation animation)
-        {
-            teacher.PlayAnimation(animation);
-        }
+        public void PlayTeacherAnimation(TutorialTeacher.TeacherAnimation animation) { teacher.PlayAnimation(animation); }
 
         /// <summary>
         /// Set sort order for canvas containing teacher RawImage
         /// </summary>
         /// <param name="sortOrder"></param>
-        public void SetTeacherCanvasSortingOrder(int sortOrder)
-        {
-            teacherCanvas.sortingOrder = sortOrder;
-        }
+        public void SetTeacherCanvasSortingOrder(int sortOrder) { teacherCanvas.sortingOrder = sortOrder; }
 
         /// <summary>
         /// Finishes the current running step, skips all the next ones and completes the tutorial.
@@ -396,7 +413,7 @@ namespace DCL.Tutorial
             if (isActive)
             {
                 eagleEyeCamera.transform.position = eagleCamInitPosition;
-                eagleEyeCamera.transform.LookAt(CommonScriptableObjects.playerUnityPosition.Get());
+                eagleEyeCamera.transform.LookAt(eagleCamInitLookAtPoint);
 
                 if (eagleCamRotationActived)
                     eagleEyeRotationCoroutine = StartCoroutine(EagleEyeCameraRotation(eagleCamRotationSpeed));
@@ -526,10 +543,7 @@ namespace DCL.Tutorial
             SetTutorialDisabled();
         }
 
-        private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType)
-        {
-            WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType);
-        }
+        private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
 
         private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
         {
@@ -562,7 +576,11 @@ namespace DCL.Tutorial
         {
             SetTutorialDisabled();
             tutorialReset = true;
-            SetTutorialEnabled(false.ToString());
+            SetTutorialEnabled(JsonUtility.ToJson(new TutorialInitializationMessage
+            {
+                fromDeepLink = false.ToString(),
+                enableNewTutorialCamera = false.ToString()
+            }));
         }
 
         private bool IsPlayerInsideGenesisPlaza()

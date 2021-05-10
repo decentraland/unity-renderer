@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine;
 using UnityEngine.UI;
 
 internal class SceneCardViewContextMenu : MonoBehaviour
@@ -48,58 +47,53 @@ internal class SceneCardViewContextMenu : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
 
-        settingsButton.onClick.AddListener(()=>
+        settingsButton.onClick.AddListener(() =>
         {
             OnSettingsPressed?.Invoke(sceneId);
             Hide();
         });
-        duplicateAsProjectButton.onClick.AddListener(()=>
+        duplicateAsProjectButton.onClick.AddListener(() =>
         {
             OnDuplicatePressed?.Invoke(sceneId);
             Hide();
         });
-        duplicateButton.onClick.AddListener(()=>
+        duplicateButton.onClick.AddListener(() =>
         {
             OnDuplicatePressed?.Invoke(sceneId);
             Hide();
         });
-        downloadButton.onClick.AddListener(()=>
+        downloadButton.onClick.AddListener(() =>
         {
             OnDownloadPressed?.Invoke(sceneId);
             Hide();
         });
-        shareButton.onClick.AddListener(()=>
+        shareButton.onClick.AddListener(() =>
         {
             OnSharePressed?.Invoke(sceneId);
             Hide();
         });
-        unpublishButton.onClick.AddListener(()=>
+        unpublishButton.onClick.AddListener(() =>
         {
             OnUnpublishPressed?.Invoke(sceneId);
             Hide();
         });
-        deleteButton.onClick.AddListener(()=>
+        deleteButton.onClick.AddListener(() =>
         {
             OnDeletePressed?.Invoke(sceneId);
             Hide();
         });
-        quitContributorButton.onClick.AddListener(()=>
+        quitContributorButton.onClick.AddListener(() =>
         {
             OnQuitContributorPressed?.Invoke(sceneId);
             Hide();
         });
     }
 
-    private void Update()
-    {
-        HideIfClickedOutside();
-    }
+    private void Update() { HideIfClickedOutside(); }
 
     public void Show(string sceneId, bool isSceneDeployed, bool isOwnerOrOperator, bool isContributor)
     {
-        ConfigFlags config = isSceneDeployed?
-            GetDeployedSceneConfig(isOwnerOrOperator, isContributor) :
-            GetProjectSceneConfig(isOwnerOrOperator, isContributor);
+        ConfigFlags config = isSceneDeployed ? GetDeployedSceneConfig(isOwnerOrOperator, isContributor) : GetProjectSceneConfig(isOwnerOrOperator, isContributor);
 
         Show(sceneId, config);
     }
@@ -111,10 +105,7 @@ internal class SceneCardViewContextMenu : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-    }
+    public void Hide() { gameObject.SetActive(false); }
 
     private void Build(ConfigFlags flags)
     {

@@ -28,7 +28,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
 
         SmartItemActionable actionableToRemove = null;
         List<SmartItemActionable> actions = (List<SmartItemActionable>)actionsGeneric;
-        foreach(SmartItemActionable actionableItem in actions)
+        foreach (SmartItemActionable actionableItem in actions)
         {
             if (actionable.actionableId == actionableItem.actionableId)
                 actionableToRemove = actionableItem;
@@ -38,10 +38,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
         SetParameterValue(actions);
     }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList)
-    {
-        this.alreadyFilterList = entitiesList; 
-    }
+    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.alreadyFilterList = entitiesList; }
 
     public override void SetInfo()
     {
@@ -74,7 +71,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
         else
             actionEvent.values = new Dictionary<object, object>();
 
-        actionsListView.AddActionEventAdapter(actionEvent);     
+        actionsListView.AddActionEventAdapter(actionEvent);
     }
 
     public void CreateEventAction()
@@ -90,7 +87,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
 
         SmartItemActionable action = new SmartItemActionable();
         action.actionableId = Guid.NewGuid().ToString();
-        actions.Add(action);     
+        actions.Add(action);
         AddEventAction(action);
         SetParameterValue(actions);
     }

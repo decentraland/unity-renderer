@@ -34,16 +34,19 @@ public class ColorSelector : MonoBehaviour
     public void Select(Color color)
     {
         ColorToggle toggle = GetColorToggle(color);
-        if (toggle == currentToggle) return;
+        if (toggle == currentToggle)
+            return;
         Select(toggle);
     }
 
     public void SelectRandom()
     {
-        if (colorToggles.Count == 0) return;
+        if (colorToggles.Count == 0)
+            return;
 
         ColorToggle toggle = colorToggles[Random.Range(0, colorToggles.Count)];
-        if (toggle == currentToggle) return;
+        if (toggle == currentToggle)
+            return;
 
         Select(toggle);
         OnColorChanged?.Invoke(currentToggle.color);
@@ -66,7 +69,8 @@ public class ColorSelector : MonoBehaviour
 
     private void ToggleClicked(ColorToggle toggle)
     {
-        if (toggle == currentToggle) return;
+        if (toggle == currentToggle)
+            return;
 
         Select(toggle);
         OnColorChanged?.Invoke(currentToggle.color);

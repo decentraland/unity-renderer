@@ -20,7 +20,7 @@ namespace DCL
             if (asset == null || masterAssets.ContainsKey(asset.id))
                 return true;
 
-            masterAssets.Add(asset.id, new RefCountedAsset() {asset = asset});
+            masterAssets.Add(asset.id, new RefCountedAsset() { asset = asset });
             assetToRefCountedAsset.Add(asset, masterAssets[asset.id]);
 
             return true;
@@ -37,10 +37,7 @@ namespace DCL
             assetToRefCountedAsset.Clear();
         }
 
-        public override bool Contains(object id)
-        {
-            return masterAssets.ContainsKey(id);
-        }
+        public override bool Contains(object id) { return masterAssets.ContainsKey(id); }
 
         public override bool Contains(AssetType asset)
         {

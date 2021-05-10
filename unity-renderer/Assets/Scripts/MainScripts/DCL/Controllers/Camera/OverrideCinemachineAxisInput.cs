@@ -24,7 +24,8 @@ public class OverrideCinemachineAxisInput : MonoBehaviour
 
     private float OverrideGetAxis(string axisName)
     {
-        if (!cachedAxisToMeasurableActions.ContainsKey(axisName)) return 0;
+        if (!cachedAxisToMeasurableActions.ContainsKey(axisName))
+            return 0;
 
         return cachedAxisToMeasurableActions[axisName].GetValue();
     }

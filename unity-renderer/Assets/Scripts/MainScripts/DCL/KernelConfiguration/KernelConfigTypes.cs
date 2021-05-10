@@ -7,10 +7,7 @@ namespace KernelConfigurationTypes
     {
         public bool enableBuilderInWorld = false;
 
-        public bool Equals(Features other)
-        {
-            return enableBuilderInWorld == other?.enableBuilderInWorld;
-        }
+        public bool Equals(Features other) { return enableBuilderInWorld == other?.enableBuilderInWorld; }
 
         public Features Clone()
         {

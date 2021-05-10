@@ -6,7 +6,7 @@ namespace Tests
 {
     public class ScenesViewControllerShould
     {
-        private ScenesViewController scenesViewController;
+        private IScenesViewController scenesViewController;
         private Listener_Mock listenerMock;
 
         [SetUp]
@@ -29,15 +29,12 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            scenesViewController.Dispose();
-        }
+        public void TearDown() { scenesViewController.Dispose(); }
 
         [Test]
         public void CallListenerEventsCorrectly()
         {
-            scenesViewController.SetScenes(new ISceneData[]{new SceneData(){id = "1", isDeployed = true}});
+            scenesViewController.SetScenes(new ISceneData[] { new SceneData() { id = "1", isDeployed = true } });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
             Assert.AreEqual(1, listenerMock.setScenes.Count);
@@ -49,8 +46,8 @@ namespace Tests
 
             scenesViewController.SetScenes(new ISceneData[]
             {
-                new SceneData(){id = "1", isDeployed = true},
-                new SceneData(){id = "2", isDeployed = true}
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = true }
             });
 
             Assert.AreEqual(2, listenerMock.deployedScenes.Count);
@@ -63,8 +60,8 @@ namespace Tests
 
             scenesViewController.SetScenes(new ISceneData[]
             {
-                new SceneData(){id = "1", isDeployed = true},
-                new SceneData(){id = "2", isDeployed = false}
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
@@ -77,8 +74,8 @@ namespace Tests
 
             scenesViewController.SetScenes(new ISceneData[]
             {
-                new SceneData(){id = "1", isDeployed = true},
-                new SceneData(){id = "2", isDeployed = false}
+                new SceneData() { id = "1", isDeployed = true },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(1, listenerMock.deployedScenes.Count);
@@ -91,8 +88,8 @@ namespace Tests
 
             scenesViewController.SetScenes(new ISceneData[]
             {
-                new SceneData(){id = "1", isDeployed = false},
-                new SceneData(){id = "2", isDeployed = false}
+                new SceneData() { id = "1", isDeployed = false },
+                new SceneData() { id = "2", isDeployed = false }
             });
 
             Assert.AreEqual(0, listenerMock.deployedScenes.Count);
@@ -119,7 +116,7 @@ namespace Tests
             removedScenes.Clear();
         }
 
-        void IDeployedSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+        void IDeployedSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
@@ -128,19 +125,19 @@ namespace Tests
             }
         }
 
-        void IDeployedSceneListener.OnSceneAdded(SceneCardView scene)
+        void IDeployedSceneListener.OnSceneAdded(ISceneCardView scene)
         {
             addedScenes.Add(scene.sceneData.id);
             deployedScenes.Add(scene.sceneData.id);
         }
 
-        void IDeployedSceneListener.OnSceneRemoved(SceneCardView scene)
+        void IDeployedSceneListener.OnSceneRemoved(ISceneCardView scene)
         {
             removedScenes.Add(scene.sceneData.id);
             deployedScenes.Remove(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSetScenes(Dictionary<string, SceneCardView> scenes)
+        void IProjectSceneListener.OnSetScenes(Dictionary<string, ISceneCardView> scenes)
         {
             foreach (var view in scenes.Values)
             {
@@ -149,13 +146,13 @@ namespace Tests
             }
         }
 
-        void IProjectSceneListener.OnSceneAdded(SceneCardView scene)
+        void IProjectSceneListener.OnSceneAdded(ISceneCardView scene)
         {
             addedScenes.Add(scene.sceneData.id);
             projectScenes.Add(scene.sceneData.id);
         }
 
-        void IProjectSceneListener.OnSceneRemoved(SceneCardView scene)
+        void IProjectSceneListener.OnSceneRemoved(ISceneCardView scene)
         {
             removedScenes.Add(scene.sceneData.id);
             projectScenes.Remove(scene.sceneData.id);

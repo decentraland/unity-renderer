@@ -33,8 +33,7 @@ namespace AvatarShape_Tests
                     skinColor = Color.white,
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>()
-                    {
-                    }
+                        { }
                 };
                 catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
                 avatarShape = AvatarShapeTestHelpers.CreateAvatarShape(scene, avatarModel);
@@ -48,7 +47,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeVisibleByDefault()
         {
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
 
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
@@ -65,8 +64,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] {sunglasses.category};
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            bandana.hides = new[] { sunglasses.category };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -83,8 +82,8 @@ namespace AvatarShape_Tests
         {
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] {"NonExistentCategory"};
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            bandana.hides = new[] { "NonExistentCategory" };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -102,8 +101,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] {sunglasses.category};
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] { sunglasses.category };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -121,8 +120,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] {sunglasses.category};
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] { sunglasses.category };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -137,7 +136,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeUnequipedProperly()
         {
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -158,7 +157,7 @@ namespace AvatarShape_Tests
 
             for (int i = 0; i < 6; i++)
             {
-                avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+                avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
                 avatarShape.UpdateFromModel(avatarModel);
                 yield return avatarShape.routine;
                 containers.Add(AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer);
@@ -226,7 +225,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeRetrievedWithoutPoolableObject()
         {
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -244,8 +243,8 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator HideBodyShapeProperly()
         {
-            catalog.Get(SUNGLASSES_ID).hides = new[] {WearableLiterals.Misc.HEAD};
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            catalog.Get(SUNGLASSES_ID).hides = new[] { WearableLiterals.Misc.HEAD };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
 
@@ -264,7 +263,7 @@ namespace AvatarShape_Tests
             avatarShape.avatarRenderer.CleanupAvatar();
             yield return null; //NOTE(Brian): Must wait a frame in order to all gameObjects finishes destroying.
 
-            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);
 
             while (avatarShape.avatarRenderer.isLoading)

@@ -42,7 +42,8 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
         hotSceneList.Add(new HotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(0, 0),
-            realms = new HotScenesController.HotSceneInfo.Realm[]{
+            realms = new HotScenesController.HotSceneInfo.Realm[]
+            {
                 new HotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "amber",
@@ -64,7 +65,8 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
         hotSceneList.Add(new HotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(20, 20),
-            realms = new HotScenesController.HotSceneInfo.Realm[]{
+            realms = new HotScenesController.HotSceneInfo.Realm[]
+            {
                 new HotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "amber",
@@ -79,7 +81,8 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
         hotSceneList.Add(new HotScenesController.HotSceneInfo()
         {
             baseCoords = new Vector2Int(70, -135),
-            realms = new HotScenesController.HotSceneInfo.Realm[]{
+            realms = new HotScenesController.HotSceneInfo.Realm[]
+            {
                 new HotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "red",

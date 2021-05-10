@@ -133,6 +133,46 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        public void ExitStartCorrectly()
+        {
+            // Act
+            buildModeHUDController.ExitStart();
+
+            // Assert
+            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
+                                  .Configure(
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>());
+            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.EXIT);
+        }
+
+        [Test]
+        public void CancelExitModalCorrectly()
+        {
+            // Act
+            buildModeHUDController.CancelExitModal(BuildModeModalType.EXIT);
+
+            // Assert
+            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(false, BuildModeModalType.EXIT);
+        }
+
+        [Test]
+        public void ConfirmExitModalCorrectly()
+        {
+            // Arrange
+            bool exitConfirmed = false;
+            buildModeHUDController.OnLogoutAction += () => { exitConfirmed = true; };
+
+            // Act
+            buildModeHUDController.ConfirmExitModal(BuildModeModalType.EXIT);
+
+            // Assert
+            Assert.IsTrue(exitConfirmed, "exitConfirmed is false!");
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void PublishEndCorrectly(bool isOk)

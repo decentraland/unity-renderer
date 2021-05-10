@@ -29,10 +29,7 @@ namespace DCL
             assetMockCoroutine = CoroutineStarter.Start(MockLoadingCoroutine(OnSuccess, OnFail));
         }
 
-        protected override void OnCancelLoading()
-        {
-            CoroutineStarter.Stop(assetMockCoroutine);
-        }
+        protected override void OnCancelLoading() { CoroutineStarter.Stop(assetMockCoroutine); }
 
         IEnumerator MockLoadingCoroutine(Action OnSuccess, Action OnFail)
         {
@@ -48,38 +45,19 @@ namespace DCL
             }
         }
 
-
         //NOTE(Brian): Used for testing
-        public void Load_Test()
-        {
-            Load();
-        }
+        public void Load_Test() { Load(); }
 
-        public Asset_Mock GetAsset_Test()
-        {
-            return asset;
-        }
+        public Asset_Mock GetAsset_Test() { return asset; }
 
-        public void Unload_Test()
-        {
-            Unload();
-        }
+        public void Unload_Test() { Unload(); }
 
-        public void SetLibrary_Test(AssetLibrary<Asset_Mock> library)
-        {
-            this.library = library;
-        }
+        public void SetLibrary_Test(AssetLibrary<Asset_Mock> library) { this.library = library; }
 
-        protected override void OnBeforeLoadOrReuse()
-        {
-        }
+        protected override void OnBeforeLoadOrReuse() { }
 
-        protected override void OnAfterLoadOrReuse()
-        {
-        }
+        protected override void OnAfterLoadOrReuse() { }
     }
 
-    public class AssetPromise_Mock_Alt_Loading_Approach : AssetPromise_Mock
-    {
-    }
+    public class AssetPromise_Mock_Alt_Loading_Approach : AssetPromise_Mock { }
 }

@@ -19,10 +19,7 @@ public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHand
 
     private float timer;
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        AudioScriptableObjects.buttonClick.Play(true);
-    }
+    public void OnBeginDrag(PointerEventData eventData) { AudioScriptableObjects.buttonClick.Play(true); }
 
     public void OnDrag(PointerEventData eventData)
     {

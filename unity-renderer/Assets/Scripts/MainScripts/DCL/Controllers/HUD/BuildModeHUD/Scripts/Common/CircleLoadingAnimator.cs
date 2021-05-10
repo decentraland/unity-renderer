@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 //Note (Adrian): This class is temporary and will dissapear when the new UI is implemented
 public class CircleLoadingAnimator : MonoBehaviour
 {
@@ -19,17 +18,13 @@ public class CircleLoadingAnimator : MonoBehaviour
         coroutine = StartCoroutine(LoadinAnimation());
     }
 
-    private void OnDisable()
-    {
-        StopCoroutine(coroutine);
-    }
-
+    private void OnDisable() { StopCoroutine(coroutine); }
 
     IEnumerator LoadinAnimation()
     {
         fillImage.fillAmount = 0;
         float currentSpeed = animSpeed * Time.deltaTime;
-        while(true)
+        while (true)
         {
             fillImage.fillAmount += currentSpeed;
 

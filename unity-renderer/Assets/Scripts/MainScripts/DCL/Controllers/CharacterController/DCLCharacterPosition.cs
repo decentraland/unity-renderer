@@ -15,7 +15,6 @@ public class DCLCharacterPosition
     public Vector3 worldPosition
     {
         get { return worldPositionValue; }
-
         set
         {
             worldPositionValue = value;
@@ -27,7 +26,6 @@ public class DCLCharacterPosition
     public Vector3 unityPosition
     {
         get { return unityPositionValue; }
-
         set
         {
             unityPositionValue = value;
@@ -75,13 +73,7 @@ public class DCLCharacterPosition
         }
     }
 
-    public bool RepositionedWorldLastFrame()
-    {
-        return lastRepositionFrame == Time.frameCount - 1;
-    }
+    public bool RepositionedWorldLastFrame() { return lastRepositionFrame == Time.frameCount - 1; }
 
-    public override string ToString()
-    {
-        return $"worldPos: {worldPositionValue} - unityPos: {unityPositionValue} - offset: {offset}";
-    }
+    public override string ToString() { return $"worldPos: {worldPositionValue} - unityPos: {unityPositionValue} - offset: {offset}"; }
 }

@@ -55,7 +55,6 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         yield return base.TearDown();
     }
 
-
     [Test]
     public void HandlePrivateMessagesProperly()
     {
@@ -92,7 +91,6 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual("<b>From TEST_USER:</b> test message", entry2.body.text);
     }
 
-
     [Test]
     public void HandleChatControllerProperly()
     {
@@ -121,7 +119,6 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
         Assert.AreEqual(0, view.group.alpha);
     }
 
-
     [UnityTest]
     public IEnumerator SendChatMessageProperly()
     {
@@ -138,7 +135,7 @@ public class WorldChatWindowHUDShould : IntegrationTestSuite_Legacy
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() {body = "test message"});
+        controller.SendChatMessage(new ChatMessage() { body = "test message" });
         Assert.IsTrue(messageWasSent);
         WebInterface.OnMessageFromEngine -= messageCallback;
         yield return null;

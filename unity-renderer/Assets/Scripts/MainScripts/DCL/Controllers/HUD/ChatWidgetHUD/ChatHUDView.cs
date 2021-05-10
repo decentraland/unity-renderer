@@ -76,15 +76,9 @@ public class ChatHUDView : MonoBehaviour
         OnSendMessage?.Invoke(currentMessage);
     }
 
-    private void OnInputFieldSelect(string message)
-    {
-        AudioScriptableObjects.inputFieldFocus.Play(true);
-    }
+    private void OnInputFieldSelect(string message) { AudioScriptableObjects.inputFieldFocus.Play(true); }
 
-    private void OnInputFieldDeselect(string message)
-    {
-        AudioScriptableObjects.inputFieldUnfocus.Play(true);
-    }
+    private void OnInputFieldDeselect(string message) { AudioScriptableObjects.inputFieldUnfocus.Play(true); }
 
     public void ResetInputField()
     {
@@ -92,10 +86,7 @@ public class ChatHUDView : MonoBehaviour
         inputField.caretColor = Color.white;
     }
 
-    void OnEnable()
-    {
-        Utils.ForceUpdateLayout(transform as RectTransform);
-    }
+    void OnEnable() { Utils.ForceUpdateLayout(transform as RectTransform); }
 
     public void FocusInputField()
     {

@@ -5,9 +5,7 @@ using UnityEngine;
 namespace DCL.SettingsPanelHUD.Sections
 {
     [System.Serializable]
-    public class SettingsWidgetList : ReorderableArray<SettingsWidgetModel>
-    {
-    }
+    public class SettingsWidgetList : ReorderableArray<SettingsWidgetModel> { }
 
     /// <summary>
     /// Model that represents a SECTION. It contains a list of WIDGETS.

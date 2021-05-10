@@ -1,6 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Object = UnityEngine.Object;
+
+internal interface IScenesViewController : IDisposable
+{
+    event Action<Dictionary<string, ISceneCardView>> OnDeployedScenesSet;
+    event Action<ISceneCardView> OnDeployedSceneAdded;
+    event Action<ISceneCardView> OnDeployedSceneRemoved;
+    event Action<Dictionary<string, ISceneCardView>> OnProjectScenesSet;
+    event Action<ISceneCardView> OnProjectSceneAdded;
+    event Action<ISceneCardView> OnProjectSceneRemoved;
+    event Action<ISceneCardView> OnSceneSelected;
+    event Action<Vector2Int> OnJumpInPressed;
+    event Action<Vector2Int> OnEditorPressed;
+    event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
+    event Action<string> OnRequestOpenUrl;
+    void SetScenes(ISceneData[] scenesData);
+    void SelectScene(string id);
+    void AddListener(IDeployedSceneListener listener);
+    void AddListener(IProjectSceneListener listener);
+    void AddListener(ISelectSceneListener listener);
+    void RemoveListener(IDeployedSceneListener listener);
+    void RemoveListener(IProjectSceneListener listener);
+    void RemoveListener(ISelectSceneListener listener);
+}
 
 /// <summary>
 /// This class is responsible for receiving a list of scenes and merge it with the previous list
@@ -8,43 +32,50 @@ using Object = UnityEngine.Object;
 /// when new scenes are added or removed.
 /// It instantiate and hold all the SceneCardViews to make them re-utilizable in every menu section screen.
 /// </summary>
-internal class ScenesViewController : IDisposable
+internal class ScenesViewController : IScenesViewController
 {
-    public event Action<Dictionary<string, SceneCardView>> OnDeployedScenesSet;
-    public event Action<SceneCardView> OnDeployedSceneAdded;
-    public event Action<SceneCardView> OnDeployedSceneRemoved;
-    public event Action<Dictionary<string, SceneCardView>> OnProjectScenesSet;
-    public event Action<SceneCardView> OnProjectSceneAdded;
-    public event Action<SceneCardView> OnProjectSceneRemoved;
-    public event Action<SceneCardView> OnSceneSelected; 
+    public event Action<Dictionary<string, ISceneCardView>> OnDeployedScenesSet;
+    public event Action<ISceneCardView> OnDeployedSceneAdded;
+    public event Action<ISceneCardView> OnDeployedSceneRemoved;
+    public event Action<Dictionary<string, ISceneCardView>> OnProjectScenesSet;
+    public event Action<ISceneCardView> OnProjectSceneAdded;
+    public event Action<ISceneCardView> OnProjectSceneRemoved;
+    public event Action<ISceneCardView> OnSceneSelected;
+    public event Action<Vector2Int> OnJumpInPressed;
+    public event Action<Vector2Int> OnEditorPressed;
+    public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
+    public event Action<string> OnRequestOpenUrl;
 
-    public Dictionary<string, SceneCardView> deployedScenes { private set; get; } = new Dictionary<string, SceneCardView>();
-    public Dictionary<string, SceneCardView> projectScenes { private set; get; } = new Dictionary<string, SceneCardView>();
+    private Dictionary<string, ISceneCardView> deployedScenes = new Dictionary<string, ISceneCardView>();
+    private Dictionary<string, ISceneCardView> projectScenes = new Dictionary<string, ISceneCardView>();
 
-    public SceneCardView selectedScene { private set; get; }
+    private ISceneCardView selectedScene;
 
     private readonly ScenesRefreshHelper scenesRefreshHelper = new ScenesRefreshHelper();
     private readonly SceneCardView sceneCardViewPrefab;
+    private readonly Transform defaultParent;
 
     /// <summary>
     /// Ctor
     /// </summary>
     /// <param name="sceneCardViewPrefab">prefab for scene's card</param>
-    public ScenesViewController(SceneCardView sceneCardViewPrefab)
+    /// <param name="defaultParent">default parent for scene's card</param>
+    public ScenesViewController(SceneCardView sceneCardViewPrefab, Transform defaultParent = null)
     {
         this.sceneCardViewPrefab = sceneCardViewPrefab;
+        this.defaultParent = defaultParent;
     }
 
     /// <summary>
     /// Set current user scenes (deployed and projects)
     /// </summary>
     /// <param name="scenesData">list of scenes</param>
-    public void SetScenes(ISceneData[] scenesData)
+    void IScenesViewController.SetScenes(ISceneData[] scenesData)
     {
         scenesRefreshHelper.Set(deployedScenes, projectScenes);
 
-        deployedScenes = new Dictionary<string, SceneCardView>();
-        projectScenes = new Dictionary<string, SceneCardView>();
+        deployedScenes = new Dictionary<string, ISceneCardView>();
+        projectScenes = new Dictionary<string, ISceneCardView>();
 
         // update or create new scenes view
         for (int i = 0; i < scenesData.Length; i++)
@@ -79,12 +110,12 @@ internal class ScenesViewController : IDisposable
         }
 
         // notify scenes set if needed
-        if (scenesRefreshHelper.isOldDeployedScenesEmpty && deployedScenes.Count > 0)
+        if (scenesRefreshHelper.isOldDeployedScenesEmpty)
         {
             OnDeployedScenesSet?.Invoke(deployedScenes);
         }
 
-        if (scenesRefreshHelper.isOldProjectScenesEmpty && projectScenes.Count > 0)
+        if (scenesRefreshHelper.isOldProjectScenesEmpty)
         {
             OnProjectScenesSet?.Invoke(projectScenes);
         }
@@ -94,25 +125,61 @@ internal class ScenesViewController : IDisposable
     /// Set selected scene
     /// </summary>
     /// <param name="id">scene id</param>
-    public void SelectScene(string id)
+    void IScenesViewController.SelectScene(string id)
     {
-        SceneCardView sceneCardView = null;
-        if (deployedScenes.TryGetValue(id, out SceneCardView deployedSceneCardView))
+        ISceneCardView sceneCardView = null;
+        if (deployedScenes.TryGetValue(id, out ISceneCardView deployedSceneCardView))
         {
             sceneCardView = deployedSceneCardView;
         }
-        else if (projectScenes.TryGetValue(id, out SceneCardView projectSceneCardView))
+        else if (projectScenes.TryGetValue(id, out ISceneCardView projectSceneCardView))
         {
             sceneCardView = projectSceneCardView;
         }
 
         selectedScene = sceneCardView;
-        
+
         if (sceneCardView != null)
         {
             OnSceneSelected?.Invoke(sceneCardView);
         }
     }
+
+    void IScenesViewController.AddListener(IDeployedSceneListener listener)
+    {
+        OnDeployedSceneAdded += listener.OnSceneAdded;
+        OnDeployedSceneRemoved += listener.OnSceneRemoved;
+        OnDeployedScenesSet += listener.OnSetScenes;
+        listener.OnSetScenes(deployedScenes);
+    }
+
+    void IScenesViewController.AddListener(IProjectSceneListener listener)
+    {
+        OnProjectSceneAdded += listener.OnSceneAdded;
+        OnProjectSceneRemoved += listener.OnSceneRemoved;
+        OnProjectScenesSet += listener.OnSetScenes;
+        listener.OnSetScenes(projectScenes);
+    }
+
+    void IScenesViewController.AddListener(ISelectSceneListener listener)
+    {
+        OnSceneSelected += listener.OnSelectScene;
+        listener.OnSelectScene(selectedScene);
+    }
+
+    void IScenesViewController.RemoveListener(IDeployedSceneListener listener)
+    {
+        OnDeployedSceneAdded -= listener.OnSceneAdded;
+        OnDeployedSceneRemoved -= listener.OnSceneRemoved;
+        OnDeployedScenesSet -= listener.OnSetScenes;
+    }
+    void IScenesViewController.RemoveListener(IProjectSceneListener listener)
+    {
+        OnProjectSceneAdded -= listener.OnSceneAdded;
+        OnProjectSceneRemoved -= listener.OnSceneRemoved;
+        OnProjectScenesSet -= listener.OnSetScenes;
+    }
+    void IScenesViewController.RemoveListener(ISelectSceneListener listener) { OnSceneSelected -= listener.OnSelectScene; }
 
     public void Dispose()
     {
@@ -120,7 +187,7 @@ internal class ScenesViewController : IDisposable
         {
             while (iterator.MoveNext())
             {
-                Object.Destroy(iterator.Current.Value.gameObject);
+                iterator.Current.Value.Dispose();
             }
         }
 
@@ -130,7 +197,7 @@ internal class ScenesViewController : IDisposable
         {
             while (iterator.MoveNext())
             {
-                Object.Destroy(iterator.Current.Value.gameObject);
+                iterator.Current.Value.Dispose();
             }
         }
 
@@ -177,12 +244,12 @@ internal class ScenesViewController : IDisposable
         AddScene(sceneData, cardView, shouldNotifyAdd);
     }
 
-    private SceneCardView RemoveScene(ISceneData sceneData, bool notify)
+    private ISceneCardView RemoveScene(ISceneData sceneData, bool notify)
     {
         bool wasDeployed = scenesRefreshHelper.WasDeployedScene(sceneData);
         var dictionary = wasDeployed ? scenesRefreshHelper.oldDeployedScenes : scenesRefreshHelper.oldProjectsScenes;
 
-        if (dictionary.TryGetValue(sceneData.id, out SceneCardView sceneCardView))
+        if (dictionary.TryGetValue(sceneData.id, out ISceneCardView sceneCardView))
         {
             dictionary.Remove(sceneData.id);
 
@@ -200,7 +267,7 @@ internal class ScenesViewController : IDisposable
         return null;
     }
 
-    private void AddScene(ISceneData sceneData, SceneCardView sceneCardView, bool notify)
+    private void AddScene(ISceneData sceneData, ISceneCardView sceneCardView, bool notify)
     {
         var dictionary = sceneData.isDeployed ? deployedScenes : projectScenes;
         dictionary.Add(sceneData.id, sceneCardView);
@@ -214,15 +281,33 @@ internal class ScenesViewController : IDisposable
         }
     }
 
-    private SceneCardView CreateCardView()
+    private ISceneCardView CreateCardView()
     {
         SceneCardView sceneCardView = Object.Instantiate(sceneCardViewPrefab);
-        sceneCardView.gameObject.SetActive(false);
-        return sceneCardView;
+        ISceneCardView view = sceneCardView;
+
+        view.SetActive(false);
+        view.ConfigureDefaultParent(defaultParent);
+        view.SetToDefaultParent();
+
+        view.OnEditorPressed += OnEditorPressed;
+        view.OnContextMenuPressed += OnContextMenuPressed;
+        view.OnJumpInPressed += OnJumpInPressed;
+        view.OnSettingsPressed += OnSceneSettingsPressed;
+
+        return view;
     }
 
-    private void DestroyCardView(SceneCardView sceneCardView)
+    private void DestroyCardView(ISceneCardView sceneCardView)
     {
-        Object.Destroy(sceneCardView.gameObject);
+        // NOTE: there is actually no need to unsubscribe here, but, just in case...
+        sceneCardView.OnEditorPressed -= OnEditorPressed;
+        sceneCardView.OnContextMenuPressed -= OnContextMenuPressed;
+        sceneCardView.OnJumpInPressed -= OnJumpInPressed;
+        sceneCardView.OnSettingsPressed -= OnSceneSettingsPressed;
+
+        sceneCardView.Dispose();
     }
+
+    private void OnSceneSettingsPressed(ISceneData sceneData) { OnRequestOpenUrl?.Invoke($"https://builder.decentraland.org/scenes/{sceneData.projectId}"); }
 }

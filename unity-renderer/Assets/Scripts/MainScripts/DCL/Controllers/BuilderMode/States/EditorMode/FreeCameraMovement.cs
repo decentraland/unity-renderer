@@ -7,14 +7,10 @@ using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
-    public BuilderInWorldInputWrapper builderInputWrapper;
-
     public float smoothLookAtSpeed = 5f;
     public float focusDistance = 5f;
-    public float focusSpeed = 5f;
 
     [Header("Manual Camera Movement")]
-
     public float keyboardMovementSpeed = 5f;
     public float lookSpeedH = 2f;
 
@@ -25,24 +21,31 @@ public class FreeCameraMovement : CameraStateBase
     public float dragSpeed = 3f;
 
     [Header("InputActions")]
-
     [SerializeField] internal InputAction_Hold advanceFowardInputAction;
     [SerializeField] internal InputAction_Hold advanceBackInputAction;
     [SerializeField] internal InputAction_Hold advanceLeftInputAction;
     [SerializeField] internal InputAction_Hold advanceRightInputAction;
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
-    
+    [SerializeField] internal InputAction_Hold cameraPanInputAction;
+
     private float yaw = 0f;
     private float pitch = 0f;
 
     private bool isCameraAbleToMove = true;
+
     private bool isAdvancingForward = false;
     private bool isAdvancingBackward = false;
     private bool isAdvancingLeft = false;
     private bool isAdvancingRight = false;
     private bool isAdvancingUp = false;
     private bool isAdvancingDown = false;
+
+    private bool isDetectingMovement = false;
+    private bool hasBeenMovement = false;
+
+    private bool isPanCameraActive = false;
+    private bool isMouseRightClickDown = false;
 
     private Coroutine smoothLookAtCor;
     private Coroutine smoothFocusOnTargetCor;
@@ -66,15 +69,20 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Hold.Started advanceUpStartDelegate;
     private InputAction_Hold.Finished advanceUpFinishedDelegate;
 
+    private InputAction_Hold.Started cameraPanStartDelegate;
+    private InputAction_Hold.Finished cameraPanFinishedDelegate;
+
     private void Awake()
-    {    
-        builderInputWrapper.OnMouseDrag += MouseDrag;
-        builderInputWrapper.OnMouseDragRaw += MouseDragRaw;
-        builderInputWrapper.OnMouseWheel += MouseWheel;
+    {
+        BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
+        BuilderInWorldInputWrapper.OnMouseDragRaw += MouseDragRaw;
+        BuilderInWorldInputWrapper.OnMouseWheel += MouseWheel;
+
+        BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
 
         DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
         DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
-
 
         advanceForwardStartDelegate = (action) => isAdvancingForward = true;
         advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
@@ -111,13 +119,48 @@ public class FreeCameraMovement : CameraStateBase
 
         advanceDownInputAction.OnStarted += advanceDownStartDelegate;
         advanceDownInputAction.OnFinished += advanceDownFinishedDelegate;
+
+        cameraPanStartDelegate = (action) => isPanCameraActive = true;
+        cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
+
+        cameraPanInputAction.OnStarted += cameraPanStartDelegate;
+        cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
+    }
+
+    public void StartDectectingMovement()
+    {
+        isDetectingMovement = true;
+        hasBeenMovement = false;
+    }
+
+    public bool HasBeenMovement => hasBeenMovement;
+
+    public void StopDetectingMovement() { isDetectingMovement = false; }
+
+    private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
+    {
+        if (buttonId != 1)
+            return;
+
+        isMouseRightClickDown = false;
+    }
+
+    private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
+    {
+        if (buttonId != 1)
+            return;
+
+        isMouseRightClickDown = true;
     }
 
     private void OnDestroy()
     {
-        builderInputWrapper.OnMouseDrag -= MouseDrag;
-        builderInputWrapper.OnMouseDragRaw -= MouseDragRaw;
-        builderInputWrapper.OnMouseWheel -= MouseWheel;
+        BuilderInWorldInputWrapper.OnMouseDrag -= MouseDrag;
+        BuilderInWorldInputWrapper.OnMouseDragRaw -= MouseDragRaw;
+        BuilderInWorldInputWrapper.OnMouseWheel -= MouseWheel;
+
+        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
 
         advanceFowardInputAction.OnStarted -= advanceForwardStartDelegate;
         advanceFowardInputAction.OnFinished -= advanceForwardFinishedDelegate;
@@ -136,52 +179,50 @@ public class FreeCameraMovement : CameraStateBase
 
         advanceUpInputAction.OnStarted -= advanceUpStartDelegate;
         advanceUpInputAction.OnFinished -= advanceUpFinishedDelegate;
+
+        cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
+        cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
     }
 
     private void Update()
     {
+        if (!isMouseRightClickDown)
+            return;
+
         Vector3 velocity = Vector3.zero;
         if (isAdvancingForward)
-        {
-            velocity += transform.forward;
-        }
+            velocity += GetTotalVelocity(velocity, transform.forward);
+
         if (isAdvancingBackward)
-        {
-            velocity += -transform.forward;
-        }
+            velocity += GetTotalVelocity(velocity, -transform.forward);
+
         if (isAdvancingRight)
-        {
-            velocity += transform.right;
-        }
+            velocity += GetTotalVelocity(velocity, transform.right);
+
         if (isAdvancingLeft)
-        {
-            velocity += -transform.right;
-        }
+            velocity += GetTotalVelocity(velocity, -transform.right);
+
         if (isAdvancingUp)
-        {
-            velocity += transform.up;
-        }
+            velocity += GetTotalVelocity(velocity, Vector3.up);
+
         if (isAdvancingDown)
-        {
-            velocity += -transform.up;
-        }
-        transform.position += velocity * keyboardMovementSpeed * Time.deltaTime;
+            velocity += GetTotalVelocity(velocity, -Vector3.up);
+
+        transform.position += velocity * (keyboardMovementSpeed * Time.deltaTime);
     }
 
-    public void SetCameraCanMove(bool canMove)
+    public Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
     {
-        isCameraAbleToMove = canMove;
+        if (isDetectingMovement)
+            hasBeenMovement = true;
+        return currentVelocity + velocityToAdd;
     }
 
-    private void OnGizmoTransformObjectEnd(string gizmoType)
-    {
-        isCameraAbleToMove = true;
-    }
+    public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
 
-    private void OnGizmoTransformObjectStart(string gizmoType)
-    {
-        isCameraAbleToMove = false;
-    }
+    private void OnGizmoTransformObjectEnd(string gizmoType) { isCameraAbleToMove = true; }
+
+    private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
 
     private void MouseWheel(float axis)
     {
@@ -196,16 +237,16 @@ public class FreeCameraMovement : CameraStateBase
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
-        if(buttonId == 0)
+        if (buttonId == 1 && !isPanCameraActive)
             CameraLook(axisX, axisY);
     }
 
     private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
-        if (buttonId == 2 || buttonId == 1)
+        if (buttonId == 2 || buttonId == 1 && isPanCameraActive)
             CameraDrag(axisX, axisY);
     }
- 
+
     public void CameraDrag(float axisX, float axisY)
     {
         if (isCameraAbleToMove)
@@ -223,27 +264,21 @@ public class FreeCameraMovement : CameraStateBase
         }
     }
 
-    public override Vector3 OnGetRotation()
-    {
-        return transform.eulerAngles;
-    }
+    public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
     public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
     {
         if (entitiesToFocus.Count > 0)
         {
             Vector3 middlePoint = FindMidPoint(entitiesToFocus);
-            if (smoothFocusOnTargetCor != null) CoroutineStarter.Stop(smoothFocusOnTargetCor);
+            if (smoothFocusOnTargetCor != null)
+                CoroutineStarter.Stop(smoothFocusOnTargetCor);
             smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
             SmoothLookAt(middlePoint);
         }
     }
 
-
-    public void SetPosition(Vector3 position)
-    {
-        transform.position = position;
-    }
+    public void SetPosition(Vector3 position) { transform.position = position; }
 
     public void LookAt(Transform transformToLookAt)
     {
@@ -252,11 +287,7 @@ public class FreeCameraMovement : CameraStateBase
         pitch = transform.eulerAngles.x;
     }
 
-    public void SmoothLookAt(Transform transform)
-    {
-
-        SmoothLookAt(transform.position);
-    }
+    public void SmoothLookAt(Transform transform) { SmoothLookAt(transform.position); }
     public void SmoothLookAt(Vector3 position)
     {
         if (smoothLookAtCor != null)
@@ -268,7 +299,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         Vector3 finalPosition = Vector3.zero;
         int totalPoints = 0;
-        foreach(DCLBuilderInWorldEntity entity in entitiesToLook)
+        foreach (DCLBuilderInWorldEntity entity in entitiesToLook)
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
@@ -281,16 +312,16 @@ public class FreeCameraMovement : CameraStateBase
                 finalPosition += midPointFromEntity;
                 totalPoints++;
             }
-           
+
         }
 
         finalPosition /= totalPoints;
         return finalPosition;
     }
-    
+
     IEnumerator SmoothScroll(float axis)
     {
-        float scrollMovementDestination = axis* zoomSpeed;
+        float scrollMovementDestination = axis * zoomSpeed;
 
         Vector3 targetPosition = transform.position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
 
@@ -321,7 +352,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
         float advance = 0;
-        while(advance <= 1)
+        while (advance <= 1)
         {
             advance += smoothLookAtSpeed * Time.deltaTime;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, advance);

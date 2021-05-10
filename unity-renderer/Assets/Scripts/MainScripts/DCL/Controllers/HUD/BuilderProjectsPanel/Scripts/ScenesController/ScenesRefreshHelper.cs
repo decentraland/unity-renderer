@@ -2,13 +2,13 @@
 
 internal class ScenesRefreshHelper
 {
-    public Dictionary<string, SceneCardView> oldDeployedScenes { get; private set; }
-    public Dictionary<string, SceneCardView> oldProjectsScenes { get; private set; }
+    public Dictionary<string, ISceneCardView> oldDeployedScenes { get; private set; }
+    public Dictionary<string, ISceneCardView> oldProjectsScenes { get; private set; }
     public bool isOldDeployedScenesEmpty { get; private set; }
     public bool isOldProjectScenesEmpty { get; private set; }
 
-    public void Set(Dictionary<string, SceneCardView> oldDeployedScenes,
-        Dictionary<string, SceneCardView> oldProjectsScenes)
+    public void Set(Dictionary<string, ISceneCardView> oldDeployedScenes,
+        Dictionary<string, ISceneCardView> oldProjectsScenes)
     {
         this.oldDeployedScenes = oldDeployedScenes;
         this.oldProjectsScenes = oldProjectsScenes;
@@ -33,17 +33,11 @@ internal class ScenesRefreshHelper
         return oldProjectsScenes.ContainsKey(sceneData.id);
     }
 
-    public bool IsSceneUpdate(ISceneData sceneData)
-    {
-        return WasDeployedScene(sceneData) || WasProjectScene(sceneData);
-    }
+    public bool IsSceneUpdate(ISceneData sceneData) { return WasDeployedScene(sceneData) || WasProjectScene(sceneData); }
 
-    public bool IsSceneDeployStatusChanged(ISceneData sceneData)
-    {
-        return (!sceneData.isDeployed && WasDeployedScene(sceneData)) || (sceneData.isDeployed && WasProjectScene(sceneData));
-    }
+    public bool IsSceneDeployStatusChanged(ISceneData sceneData) { return (!sceneData.isDeployed && WasDeployedScene(sceneData)) || (sceneData.isDeployed && WasProjectScene(sceneData)); }
 
-    public Dictionary<string, SceneCardView> GetOldDictionary(ISceneData sceneData)
+    public Dictionary<string, ISceneCardView> GetOldDictionary(ISceneData sceneData)
     {
         if (WasDeployedScene(sceneData))
         {

@@ -8,18 +8,9 @@ public class UIHoverCallback : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public event Action OnPointerEnter;
     public event Action OnPointerExit;
 
-    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
-    {
-        OnPointerDown?.Invoke();
-    }
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData) { OnPointerDown?.Invoke(); }
 
-    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-    {
-        OnPointerEnter?.Invoke();
-    }
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) { OnPointerEnter?.Invoke(); }
 
-    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-    {
-        OnPointerExit?.Invoke();
-    }
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData) { OnPointerExit?.Invoke(); }
 }

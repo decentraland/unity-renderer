@@ -11,8 +11,14 @@ using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IHUD
 {
-    protected static readonly string[] categoriesThatMustHaveSelection = {Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH};
-    protected static readonly string[] categoriesToRandomize = {Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET};
+    private const int LOADING_OWNED_WEARABLES_RETRIES = 3;
+    private const string LOADING_OWNED_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
+    private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
+    private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
+    private const string URL_SELL_COLLECTIBLE = "https://market.decentraland.org/account";
+
+    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
+    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
     [NonSerialized]
     public bool bypassUpdateAvatarPreview = false;
@@ -20,6 +26,7 @@ public class AvatarEditorHUDController : IHUD
     private UserProfile userProfile;
     private BaseDictionary<string, WearableItem> catalog;
     bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
+    bool isPlayerRendererLoaded => DataStore.i.isPlayerRendererLoaded.Get();
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
     protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
@@ -27,15 +34,15 @@ public class AvatarEditorHUDController : IHUD
     private ColorList eyeColorList;
     private ColorList hairColorList;
     private bool prevMouseLockState = false;
+    private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
+    private bool ownedWearablesAlreadyLoaded = false;
 
     public AvatarEditorHUDView view;
 
     public event Action OnOpen;
     public event Action OnClose;
 
-    public AvatarEditorHUDController()
-    {
-    }
+    public AvatarEditorHUDController() { }
 
     public void Initialize(UserProfile userProfile, BaseDictionary<string, WearableItem> catalog, bool bypassUpdateAvatarPreview = false)
     {
@@ -56,6 +63,7 @@ public class AvatarEditorHUDController : IHUD
 
         LoadUserProfile(userProfile, true);
         this.userProfile.OnUpdate += LoadUserProfile;
+        DataStore.i.isPlayerRendererLoaded.OnChange += PlayerRendererLoaded;
     }
 
     public void SetCatalog(BaseDictionary<string, WearableItem> catalog)
@@ -75,7 +83,78 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadUserProfile(UserProfile userProfile)
     {
+        LoadOwnedWereables(userProfile);
         LoadUserProfile(userProfile, false);
+    }
+
+    private void LoadOwnedWereables(UserProfile userProfile)
+    {
+        if (ownedWearablesAlreadyLoaded || ownedWearablesRemainingRequests <= 0 || string.IsNullOrEmpty(userProfile.userId))
+            return;
+
+        view.ShowCollectiblesLoadingSpinner(true);
+        view.ShowCollectiblesLoadingRetry(false);
+        CatalogController.RequestOwnedWearables(userProfile.userId)
+                         .Then((ownedWearables) =>
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             view.ShowCollectiblesLoadingSpinner(false);
+                         })
+                         .Catch((error) =>
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new Notification.Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = NotificationFactory.Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
+
+                                 view.ShowCollectiblesLoadingSpinner(false);
+                                 view.ShowCollectiblesLoadingRetry(true);
+                                 Debug.LogError(error);
+                             }
+                         });
+    }
+
+    public void RetryLoadOwnedWearables()
+    {
+        ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
+        LoadOwnedWereables(userProfile);
+    }
+
+    private void PlayerRendererLoaded(bool current, bool previous)
+    {
+        if (!current)
+            return;
+
+        if (!ownedWearablesAlreadyLoaded)
+        {
+            List<string> equippedOwnedWearables = new List<string>();
+            for (int i = 0; i < userProfile.avatar.wearables.Count; i++)
+            {
+                if (catalog.TryGetValue(userProfile.avatar.wearables[i], out WearableItem wearable) &&
+                    !wearable.tags.Contains("base-wearable"))
+                {
+                    equippedOwnedWearables.Add(userProfile.avatar.wearables[i]);
+                }
+            }
+            userProfile.SetInventory(equippedOwnedWearables.ToArray());
+        }
+
+        LoadUserProfile(userProfile, true);
+        DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
+
     }
 
     public void LoadUserProfile(UserProfile userProfile, bool forceLoading)
@@ -115,16 +194,19 @@ public class AvatarEditorHUDController : IHUD
 
         int wearablesCount = userProfile.avatar.wearables.Count;
 
-        for (var i = 0; i < wearablesCount; i++)
+        if (isPlayerRendererLoaded)
         {
-            CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable);
-            if (wearable == null)
+            for (var i = 0; i < wearablesCount; i++)
             {
-                Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
-                continue;
-            }
+                CatalogController.wearableCatalog.TryGetValue(userProfile.avatar.wearables[i], out var wearable);
+                if (wearable == null)
+                {
+                    Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
+                    continue;
+                }
 
-            EquipWearable(wearable);
+                EquipWearable(wearable);
+            }
         }
 
         EnsureWearablesCategoriesNotEmpty();
@@ -162,7 +244,8 @@ public class AvatarEditorHUDController : IHUD
     public void WearableClicked(string wearableId)
     {
         CatalogController.wearableCatalog.TryGetValue(wearableId, out var wearable);
-        if (wearable == null) return;
+        if (wearable == null)
+            return;
 
         if (wearable.category == Categories.BODY_SHAPE)
         {
@@ -285,7 +368,8 @@ public class AvatarEditorHUDController : IHUD
 
     private void EquipWearable(WearableItem wearable)
     {
-        if (!wearablesByCategory.ContainsKey(wearable.category)) return;
+        if (!wearablesByCategory.ContainsKey(wearable.category))
+            return;
 
         if (wearablesByCategory[wearable.category].Contains(wearable) && wearable.SupportsBodyShape(model.bodyShape.id) && !model.wearables.Contains(wearable))
         {
@@ -401,7 +485,8 @@ public class AvatarEditorHUDController : IHUD
         for (int i = 0; i < wearableCount; i++)
         {
             var wearable = model.wearables[i];
-            if (wearable == null) continue;
+            if (wearable == null)
+                continue;
 
             if (categoriesToReplace.Contains(wearable.category))
             {
@@ -485,12 +570,10 @@ public class AvatarEditorHUDController : IHUD
         this.userProfile.OnUpdate -= LoadUserProfile;
         this.catalog.OnAdded -= AddWearable;
         this.catalog.OnRemoved -= RemoveWearable;
+        DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
     }
 
-    public void SetConfiguration(HUDConfiguration configuration)
-    {
-        SetVisibility(configuration.active);
-    }
+    public void SetConfiguration(HUDConfiguration configuration) { SetVisibility(configuration.active); }
 
     public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
@@ -515,18 +598,12 @@ public class AvatarEditorHUDController : IHUD
     public void GoToMarketplace()
     {
         if (userProfile.hasConnectedWeb3)
-            WebInterface.OpenURL("https://market.decentraland.org/browse?section=wearables");
+            WebInterface.OpenURL(URL_MARKET_PLACE);
         else
-            WebInterface.OpenURL("https://docs.decentraland.org/get-a-wallet");
+            WebInterface.OpenURL(URL_GET_A_WALLET);
     }
 
-    public void SellCollectible(string collectibleId)
-    {
-        WebInterface.OpenURL("https://market.decentraland.org/account");
-    }
+    public void SellCollectible(string collectibleId) { WebInterface.OpenURL(URL_SELL_COLLECTIBLE); }
 
-    public void ToggleVisibility()
-    {
-        SetVisibility(!view.isOpen);
-    }
+    public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 }

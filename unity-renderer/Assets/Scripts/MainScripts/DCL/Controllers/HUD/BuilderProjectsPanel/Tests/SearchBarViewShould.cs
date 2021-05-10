@@ -24,10 +24,7 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(view.gameObject);
-        }
+        public void TearDown() { Object.Destroy(view.gameObject); }
 
         [UnityTest]
         public IEnumerator TriggerSearchWhenUserStopTyping()
@@ -41,12 +38,12 @@ namespace Tests
 
             var handler = Substitute.For<ISectionSearchHandler>();
             handler.WhenForAnyArgs(a => a.SetSearchString(""))
-                .Do(info =>
-                {
-                    searchTriggered = true;
-                    searchValueReceived = info.Arg<string>();
-                    searchTriggerTime = Time.unscaledTime;
-                });
+                   .Do(info =>
+                   {
+                       searchTriggered = true;
+                       searchValueReceived = info.Arg<string>();
+                       searchTriggerTime = Time.unscaledTime;
+                   });
 
             view.SetSearchBar(handler, null);
 
@@ -86,13 +83,13 @@ namespace Tests
         [Test]
         public void ShowFilters()
         {
-            view.ShowFilters(true,false,false);
+            view.ShowFilters(true, false, false);
 
             Assert.IsTrue(view.ownerToggle.gameObject.activeSelf);
             Assert.IsFalse(view.operatorToggle.gameObject.activeSelf);
             Assert.IsFalse(view.contributorToggle.gameObject.activeSelf);
 
-            view.ShowFilters(false,false,false);
+            view.ShowFilters(false, false, false);
 
             Assert.IsFalse(view.ownerToggle.gameObject.activeSelf);
             Assert.IsFalse(view.operatorToggle.gameObject.activeSelf);
@@ -108,12 +105,12 @@ namespace Tests
 
             var handler = Substitute.For<ISectionSearchHandler>();
             handler.WhenForAnyArgs(a => a.SetFilter(false, false, false))
-                .Do(info =>
-                {
-                    ownerON = info.ArgAt<bool>(0);
-                    operatorON = info.ArgAt<bool>(1);
-                    contributorON = info.ArgAt<bool>(2);
-                });
+                   .Do(info =>
+                   {
+                       ownerON = info.ArgAt<bool>(0);
+                       operatorON = info.ArgAt<bool>(1);
+                       contributorON = info.ArgAt<bool>(2);
+                   });
 
             view.SetSearchBar(handler, null);
 
@@ -123,13 +120,13 @@ namespace Tests
             Assert.IsFalse(contributorON);
 
             view.operatorToggle.isOn = true;
-            Assert.IsTrue(ownerON);
+            Assert.IsFalse(ownerON);
             Assert.IsTrue(operatorON);
             Assert.IsFalse(contributorON);
 
             view.contributorToggle.isOn = true;
-            Assert.IsTrue(ownerON);
-            Assert.IsTrue(operatorON);
+            Assert.IsFalse(ownerON);
+            Assert.IsFalse(operatorON);
             Assert.IsTrue(contributorON);
 
             view.ownerToggle.isOn = false;
@@ -143,7 +140,7 @@ namespace Tests
         [Test]
         public void ShowSortDropdown()
         {
-            string[] sortTypes = new[] {"Type1", "Type2", "Type3"};
+            string[] sortTypes = new[] { "Type1", "Type2", "Type3" };
             view.SetSortTypes(sortTypes);
 
             Assert.IsTrue(view.sortDropdown.activeButtons.TrueForAll(button => sortTypes.Contains(button.label.text)));
@@ -156,7 +153,7 @@ namespace Tests
         [Test]
         public void NotShowSortDropdownWhenLessThanTwoSortTypes()
         {
-            string[] sortTypes = new[] {"Type1"};
+            string[] sortTypes = new[] { "Type1" };
             view.SetSortTypes(sortTypes);
             Assert.IsFalse(view.sortDropdown.gameObject.activeSelf);
 
@@ -171,40 +168,19 @@ namespace Tests
 
             var handler = Substitute.For<ISectionSearchHandler>();
             handler.WhenForAnyArgs(a => a.SetSortType(""))
-                .Do(info =>
-                {
-                    selectedSort = info.Arg<string>();
-                });
+                   .Do(info =>
+                   {
+                       selectedSort = info.Arg<string>();
+                   });
 
             view.SetSearchBar(handler, null);
 
-            string[] sortTypes = new[] {"Type1"};
+            string[] sortTypes = new[] { "Type1" };
             view.SetSortTypes(sortTypes);
             ((IPointerDownHandler)view.sortDropdown.activeButtons[0]).OnPointerDown(null);
 
             Assert.AreEqual(sortTypes[0], selectedSort);
             Assert.AreEqual(sortTypes[0], view.sortTypeLabel.text);
-        }
-
-        [Test]
-        public void TriggerSortOrderCallback()
-        {
-            bool ascending = false;
-
-            var handler = Substitute.For<ISectionSearchHandler>();
-            handler.WhenForAnyArgs(a => a.SetSortOrder(false))
-                .Do(info =>
-                {
-                    ascending = info.Arg<bool>();
-                });
-
-            view.SetSearchBar(handler, null);
-
-            view.sortOrderToggle.Set(true);
-            Assert.IsTrue(ascending);
-
-            view.sortOrderToggle.Set(false);
-            Assert.IsFalse(ascending);
         }
     }
 }

@@ -118,9 +118,6 @@ namespace Builder
             OnDraggingObject?.Invoke();
         }
 
-        private void OnSetGridResolution(float position, float rotation, float scale)
-        {
-            snapFactorPosition = position;
-        }
+        private void OnSetGridResolution(float position, float rotation, float scale) { snapFactorPosition = position; }
     }
 }

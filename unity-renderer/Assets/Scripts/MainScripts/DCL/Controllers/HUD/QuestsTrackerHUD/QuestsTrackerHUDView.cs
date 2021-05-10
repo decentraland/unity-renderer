@@ -9,12 +9,13 @@ namespace DCL.Huds.QuestsTracker
 {
     public interface IQuestsTrackerHUDView
     {
-        void UpdateQuest(string questId);
+        void UpdateQuest(string questId, bool hasProgressed);
         void RemoveEntry(string questId);
         void PinQuest(string questId);
         void UnpinQuest(string questId);
         void ClearEntries();
         void SetVisibility(bool visibility);
+        void AddReward(string questId, QuestReward reward);
         void Dispose();
     }
 
@@ -26,11 +27,12 @@ namespace DCL.Huds.QuestsTracker
 
         [SerializeField] internal RectTransform questsContainer;
         [SerializeField] internal GameObject questPrefab;
+        [SerializeField] private DynamicScrollSensitivity dynamicScrollSensitivity;
+        [SerializeField] internal QuestsNotificationsController notificationsController;
 
         internal readonly Dictionary<string, QuestsTrackerEntry> currentEntries = new Dictionary<string, QuestsTrackerEntry>();
-        internal  readonly Dictionary<string, DateTime> lastUpdateTimestamp = new Dictionary<string, DateTime>();
-        internal  readonly List<string> questsToBeAdded = new List<string>();
         private bool layoutRebuildRequested;
+
         private bool isDestroyed = false;
 
         public static QuestsTrackerHUDView Create()
@@ -43,26 +45,20 @@ namespace DCL.Huds.QuestsTracker
             return view;
         }
 
-        private void Awake()
-        {
-            StartCoroutine(AddEntriesRoutine());
-            StartCoroutine(RemoveEntriesRoutine());
-        }
+        private void Awake() { StartCoroutine(RemoveEntriesRoutine()); }
 
-        public void UpdateQuest(string questId)
+        public void UpdateQuest(string questId, bool hasProgressed)
         {
-            if (questsToBeAdded.Contains(questId))
-                return;
-
-            questsToBeAdded.Add(questId);
+            if (hasProgressed || currentEntries.ContainsKey(questId))
+                AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
         }
 
         internal void AddOrUpdateQuest(string questId, bool isPinned)
         {
-            if (!quests.TryGetValue(questId, out QuestModel quest) )
+            if (!quests.TryGetValue(questId, out QuestModel quest))
                 return;
 
-            if (quest.isCompleted)
+            if (quest.isCompleted && !quest.justProgressed)
             {
                 RemoveEntry(questId);
                 return;
@@ -72,11 +68,11 @@ namespace DCL.Huds.QuestsTracker
             {
                 questEntry = Instantiate(questPrefab, questsContainer).GetComponent<QuestsTrackerEntry>();
                 questEntry.OnLayoutRebuildRequested += () => layoutRebuildRequested = true;
-                questEntry.Populate(quest);
+                questEntry.OnQuestCompleted += (x => notificationsController.ShowQuestCompleted(x));
+                questEntry.OnRewardObtained += (x => notificationsController.ShowRewardObtained(x));
                 currentEntries.Add(quest.id, questEntry);
             }
 
-            RefreshLastUpdateTime(quest.id, isPinned ? DateTime.MaxValue : DateTime.Now);
             questEntry.transform.SetSiblingIndex(0);
 
             questEntry.Populate(quest);
@@ -86,12 +82,10 @@ namespace DCL.Huds.QuestsTracker
 
         public void RemoveEntry(string questId)
         {
-            questsToBeAdded.Remove(questId);
             if (!currentEntries.TryGetValue(questId, out QuestsTrackerEntry entry))
                 return;
 
             currentEntries.Remove(questId);
-            lastUpdateTimestamp.Remove(questId);
             entry.StartDestroy();
         }
 
@@ -100,14 +94,10 @@ namespace DCL.Huds.QuestsTracker
             if (currentEntries.TryGetValue(questId, out QuestsTrackerEntry entry))
             {
                 entry.SetPinStatus(true);
-                RefreshLastUpdateTime(questId, DateTime.MaxValue);
             }
             else
             {
-                if (questsToBeAdded.Contains(questId))
-                    return;
-
-                questsToBeAdded.Add(questId);
+                AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
             }
         }
 
@@ -117,7 +107,6 @@ namespace DCL.Huds.QuestsTracker
                 return;
 
             entry.SetPinStatus(false);
-            RefreshLastUpdateTime(questId, DateTime.MinValue);
         }
 
         private void Update()
@@ -126,20 +115,12 @@ namespace DCL.Huds.QuestsTracker
             {
                 layoutRebuildRequested = false;
                 questsContainer.ForceUpdateLayout( false);
+                dynamicScrollSensitivity?.RecalculateSensitivity();
             }
-        }
-
-        internal void RefreshLastUpdateTime(string questId, DateTime dateToSet)
-        {
-            if (lastUpdateTimestamp.ContainsKey(questId))
-                lastUpdateTimestamp[questId] = dateToSet;
-            else
-                lastUpdateTimestamp.Add(questId, dateToSet);
         }
 
         public void ClearEntries()
         {
-            lastUpdateTimestamp.Clear();
             foreach ((string key, QuestsTrackerEntry value) in currentEntries)
             {
                 Destroy(value.gameObject);
@@ -148,6 +129,12 @@ namespace DCL.Huds.QuestsTracker
         }
 
         public void SetVisibility(bool visibility) { gameObject.SetActive(visibility); }
+        public void AddReward(string questId, QuestReward reward)
+        {
+            if (!currentEntries.TryGetValue(questId, out QuestsTrackerEntry entry))
+                return;
+            entry.AddRewardToGive(reward);
+        }
 
         public void Dispose()
         {
@@ -157,25 +144,11 @@ namespace DCL.Huds.QuestsTracker
 
         private void OnDestroy() { isDestroyed = true; }
 
-        private IEnumerator AddEntriesRoutine()
-        {
-            while (true)
-            {
-                for (int i = 0; i < ENTRIES_PER_FRAME && questsToBeAdded.Count > 0; i++)
-                {
-                    string questId = questsToBeAdded.First();
-                    questsToBeAdded.RemoveAt(0);
-                    AddOrUpdateQuest(questId, pinnedQuests.Contains(questId));
-                }
-                yield return null;
-            }
-        }
-
         private IEnumerator RemoveEntriesRoutine()
         {
             while (true)
             {
-                var entriesToRemove = lastUpdateTimestamp.Where(x => (DateTime.Now - x.Value) > TimeSpan.FromSeconds(3)).Select(x => x.Key).ToArray();
+                var entriesToRemove = currentEntries.Where(x => x.Value.isReadyForDisposal).Select(x => x.Key).ToArray();
                 foreach (string questId in entriesToRemove)
                 {
                     RemoveEntry(questId);

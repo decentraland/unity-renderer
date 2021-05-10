@@ -65,6 +65,7 @@ GameObject:
   - component: {fileID: 404395254036622747}
   - component: {fileID: 404395254036622744}
   - component: {fileID: 2533142243847039932}
+  - component: {fileID: 5406442513345695448}
   m_Layer: 5
   m_Name: ChangeModeBtn
   m_TagString: Untagged
@@ -185,6 +186,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates: []
+--- !u!114 &5406442513345695448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404395254036622750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &404395254543227422
 GameObject:
   m_ObjectHideFlags: 0

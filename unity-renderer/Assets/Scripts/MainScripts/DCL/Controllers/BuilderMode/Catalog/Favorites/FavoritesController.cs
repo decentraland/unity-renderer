@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class FavoritesController 
+public class FavoritesController
 {
     List<CatalogItem> favoritesCatalogItems = new List<CatalogItem>();
 
@@ -20,10 +20,7 @@ public class FavoritesController
             catalogGroupListView.OnCatalogItemFavorite -= ToggleFavoriteState;
     }
 
-    public List<CatalogItem> GetFavorites()
-    {
-        return favoritesCatalogItems;
-    }
+    public List<CatalogItem> GetFavorites() { return favoritesCatalogItems; }
 
     public void ToggleFavoriteState(CatalogItem catalogItem, CatalogItemAdapter adapter)
     {

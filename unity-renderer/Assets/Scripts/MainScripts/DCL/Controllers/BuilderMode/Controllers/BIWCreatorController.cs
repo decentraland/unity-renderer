@@ -27,8 +27,7 @@ public class BIWCreatorController : BIWController
 
     public Action OnInputDone;
 
-    //Note(Adrian): This is for tutorial purposes
-    public Action OnSceneObjectPlaced;
+    public Action OnCatalogItemPlaced;
 
     private CatalogItem lastCatalogItemCreated;
 
@@ -54,7 +53,7 @@ public class BIWCreatorController : BIWController
     {
         foreach (BIWLoadingPlaceHolder placeHolder in loadingGameObjects.Values)
         {
-            placeHolder.Disspose();
+            placeHolder.Dispose();
         }
 
         loadingGameObjects.Clear();
@@ -114,7 +113,9 @@ public class BIWCreatorController : BIWController
         return true;
     }
 
-    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false)
+    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { return CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
+
+    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false)
     {
         if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
             return null;
@@ -124,7 +125,6 @@ public class BIWCreatorController : BIWController
         //Note (Adrian): This is a workaround until the mapping is handle by kernel
         AddSceneMappings(catalogItem);
 
-        Vector3 startPosition = biwModeController.GetModeCreationEntryPoint();
         Vector3 editionPosition = biwModeController.GetCurrentEditionPosition();
 
         DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
@@ -160,11 +160,10 @@ public class BIWCreatorController : BIWController
 
         lastCatalogItemCreated = catalogItem;
 
-        entity.OnShapeFinishLoading += OnShapeLoadFinish;
         builderInWorldEntityHandler.EntityListChanged();
         builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
         OnInputDone?.Invoke();
-        OnSceneObjectPlaced?.Invoke();
+        OnCatalogItemPlaced?.Invoke();
         return entity;
     }
 
@@ -172,10 +171,14 @@ public class BIWCreatorController : BIWController
 
     public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
 
-    private void CreateLoadingObject(DCLBuilderInWorldEntity entity)
+    public void CreateLoadingObject(DCLBuilderInWorldEntity entity)
     {
+        if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
+            return;
+
         BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
+        entity.OnShapeFinishLoading += OnShapeLoadFinish;
     }
 
     private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)
@@ -191,6 +194,15 @@ public class BIWCreatorController : BIWController
         BIWLoadingPlaceHolder loadingPlaceHolder = loadingGameObjects[entityId];
         loadingGameObjects.Remove(entityId);
         loadingPlaceHolder.DestroyAfterAnimation();
+    }
+
+    public void RemoveLoadingObjectInmediate(string entityId)
+    {
+        if (!loadingGameObjects.ContainsKey(entityId))
+            return;
+        BIWLoadingPlaceHolder loadingPlaceHolder = loadingGameObjects[entityId];
+        loadingGameObjects.Remove(entityId);
+        loadingPlaceHolder.Dispose();
     }
 
     #endregion
@@ -216,7 +228,7 @@ public class BIWCreatorController : BIWController
     {
         DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
         sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
-        builderInWorldEntityHandler.SetEntityName(entity, catalogItem.name);
+        builderInWorldEntityHandler.SetEntityName(entity, catalogItem.name, false);
     }
 
     private void AddLockedComponent(DCLBuilderInWorldEntity entity)

@@ -88,7 +88,8 @@ namespace DCL
             {
                 ParcelScene scene = element.Value as ParcelScene;
 
-                if (!scene.sceneLifecycleHandler.isReady) continue;
+                if (!scene.sceneLifecycleHandler.isReady)
+                    continue;
 
                 allLoadedParcelCoords.UnionWith(scene.parcels);
             }

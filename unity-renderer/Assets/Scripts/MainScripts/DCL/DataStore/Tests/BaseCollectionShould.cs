@@ -27,7 +27,7 @@ public class BaseCollectionShould
     [Test]
     public void ProcessParametrizedConstructor()
     {
-        BaseCollection<int> collection = new BaseCollection<int>( new [] {1, 2, 3});
+        BaseCollection<int> collection = new BaseCollection<int>( new [] { 1, 2, 3 });
         Assert.AreEqual(3, collection.Count());
         Assert.AreEqual(1, collection[0]);
         Assert.AreEqual(2, collection[1]);
@@ -37,7 +37,7 @@ public class BaseCollectionShould
     [Test]
     public void RemoveItems()
     {
-        BaseCollection<int> collection = new BaseCollection<int>( new [] {1, 2, 3});
+        BaseCollection<int> collection = new BaseCollection<int>( new [] { 1, 2, 3 });
 
         collection.Remove(3);
         collection.Remove(2);
@@ -48,7 +48,7 @@ public class BaseCollectionShould
     [Test]
     public void RemoveAt()
     {
-        BaseCollection<int> collection = new BaseCollection<int>( new [] {1, 2, 3});
+        BaseCollection<int> collection = new BaseCollection<int>( new [] { 1, 2, 3 });
 
         collection.RemoveAt(2);
         collection.RemoveAt(1);
@@ -60,7 +60,7 @@ public class BaseCollectionShould
     public void Set()
     {
         BaseCollection<int> collection = new BaseCollection<int>( );
-        collection.Set(new [] {1, 2, 3});
+        collection.Set(new [] { 1, 2, 3 });
         Assert.AreEqual(3, collection.Count());
         Assert.AreEqual(1, collection[0]);
         Assert.AreEqual(2, collection[1]);
@@ -115,9 +115,9 @@ public class BaseDictionaryShould
     [Test]
     public void ProcessParametrizedConstructor()
     {
-        IEnumerable<(int, string)> values = new []{ (1, "1")};
+        IEnumerable<(int, string)> values = new [] { (1, "1") };
 
-        BaseDictionary<int, string> dictionary = new BaseDictionary<int, string>(new []{ (1, "1"), (2, "2")});
+        BaseDictionary<int, string> dictionary = new BaseDictionary<int, string>(new [] { (1, "1"), (2, "2") });
 
         Assert.AreEqual(2, dictionary.Count());
         Assert.AreEqual("1", dictionary[1]);
@@ -127,7 +127,7 @@ public class BaseDictionaryShould
     [Test]
     public void RemoveItems()
     {
-        BaseDictionary<int, string> dictionary = new BaseDictionary<int, string>(new []{ (1, "1"), (2, "2"), (3, "3")});
+        BaseDictionary<int, string> dictionary = new BaseDictionary<int, string>(new [] { (1, "1"), (2, "2"), (3, "3") });
 
         dictionary.Remove(3);
         dictionary.Remove(2);
@@ -139,7 +139,7 @@ public class BaseDictionaryShould
     public void Set()
     {
         BaseDictionary<int, string> dictionary = new BaseDictionary<int, string>( );
-        dictionary.Set(new []{ (1, "1"), (2, "2"), (3, "3")});
+        dictionary.Set(new [] { (1, "1"), (2, "2"), (3, "3") });
         Assert.AreEqual(3, dictionary.Count());
         Assert.AreEqual("1", dictionary[1]);
         Assert.AreEqual("2", dictionary[2]);
@@ -158,7 +158,7 @@ public class BaseDictionaryShould
         dictionary.OnAdded += addedSubscriber.React;
         dictionary.OnRemoved += removedSubscriber.React;
 
-        dictionary.Set(new []{ (1, "1"), (2, "2"), (3, "3")});
+        dictionary.Set(new [] { (1, "1"), (2, "2"), (3, "3") });
         dictionary.Add(4, "4");
         dictionary.Remove(1);
 

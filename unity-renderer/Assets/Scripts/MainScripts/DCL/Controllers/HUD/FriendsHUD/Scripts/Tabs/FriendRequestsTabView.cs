@@ -108,7 +108,8 @@ public class FriendRequestsTabView : FriendsTabViewBase
 
     void SendFriendRequest(string friendUserName)
     {
-        if (string.IsNullOrEmpty(friendUserName)) return;
+        if (string.IsNullOrEmpty(friendUserName))
+            return;
 
         friendSearchInputField.placeholder.enabled = true;
         friendSearchInputField.text = string.Empty;

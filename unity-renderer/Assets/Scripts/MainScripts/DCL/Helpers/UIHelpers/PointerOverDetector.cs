@@ -9,13 +9,7 @@ public class PointerOverDetector : MonoBehaviour, IPointerEnterHandler, IPointer
     public event Enter OnEnter;
     public event Exit OnExit;
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnEnter?.Invoke(eventData);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { OnEnter?.Invoke(eventData); }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        OnExit?.Invoke(eventData);
-    }
+    public void OnPointerExit(PointerEventData eventData) { OnExit?.Invoke(eventData); }
 }

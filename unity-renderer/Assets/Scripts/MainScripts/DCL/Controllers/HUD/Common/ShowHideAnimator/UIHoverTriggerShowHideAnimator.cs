@@ -17,6 +17,8 @@ public class UIHoverTriggerShowHideAnimator : MonoBehaviour, IPointerEnterHandle
 
     Coroutine delayRoutine = null;
 
+    public void SetShowHideAnimator(ShowHideAnimator showHideAnimator) { this.showHideAnimator = showHideAnimator; }
+
     void Awake()
     {
         if (hideAnimatorOnAwake)
@@ -25,15 +27,9 @@ public class UIHoverTriggerShowHideAnimator : MonoBehaviour, IPointerEnterHandle
         }
     }
 
-    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-    {
-        Show();
-    }
+    void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData) { Show(); }
 
-    void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-    {
-        Hide();
-    }
+    void IPointerExitHandler.OnPointerExit(PointerEventData eventData) { Hide(); }
 
     IEnumerator DelayRoutine(float delay, Action callback)
     {

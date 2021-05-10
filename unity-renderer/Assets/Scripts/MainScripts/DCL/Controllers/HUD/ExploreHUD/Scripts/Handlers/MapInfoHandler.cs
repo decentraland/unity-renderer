@@ -22,7 +22,8 @@ internal class MapInfoHandler : IMapDataView
 
     public bool ContainCoords(Vector2Int coords)
     {
-        if (parcels == null) return false;
+        if (parcels == null)
+            return false;
         return parcels.Contains(coords);
     }
 }

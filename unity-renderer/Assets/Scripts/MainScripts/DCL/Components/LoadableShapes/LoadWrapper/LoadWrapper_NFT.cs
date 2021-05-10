@@ -25,7 +25,8 @@ namespace DCL.Components
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
         {
-            if (string.IsNullOrEmpty(src)) return;
+            if (string.IsNullOrEmpty(src))
+                return;
 
             if (loaderController == null)
                 loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
@@ -63,10 +64,7 @@ namespace DCL.Components
             entity.OnShapeUpdated?.Invoke(entity);
         }
 
-        void LoadAsset()
-        {
-            loaderController?.LoadAsset(assetUrl, true);
-        }
+        void LoadAsset() { loaderController?.LoadAsset(assetUrl, true); }
 
         void OnRendererStateChanged(bool current, bool previous)
         {

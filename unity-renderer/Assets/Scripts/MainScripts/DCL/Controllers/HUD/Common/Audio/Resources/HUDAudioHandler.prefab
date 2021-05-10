@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19e7434f0c30cd34ab81edae8ab53843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantiateEvents: 0
   audioMixerGroup: {fileID: 3522371855724722028, guid: 97507d628c02bcf47859b9f108ab1823,
     type: 2}
   spatialBlend: 0
@@ -92,3 +93,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 92bde48d875863a43a97d5f16550733d, type: 2}
     - {fileID: 11400000, guid: d308bbe1912d4dd47b07cc7ab83a6c02, type: 2}
     - {fileID: 11400000, guid: db27311c40b38e84da3c7f3ce06b7681, type: 2}
+    - {fileID: 11400000, guid: 86f4277bd2350464885290b6bc7fb5c8, type: 2}
+    - {fileID: 11400000, guid: d85bc9f8739c09a41b7744ce4c154393, type: 2}
+    - {fileID: 11400000, guid: e3b9b8b93820d4d4d8f33799e5e806b5, type: 2}
+    - {fileID: 11400000, guid: c700c21dd217d4c4fb5d40c5804cb0b2, type: 2}
+    - {fileID: 11400000, guid: f6a9e6bc666e5ee45b6dbbf68a03b703, type: 2}
+    - {fileID: 11400000, guid: d4003092dce40b14b9291b5a7be6e54d, type: 2}

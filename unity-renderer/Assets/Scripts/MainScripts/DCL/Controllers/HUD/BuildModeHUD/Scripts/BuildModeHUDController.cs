@@ -13,6 +13,8 @@ public class BuildModeHUDController : IHUD
     public event Action OnRotateSelectedAction;
     public event Action OnScaleSelectedAction;
     public event Action OnResetAction;
+    public event Action OnUndoAction;
+    public event Action OnRedoAction;
     public event Action OnDuplicateSelectedAction;
     public event Action OnDeleteSelectedAction;
     public event Action OnEntityListVisible;
@@ -22,6 +24,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnPublishAction;
     public event Action OnConfirmPublishAction;
     public event Action OnLogoutAction;
+    public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
     public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
@@ -64,7 +67,7 @@ public class BuildModeHUDController : IHUD
         ConfigureInspectorController();
         ConfigureTopActionsButtonsController();
         ConfigureCatalogItemDropController();
-        ConfigureBuildModeConfirmationModalController();
+        ConfigureSaveHUDController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -92,7 +95,8 @@ public class BuildModeHUDController : IHUD
             catalogBtnController = new CatalogBtnController(),
             inspectorController = new InspectorController(),
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
-            topActionsButtonsController = new TopActionsButtonsController()
+            topActionsButtonsController = new TopActionsButtonsController(),
+            saveHUDController = new SaveHUDController()
         };
 
         catalogItemDropController = new CatalogItemDropController();
@@ -157,12 +161,15 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.OnTranslateClick += () => OnTranslateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnRotateClick += () => OnRotateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnScaleClick += () => OnScaleSelectedAction?.Invoke();
-        controllers.topActionsButtonsController.OnResetClick += () => OnResetAction?.Invoke();
+        controllers.topActionsButtonsController.OnUndoClick += () => OnUndoAction?.Invoke();
+        controllers.topActionsButtonsController.OnRedoClick += () => OnRedoAction?.Invoke();
         controllers.topActionsButtonsController.OnDuplicateClick += () => OnDuplicateSelectedAction?.Invoke();
         controllers.topActionsButtonsController.OnDeleteClick += () => OnDeleteSelectedAction?.Invoke();
-        controllers.topActionsButtonsController.OnLogOutClick += () => OnLogoutAction?.Invoke();
+        controllers.topActionsButtonsController.OnSnapModeClick += () => OnChangeSnapModeAction?.Invoke();
+        controllers.topActionsButtonsController.OnLogOutClick += ExitStart;
         controllers.topActionsButtonsController.extraActionsController.OnControlsClick += ChangeVisibilityOfControls;
         controllers.topActionsButtonsController.extraActionsController.OnHideUIClick += ChangeVisibilityOfUI;
+        controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
     }
 
@@ -172,14 +179,17 @@ public class BuildModeHUDController : IHUD
         catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
     }
 
-    private void ConfigureBuildModeConfirmationModalController()
-    {
-        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
-        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
-    }
+    private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
+
+    public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
     public void PublishStart()
     {
+        UnsubscribeConfirmationModal();
+
+        controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
+
         controllers.buildModeConfirmationModalController.Configure(
             BuilderInWorldSettings.PUBLISH_MODAL_TITLE,
             BuilderInWorldSettings.PUBLISH_MODAL_SUBTITLE,
@@ -194,6 +204,9 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
+
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
     }
 
     internal void ConfirmPublishModal(BuildModeModalType modalType)
@@ -207,6 +220,9 @@ public class BuildModeHUDController : IHUD
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.
         publishProgressCoroutine = CoroutineStarter.Start(FakePublishProgress());
+
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
     }
 
     private IEnumerator FakePublishProgress()
@@ -224,6 +240,51 @@ public class BuildModeHUDController : IHUD
         }
     }
 
+    public void ExitStart()
+    {
+        UnsubscribeConfirmationModal();
+
+        controllers.buildModeConfirmationModalController.OnCancelExit += CancelExitModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmExitModal;
+
+        controllers.buildModeConfirmationModalController.Configure(
+            BuilderInWorldSettings.EXIT_MODAL_TITLE,
+            BuilderInWorldSettings.EXIT_MODAL_SUBTITLE,
+            BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
+            BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
+        controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.EXIT);
+    }
+
+    internal void CancelExitModal(BuildModeModalType modalType)
+    {
+        if (modalType != BuildModeModalType.EXIT)
+            return;
+
+        controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.EXIT);
+
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+    }
+
+    internal void ConfirmExitModal(BuildModeModalType modalType)
+    {
+        if (modalType != BuildModeModalType.EXIT)
+            return;
+
+        OnLogoutAction?.Invoke();
+
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+    }
+
+    private void UnsubscribeConfirmationModal()
+    {
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
+        controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
+        controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+    }
+
     public void PublishEnd(bool isOk, string message)
     {
         if (publishProgressCoroutine != null)
@@ -235,6 +296,7 @@ public class BuildModeHUDController : IHUD
         controllers.publishPopupController.PublishEnd(isOk, message);
     }
 
+    public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }
     public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
 
     public void SetPublishBtnAvailability(bool isAvailable) { view.SetPublishBtnAvailability(isAvailable); }
@@ -341,6 +403,7 @@ public class BuildModeHUDController : IHUD
     public void ChangeVisibilityOfEntityList()
     {
         isEntityListVisible = !isEntityListVisible;
+        controllers.saveHUDController?.SetSaveViewByEntityListOpen(isEntityListVisible);
         if (isEntityListVisible)
         {
             OnEntityListVisible?.Invoke();
@@ -362,11 +425,28 @@ public class BuildModeHUDController : IHUD
 
     public void ChangeVisibilityOfUI() { SetVisibility(!IsVisible()); }
 
+    #region TopButtons
+
     public void ChangeVisibilityOfExtraBtns()
     {
         areExtraButtonsVisible = !areExtraButtonsVisible;
         view.SetVisibilityOfExtraBtns(areExtraButtonsVisible);
     }
+
+    public void HideExtraBtns()
+    {
+        areExtraButtonsVisible = false;
+        controllers.topActionsButtonsController.extraActionsController.SetActive(areExtraButtonsVisible);
+    }
+
+    public void SetActionsButtonsInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetActionsInteractable(isInteractable); }
+
+    public void SetSnapModeActive(bool isActive) { controllers.topActionsButtonsController.SetSnapActive(isActive); }
+
+    public void SetUndoButtonInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetUndoInteractable(isInteractable); }
+    public void SetRedoButtonInteractable(bool isInteractable) { controllers.topActionsButtonsController.SetRedoInteractable(isInteractable); }
+
+    #endregion
 
     public void SetVisibility(bool visible)
     {
@@ -407,4 +487,6 @@ public class BuildModeHUDController : IHUD
     public void SceneObjectDroppedInView() { catalogItemDropController.CatalogitemDropped(); }
 
     internal virtual IBuildModeHUDView CreateView() => BuildModeHUDView.Create();
+
+    public void UpdateEntitiesSelection(int numberOfSelectedEntities) { controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities); }
 }

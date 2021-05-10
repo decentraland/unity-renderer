@@ -40,10 +40,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         });
     }
 
-    private void OnEnable()
-    {
-        talkingAnimator.SetBool(talkingAnimation, isRecording);
-    }
+    private void OnEnable() { talkingAnimator.SetBool(talkingAnimation, isRecording); }
 
     public void SetUserProfile(UserProfile profile)
     {
@@ -75,10 +72,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         talkingAnimator.SetBool(talkingAnimation, isRecording);
     }
 
-    public void SetBlocked(bool blocked)
-    {
-        blockedGO.SetActive(blocked);
-    }
+    public void SetBlocked(bool blocked) { blockedGO.SetActive(blocked); }
 
     public void OnPoolRelease()
     {
@@ -136,10 +130,7 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         FriendsController.i.OnUpdateFriendship += OnFriendActionUpdate;
     }
 
-    void SetAvatarPreviewImage(Texture texture)
-    {
-        avatarPreview.texture = texture;
-    }
+    void SetAvatarPreviewImage(Texture texture) { avatarPreview.texture = texture; }
 
     void OnSoundButtonPressed()
     {
@@ -173,8 +164,5 @@ internal class UsersAroundListHUDListElementView : MonoBehaviour, IPoolLifecycle
         friendLabel.SetActive(action == FriendshipAction.APPROVED);
     }
 
-    void SetupFriendship(FriendshipStatus friendshipStatus)
-    {
-        friendLabel.SetActive(friendshipStatus == FriendshipStatus.FRIEND);
-    }
+    void SetupFriendship(FriendshipStatus friendshipStatus) { friendLabel.SetActive(friendshipStatus == FriendshipStatus.FRIEND); }
 }

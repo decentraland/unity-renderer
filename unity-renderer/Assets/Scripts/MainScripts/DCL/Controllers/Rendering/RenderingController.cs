@@ -41,15 +41,9 @@ public class RenderingController : MonoBehaviour
     }
 
     [ContextMenu("Enable Rendering")]
-    public void ActivateRendering()
-    {
-        ActivateRendering(forceActivate: false);
-    }
+    public void ActivateRendering() { ActivateRendering(forceActivate: false); }
 
-    public void ForceActivateRendering()
-    {
-        ActivateRendering(forceActivate: true);
-    }
+    public void ForceActivateRendering() { ActivateRendering(forceActivate: true); }
 
     public void ActivateRendering(bool forceActivate)
     {
@@ -90,7 +84,8 @@ public class RenderingController : MonoBehaviour
 
     private void AddLock(object id)
     {
-        if (CommonScriptableObjects.rendererState.Get()) return;
+        if (CommonScriptableObjects.rendererState.Get())
+            return;
 
         if (VERBOSE)
             Debug.Log("Add lock: " + id);

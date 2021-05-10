@@ -9,10 +9,7 @@ namespace DCL.Helpers
         public static readonly Vector2Int CHUNK_SIZE = new Vector2Int(1020, 1020);
         public static readonly int PARCEL_SIZE = 20;
 
-        public static Vector2Int GetTileFromLocalPosition(Vector3 position)
-        {
-            return new Vector2Int((int)(position.x / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.x, (int)(position.y / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.y);
-        }
+        public static Vector2Int GetTileFromLocalPosition(Vector3 position) { return new Vector2Int((int)(position.x / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.x, (int)(position.y / PARCEL_SIZE) + WORLD_PARCELS_OFFSET_MIN.y); }
 
         public static Vector3 GetTileToLocalPosition(float x, float y)
         {
@@ -34,12 +31,17 @@ namespace DCL.Helpers
             {
                 coord = parcels[i];
                 parcelsStr += string.Format("{0},{1}", coord.x, coord.y);
-                if (i < parcels.Length - 1) parcelsStr += ";";
+                if (i < parcels.Length - 1)
+                    parcelsStr += ";";
 
-                if (coord.x < min.x) min.x = coord.x;
-                if (coord.y < min.y) min.y = coord.y;
-                if (coord.x > max.x) max.x = coord.x;
-                if (coord.y > max.y) max.y = coord.y;
+                if (coord.x < min.x)
+                    min.x = coord.x;
+                if (coord.y < min.y)
+                    min.y = coord.y;
+                if (coord.x > max.x)
+                    max.x = coord.x;
+                if (coord.y > max.y)
+                    max.y = coord.y;
             }
 
             int centerX = (int)(min.x + (max.x - min.x) * 0.5f);
