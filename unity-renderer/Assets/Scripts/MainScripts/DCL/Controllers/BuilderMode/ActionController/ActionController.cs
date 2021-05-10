@@ -1,3 +1,4 @@
+using System;
 using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
@@ -19,6 +20,24 @@ public class ActionController : BIWController
 
     int currentUndoStepIndex = 0;
     int currentRedoStepIndex = 0;
+
+    public override void Init()
+    {
+        base.Init();
+
+        if (HUDController.i.builderInWorldMainHud == null)
+            return;
+        HUDController.i.builderInWorldMainHud.OnUndoAction += TryToUndoAction;
+        HUDController.i.builderInWorldMainHud.OnRedoAction += TryToRedoAction;
+    }
+
+    private void OnDestroy()
+    {
+        if (HUDController.i.builderInWorldMainHud == null)
+            return;
+        HUDController.i.builderInWorldMainHud.OnUndoAction -= TryToUndoAction;
+        HUDController.i.builderInWorldMainHud.OnRedoAction -= TryToRedoAction;
+    }
 
     public override void EnterEditMode(ParcelScene scene)
     {
@@ -140,6 +159,7 @@ public class ActionController : BIWController
         if (VERBOSE)
             Debug.Log("Redo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
         action.OnApplyValue += ApplyAction;
+        CheckButtonsInteractability();
     }
 
     void ApplyAction(string entityIdToApply, object value, ActionType actionType, bool isUndo)
@@ -198,6 +218,8 @@ public class ActionController : BIWController
         {
             actionsMade[currentRedoStepIndex].Redo();
             OnRedo?.Invoke();
+
+            CheckButtonsInteractability();
         }
     }
 
@@ -207,6 +229,14 @@ public class ActionController : BIWController
         {
             actionsMade[currentUndoStepIndex].Undo();
             OnUndo?.Invoke();
+
+            CheckButtonsInteractability();
         }
+    }
+
+    void CheckButtonsInteractability()
+    {
+        HUDController.i.builderInWorldMainHud.SetRedoButtonInteractable(!(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].isDone));
+        HUDController.i.builderInWorldMainHud.SetUndoButtonInteractable(!(currentUndoStepIndex == 0 && !actionsMade[0].isDone));
     }
 }
