@@ -210,7 +210,7 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
         lastIndexToBeginDrag = triggerIndex;
         SetIndexToBeginDrag(triggerIndex);
         draggedSlot.SetActive(true);
-        draggedSlot.SetTexture(shortcutsImgs[triggerIndex].image.texture, false);
+        draggedSlot.SetTexture(shortcutsImgs[triggerIndex].image.texture);
     }
 
     public void DragSlot(BaseEventData eventData, int triggerIndex)
