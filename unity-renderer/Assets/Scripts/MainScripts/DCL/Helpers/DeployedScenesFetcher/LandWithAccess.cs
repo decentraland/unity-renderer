@@ -13,13 +13,13 @@ public class LandWithAccess
 
     public List<DeployedScene> scenes;
     public Vector2Int[] parcels;
-    public Vector2Int @base;
+    public Vector2Int baseCoords;
     public Land rawData;
 
     public LandWithAccess(Land land)
     {
         rawData = land;
         parcels = land.parcels.Select(parcel => new Vector2Int(parcel.x, parcel.y)).ToArray();
-        @base = land.type == LandType.PARCEL ? new Vector2Int(land.x, land.y) : parcels[0];
+        baseCoords = land.type == LandType.PARCEL ? new Vector2Int(land.x, land.y) : parcels[0];
     }
 }
