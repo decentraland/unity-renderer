@@ -7,47 +7,50 @@ public class NotificationsController : MonoBehaviour
     public static NotificationsController i { get; private set; }
     public static bool disableWelcomeNotification = false;
 
-    void Awake()
-    {
-        i = this;
-    }
+    public bool allowNotifications { get; set; }
+
+    void Awake() { i = this; }
 
     NotificationHUDController controller;
 
     public void Initialize(NotificationHUDController controller)
     {
         this.controller = controller;
+        allowNotifications = true;
     }
 
-    public void Dispose()
-    {
-        controller.Dispose();
-    }
+    public void Dispose() { controller.Dispose(); }
 
     public void ShowNotificationFromJson(string notificationJson)
     {
+        if (!allowNotifications)
+            return;
+
         Notification.Model model = JsonUtility.FromJson<Notification.Model>(notificationJson);
         ShowNotification(model);
     }
 
     public void ShowNotification(Notification.Model notification)
     {
+        if (!allowNotifications)
+            return;
+
         controller?.ShowNotification(notification);
     }
 
     public void ShowNotification(Notification notification)
     {
+        if (!allowNotifications)
+            return;
+
         controller?.ShowNotification(notification);
     }
 
-    public void DismissAllNotifications(string groupID)
-    {
-        controller?.DismissAllNotifications(groupID);
-    }
+    public void DismissAllNotifications(string groupID) { controller?.DismissAllNotifications(groupID); }
 
     public void ShowWelcomeNotification()
     {
-        if (disableWelcomeNotification)
+        if (!allowNotifications || disableWelcomeNotification)
             return;
 
         //TODO(Brian): This should be triggered entirely by kernel

@@ -90,43 +90,19 @@ public class SceneLimitsView : MonoBehaviour, ISceneLimitsView
         toggleButton.onClick.RemoveAllListeners();
     }
 
-    public void SetUpdateCallback(UnityAction call)
-    {
-        updateInfoAction = call;
-    }
+    public void SetUpdateCallback(UnityAction call) { updateInfoAction = call; }
 
-    public void ToggleSceneLimitsInfo(DCLAction_Trigger action)
-    {
-        OnToggleSceneLimitsInfo?.Invoke();
-    }
+    public void ToggleSceneLimitsInfo(DCLAction_Trigger action) { OnToggleSceneLimitsInfo?.Invoke(); }
 
-    public void SetBodyActive(bool isActive)
-    {
-        sceneLimitsBodyGO.SetActive(isActive);
-    }
+    public void SetBodyActive(bool isActive) { sceneLimitsBodyGO.SetActive(isActive); }
 
-    public void SetDetailsToggleAsOpen()
-    {
-        detailsToggleBtn.sprite = openMenuSprite;
-    }
+    public void SetDetailsToggleAsOpen() { detailsToggleBtn.sprite = openMenuSprite; }
 
-    public void SetDetailsToggleAsClose()
-    {
-        detailsToggleBtn.sprite = closeMenuSprite;
-    }
+    public void SetDetailsToggleAsClose() { detailsToggleBtn.sprite = closeMenuSprite; }
 
-    public void SetTitleText(string text)
-    {
-        titleTxt.text = text;
-    }
+    public void SetTitleText(string text) { titleTxt.text = text; }
 
-    public void SetLeftDescText(string text)
-    {
-        leftDescTxt.text = text;
-    }
+    public void SetLeftDescText(string text) { leftDescTxt.text = text; }
 
-    public void SetRightDescText(string text)
-    {
-        rightDescTxt.text = text;
-    }
+    public void SetRightDescText(string text) { rightDescTxt.text = text; }
 }

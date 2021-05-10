@@ -15,10 +15,7 @@ namespace DCL.Components
         {
             public TextShape.Model textModel;
 
-            public Model()
-            {
-                textModel = new TextShape.Model();
-            }
+            public Model() { textModel = new TextShape.Model(); }
 
             public override BaseModel GetDataFromJSON(string json)
             {
@@ -31,24 +28,13 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIText";
 
-        public UIText()
-        {
-            model = new Model();
-        }
+        public UIText() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_TEXT_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
 
-        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-            Debug.LogError("Aborted UITextShape attachment to an entity. UIShapes shouldn't be attached to entities.");
-        }
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) { Debug.LogError("Aborted UITextShape attachment to an entity. UIShapes shouldn't be attached to entities."); }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {

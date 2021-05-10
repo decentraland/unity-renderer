@@ -16,30 +16,15 @@ public class CameraStateBase : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public virtual void OnSelect()
-    {
-        gameObject.SetActive(true);
-    }
+    public virtual void OnSelect() { gameObject.SetActive(true); }
 
-    public virtual void OnUnselect()
-    {
-        gameObject.SetActive(false);
-    }
+    public virtual void OnUnselect() { gameObject.SetActive(false); }
 
-    public virtual void OnUpdate()
-    {
-    }
+    public virtual void OnUpdate() { }
 
-    public virtual void OnSetRotation(CameraController.SetRotationPayload payload)
-    {
-    }
+    public virtual void OnSetRotation(CameraController.SetRotationPayload payload) { }
 
-    public virtual Vector3 OnGetRotation()
-    {
-        return Vector3.zero;
-    }
+    public virtual Vector3 OnGetRotation() { return Vector3.zero; }
 
-    public virtual void OnBlock(bool blocked)
-    {
-    }
+    public virtual void OnBlock(bool blocked) { }
 }

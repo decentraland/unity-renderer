@@ -103,10 +103,7 @@ namespace DCL
             }
         }
 
-        private void OnHotSceneListFinishUpdating()
-        {
-            OnHotScenesFetched(HotScenesController.i.hotScenesList);
-        }
+        private void OnHotSceneListFinishUpdating() { OnHotScenesFetched(HotScenesController.i.hotScenesList); }
 
         private void OnHotScenesFetched(List<HotScenesController.HotSceneInfo> scenes)
         {

@@ -87,7 +87,7 @@ namespace DCL.Helpers
             if (assert)
             {
                 Assert.IsTrue(ratioResult > ratio,
-            $"{Path.GetFileName(baselineImagePathWithFilename)} has {ratioResult}% affinity, the minimum is {ratio}%. A diff image has been generated. Check it out at {testImagesPath}");
+                    $"{Path.GetFileName(baselineImagePathWithFilename)} has {ratioResult}% affinity, the minimum is {ratio}%. A diff image has been generated. Check it out at {testImagesPath}");
             }
 
             return ratioResult > ratio;
@@ -310,9 +310,6 @@ namespace DCL.Helpers
             }
         }
 
-        public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null)
-        {
-            RepositionVisualTestsCamera(camera.transform, position, target);
-        }
+        public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null) { RepositionVisualTestsCamera(camera.transform, position, target); }
     }
 }

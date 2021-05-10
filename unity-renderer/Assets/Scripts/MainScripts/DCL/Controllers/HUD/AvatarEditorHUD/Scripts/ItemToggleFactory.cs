@@ -33,10 +33,7 @@ public class ItemToggleFactory : ScriptableObject
         }
     }
 
-    public ItemToggle CreateBaseWearable(Transform parent = null)
-    {
-        return parent == null ? Instantiate(baseWearable) : Instantiate(baseWearable, parent);
-    }
+    public ItemToggle CreateBaseWearable(Transform parent = null) { return parent == null ? Instantiate(baseWearable) : Instantiate(baseWearable, parent); }
 
     public ItemToggle CreateItemToggleFromRarity(string rarity, Transform parent = null)
     {

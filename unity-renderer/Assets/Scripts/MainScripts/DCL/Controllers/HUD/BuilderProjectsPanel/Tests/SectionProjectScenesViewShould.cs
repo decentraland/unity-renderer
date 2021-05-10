@@ -17,16 +17,10 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            Object.Destroy(view.gameObject);
-        }
+        public void TearDown() { Object.Destroy(view.gameObject); }
 
         [Test]
-        public void HaveScenesContainerEmptyAtInstantiation()
-        {
-            Assert.AreEqual(0, view.scenesCardContainer.childCount);
-        }
+        public void HaveScenesContainerEmptyAtInstantiation() { Assert.AreEqual(0, view.scenesCardContainer.childCount); }
 
         [Test]
         public void ShowCardsInCorrectSortOrder()
@@ -35,35 +29,34 @@ namespace Tests
                 "Assets/Scripts/MainScripts/DCL/Controllers/HUD/BuilderProjectsPanel/Prefabs/SceneCardView.prefab";
             var prefab = AssetDatabase.LoadAssetAtPath<SceneCardView>(prefabAssetPath);
 
-            Dictionary<string, SceneCardView> cardViews = new Dictionary<string, SceneCardView>();
+            Dictionary<string, ISceneCardView> cardViews = new Dictionary<string, ISceneCardView>();
             const int cardsCount = 10;
             for (int i = 0; i < cardsCount; i++)
             {
-                var card = Object.Instantiate(prefab);
-                card.Setup(new SceneData(){size = new Vector2Int(i,i), id = i.ToString()});
+                var card = (ISceneCardView)Object.Instantiate(prefab);
+                card.Setup(new SceneData() { size = new Vector2Int(i, i), id = i.ToString() });
                 cardViews.Add(i.ToString(), card);
             }
 
 
             SectionProjectScenesController controller = new SectionProjectScenesController(view);
-            controller.searchHandler.SetSortType(SceneSearchHandler.SIZE_SORT_TYPE);
-            controller.searchHandler.SetSortOrder(true);
-            
+            controller.searchHandler.SetSortType(SectionSearchHandler.SIZE_SORT_TYPE_DESC);
+
             ((IProjectSceneListener)controller).OnSetScenes(cardViews);
-            
+
             Assert.AreEqual(cardsCount, view.scenesCardContainer.childCount);
 
-            var prev = view.scenesCardContainer.GetChild(0).GetComponent<SceneCardView>();
+            var prev = (ISceneCardView)view.scenesCardContainer.GetChild(0).GetComponent<SceneCardView>();
             for (int i = 1; i < cardsCount; i++)
             {
-                var current = view.scenesCardContainer.GetChild(i).GetComponent<SceneCardView>();
+                var current = (ISceneCardView)view.scenesCardContainer.GetChild(i).GetComponent<SceneCardView>();
                 Assert.LessOrEqual(current.sceneData.size.x * current.sceneData.size.y, prev.sceneData.size.x * prev.sceneData.size.y);
                 prev = current;
             }
 
             foreach (var card in cardViews.Values)
             {
-                Object.Destroy(card);
+                card.Dispose();
             }
             controller.Dispose();
         }

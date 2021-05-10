@@ -45,7 +45,7 @@ namespace Tests
             HUDController hudController = HUDController.i;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
-            HUDConfiguration config = new HUDConfiguration() {active = true, visible = true};
+            HUDConfiguration config = new HUDConfiguration() { active = true, visible = true };
 
             for (int i = 1; i < (int) HUDController.HUDElementID.COUNT; i++)
             {

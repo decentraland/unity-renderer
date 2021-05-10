@@ -6,5 +6,4 @@ public class AudioEvent_Music : AudioEvent
     [SerializeField]
     double loopStart, loopEnd;
 
-
 }

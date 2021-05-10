@@ -9,8 +9,5 @@ public class TMPColorOnToggle : UIToggle
 
     [SerializeField] private Color offColor;
 
-    protected override void OnValueChanged(bool isOn)
-    {
-        targetText.color = isOn ? onColor : offColor;
-    }
+    protected override void OnValueChanged(bool isOn) { targetText.color = isOn ? onColor : offColor; }
 }

@@ -24,21 +24,12 @@ namespace DCL.Components
             public bool cycle = true;
             public string selectedGizmo = Gizmo.NONE;
             public bool localReference = false;
-            
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
-        public override IEnumerator ApplyChanges(BaseModel baseModel)
-        {
-            return null;
-        }
+        public override IEnumerator ApplyChanges(BaseModel baseModel) { return null; }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.GIZMOS;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.GIZMOS; }
     }
 }

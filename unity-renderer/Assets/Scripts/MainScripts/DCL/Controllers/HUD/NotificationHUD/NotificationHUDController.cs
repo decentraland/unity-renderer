@@ -11,9 +11,7 @@ public class NotificationHUDController : IHUD
     public NotificationHUDView view { get; private set; }
     public Model model { get; private set; }
 
-    public NotificationHUDController() : this(new Model())
-    {
-    }
+    public NotificationHUDController() : this(new Model()) { }
 
     public NotificationHUDController(Model model)
     {
@@ -59,15 +57,9 @@ public class NotificationHUDController : IHUD
         }
     }
 
-    private void OnNotificationDismissed(Notification notification)
-    {
-        model.notifications.Remove(notification);
-    }
+    private void OnNotificationDismissed(Notification notification) { model.notifications.Remove(notification); }
 
-    public void SetActive(bool active)
-    {
-        view.SetActive(active);
-    }
+    public void SetActive(bool active) { view.SetActive(active); }
 
     public void Dispose()
     {
@@ -79,8 +71,5 @@ public class NotificationHUDController : IHUD
         view.OnNotificationDismissedEvent -= OnNotificationDismissed;
     }
 
-    public void SetVisibility(bool visible)
-    {
-        SetActive(visible);
-    }
+    public void SetVisibility(bool visible) { SetActive(visible); }
 }

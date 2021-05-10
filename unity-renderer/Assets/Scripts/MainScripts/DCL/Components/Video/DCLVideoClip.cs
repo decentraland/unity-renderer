@@ -14,30 +14,21 @@ namespace DCL.Components
         {
             public string url;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public bool isExternalURL { get; private set; }
         public bool isStream { get; private set; }
 
-        public DCLVideoClip()
-        {
-            model = new Model();
-        }
+        public DCLVideoClip() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.VIDEO_CLIP;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.VIDEO_CLIP; }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
             Model model = (Model) newModel;
             isExternalURL = model.url.StartsWith("http://") || model.url.StartsWith("https://");
-            isStream = !new[] {".mp4", ".ogg", ".mov", ".webm"}.Any(x => model.url.EndsWith(x));
+            isStream = !new[] { ".mp4", ".ogg", ".mov", ".webm" }.Any(x => model.url.EndsWith(x));
             yield break;
         }
 

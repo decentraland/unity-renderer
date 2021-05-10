@@ -2,7 +2,8 @@
     "name": "ServiceProviders",
     "rootNamespace": "",
     "references": [
-        "GUID:1b07639381de24d0f932014911b5b207"
+        "GUID:1b07639381de24d0f932014911b5b207",
+        "GUID:3d1a503a92d494d8aa3f35909695fa1f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

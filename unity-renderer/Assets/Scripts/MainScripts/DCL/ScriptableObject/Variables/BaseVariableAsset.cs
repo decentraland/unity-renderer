@@ -40,10 +40,7 @@ public class BaseVariableAsset<T> : BaseVariableAsset, IEquatable<T>
         OnChange?.Invoke(value, previous);
     }
 
-    public T Get()
-    {
-        return value;
-    }
+    public T Get() { return value; }
 
     public static implicit operator T(BaseVariableAsset<T> value) => value.value;
 

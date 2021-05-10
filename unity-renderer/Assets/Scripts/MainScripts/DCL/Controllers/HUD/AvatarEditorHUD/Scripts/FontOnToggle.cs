@@ -11,8 +11,5 @@ public class FontOnToggle : UIToggle
 
     public Font offFont;
 
-    protected override void OnValueChanged(bool isOn)
-    {
-        targetText.font = isOn ? onFont : offFont;
-    }
+    protected override void OnValueChanged(bool isOn) { targetText.font = isOn ? onFont : offFont; }
 }

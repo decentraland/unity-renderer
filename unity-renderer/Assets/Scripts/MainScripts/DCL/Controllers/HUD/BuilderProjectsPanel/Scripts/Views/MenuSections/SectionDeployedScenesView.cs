@@ -6,27 +6,60 @@ using UnityEngine.UI;
 internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
 {
     public event Action OnScrollRectValueChanged;
-    
+
     [SerializeField] public Transform scenesCardContainer;
     [SerializeField] public ScrollRect scrollRect;
+    [SerializeField] internal GameObject contentContainer;
+    [SerializeField] internal GameObject emptyContainer;
+    [SerializeField] internal GameObject noSearchResultContainer;
+    [SerializeField] internal GameObject loadingAnimationContainer;
 
     private bool isDestroyed = false;
-    
+
     public void SetParent(Transform parent)
     {
         transform.SetParent(parent);
         transform.ResetLocalTRS();
     }
 
-    public void SetActive(bool active)
+    public void SetActive(bool active) { gameObject.SetActive(active); }
+
+    public void ResetScrollRect() { scrollRect.verticalNormalizedPosition = 1; }
+
+    public void SetEmpty()
     {
-        gameObject.SetActive(active);
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(true);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
     }
 
-    public void ResetScrollRect()
+    public void SetLoading()
     {
-        scrollRect.verticalNormalizedPosition = 1;
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(true);
     }
+
+    public void SetNoSearchResult()
+    {
+        contentContainer.SetActive(false);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(true);
+        loadingAnimationContainer.SetActive(false);
+    }
+
+    public void SetFilled()
+    {
+        contentContainer.SetActive(true);
+        emptyContainer.SetActive(false);
+        noSearchResultContainer.SetActive(false);
+        loadingAnimationContainer.SetActive(false);
+        ResetScrollRect();
+    }
+
+    public Transform GetCardsContainer() { return scenesCardContainer; }
 
     public void Dispose()
     {
@@ -36,10 +69,7 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         }
     }
 
-    private void Awake()
-    {
-        scrollRect.onValueChanged.AddListener(OnScrollValueChanged);
-    }
+    private void Awake() { scrollRect.onValueChanged.AddListener(OnScrollValueChanged); }
 
     private void OnDestroy()
     {
@@ -47,8 +77,5 @@ internal class SectionDeployedScenesView : MonoBehaviour, IDisposable
         scrollRect.onValueChanged.RemoveListener(OnScrollValueChanged);
     }
 
-    private void OnScrollValueChanged(Vector2 value)
-    {
-        OnScrollRectValueChanged?.Invoke();
-    }
+    private void OnScrollValueChanged(Vector2 value) { OnScrollRectValueChanged?.Invoke(); }
 }

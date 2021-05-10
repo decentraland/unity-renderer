@@ -1,8 +1,12 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public interface IBuildModeHUDView
 {
     GameObject viewGO { get; }
+    SaveHUDView saveHud { get; }
     SceneCatalogView sceneCatalog { get; }
     EntityInformationView entityInformation { get; }
     bool isShowHideAnimatorVisible { get; }
@@ -25,6 +29,7 @@ public interface IBuildModeHUDView
 public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
 {
     public GameObject viewGO => !isDestroyed ? gameObject : null;
+    public SaveHUDView saveHud  => saveView;
     public SceneCatalogView sceneCatalog => sceneCatalogView;
     public EntityInformationView entityInformation => entityInformationView;
     public bool isShowHideAnimatorVisible => showHideAnimator.isVisible;
@@ -51,6 +56,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     [SerializeField] internal InspectorView inspectorView;
     [SerializeField] internal TopActionsButtonsView topActionsButtonsView;
     [SerializeField] internal BuildModeConfirmationModalView buildModeConfirmationModalView;
+    [SerializeField] internal SaveHUDView saveView;
 
     private bool isDestroyed = false;
     internal BuildModeHUDInitializationModel controllers;
@@ -81,7 +87,8 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.catalogBtnController.Initialize(catalogBtnView, this.controllers.tooltipController);
         this.controllers.inspectorController.Initialize(inspectorView);
         this.controllers.buildModeConfirmationModalController.Initialize(buildModeConfirmationModalView);
-        this.controllers.topActionsButtonsController.Initialize(topActionsButtonsView, this.controllers.tooltipController, this.controllers.buildModeConfirmationModalController);
+        this.controllers.topActionsButtonsController.Initialize(topActionsButtonsView, this.controllers.tooltipController);
+        this.controllers.saveHUDController.Initialize(saveView);
     }
 
     private void OnDestroy()
@@ -101,6 +108,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         controllers.inspectorController.Dispose();
         controllers.buildModeConfirmationModalController.Dispose();
         controllers.topActionsButtonsController.Dispose();
+        controllers.saveHUDController.Dispose();
     }
 
     public void SetPublishBtnAvailability(bool isAvailable) { controllers.publishBtnController.SetInteractable(isAvailable); }
@@ -133,6 +141,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     {
         firstPersonCanvasGO.SetActive(true);
         godModeCanvasGO.SetActive(false);
+        saveView.SetFirstPersonView();
         HideToolTip();
     }
 
@@ -140,6 +149,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     {
         firstPersonCanvasGO.SetActive(false);
         godModeCanvasGO.SetActive(true);
+        saveView.SetGodModeView();
         HideToolTip();
     }
 
@@ -154,4 +164,5 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         else
             showHideAnimator.Hide();
     }
+
 }

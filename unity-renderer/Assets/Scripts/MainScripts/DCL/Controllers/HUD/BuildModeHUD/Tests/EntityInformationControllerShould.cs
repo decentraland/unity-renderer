@@ -17,10 +17,19 @@ namespace Tests.BuildModeHUDControllers
         {
             entityInformationController = new EntityInformationController();
             entityInformationController.Initialize(Substitute.For<IEntityInformationView>());
+            Environment.i.platform.webRequest.Initialize(
+                genericWebRequest: new WebRequest(),
+                assetBundleWebRequest: new WebRequestAssetBundle(),
+                textureWebRequest: new WebRequestTexture(),
+                audioWebRequest: new WebRequestAudio());
         }
 
         [TearDown]
-        public void TearDown() { entityInformationController.Dispose(); }
+        public void TearDown()
+        {
+            entityInformationController.Dispose();
+            Environment.i.platform.webRequest.Dispose();
+        }
 
         [Test]
         public void PositionChangedCorrectly()
@@ -192,7 +201,6 @@ namespace Tests.BuildModeHUDControllers
             entityInformationController.UpdateEntityName(testEntity);
 
             // Assert
-            entityInformationController.entityInformationView.Received(1).SeTitleText(Arg.Any<string>());
             entityInformationController.entityInformationView.Received(1).SetNameIFText(Arg.Any<string>());
         }
 
@@ -263,6 +271,18 @@ namespace Tests.BuildModeHUDControllers
             entityInformationController.entityInformationView.Received(1).SetPositionAttribute(Arg.Any<Vector3>());
             entityInformationController.entityInformationView.Received(1).SetRotationAttribute(Arg.Any<Vector3>());
             entityInformationController.entityInformationView.Received(1).SetScaleAttribute(Arg.Any<Vector3>());
+        }
+
+        [Test]
+        [TestCase(1)]
+        [TestCase(5)]
+        public void UpdateEntitiesSelectionCorrectly(int numberOfSelectedEntities)
+        {
+            // Act
+            entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities);
+
+            // Assert
+            entityInformationController.entityInformationView.Received(1).UpdateEntitiesSelection(numberOfSelectedEntities);
         }
     }
 }

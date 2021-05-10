@@ -51,7 +51,6 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(texture.texture != null, "Texture should persist because is used by the other material!!");
     }
 
-
     [UnityTest]
     public IEnumerator BeCreatedProperly()
     {
@@ -348,7 +347,6 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
         Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
     }
-
 
     [UnityTest]
     public IEnumerator DefaultMissingValuesPropertyOnUpdate()

@@ -72,10 +72,7 @@ namespace DCL.SettingsPanelHUD
 
         private List<SettingsButtonEntry> menuButtons = new List<SettingsButtonEntry>();
 
-        public SettingsPanelHUDController()
-        {
-            view = SettingsPanelHUDView.Create();
-        }
+        public SettingsPanelHUDController() { view = SettingsPanelHUDView.Create(); }
 
         public void Dispose()
         {
@@ -97,10 +94,7 @@ namespace DCL.SettingsPanelHUD
             view.SetVisibility(visible);
         }
 
-        public void Initialize()
-        {
-            view.Initialize(this, this);
-        }
+        public void Initialize() { view.Initialize(this, this); }
 
         public void AddSection(
             SettingsButtonEntry newMenuButton,
@@ -164,14 +158,8 @@ namespace DCL.SettingsPanelHUD
             menuButtons[buttonIndex].MarkAsSelected(true);
         }
 
-        public void SaveSettings()
-        {
-            Settings.i.SaveSettings();
-        }
+        public void SaveSettings() { Settings.i.SaveSettings(); }
 
-        public void ResetAllSettings()
-        {
-            Settings.i.ResetAllSettings();
-        }
+        public void ResetAllSettings() { Settings.i.ResetAllSettings(); }
     }
 }

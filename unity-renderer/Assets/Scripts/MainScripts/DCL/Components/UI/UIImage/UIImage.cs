@@ -24,34 +24,20 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public override string referencesContainerPrefabName => "UIImage";
 
         DCLTexture dclTexture = null;
 
-        public UIImage()
-        {
-            model = new Model();
-        }
+        public UIImage() { model = new Model(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID.UI_IMAGE_SHAPE;
-        }
+        public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
-        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-            Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities.");
-        }
+        public override void AttachTo(IDCLEntity entity, System.Type overridenAttachedType = null) { Debug.LogError("Aborted UIImageShape attachment to an entity. UIShapes shouldn't be attached to entities."); }
 
-        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null)
-        {
-        }
+        public override void DetachFrom(IDCLEntity entity, System.Type overridenAttachedType = null) { }
 
         Coroutine fetchRoutine;
 

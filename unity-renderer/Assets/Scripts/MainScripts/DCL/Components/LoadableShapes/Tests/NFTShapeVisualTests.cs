@@ -9,19 +9,13 @@ using UnityEngine.TestTools;
 
 public class NFTShapeVisualTests : VisualTestsBase
 {
-    protected override IEnumerator SetUp()
-    {
-        yield break;
-    }
+    protected override IEnumerator SetUp() { yield break; }
 
     [UnityTest]
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests1_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests1());
-    }
+    public IEnumerator NFTShapeVisualTests1_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests1()); }
 
     [UnityTest]
     [VisualTest]
@@ -40,10 +34,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests2_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests2());
-    }
+    public IEnumerator NFTShapeVisualTests2_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests2()); }
 
     [UnityTest]
     [VisualTest]
@@ -62,10 +53,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests3_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests3());
-    }
+    public IEnumerator NFTShapeVisualTests3_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests3()); }
 
     [UnityTest]
     [VisualTest]
@@ -84,10 +72,7 @@ public class NFTShapeVisualTests : VisualTestsBase
     [VisualTest]
     [Explicit]
     [Category("Explicit")]
-    public IEnumerator NFTShapeVisualTests4_Generate()
-    {
-        yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests4());
-    }
+    public IEnumerator NFTShapeVisualTests4_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(NFTShapeVisualTests4()); }
 
     [UnityTest]
     [VisualTest]

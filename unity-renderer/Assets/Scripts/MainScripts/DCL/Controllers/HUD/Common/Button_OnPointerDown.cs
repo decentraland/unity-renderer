@@ -10,8 +10,5 @@ public class Button_OnPointerDown : Button
 {
     public event UnityAction onPointerDown;
 
-    public override void OnPointerDown(PointerEventData eventData)
-    {
-        onPointerDown?.Invoke();
-    }
+    public override void OnPointerDown(PointerEventData eventData) { onPointerDown?.Invoke(); }
 }

@@ -6,10 +6,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Voice Chat Volume", fileName = "VoiceChatVolumeControlController")]
     public class VoiceChatVolumeControlController : SliderSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentGeneralSettings.voiceChatVolume * 100;
-        }
+        public override object GetStoredValue() { return currentGeneralSettings.voiceChatVolume * 100; }
 
         public override void UpdateSetting(object newValue)
         {

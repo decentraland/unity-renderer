@@ -12,7 +12,6 @@ namespace Tests
         Billboard billboard;
         string entityId = "e1";
 
-
         [UnityTest]
         public IEnumerator AddBillboardComponent()
         {

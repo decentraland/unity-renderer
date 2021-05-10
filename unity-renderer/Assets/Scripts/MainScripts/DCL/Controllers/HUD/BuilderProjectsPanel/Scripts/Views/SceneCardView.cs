@@ -5,61 +5,116 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-internal class SceneCardView : MonoBehaviour
+internal interface ISceneCardView : IDisposable
 {
-    public static event Action<ISceneData> OnJumpInPressed;
-    public static event Action<ISceneData> OnEditorPressed;
-    public static event Action<ISceneData, SceneCardView> OnContextMenuPressed;
+    event Action<Vector2Int> OnJumpInPressed;
+    event Action<Vector2Int> OnEditorPressed;
+    event Action<ISceneData> OnSettingsPressed;
+    event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
+    ISceneData sceneData { get; }
+    ISearchInfo searchInfo { get; }
+    Vector3 contextMenuButtonPosition { get; }
+    void Setup(ISceneData sceneData);
+    void SetParent(Transform parent);
+    void SetToDefaultParent();
+    void ConfigureDefaultParent(Transform parent);
+    void SetName(string name);
+    void SetCoords(Vector2Int coords);
+    void SetSize(Vector2Int size);
+    void SetThumbnail(string thumbnailUrl);
+    void SetThumbnail(Texture2D thumbnailTexture);
+    void SetDeployed(bool deployed);
+    void SetEditable(bool isEditable);
+    void SetUserRole(bool isOwner, bool isOperator, bool isContributor);
+    void SetActive(bool active);
+    void SetSiblingIndex(int index);
+}
+
+internal class SceneCardView : MonoBehaviour, ISceneCardView
+{
+    const int THMBL_MARKETPLACE_WIDTH = 196;
+    const int THMBL_MARKETPLACE_HEIGHT = 143;
+    const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
+
+    public event Action<Vector2Int> OnJumpInPressed;
+    public event Action<Vector2Int> OnEditorPressed;
+    public event Action<ISceneData> OnSettingsPressed;
+    public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
     [Space]
-
     [SerializeField] private RawImageFillParent thumbnail;
     [SerializeField] private TextMeshProUGUI sceneName;
     [Space]
-
     [SerializeField] internal GameObject coordsContainer;
     [SerializeField] private TextMeshProUGUI coordsText;
     [Space]
-
     [SerializeField] internal GameObject sizeContainer;
     [SerializeField] private TextMeshProUGUI sizeText;
     [Space]
-
     [SerializeField] internal Button jumpInButton;
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
+    [SerializeField] internal Button settingsButton;
     [Space]
-
     [SerializeField] internal GameObject roleOwnerGO;
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
+    [Space]
+    [SerializeField] internal GameObject editorLockedGO;
+    [SerializeField] internal GameObject editorLockedTooltipGO;
 
-    public SceneSearchInfo searchInfo { get; } = new SceneSearchInfo();
+    [SerializeField] internal Animator loadingAnimator;
 
-    internal ISceneData sceneData;
+    private static readonly int isLoadingAnimation = Animator.StringToHash("isLoading");
+
+    ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
+    ISceneData ISceneCardView.sceneData => sceneData;
+    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
+
+    private ISceneData sceneData;
     private AssetPromise_Texture thumbnailPromise;
+    private bool isDestroyed = false;
+    private Transform defaultParent;
+    private bool isLoadingThumbnail = false;
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(()=> OnJumpInPressed?.Invoke(sceneData));
-        editorButton.onClick.AddListener(()=> OnEditorPressed?.Invoke(sceneData));
-        contextMenuButton.onClick.AddListener(()=> OnContextMenuPressed?.Invoke(sceneData, this));
+        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData.coords));
+        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData.coords));
+        contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
+        settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
+
+        editorLockedGO.SetActive(false);
+        editorLockedTooltipGO.SetActive(false);
     }
 
-    public void Setup(ISceneData sceneData)
+    private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
+
+    void ISceneCardView.Setup(ISceneData sceneData)
     {
         this.sceneData = sceneData;
-        SetThumbnail(sceneData.thumbnailUrl);
-        SetName(sceneData.name);
-        SetCoords(sceneData.coords);
-        SetSize(sceneData.size);
-        SetDeployed(sceneData.isDeployed);
-        SetUserRole(sceneData.isOwner, sceneData.isOperator, sceneData.isContributor);
-        searchInfo.id = sceneData.id;
+
+        string sceneThumbnailUrl = sceneData.thumbnailUrl;
+        if (string.IsNullOrEmpty(sceneThumbnailUrl) && sceneData.parcels != null)
+        {
+            sceneThumbnailUrl = MapUtils.GetMarketPlaceThumbnailUrl(sceneData.parcels,
+                THMBL_MARKETPLACE_WIDTH, THMBL_MARKETPLACE_HEIGHT, THMBL_MARKETPLACE_SIZEFACTOR);
+        }
+
+        ISceneCardView thisView = this;
+        thisView.SetThumbnail(sceneThumbnailUrl);
+        thisView.SetName(sceneData.name);
+        thisView.SetCoords(sceneData.coords);
+        thisView.SetSize(sceneData.size);
+        thisView.SetDeployed(sceneData.isDeployed);
+        thisView.SetUserRole(sceneData.isOwner, sceneData.isOperator, sceneData.isContributor);
+        thisView.SetEditable(sceneData.isEditable);
+
+        thisView.searchInfo.SetId(sceneData.id);
     }
 
-    public void SetParent(Transform parent)
+    void ISceneCardView.SetParent(Transform parent)
     {
         if (transform.parent == parent)
             return;
@@ -68,25 +123,30 @@ internal class SceneCardView : MonoBehaviour
         transform.ResetLocalTRS();
     }
 
-    public void SetName(string name)
+    void ISceneCardView.SetName(string name)
     {
         sceneName.text = name;
-        searchInfo.SetName(name);
+        ((ISceneCardView)this).searchInfo.SetName(name);
     }
 
-    public void SetCoords(Vector2Int coords)
+    void ISceneCardView.SetCoords(Vector2Int coords)
     {
-        coordsText.text = $"{coords.x},{coords.y}";
+        string coordStr = $"{coords.x},{coords.y}";
+        coordsText.text = coordStr;
+        ((ISceneCardView)this).searchInfo.SetCoords(coordStr);
     }
 
-    public void SetSize(Vector2Int size)
+    void ISceneCardView.SetSize(Vector2Int size)
     {
         sizeText.text = $"{size.x},{size.y}m";
-        searchInfo.SetSize(size);
+        ((ISceneCardView)this).searchInfo.SetSize(size.x * size.y);
     }
 
-    public void SetThumbnail(string thumbnailUrl)
+    void ISceneCardView.SetThumbnail(string thumbnailUrl)
     {
+        isLoadingThumbnail = true;
+        loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
+
         if (thumbnailPromise != null)
         {
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
@@ -95,35 +155,37 @@ internal class SceneCardView : MonoBehaviour
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
-            SetThumbnail((Texture2D) null);
+            ((ISceneCardView)this).SetThumbnail((Texture2D) null);
             return;
         }
 
         thumbnailPromise = new AssetPromise_Texture(thumbnailUrl);
-        thumbnailPromise.OnSuccessEvent += texture => SetThumbnail(texture.texture);
-        thumbnailPromise.OnFailEvent += texture => SetThumbnail((Texture2D) null);
+        thumbnailPromise.OnSuccessEvent += texture => ((ISceneCardView)this).SetThumbnail(texture.texture);
+        thumbnailPromise.OnFailEvent += texture => ((ISceneCardView)this).SetThumbnail((Texture2D) null);
 
         AssetPromiseKeeper_Texture.i.Keep(thumbnailPromise);
     }
 
-    public void SetThumbnail(Texture2D thumbnailTexture)
+    void ISceneCardView.SetThumbnail(Texture2D thumbnailTexture)
     {
         thumbnail.texture = thumbnailTexture ?? defaultThumbnail;
+        isLoadingThumbnail = false;
+        loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
     }
 
-    public void SetDeployed(bool deployed)
+    void ISceneCardView.SetDeployed(bool deployed)
     {
         coordsContainer.SetActive(deployed);
         sizeContainer.SetActive(!deployed);
         jumpInButton.gameObject.SetActive(deployed);
     }
 
-    public void SetUserRole(bool isOwner, bool isOperator, bool isContributor)
+    void ISceneCardView.SetUserRole(bool isOwner, bool isOperator, bool isContributor)
     {
         roleOwnerGO.SetActive(false);
         roleOperatorGO.SetActive(false);
         roleContributorGO.SetActive(false);
-        searchInfo.SetRole(isOwner, isOperator, isContributor);
+        ((ISceneCardView)this).searchInfo.SetRole(isOwner);
 
         if (isOwner)
         {
@@ -139,8 +201,31 @@ internal class SceneCardView : MonoBehaviour
         }
     }
 
+    void ISceneCardView.SetActive(bool active) { gameObject.SetActive(active); }
+
+    void ISceneCardView.SetSiblingIndex(int index) { transform.SetSiblingIndex(index); }
+    void ISceneCardView.SetToDefaultParent() { transform.SetParent(defaultParent); }
+
+    void ISceneCardView.ConfigureDefaultParent(Transform parent) { defaultParent = parent; }
+
+    void ISceneCardView.SetEditable(bool isEditable)
+    {
+        editorButton.gameObject.SetActive(isEditable);
+        editorLockedGO.SetActive(!isEditable);
+        settingsButton.gameObject.SetActive(isEditable);
+    }
+
+    public void Dispose()
+    {
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void OnDestroy()
     {
         AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
+        isDestroyed = true;
     }
 }

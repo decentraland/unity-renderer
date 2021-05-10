@@ -64,22 +64,21 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     public void SetHoverState(bool hoverState)
     {
-        if (!enabled || hoverState == isHovered) return;
+        if (!enabled || hoverState == isHovered)
+            return;
 
         isHovered = hoverState;
 
         canvas.enabled = isHovered;
     }
 
-    public GameObject GetCurrentHoverIcon()
-    {
-        return hoverIcon;
-    }
+    public GameObject GetCurrentHoverIcon() { return hoverIcon; }
 
     // This method will be used when we apply a "loose aim" for the 3rd person camera
     void CalculateMeshCenteredPos(DCLTransform.Model transformModel = null)
     {
-        if (!canvas.enabled) return;
+        if (!canvas.enabled)
+            return;
 
         if (entity.meshesInfo.renderers == null || entity.meshesInfo.renderers.Length == 0)
         {

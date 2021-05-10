@@ -49,23 +49,11 @@ public class PublishBtnView : MonoBehaviour, IPublishBtnView
         BuilderInWorldUtils.RemoveEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
-    public void OnPointerClick()
-    {
-        OnPublishButtonClick?.Invoke();
-    }
+    public void OnPointerClick() { OnPublishButtonClick?.Invoke(); }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        OnShowTooltip?.Invoke(eventData, tooltipText);
-    }
+    public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
-    public void OnPointerExit()
-    {
-        OnHideTooltip?.Invoke();
-    }
+    public void OnPointerExit() { OnHideTooltip?.Invoke(); }
 
-    public void SetInteractable(bool isInteractable)
-    {
-        mainButton.interactable = isInteractable;
-    }
+    public void SetInteractable(bool isInteractable) { mainButton.interactable = isInteractable; }
 }

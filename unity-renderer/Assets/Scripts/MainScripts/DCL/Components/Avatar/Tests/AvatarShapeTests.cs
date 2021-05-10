@@ -82,7 +82,6 @@ namespace Tests
             AssertMaterialsAreCorrect(avatar.transform);
         }
 
-
         [UnityTest]
         [Category("Explicit")]
         [Explicit("Test too slow")]

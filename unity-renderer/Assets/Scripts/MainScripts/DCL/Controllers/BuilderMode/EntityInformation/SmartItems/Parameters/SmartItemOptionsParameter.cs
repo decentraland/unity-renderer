@@ -9,10 +9,7 @@ public class SmartItemOptionsParameter : SmartItemUIParameterAdapter
 {
     public TMP_Dropdown dropDown;
 
-    private void Start()
-    {
-        dropDown.onValueChanged.AddListener(OnValueChange);
-    }
+    private void Start() { dropDown.onValueChanged.AddListener(OnValueChange); }
 
     public override void SetInfo()
     {
@@ -21,7 +18,7 @@ public class SmartItemOptionsParameter : SmartItemUIParameterAdapter
         dropDown.options = new List<TMP_Dropdown.OptionData>();
 
         List<string> optionsLabelList = new List<string>();
-        foreach(SmartItemParameter.OptionsParameter options in currentParameter.options)
+        foreach (SmartItemParameter.OptionsParameter options in currentParameter.options)
         {
             optionsLabelList.Add(options.label);
         }
@@ -30,9 +27,10 @@ public class SmartItemOptionsParameter : SmartItemUIParameterAdapter
 
         string value = (string) GetParameterValue();
 
-        for(int i = 0; i < currentParameter.options.Length;i++)
+        for (int i = 0; i < currentParameter.options.Length; i++)
         {
-            if (currentParameter.options[i].value == value) dropDown.SetValueWithoutNotify(i);
+            if (currentParameter.options[i].value == value)
+                dropDown.SetValueWithoutNotify(i);
         }
     }
 
@@ -40,8 +38,8 @@ public class SmartItemOptionsParameter : SmartItemUIParameterAdapter
     {
         foreach (SmartItemParameter.OptionsParameter options in currentParameter.options)
         {
-            if(options.label == dropDown.options[currentIndex].text)
+            if (options.label == dropDown.options[currentIndex].text)
                 SetParameterValue(options.value);
-        }      
+        }
     }
 }

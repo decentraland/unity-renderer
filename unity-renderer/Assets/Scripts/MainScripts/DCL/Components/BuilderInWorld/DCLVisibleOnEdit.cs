@@ -18,21 +18,12 @@ public class DCLVisibleOnEdit : BaseDisposable
     {
         public bool isVisible;
 
-        public override BaseModel GetDataFromJSON(string json)
-        {
-            return Utils.SafeFromJson<Model>(json);
-        }
+        public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
     }
 
-    public DCLVisibleOnEdit()
-    {
-        model = new Model();
-    }
+    public DCLVisibleOnEdit() { model = new Model(); }
 
-    public override int GetClassId()
-    {
-        return (int) CLASS_ID.VISIBLE_ON_EDIT;
-    }
+    public override int GetClassId() { return (int) CLASS_ID.VISIBLE_ON_EDIT; }
 
     public override IEnumerator ApplyChanges(BaseModel newModel)
     {

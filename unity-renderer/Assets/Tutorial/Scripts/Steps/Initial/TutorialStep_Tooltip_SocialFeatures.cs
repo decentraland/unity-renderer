@@ -86,30 +86,15 @@ namespace DCL.Tutorial
             }
         }
 
-        private void WorldChatWindowHud_OnOpen()
-        {
-            stepIsFinished = true;
-        }
+        private void WorldChatWindowHud_OnOpen() { stepIsFinished = true; }
 
-        private void FriendsHud_OnFriendsOpened()
-        {
-            SocialFeatureIsOpen(true);
-        }
+        private void FriendsHud_OnFriendsOpened() { SocialFeatureIsOpen(true); }
 
-        private void FriendsHud_OnFriendsClosed()
-        {
-            SocialFeatureIsOpen(false);
-        }
+        private void FriendsHud_OnFriendsClosed() { SocialFeatureIsOpen(false); }
 
-        private void VoiceChatAction_OnStarted(DCLAction_Hold action)
-        {
-            SocialFeatureIsOpen(true);
-        }
+        private void VoiceChatAction_OnStarted(DCLAction_Hold action) { SocialFeatureIsOpen(true); }
 
-        private void VoiceChatAction_OnFinished(DCLAction_Hold action)
-        {
-            SocialFeatureIsOpen(false);
-        }
+        private void VoiceChatAction_OnFinished(DCLAction_Hold action) { SocialFeatureIsOpen(false); }
 
         private void SocialFeatureIsOpen(bool isOpen)
         {

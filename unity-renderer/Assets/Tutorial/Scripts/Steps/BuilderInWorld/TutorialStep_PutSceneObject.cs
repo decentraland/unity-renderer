@@ -14,20 +14,17 @@ public class TutorialStep_PutSceneObject : TutorialStep
     {
         base.OnStepStart();
         builderInWorldController = FindObjectOfType<BIWCreatorController>();
-        builderInWorldController.OnSceneObjectPlaced += SceneObjectSelected;
+        builderInWorldController.OnCatalogItemPlaced += SceneObjectSelected;
     }
 
     public override void OnStepFinished()
     {
         base.OnStepFinished();
 
-        builderInWorldController.OnSceneObjectPlaced -= SceneObjectSelected;
+        builderInWorldController.OnCatalogItemPlaced -= SceneObjectSelected;
     }
 
-    void SceneObjectSelected()
-    {
-        sceneObjectSet = true;
-    }
+    void SceneObjectSelected() { sceneObjectSet = true; }
 
     public override IEnumerator OnStepExecute()
     {

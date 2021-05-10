@@ -13,10 +13,7 @@ namespace DCL
 
         internal GifProcessor processor;
 
-        public void Dispose()
-        {
-            Cleanup();
-        }
+        public void Dispose() { Cleanup(); }
 
         public override void Cleanup()
         {

@@ -7,10 +7,7 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Bloom", fileName = "BloomControlController")]
     public class BloomControlController : ToggleSettingsControlController
     {
-        public override object GetStoredValue()
-        {
-            return currentQualitySetting.bloom;
-        }
+        public override object GetStoredValue() { return currentQualitySetting.bloom; }
 
         public override void UpdateSetting(object newValue)
         {

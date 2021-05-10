@@ -114,10 +114,7 @@ namespace DCL.SettingsPanelHUD
             resetAllBlackOverlay.SetActive(false);
         }
 
-        private void CloseSettingsPanel()
-        {
-            hudController.SetVisibility(false);
-        }
+        private void CloseSettingsPanel() { hudController.SetVisibility(false); }
 
         public void SetVisibility(bool visible)
         {
@@ -151,14 +148,8 @@ namespace DCL.SettingsPanelHUD
             hudController.SetVisibility(!isOpen);
         }
 
-        private void CloseAction_OnTriggered(DCLAction_Trigger action)
-        {
-            CloseSettingsPanel();
-        }
+        private void CloseAction_OnTriggered(DCLAction_Trigger action) { CloseSettingsPanel(); }
 
-        private void OnFinishHide(ShowHideAnimator animator)
-        {
-            mainWindow.SetActive(false);
-        }
+        private void OnFinishHide(ShowHideAnimator animator) { mainWindow.SetActive(false); }
     }
 }

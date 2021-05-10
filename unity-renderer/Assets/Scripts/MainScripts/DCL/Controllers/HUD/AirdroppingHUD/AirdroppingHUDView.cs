@@ -34,10 +34,7 @@ public class AirdroppingHUDView : MonoBehaviour
     [SerializeField] internal GameObject summaryNoItemsScreen;
     [SerializeField] internal Button summaryNoItemsDoneButton;
 
-    internal static AirdroppingHUDView Create()
-    {
-        return Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AirdroppingHUDView>();
-    }
+    internal static AirdroppingHUDView Create() { return Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<AirdroppingHUDView>(); }
 
     public void Initialize(UnityAction nextStateCallback)
     {
@@ -102,15 +99,9 @@ public class AirdroppingHUDView : MonoBehaviour
         summaryNoItemsScreen.SetActive(false);
     }
 
-    public void SetContentActive(bool active)
-    {
-        content.SetActive(active);
-    }
+    public void SetContentActive(bool active) { content.SetActive(active); }
 
-    public void SetVisibility(bool active)
-    {
-        gameObject.SetActive(active);
-    }
+    public void SetVisibility(bool active) { gameObject.SetActive(active); }
 
     private AirdroppingItemPanel CreateItemPanel(Transform parent, AirdroppingHUDController.ItemModel model)
     {

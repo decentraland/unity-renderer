@@ -173,6 +173,7 @@ GameObject:
   - component: {fileID: 4150149717697440183}
   - component: {fileID: 4150149717697440180}
   - component: {fileID: 6380260585337340335}
+  - component: {fileID: 6050542813854093896}
   m_Layer: 5
   m_Name: Shortcut (8)
   m_TagString: Untagged
@@ -321,6 +322,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &6050542813854093896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149717697440185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149717720923983
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +353,7 @@ GameObject:
   - component: {fileID: 4150149717720923981}
   - component: {fileID: 4150149717720923978}
   - component: {fileID: 7867311650625056300}
+  - component: {fileID: 5850612072920084556}
   m_Layer: 5
   m_Name: Shortcut (1)
   m_TagString: Untagged
@@ -484,6 +502,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5850612072920084556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149717720923983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149717898734192
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,6 +887,7 @@ GameObject:
   - component: {fileID: 4150149718227659232}
   - component: {fileID: 4150149718227659037}
   - component: {fileID: 7547448137032932443}
+  - component: {fileID: 1389060412630643446}
   m_Layer: 5
   m_Name: Shortcut (7)
   m_TagString: Untagged
@@ -1001,6 +1036,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1389060412630643446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149718227659234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149718235987393
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,6 +1067,7 @@ GameObject:
   - component: {fileID: 4150149718235987455}
   - component: {fileID: 4150149718235987452}
   - component: {fileID: 8384907243119569186}
+  - component: {fileID: 2939173459679244039}
   m_Layer: 5
   m_Name: Shortcut (4)
   m_TagString: Untagged
@@ -1164,6 +1216,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2939173459679244039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149718235987393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149718284477259
 GameObject:
   m_ObjectHideFlags: 0
@@ -2199,6 +2267,7 @@ GameObject:
   - component: {fileID: 4150149718965725684}
   - component: {fileID: 4150149718965725681}
   - component: {fileID: 5145954336287007227}
+  - component: {fileID: 1398598170451595921}
   m_Layer: 5
   m_Name: Shortcut (3)
   m_TagString: Untagged
@@ -2347,6 +2416,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1398598170451595921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149718965725686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149718997101701
 GameObject:
   m_ObjectHideFlags: 0
@@ -2362,6 +2447,7 @@ GameObject:
   - component: {fileID: 4150149718997101699}
   - component: {fileID: 4150149718997101698}
   - component: {fileID: 5052106094130230117}
+  - component: {fileID: 5141665774172749450}
   m_Layer: 5
   m_Name: Shortcut
   m_TagString: Untagged
@@ -2510,6 +2596,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5141665774172749450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149718997101701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149719017608881
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,6 +2783,7 @@ GameObject:
   - component: {fileID: 4150149719053854402}
   - component: {fileID: 4150149719053854463}
   - component: {fileID: 2238003846497559198}
+  - component: {fileID: 5182739717584126589}
   m_Layer: 5
   m_Name: Shortcut (6)
   m_TagString: Untagged
@@ -2829,6 +2932,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5182739717584126589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149719053854404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149719234510473
 GameObject:
   m_ObjectHideFlags: 0
@@ -2844,6 +2963,7 @@ GameObject:
   - component: {fileID: 4150149719234510471}
   - component: {fileID: 4150149719234510468}
   - component: {fileID: 8291659331064781019}
+  - component: {fileID: 4062201628211267739}
   m_Layer: 5
   m_Name: Shortcut (5)
   m_TagString: Untagged
@@ -2992,6 +3112,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &4062201628211267739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149719234510473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149719401343477
 GameObject:
   m_ObjectHideFlags: 0
@@ -3078,6 +3214,7 @@ GameObject:
   - component: {fileID: 4150149719408763117}
   - component: {fileID: 4150149719408763114}
   - component: {fileID: 6020862912823368484}
+  - component: {fileID: 2640859592864653374}
   m_Layer: 5
   m_Name: Shortcut (2)
   m_TagString: Untagged
@@ -3226,6 +3363,22 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2640859592864653374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150149719408763119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &4150149719437645689
 GameObject:
   m_ObjectHideFlags: 0

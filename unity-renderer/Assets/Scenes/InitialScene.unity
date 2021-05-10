@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1105,18 +1105,18 @@ MonoBehaviour:
   cameraController: {fileID: 1608366483}
   bridgesGameObject: {fileID: 287244851}
   wssServerUrl: ws://localhost:4999/
-  openBrowserWhenStart: 0
+  openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
-  environment: 4
-  startInCoords: {x: 150, y: 150}
+  environment: 2
+  startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  builderInWorld: 0
+  builderInWorld: 1
   soloScene: 1
   questsEnabled: 0
   debugPanelMode: 0
@@ -1357,6 +1357,11 @@ PrefabInstance:
       propertyPath: avatarRenderer
       value: 
       objectReference: {fileID: 2021276774}
+    - target: {fileID: 6802675824613373767, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: builderInWorldBridge
+      value: 
+      objectReference: {fileID: 322303338}
     - target: {fileID: 7801740759641975108, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderInWorldBridge

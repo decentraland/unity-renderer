@@ -15,10 +15,7 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            dragAndDropSceneObjectController.Dispose();
-        }
+        public void TearDown() { dragAndDropSceneObjectController.Dispose(); }
 
         [Test]
         public void ClickCorrectly()

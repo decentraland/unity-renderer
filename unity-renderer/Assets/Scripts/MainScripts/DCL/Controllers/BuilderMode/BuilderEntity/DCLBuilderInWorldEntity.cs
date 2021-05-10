@@ -69,20 +69,22 @@ public class DCLBuilderInWorldEntity : EditableEntity
     CatalogItem associatedCatalogItem;
 
     public bool isFloor { get; set; } = false;
-    public bool isNFT { get; set; } = false;
+    public bool isNFT { get; private set; } = false;
 
     private bool isShapeComponentSet = false;
 
     private Animation[] meshAnimations;
 
     private Vector3 currentRotation;
-    Transform originalParent;
+    private Transform originalParent;
 
-    Material[] originalMaterials;
+    private Material[] originalMaterials;
 
-    Material editMaterial;
+    private Material editMaterial;
 
-    Dictionary<string, List<GameObject>> collidersGameObjectDictionary = new Dictionary<string, List<GameObject>>();
+    private Dictionary<string, List<GameObject>> collidersGameObjectDictionary = new Dictionary<string, List<GameObject>>();
+
+    private Vector3 lastPositionReported;
 
     public void Init(IDCLEntity entity, Material editMaterial)
     {
@@ -128,11 +130,16 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, transform.position) >= BuilderInWorldSettings.ENTITY_POSITION_POSITION_THRESHOLD; }
+
+    public void PositionReported() { lastPositionReported = transform.position; }
+
     public void Select()
     {
         IsSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
+        lastPositionReported = transform.position;
     }
 
     public void Deselect()
@@ -140,6 +147,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         if (!IsSelected)
             return;
 
+        IsNew = false;
         IsSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
@@ -160,28 +168,37 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public void Delete()
     {
-        rootEntity.OnShapeUpdated -= OnShapeUpdate;
-        rootEntity.OnNameChange -= OnNameUpdate;
-
         Deselect();
-        DestroyColliders();
+        Dispose();
+        OnDelete?.Invoke(this);
+    }
 
-        if (isNFT)
+    public void Dispose()
+    {
+        if (rootEntity != null)
         {
-            foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.sharedComponents)
+            rootEntity.OnShapeUpdated -= OnShapeUpdate;
+            rootEntity.OnNameChange -= OnNameUpdate;
+
+            if (isNFT)
             {
-                if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+                foreach (KeyValuePair<Type, ISharedComponent> kvp in rootEntity.sharedComponents)
                 {
-                    BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
-                    break;
+                    if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
+                    {
+                        BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
+                        break;
+                    }
                 }
             }
+
+            DCL.Environment.i.world.sceneBoundsChecker?.EvaluateEntityPosition(rootEntity);
+            DCL.Environment.i.world.sceneBoundsChecker?.RemoveEntityToBeChecked(rootEntity);
         }
 
+        DestroyColliders();
+
         associatedCatalogItem = null;
-        DCL.Environment.i.world.sceneBoundsChecker.EvaluateEntityPosition(rootEntity);
-        DCL.Environment.i.world.sceneBoundsChecker.RemoveEntityToBeChecked(rootEntity);
-        OnDelete?.Invoke(this);
     }
 
     public void DestroyColliders()
@@ -304,6 +321,14 @@ public class DCLBuilderInWorldEntity : EditableEntity
     #endregion
 
     #endregion
+
+    public void ResetTransfrom()
+    {
+        currentRotation = Vector3.zero;
+        rootEntity.gameObject.transform.eulerAngles = currentRotation;
+
+        OnStatusUpdate?.Invoke(this);
+    }
 
     void ShapeInit()
     {
@@ -506,6 +531,17 @@ public class DCLBuilderInWorldEntity : EditableEntity
                 {
                     CreateCollidersForEntity(iterator.Current.Value);
                 }
+            }
+        }
+
+        //Note: When we are duplicating the GLTF and NFT component, their colliders are duplicated too
+        //So we eliminate any previous collider to ensure that only 1 collider remain active
+        Transform[] children = GetComponentsInChildren<Transform>();
+        foreach (Transform child in children)
+        {
+            if (child.gameObject.layer ==  BuilderInWorldSettings.COLLIDER_SELECTION_LAYER)
+            {
+                Destroy(child.gameObject);
             }
         }
 

@@ -80,12 +80,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 03d744388580e334391bfa394a66e6d7, type: 2}
   builderTriggerTimeActions:
   - {fileID: 11400000, guid: 4f763868020343f469cebb00aaf01960, type: 2}
-  - {fileID: 11400000, guid: 7a0d84998e5175746a922761f2a867fe, type: 2}
   - {fileID: 11400000, guid: 02c21a2f1fb6f714f84c2fd94640f53a, type: 2}
   - {fileID: 11400000, guid: efecb0671e927ba4fa1dffff33d267a2, type: 2}
-  - {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e, type: 2}
   - {fileID: 11400000, guid: 43948507e81566e499e81e633a1dcf23, type: 2}
-  - {fileID: 11400000, guid: 8564ac18833cf9a4aa9290543b5698d3, type: 2}
   - {fileID: 11400000, guid: 019a8b4972b1c1a45b15beba521da248, type: 2}
   - {fileID: 11400000, guid: 702cc9951626b2342be70c2ea20e6b3c, type: 2}
   - {fileID: 11400000, guid: 078b4efaef516bf49884dcc0f1b5a548, type: 2}
@@ -98,14 +95,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 04b9b1db1e772b84ba73426304948e60, type: 2}
   - {fileID: 11400000, guid: 321cf4baeaa41d647a6198e45d74ee87, type: 2}
   - {fileID: 11400000, guid: 9e5ca5b6a25bef24eaa80d22ea3959ae, type: 2}
-  - {fileID: 11400000, guid: b01ba6523971e0149a23c36b50259cdd, type: 2}
   - {fileID: 11400000, guid: 9069f92e06a1094478a137f5274d1ab6, type: 2}
   - {fileID: 11400000, guid: c30e7470bcfa51844ab8120da4ae4faf, type: 2}
   - {fileID: 11400000, guid: 406d4343cf8bb7a4c9abde62ea95895c, type: 2}
   - {fileID: 11400000, guid: 4cee9aa16106c7d44900a13123280dac, type: 2}
   - {fileID: 11400000, guid: 9ec10551302c6334da92572890605db3, type: 2}
   - {fileID: 11400000, guid: 746094ad79f2853439fc98abd3963fb8, type: 2}
-  - {fileID: 11400000, guid: 9d995e577b758d248b97f78c9825d831, type: 2}
   - {fileID: 11400000, guid: 6d010659c23cf88408422156d7c5c78e, type: 2}
   - {fileID: 11400000, guid: a9f9f5fb4f1639d4b8461c2838cfae56, type: 2}
   - {fileID: 11400000, guid: f0a0f94cc4fd01c4e82210e0de670a65, type: 2}
@@ -121,3 +116,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7eb660acd8e8fdb4287f537b3f17e49d, type: 2}
   - {fileID: 11400000, guid: 2ee64fe39f7539d4c9a54d793d776da5, type: 2}
   - {fileID: 11400000, guid: b9d68cd32276d4d44804d2d9325da9ca, type: 2}
+  - {fileID: 11400000, guid: eb66fafd45ae9b947979e198f552f36c, type: 2}
+  loadingBuilderTriggerTimeActions: []

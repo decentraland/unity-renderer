@@ -41,7 +41,7 @@ namespace Tests
                 owner = null,
                 description = "",
                 isPOI = false,
-                parcels = new List<Vector2Int>() {new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12)}
+                parcels = new List<Vector2Int>() { new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12) }
             };
 
             MinimapMetadata.GetMetadata().Clear();
@@ -64,7 +64,7 @@ namespace Tests
                 owner = null,
                 description = "",
                 isPOI = false,
-                parcels = new List<Vector2Int>() {new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12)}
+                parcels = new List<Vector2Int>() { new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12) }
             };
 
             MinimapMetadata.GetMetadata().Clear();
@@ -90,7 +90,7 @@ namespace Tests
                 owner = "bar",
                 description = "foobar",
                 isPOI = false,
-                parcels = new List<Vector2Int>() {new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12)}
+                parcels = new List<Vector2Int>() { new Vector2Int(10, 10), new Vector2Int(10, 11), new Vector2Int(10, 12) }
             };
 
             MinimapMetadata.GetMetadata().Clear();

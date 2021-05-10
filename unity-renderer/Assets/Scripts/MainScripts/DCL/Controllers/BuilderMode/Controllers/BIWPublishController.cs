@@ -7,6 +7,7 @@ public class BIWPublishController : BIWController
 {
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public BuilderInWorldBridge builderInWorldBridge;
+    public BIWSaveController biwSaveController;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
 
@@ -68,6 +69,7 @@ public class BIWPublishController : BIWController
             return;
 
         HUDController.i.builderInWorldMainHud.PublishStart();
+        biwSaveController.ForceSave();
     }
 
     void ConfirmPublishScene() { builderInWorldBridge.PublishScene(sceneToEdit); }

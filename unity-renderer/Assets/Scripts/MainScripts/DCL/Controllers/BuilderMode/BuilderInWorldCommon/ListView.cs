@@ -16,6 +16,7 @@ public class ListView<T> : MonoBehaviour
 {
 
     public Transform contentPanelTransform;
+    public GameObject emptyContentMark;
 
     protected List<T> contentList = new List<T>();
     public void SetContent(List<T> content)
@@ -28,16 +29,14 @@ public class ListView<T> : MonoBehaviour
     {
         RemoveAdapters();
         AddAdapters();
+        CheckEmptyContent();
     }
 
-    public virtual void AddAdapters()
-    {
-
-    }
+    public virtual void AddAdapters() { }
 
     public virtual void RemoveAdapters()
     {
-        if (contentPanelTransform == null||
+        if (contentPanelTransform == null ||
             contentPanelTransform.transform == null ||
             contentPanelTransform.transform.childCount <= 0)
             return;
@@ -46,8 +45,19 @@ public class ListView<T> : MonoBehaviour
         for (int i = 0; i < contentPanelTransform.transform.childCount; i++)
         {
             GameObject toRemove = contentPanelTransform.transform.GetChild(i).gameObject;
-            if(toRemove != null)
+            if (toRemove != null)
                 Destroy(toRemove);
         }
+    }
+
+    private void CheckEmptyContent()
+    {
+        bool contentIsEmpty = contentList.Count == 0;
+
+        if (contentPanelTransform != null)
+            contentPanelTransform.gameObject.SetActive(!contentIsEmpty);
+
+        if (emptyContentMark != null)
+            emptyContentMark.SetActive(contentIsEmpty);
     }
 }

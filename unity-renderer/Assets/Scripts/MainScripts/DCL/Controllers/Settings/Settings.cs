@@ -179,10 +179,10 @@ namespace DCL.SettingsData
         public bool Equals(GeneralSettings settings)
         {
             return sfxVolume == settings.sfxVolume
-                && mouseSensitivity == settings.mouseSensitivity
-                && voiceChatVolume == settings.voiceChatVolume
-                && voiceChatAllow == settings.voiceChatAllow
-                && autoqualityOn == settings.autoqualityOn;
+                   && mouseSensitivity == settings.mouseSensitivity
+                   && voiceChatVolume == settings.voiceChatVolume
+                   && voiceChatAllow == settings.voiceChatAllow
+                   && autoqualityOn == settings.autoqualityOn;
         }
     }
 }

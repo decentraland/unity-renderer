@@ -22,10 +22,7 @@ public class TutorialStep_SceneObject : TutorialStep
         HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= SceneObjectSelected;
     }
 
-    void SceneObjectSelected(CatalogItem sceneObject)
-    {
-        catalogItemIsSelected = true;
-    }
+    void SceneObjectSelected(CatalogItem sceneObject) { catalogItemIsSelected = true; }
 
     public override IEnumerator OnStepExecute()
     {

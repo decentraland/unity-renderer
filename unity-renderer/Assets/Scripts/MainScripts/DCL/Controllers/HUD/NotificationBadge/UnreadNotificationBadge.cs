@@ -82,10 +82,11 @@ public class UnreadNotificationBadge : MonoBehaviour
 
     private void UpdateUnreadMessages()
     {
-        currentUnreadMessages = currentChatController.GetEntries().Count(
-            msg => msg.messageType == ChatMessage.Type.PRIVATE &&
-            msg.sender == currentUserId &&
-            msg.timestamp > (ulong)currentTimestampReading);
+        currentUnreadMessages = currentChatController.GetEntries()
+                                                     .Count(
+                                                         msg => msg.messageType == ChatMessage.Type.PRIVATE &&
+                                                                msg.sender == currentUserId &&
+                                                                msg.timestamp > (ulong)currentTimestampReading);
     }
 
     private void RefreshNotificationBadge()

@@ -35,7 +35,7 @@ namespace Tests
             // Arrange
             IWelcomeHUDView mockView = Substitute.For<IWelcomeHUDView>();
             mockView.When(x => x.Initialize(Arg.Any<UnityAction<int>>(), Arg.Any<UnityAction>(), Arg.Any<MessageOfTheDayConfig>()))
-                .Do(x => x.ArgAt<UnityAction<int>>(0).Invoke(buttonIndexToPress));
+                    .Do(x => x.ArgAt<UnityAction<int>>(0).Invoke(buttonIndexToPress));
             WelcomeHUDController controller = Substitute.ForPartsOf<WelcomeHUDController>();
 
             // Act
@@ -57,8 +57,8 @@ namespace Tests
             {
                 buttons = new[]
                 {
-                    new MessageOfTheDayConfig.Button {action = "action0"},
-                    new MessageOfTheDayConfig.Button {action = "action1"}
+                    new MessageOfTheDayConfig.Button { action = "action0" },
+                    new MessageOfTheDayConfig.Button { action = "action1" }
                 }
             });
 
@@ -76,7 +76,7 @@ namespace Tests
         {
             // Arrange
             WelcomeHUDController controller = Substitute.ForPartsOf<WelcomeHUDController>();
-            controller.Initialize(new MessageOfTheDayConfig {buttons = new MessageOfTheDayConfig.Button[0]});
+            controller.Initialize(new MessageOfTheDayConfig { buttons = new MessageOfTheDayConfig.Button[0] });
 
             // Act
             controller.OnConfirmPressed(-1);
@@ -128,8 +128,8 @@ namespace Tests
                 {
                     buttons = new[]
                     {
-                        new MessageOfTheDayConfig.Button {caption = "button0", tint = Color.green},
-                        new MessageOfTheDayConfig.Button {caption = "button1", tint = Color.blue},
+                        new MessageOfTheDayConfig.Button { caption = "button0", tint = Color.green },
+                        new MessageOfTheDayConfig.Button { caption = "button1", tint = Color.blue },
                     }
                 });
 

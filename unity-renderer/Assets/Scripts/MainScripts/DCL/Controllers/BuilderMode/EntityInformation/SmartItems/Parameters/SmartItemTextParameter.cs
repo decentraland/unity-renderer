@@ -8,10 +8,7 @@ public class SmartItemTextParameter : SmartItemUIParameterAdapter
 {
     public TMP_InputField textParameterInputField;
 
-    private void Start()
-    {
-        textParameterInputField.onEndEdit.AddListener(OnValueChange);
-    }
+    private void Start() { textParameterInputField.onEndEdit.AddListener(OnValueChange); }
 
     public override void SetInfo()
     {
@@ -24,8 +21,5 @@ public class SmartItemTextParameter : SmartItemUIParameterAdapter
         textParameterInputField.SetTextWithoutNotify((string)GetParameterValue());
     }
 
-    public void OnValueChange(string text)
-    {
-        SetParameterValue(text);
-    }
+    public void OnValueChange(string text) { SetParameterValue(text); }
 }

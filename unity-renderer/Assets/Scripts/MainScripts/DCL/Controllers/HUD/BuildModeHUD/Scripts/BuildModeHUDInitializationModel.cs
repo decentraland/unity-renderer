@@ -14,4 +14,5 @@ public class BuildModeHUDInitializationModel
     public IInspectorController inspectorController;
     public ITopActionsButtonsController topActionsButtonsController;
     public IBuildModeConfirmationModalController buildModeConfirmationModalController;
+    public ISaveHUDController saveHUDController;
 }

@@ -15,20 +15,14 @@ namespace DCL
             public bool y = true;
             public bool z = true;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                return Utils.SafeFromJson<Model>(json);
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         Transform entityTransform;
         Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
         Vector3 lastPosition;
 
-        private void Awake()
-        {
-            model = new Model();
-        }
+        private void Awake() { model = new Model(); }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -47,15 +41,9 @@ namespace DCL
             }
         }
 
-        new public Model GetModel()
-        {
-            return (Model)model;
-        }
+        new public Model GetModel() { return (Model)model; }
 
-        public void OnDestroy()
-        {
-            cameraPosition.OnChange -= CameraPositionChanged;
-        }
+        public void OnDestroy() { cameraPosition.OnChange -= CameraPositionChanged; }
 
         // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
         public void LateUpdate()
@@ -63,8 +51,10 @@ namespace DCL
             //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
             //             We must find a more performant way to handle this, until that time, this is the approach.
 
-            if (entityTransform == null) return;
-            if (transform.position == lastPosition) return;
+            if (entityTransform == null)
+                return;
+            if (transform.position == lastPosition)
+                return;
 
             lastPosition = transform.position;
 
@@ -98,18 +88,12 @@ namespace DCL
             if (entityTransform == null)
                 return;
             Vector3 lookAtVector = GetLookAtVector();
-            if(lookAtVector != Vector3.zero)
+            if (lookAtVector != Vector3.zero)
                 entityTransform.forward = lookAtVector;
         }
 
-        private void CameraPositionChanged(Vector3 current, Vector3 previous)
-        {
-            ChangeOrientation();
-        }
+        private void CameraPositionChanged(Vector3 current, Vector3 previous) { ChangeOrientation(); }
 
-        public override int GetClassId()
-        {
-            return (int) CLASS_ID_COMPONENT.BILLBOARD;
-        }
+        public override int GetClassId() { return (int) CLASS_ID_COMPONENT.BILLBOARD; }
     }
 }

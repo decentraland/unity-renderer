@@ -11,7 +11,6 @@ namespace DCL
         public GameObject groundVisual { get { return groundVisualReference; } }
         public MouseCatcher mouseCatcher { get { return mouseCatcherReference; } }
 
-
         public static InitialSceneReferences i { get; private set; }
 
         void Awake()
@@ -25,9 +24,6 @@ namespace DCL
             i = this;
         }
 
-        void OnDestroy()
-        {
-            i = null;
-        }
+        void OnDestroy() { i = null; }
     }
 }

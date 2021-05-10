@@ -94,7 +94,8 @@ namespace DCL.Controllers
 
         public void SetupWorldBlockers()
         {
-            if (!enabled || sceneHandler == null) return;
+            if (!enabled || sceneHandler == null)
+                return;
 
             SetupWorldBlockers(sceneHandler.GetAllLoadedScenesCoords());
         }
@@ -124,7 +125,8 @@ namespace DCL.Controllers
 
         internal void SetupWorldBlockers(HashSet<Vector2Int> allLoadedParcelCoords)
         {
-            if (allLoadedParcelCoords.Count == 0) return;
+            if (allLoadedParcelCoords.Count == 0)
+                return;
 
             blockersToRemove.Clear();
             blockersToAdd.Clear();

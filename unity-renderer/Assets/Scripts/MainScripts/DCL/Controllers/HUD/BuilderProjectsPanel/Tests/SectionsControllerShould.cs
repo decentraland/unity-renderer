@@ -16,10 +16,7 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            controller.Dispose();
-        }
+        public void TearDown() { controller.Dispose(); }
 
         [Test]
         public void OpenSection()
@@ -34,7 +31,7 @@ namespace Tests
             }
 
             controller.OnSectionShow += OnSectionOpen;
-            controller.OpenSection(SectionsController.SectionId.SCENES_MAIN);
+            controller.OpenSection(SectionId.SCENES_MAIN);
 
             Assert.IsTrue(openCallbackCalled);
             Assert.IsTrue(sectionFactory_Mock.sectionScenesMain.isVisible);
@@ -47,25 +44,19 @@ namespace Tests
             SectionBase openSection = null;
             SectionBase hiddenSection = null;
 
-            void OnSectionOpen(SectionBase section)
-            {
-                openSection = section;
-            }
+            void OnSectionOpen(SectionBase section) { openSection = section; }
 
-            void OnSectionHide(SectionBase section)
-            {
-                hiddenSection = section;
-            }
+            void OnSectionHide(SectionBase section) { hiddenSection = section; }
 
             controller.OnSectionShow += OnSectionOpen;
             controller.OnSectionHide += OnSectionHide;
 
-            controller.OpenSection(SectionsController.SectionId.SCENES_MAIN);
+            controller.OpenSection(SectionId.SCENES_MAIN);
 
             Assert.IsTrue(sectionFactory_Mock.sectionScenesMain.isVisible);
             Assert.AreEqual(sectionFactory_Mock.sectionScenesMain, openSection);
 
-            controller.OpenSection(SectionsController.SectionId.SCENES_PROJECT);
+            controller.OpenSection(SectionId.SCENES_PROJECT);
 
             Assert.IsFalse(sectionFactory_Mock.sectionScenesMain.isVisible);
             Assert.IsTrue(sectionFactory_Mock.sectionScenesProjects.isVisible);
@@ -86,20 +77,20 @@ namespace Tests
             sectionScenesProjects =  new Section_Mock();
         }
 
-        SectionBase ISectionFactory.GetSectionController(SectionsController.SectionId id)
+        SectionBase ISectionFactory.GetSectionController(SectionId id)
         {
             SectionBase result = null;
             switch (id)
             {
-                case SectionsController.SectionId.SCENES_MAIN:
+                case SectionId.SCENES_MAIN:
                     result = sectionScenesMain;
                     break;
-                case SectionsController.SectionId.SCENES_DEPLOYED:
+                case SectionId.SCENES_DEPLOYED:
                     break;
-                case SectionsController.SectionId.SCENES_PROJECT:
+                case SectionId.SCENES_PROJECT:
                     result = sectionScenesProjects;
                     break;
-                case SectionsController.SectionId.LAND:
+                case SectionId.LAND:
                     break;
             }
 
@@ -108,21 +99,13 @@ namespace Tests
 
         class Section_Mock : SectionBase
         {
-            public override void SetViewContainer(Transform viewContainer)
-            {
-            }
+            public override void SetViewContainer(Transform viewContainer) { }
 
-            public override void Dispose()
-            {
-            }
+            public override void Dispose() { }
 
-            protected override void OnShow()
-            {
-            }
+            protected override void OnShow() { }
 
-            protected override void OnHide()
-            {
-            }
+            protected override void OnHide() { }
         }
     }
 }

@@ -48,15 +48,9 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange += OnGlobalRendererStateChange;
     }
 
-    void OnGlobalRendererStateChange(bool current, bool previous)
-    {
-        globalRendererIsReady = current;
-    }
+    void OnGlobalRendererStateChange(bool current, bool previous) { globalRendererIsReady = current; }
 
-    public void Init(GameObject rendererContainer)
-    {
-        this.rendererContainer = rendererContainer;
-    }
+    public void Init(GameObject rendererContainer) { this.rendererContainer = rendererContainer; }
 
     private void Update()
     {
@@ -98,6 +92,9 @@ public class AvatarAudioHandlerRemote : MonoBehaviour
     {
         if (renderer.isVisible)
             return true;
+
+        if (Camera.main == null)
+            return false;
 
         // NOTE(Mordi): In some cases, the renderer will report false even if the avatar is visible.
         // Therefore we must check whether or not the avatar is in the camera's view.

@@ -17,24 +17,12 @@ namespace DCL.Tutorial_Tests
         public delegate void CustomOnStepFinished();
         public CustomOnStepFinished customOnStepFinished;
 
-        public override void OnStepStart()
-        {
-            customOnStepStart();
-        }
+        public override void OnStepStart() { customOnStepStart(); }
 
-        public override IEnumerator OnStepExecute()
-        {
-            yield return customOnStepExecute;
-        }
+        public override IEnumerator OnStepExecute() { yield return customOnStepExecute; }
 
-        public override IEnumerator OnStepPlayHideAnimation()
-        {
-            yield return customOnStepPlayAnimationForHidding;
-        }
+        public override IEnumerator OnStepPlayHideAnimation() { yield return customOnStepPlayAnimationForHidding; }
 
-        public override void OnStepFinished()
-        {
-            customOnStepFinished();
-        }
+        public override void OnStepFinished() { customOnStepFinished(); }
     }
 }

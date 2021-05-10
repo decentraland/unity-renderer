@@ -1,3 +1,4 @@
+using System;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
@@ -10,9 +11,7 @@ public class VoxelController : MonoBehaviour
     [Header("References")]
     public VoxelPrefab voxelPrefab;
 
-    public BuilderInWorldInputWrapper builderInputWrapper;
     public BuilderInWorldController buildModeController;
-    public BuilderInWorldGodMode buildEditorMode;
     public BIWOutlinerController outlinerController;
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public FreeCameraMovement freeCameraMovement;
@@ -34,8 +33,14 @@ public class VoxelController : MonoBehaviour
 
     private void Start()
     {
-        builderInputWrapper.OnMouseDown += MouseDown;
-        builderInputWrapper.OnMouseUp += MouseUp;
+        BuilderInWorldInputWrapper.OnMouseDown += MouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp += MouseUp;
+    }
+
+    private void OnDestroy()
+    {
+        BuilderInWorldInputWrapper.OnMouseDown -= MouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp -= MouseUp;
     }
 
     private void Update()
@@ -67,10 +72,7 @@ public class VoxelController : MonoBehaviour
         }
     }
 
-    public void SetSceneToEdit(ParcelScene scene)
-    {
-        currentScene = scene;
-    }
+    public void SetSceneToEdit(ParcelScene scene) { currentScene = scene; }
 
     public void SetEditObjectLikeVoxel()
     {
@@ -101,20 +103,11 @@ public class VoxelController : MonoBehaviour
         }
     }
 
-    public void SetEditionGO(GameObject _editionGO)
-    {
-        editionGO = _editionGO;
-    }
+    public void SetEditionGO(GameObject editionGO) { this.editionGO = editionGO; }
 
-    public bool IsActive()
-    {
-        return isVoxelModelActivated;
-    }
+    public bool IsActive() { return isVoxelModelActivated; }
 
-    public void SetActiveMode(bool isActive)
-    {
-        isVoxelModelActivated = isActive;
-    }
+    public void SetActiveMode(bool isActive) { isVoxelModelActivated = isActive; }
 
     public void EndMultiVoxelSelection()
     {
@@ -145,17 +138,20 @@ public class VoxelController : MonoBehaviour
         for (int x = 0; x <= xDifference; x++)
         {
             int contX = x;
-            if (firstPosition.x > lastPosition.x) contX = -contX;
+            if (firstPosition.x > lastPosition.x)
+                contX = -contX;
 
             for (int y = 0; y <= yDifference; y++)
             {
                 int contY = y;
-                if (firstPosition.y > lastPosition.y) contY = -contY;
+                if (firstPosition.y > lastPosition.y)
+                    contY = -contY;
 
                 for (int z = 0; z <= zDifference; z++)
                 {
                     int contZ = z;
-                    if (firstPosition.z > lastPosition.z) contZ = -contZ;
+                    if (firstPosition.z > lastPosition.z)
+                        contZ = -contZ;
 
                     Vector3Int positionOfVoxel = new Vector3Int(firstPosition.x + contX, firstPosition.y + contY, firstPosition.z + contZ);
                     if (positionOfVoxel == firstPosition)
@@ -172,7 +168,8 @@ public class VoxelController : MonoBehaviour
         List<Vector3Int> voxelToRemove = new List<Vector3Int>();
         foreach (Vector3Int position in createdVoxels.Keys)
         {
-            if (!mustContainVoxelList.Contains(position)) voxelToRemove.Add(position);
+            if (!mustContainVoxelList.Contains(position))
+                voxelToRemove.Add(position);
         }
 
         foreach (Vector3Int vector in voxelToRemove)
@@ -215,7 +212,8 @@ public class VoxelController : MonoBehaviour
 
     private void MouseUp(int buttonID, Vector3 position)
     {
-        if (!mousePressed || buttonID != 0) return;
+        if (!mousePressed || buttonID != 0)
+            return;
 
         if (isCreatingMultipleVoxels)
         {
@@ -240,7 +238,7 @@ public class VoxelController : MonoBehaviour
             {
                 if (canVoxelsBeCreated)
                 {
-                    IDCLEntity entity = builderInWorldEntityHandler.DuplicateEntity(lastVoxelCreated);
+                    IDCLEntity entity = builderInWorldEntityHandler.DuplicateEntity(lastVoxelCreated).rootEntity;
                     entity.gameObject.tag = BuilderInWorldSettings.VOXEL_TAG;
                     entity.gameObject.transform.position = voxelPosition;
 
@@ -274,7 +272,8 @@ public class VoxelController : MonoBehaviour
 
     void MouseDown(int buttonID, Vector3 position)
     {
-        if (buttonID != 0 || !isVoxelModelActivated || lastVoxelCreated == null) return;
+        if (buttonID != 0 || !isVoxelModelActivated || lastVoxelCreated == null)
+            return;
 
         lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.transform.position);
         mousePressed = true;
@@ -299,13 +298,16 @@ public class VoxelController : MonoBehaviour
 
     bool IsVoxelAtValidPoint(VoxelPrefab voxelPrefab, List<DCLBuilderInWorldEntity> entitiesToCheck)
     {
-        if (!currentScene.IsInsideSceneBoundaries(voxelPrefab.meshRenderer.bounds)) return false;
+        if (!currentScene.IsInsideSceneBoundaries(voxelPrefab.meshRenderer.bounds))
+            return false;
         Bounds bounds = voxelPrefab.meshRenderer.bounds;
         bounds.size -= Vector3.one * VOXEL_BOUND_ERROR;
         foreach (DCLBuilderInWorldEntity entity in entitiesToCheck)
         {
-            if (entity.rootEntity.meshesInfo == null || entity.rootEntity.meshesInfo.renderers == null) continue;
-            if (bounds.Intersects(entity.rootEntity.meshesInfo.mergedBounds)) return false;
+            if (entity.rootEntity.meshesInfo == null || entity.rootEntity.meshesInfo.renderers == null)
+                continue;
+            if (bounds.Intersects(entity.rootEntity.meshesInfo.mergedBounds))
+                return false;
         }
 
         bounds.size += Vector3.one * VOXEL_BOUND_ERROR;

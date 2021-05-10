@@ -2,7 +2,6 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class FriendsListToggleButton : MonoBehaviour
 {
     public bool toggleOnAwake = false;

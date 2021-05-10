@@ -88,7 +88,8 @@ internal class HighlightScenesController : MonoBehaviour
         if (cachedHotScenes.ContainsKey(baseCoords))
         {
             hotSceneView = cachedHotScenes[baseCoords];
-            if (!hotSceneView) return;
+            if (!hotSceneView)
+                return;
         }
         else
         {
@@ -113,15 +114,9 @@ internal class HighlightScenesController : MonoBehaviour
         friendsController.AddHandler(hotSceneView.friendsHandler);
     }
 
-    void AddActiveHotSceneCell(Vector2Int coords, HotSceneCellView view)
-    {
-        activeHotSceneViews.Add(coords, view);
-    }
+    void AddActiveHotSceneCell(Vector2Int coords, HotSceneCellView view) { activeHotSceneViews.Add(coords, view); }
 
-    bool IsHotSceneCellActive(Vector2Int coords)
-    {
-        return activeHotSceneViews.ContainsKey(coords);
-    }
+    bool IsHotSceneCellActive(Vector2Int coords) { return activeHotSceneViews.ContainsKey(coords); }
 
     void RemoveActiveHotSceneCell(Vector2Int coords)
     {
@@ -156,7 +151,8 @@ internal class HighlightScenesController : MonoBehaviour
         {
             while (iterator.MoveNext())
             {
-                if (iterator.Current is null) continue;
+                if (iterator.Current is null)
+                    continue;
 
                 iterator.Current.gameObject.SetActive(true);
                 yield return new WaitForSeconds(SCENE_FIRST_LOAD_DELAY);

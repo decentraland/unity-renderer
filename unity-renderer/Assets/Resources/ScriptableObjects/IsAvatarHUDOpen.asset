@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdae4528345114a1fa069b0a59dc53c7, type: 3}
-  m_Name: IsProfileHUDOpen
+  m_Name: IsAvatarHUDOpen
   m_EditorClassIdentifier: 
   value: 0
