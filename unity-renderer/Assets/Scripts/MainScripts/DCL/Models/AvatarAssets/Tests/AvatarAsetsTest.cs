@@ -10,7 +10,9 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                replaces = new [] { "category1", "category2", "category3" }
+                data = new WearableItem.Data(){
+                    replaces = new [] { "category1", "category2", "category3" }
+                }
             };
 
             var replaces = wearableItem.GetReplacesList(null);
@@ -25,8 +27,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                replaces = new [] { "category1", "category2", "category3" },
                 data = new WearableItem.Data() {
+                    replaces = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
                         new WearableItem.Representation()
@@ -53,8 +55,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                replaces = new [] { "category1", "category2", "category3" },
                 data = new WearableItem.Data() {
+                    replaces = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
                         new WearableItem.Representation()
@@ -81,7 +83,9 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                hides = new [] { "category1", "category2", "category3" }
+                data = new WearableItem.Data() {
+                    hides = new [] { "category1", "category2", "category3" }
+                }
             };
 
             var hides = wearableItem.GetHidesList(null);
@@ -96,8 +100,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                hides = new [] { "category1", "category2", "category3" },
                 data = new WearableItem.Data() {
+                    hides = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
                         new WearableItem.Representation()
@@ -124,8 +128,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                hides = new [] { "category1", "category2", "category3" },
                 data = new WearableItem.Data() {
+                    hides = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
                         new WearableItem.Representation()

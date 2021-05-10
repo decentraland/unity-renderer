@@ -65,7 +65,7 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] {sunglasses.data.category};
+            bandana.data.hides = new[] {sunglasses.data.category};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
@@ -83,7 +83,7 @@ namespace AvatarShape_Tests
         {
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] {"NonExistentCategory"};
+            bandana.data.hides = new[] {"NonExistentCategory"};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;
@@ -244,7 +244,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator HideBodyShapeProperly()
         {
-            catalog.Get(SUNGLASSES_ID).hides = new[] {WearableLiterals.Misc.HEAD};
+            catalog.Get(SUNGLASSES_ID).data.hides = new[] {WearableLiterals.Misc.HEAD};
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.UpdateFromModel(avatarModel);
             yield return avatarShape.routine;

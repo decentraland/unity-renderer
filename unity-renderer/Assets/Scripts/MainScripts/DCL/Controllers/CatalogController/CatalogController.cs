@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Helpers;
 using DCL.Interface;
@@ -15,7 +16,6 @@ public class CatalogController : MonoBehaviour
 
     public static CatalogController i { get; private set; }
 
-    public static BaseDictionary<string, Item> itemCatalog => DataStore.i.items;
     public static BaseDictionary<string, WearableItem> wearableCatalog => DataStore.i.wearables;
 
     private static Dictionary<string, int> wearablesInUseCounters = new Dictionary<string, int>();
@@ -54,43 +54,35 @@ public class CatalogController : MonoBehaviour
 
     public void AddWearablesToCatalog(string payload)
     {
-        WearablesRequestResponse request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
-
         if (VERBOSE)
             Debug.Log("add wearables: " + payload);
 
+        WearablesRequestResponse request = null;
+        
+        try
+        {
+            request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Fail to parse wearables json {e}");
+        }
+        
+        if (request == null)
+            return;
+        
         for (int i = 0; i < request.wearables.Length; i++)
         {
-            switch (request.wearables[i].type)
+            WearableItem wearableItem = request.wearables[i];
+
+            if (!wearableCatalog.ContainsKey(wearableItem.id))
             {
-                case "wearable":
-                    {
-                        WearableItem wearableItem = request.wearables[i];
-
-                        if (!wearableCatalog.ContainsKey(wearableItem.id))
-                        {
-                            wearableCatalog.Add(wearableItem.id, wearableItem);
-                            wearablesInUseCounters.Add(wearableItem.id, 1);
-                            ResolvePendingWearablePromise(wearableItem.id, wearableItem);
-                            pendingWearableRequestedTimes.Remove(wearableItem.id);
-                        }
-
-                        break;
-                    }
-                case "item":
-                    {
-                        if (!itemCatalog.ContainsKey(request.wearables[i].id))
-                            itemCatalog.Add(request.wearables[i].id, (Item)request.wearables[i]);
-
-                        break;
-                    }
-                default:
-                    {
-                        Debug.LogError("Bad type in item, will not be added to catalog");
-                        break;
-                    }
+                wearableCatalog.Add(wearableItem.id, wearableItem);
+                wearablesInUseCounters.Add(wearableItem.id, 1);
+                ResolvePendingWearablePromise(wearableItem.id, wearableItem);
+                pendingWearableRequestedTimes.Remove(wearableItem.id);
             }
-        }
+        }        
 
         if (!string.IsNullOrEmpty(request.context))
         {
@@ -123,7 +115,6 @@ public class CatalogController : MonoBehaviour
         int count = itemIDs.Length;
         for (int i = 0; i < count; ++i)
         {
-            itemCatalog.Remove(itemIDs[i]);
             wearableCatalog.Remove(itemIDs[i]);
             wearablesInUseCounters.Remove(itemIDs[i]);
         }
@@ -131,7 +122,6 @@ public class CatalogController : MonoBehaviour
 
     public void ClearWearableCatalog()
     {
-        itemCatalog?.Clear();
         wearableCatalog?.Clear();
         wearablesInUseCounters.Clear();
     }

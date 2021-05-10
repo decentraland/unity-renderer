@@ -71,7 +71,7 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.replaces = new[] {sunglasses.data.category};
+            bandana.data.replaces = new[] {sunglasses.data.category};
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -86,8 +86,8 @@ namespace AvatarEditorHUD_Tests
             var sunglasses = catalog.Get(sunglassesId);
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
-
-            bandana.replaces = new[] {"NonExistentCategory"};
+            
+            bandana.data.replaces = new[] {"NonExistentCategory"};
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

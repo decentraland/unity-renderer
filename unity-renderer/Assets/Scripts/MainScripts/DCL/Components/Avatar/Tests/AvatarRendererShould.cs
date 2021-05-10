@@ -184,7 +184,7 @@ namespace AvatarShape_Tests
             //Clean hides/replaces to avoid interferences
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
-            catalog.Get(SUNGLASSES_ID).hides = new [] { WearableLiterals.Misc.HEAD};
+            catalog.Get(SUNGLASSES_ID).data.hides = new [] { WearableLiterals.Misc.HEAD};
 
             avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
 
@@ -269,8 +269,8 @@ namespace AvatarShape_Tests
 
         private void CleanWearableHidesAndReplaces(string id)
         {
-            catalog.Get(id).hides = new string[] { };
-            catalog.Get(id).replaces = new string[] { };
+            catalog.Get(id).data.hides = new string[] { };
+            catalog.Get(id).data.replaces = new string[] { };
             foreach (WearableItem.Representation representation in catalog.Get(id).data.representations)
             {
                 representation.overrideHides = new string[] { };

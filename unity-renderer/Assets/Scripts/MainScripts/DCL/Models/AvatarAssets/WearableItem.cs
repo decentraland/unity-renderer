@@ -2,10 +2,9 @@ using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Serialization;
 
 [System.Serializable]
-public class WearableItem : Item
+public class WearableItem
 {
     [Serializable]
     public class MappingPair
@@ -30,17 +29,18 @@ public class WearableItem : Item
         public Representation[] representations;
         public string category;
         public string[] tags;
+        public string[] replaces;
+        public string[] hides;
     }
 
     public Data data;
+    public string id;
 
     public string baseUrl;
     public string baseUrlBundles;
 
     public i18n[] i18n;
     public string thumbnail;
-    public string[] hides;
-    public string[] replaces;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;
@@ -113,7 +113,7 @@ public class WearableItem : Item
         var representation = GetRepresentation(bodyShapeType);
 
         if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0)
-            return replaces;
+            return data.replaces;
 
         return representation.overrideReplaces;
     }
@@ -123,7 +123,7 @@ public class WearableItem : Item
         var representation = GetRepresentation(bodyShapeType);
 
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            return hides;
+            return data.hides;
 
         return representation.overrideHides;
     }
