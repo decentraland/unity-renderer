@@ -593,6 +593,7 @@ namespace DCL.ABConverter
             obj.importSkeleton = false;
             obj.maxTextureSize = 512;
         }
+
         private static void GLTFImporter_OnBodyWearableLoad(UnityGLTF.GLTFSceneImporter obj)
         {
             obj.importSkeleton = true;
