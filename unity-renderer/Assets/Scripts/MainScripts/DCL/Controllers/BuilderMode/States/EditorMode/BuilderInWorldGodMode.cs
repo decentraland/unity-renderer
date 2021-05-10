@@ -685,6 +685,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void OnGizmosTransformStart(string gizmoType)
     {
+        outlinerController.SetOutlineCheckActive(false);
         foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             TransformActionStarted(entity.rootEntity, gizmoType);
@@ -693,6 +694,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void OnGizmosTransformEnd(string gizmoType)
     {
+        outlinerController.SetOutlineCheckActive(true);
         foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
             TransformActionEnd(entity.rootEntity, gizmoType);

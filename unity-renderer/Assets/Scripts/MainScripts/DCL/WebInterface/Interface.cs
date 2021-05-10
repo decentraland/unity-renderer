@@ -137,7 +137,13 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
-
+        
+        [System.Serializable]
+        public class IdleStateChangedPayload
+        {
+            public bool isIdle;
+        };
+        
         [System.Serializable]
         public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
@@ -610,6 +616,7 @@ namespace DCL.Interface
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static CameraModePayload cameraModePayload = new CameraModePayload();
+        private static IdleStateChangedPayload idleStateChangedPayload = new IdleStateChangedPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnPointerDownEvent onPointerDownEvent = new OnPointerDownEvent();
@@ -676,6 +683,12 @@ namespace DCL.Interface
         {
             cameraModePayload.cameraMode = cameraMode;
             SendAllScenesEvent("cameraModeChanged", cameraModePayload);
+        }
+        
+        public static void ReportIdleStateChanged(bool isIdle)
+        {
+            idleStateChangedPayload.isIdle = isIdle;
+            SendAllScenesEvent("idleStateChanged", idleStateChangedPayload);
         }
 
         public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent { SendMessage("ControlEvent", controlEvent); }

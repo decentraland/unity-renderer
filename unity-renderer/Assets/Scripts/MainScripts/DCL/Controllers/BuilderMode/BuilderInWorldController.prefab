@@ -1605,10 +1605,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxDistanceToSelectEntities: 9999
-  snapFactor: 1
+  snapFactor: 0.5
   snapRotationDegresFactor: 0.261799
   snapScaleFactor: 0.5
-  snapDistanceToActivateMovement: 1
+  snapDistanceToActivateMovement: 0.1
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   biwSaveController: {fileID: 6802675824613373767}
   actionController: {fileID: 1208871512032110241}
