@@ -852,20 +852,20 @@ namespace DCL
             }
         }
 
-        public void IsolateScene(ParcelScene sceneToActive)
+        public void IsolateScene(IParcelScene sceneToActive)
         {
-            foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+            foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
             {
                 if (scene != sceneToActive)
-                    scene.gameObject.SetActive(false);
+                    scene.GetSceneTransform().gameObject.SetActive(false);
             }
         }
 
         public void ReIntegrateIsolatedScene()
         {
-            foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+            foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
             {
-                scene.gameObject.SetActive(true);
+                scene.GetSceneTransform().gameObject.SetActive(true);
             }
         }
 
@@ -885,12 +885,10 @@ namespace DCL
         private int lastSortFrame = 0;
 
         public event Action OnSortScenes;
-        public event Action<ParcelScene, string> OnOpenExternalUrlRequest;
-        public event Action<ParcelScene> OnNewSceneAdded;
-        public event Action<GlobalScene> OnNewPortableExperienceSceneAdded;
+        public event Action<IParcelScene, string> OnOpenExternalUrlRequest;
+        public event Action<IParcelScene> OnNewSceneAdded;
+        public event Action<IParcelScene> OnNewPortableExperienceSceneAdded;
         public event Action<string> OnNewPortableExperienceSceneRemoved;
-
-        public delegate void OnOpenNFTDialogDelegate(string assetContractAddress, string tokenId, string comment);
 
         public event OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
 
