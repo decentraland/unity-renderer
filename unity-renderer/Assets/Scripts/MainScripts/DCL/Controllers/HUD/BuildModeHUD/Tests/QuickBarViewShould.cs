@@ -126,7 +126,7 @@ namespace Tests.BuildModeHUDViews
             // Arrange
             int testIndex = 0;
             quickBarView.lastIndexToBeginDrag = -1;
-            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10, TextureFormat.RGB565, false));
+            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10));
 
 
             // Act
@@ -146,7 +146,7 @@ namespace Tests.BuildModeHUDViews
             testEventData.position = new Vector2(5, 3);
             int testIndex = 0;
             quickBarView.draggedSlot.slotTransform.position = Vector3.zero;
-            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10, TextureFormat.RGB565, false));
+            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10));
 
 
             // Act
@@ -162,7 +162,7 @@ namespace Tests.BuildModeHUDViews
             // Arrange
             int testIndex = 0;
             int returnedIndex = -1;
-            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10, TextureFormat.RGB565, false));
+            quickBarView.shortcutsImgs[0].SetTexture(new Texture2D(10, 10));
             quickBarView.OnQuickBarObjectSelected += (index) => { returnedIndex = index; };
 
 
