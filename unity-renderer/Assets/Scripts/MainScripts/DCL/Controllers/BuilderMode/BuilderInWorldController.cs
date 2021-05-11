@@ -328,7 +328,7 @@ public class BuilderInWorldController : MonoBehaviour
         return voxelEntityHit;
     }
 
-    private void NewSceneAdded(ParcelScene newScene)
+    private void NewSceneAdded(IParcelScene newScene)
     {
         if (newScene.sceneData.id != sceneToEditId)
             return;
