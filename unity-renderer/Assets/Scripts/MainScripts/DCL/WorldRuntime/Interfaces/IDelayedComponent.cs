@@ -4,7 +4,7 @@ namespace DCL.Components
 {
     public interface IDelayedComponent : IComponent, ICleanable
     {
-        WaitForComponentUpdate yieldInstruction { get; }
+        CustomYieldInstruction yieldInstruction { get; }
         Coroutine routine { get; }
         bool isRoutineRunning { get; }
     }

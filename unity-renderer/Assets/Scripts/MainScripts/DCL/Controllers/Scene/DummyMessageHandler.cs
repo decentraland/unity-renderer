@@ -1,10 +1,12 @@
+using UnityEngine;
+
 namespace DCL
 {
     public class DummyMessageHandler : IMessageProcessHandler
     {
         public void LoadParcelScenesExecute(string scenePayload) { }
 
-        public bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
+        public bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CustomYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
             return true;

@@ -51,7 +51,7 @@ namespace DCL
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private float timeBudgetValue;
 
-        public CleanableYieldInstruction msgYieldInstruction;
+        public CustomYieldInstruction msgYieldInstruction;
 
         public MessagingBusType type;
         public string debugTag;
@@ -82,7 +82,10 @@ namespace DCL
         public void Stop()
         {
             enabled = false;
-            msgYieldInstruction?.Cleanup();
+
+            if ( msgYieldInstruction is CleanableYieldInstruction cleanableYieldInstruction )
+                cleanableYieldInstruction.Cleanup();
+
             pendingMessagesCount = 0;
         }
 

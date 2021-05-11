@@ -22,7 +22,7 @@ namespace DCL.Components
         }
 
         ComponentUpdateHandler updateHandler;
-        public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
+        public CustomYieldInstruction yieldInstruction => updateHandler.yieldInstruction;
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 

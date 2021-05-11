@@ -8,7 +8,7 @@ namespace DCL.Components
     public abstract class BaseComponent : MonoBehaviour, IEntityComponent, IDelayedComponent, IPoolLifecycleHandler, IPoolableObjectContainer
     {
         protected ComponentUpdateHandler updateHandler;
-        public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
+        public CustomYieldInstruction yieldInstruction => updateHandler.yieldInstruction;
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
