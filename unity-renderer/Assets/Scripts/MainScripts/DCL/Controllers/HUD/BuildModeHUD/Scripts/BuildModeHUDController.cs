@@ -26,6 +26,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
+    public event Action<CatalogItem> OnCatalogItemDropped;
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
     public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
     public event Action<DCLBuilderInWorldEntity> OnEntityLock;
@@ -176,7 +177,7 @@ public class BuildModeHUDController : IHUD
     private void ConfigureCatalogItemDropController()
     {
         catalogItemDropController.catalogGroupListView = view.sceneCatalog.catalogGroupListView;
-        catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
+        catalogItemDropController.OnCatalogItemDropped += CatalogItemDropped;
     }
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
@@ -316,15 +317,23 @@ public class BuildModeHUDController : IHUD
     public void StopInput()
     {
         OnStopInput?.Invoke();
-
-        if (controllers.sceneCatalogController.IsCatalogExpanded())
-            controllers.sceneCatalogController.ToggleCatalogExpanse();
+        ToggleCatalogIfExpanded();
     }
 
     public void CatalogItemSelected(CatalogItem catalogItem)
     {
         OnCatalogItemSelected?.Invoke(catalogItem);
+        ToggleCatalogIfExpanded();
+    }
 
+    public void CatalogItemDropped(CatalogItem catalogItem)
+    {
+        OnCatalogItemDropped?.Invoke(catalogItem);
+        ToggleCatalogIfExpanded();
+    }
+
+    private void ToggleCatalogIfExpanded()
+    {
         if (controllers.sceneCatalogController.IsCatalogExpanded())
             controllers.sceneCatalogController.ToggleCatalogExpanse();
     }
