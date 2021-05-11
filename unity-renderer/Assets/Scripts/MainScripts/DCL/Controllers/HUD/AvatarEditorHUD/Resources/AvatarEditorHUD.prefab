@@ -1500,7 +1500,6 @@ MonoBehaviour:
   characterPreviewPrefab: {fileID: 3569267310167974304, guid: 164e126ce7f309a47b78e9f75cbca418,
     type: 3}
   characterPreviewRotation: {fileID: 6749458557699296124}
-  loadingPanel: {fileID: 0}
   randomizeButton: {fileID: 1450360507441575512}
   doneButton: {fileID: 8118935322395685570}
   exitButton: {fileID: 178893782665926146}
@@ -4294,9 +4293,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 29.000004}
+  m_SizeDelta: {x: 0, y: -58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2225072684624242756
 CanvasRenderer:
@@ -4345,7 +4344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 3
+  m_AspectMode: 2
   m_AspectRatio: 0.5
 --- !u!114 &6749458557699296124
 MonoBehaviour:
