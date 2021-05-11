@@ -1,5 +1,6 @@
 {
     "name": "NFTPromptHUD",
+    "rootNamespace": "",
     "references": [
         "GUID:91b3e67997f21408dae5a247c35f91ad",
         "GUID:555c1f3c6d18648df910b7a1de75b424",
@@ -11,7 +12,8 @@
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
         "GUID:99cea83ca76dcd846abed7e61a8c90bd",
         "GUID:a3ceb534947fac14da25035bc5c24788",
-        "GUID:d7ced3c8f2800ed40a132e6df054755e"
+        "GUID:d7ced3c8f2800ed40a132e6df054755e",
+        "GUID:97d8897529779cb49bebd400c7f402a6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

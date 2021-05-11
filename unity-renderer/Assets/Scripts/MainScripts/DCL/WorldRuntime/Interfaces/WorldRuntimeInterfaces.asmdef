@@ -1,0 +1,21 @@
+{
+    "name": "WorldRuntimeInterfaces",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
+        "GUID:b24824f3bc2a60641a01e2083614f802",
+        "GUID:d7ced3c8f2800ed40a132e6df054755e",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:8af21c3a612af2645a9953d4b9b3f6d5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
