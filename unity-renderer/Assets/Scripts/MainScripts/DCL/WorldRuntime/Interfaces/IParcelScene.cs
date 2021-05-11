@@ -19,7 +19,7 @@ namespace DCL.Controllers
         bool isPersistent { get; }
         bool isTestScene { get; }
         float loadingProgress { get; }
-        bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition);
+
         bool IsInsideSceneBoundaries(Bounds objectBounds);
         bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f);
         bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f);

@@ -536,7 +536,7 @@ namespace DCL
                     if (scene == null)
                         continue;
 
-                    characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
+                    characterIsInsideScene = WorldStateUtils.IsCharacterInsideScene(scene);
 
                     if (!worldState.globalSceneIds.Contains(scene.sceneData.id) && characterIsInsideScene)
                     {

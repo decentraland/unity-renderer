@@ -70,7 +70,11 @@ namespace DCL
             return worldPosition;
         }
 
-        public static bool IsCharacterInsideScene(IParcelScene scene) { return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition); }
+        public static bool IsCharacterInsideScene(IParcelScene scene)
+        {
+            Vector2Int gridPosition = Utils.WorldToGridPosition(CommonScriptableObjects.playerWorldPosition.Get());
+            return scene.IsInsideSceneBoundaries(gridPosition);
+        }
 
         public static List<GlobalScene> GetActivePortableExperienceScenes()
         {

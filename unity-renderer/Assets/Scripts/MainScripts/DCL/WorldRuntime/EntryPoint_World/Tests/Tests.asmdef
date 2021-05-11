@@ -1,11 +1,13 @@
 {
     "name": "EntryPoint_World_Tests",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "MainScripts",
         "Protocol",
-        "QueuedSceneMessage"
+        "QueuedSceneMessage",
+        "MessagingContext"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

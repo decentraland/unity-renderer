@@ -335,7 +335,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
-        sceneToEdit = Environment.i.world.state.GetScene(sceneToEditId) as ParcelScene;
+        sceneToEdit = (ParcelScene)Environment.i.world.state.GetScene(sceneToEditId);
         sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
     }
 
@@ -586,14 +586,16 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void FindSceneToEdit()
     {
-        foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+        foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
-            if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+            if (WorldStateUtils.IsCharacterInsideScene(scene))
             {
-                if (sceneToEdit != null && sceneToEdit != scene)
-                    actionController.Clear();
-                sceneToEdit = scene;
+                ParcelScene parcelScene = (ParcelScene)scene;
 
+                if (sceneToEdit != null && sceneToEdit != parcelScene)
+                    actionController.Clear();
+
+                sceneToEdit = parcelScene;
                 break;
             }
         }
