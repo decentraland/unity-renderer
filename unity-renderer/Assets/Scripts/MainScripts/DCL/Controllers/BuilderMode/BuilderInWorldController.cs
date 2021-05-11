@@ -12,6 +12,7 @@ public class BuilderInWorldController : MonoBehaviour
 {
     [Header("Activation of Feature")]
     public bool activeFeature = false;
+
     public bool bypassLandOwnershipCheck = false;
 
     [Header("DesignVariables")]
@@ -27,6 +28,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     [Header("Prefab References")]
     public BIWOutlinerController outlinerController;
+
     public BIWInputHandler bIWInputHandler;
     public BIWPublishController biwPublishController;
     public BIWCreatorController biwCreatorController;
@@ -39,6 +41,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     [Header("Build Modes")]
     public BuilderInWorldGodMode editorMode;
+
     public LayerMask layerToRaycast;
 
     private ParcelScene sceneToEdit;
@@ -321,6 +324,7 @@ public class BuilderInWorldController : MonoBehaviour
                 }
             }
         }
+
         return voxelEntityHit;
     }
 
@@ -361,6 +365,7 @@ public class BuilderInWorldController : MonoBehaviour
                     return true;
             }
         }
+
         return false;
     }
 

@@ -1,12 +1,14 @@
 {
     "name": "UsersSearcherTests",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "UsersSearcher",
         "UsersSearchBridge",
         "Utils",
-        "UserProfile"
+        "UserProfile",
+        "Promise"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
