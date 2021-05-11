@@ -207,9 +207,10 @@ public class DCLCharacterController : MonoBehaviour
 
             OnCharacterMoved?.Invoke(characterPosition);
 
-            float distance = Vector3.Distance(characterPosition.worldPosition, lastPosition);
+            float distance = Vector3.Distance(characterPosition.worldPosition, lastPosition) - movingPlatformSpeed;
+
             if (distance > 0f && isGrounded)
-                OnMoved?.Invoke(distance / Time.deltaTime);
+                OnMoved?.Invoke(distance);
         }
 
         lastPosition = transform.position;

@@ -364,7 +364,17 @@ namespace DCL
             }
         }
 
-        void OnWearableLoadingSuccess(WearableController wearableController) { wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor); }
+        void OnWearableLoadingSuccess(WearableController wearableController)
+        {
+            if (wearableController == null || model == null)
+            {
+                Debug.LogWarning($"WearableSuccess was called wrongly: IsWearableControllerNull=>{wearableController == null}, IsModelNull=>{model == null}");
+                OnWearableLoadingFail(wearableController, 0);
+                return;
+            }
+
+            wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+        }
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
         {
