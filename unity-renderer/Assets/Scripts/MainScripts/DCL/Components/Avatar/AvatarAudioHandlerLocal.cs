@@ -16,16 +16,15 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
     AudioEvent footstepRun;
     AudioEvent clothesRustleShort;
 
-    CameraController cameraController;
-
     private void Start()
     {
-        DCLCharacterController dclCharacterController = transform.parent.GetComponent<DCLCharacterController>();
-        if (dclCharacterController != null)
+        var characterController = DCLCharacterController.i;
+
+        if (characterController != null)
         {
-            dclCharacterController.OnJump += OnJump;
-            dclCharacterController.OnHitGround += OnLand;
-            dclCharacterController.OnMoved += OnWalk;
+            characterController.OnJump += OnJump;
+            characterController.OnHitGround += OnLand;
+            characterController.OnMoved += OnWalk;
         }
 
         AudioContainer ac = GetComponent<AudioContainer>();
@@ -51,33 +50,31 @@ public class AvatarAudioHandlerLocal : MonoBehaviour
     // Faking footsteps when in first-person mode, since animations won't play
     void OnWalk(float distance)
     {
-        if (cameraController == null)
-        {
-            GameObject camObj = GameObject.Find("CameraController");
-            if (camObj != null)
-                cameraController =  camObj.GetComponent<CameraController>();
-            return;
-        }
-
-        if (cameraController.currentCameraState.name != "FirstPerson")
+        if (CommonScriptableObjects.cameraMode.Get() != CameraMode.ModeId.FirstPerson)
             return;
 
         if (intervalTimer < 0f)
         {
+            distance /= Time.deltaTime;
+
             if (distance > WALK_RUN_CROSSOVER_DISTANCE)
             {
                 if (footstepRun != null)
                     footstepRun.Play(true);
+
                 if (clothesRustleShort != null)
                     clothesRustleShort.Play(true);
+
                 intervalTimer = RUN_INTERVAL_SEC;
             }
             else
             {
                 if (footstepWalk != null)
                     footstepWalk.Play(true);
+
                 if (clothesRustleShort != null)
                     clothesRustleShort.PlayScheduled(Random.Range(0.05f, 0.1f));
+
                 intervalTimer = WALK_INTERVAL_SEC;
             }
         }
