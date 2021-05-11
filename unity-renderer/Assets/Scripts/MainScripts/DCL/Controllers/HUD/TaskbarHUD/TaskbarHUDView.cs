@@ -167,7 +167,7 @@ public class TaskbarHUDView : MonoBehaviour
         AdjustRightButtonsLayoutWidth();
     }
 
-    public void SetQuestsPanelStatus(bool isActive) { questPanelButton.gameObject.SetActive(isActive); }
+    public void SetQuestsPanelStatus(bool isActive) { questPanelButton.transform.parent.gameObject.SetActive(isActive); }
 
     private void OnWindowToggleOff(TaskbarButton obj)
     {
