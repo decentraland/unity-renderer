@@ -75,7 +75,7 @@ public class BIWCatalogShould
         {
             quickBarController.SetIndexToDrop(i);
             adapter.AdapterStartDragging(null);
-            quickBarController.SceneObjectDroppedFromCatalog(null);
+            quickBarController.SetQuickBarShortcut(item, i, new Texture2D(10, 10));
             Assert.AreEqual(item, quickBarController.QuickBarObjectSelected(i));
         }
     }
