@@ -142,14 +142,15 @@ namespace DCL
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
         }
 
-        private void OnEntityTransformChanged(DCLTransform.Model updatedModel)
+        private void OnEntityTransformChanged(object newModel)
         {
-            lastAvatarPosition = updatedModel.position;
+            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
+            lastAvatarPosition = newTransformModel.position;
 
             var model = (AvatarModel) this.model;
             avatarUserInfo.userId = model.id;
             avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = updatedModel.position;
+            avatarUserInfo.worldPosition = newTransformModel.position;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
         }
 

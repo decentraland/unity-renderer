@@ -202,8 +202,9 @@ namespace Builder
             }
         }
 
-        private void OnTransformUpdated(DCLTransform.Model transformModel)
+        private void OnTransformUpdated(object model)
         {
+            DCLTransform.Model transformModel = (DCLTransform.Model)model;
             //NOTE: there is no parenting entities in editor mode so we can set properties in world space
             gameObject.transform.position = transformModel.position;
             gameObject.transform.rotation = transformModel.rotation;
