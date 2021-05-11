@@ -97,7 +97,7 @@ namespace Builder
         {
             if (rootEntity != null && rootEntity.meshesInfo.renderers != null)
             {
-                return rootEntity.scene.IsInsideSceneBoundaries(Utils.BuildMergedBounds(rootEntity.meshesInfo.renderers));
+                return rootEntity.scene.IsInsideSceneBoundaries(MeshesInfoUtils.BuildMergedBounds(rootEntity.meshesInfo.renderers));
             }
 
             return true;
