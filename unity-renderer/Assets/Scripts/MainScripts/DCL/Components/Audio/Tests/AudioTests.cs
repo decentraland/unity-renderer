@@ -117,7 +117,7 @@ namespace Tests
             var entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
-            yield return TestHelpers.LoadAudioClip(scene, "1", DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+            yield return TestHelpers.LoadAudioClip(scene, "1", TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg", false, true, 1);
 
             yield return TestHelpers.CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
@@ -135,7 +135,7 @@ namespace Tests
             var entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
-            yield return TestHelpers.LoadAudioClip(scene, "1", DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+            yield return TestHelpers.LoadAudioClip(scene, "1", TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg", false, true, 1);
 
             yield return TestHelpers.CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
 
@@ -280,7 +280,7 @@ namespace Tests
         [Test]
         public void AudioClip_OnReadyBeforeLoading()
         {
-            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
 
@@ -290,7 +290,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClip_OnReadyWaitLoading()
         {
-            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
             yield return dclAudioClip.routine;
@@ -301,7 +301,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClip_OnReadyAfterLoadingInstantlyCalled()
         {
-            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestAssetsUtils.GetPath() + "/Audio/short_effect.ogg", true, true, 1);
             yield return dclAudioClip.routine;
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });

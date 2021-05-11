@@ -11,7 +11,7 @@ namespace AssetPromiseKeeper_Texture_Tests
     {
         protected override AssetPromise_Texture CreatePromise()
         {
-            string url = Utils.GetTestsAssetsPath() + "/Images/atlas.png";
+            string url = TestAssetsUtils.GetPath() + "/Images/atlas.png";
             var prom = new AssetPromise_Texture(url);
             return prom;
         }

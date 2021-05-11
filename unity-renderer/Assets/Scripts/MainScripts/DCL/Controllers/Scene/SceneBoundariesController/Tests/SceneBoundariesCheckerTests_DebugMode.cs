@@ -36,7 +36,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
@@ -64,7 +64,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
 
             LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity2);

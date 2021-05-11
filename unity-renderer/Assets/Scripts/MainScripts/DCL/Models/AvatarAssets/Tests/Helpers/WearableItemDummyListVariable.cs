@@ -15,7 +15,7 @@ public class WearableItemDummyListVariable : ScriptableObject
     private void FillWithTestCatalog()
     {
         string file = "TestCatalog.json";
-        var catalogJson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + $"/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
+        var catalogJson = File.ReadAllText(TestAssetsUtils.GetPathRaw() + $"/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
         list = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItemDummy[]>(catalogJson).ToList(); // JsonUtility cannot deserialize jsons whose root is an array
     }
 }

@@ -97,7 +97,7 @@ namespace Tests
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
-            shapeModel.src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             // 3. Change a shape component property while it loads
@@ -133,7 +133,7 @@ namespace Tests
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
-            shapeModel.src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -169,7 +169,7 @@ namespace Tests
 
             // 2. Attach a shape
             var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
-            shapeModel.src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var shapeComponentId = TestHelpers.CreateAndSetShape(scene, entity1Id, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
             LoadWrapper gltfShapeLoader1 = GLTFShape.GetLoaderForEntity(scene.entities[entity1Id]);

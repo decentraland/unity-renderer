@@ -23,7 +23,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
@@ -66,7 +66,7 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
                 });
             var entity = gltfShape.attachedEntities.First();
 
@@ -134,7 +134,7 @@ namespace Tests
             var gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
                 });
             var entity = gltfShape.attachedEntities.First();
 
@@ -204,7 +204,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
             string clipName = "animation:0";
@@ -258,7 +258,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
@@ -278,7 +278,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
             string clipName = "animation:0";
@@ -321,7 +321,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/non-skeletal-3-transformations.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/non-skeletal-3-transformations.glb"
                 }));
 
             string clipName = "All";

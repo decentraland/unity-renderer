@@ -21,7 +21,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator NotDestroySharedTextureWhenDisposed()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
+            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
@@ -55,7 +55,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator BeCreatedProperly()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
+            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
@@ -138,7 +138,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         // Update material
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
+            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
@@ -315,7 +315,7 @@ public class PBRMaterialShould : IntegrationTestSuite_Legacy
 
         DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
             scene,
-            Utils.GetTestsAssetsPath() + "/Images/atlas.png",
+            TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.CLAMP,
             FilterMode.Bilinear);
 

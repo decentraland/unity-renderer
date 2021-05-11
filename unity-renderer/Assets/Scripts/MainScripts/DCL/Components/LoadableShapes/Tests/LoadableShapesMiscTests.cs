@@ -25,7 +25,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/OBJ/teapot.obj"
+                src = TestAssetsUtils.GetPath() + "/OBJ/teapot.obj"
             }));
 
         LoadWrapper objShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -75,7 +75,7 @@ public class LoadableShapesMiscTests : IntegrationTestSuite_Legacy
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);

@@ -34,7 +34,7 @@ namespace Tests
                 DCL.Models.CLASS_ID.GLTF_SHAPE,
                 Vector3.zero,
                 out entity,
-                new GLTFShape.Model() { src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
+                new GLTFShape.Model() { src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb" });
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);

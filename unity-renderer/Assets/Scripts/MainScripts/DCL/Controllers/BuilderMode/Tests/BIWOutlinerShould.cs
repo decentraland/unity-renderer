@@ -27,7 +27,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         TestHelpers.CreateAndSetShape(scene, ENTITY_ID, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[ENTITY_ID]);

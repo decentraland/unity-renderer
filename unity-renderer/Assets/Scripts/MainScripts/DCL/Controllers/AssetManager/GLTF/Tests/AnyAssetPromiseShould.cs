@@ -15,7 +15,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             var keeper = new AssetPromiseKeeper_GLTF();
 
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF loadedAsset = null;
 
@@ -60,7 +60,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             var keeper = new AssetPromiseKeeper_GLTF();
 
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             prom.settings.forceNewInstance = false;
             keeper.Keep(prom);
@@ -78,7 +78,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             var poolableComponents = new List<PoolableObject>();
 
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             for (int i = 0; i < 10; i++)
             {
                 AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
@@ -98,7 +98,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
         {
             var keeper = new AssetPromiseKeeper_GLTF();
 
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             prom.settings.forceNewInstance = true;
 
@@ -121,7 +121,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             var poolableComponents = new List<PoolableObject>();
 
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
 
             for (int i = 0; i < 10; i++)
             {

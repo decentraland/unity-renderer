@@ -16,7 +16,7 @@ namespace Tests
         public IEnumerator TextureCreateAndLoadTest()
         {
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,
-                Utils.GetTestsAssetsPath() + "/Images/avatar.png",
+                TestAssetsUtils.GetPath() + "/Images/avatar.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
@@ -42,7 +42,7 @@ namespace Tests
         [Test]
         public void Texture_OnReadyBeforeLoading()
         {
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
 
@@ -52,7 +52,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator Texture_OnReadyWaitLoading()
         {
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
             yield return dclTexture.routine;
@@ -63,7 +63,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator Texture_OnReadyAfterLoadingInstantlyCalled()
         {
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
             yield return dclTexture.routine;
 
             bool isOnReady = false;

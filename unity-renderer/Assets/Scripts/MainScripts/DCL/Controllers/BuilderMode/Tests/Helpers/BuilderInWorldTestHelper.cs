@@ -43,7 +43,7 @@ public static class BuilderInWorldTestHelper
     public static void CreateTestCatalogLocalMultipleFloorObjects()
     {
         AssetCatalogBridge.i.ClearCatalog();
-        string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
 
         if (File.Exists(jsonPath))
         {
@@ -55,7 +55,7 @@ public static class BuilderInWorldTestHelper
     public static void CreateTestCatalogLocalSingleObject()
     {
         AssetCatalogBridge.i.ClearCatalog();
-        string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/sceneObjectCatalog.json";
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/sceneObjectCatalog.json";
 
         if (File.Exists(jsonPath))
         {
@@ -67,7 +67,7 @@ public static class BuilderInWorldTestHelper
     public static void CreateTestSmartItemCatalogLocalSingleObject()
     {
         AssetCatalogBridge.i.ClearCatalog();
-        string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/smartItemSceneObjectCatalog.json";
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/smartItemSceneObjectCatalog.json";
 
         if (File.Exists(jsonPath))
         {
@@ -78,7 +78,7 @@ public static class BuilderInWorldTestHelper
 
     public static void CreateNFT()
     {
-        string jsonPath = Utils.GetTestAssetsPathRaw() + "/BuilderInWorldCatalog/nftAsset.json";
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/nftAsset.json";
 
         if (File.Exists(jsonPath))
         {

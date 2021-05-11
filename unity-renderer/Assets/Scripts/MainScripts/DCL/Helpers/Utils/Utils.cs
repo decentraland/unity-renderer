@@ -380,22 +380,6 @@ namespace DCL.Helpers
             );
         }
 
-        public static string GetTestAssetsPathRaw() { return Application.dataPath + "/../TestResources"; }
-
-        public static string GetTestsAssetsPath(bool useWebServerPath = false)
-        {
-            if (useWebServerPath)
-            {
-                return "http://127.0.0.1:9991";
-            }
-            else
-            {
-                var uri = new System.Uri(GetTestAssetsPathRaw());
-                var converted = uri.AbsoluteUri;
-                return converted;
-            }
-        }
-
         public static bool AproxComparison(this Color color1, Color color2, float tolerance = 0.01f) // tolerance of roughly 1f / 255f
         {
             if (Mathf.Abs(color1.r - color2.r) < tolerance
@@ -419,7 +403,7 @@ namespace DCL.Helpers
             public static T GetFromJsonArray(string jsonArray)
             {
                 string newJson = $"{{ \"value\": {jsonArray}}}";
-                return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
+                return JsonUtility.FromJson<Utils.DummyJsonUtilityFromArray<T>>(newJson).value;
             }
         }
 

@@ -15,14 +15,14 @@ namespace AssetPromiseKeeper_Texture_Tests
     {
         protected AssetPromise_Texture CreatePromise()
         {
-            string url = Utils.GetTestsAssetsPath() + "/Images/atlas.png";
+            string url = TestAssetsUtils.GetPath() + "/Images/atlas.png";
             var prom = new AssetPromise_Texture(url);
             return prom;
         }
 
         protected AssetPromise_Texture CreatePromise(TextureWrapMode wrapmode, FilterMode filterMode)
         {
-            string url = Utils.GetTestsAssetsPath() + "/Images/atlas.png";
+            string url = TestAssetsUtils.GetPath() + "/Images/atlas.png";
             AssetPromise_Texture prom = new AssetPromise_Texture(url, wrapmode, filterMode);
 
             return prom;

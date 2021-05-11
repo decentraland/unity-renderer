@@ -43,7 +43,7 @@ namespace Tests
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
                 scene,
-                Utils.GetTestsAssetsPath() + "/Images/atlas.png",
+                TestAssetsUtils.GetPath() + "/Images/atlas.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 

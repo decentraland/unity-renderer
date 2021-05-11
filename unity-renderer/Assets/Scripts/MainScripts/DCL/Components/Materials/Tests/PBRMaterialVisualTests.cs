@@ -22,7 +22,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
     public IEnumerator AlphaTextureShouldWork()
     {
         yield return InitVisualTestsScene("PBRMaterialVisualTests_AlphaTextureShouldWork");
-        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/alphaTexture.png");
+        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/alphaTexture.png");
         yield return texture.routine;
         Vector3 camTarget = new Vector3(5, 2, 5);
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, camTarget - new Vector3(2, -1, 2), camTarget);

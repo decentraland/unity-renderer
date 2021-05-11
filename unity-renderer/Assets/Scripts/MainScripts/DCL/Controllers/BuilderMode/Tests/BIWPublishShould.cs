@@ -54,7 +54,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
         TestHelpers.CreateAndSetShape(scene, entity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.rootEntity.entityId]);

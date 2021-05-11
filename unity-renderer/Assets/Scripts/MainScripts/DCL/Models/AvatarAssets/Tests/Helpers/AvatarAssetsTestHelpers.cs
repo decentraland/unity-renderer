@@ -10,7 +10,7 @@ public static class AvatarAssetsTestHelpers
         List<WearableItemDummy> wearables = Object.Instantiate(Resources.Load<WearableItemDummyListVariable>("TestCatalogArrayLocalAssets")).list;
         foreach (var wearableItem in wearables)
         {
-            wearableItem.baseUrl = Utils.GetTestsAssetsPath() + "/Avatar/Assets/";
+            wearableItem.baseUrl = TestAssetsUtils.GetPath() + "/Avatar/Assets/";
 
             foreach (var rep in wearableItem.representations)
             {

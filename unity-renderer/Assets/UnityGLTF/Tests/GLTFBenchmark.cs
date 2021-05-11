@@ -52,6 +52,6 @@ public class GLTFBenchmark : MonoBehaviour
         };
 
         gltfComponent.OnFinishedLoadingAsset += RunTest;
-        gltfComponent.LoadAsset(Utils.GetTestsAssetsPath() + url, Utils.GetTestsAssetsPath() + url, false, tmpSettings);
+        gltfComponent.LoadAsset(TestAssetsUtils.GetPath() + url, TestAssetsUtils.GetPath() + url, false, tmpSettings);
     }
 }

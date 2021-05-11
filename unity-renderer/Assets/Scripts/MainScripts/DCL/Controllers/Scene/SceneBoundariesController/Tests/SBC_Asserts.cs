@@ -53,7 +53,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -115,7 +115,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -263,7 +263,7 @@ namespace SceneBoundariesCheckerTests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
                 }));
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);

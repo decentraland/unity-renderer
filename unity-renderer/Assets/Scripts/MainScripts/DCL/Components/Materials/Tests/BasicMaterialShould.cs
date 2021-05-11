@@ -21,7 +21,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
     public IEnumerator NotDestroySharedTextureWhenDisposed()
     {
         DCLTexture texture =
-            TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
+            TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/atlas.png");
 
         yield return texture.routine;
 
@@ -56,7 +56,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
             scene,
-            Utils.GetTestsAssetsPath() + "/Images/atlas.png",
+            TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.CLAMP,
             FilterMode.Bilinear);
 
@@ -211,7 +211,7 @@ public class BasicMaterialShould : IntegrationTestSuite_Legacy
 
         DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
             scene,
-            Utils.GetTestsAssetsPath() + "/Images/atlas.png",
+            TestAssetsUtils.GetPath() + "/Images/atlas.png",
             DCLTexture.BabylonWrapMode.MIRROR,
             FilterMode.Bilinear);
 
