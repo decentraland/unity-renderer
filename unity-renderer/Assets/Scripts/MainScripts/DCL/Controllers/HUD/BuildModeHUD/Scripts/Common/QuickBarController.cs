@@ -56,6 +56,8 @@ public class QuickBarController : IQuickBarController
         quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
         sceneCatalogController.OnStopInput -= CancelDragging;
+
+        ClearThumbnailPromise();
     }
 
     public int GetSlotsCount() { return AMOUNT_OF_QUICK_SLOTS; }
