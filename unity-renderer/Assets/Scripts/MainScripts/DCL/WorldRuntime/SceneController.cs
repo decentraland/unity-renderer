@@ -146,7 +146,7 @@ namespace DCL
         Queue<string> payloadsToDecode = new Queue<string>();
         const float MAX_TIME_FOR_DECODE = 0.005f;
 
-        public bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
+        public bool ProcessMessage(QueuedSceneMessage_Scene msgObject, out CustomYieldInstruction yieldInstruction)
         {
             string sceneId = msgObject.sceneId;
             string method = msgObject.method;
@@ -198,7 +198,7 @@ namespace DCL
         }
 
         private void ProcessMessage(ParcelScene scene, string method, object msgPayload,
-            out CleanableYieldInstruction yieldInstruction)
+            out CustomYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
             IDelayedComponent delayedComponent = null;
