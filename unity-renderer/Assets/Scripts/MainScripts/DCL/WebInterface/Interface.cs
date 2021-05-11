@@ -137,13 +137,13 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
-        
+
         [System.Serializable]
         public class IdleStateChangedPayload
         {
             public bool isIdle;
         };
-        
+
         [System.Serializable]
         public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
@@ -410,7 +410,7 @@ namespace DCL.Interface
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
         }
-        
+
         [System.Serializable]
         public class PerformanceHiccupPayload
         {
@@ -460,6 +460,12 @@ namespace DCL.Interface
             public string url;
             public bool play;
             public float volume;
+        }
+
+        [System.Serializable]
+        public class SetScenesLoadRadiusPayload
+        {
+            public float newRadius;
         }
 
         [System.Serializable]
@@ -633,7 +639,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
         private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
-
+        private static SetScenesLoadRadiusPayload setScenesLoadRadiusPayload = new SetScenesLoadRadiusPayload();
         private static ApplySettingsPayload applySettingsPayload = new ApplySettingsPayload();
         private static GIFSetupPayload gifSetupPayload = new GIFSetupPayload();
         private static JumpInPayload jumpInPayload = new JumpInPayload();
@@ -684,7 +690,7 @@ namespace DCL.Interface
             cameraModePayload.cameraMode = cameraMode;
             SendAllScenesEvent("cameraModeChanged", cameraModePayload);
         }
-        
+
         public static void ReportIdleStateChanged(bool isIdle)
         {
             idleStateChangedPayload.isIdle = isIdle;
@@ -904,6 +910,12 @@ namespace DCL.Interface
             SendMessage("SetDelightedSurveyEnabled", delightedSurveyEnabled);
         }
 
+        public static void SetScenesLoadRadius(float newRadius)
+        {
+            setScenesLoadRadiusPayload.newRadius = newRadius;
+            SendMessage("SetScenesLoadRadius", setScenesLoadRadiusPayload);
+        }
+
         [System.Serializable]
         public class SaveAvatarPayload
         {
@@ -963,10 +975,7 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendSystemInfoReport()
-        {
-            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
-        }
+        public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
         {
