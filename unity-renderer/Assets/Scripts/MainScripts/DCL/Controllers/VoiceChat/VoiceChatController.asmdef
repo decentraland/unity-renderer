@@ -1,13 +1,13 @@
 {
-    "name": "CatalogController",
+    "name": "VoiceChatController",
     "rootNamespace": "",
     "references": [
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:e99faafecbf8dd74d8130597511b9b27",
+        "GUID:c44f6fd10d3d94432a107d581e0096b5",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
-        "GUID:28f74c468a54948bfa9f625c5d428f56",
-        "GUID:4973650d2444c4561a15d50f24d91cd9",
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:e99faafecbf8dd74d8130597511b9b27"
+        "GUID:4973650d2444c4561a15d50f24d91cd9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
