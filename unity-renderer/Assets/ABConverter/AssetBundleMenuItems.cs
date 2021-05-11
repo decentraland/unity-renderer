@@ -97,7 +97,10 @@ namespace DCL
         public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
-        public static void DumpZoneArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+        public static void DumpArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump scene QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM")]
+        public static void DumpSceneId() { ABConverter.Client.DumpScene("QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM"); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
         public static void DumpSingleAsset()
