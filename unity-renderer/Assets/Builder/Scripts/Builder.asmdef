@@ -1,5 +1,6 @@
 {
     "name": "Builder",
+    "rootNamespace": "",
     "references": [
         "GUID:e555144732b726c4cba5b0f6337fea75",
         "GUID:4973650d2444c4561a15d50f24d91cd9",

@@ -161,13 +161,13 @@ namespace DCL.ABConverter
             var renderers = targetGO.GetComponentsInChildren<Renderer>();
 
             // unify all child renderer bounds and use that to position the snapshot camera
-            var mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+            var mergedBounds = MeshUtils.BuildMergedBounds(renderers);
 
             // Some objects are imported super small (like 0.00x in scale) and we can barely see them in the snapshots
             if (mergedBounds.size.magnitude < 1f)
             {
                 targetGO.transform.localScale *= 100;
-                mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+                mergedBounds = MeshUtils.BuildMergedBounds(renderers);
             }
 
             Vector3 offset = mergedBounds.extents;
