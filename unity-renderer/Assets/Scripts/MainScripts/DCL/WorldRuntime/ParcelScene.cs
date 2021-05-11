@@ -165,8 +165,6 @@ namespace DCL.Controllers
 
         public override string ToString() { return "Parcel Scene: " + base.ToString() + "\n" + sceneData.ToString(); }
 
-        public bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition) { return IsInsideSceneBoundaries(Utils.WorldToGridPosition(charPosition.worldPosition)); }
-
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
             if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.worldOffset, objectBounds.max.y))
