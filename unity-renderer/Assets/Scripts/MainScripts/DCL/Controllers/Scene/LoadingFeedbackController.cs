@@ -47,7 +47,11 @@ public class LoadingFeedbackController : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
-    private void SceneController_OnNewSceneAdded(ParcelScene scene) { scene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed; }
+    private void SceneController_OnNewSceneAdded(IParcelScene scene)
+    {
+        var parcelScene = (ParcelScene)scene;
+        parcelScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
+    }
 
     private void Scene_OnStateRefreshed(ParcelScene scene)
     {

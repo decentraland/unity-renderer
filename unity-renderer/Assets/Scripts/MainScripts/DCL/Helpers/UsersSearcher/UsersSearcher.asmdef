@@ -1,10 +1,12 @@
 {
     "name": "UsersSearcher",
+    "rootNamespace": "",
     "references": [
         "GUID:46e59b3e5841640ce918884307de67e0",
         "GUID:1de3566cccb280f4a982c59ad0d08c96",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:4973650d2444c4561a15d50f24d91cd9"
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:e99faafecbf8dd74d8130597511b9b27"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

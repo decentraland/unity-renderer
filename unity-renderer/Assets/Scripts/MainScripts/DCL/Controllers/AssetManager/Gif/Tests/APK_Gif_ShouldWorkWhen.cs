@@ -11,7 +11,7 @@ namespace AssetPromiseKeeper_Gif_Tests
     {
         protected override AssetPromise_Gif CreatePromise()
         {
-            string url = Utils.GetTestsAssetsPath() + "/Images/gif1.gif";
+            string url = TestAssetsUtils.GetPath() + "/Images/gif1.gif";
             var prom = new AssetPromise_Gif(url);
             return prom;
         }

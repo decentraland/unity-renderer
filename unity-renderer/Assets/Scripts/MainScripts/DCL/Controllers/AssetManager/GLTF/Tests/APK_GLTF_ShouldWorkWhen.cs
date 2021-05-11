@@ -25,7 +25,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
         protected override AssetPromise_GLTF CreatePromise()
         {
-            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var prom = new AssetPromise_GLTF(contentProvider, url);
             return prom;
         }
