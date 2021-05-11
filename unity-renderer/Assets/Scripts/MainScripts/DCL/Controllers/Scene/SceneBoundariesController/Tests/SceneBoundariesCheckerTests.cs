@@ -80,7 +80,7 @@ namespace SceneBoundariesCheckerTests
         [UnityTest]
         public IEnumerator AudioSourceWithMeshIsDisabled()
         {
-            TestHelpers.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb", out var entity);
+            TestHelpers.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
             TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });

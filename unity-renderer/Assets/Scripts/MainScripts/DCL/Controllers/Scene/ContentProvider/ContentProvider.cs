@@ -177,7 +177,7 @@ namespace DCL
                 return true;
             }
 
-            if (url.StartsWith(Utils.GetTestsAssetsPath()))
+            if (url.StartsWith(TestAssetsUtils.GetPath()))
             {
                 return true;
             }
