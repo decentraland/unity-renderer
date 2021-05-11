@@ -45,9 +45,10 @@ namespace DCL
 
         public static void DumpEmptyParcels(string folderName = "empty-scenes")
         {
+            // The paths in this method work if the unity-renderer repo is at the same location as the explorer repo
             string indexJsonPath = Application.dataPath;
 
-            indexJsonPath += $"/../../kernel/static/loader/{folderName}/index.json";
+            indexJsonPath += $"/../../../explorer/kernel/static/loader/{folderName}/index.json";
 
             if (!File.Exists(indexJsonPath))
             {
@@ -74,7 +75,7 @@ namespace DCL
             mappings.AddRange(es.EP_12);
 
             string emptyScenesResourcesPath = Application.dataPath;
-            emptyScenesResourcesPath += $"/../../kernel/static/loader/{folderName}";
+            emptyScenesResourcesPath += $"/../../../explorer/kernel/static/loader/{folderName}";
 
             string customBaseUrl = "file://" + emptyScenesResourcesPath;
 
