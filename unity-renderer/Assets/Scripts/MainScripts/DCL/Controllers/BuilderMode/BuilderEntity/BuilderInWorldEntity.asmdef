@@ -1,5 +1,6 @@
 {
   "name": "BuilderEntity",
+  "rootNamespace": "",
   "references": [
     "GUID:e555144732b726c4cba5b0f6337fea75",
     "GUID:a881b57670b1d2747a6d7f9e32b63230",
@@ -14,7 +15,8 @@
     "GUID:bb6e4d6fc48a2cf4191076e3407fc249",
     "GUID:a78c5d8dad39efe45ab1b21901f8db0f",
     "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-    "GUID:97d8897529779cb49bebd400c7f402a6"
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:5289a39f46259954ca74010d7c9ded16"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

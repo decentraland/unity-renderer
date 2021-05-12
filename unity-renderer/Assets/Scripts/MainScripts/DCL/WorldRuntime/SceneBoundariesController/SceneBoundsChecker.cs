@@ -8,48 +8,6 @@ using DCL.Helpers;
 
 namespace DCL.Controllers
 {
-    public interface ISceneBoundsFeedbackStyle
-    {
-        void OnRendererExitBounds(Renderer renderer);
-        void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries);
-        List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
-    }
-
-    public interface IOutOfSceneBoundariesHandler
-    {
-        void UpdateOutOfBoundariesState(bool enable);
-    }
-
-    public interface ISceneBoundsChecker
-    {
-        event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
-
-        float timeBetweenChecks { get; set; }
-        bool enabled { get; }
-        int entitiesToCheckCount { get; }
-        void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle);
-        ISceneBoundsFeedbackStyle GetFeedbackStyle();
-        List<Material> GetOriginalMaterials(MeshesInfo meshesInfo);
-        void Start();
-        void Stop();
-        void AddEntityToBeChecked(IDCLEntity entity);
-
-        /// <summary>
-        /// Add an entity that will be consistently checked, until manually removed from the list.
-        /// </summary>
-        void AddPersistent(IDCLEntity entity);
-
-        /// <summary>
-        /// Returns whether an entity was added to be consistently checked
-        /// </summary>
-        ///
-        bool WasAddedAsPersistent(IDCLEntity entity);
-
-        void RemoveEntityToBeChecked(IDCLEntity entity);
-        void EvaluateEntityPosition(IDCLEntity entity);
-        bool IsEntityInsideSceneBoundaries(IDCLEntity entity);
-    }
-
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
