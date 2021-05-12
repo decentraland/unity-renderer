@@ -18,6 +18,7 @@ namespace DCL
         public readonly IServiceProviders serviceProviders;
         public readonly IIdleChecker idleChecker;
 
+
         public PlatformContext(IMemoryManager memoryManager,
             ICullingController cullingController,
             IClipboard clipboard,
