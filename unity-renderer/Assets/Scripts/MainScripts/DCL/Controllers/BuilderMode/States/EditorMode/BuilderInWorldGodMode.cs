@@ -101,10 +101,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
-
         HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
+        HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
     }
 
     private void Update()
@@ -240,6 +240,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange += UpdateSelectionPosition;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
+            HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
         }
     }
 
@@ -759,4 +760,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         return Vector3.zero;
     }
+
+    private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 }
