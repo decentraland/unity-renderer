@@ -7,19 +7,6 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public enum TheGraphCache
-{
-    DontUseCache,
-    UseCache
-}
-
-public interface ITheGraph
-{
-    Promise<string> Query(string url, string query);
-    Promise<string> Query(string url, string query, QueryVariablesBase variables);
-    Promise<List<Land>> QueryLands(string tld, string address, TheGraphCache cache);
-}
-
 public class TheGraph : ITheGraph
 {
     private const float CACHE_TIME = 5 * 60;
@@ -64,6 +51,7 @@ public class TheGraph : ITheGraph
             {
                 promise.Reject($"error: {request.error} response: {request.downloadHandler.text}");
             }
+
             request.Dispose();
         };
 

@@ -1,11 +1,8 @@
 {
-  "name": "TheGraph",
+  "name": "TheGraphInterfaces",
   "rootNamespace": "",
   "references": [
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:e9cee4050cfa5534d9b26e2782df20be",
-    "GUID:e99faafecbf8dd74d8130597511b9b27",
-    "GUID:75c2f974443a1fc4795b5687b5e725ef"
+    "GUID:e99faafecbf8dd74d8130597511b9b27"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
