@@ -13,6 +13,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnRotateSelectedAction;
     public event Action OnScaleSelectedAction;
     public event Action OnResetAction;
+    public event Action OnResetCameraAction;
     public event Action OnUndoAction;
     public event Action OnRedoAction;
     public event Action OnDuplicateSelectedAction;
@@ -172,6 +173,7 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.extraActionsController.OnHideUIClick += ChangeVisibilityOfUI;
         controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
+        controllers.topActionsButtonsController.extraActionsController.OnResetCameraClick += () => OnResetCameraAction?.Invoke();
     }
 
     private void ConfigureCatalogItemDropController()
