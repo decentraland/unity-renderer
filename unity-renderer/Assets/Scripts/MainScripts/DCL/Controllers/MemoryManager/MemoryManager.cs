@@ -1,5 +1,3 @@
-using System;
-using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,12 +5,6 @@ using UnityEngine.Profiling;
 
 namespace DCL
 {
-    public interface IMemoryManager : IDisposable
-    {
-        void Initialize();
-        IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false, bool immediate = false);
-    }
-
     public class MemoryManager : IMemoryManager
     {
         private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
@@ -22,7 +14,13 @@ namespace DCL
 
         private Coroutine autoCleanupCoroutine;
 
-        public void Initialize() { autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup()); }
+        private IParcelScenesCleaner parcelScenesCleaner;
+
+        public void Initialize(IParcelScenesCleaner parcelScenesCleaner)
+        {
+            this.parcelScenesCleaner = parcelScenesCleaner;
+            autoCleanupCoroutine = CoroutineStarter.Start(AutoCleanup());
+        }
 
         public void Dispose()
         {
@@ -42,7 +40,7 @@ namespace DCL
         {
             if (isEnable)
             {
-                Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+                parcelScenesCleaner.ForceCleanup();
                 Resources.UnloadUnusedAssets();
             }
         }

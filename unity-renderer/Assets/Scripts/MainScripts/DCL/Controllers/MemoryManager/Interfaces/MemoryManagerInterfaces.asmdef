@@ -1,0 +1,16 @@
+{
+  "name": "MemoryManagerInterfaces",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4bca15ec88eae72498e62f9a5c04bcf1"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

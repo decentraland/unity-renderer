@@ -1,4 +1,3 @@
-using System;
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
@@ -8,16 +7,6 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public interface IParcelScenesCleaner : IDisposable
-    {
-        void Start();
-        void Stop();
-        void MarkForCleanup(IDCLEntity entity);
-        void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity);
-        void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId);
-        void ForceCleanup();
-    }
-
     public class ParcelScenesCleaner : IParcelScenesCleaner
     {
         const float MAX_TIME_BUDGET = 0.01f;
@@ -80,9 +69,9 @@ namespace DCL
 
         // When removing all entities from a scene, we need to separate the root entities, as stated in ParcelScene,
         // to avoid traversing a lot of child entities in the same frame and other problems
-        public void MarkRootEntityForCleanup(ParcelScene scene, IDCLEntity entity) { rootEntitiesMarkedForCleanup.Enqueue(new MarkedEntityInfo(scene, entity)); }
+        public void MarkRootEntityForCleanup(IParcelScene scene, IDCLEntity entity) { rootEntitiesMarkedForCleanup.Enqueue(new MarkedEntityInfo((ParcelScene)scene, entity)); }
 
-        public void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId) { disposableComponentsMarkedForCleanup.Enqueue(new MarkedSharedComponentInfo(scene, componentId)); }
+        public void MarkDisposableComponentForCleanup(IParcelScene scene, string componentId) { disposableComponentsMarkedForCleanup.Enqueue(new MarkedSharedComponentInfo((ParcelScene)scene, componentId)); }
 
         public void ForceCleanup()
         {
