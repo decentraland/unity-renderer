@@ -6,39 +6,6 @@ using DCL;
 using DCL.Helpers;
 using Variables.RealmsInfo;
 
-/// <summary>
-/// GET Entities from connected Catalyst
-/// </summary>
-public interface ICatalyst : IDisposable
-{
-    /// <summary>
-    /// url for content server
-    /// </summary>
-    public string contentUrl { get; }
-
-    /// <summary>
-    /// get scenes deployed in parcels
-    /// </summary>
-    /// <param name="parcels">parcels to get scenes from</param>
-    /// <returns>promise of an array of scenes entities</returns>
-    Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels);
-
-    /// <summary>
-    /// get entities of entityType
-    /// </summary>
-    /// <param name="entityType">type of the entity to fetch. see CatalystEntitiesType class</param>
-    /// <param name="pointers">pointers to fetch</param>
-    /// <returns>promise of a string containing catalyst response json</returns>
-    Promise<string> GetEntities(string entityType, string[] pointers);
-
-    /// <summary>
-    /// wraps a WebRequest inside a promise and cache it result
-    /// </summary>
-    /// <param name="url">url to make the request to</param>
-    /// <returns>promise of the server response</returns>
-    Promise<string> Get(string url);
-}
-
 public class Catalyst : ICatalyst
 {
     private const float CACHE_TIME = 5 * 60;
