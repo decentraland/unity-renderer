@@ -10,6 +10,7 @@ public interface ICatalogBtnController
     void Click();
     void ShowTooltip(BaseEventData eventData, string tooltipText);
     void HideTooltip();
+    void SetActive(bool isActive);
 }
 
 public class CatalogBtnController : ICatalogBtnController
@@ -45,4 +46,6 @@ public class CatalogBtnController : ICatalogBtnController
     }
 
     public void HideTooltip() { tooltipController.HideTooltip(); }
+
+    public void SetActive(bool isActive) { catalogBtnView.SetActive(isActive); }
 }

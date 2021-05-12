@@ -395,9 +395,23 @@ public class BuildModeHUDController : IHUD
 
     public void EntityInformationSetEntity(DCLBuilderInWorldEntity entity, ParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
 
-    public void ShowEntityInformation() { controllers.entityInformationController.Enable(); }
+    public void ShowEntityInformation(bool activateTransparencyMode = false)
+    {
+        controllers.entityInformationController.Enable();
+        controllers.entityInformationController.SetTransparencyMode(activateTransparencyMode);
+        controllers.catalogBtnController.SetActive(false);
+        controllers.sceneCatalogController.CloseCatalog();
+        controllers.tooltipController.HideTooltip();
+    }
 
-    public void HideEntityInformation() { controllers.entityInformationController.Disable(); }
+    public void HideEntityInformation()
+    {
+        controllers.entityInformationController.Disable();
+        controllers.catalogBtnController.SetActive(true);
+
+        if (isCatalogOpen)
+            controllers.sceneCatalogController.SetActive(true);
+    }
 
     #endregion
 

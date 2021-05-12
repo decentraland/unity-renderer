@@ -2535,7 +2535,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9164274516587283706}
   m_HandleRect: {fileID: 9164274516587283707}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3778,6 +3778,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9164274516819457004}
   - component: {fileID: 3044571813177970572}
+  - component: {fileID: 776511985520277114}
   m_Layer: 5
   m_Name: SceneCatalogView
   m_TagString: Untagged
@@ -3819,6 +3820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe74cb22466a6c479568eedc95801ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 776511985520277114}
   catalogTitleTxt: {fileID: 9164274516171179723}
   catalogAssetPackListView: {fileID: 8285016998033159335}
   catalogGroupListView: {fileID: 9164274516264469572}
@@ -3843,6 +3845,18 @@ MonoBehaviour:
   headerMaxSizeRT: {fileID: 7325014198224996165}
   searchBarMaxSizeRT: {fileID: 1540469098558659209}
   assetPackMaxSizeRT: {fileID: 3380481578103879011}
+--- !u!225 &776511985520277114
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9164274516819457005}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &9164274516946305849
 GameObject:
   m_ObjectHideFlags: 0

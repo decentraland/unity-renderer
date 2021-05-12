@@ -28,6 +28,7 @@ public interface IEntityInformationController
     void Disable();
     void UpdateInfo(DCLBuilderInWorldEntity entity);
     void UpdateEntitiesSelection(int numberOfSelectedEntities);
+    void SetTransparencyMode(bool isOn);
 }
 
 public class EntityInformationController : IEntityInformationController
@@ -226,4 +227,6 @@ public class EntityInformationController : IEntityInformationController
     }
 
     public void UpdateEntitiesSelection(int numberOfSelectedEntities) { entityInformationView.UpdateEntitiesSelection(numberOfSelectedEntities); }
+
+    public void SetTransparencyMode(bool isOn) { entityInformationView.SetTransparencyMode(isOn ? 0.5f : 1f, !isOn); }
 }
