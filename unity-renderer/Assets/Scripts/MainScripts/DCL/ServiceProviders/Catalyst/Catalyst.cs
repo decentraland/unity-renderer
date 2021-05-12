@@ -58,6 +58,7 @@ public class Catalyst : ICatalyst
             realmDomain = DataStore.i.playerRealm.Get().domain;
             realmContentServerUrl = DataStore.i.playerRealm.Get().contentServerUrl;
         }
+
         DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
@@ -86,6 +87,7 @@ public class Catalyst : ICatalyst
 
                         noDuplicates.Add(sceneToCheck);
                     }
+
                     scenes = noDuplicates.ToArray();
                 }
                 catch (Exception e)
@@ -164,6 +166,7 @@ public class Catalyst : ICatalyst
                         string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
                         json += $",{jsonContent}";
                     }
+
                     promise.Resolve($"[{json}]");
                 });
             splittedPromises[i].Catch(error => promise.Reject(error));

@@ -1,22 +1,23 @@
 {
-    "name": "UnityGLTFAssembly",
-    "references": [
-        "CoroutineHelpers",
-        "MaterialTransitionController",
-        "ILoader",
-        "Utils",
-        "SRPBatchingHelper",
-        "ScriptableObjects",
-        "TextureHelpers",
-        "WebRequest"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": true,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "UnityGLTFAssembly",
+  "references": [
+    "CoroutineHelpers",
+    "MaterialTransitionController",
+    "ILoader",
+    "Utils",
+    "SRPBatchingHelper",
+    "ScriptableObjects",
+    "TextureHelpers",
+    "WebRequest",
+    "WebRequestControllerInterfaces"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

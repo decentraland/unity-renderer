@@ -66,6 +66,7 @@ public class GifProcessor
                     fetchFailed = true;
                     return;
                 }
+
                 OnSuccess?.Invoke(newTextures);
             }, () => fetchFailed = true);
 
