@@ -32,7 +32,7 @@ public class BlockersControllerShould
         animationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
         var newBlockerInstanceHandler = new BlockerInstanceHandler();
-        newBlockerInstanceHandler.Initialize(animationHandler);
+        newBlockerInstanceHandler.Initialize(animationHandler, null);
 
         blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();
