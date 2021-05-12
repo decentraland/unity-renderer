@@ -1,5 +1,6 @@
 using DCL;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class NFTPromptHUDController : IHUD
 {

@@ -41,9 +41,12 @@ namespace DCL
             {
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
-                Environment.SetupWithBuilders(worldRuntimeBuilder: RuntimeContextBuilder);
+                Environment.SetupWithBuilders(
+                    messagingBuilder: MessagingContextFactory.CreateDefault,
+                    platformBuilder: PlatformContextFactory.CreateDefault,
+                    worldRuntimeBuilder: RuntimeContextBuilder);
             }
-            
+
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR

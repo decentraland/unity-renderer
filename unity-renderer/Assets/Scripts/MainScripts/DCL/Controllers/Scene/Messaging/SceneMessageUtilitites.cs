@@ -4,7 +4,6 @@ public class SceneMessageUtilities
 {
     public static bool DecodePayloadChunk(string chunk, out string sceneId, out string message, out string tag)
     {
-
         sceneId = message = tag = null;
 
         var separatorPosition = chunk.IndexOf('\t');
