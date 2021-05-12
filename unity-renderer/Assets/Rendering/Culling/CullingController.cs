@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -10,23 +9,6 @@ using static DCL.Rendering.CullingControllerUtils;
 
 namespace DCL.Rendering
 {
-    public interface ICullingController : IDisposable
-    {
-        void Start();
-        void Stop();
-        void MarkDirty();
-        void SetSettings(CullingControllerSettings settings);
-        CullingControllerSettings GetSettingsCopy();
-        void SetObjectCulling(bool enabled);
-        void SetAnimationCulling(bool enabled);
-        void SetShadowCulling(bool enabled);
-        bool IsRunning();
-
-        bool IsDirty();
-        ICullingObjectsTracker objectsTracker { get; }
-        event CullingController.DataReport OnDataReport;
-    }
-
     /// <summary>
     /// CullingController has the following responsibilities:
     /// - Hides small renderers (detail objects).
@@ -52,9 +34,7 @@ namespace DCL.Rendering
         private bool objectPositionsDirty;
         private bool running = false;
 
-        public delegate void DataReport(int rendererCount, int hiddenRendererCount, int hiddenShadowCount);
-
-        public event DataReport OnDataReport;
+        public event ICullingController.DataReport OnDataReport;
 
         public static CullingController Create()
         {

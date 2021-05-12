@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
 {
-    public interface ICullingObjectsTracker : IDisposable
-    {
-        void MarkDirty();
-        bool IsDirty();
-        Renderer[] GetRenderers();
-        SkinnedMeshRenderer[] GetSkinnedRenderers();
-        Animation[] GetAnimations();
-        IEnumerator PopulateRenderersList();
-    }
-
     /// <summary>
     /// This class is used for tracking all the renderers, skinnedMeshRenderers and Animations of the world.
     ///
