@@ -36,7 +36,7 @@ public class BlockerHandlerCan
         blockerAnimationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
         var newBlockerInstanceHandler = new BlockerInstanceHandler();
-        newBlockerInstanceHandler.Initialize(blockerAnimationHandler);
+        newBlockerInstanceHandler.Initialize(blockerAnimationHandler, null);
 
         blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();

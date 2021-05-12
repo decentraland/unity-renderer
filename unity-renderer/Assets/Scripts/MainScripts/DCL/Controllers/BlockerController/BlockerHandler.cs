@@ -3,20 +3,12 @@ using DCL.Configuration;
 using DCL.Helpers;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Rendering;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace DCL.Controllers
 {
-    public interface IBlockerInstanceHandler
-    {
-        void DestroyAllBlockers();
-        Dictionary<Vector2Int, IPoolableObject> GetBlockers();
-        void HideBlocker(Vector2Int coords, bool instant = false);
-        void ShowBlocker(Vector2Int pos, bool instant = false);
-        void SetParent(Transform parent);
-    }
-
     /// <summary>
     /// This class is the loading blockers composite and instancing handler.
     /// <br/>
@@ -37,9 +29,14 @@ namespace DCL.Controllers
         Dictionary<Vector2Int, IPoolableObject> blockers = new Dictionary<Vector2Int, IPoolableObject>();
 
         private IBlockerAnimationHandler animationHandler;
+        private ICullingController cullingController;
         private Transform parent;
 
-        public void Initialize(IBlockerAnimationHandler animationHandler) { this.animationHandler = animationHandler; }
+        public void Initialize(IBlockerAnimationHandler animationHandler, ICullingController cullingController)
+        {
+            this.cullingController = cullingController;
+            this.animationHandler = animationHandler;
+        }
 
         public BlockerInstanceHandler()
         {
@@ -92,7 +89,7 @@ namespace DCL.Controllers
             if (!instant)
                 animationHandler.FadeIn(blockerGo);
 
-            Environment.i.platform.cullingController.MarkDirty();
+            cullingController?.MarkDirty();
         }
 
         private void EnsureBlockerPool()

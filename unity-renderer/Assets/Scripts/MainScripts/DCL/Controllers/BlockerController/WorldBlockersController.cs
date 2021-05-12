@@ -1,18 +1,10 @@
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCL.Rendering;
 using UnityEngine;
 
 namespace DCL.Controllers
 {
-    public interface IWorldBlockersController
-    {
-        void Initialize(ISceneHandler sceneHandler, IBlockerInstanceHandler blockerInstanceHandler);
-        void InitializeWithDefaultDependencies(ISceneHandler sceneHandler);
-        void SetupWorldBlockers();
-        void SetEnabled(bool targetValue);
-        void Dispose();
-    }
-
     /// <summary>
     /// This class is the domain-specific glue for BlockerInstanceHandler.
     /// <br/><br/>
@@ -71,20 +63,21 @@ namespace DCL.Controllers
             blockersParent.position = Vector3.zero;
         }
 
-        public static WorldBlockersController CreateWithDefaultDependencies(ISceneHandler sceneHandler)
+        public static WorldBlockersController CreateWithDefaultDependencies(ISceneHandler sceneHandler, ICullingController cullingController)
         {
             var worldBlockersController = new WorldBlockersController();
-            worldBlockersController.InitializeWithDefaultDependencies(sceneHandler);
+            worldBlockersController.InitializeWithDefaultDependencies(sceneHandler, cullingController);
             return worldBlockersController;
         }
 
-        public void InitializeWithDefaultDependencies(ISceneHandler sceneHandler)
+        public void InitializeWithDefaultDependencies(ISceneHandler sceneHandler, ICullingController cullingController)
         {
             var blockerAnimationHandler = new BlockerAnimationHandler();
             var blockerInstanceHandler = new BlockerInstanceHandler();
 
             blockerInstanceHandler.Initialize(
-                blockerAnimationHandler
+                blockerAnimationHandler,
+                cullingController
             );
 
             Initialize(
