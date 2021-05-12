@@ -54,7 +54,7 @@ public class BlockersControllerShould
     {
         // Arrange
         blockerInstanceHandler = Substitute.For<IBlockerInstanceHandler>();
-        blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, PoolableObject>());
+        blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, IPoolableObject>());
 
         if (blockerController != null)
             blockerController.Dispose();

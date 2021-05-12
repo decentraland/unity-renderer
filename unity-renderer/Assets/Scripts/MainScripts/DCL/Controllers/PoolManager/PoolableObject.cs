@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class PoolableObject
+    public class PoolableObject : IPoolableObject
     {
         public Pool pool;
         public LinkedListNode<PoolableObject> node;
-        public GameObject gameObject;
+        public GameObject gameObject { get; }
 
         public bool isInsidePool { get { return node != null; } }
 
-        public System.Action OnGet;
-        public System.Action OnRelease;
+        public event System.Action OnGet;
+        public event System.Action OnRelease;
 
         private IPoolLifecycleHandler[] lifecycleHandlers = null;
 
@@ -77,6 +77,8 @@ namespace DCL
 
             OnPoolRelease();
         }
+
+        public void RemoveFromPool() { pool.RemoveFromPool(this); }
 
         public void OnCleanup(DCL.ICleanableEventDispatcher sender)
         {

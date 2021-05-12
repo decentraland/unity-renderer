@@ -52,7 +52,7 @@ namespace DCL
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
-                poolableObject.pool.RemoveFromPool(poolableObject);
+                poolableObject.RemoveFromPool();
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)

@@ -11,7 +11,7 @@ namespace DCL.Controllers
     public interface IBlockerInstanceHandler
     {
         void DestroyAllBlockers();
-        Dictionary<Vector2Int, PoolableObject> GetBlockers();
+        Dictionary<Vector2Int, IPoolableObject> GetBlockers();
         void HideBlocker(Vector2Int coords, bool instant = false);
         void ShowBlocker(Vector2Int pos, bool instant = false);
         void SetParent(Transform parent);
@@ -34,7 +34,7 @@ namespace DCL.Controllers
         Vector3 auxPosVec = new Vector3();
         Vector3 auxScaleVec = new Vector3();
 
-        Dictionary<Vector2Int, PoolableObject> blockers = new Dictionary<Vector2Int, PoolableObject>();
+        Dictionary<Vector2Int, IPoolableObject> blockers = new Dictionary<Vector2Int, IPoolableObject>();
 
         private IBlockerAnimationHandler animationHandler;
         private Transform parent;
@@ -134,7 +134,7 @@ namespace DCL.Controllers
             blockers.Remove(coords);
         }
 
-        public Dictionary<Vector2Int, PoolableObject> GetBlockers() { return new Dictionary<Vector2Int, PoolableObject>(blockers); }
+        public Dictionary<Vector2Int, IPoolableObject> GetBlockers() { return new Dictionary<Vector2Int, IPoolableObject>(blockers); }
 
         public void DestroyAllBlockers()
         {

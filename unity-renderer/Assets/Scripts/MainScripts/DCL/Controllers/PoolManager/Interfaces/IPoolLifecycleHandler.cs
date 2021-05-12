@@ -2,7 +2,7 @@
 {
     public interface IPoolableObjectContainer
     {
-        PoolableObject poolableObject { get; set; }
+        IPoolableObject poolableObject { get; set; }
     }
 
     public interface IPoolLifecycleHandler
