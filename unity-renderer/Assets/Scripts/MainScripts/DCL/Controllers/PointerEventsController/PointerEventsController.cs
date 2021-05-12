@@ -12,14 +12,6 @@ using Ray = UnityEngine.Ray;
 
 namespace DCL
 {
-    public interface IPointerEventsController
-    {
-        void Initialize();
-        void Update();
-        void Cleanup();
-        Ray GetRayFromCamera();
-    }
-
     public class PointerEventsController : IPointerEventsController
     {
         private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
