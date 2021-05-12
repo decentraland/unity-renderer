@@ -193,7 +193,7 @@ internal class SectionLandController : SectionBase, ILandsListener, ISectionOpen
 
         if (!isEstate)
         {
-            return MapUtils.GetMarketPlaceThumbnailUrl(new[] { land.@base }, width, height, sizeFactorParcel);
+            return MapUtils.GetMarketPlaceThumbnailUrl(new[] { land.baseCoords }, width, height, sizeFactorParcel);
         }
 
         return MapUtils.GetMarketPlaceThumbnailUrl(land.parcels, width, height, sizeFactorEstate);

@@ -27,7 +27,7 @@ namespace Tests
             ITheGraph theGraph = Substitute.For<ITheGraph>();
             theGraph.Query(Arg.Any<string>(), Arg.Any<string>()).Returns(new Promise<string>());
             theGraph.Query(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<QueryVariablesBase>()).Returns(new Promise<string>());
-            theGraph.QueryLands(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<TheGraphCache>()).Returns(new Promise<List<Land>>());
+            theGraph.QueryLands(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<float>()).Returns(new Promise<List<Land>>());
 
             ICatalyst catalyst = Substitute.For<ICatalyst>();
             catalyst.contentUrl.Returns(string.Empty);
