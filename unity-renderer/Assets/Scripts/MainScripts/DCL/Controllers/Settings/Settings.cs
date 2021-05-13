@@ -176,7 +176,7 @@ namespace DCL.SettingsData
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
         public bool autoqualityOn;
-        public float scenesLoadRadius; // move to "Performance" settings? <---- IF WE DECLARE THIS AS AN INT EVERYTHING BREAKS XD
+        public float scenesLoadRadius;
 
         public bool Equals(GeneralSettings settings)
         {
