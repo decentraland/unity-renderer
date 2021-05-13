@@ -37,6 +37,8 @@ namespace DCL
             public MappingPair[] EP_12;
         }
 
+        private const string KERNEL_RELATIVE_PATH = "/../../../explorer/kernel"; // This has to be set manually according to the local paths 
+
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Default Empty Parcels")]
         public static void DumpEmptyParcels_Default() { DumpEmptyParcels(); }
 
@@ -45,10 +47,9 @@ namespace DCL
 
         public static void DumpEmptyParcels(string folderName = "empty-scenes")
         {
-            // The paths in this method work if the unity-renderer repo is at the same location as the explorer repo
             string indexJsonPath = Application.dataPath;
 
-            indexJsonPath += $"/../../../explorer/kernel/static/loader/{folderName}/index.json";
+            indexJsonPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}/index.json";
 
             if (!File.Exists(indexJsonPath))
             {
