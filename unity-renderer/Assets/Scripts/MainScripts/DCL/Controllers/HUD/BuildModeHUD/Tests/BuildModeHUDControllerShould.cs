@@ -359,13 +359,19 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void ShowEntityInformationCorrectly()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShowEntityInformationCorrectly(bool activateTransparencyMode)
         {
             // Act
-            buildModeHUDController.ShowEntityInformation();
+            buildModeHUDController.ShowEntityInformation(activateTransparencyMode);
 
             // Assert
             buildModeHUDController.controllers.entityInformationController.Received(1).Enable();
+            buildModeHUDController.controllers.entityInformationController.Received(1).SetTransparencyMode(activateTransparencyMode);
+            buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(false);
+            buildModeHUDController.controllers.sceneCatalogController.Received(1).CloseCatalog();
+            buildModeHUDController.controllers.tooltipController.Received(1).HideTooltip();
         }
 
         [Test]
@@ -376,6 +382,10 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             buildModeHUDController.controllers.entityInformationController.Received(1).Disable();
+            buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(true);
+
+            if (buildModeHUDController.isCatalogOpen)
+                buildModeHUDController.controllers.sceneCatalogController.Received(1).SetActive(true);
         }
 
         [Test]

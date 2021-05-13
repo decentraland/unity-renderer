@@ -284,5 +284,17 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             entityInformationController.entityInformationView.Received(1).UpdateEntitiesSelection(numberOfSelectedEntities);
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetTransparencyModeCorrectly(bool isOn)
+        {
+            // Act
+            entityInformationController.SetTransparencyMode(isOn);
+
+            // Assert
+            entityInformationController.entityInformationView.Received(1).SetTransparencyMode(Arg.Any<float>(), !isOn);
+        }
     }
 }

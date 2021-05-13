@@ -214,5 +214,17 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             sceneCatalogController.sceneCatalogView.Received(1).CloseCatalog();
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetActiveCorrectly(bool isActive)
+        {
+            // Act
+            sceneCatalogController.SetActive(isActive);
+
+            // Assert
+            sceneCatalogController.sceneCatalogView.Received(1).SetActive(isActive);
+        }
     }
 }
