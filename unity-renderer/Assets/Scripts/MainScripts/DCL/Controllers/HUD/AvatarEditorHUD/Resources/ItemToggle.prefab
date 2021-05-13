@@ -181,7 +181,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3732952437850294241
 RectTransform:
   m_ObjectHideFlags: 0
@@ -444,7 +444,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -688,6 +688,7 @@ MonoBehaviour:
   warningPanel: {fileID: 4651792722663187417}
   loadingSpinner: {fileID: 7790791293881880012}
   amountContainer: {fileID: 2922434554356887328}
+  loadingAnimator: {fileID: 8170687855033203491}
   amountText: {fileID: 273831658183650843}
 --- !u!114 &4264371991600695318
 MonoBehaviour:
