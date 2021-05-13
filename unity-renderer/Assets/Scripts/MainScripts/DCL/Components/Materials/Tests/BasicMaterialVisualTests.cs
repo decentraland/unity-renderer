@@ -65,4 +65,31 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
+
+    [UnityTest]
+    [VisualTest]
+    [Explicit]
+    public IEnumerator StandardConfigurations_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(StandardConfigurations()); }
+
+    [UnityTest]
+    [VisualTest]
+    public IEnumerator StandardConfigurations()
+    {
+        yield return InitVisualTestsScene("BasicMaterialVisualTests_StandardConfigurations");
+
+        Vector3 camTarget = new Vector3(8, 3, 8);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(9, 4, 17), camTarget);
+
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
+            new LoadableShape.Model
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/MaterialsScene.glb"
+            }, out IDCLEntity entity);
+        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(0, 0, 8), rotation = Quaternion.Euler(90, 180, 0) });
+
+        LoadWrapper loader = GLTFShape.GetLoaderForEntity(entity);
+        yield return new WaitUntil(() => loader.alreadyLoaded);
+
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
 }

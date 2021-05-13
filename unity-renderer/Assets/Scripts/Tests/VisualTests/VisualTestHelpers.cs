@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Experimental.Rendering;
 
 namespace DCL.Helpers
 {
@@ -127,13 +128,22 @@ namespace DCL.Helpers
             // We should only read the screen buffer after rendering is complete
             yield return null;
 
-            RenderTexture renderTexture = new RenderTexture(width, height, 24);
+            RenderTexture renderTexture = new RenderTexture(width, height, 32, RenderTextureFormat.DefaultHDR, RenderTextureReadWrite.sRGB);
             camera.targetTexture = renderTexture;
             camera.Render();
 
             RenderTexture.active = renderTexture;
-            Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGB24, false);
+            Texture2D currentSnapshot = new Texture2D(width, height, TextureFormat.RGBAFloat, false);
             currentSnapshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+
+            // Apply Gamma color space
+            var pixels = currentSnapshot.GetPixels();
+            for (int index = 0; index < pixels.Length; index++)
+            {
+                pixels[index] = new Color( Mathf.LinearToGammaSpace(pixels[index].r), Mathf.LinearToGammaSpace(pixels[index].g), Mathf.LinearToGammaSpace(pixels[index].b));
+            }
+            currentSnapshot.SetPixels(pixels);
+
             currentSnapshot.Apply();
 
             yield return null;
