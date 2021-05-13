@@ -833,7 +833,7 @@ MonoBehaviour:
   keyboardMovementSpeed: 15
   lookSpeedH: 2.5
   lookSpeedV: 2.5
-  zoomSpeed: 10
+  zoomSpeed: 15
   dragSpeed: 15
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
