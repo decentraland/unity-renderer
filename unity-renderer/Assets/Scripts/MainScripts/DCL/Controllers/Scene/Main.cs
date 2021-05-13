@@ -2,7 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Serialization;
 
