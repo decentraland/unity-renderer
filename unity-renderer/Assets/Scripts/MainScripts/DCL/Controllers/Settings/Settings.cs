@@ -112,7 +112,7 @@ namespace DCL
             {
                 sfxVolume = 1,
                 mouseSensitivity = 0.6f,
-                scenesLoadRadius = 10,
+                scenesLoadRadius = 4,
                 voiceChatVolume = 1,
                 voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false
