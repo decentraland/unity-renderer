@@ -7,26 +7,21 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public enum TheGraphCache
-{
-    DontUseCache,
-    UseCache
-}
-
-public interface ITheGraph
+public interface ITheGraph : IDisposable
 {
     Promise<string> Query(string url, string query);
     Promise<string> Query(string url, string query, QueryVariablesBase variables);
-    Promise<List<Land>> QueryLands(string tld, string address, TheGraphCache cache);
+    Promise<List<Land>> QueryLands(string tld, string address);
+    Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds);
 }
 
 public class TheGraph : ITheGraph
 {
-    private const float CACHE_TIME = 5 * 60;
+    private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
     private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-ropsten";
 
-    private readonly Dictionary<string, QueryLandCache> landQueryCache = new Dictionary<string, QueryLandCache>();
+    private readonly IDataCache<List<Land>> landQueryCache = new DataCache<List<Land>>();
 
     public Promise<string> Query(string url, string query) { return Query(url, query, null); }
 
@@ -70,19 +65,21 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
-    public Promise<List<Land>> QueryLands(string tld, string address, TheGraphCache cache = TheGraphCache.UseCache)
+    public Promise<List<Land>> QueryLands(string tld, string address) { return QueryLands(tld, address, DEFAULT_CACHE_TIME); }
+
+    public Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds)
     {
         string lowerCaseAddress = address.ToLower();
 
         Promise<List<Land>> promise = new Promise<List<Land>>();
 
-        if (cache == TheGraphCache.UseCache)
+        if (cacheMaxAgeSeconds >= 0)
         {
-            if (landQueryCache.TryGetValue(lowerCaseAddress, out QueryLandCache cacheValue))
+            if (landQueryCache.TryGet(lowerCaseAddress, out List<Land> cacheValue, out float lastUpdate))
             {
-                if (Time.unscaledTime - cacheValue.lastUpdate <= CACHE_TIME)
+                if (Time.unscaledTime - lastUpdate <= cacheMaxAgeSeconds)
                 {
-                    promise.Resolve(cacheValue.lands);
+                    promise.Resolve(cacheValue);
                     return promise;
                 }
             }
@@ -100,6 +97,8 @@ public class TheGraph : ITheGraph
         return promise;
     }
 
+    public void Dispose() { landQueryCache.Dispose(); }
+
     private void ProcessReceivedLandsData(Promise<List<Land>> landPromise, string jsonValue, string lowerCaseAddress, bool cache)
     {
         bool hasException = false;
@@ -112,7 +111,7 @@ public class TheGraph : ITheGraph
 
             if (cache)
             {
-                landQueryCache[lowerCaseAddress] = new QueryLandCache() { lands = lands, lastUpdate = Time.unscaledTime };
+                landQueryCache.Add(lowerCaseAddress, lands, DEFAULT_CACHE_TIME);
             }
         }
         catch (Exception exception)
@@ -128,10 +127,4 @@ public class TheGraph : ITheGraph
             }
         }
     }
-}
-
-internal class QueryLandCache
-{
-    public List<Land> lands;
-    public float lastUpdate;
 }

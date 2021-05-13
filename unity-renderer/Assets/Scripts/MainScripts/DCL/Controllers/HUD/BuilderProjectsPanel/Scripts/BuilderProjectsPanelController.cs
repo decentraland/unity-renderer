@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
@@ -14,6 +14,10 @@ public class BuilderProjectsPanelController : IHUD
     private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
+
+    private const float CACHE_TIME_LAND = 5 * 60;
+    private const float CACHE_TIME_SCENES = 1 * 60;
+    private const float REFRESH_INTERVAL = 2 * 60;
 
     internal readonly IBuilderProjectsPanelView view;
 
@@ -30,6 +34,8 @@ public class BuilderProjectsPanelController : IHUD
     private ICatalyst catalyst;
 
     private bool isInitialized = false;
+    private bool isFetching = false;
+    private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
     public BuilderProjectsPanelController() : this(
@@ -43,6 +49,8 @@ public class BuilderProjectsPanelController : IHUD
 
     public void Dispose()
     {
+        StopFetchInterval();
+
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         view.OnClosePressed -= OnClose;
 
@@ -116,7 +124,12 @@ public class BuilderProjectsPanelController : IHUD
         if (isVisible)
         {
             FetchLandsAndScenes();
+            StartFetchInterval();
             sectionsController.OpenSection(SectionId.SCENES_DEPLOYED);
+        }
+        else
+        {
+            StopFetchInterval();
         }
     }
 
@@ -130,6 +143,11 @@ public class BuilderProjectsPanelController : IHUD
 
     private void FetchLandsAndScenes()
     {
+        if (isFetching)
+            return;
+
+        isFetching = true;
+
         var address = UserProfile.GetOwnUserProfile().ethAddress;
         var tld = KernelConfig.i.Get().tld;
 
@@ -149,11 +167,12 @@ public class BuilderProjectsPanelController : IHUD
 
         sectionsController.SetFetchingDataStart();
 
-        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld);
+        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, CACHE_TIME_LAND, CACHE_TIME_SCENES);
         fetchLandPromise
             .Then(lands =>
             {
                 sectionsController.SetFetchingDataEnd();
+                isFetching = false;
 
                 try
                 {
@@ -173,6 +192,7 @@ public class BuilderProjectsPanelController : IHUD
             })
             .Catch(error =>
             {
+                isFetching = false;
                 sectionsController.SetFetchingDataEnd();
                 landsController.SetLands(new LandWithAccess[] { });
                 scenesViewController.SetScenes(new ISceneData[] { });
@@ -194,6 +214,31 @@ public class BuilderProjectsPanelController : IHUD
         if (isGoingToTeleport)
         {
             SetVisibility(false);
+        }
+    }
+
+    private void StartFetchInterval()
+    {
+        if (fetchDataInterval != null)
+        {
+            StopFetchInterval();
+        }
+
+        fetchDataInterval = CoroutineStarter.Start(RefreshDataInterval());
+    }
+
+    private void StopFetchInterval()
+    {
+        CoroutineStarter.Stop(fetchDataInterval);
+        fetchDataInterval = null;
+    }
+
+    IEnumerator RefreshDataInterval()
+    {
+        while (true)
+        {
+            yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
+            FetchLandsAndScenes();
         }
     }
 }
