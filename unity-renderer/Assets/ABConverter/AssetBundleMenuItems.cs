@@ -76,7 +76,7 @@ namespace DCL
             mappings.AddRange(es.EP_12);
 
             string emptyScenesResourcesPath = Application.dataPath;
-            emptyScenesResourcesPath += $"/../../../explorer/kernel/static/loader/{folderName}";
+            emptyScenesResourcesPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}";
 
             string customBaseUrl = "file://" + emptyScenesResourcesPath;
 
