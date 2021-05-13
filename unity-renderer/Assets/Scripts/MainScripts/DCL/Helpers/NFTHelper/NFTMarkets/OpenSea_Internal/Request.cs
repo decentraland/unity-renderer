@@ -34,6 +34,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             {
                 group = CreateNewGroup();
             }
+
             return group.AddRequest(assetContractAddress, tokenId);
         }
 
@@ -66,6 +67,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             {
                 delayRequest += Math.Abs(timeSinceLastApiRequest);
             }
+
             lastApiRequestTime = Time.unscaledTime + delayRequest;
             return delayRequest;
         }
@@ -103,6 +105,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
                 requests.Add(key, value);
                 requestUrl += value.ToString() + "&";
             }
+
             this.getRetryDelay = getRetryDelay;
             fetchRoutine = CoroutineStarter.Start(Fetch(delayRequest));
         }
@@ -146,7 +149,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
                 // NOTE(Santi): In this case, as this code is implementing a very specific retries system (including delays), we use our
                 //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
-                WebRequestAsyncOperation asyncOp = WebRequestController.i.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
+                WebRequestAsyncOperation asyncOp = DCL.Environment.i.platform.webRequest.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
                 yield return asyncOp;
 
                 AssetsResponse response = null;
@@ -283,7 +286,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
                 // NOTE(Santi): In this case, as this code is implementing a very specific retries system (including delays), we use our
                 //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
-                WebRequestAsyncOperation requestOp = WebRequestController.i.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
+                WebRequestAsyncOperation requestOp = DCL.Environment.i.platform.webRequest.Get(url: url, requestAttemps: 1, disposeOnCompleted: false);
                 yield return requestOp;
 
                 AssetsResponse response = null;
@@ -359,12 +362,14 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
                     break;
                 }
             }
+
             if (assetResponse == null)
             {
                 error = $"asset {assetContractAddress}/{tokenId} not found in api response";
                 if (OpenSeaRequestController.VERBOSE)
                     Debug.Log($"Request: for {assetContractAddress}/{tokenId} not found {JsonUtility.ToJson(response)}");
             }
+
             resolved = true;
         }
 
@@ -390,5 +395,4 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
         public override string ToString() { return $"asset_contract_addresses={assetContractAddress}&token_ids={tokenId}"; }
     }
-
 }

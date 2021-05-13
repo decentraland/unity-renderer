@@ -1,10 +1,12 @@
 {
   "name": "NFTHelper",
+  "rootNamespace": "",
   "references": [
     "GUID:b1087c5731ff68448a0a9c625bb7e52d",
     "GUID:760a1d365aad58044916992b072cf2a6",
     "GUID:e9cee4050cfa5534d9b26e2782df20be",
-    "GUID:ee6523961ef177343ad763fcd55c7c46"
+    "GUID:ee6523961ef177343ad763fcd55c7c46",
+    "GUID:fbcc413e192ef9048811d47ab0aca0c0"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

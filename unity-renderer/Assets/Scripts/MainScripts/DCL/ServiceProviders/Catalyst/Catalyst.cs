@@ -152,7 +152,7 @@ public class Catalyst : ICatalyst
             return promise;
         }
 
-        WebRequestController.i.Get(url, null , request =>
+        DCL.Environment.i.platform.webRequest.Get(url, null , request =>
         {
             AddToCache(url, request.downloadHandler.text);
             promise.Resolve(request.downloadHandler.text);
