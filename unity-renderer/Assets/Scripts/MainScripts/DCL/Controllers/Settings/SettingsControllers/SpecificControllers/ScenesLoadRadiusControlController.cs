@@ -1,5 +1,4 @@
 ﻿using DCL.Interface;
-using DCL.SettingsController;
 using UnityEngine;
 
 namespace DCL.SettingsControls
@@ -11,9 +10,7 @@ namespace DCL.SettingsControls
         {
             base.Initialize();
 
-            Debug.Log("PRAVS - ScenesLoadRadiusControlController initializing...");
             UpdateSetting(Settings.i.generalSettings.scenesLoadRadius);
-            // Settings.i.OnGeneralSettingsLoaded += (generalSettings) => UpdateSetting(generalSettings.scenesLoadRadius);
         }
 
         public override object GetStoredValue() { return currentGeneralSettings.scenesLoadRadius; }

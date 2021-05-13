@@ -49,13 +49,10 @@ namespace DCL
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = true;
+            Debug.unityLogger.logEnabled = false;
 
             worldEntryPoint = new EntryPoint_World(Environment.i.world.sceneController);
 #endif
-
-            Debug.Log("PRAVS - Finished Main AWAKE");
-            // WebInterface.SetScenesLoadRadius(Settings.i.generalSettings.scenesLoadRadius);
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
             // We should re-enable this later as produces a performance regression.
