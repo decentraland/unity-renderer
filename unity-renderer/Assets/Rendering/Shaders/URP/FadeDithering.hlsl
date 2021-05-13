@@ -1,10 +1,8 @@
 #ifndef DCL_FADE_DITHERING_INCLUDED
 #define DCL_FADE_DITHERING_INCLUDED
 
-
 float4 fadeDithering(float4 color, float3 positionWS, float4 positionSS)
 {
-	const float SURFACE_OPAQUE = 0;
 	bool insideFadeThreshold;
 	float3 worldPos = positionWS;
 

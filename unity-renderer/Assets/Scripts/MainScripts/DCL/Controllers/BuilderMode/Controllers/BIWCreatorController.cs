@@ -1,11 +1,8 @@
 using DCL;
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Controllers;
-using DCL.Helpers;
 using DCL.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -45,7 +42,10 @@ public class BIWCreatorController : BIWController
     {
         toggleCreateLastSceneObjectInputAction.OnTriggered -= createLastSceneObjectDelegate;
         if (HUDController.i.builderInWorldMainHud != null)
+        {
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
+            HUDController.i.builderInWorldMainHud.OnCatalogItemDropped -= OnCatalogItemDropped;
+        }
         Clean();
     }
 
@@ -63,7 +63,10 @@ public class BIWCreatorController : BIWController
     {
         base.Init();
         if (HUDController.i.builderInWorldMainHud != null)
+        {
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
+            HUDController.i.builderInWorldMainHud.OnCatalogItemDropped += OnCatalogItemDropped;
+        }
     }
 
     private bool IsInsideTheLimits(CatalogItem sceneObject)
@@ -113,7 +116,7 @@ public class BIWCreatorController : BIWController
         return true;
     }
 
-    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { return CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
+    public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
 
     public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false)
     {
@@ -318,5 +321,11 @@ public class BIWCreatorController : BIWController
         {
             CreateCatalogItem(catalogItem);
         }
+    }
+
+    private void OnCatalogItemDropped(CatalogItem catalogItem)
+    {
+        OnCatalogItemSelected(catalogItem);
+        builderInWorldEntityHandler.DeselectEntities();
     }
 }

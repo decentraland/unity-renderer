@@ -13,6 +13,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnRotateSelectedAction;
     public event Action OnScaleSelectedAction;
     public event Action OnResetAction;
+    public event Action OnResetCameraAction;
     public event Action OnUndoAction;
     public event Action OnRedoAction;
     public event Action OnDuplicateSelectedAction;
@@ -26,6 +27,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
+    public event Action<CatalogItem> OnCatalogItemDropped;
     public event Action<DCLBuilderInWorldEntity> OnEntityClick;
     public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
     public event Action<DCLBuilderInWorldEntity> OnEntityLock;
@@ -171,12 +173,13 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.extraActionsController.OnHideUIClick += ChangeVisibilityOfUI;
         controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
+        controllers.topActionsButtonsController.extraActionsController.OnResetCameraClick += () => OnResetCameraAction?.Invoke();
     }
 
     private void ConfigureCatalogItemDropController()
     {
         catalogItemDropController.catalogGroupListView = view.sceneCatalog.catalogGroupListView;
-        catalogItemDropController.OnCatalogItemDropped += CatalogItemSelected;
+        catalogItemDropController.OnCatalogItemDropped += CatalogItemDropped;
     }
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
@@ -316,15 +319,23 @@ public class BuildModeHUDController : IHUD
     public void StopInput()
     {
         OnStopInput?.Invoke();
-
-        if (controllers.sceneCatalogController.IsCatalogExpanded())
-            controllers.sceneCatalogController.ToggleCatalogExpanse();
+        ToggleCatalogIfExpanded();
     }
 
     public void CatalogItemSelected(CatalogItem catalogItem)
     {
         OnCatalogItemSelected?.Invoke(catalogItem);
+        ToggleCatalogIfExpanded();
+    }
 
+    public void CatalogItemDropped(CatalogItem catalogItem)
+    {
+        OnCatalogItemDropped?.Invoke(catalogItem);
+        ToggleCatalogIfExpanded();
+    }
+
+    private void ToggleCatalogIfExpanded()
+    {
         if (controllers.sceneCatalogController.IsCatalogExpanded())
             controllers.sceneCatalogController.ToggleCatalogExpanse();
     }

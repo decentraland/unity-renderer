@@ -70,5 +70,19 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             Assert.IsTrue(clicked, "clicked is false!");
         }
+
+        [Test]
+        public void ClickOnResetCameraCorrectly()
+        {
+            // Arrange
+            bool clicked = false;
+            extraActionsController.OnResetCameraClick += () => { clicked = true; };
+
+            // Act
+            extraActionsController.ResetCameraClicked();
+
+            // Assert
+            Assert.IsTrue(clicked, "clicked is false!");
+        }
     }
 }
