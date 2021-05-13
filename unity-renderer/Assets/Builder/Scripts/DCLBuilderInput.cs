@@ -19,6 +19,7 @@ namespace Builder
         public static event MouseDragDelegate OnMouseDrag;
         public static event MouseRawDragDelegate OnMouseRawDrag;
         public static event MouseWheelDelegate OnMouseWheel;
+        public static event MouseWheelDelegate OnMouseWheelRaw;
 
         private float lastMouseWheelDelta = 0;
         private float lastMouseWheelTime = 0;
@@ -90,6 +91,7 @@ namespace Builder
             {
                 OnMouseWheelInput((int)Mathf.Sign(axisValue));
             }
+            OnMouseWheelRaw?.Invoke(axisValue);
         }
 
 #if UNITY_EDITOR

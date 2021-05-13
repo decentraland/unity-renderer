@@ -31,6 +31,7 @@ public class FreeCameraMovement : CameraStateBase
 
     private float yaw = 0f;
     private float pitch = 0f;
+    private float wheelAxisValue = 0f;
 
     private bool isCameraAbleToMove = true;
 
@@ -49,7 +50,6 @@ public class FreeCameraMovement : CameraStateBase
 
     private Coroutine smoothLookAtCor;
     private Coroutine smoothFocusOnTargetCor;
-    private Coroutine smoothScrollCor;
 
     private InputAction_Hold.Started advanceForwardStartDelegate;
     private InputAction_Hold.Finished advanceForwardFinishedDelegate;
@@ -76,7 +76,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
         BuilderInWorldInputWrapper.OnMouseDragRaw += MouseDragRaw;
-        BuilderInWorldInputWrapper.OnMouseWheel += MouseWheel;
+        BuilderInWorldInputWrapper.OnMouseWheelRaw += MouseWheel;
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -157,7 +157,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         BuilderInWorldInputWrapper.OnMouseDrag -= MouseDrag;
         BuilderInWorldInputWrapper.OnMouseDragRaw -= MouseDragRaw;
-        BuilderInWorldInputWrapper.OnMouseWheel -= MouseWheel;
+        BuilderInWorldInputWrapper.OnMouseWheelRaw -= MouseWheel;
 
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -186,6 +186,8 @@ public class FreeCameraMovement : CameraStateBase
 
     private void Update()
     {
+        MouseWheelUpdate(wheelAxisValue);
+
         if (!isMouseRightClickDown)
             return;
 
@@ -224,15 +226,20 @@ public class FreeCameraMovement : CameraStateBase
 
     private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
 
-    private void MouseWheel(float axis)
+    private void MouseWheel(float axis) { wheelAxisValue = axis; }
+
+    private void MouseWheelUpdate(float axis)
     {
         if (!isCameraAbleToMove)
             return;
 
-        if (smoothScrollCor != null )
-            CoroutineStarter.Stop(smoothScrollCor);
+        float scrollMovementDestination = axis * zoomSpeed;
 
-        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
+        var position = transform.position;
+        Vector3 targetPosition = position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
+        Vector3 result = Vector3.Lerp(position, targetPosition, smoothLookAtSpeed * Time.deltaTime);
+        position = result;
+        transform.position = position;
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -317,22 +324,6 @@ public class FreeCameraMovement : CameraStateBase
 
         finalPosition /= totalPoints;
         return finalPosition;
-    }
-
-    IEnumerator SmoothScroll(float axis)
-    {
-        float scrollMovementDestination = axis * zoomSpeed;
-
-        Vector3 targetPosition = transform.position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
-
-        float advance = 0;
-        while (advance <= 1)
-        {
-            advance += smoothLookAtSpeed * Time.deltaTime;
-            Vector3 result = Vector3.Lerp(transform.position, targetPosition, advance);
-            transform.position = result;
-            yield return null;
-        }
     }
 
     IEnumerator SmoothFocusOnTarget(Vector3 targetPosition)

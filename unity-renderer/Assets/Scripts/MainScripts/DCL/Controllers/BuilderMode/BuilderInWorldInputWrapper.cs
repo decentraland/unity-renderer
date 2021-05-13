@@ -15,6 +15,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     public static event Action<int, Vector3> OnMouseUp;
 
     public static event Action<float> OnMouseWheel;
+    public static event Action<float> OnMouseWheelRaw;
 
     public static event OnMouseDragDelegate OnMouseDrag;
     public static event OnMouseDragDelegateRaw OnMouseDragRaw;
@@ -31,7 +32,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     {
         DCLBuilderInput.OnMouseDrag += MouseDrag;
         DCLBuilderInput.OnMouseRawDrag += MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel += MouseWheel;
+        DCLBuilderInput.OnMouseWheelRaw += MouseWheelRaw;
         DCLBuilderInput.OnMouseDown += MouseDown;
         DCLBuilderInput.OnMouseUp += MouseUp;
     }
@@ -40,7 +41,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     {
         DCLBuilderInput.OnMouseDrag -= MouseDrag;
         DCLBuilderInput.OnMouseRawDrag -= MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel -= MouseWheel;
+        DCLBuilderInput.OnMouseWheelRaw -= MouseWheelRaw;
         DCLBuilderInput.OnMouseDown -= MouseDown;
         DCLBuilderInput.OnMouseUp -= MouseUp;
     }
@@ -79,12 +80,12 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
             OnMouseDown?.Invoke(buttonId, mousePosition);
     }
 
-    private void MouseWheel(float axisValue)
+    private void MouseWheelRaw(float axisValue)
     {
         if (!canInputBeMade)
             return;
         if (!BuilderInWorldUtils.IsPointerOverUIElement())
-            OnMouseWheel?.Invoke(axisValue);
+            OnMouseWheelRaw?.Invoke(axisValue);
     }
 
     private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
