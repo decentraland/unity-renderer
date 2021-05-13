@@ -37,6 +37,8 @@ namespace DCL
             public MappingPair[] EP_12;
         }
 
+        private const string KERNEL_RELATIVE_PATH = "/../../../explorer/kernel"; // This has to be set manually according to the local paths 
+
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Default Empty Parcels")]
         public static void DumpEmptyParcels_Default() { DumpEmptyParcels(); }
 
@@ -47,7 +49,7 @@ namespace DCL
         {
             string indexJsonPath = Application.dataPath;
 
-            indexJsonPath += $"/../../kernel/static/loader/{folderName}/index.json";
+            indexJsonPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}/index.json";
 
             if (!File.Exists(indexJsonPath))
             {
@@ -74,7 +76,7 @@ namespace DCL
             mappings.AddRange(es.EP_12);
 
             string emptyScenesResourcesPath = Application.dataPath;
-            emptyScenesResourcesPath += $"/../../kernel/static/loader/{folderName}";
+            emptyScenesResourcesPath += KERNEL_RELATIVE_PATH + $"/static/loader/{folderName}";
 
             string customBaseUrl = "file://" + emptyScenesResourcesPath;
 
@@ -97,7 +99,10 @@ namespace DCL
         public static void StartVisualTests() { EditorCoroutineUtility.StartCoroutineOwnerless(VisualTests.TestConvertedAssets()); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Org -110,-110")]
-        public static void DumpZoneArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+        public static void DumpArea() { ABConverter.Client.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1)); }
+
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump scene QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM")]
+        public static void DumpSceneId() { ABConverter.Client.DumpScene("QmXMzPLZNx5EHiYi3tK9MT5g9HqjAqgyAoZUu2LfAXJcSM"); }
 
         [MenuItem("Decentraland/Asset Bundle Builder/Dump Single Asset")]
         public static void DumpSingleAsset()
