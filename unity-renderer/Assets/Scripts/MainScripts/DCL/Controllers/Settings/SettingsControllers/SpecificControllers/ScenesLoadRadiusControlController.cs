@@ -7,10 +7,16 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Scenes Load Radius", fileName = "ScenesLoadRadiusControlController")]
     public class ScenesLoadRadiusControlController : SliderSettingsControlController
     {
-        public override object GetStoredValue()
+        public override void Initialize()
         {
-            return currentGeneralSettings.scenesLoadRadius;
+            base.Initialize();
+
+            Debug.Log("PRAVS - ScenesLoadRadiusControlController initializing...");
+            UpdateSetting(Settings.i.generalSettings.scenesLoadRadius);
+            // Settings.i.OnGeneralSettingsLoaded += (generalSettings) => UpdateSetting(generalSettings.scenesLoadRadius);
         }
+
+        public override object GetStoredValue() { return currentGeneralSettings.scenesLoadRadius; }
 
         public override void UpdateSetting(object newValue)
         {

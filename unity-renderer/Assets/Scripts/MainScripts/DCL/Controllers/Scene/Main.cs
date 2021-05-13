@@ -2,6 +2,7 @@ using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -43,15 +44,18 @@ namespace DCL
                 RenderProfileManifest.i.Initialize();
                 Environment.SetupWithBuilders(worldRuntimeBuilder: RuntimeContextBuilder);
             }
-            
+
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-            Debug.unityLogger.logEnabled = false;
+            Debug.unityLogger.logEnabled = true;
 
             worldEntryPoint = new EntryPoint_World(Environment.i.world.sceneController);
 #endif
+
+            Debug.Log("PRAVS - Finished Main AWAKE");
+            // WebInterface.SetScenesLoadRadius(Settings.i.generalSettings.scenesLoadRadius);
 
             // TODO(Brian): This is a temporary fix to address elevators issue in the xmas event.
             // We should re-enable this later as produces a performance regression.

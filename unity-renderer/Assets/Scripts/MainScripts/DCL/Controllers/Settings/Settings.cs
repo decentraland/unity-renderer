@@ -79,6 +79,8 @@ namespace DCL
                     object currentSetting = currentGeneralSettings;
                     JsonUtility.FromJsonOverwrite(PlayerPrefsUtils.GetString(GENERAL_SETTINGS_KEY), currentSetting);
                     currentGeneralSettings = (SettingsData.GeneralSettings)currentSetting;
+
+                    Debug.Log("PRAVS - Loaded previous general settings... LOS is " + currentGeneralSettings.scenesLoadRadius);
                 }
                 catch (Exception e)
                 {
@@ -147,6 +149,8 @@ namespace DCL
 
         public void ApplyGeneralSettings(SettingsData.GeneralSettings settings)
         {
+            Debug.Log("PRAVS - Apply GeneralSettings...");
+
             if (settings.Equals(currentGeneralSettings))
                 return;
 
