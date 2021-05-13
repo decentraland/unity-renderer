@@ -49,6 +49,8 @@ public class EntityInformationController : IEntityInformationController
     internal bool isChangingName = false;
     internal DCLBuilderInWorldEntity currentEntity;
 
+    private bool temporalFlag = false;
+
     public void Initialize(IEntityInformationView entityInformationView)
     {
         this.entityInformationView = entityInformationView;
@@ -228,5 +230,9 @@ public class EntityInformationController : IEntityInformationController
 
     public void UpdateEntitiesSelection(int numberOfSelectedEntities) { entityInformationView.UpdateEntitiesSelection(numberOfSelectedEntities); }
 
-    public void SetTransparencyMode(bool isOn) { entityInformationView.SetTransparencyMode(isOn ? 0.5f : 1f, !isOn); }
+    public void SetTransparencyMode(bool isOn)
+    {
+        entityInformationView.SetTransparencyMode(isOn ? (temporalFlag ? 0f : 0.5f) : 1f, !isOn);
+        temporalFlag = !temporalFlag;
+    }
 }
