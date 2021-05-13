@@ -40,7 +40,7 @@ namespace DCL
         {
             if (isEnable)
             {
-                parcelScenesCleaner.ForceCleanup();
+                parcelScenesCleaner?.ForceCleanup();
                 Resources.UnloadUnusedAssets();
             }
         }

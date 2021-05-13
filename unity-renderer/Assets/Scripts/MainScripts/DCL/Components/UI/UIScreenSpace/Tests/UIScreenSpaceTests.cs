@@ -12,6 +12,7 @@ namespace Tests
     {
         [UnityTest]
         [Explicit]
+        [Category("Explicit")]
         public IEnumerator TestVisibilityUpdate()
         {
             scene.isPersistent = false;
@@ -70,6 +71,7 @@ namespace Tests
 
         [UnityTest]
         [Explicit]
+        [Category("Explicit")]
         public IEnumerator TestScaleWhenCharacterIsElsewhere()
         {
             // Position character outside parcel
