@@ -776,6 +776,8 @@ namespace DCL
                 Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}");
             }
 
+            Environment.i.world.blockersController.SetupWorldBlockers();
+
             ProfilingEvents.OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
         }
 
