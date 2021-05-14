@@ -37,8 +37,8 @@ public class NFTItemInfo : MonoBehaviour
 
         public static Model FromWearableItem(WearableItem wearable)
         {
-            var iconsIds = wearable.representations.SelectMany(x => x.bodyShapes).ToList();
-            iconsIds.Add(wearable.category);
+            var iconsIds = wearable.data.representations.SelectMany(x => x.bodyShapes).ToList();
+            iconsIds.Add(wearable.data.category);
 
             return new Model()
             {
