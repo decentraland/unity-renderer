@@ -73,6 +73,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
 
     private ISceneData sceneData;
+    private string thumbnailUrl = null;
     private AssetPromise_Texture thumbnailPromise;
     private bool isDestroyed = false;
     private Transform defaultParent;
@@ -144,6 +145,11 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     void ISceneCardView.SetThumbnail(string thumbnailUrl)
     {
+        if (this.thumbnailUrl == thumbnailUrl)
+            return;
+
+        this.thumbnailUrl = thumbnailUrl;
+
         isLoadingThumbnail = true;
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
 
@@ -152,6 +158,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             thumbnailPromise = null;
         }
+
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
