@@ -36,6 +36,7 @@ public class EntityInformationController : IEntityInformationController
     private const string TRIS_TEXT_FORMAT  = "{0} TRIS";
     private const string MATERIALS_TEXT_FORMAT  = "{0} MATERIALS";
     private const string TEXTURES_TEXT_FORMAT = "{0} TEXTURES";
+    private const float TRANSPARENCY_MODE_ALPHA_VALUE = 0.5f;
 
     public event Action<Vector3> OnPositionChange;
     public event Action<Vector3> OnRotationChange;
@@ -48,8 +49,6 @@ public class EntityInformationController : IEntityInformationController
     internal AssetPromise_Texture loadedThumbnailPromise;
     internal bool isChangingName = false;
     internal DCLBuilderInWorldEntity currentEntity;
-
-    private bool temporalFlag = false;
 
     public void Initialize(IEntityInformationView entityInformationView)
     {
@@ -230,9 +229,5 @@ public class EntityInformationController : IEntityInformationController
 
     public void UpdateEntitiesSelection(int numberOfSelectedEntities) { entityInformationView.UpdateEntitiesSelection(numberOfSelectedEntities); }
 
-    public void SetTransparencyMode(bool isOn)
-    {
-        entityInformationView.SetTransparencyMode(isOn ? (temporalFlag ? 0f : 0.5f) : 1f, !isOn);
-        temporalFlag = !temporalFlag;
-    }
+    public void SetTransparencyMode(bool isOn) { entityInformationView.SetTransparencyMode(isOn ? TRANSPARENCY_MODE_ALPHA_VALUE : 1f, !isOn); }
 }
