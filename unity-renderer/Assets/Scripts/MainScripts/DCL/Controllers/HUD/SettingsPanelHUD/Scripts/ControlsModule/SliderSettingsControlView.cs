@@ -27,7 +27,7 @@ namespace DCL.SettingsPanelHUD.Controls
             this.sliderControlConfig = (SliderControlModel)controlConfig;
             slider.maxValue = this.sliderControlConfig.sliderMaxValue;
             slider.minValue = this.sliderControlConfig.sliderMinValue;
-            slider.wholeNumbers = false;
+            slider.wholeNumbers = this.sliderControlConfig.wholeNumbers;
 
             base.Initialize(controlConfig, sliderController);
             OverrideIndicatorLabel(slider.value.ToString());

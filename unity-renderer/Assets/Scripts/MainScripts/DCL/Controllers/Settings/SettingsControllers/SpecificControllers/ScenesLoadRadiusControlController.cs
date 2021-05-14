@@ -19,8 +19,6 @@ namespace DCL.SettingsControls
 
         private void ApplyAndReportScenesLoadRadius(float newRadius, bool forceApply = false)
         {
-            newRadius = Mathf.Round(newRadius);
-
             if (!forceApply && newRadius == currentGeneralSettings.scenesLoadRadius)
                 return;
 
