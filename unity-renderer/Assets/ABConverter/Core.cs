@@ -67,21 +67,20 @@ namespace DCL.ABConverter
             this.settings = settings?.Clone() ?? new Client.Settings();
 
             finalDownloadedPath = PathUtils.FixDirectorySeparator(Config.DOWNLOADED_PATH_ROOT + Config.DASH);
+            finalDownloadedAssetDbPath = PathUtils.FixDirectorySeparator(Config.ASSET_BUNDLES_PATH_ROOT + Config.DASH);
 
             if (Utils.ParseOption(Config.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
             {
-                // TODO: should we update the finalDownloadedAssetDbPath too ??
-                settings.finalAssetBundlePath =  System.IO.Path.Combine(Directory.GetCurrentDirectory(), outputPath[0] + "/");
-                // finalDownloadedAssetDbPath = settings.finalAssetBundlePath;
+                finalDownloadedAssetDbPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), outputPath[0] + "/");
 
-                Debug.Log($"ABConverter Core: -output PATH param found, setting final ABPath as '{settings.finalAssetBundlePath}'");
+                Debug.Log($"ABConverter Core: -output PATH param found, setting final ABPath as '{finalDownloadedAssetDbPath}'");
             }
             else
             {
-                Debug.Log($"ABConverter Core: -output PATH param NOT found, setting final ABPath as '{settings.finalAssetBundlePath}'");
+                Debug.Log($"ABConverter Core: -output PATH param NOT found, setting final ABPath as '{finalDownloadedAssetDbPath}'");
             }
 
-            finalDownloadedAssetDbPath = PathUtils.FixDirectorySeparator(Config.ASSET_BUNDLES_PATH_ROOT + Config.DASH);
+            settings.finalAssetBundlePath = finalDownloadedAssetDbPath;
 
             log.verboseEnabled = this.settings.verbose;
 
