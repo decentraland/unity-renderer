@@ -10,18 +10,24 @@ namespace DCL.SettingsControls
         {
             base.Initialize();
 
-            UpdateSetting(Settings.i.generalSettings.scenesLoadRadius);
+            ApplyAndReportScenesLoadRadius(currentGeneralSettings.scenesLoadRadius, true);
         }
 
         public override object GetStoredValue() { return currentGeneralSettings.scenesLoadRadius; }
 
-        public override void UpdateSetting(object newValue)
+        public override void UpdateSetting(object newValue) { ApplyAndReportScenesLoadRadius((float)newValue); }
+
+        private void ApplyAndReportScenesLoadRadius(float newRadius, bool forceApply = false)
         {
-            float parsedValue = (float)newValue;
-            currentGeneralSettings.scenesLoadRadius = parsedValue;
+            newRadius = Mathf.Round(newRadius);
+
+            if (!forceApply && newRadius == currentGeneralSettings.scenesLoadRadius)
+                return;
+
+            currentGeneralSettings.scenesLoadRadius = newRadius;
 
             // trigger LOS update and re-load of surrounding parcels in Kernel
-            WebInterface.SetScenesLoadRadius(parsedValue);
+            WebInterface.SetScenesLoadRadius(newRadius);
         }
     }
 }
