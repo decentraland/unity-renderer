@@ -69,5 +69,33 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.IsTrue(isClicked, "isClicked is false!");
         }
+
+        [Test]
+        public void ClickOnResetCorrectly()
+        {
+            // Arrange
+            bool isClicked = false;
+            extraActionsView.OnResetClicked += () => isClicked = true;
+
+            // Act
+            extraActionsView.OnResetClick();
+
+            // Assert
+            Assert.IsTrue(isClicked, "isClicked is false!");
+        }
+
+        [Test]
+        public void ClickOnResetCameraCorrectly()
+        {
+            // Arrange
+            bool isClicked = false;
+            extraActionsView.OnResetCameraClicked += () => isClicked = true;
+
+            // Act
+            extraActionsView.OnResetCameraClick();
+
+            // Assert
+            Assert.IsTrue(isClicked, "isClicked is false!");
+        }
     }
 }

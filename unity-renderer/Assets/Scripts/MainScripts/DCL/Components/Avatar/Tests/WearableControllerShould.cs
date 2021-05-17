@@ -11,7 +11,7 @@ namespace AvatarShape_Tests
 {
     public class WearableControllerShould : IntegrationTestSuite_Legacy
     {
-        private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
+        private const string SUNGLASSES_ID = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
 
         private BaseDictionary<string, WearableItem> catalog;
         private Transform wearableHolder;
@@ -52,13 +52,16 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem unexistentWearableItem = new WearableItem
             {
-                representations = new []
+                data = new WearableItem.Data()
                 {
-                    new WearableItem.Representation
+                    representations = new []
                     {
-                        mainFile = "NothingHere",
-                        contents = new [] { new ContentServerUtils.MappingPair { file = "NothingHere", hash = "NothingHere" } },
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE }
+                        new WearableItem.Representation
+                        {
+                            mainFile = "NothingHere",
+                            contents = new [] { new WearableItem.MappingPair { key = "NothingHere", hash = "NothingHere" } },
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE }
+                        }
                     }
                 }
             };
@@ -140,7 +143,7 @@ namespace AvatarShape_Tests
             skinnedMeshRenderer.enabled = true;
 
             //Act
-            wearable.UpdateVisibility(new HashSet<string> { wearable.wearable.category });
+            wearable.UpdateVisibility(new HashSet<string> { wearable.wearable.data.category });
 
             //Assert
             Assert.IsFalse(skinnedMeshRenderer.enabled);

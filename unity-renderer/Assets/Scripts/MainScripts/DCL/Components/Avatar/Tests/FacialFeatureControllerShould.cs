@@ -10,8 +10,8 @@ namespace AvatarShape_Tests
 {
     public class FacialFeatureControllerShould : IntegrationTestSuite_Legacy
     {
-        private const string EYES_ID = "dcl://base-avatars/f_eyes_01";
-        private const string DRACULA_MOUTH_ID = "dcl://base-avatars/dracula_mouth";
+        private const string EYES_ID = "urn:decentraland:off-chain:base-avatars:f_eyes_01";
+        private const string DRACULA_MOUTH_ID = "urn:decentraland:off-chain:base-avatars:dracula_mouth";
         private BaseDictionary<string, WearableItem> catalog;
         private IBodyShapeController bodyShapeController;
 
@@ -47,14 +47,21 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem fakeWearable = new WearableItem
             {
-                category = WearableLiterals.Categories.EYES,
                 baseUrl = "http://nothing_here.nope",
-                representations = new []
+                data = new WearableItem.Data()
                 {
-                    new WearableItem.Representation
+                    category = WearableLiterals.Categories.EYES,
+                    representations = new []
                     {
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                        contents = new [] { new ContentServerUtils.MappingPair { file = "fake.png", hash = "nope" }, new ContentServerUtils.MappingPair { file = "fake_mask.png", hash = "nope2" } },
+                        new WearableItem.Representation()
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                            contents = new []
+                            {
+                                new WearableItem.MappingPair { key = "fake.png", hash = "nope" },
+                                new WearableItem.MappingPair { key = "fake_mask.png", hash = "nope2" }
+                            },
+                        }
                     }
                 }
             };
@@ -75,14 +82,17 @@ namespace AvatarShape_Tests
             //Arrange
             WearableItem fakeWearable = new WearableItem
             {
-                category = WearableLiterals.Categories.EYES,
                 baseUrl = "http://nothing_here.nope",
-                representations = new []
+                data = new WearableItem.Data()
                 {
-                    new WearableItem.Representation
+                    category = WearableLiterals.Categories.EYES,
+                    representations = new []
                     {
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
-                        contents = new ContentServerUtils.MappingPair[0],
+                        new WearableItem.Representation
+                        {
+                            bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE },
+                            contents = new WearableItem.MappingPair[0],
+                        }
                     }
                 }
             };
@@ -102,6 +112,7 @@ namespace AvatarShape_Tests
         {
             //Arrange
             catalog.TryGetValue(DRACULA_MOUTH_ID, out WearableItem wereableItem);
+
             FacialFeatureController controller = new FacialFeatureController(wereableItem, new Material(Shader.Find("DCL/Unlit Cutout Tinted")));
 
             //Act

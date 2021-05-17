@@ -4,29 +4,43 @@ using System.Collections.Generic;
 using System.Linq;
 
 [System.Serializable]
-public class WearableItem : Item
+public class WearableItem
 {
+    [Serializable]
+    public class MappingPair
+    {
+        public string key;
+        public string hash;
+    }
+
     [Serializable]
     public class Representation
     {
         public string[] bodyShapes;
         public string mainFile;
-        public ContentServerUtils.MappingPair[] contents;
+        public MappingPair[] contents;
         public string[] overrideHides;
         public string[] overrideReplaces;
     }
 
-    public Representation[] representations;
-    public string category;
-    public string[] tags;
+    [Serializable]
+    public class Data
+    {
+        public Representation[] representations;
+        public string category;
+        public string[] tags;
+        public string[] replaces;
+        public string[] hides;
+    }
+
+    public Data data;
+    public string id;
 
     public string baseUrl;
     public string baseUrlBundles;
 
     public i18n[] i18n;
     public string thumbnail;
-    public string[] hides;
-    public string[] replaces;
 
     //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
     public string rarity;
@@ -37,14 +51,14 @@ public class WearableItem : Item
 
     public Representation GetRepresentation(string bodyShapeType)
     {
-        if (representations == null)
+        if (data?.representations == null)
             return null;
 
-        for (int i = 0; i < representations.Length; i++)
+        for (int i = 0; i < data.representations.Length; i++)
         {
-            if (representations[i].bodyShapes.Contains(bodyShapeType))
+            if (data.representations[i].bodyShapes.Contains(bodyShapeType))
             {
-                return representations[i];
+                return data.representations[i];
             }
         }
 
@@ -62,7 +76,7 @@ public class WearableItem : Item
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
-            var contentProvider = CreateContentProvider(baseUrl, representation.contents.ToList());
+            var contentProvider = CreateContentProvider(baseUrl, representation.contents);
             contentProvider.BakeHashes();
             cachedContentProviers.Add(bodyShapeType, contentProvider);
         }
@@ -70,23 +84,23 @@ public class WearableItem : Item
         return cachedContentProviers[bodyShapeType];
     }
 
-    protected virtual ContentProvider CreateContentProvider(string baseUrl, List<ContentServerUtils.MappingPair> contents)
+    protected virtual ContentProvider CreateContentProvider(string baseUrl, MappingPair[] contents)
     {
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair(){file = mapping.key, hash = mapping.hash}).ToList()
         };
     }
 
     public bool SupportsBodyShape(string bodyShapeType)
     {
-        if (representations == null)
+        if (data?.representations == null)
             return false;
 
-        for (int i = 0; i < representations.Length; i++)
+        for (int i = 0; i < data.representations.Length; i++)
         {
-            if (representations[i].bodyShapes.Contains(bodyShapeType))
+            if (data.representations[i].bodyShapes.Contains(bodyShapeType))
             {
                 return true;
             }
@@ -100,7 +114,7 @@ public class WearableItem : Item
         var representation = GetRepresentation(bodyShapeType);
 
         if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0)
-            return replaces;
+            return data.replaces;
 
         return representation.overrideReplaces;
     }
@@ -110,7 +124,7 @@ public class WearableItem : Item
         var representation = GetRepresentation(bodyShapeType);
 
         if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
-            return hides;
+            return data.hides;
 
         return representation.overrideHides;
     }
@@ -155,7 +169,7 @@ public class WearableItem : Item
         {
             var wearableItem = wearables[i];
 
-            if (result.Contains(wearableItem.category)) //Skip hidden elements to avoid two elements hiding each other
+            if (result.Contains(wearableItem.data.category)) //Skip hidden elements to avoid two elements hiding each other
                 continue;
 
             var wearableHidesList = wearableItem.GetHidesList(bodyShapeId);

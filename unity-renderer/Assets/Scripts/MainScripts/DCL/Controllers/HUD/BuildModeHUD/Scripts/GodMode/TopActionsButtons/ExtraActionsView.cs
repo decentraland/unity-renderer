@@ -7,12 +7,15 @@ public interface IExtraActionsView
     event Action OnControlsClicked,
                  OnHideUIClicked,
                  OnTutorialClicked,
-                 OnResetClicked;
+                 OnResetClicked,
+                 OnResetCameraClicked;
 
     void OnControlsClick(DCLAction_Trigger action);
     void OnHideUIClick(DCLAction_Trigger action);
     void OnTutorialClick();
     void SetActive(bool isActive);
+    void OnResetClick();
+    void OnResetCameraClick();
 }
 
 public class ExtraActionsView : MonoBehaviour, IExtraActionsView
@@ -20,13 +23,15 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     public event Action OnControlsClicked,
                         OnHideUIClicked,
                         OnTutorialClicked,
-                        OnResetClicked;
+                        OnResetClicked,
+                        OnResetCameraClicked;
 
     [Header("Buttons")]
     [SerializeField] internal Button hideUIBtn;
     [SerializeField] internal Button controlsBtn;
     [SerializeField] internal Button tutorialBtn;
     [SerializeField] internal Button resetBtn;
+    [SerializeField] internal Button resetCameraBtn;
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
@@ -48,7 +53,8 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     {
         hideUIBtn.onClick.AddListener(() => OnHideUIClick(dummyActionTrigger));
         controlsBtn.onClick.AddListener(() => OnControlsClick(dummyActionTrigger));
-        resetBtn.onClick.AddListener(() => OnResetClicked?.Invoke());
+        resetBtn.onClick.AddListener(OnResetClick);
+        resetCameraBtn.onClick.AddListener(OnResetCameraClick);
         tutorialBtn.onClick.AddListener(OnTutorialClick);
 
         toggleUIVisibilityInputAction.OnTriggered += OnHideUIClick;
@@ -60,6 +66,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
         hideUIBtn.onClick.RemoveAllListeners();
         controlsBtn.onClick.RemoveAllListeners();
         resetBtn.onClick.RemoveAllListeners();
+        resetCameraBtn.onClick.RemoveAllListeners();
         tutorialBtn.onClick.RemoveListener(OnTutorialClick);
 
         toggleUIVisibilityInputAction.OnTriggered -= OnHideUIClick;
@@ -77,4 +84,8 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     public void OnHideUIClick(DCLAction_Trigger action) { OnHideUIClicked?.Invoke(); }
 
     public void OnTutorialClick() { OnTutorialClicked?.Invoke(); }
+
+    public void OnResetClick() { OnResetClicked?.Invoke(); }
+
+    public void OnResetCameraClick() { OnResetCameraClicked?.Invoke(); }
 }
