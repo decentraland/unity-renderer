@@ -2310,7 +2310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultThumbnail: {fileID: 2800000, guid: 1744fc3cbef3941db85c15f4beb5cb37, type: 3}
-  thumbnail: {fileID: 2505408307629589042}
+  thumbnail: {fileID: 7205038377433616152}
   landName: {fileID: 5398650941234539774}
   landCoords: {fileID: 7959593574965287870}
   landSize: {fileID: 1604587823021801010}
