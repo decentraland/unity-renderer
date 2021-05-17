@@ -333,6 +333,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         dragStartedPoint = GetFloorPointAtMouse(position);
 
+        if (isSnapActive)
+        {
+            dragStartedPoint.x = Mathf.Round(dragStartedPoint.x);
+            dragStartedPoint.z = Mathf.Round(dragStartedPoint.z);
+        }
+
         if (isPlacingNewObject)
             return;
 
