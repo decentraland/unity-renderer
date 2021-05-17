@@ -239,7 +239,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     internal void SetWearableLoadingSpinner(WearableItem wearable, bool isActive)
     {
-        selectorsByCategory[wearable.category].SetWearableLoadingSpinner(wearable.id, isActive);
+        selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, isActive);
         collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, isActive);
         if (isActive)
             wearablesWithLoadingSpinner.Add(wearable);
@@ -251,7 +251,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         foreach (WearableItem wearable in wearablesWithLoadingSpinner)
         {
-            selectorsByCategory[wearable.category].SetWearableLoadingSpinner(wearable.id, false);
+            selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, false);
             collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, false);
         }
         wearablesWithLoadingSpinner.Clear();
