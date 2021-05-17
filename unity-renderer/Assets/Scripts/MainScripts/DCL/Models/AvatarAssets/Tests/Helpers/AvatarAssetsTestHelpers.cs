@@ -12,11 +12,11 @@ public static class AvatarAssetsTestHelpers
         {
             wearableItem.baseUrl = Utils.GetTestsAssetsPath() + "/Avatar/Assets/";
 
-            foreach (var rep in wearableItem.representations)
+            foreach (var rep in wearableItem.data.representations)
             {
                 rep.contents = rep.contents.Select((x) =>
                                   {
-                                      x.hash = x.file;
+                                      x.hash = x.key;
                                       return x;
                                   })
                                   .ToArray();
