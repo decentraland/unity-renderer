@@ -116,7 +116,8 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
     public void SetSize(int size)
     {
-        landSizeGO.SetActive(size > 1);
+        if (size == 0)
+            size = 1;
         landSize.text = string.Format(SIZE_TEXT_FORMAT, size);
         searchInfo.SetSize(size);
     }
