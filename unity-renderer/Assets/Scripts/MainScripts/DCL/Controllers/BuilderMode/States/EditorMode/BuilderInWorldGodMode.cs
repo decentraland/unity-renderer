@@ -50,7 +50,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool isMouseDragging = false;
     private bool isTypeOfBoundSelectionSelected = false;
     private bool isVoxelBoundMultiSelection = false;
-    private bool multiSelectionButtonPressed = false;
     private bool changeSnapTemporaryButtonPressed = false;
 
     private bool wasGizmosActive = false;
@@ -74,9 +73,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         BuilderInWorldInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
-
-        multiSelectionInputAction.OnStarted += (o) => multiSelectionButtonPressed = true;
-        multiSelectionInputAction.OnFinished += (o) => multiSelectionButtonPressed = false;
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
@@ -172,7 +168,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void ChangeSnapTemporaryActivated()
     {
-        if (!mouseMainBtnPressed || !gizmoManager.HasAxisHover())
+        if (selectedEntities.Count == 0)
             return;
 
         changeSnapTemporaryButtonPressed = true;
@@ -265,8 +261,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (buttonId != 0 ||
             selectedEntities.Count <= 0 ||
             BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick) ||
-            isSquareMultiSelectionInputActive ||
-            multiSelectionButtonPressed)
+            isSquareMultiSelectionInputActive)
             return;
 
         if (!isDraggingStarted)
