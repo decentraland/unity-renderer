@@ -12,8 +12,6 @@ public class ParticlesOnAvatarVisualCue : MonoBehaviour
     private void Awake()
     {
         avatarRenderer = GetComponent<AvatarRenderer>();
-        if (avatarRenderer == null)
-            return;
         avatarRenderer.OnVisualCue += OnVisualCue;
     }
 
