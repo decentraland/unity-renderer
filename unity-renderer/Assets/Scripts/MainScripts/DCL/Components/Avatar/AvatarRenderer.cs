@@ -254,23 +254,19 @@ namespace DCL
             {
                 //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
                 if (bodyShapeController.isReady)
-                {
                     bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
-                }
             }
 
             bool wearablesIsDirty = false;
             HashSet<string> unusedCategories = new HashSet<string>(Categories.ALL);
             int wearableCount = resolvedWearables.Count;
-
             for (int index = 0; index < wearableCount; index++)
             {
                 WearableItem wearable = resolvedWearables[index];
                 if (wearable == null)
                     continue;
 
-                unusedCategories.Remove(wearable.category);
-
+                unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
                     if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
@@ -281,7 +277,7 @@ namespace DCL
                 else
                 {
                     AddWearableController(wearable);
-                    if (wearable.category != Categories.EYES && wearable.category != Categories.MOUTH && wearable.category != Categories.EYEBROWS)
+                    if (wearable.data.category != Categories.EYES && wearable.data.category != Categories.MOUTH && wearable.data.category != Categories.EYEBROWS)
                         wearablesIsDirty = true;
                 }
             }
@@ -317,7 +313,6 @@ namespace DCL
                 wearable.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
                 yield return null;
             }
-
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
@@ -422,7 +417,7 @@ namespace DCL
         {
             if (wearable == null)
                 return;
-            switch (wearable.category)
+            switch (wearable.data.category)
             {
                 case Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, eyeMaterial);

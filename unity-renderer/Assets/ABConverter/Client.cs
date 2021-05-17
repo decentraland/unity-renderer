@@ -137,15 +137,18 @@ namespace DCL.ABConverter
                     WearableItem wearable = new WearableItem()
                     {
                         id = wearableData.metadata.id,
-                        category = wearableData.metadata.data.category,
-                        tags = wearableData.metadata.data.tags,
                         baseUrl = WEARABLES_CONTENT_BASE_URL,
                         thumbnail = wearableData.metadata.thumbnail,
-                        hides = wearableData.metadata.data.hides,
-                        replaces = wearableData.metadata.data.replaces,
                         rarity = wearableData.metadata.rarity,
                         description = wearableData.metadata.description,
-                        i18n = wearableData.metadata.i18n
+                        i18n = wearableData.metadata.i18n,
+                        data = new WearableItem.Data()
+                        {
+                            category = wearableData.metadata.data.category,
+                            tags = wearableData.metadata.data.tags,
+                            hides = wearableData.metadata.data.hides,
+                            replaces = wearableData.metadata.data.replaces
+                        }
                     };
 
                     List<WearableItem.Representation> wearableRepresentations = new List<WearableItem.Representation>();
@@ -159,7 +162,7 @@ namespace DCL.ABConverter
                             mainFile = wearableDataRepresentation.mainFile
                         };
 
-                        List<ContentServerUtils.MappingPair> contentMappingPairs = new List<ContentServerUtils.MappingPair>();
+                        List<WearableItem.MappingPair> contentMappingPairs = new List<WearableItem.MappingPair>();
                         foreach (var contentFileName in wearableDataRepresentation.contents)
                         {
                             var contentData = wearableData.content.FirstOrDefault((x) => x.key == contentFileName);
@@ -170,9 +173,9 @@ namespace DCL.ABConverter
                                 continue;
                             }
 
-                            contentMappingPairs.Add(new ContentServerUtils.MappingPair()
+                            contentMappingPairs.Add(new WearableItem.MappingPair()
                             {
-                                file = contentData.key,
+                                key = contentData.key,
                                 hash = contentData.hash
                             });
                         }
@@ -181,7 +184,7 @@ namespace DCL.ABConverter
                         wearableRepresentations.Add(wearableRepresentation);
                     }
 
-                    wearable.representations = wearableRepresentations.ToArray();
+                    wearable.data.representations = wearableRepresentations.ToArray();
                     result.Add(wearable);
                 }
 
@@ -461,7 +464,7 @@ namespace DCL.ABConverter
             EnsureEnvironment();
 
             List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
-                                                .Where(x => x.category == WearableLiterals.Categories.BODY_SHAPE)
+                                                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
@@ -485,7 +488,7 @@ namespace DCL.ABConverter
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
             List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
-                                                .Where(x => x.category != WearableLiterals.Categories.BODY_SHAPE)
+                                                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
@@ -544,11 +547,11 @@ namespace DCL.ABConverter
 
             foreach (var wearable in wearableItems)
             {
-                foreach (var representation in wearable.representations)
+                foreach (var representation in wearable.data.representations)
                 {
                     foreach (var datum in representation.contents)
                     {
-                        result.Add(datum);
+                        result.Add(new ContentServerUtils.MappingPair(){file = datum.key, hash = datum.hash});
                     }
                 }
             }

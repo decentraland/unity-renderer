@@ -225,14 +225,14 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void EquipWearable(WearableItem wearable)
     {
-        selectorsByCategory[wearable.category].Select(wearable.id);
+        selectorsByCategory[wearable.data.category].Select(wearable.id);
         SetWearableLoadingSpinner(wearable, true);
         collectiblesItemSelector.Select(wearable.id);
     }
 
     public void UnequipWearable(WearableItem wearable)
     {
-        selectorsByCategory[wearable.category].Unselect(wearable.id);
+        selectorsByCategory[wearable.data.category].Unselect(wearable.id);
         SetWearableLoadingSpinner(wearable, false);
         collectiblesItemSelector.Unselect(wearable.id);
     }
@@ -305,13 +305,13 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (wearableItem == null)
             return;
 
-        if (!selectorsByCategory.ContainsKey(wearableItem.category))
+        if (!selectorsByCategory.ContainsKey(wearableItem.data.category))
         {
-            Debug.LogError($"Category couldn't find selector for category: {wearableItem.category} ");
+            Debug.LogError($"Category couldn't find selector for category: {wearableItem.data.category} ");
             return;
         }
 
-        selectorsByCategory[wearableItem.category].AddItemToggle(wearableItem, amount);
+        selectorsByCategory[wearableItem.data.category].AddItemToggle(wearableItem, amount);
         if (wearableItem.IsCollectible())
         {
             collectiblesItemSelector.AddItemToggle(wearableItem, amount);
@@ -323,13 +323,13 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (wearableItem == null)
             return;
 
-        if (!selectorsByCategory.ContainsKey(wearableItem.category))
+        if (!selectorsByCategory.ContainsKey(wearableItem.data.category))
         {
-            Debug.LogError($"Category couldn't find selector for category: {wearableItem.category} ");
+            Debug.LogError($"Category couldn't find selector for category: {wearableItem.data.category} ");
             return;
         }
 
-        selectorsByCategory[wearableItem.category].RemoveItemToggle(wearableItem.id);
+        selectorsByCategory[wearableItem.data.category].RemoveItemToggle(wearableItem.id);
         if (wearableItem.IsCollectible())
             collectiblesItemSelector.RemoveItemToggle(wearableItem.id);
     }
