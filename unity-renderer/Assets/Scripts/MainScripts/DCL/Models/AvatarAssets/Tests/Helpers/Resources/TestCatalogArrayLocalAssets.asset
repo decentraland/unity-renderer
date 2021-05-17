@@ -13,31 +13,33 @@ MonoBehaviour:
   m_Name: TestCatalogArrayLocalAssets
   m_EditorClassIdentifier: 
   list:
-  - id: dcl://base-avatars/BaseFemale
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: BaseFemale.glb
-      contents:
-      - file: Avatar_FemaleSkinBase.png
-        hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
-      - file: BaseFemale.glb
-        hash: QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2
-      - file: Brows_00.png
-        hash: QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81
-      - file: Eyes_00.png
-        hash: QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28
-      - file: F_Mouth_00.png
-        hash: QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB
-      overrideHides: []
-      overrideReplaces: []
-    category: body_shape
-    tags:
-    - body
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: BaseFemale.glb
+        contents:
+        - key: Avatar_FemaleSkinBase.png
+          hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+        - key: BaseFemale.glb
+          hash: QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2
+        - key: Brows_00.png
+          hash: QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81
+        - key: Eyes_00.png
+          hash: QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28
+        - key: F_Mouth_00.png
+          hash: QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB
+        overrideHides: []
+        overrideReplaces: []
+      category: body_shape
+      tags:
+      - body
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:BaseFemale
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -46,36 +48,36 @@ MonoBehaviour:
     - code: es
       text: Mujer
     thumbnail: QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/BaseMale
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: BaseMale.glb
-      contents:
-      - file: Avatar_MaleSkinBase.png
-        hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
-      - file: BaseMale.glb
-        hash: QmRhw6iFmT1r8KTbComWMKFLPxf7pFZqFwKrEY1Az2whZ8
-      - file: EyeBrows_00.png
-        hash: QmP4823KZpn5d5iAEwXJyGTZy19HriJsJYkCJ22ERmpFMa
-      - file: Eyes_00.png
-        hash: QmUYEYptrfbtvAr53C4X3ReAtYYuQsuN41dB5D5cfuLxkh
-      - file: Mouth_00.png
-        hash: QmTZXe8CyZWCfV9KvjKx6LpYwDXAzCeRCozoZRuRUth7qP
-      overrideHides: []
-      overrideReplaces: []
-    category: body_shape
-    tags:
-    - body
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: BaseMale.glb
+        contents:
+        - key: Avatar_MaleSkinBase.png
+          hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
+        - key: BaseMale.glb
+          hash: QmRhw6iFmT1r8KTbComWMKFLPxf7pFZqFwKrEY1Az2whZ8
+        - key: EyeBrows_00.png
+          hash: QmP4823KZpn5d5iAEwXJyGTZy19HriJsJYkCJ22ERmpFMa
+        - key: Eyes_00.png
+          hash: QmUYEYptrfbtvAr53C4X3ReAtYYuQsuN41dB5D5cfuLxkh
+        - key: Mouth_00.png
+          hash: QmTZXe8CyZWCfV9KvjKx6LpYwDXAzCeRCozoZRuRUth7qP
+        overrideHides: []
+        overrideReplaces: []
+      category: body_shape
+      tags:
+      - body
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:BaseMale
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -84,42 +86,42 @@ MonoBehaviour:
     - code: es
       text: Hombre
     thumbnail: QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/black_sun_glasses
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: F_Eyewear_BlackSunglasses.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: F_Eyewear_BlackSunglasses.glb
-        hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
-      overrideHides: []
-      overrideReplaces: []
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyewear_BlackSunglasses.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: F_Eyewear_BlackSunglasses.glb
-        hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
-      overrideHides: []
-      overrideReplaces: []
-    category: eyewear
-    tags:
-    - accesories
-    - woman
-    - women
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: F_Eyewear_BlackSunglasses.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: F_Eyewear_BlackSunglasses.glb
+          hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyewear_BlackSunglasses.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: F_Eyewear_BlackSunglasses.glb
+          hash: QmXLrokLeJkmyFD64xGicQyD3R3M4AWcPFLXJMNQx9U7eK
+        overrideHides: []
+        overrideReplaces: []
+      category: eyewear
+      tags:
+      - accesories
+      - woman
+      - women
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:black_sun_glasses
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -128,42 +130,45 @@ MonoBehaviour:
     - code: es
       text: Anteojos Negros
     thumbnail: QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/blue_bandana
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: BlueBandana.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: BlueBandana.glb
-        hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
-      overrideHides: []
-      overrideReplaces: []
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: BlueBandana.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: BlueBandana.glb
-        hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
-      overrideHides: []
-      overrideReplaces: []
-    category: tiara
-    tags:
-    - accesories
-    - male
-    - man
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: BlueBandana.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: BlueBandana.glb
+          hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: BlueBandana.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: BlueBandana.glb
+          hash: Qma4gTPkjhTdXk5yBFah8rYUHsG1yCBaadPtfLs32DCXr7
+        overrideHides: []
+        overrideReplaces: []
+      category: tiara
+      tags:
+      - accesories
+      - male
+      - man
+      - female
+      - woman
+      - base-wearable
+      replaces:
+      - mask
+      - hat
+      - helmet
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:blue_bandana
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -172,32 +177,29 @@ MonoBehaviour:
     - code: es
       text: Bandana Azul
     thumbnail: QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y
-    hides: []
-    replaces:
-    - mask
-    - hat
-    - helmet
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/eyes_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_Eyes_00.png
-      contents:
-      - file: M_Eyes_00.png
-        hash: QmdPqHWhGTu6H3Dtn1SgvatmpxWeCR9Dm2Qb2hofAHqg1A
-      overrideHides: []
-      overrideReplaces: []
-    category: eyes
-    tags:
-    - face
-    - eyes
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_Eyes_00.png
+        contents:
+        - key: M_Eyes_00.png
+          hash: QmdPqHWhGTu6H3Dtn1SgvatmpxWeCR9Dm2Qb2hofAHqg1A
+        overrideHides: []
+        overrideReplaces: []
+      category: eyes
+      tags:
+      - face
+      - eyes
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:eyes_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -206,29 +208,29 @@ MonoBehaviour:
     - code: es
       text: Eyes_00
     thumbnail: Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/eyebrows_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_EyeBrows_00.png
-      contents:
-      - file: M_EyeBrows_00.png
-        hash: QmZWwUgq6UYJLCgtPbzVdhThkPTNPHqezWiQKw7Lg3yqKV
-      overrideHides: []
-      overrideReplaces: []
-    category: eyebrows
-    tags:
-    - face
-    - eyebrows
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_EyeBrows_00.png
+        contents:
+        - key: M_EyeBrows_00.png
+          hash: QmZWwUgq6UYJLCgtPbzVdhThkPTNPHqezWiQKw7Lg3yqKV
+        overrideHides: []
+        overrideReplaces: []
+      category: eyebrows
+      tags:
+      - face
+      - eyebrows
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:eyebrows_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -237,29 +239,29 @@ MonoBehaviour:
     - code: es
       text: EyeBrows_00
     thumbnail: QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/mouth_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_Mouth_00.png
-      contents:
-      - file: M_Mouth_00.png
-        hash: QmQZ6MAyHpGaPpntHJnU3x4o2dUvz5KhvNtWbbzvbAE34T
-      overrideHides: []
-      overrideReplaces: []
-    category: mouth
-    tags:
-    - face
-    - mouth
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_Mouth_00.png
+        contents:
+        - key: M_Mouth_00.png
+          hash: QmQZ6MAyHpGaPpntHJnU3x4o2dUvz5KhvNtWbbzvbAE34T
+        overrideHides: []
+        overrideReplaces: []
+      category: mouth
+      tags:
+      - face
+      - mouth
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:mouth_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -268,30 +270,30 @@ MonoBehaviour:
     - code: es
       text: Mouth_00
     thumbnail: QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/casual_hair_01
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_Hair_Standard_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: M_Hair_Standard_01.glb
-        hash: QmQtwaQT8etWM4XHZANtvBYdpqiiSg3rXFREDKacx7FDkF
-      overrideHides: []
-      overrideReplaces: []
-    category: hair
-    tags:
-    - hair
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_Hair_Standard_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: M_Hair_Standard_01.glb
+          hash: QmQtwaQT8etWM4XHZANtvBYdpqiiSg3rXFREDKacx7FDkF
+        overrideHides: []
+        overrideReplaces: []
+      category: hair
+      tags:
+      - hair
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:casual_hair_01
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -300,30 +302,30 @@ MonoBehaviour:
     - code: es
       text: Corte Casual
     thumbnail: QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/beard
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: Beard_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: Beard_01.glb
-        hash: QmY2eXCDj9arFjXD7ofoVLfJvKqJdXVm7zA9o9Macp7mTv
-      overrideHides: []
-      overrideReplaces: []
-    category: facial_hair
-    tags:
-    - face
-    - facial_hair
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: Beard_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: Beard_01.glb
+          hash: QmY2eXCDj9arFjXD7ofoVLfJvKqJdXVm7zA9o9Macp7mTv
+        overrideHides: []
+        overrideReplaces: []
+      category: facial_hair
+      tags:
+      - face
+      - facial_hair
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:beard
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -332,32 +334,32 @@ MonoBehaviour:
     - code: es
       text: Barba
     thumbnail: QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/green_hoodie
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_uBody_Hoodie_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: Avatar_MaleSkinBase.png
-        hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
-      - file: M_uBody_Hoodie_01.glb
-        hash: QmSHjzk2Uc2QU5dMx1WZEWxqi6Zrijy8FhHZeatjDApS2e
-      overrideHides: []
-      overrideReplaces: []
-    category: upper_body
-    tags:
-    - top
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_uBody_Hoodie_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: Avatar_MaleSkinBase.png
+          hash: QmdyPfi4sRYU3eMFWxeXArnCeQ78sZw7oSGxFrntAPqHhy
+        - key: M_uBody_Hoodie_01.glb
+          hash: QmSHjzk2Uc2QU5dMx1WZEWxqi6Zrijy8FhHZeatjDApS2e
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags:
+      - top
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:green_hoodie
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -366,46 +368,46 @@ MonoBehaviour:
     - code: es
       text: Sudadera Verde con Capucha
     thumbnail: QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/sneakers
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: Sneakers_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: Sneakers_01.glb
-        hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
-      overrideHides: []
-      overrideReplaces: []
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: Sneakers_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: Sneakers_01.glb
-        hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
-      overrideHides: []
-      overrideReplaces: []
-    category: feet
-    tags:
-    - shoes
-    - male
-    - man
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: Sneakers_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: Sneakers_01.glb
+          hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: Sneakers_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: Sneakers_01.glb
+          hash: QmesD6ZPWqCjHCTbKHNokrdDJTzt3wX5zuyy1Ft83uoDa8
+        overrideHides: []
+        overrideReplaces: []
+      category: feet
+      tags:
+      - shoes
+      - male
+      - man
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:sneakers
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -414,29 +416,29 @@ MonoBehaviour:
     - code: es
       text: Zapatillas
     thumbnail: QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_eyes_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyes_00.png
-      contents:
-      - file: F_Eyes_00.png
-        hash: QmPt59PBdQkYZw9A7KRHx8hBbUSXkWfXmxEATvnDavJ7gR
-      overrideHides: []
-      overrideReplaces: []
-    category: eyes
-    tags:
-    - face
-    - eyes
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyes_00.png
+        contents:
+        - key: F_Eyes_00.png
+          hash: QmPt59PBdQkYZw9A7KRHx8hBbUSXkWfXmxEATvnDavJ7gR
+        overrideHides: []
+        overrideReplaces: []
+      category: eyes
+      tags:
+      - face
+      - eyes
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_eyes_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -445,29 +447,29 @@ MonoBehaviour:
     - code: es
       text: f_Eyes_00
     thumbnail: Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_eyebrows_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyebrows_00.png
-      contents:
-      - file: F_Eyebrows_00.png
-        hash: QmXqPxhpVaNx7KfiWDjBoufQK28373nbZhNqWbKSwcGwUr
-      overrideHides: []
-      overrideReplaces: []
-    category: eyebrows
-    tags:
-    - face
-    - eyebrows
-    - Female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyebrows_00.png
+        contents:
+        - key: F_Eyebrows_00.png
+          hash: QmXqPxhpVaNx7KfiWDjBoufQK28373nbZhNqWbKSwcGwUr
+        overrideHides: []
+        overrideReplaces: []
+      category: eyebrows
+      tags:
+      - face
+      - eyebrows
+      - Female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_eyebrows_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -476,29 +478,29 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_00
     thumbnail: QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_mouth_00
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Mouth_00.png
-      contents:
-      - file: F_Mouth_00.png
-        hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
-      overrideHides: []
-      overrideReplaces: []
-    category: mouth
-    tags:
-    - face
-    - mouth
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Mouth_00.png
+        contents:
+        - key: F_Mouth_00.png
+          hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+        overrideHides: []
+        overrideReplaces: []
+      category: mouth
+      tags:
+      - face
+      - mouth
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_mouth_00
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -507,30 +509,30 @@ MonoBehaviour:
     - code: es
       text: f_Mouth_00
     thumbnail: QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/standard_hair
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Hair_Standard.glb
-      contents:
-      - file: AvatarWearables_TX.png.001.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: F_Hair_Standard.glb
-        hash: Qmbgt2AnZu9JMdxk4tCgERrbzcUYw82ivEDViywwh3dkp7
-      overrideHides: []
-      overrideReplaces: []
-    category: hair
-    tags:
-    - hair
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Hair_Standard.glb
+        contents:
+        - key: AvatarWearables_TX.png.001.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: F_Hair_Standard.glb
+          hash: Qmbgt2AnZu9JMdxk4tCgERrbzcUYw82ivEDViywwh3dkp7
+        overrideHides: []
+        overrideReplaces: []
+      category: hair
+      tags:
+      - hair
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:standard_hair
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -539,32 +541,32 @@ MonoBehaviour:
     - code: es
       text: "Peinado Cl\xE1sico"
     thumbnail: QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_sweater
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_uBody_Sweater_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_FemaleSkinBase.png
-        hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
-      - file: F_uBody_Sweater_01.glb
-        hash: QmUog3pt3CHwGDCB2QXbnKKY1GoBsJo71L8qdzV9u133Ph
-      overrideHides: []
-      overrideReplaces: []
-    category: upper_body
-    tags:
-    - top
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_uBody_Sweater_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_FemaleSkinBase.png
+          hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+        - key: F_uBody_Sweater_01.glb
+          hash: QmUog3pt3CHwGDCB2QXbnKKY1GoBsJo71L8qdzV9u133Ph
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags:
+      - top
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_sweater
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -573,30 +575,30 @@ MonoBehaviour:
     - code: es
       text: "Su\xE9ter Amarillo"
     thumbnail: QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_jeans
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_lBody_Jeans_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: F_lBody_Jeans_01.glb
-        hash: QmNXsTqL9MS24Wae8N7VXi2u4YrDnvaiZRiK8U29DZAC2z
-      overrideHides: []
-      overrideReplaces: []
-    category: lower_body
-    tags:
-    - bottom
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_lBody_Jeans_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: F_lBody_Jeans_01.glb
+          hash: QmNXsTqL9MS24Wae8N7VXi2u4YrDnvaiZRiK8U29DZAC2z
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags:
+      - bottom
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_jeans
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -605,32 +607,32 @@ MonoBehaviour:
     - code: es
       text: Jeans
     thumbnail: QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/bun_shoes
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_BunShoes_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_FemaleSkinBase.png
-        hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
-      - file: F_BunShoes_01.glb
-        hash: QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11
-      overrideHides: []
-      overrideReplaces: []
-    category: feet
-    tags:
-    - shoes
-    - woman
-    - women
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_BunShoes_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_FemaleSkinBase.png
+          hash: QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT
+        - key: F_BunShoes_01.glb
+          hash: QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11
+        overrideHides: []
+        overrideReplaces: []
+      category: feet
+      tags:
+      - shoes
+      - woman
+      - women
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:bun_shoes
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -639,29 +641,29 @@ MonoBehaviour:
     - code: es
       text: Zapatillas de Lona
     thumbnail: QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_eyebrows_01
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyebrows_01.png
-      contents:
-      - file: F_Eyebrows_01.png
-        hash: QmVbxn91ZRByw9u5jRSuxzs6wrdnLhMqiTX7LXH27CEngb
-      overrideHides: []
-      overrideReplaces: []
-    category: eyebrows
-    tags:
-    - face
-    - eyebrows
-    - Female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyebrows_01.png
+        contents:
+        - key: F_Eyebrows_01.png
+          hash: QmVbxn91ZRByw9u5jRSuxzs6wrdnLhMqiTX7LXH27CEngb
+        overrideHides: []
+        overrideReplaces: []
+      category: eyebrows
+      tags:
+      - face
+      - eyebrows
+      - Female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_eyebrows_01
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -670,46 +672,46 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_01
     thumbnail: QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/bear_slippers
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: BearSlippers_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: BearSlippers_01.glb
-        hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
-      overrideHides: []
-      overrideReplaces: []
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: BearSlippers_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: BearSlippers_01.glb
-        hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
-      overrideHides: []
-      overrideReplaces: []
-    category: feet
-    tags:
-    - shoes
-    - male
-    - man
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: BearSlippers_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: BearSlippers_01.glb
+          hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: BearSlippers_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: BearSlippers_01.glb
+          hash: QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp
+        overrideHides: []
+        overrideReplaces: []
+      category: feet
+      tags:
+      - shoes
+      - male
+      - man
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:bear_slippers
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -718,30 +720,30 @@ MonoBehaviour:
     - code: es
       text: Pantuflas de Oso
     thumbnail: QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_african_leggins
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_lBody_AfricanLeggings.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: F_lBody_AfricanLeggings.glb
-        hash: QmWJiYDnp1aeqWRCHydFKZcyT966WWtzA2hgS1E7dkHmpE
-      overrideHides: []
-      overrideReplaces: []
-    category: lower_body
-    tags:
-    - bottom
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_lBody_AfricanLeggings.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: F_lBody_AfricanLeggings.glb
+          hash: QmWJiYDnp1aeqWRCHydFKZcyT966WWtzA2hgS1E7dkHmpE
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags:
+      - bottom
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_african_leggins
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -750,32 +752,32 @@ MonoBehaviour:
     - code: es
       text: Leggins Africanos
     thumbnail: Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/bee_t_shirt
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_uBody_BeeTShirt.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
-      - file: Avatar_FemaleSkinBase.png
-        hash: QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ
-      - file: F_uBody_BeeTShirt.glb
-        hash: QmTA6EHFiqBPuT8ESafQGyp2VnKXrnYV8faBWpvmbeM6v5
-      overrideHides: []
-      overrideReplaces: []
-    category: upper_body
-    tags:
-    - top
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_uBody_BeeTShirt.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU
+        - key: Avatar_FemaleSkinBase.png
+          hash: QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ
+        - key: F_uBody_BeeTShirt.glb
+          hash: QmTA6EHFiqBPuT8ESafQGyp2VnKXrnYV8faBWpvmbeM6v5
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags:
+      - top
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:bee_t_shirt
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -784,32 +786,32 @@ MonoBehaviour:
     - code: es
       text: Remera con Estampado de Abeja
     thumbnail: QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/brown_pants
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_lBody_LongPants_01.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: M_lBody_LongPants_01.glb
-        hash: QmVBByC2XaeoxY9oowr9r9N3NX8DyMfVdT5vHe7ZYbjYbN
-      overrideHides: []
-      overrideReplaces: []
-    category: lower_body
-    tags:
-    - bottom
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_lBody_LongPants_01.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: M_lBody_LongPants_01.glb
+          hash: QmVBByC2XaeoxY9oowr9r9N3NX8DyMfVdT5vHe7ZYbjYbN
+        overrideHides: []
+        overrideReplaces: []
+      category: lower_body
+      tags:
+      - bottom
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:brown_pants
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -818,30 +820,30 @@ MonoBehaviour:
     - code: es
       text: "Pantal\xF3n Marr\xF3n"
     thumbnail: QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_glasses_cat_style
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyewear_CatStyle.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: F_Eyewear_CatStyle.glb
-        hash: QmXVGQTKqfvXuX8hTWzbviAVHievAGEFFaWFcPhQXRUEdr
-      overrideHides: []
-      overrideReplaces: []
-    category: eyewear
-    tags:
-    - accesories
-    - woman
-    - women
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyewear_CatStyle.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: F_Eyewear_CatStyle.glb
+          hash: QmXVGQTKqfvXuX8hTWzbviAVHievAGEFFaWFcPhQXRUEdr
+        overrideHides: []
+        overrideReplaces: []
+      category: eyewear
+      tags:
+      - accesories
+      - woman
+      - women
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_glasses_cat_style
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -850,29 +852,29 @@ MonoBehaviour:
     - code: es
       text: Gafas de Estilo Gato
     thumbnail: QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/f_eyebrows_02
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyebrows_02.png
-      contents:
-      - file: F_Eyebrows_02.png
-        hash: QmNM7wkfpUDULNJ7FC8AGua7b9hNnUtw9zMR676bt57v6J
-      overrideHides: []
-      overrideReplaces: []
-    category: eyebrows
-    tags:
-    - face
-    - eyebrows
-    - Female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyebrows_02.png
+        contents:
+        - key: F_Eyebrows_02.png
+          hash: QmNM7wkfpUDULNJ7FC8AGua7b9hNnUtw9zMR676bt57v6J
+        overrideHides: []
+        overrideReplaces: []
+      category: eyebrows
+      tags:
+      - face
+      - eyebrows
+      - Female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_eyebrows_02
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -881,34 +883,34 @@ MonoBehaviour:
     - code: es
       text: f_EyeBrows_02
     thumbnail: QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://halloween_2019/sad_clown_upper_body
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_uBody_Clown.glb
-      contents:
-      - file: AvatarWearables_TX.png
-        hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
-      - file: Avatar_MaleSkinBase.png
-        hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
-      - file: M_uBody_Clown.glb
-        hash: QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF
-      overrideHides: []
-      overrideReplaces: []
-    category: upper_body
-    tags:
-    - accesories
-    - exclusive
-    - halloween
-    - upper_body
-    - suit
-    - exclusive
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_uBody_Clown.glb
+        contents:
+        - key: AvatarWearables_TX.png
+          hash: QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb
+        - key: Avatar_MaleSkinBase.png
+          hash: QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH
+        - key: M_uBody_Clown.glb
+          hash: QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF
+        overrideHides: []
+        overrideReplaces: []
+      category: upper_body
+      tags:
+      - accesories
+      - exclusive
+      - halloween
+      - upper_body
+      - suit
+      - exclusive
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:halloween_2019:sad_clown_upper_body
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -917,31 +919,31 @@ MonoBehaviour:
     - code: es
       text: Traje de Payaso Triste
     thumbnail: QmTK397dYkoUTGh5vYY4yXPMqCXDwhEWhJg4CJFCBwCi2v
-    hides: []
-    replaces: []
     rarity: epic
     description: 'Little known fact: blue, red and gold are the saddest colours'
     issuedId: 0
-  - id: dcl://base-avatars/f_eyes_01
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: F_Eyes_01.png
-      contents:
-      - file: F_Eyes_01.png
-        hash: Qmbar9bThqMwjzN6LD7KhtSJshMp6ACAVXC3cgLjnoBBin
-      - file: F_Eyes_01_Mask.png
-        hash: QmWMR45paAvZtYvCTVvt296NBXsHDvcc54pURbqu2qMKje
-      overrideHides: []
-      overrideReplaces: []
-    category: eyes
-    tags:
-    - face
-    - eyes
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: F_Eyes_01.png
+        contents:
+        - key: F_Eyes_01.png
+          hash: Qmbar9bThqMwjzN6LD7KhtSJshMp6ACAVXC3cgLjnoBBin
+        - key: F_Eyes_01_Mask.png
+          hash: QmWMR45paAvZtYvCTVvt296NBXsHDvcc54pURbqu2qMKje
+        overrideHides: []
+        overrideReplaces: []
+      category: eyes
+      tags:
+      - face
+      - eyes
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:f_eyes_01
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -950,31 +952,31 @@ MonoBehaviour:
     - code: es
       text: f_Eyes_01
     thumbnail: QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/dracula_mouth
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseFemale
-      mainFile: dracula_mouth.png
-      contents:
-      - file: dracula_mouth.png
-        hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
-      - file: dracula_mouth_mask.png
-        hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
-      overrideHides: []
-      overrideReplaces: []
-    category: mouth
-    tags:
-    - face
-    - mouth
-    - female
-    - woman
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: dracula_mouth.png
+        contents:
+        - key: dracula_mouth.png
+          hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+        - key: dracula_mouth_mask.png
+          hash: QmdG4aqspAAksNFyr68sz8XqFcN2ynENaQovJ2BBsyWtD2
+        overrideHides: []
+        overrideReplaces: []
+      category: mouth
+      tags:
+      - face
+      - mouth
+      - female
+      - woman
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:dracula_mouth
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -983,29 +985,29 @@ MonoBehaviour:
     - code: es
       text: f_Mouth_00
     thumbnail: QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0
-  - id: dcl://base-avatars/eyebrows_02
-    type: wearable
-    representations:
-    - bodyShapes:
-      - dcl://base-avatars/BaseMale
-      mainFile: M_EyeBrows_02.png
-      contents:
-      - file: M_EyeBrows_02.png
-        hash: QmaPGCFTsiAPGYkhmDbTcxvM5SyqWyhHraPJ65Rzfp4dWi
-      overrideHides: []
-      overrideReplaces: []
-    category: eyebrows
-    tags:
-    - face
-    - eyebrows
-    - male
-    - man
-    - base-wearable
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_EyeBrows_02.png
+        contents:
+        - key: M_EyeBrows_02.png
+          hash: QmaPGCFTsiAPGYkhmDbTcxvM5SyqWyhHraPJ65Rzfp4dWi
+        overrideHides: []
+        overrideReplaces: []
+      category: eyebrows
+      tags:
+      - face
+      - eyebrows
+      - male
+      - man
+      - base-wearable
+      replaces: []
+      hides: []
+    id: urn:decentraland:off-chain:base-avatars:eyebrows_02
     baseUrl: https://content.decentraland.org/contents/
     baseUrlBundles: 
     i18n:
@@ -1014,8 +1016,6 @@ MonoBehaviour:
     - code: es
       text: EyeBrows_02
     thumbnail: QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr
-    hides: []
-    replaces: []
     rarity: 
     description: 
     issuedId: 0

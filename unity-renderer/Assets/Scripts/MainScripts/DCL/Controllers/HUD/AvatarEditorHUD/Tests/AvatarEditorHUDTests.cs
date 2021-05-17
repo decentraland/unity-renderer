@@ -58,7 +58,7 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void BeAddedWhenEquiped()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
+            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
 
             controller.WearableClicked(sunglassesId);
@@ -68,12 +68,12 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void BeReplacedByGeneralReplaces()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
+            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
+            var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.replaces = new[] { sunglasses.category };
+            bandana.data.replaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -84,12 +84,12 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void NotBeReplacedByWrongGeneralReplaces()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
+            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
+            var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.replaces = new[] { "NonExistentCategory" };
+            bandana.data.replaces = new[] { "NonExistentCategory" };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -100,12 +100,12 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void BeReplacedByOverrideReplaces()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
+            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
+            var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] { sunglasses.category };
+            bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 
@@ -116,12 +116,13 @@ namespace AvatarEditorHUD_Tests
         [Test]
         public void NotBeReplacedByWrongOverrideReplaces()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
+            var sunglassesId = "urn:decentraland:off-chain:base-avatars:black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
+            var bandanaId = "urn:decentraland:off-chain:base-avatars:blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideReplaces = new[] { sunglasses.category };
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE)
+                   .overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

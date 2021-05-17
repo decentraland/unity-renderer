@@ -72,6 +72,9 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Hold.Started cameraPanStartDelegate;
     private InputAction_Hold.Finished cameraPanFinishedDelegate;
 
+    private Vector3 originalCameraPosition;
+    private Transform originalCameraLookAt;
+
     private void Awake()
     {
         BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
@@ -360,5 +363,17 @@ public class FreeCameraMovement : CameraStateBase
         }
         yaw = transform.eulerAngles.y;
         pitch = transform.eulerAngles.x;
+    }
+
+    public void SetResetConfiguration(Vector3 position, Transform lookAt)
+    {
+        originalCameraPosition = position;
+        originalCameraLookAt = lookAt;
+    }
+
+    public void ResetCameraPosition()
+    {
+        SetPosition(originalCameraPosition);
+        LookAt(originalCameraLookAt);
     }
 }

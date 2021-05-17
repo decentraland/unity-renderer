@@ -101,10 +101,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
-
         HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
+        HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
     }
 
     private void Update()
@@ -240,6 +240,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange += UpdateSelectionPosition;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
+            HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
         }
     }
 
@@ -469,11 +470,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         SetLookAtObject(parcelScene);
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition;
-        freeCameraController.SetPosition(cameraPosition + Vector3.up * distanceEagleCamera);
-        //
-
+        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition + Vector3.up * distanceEagleCamera;
+        freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
+        freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
 
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
@@ -760,4 +760,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         return Vector3.zero;
     }
+
+    private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 }

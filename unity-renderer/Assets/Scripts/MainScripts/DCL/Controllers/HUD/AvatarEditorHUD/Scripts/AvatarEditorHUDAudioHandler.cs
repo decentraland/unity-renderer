@@ -47,7 +47,7 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         if (wearable == null)
             return;
 
-        switch (wearable.category)
+        switch (wearable.data.category)
         {
             case Categories.EYEBROWS:
                 eventWearableHair.Play(true);
