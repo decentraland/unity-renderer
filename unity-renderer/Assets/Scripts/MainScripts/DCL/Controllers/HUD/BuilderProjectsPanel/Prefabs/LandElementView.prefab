@@ -2314,7 +2314,7 @@ MonoBehaviour:
   landName: {fileID: 5398650941234539774}
   landCoords: {fileID: 7959593574965287870}
   landSize: {fileID: 1604587823021801010}
-  landSizeGO: {fileID: 8024369659437117764}
+  landSizeGO: {fileID: 4513709511544585788}
   roleOwner: {fileID: 6202022643292095195}
   roleOperator: {fileID: 3498342099377015172}
   buttonSettings: {fileID: 6245391608988474365}
