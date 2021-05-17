@@ -2311,13 +2311,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultThumbnail: {fileID: 2800000, guid: 1744fc3cbef3941db85c15f4beb5cb37, type: 3}
   thumbnail: {fileID: 2505408307629589042}
-  landName: {fileID: 0}
-  landCoords: {fileID: 0}
-  landSize: {fileID: 0}
-  landSizeGO: {fileID: 0}
-  roleOwner: {fileID: 0}
-  roleOperator: {fileID: 0}
-  buttonSettings: {fileID: 0}
+  landName: {fileID: 5398650941234539774}
+  landCoords: {fileID: 7959593574965287870}
+  landSize: {fileID: 1604587823021801010}
+  landSizeGO: {fileID: 8024369659437117764}
+  roleOwner: {fileID: 6202022643292095195}
+  roleOperator: {fileID: 3498342099377015172}
+  buttonSettings: {fileID: 6245391608988474365}
   buttonJumpIn: {fileID: 7931584673840458251}
   buttonEditor: {fileID: 2445830308061827044}
   buttonOpenInBuilderDapp: {fileID: 4043813018816424533}
