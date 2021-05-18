@@ -101,11 +101,16 @@ public static class BIWCatalogManager
         if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
             return;
 
-        CatalogItem catalogItem = CreateCatalogItem(sceneObject);
-
         //TODO: SmartItems disabled until kernel has them implemented
-        if (!catalogItem.IsSmartItem())
-            DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
+        if (sceneObject.IsSmartItem())
+            return;
+
+        //TODO: Voxels disabled for Builder In World V1
+        if (sceneObject.IsVoxel())
+            return;
+
+        CatalogItem catalogItem = CreateCatalogItem(sceneObject);
+        DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
     }
 
     public static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
@@ -114,7 +119,7 @@ public static class BIWCatalogManager
             return;
 
         CatalogItemPack catalogItemPack = CreateCatalogItemPack(sceneAssetPack);
-        //TODO: SmartItems disabled until kernel has them implemented
+
         if (catalogItemPack.assets.Count != 0)
             DataStore.i.builderInWorld.catalogItemPackDict.Add(catalogItemPack.id, catalogItemPack);
     }
@@ -176,8 +181,14 @@ public static class BIWCatalogManager
         foreach (SceneObject sceneObject in sceneAssetPack.assets)
         {
             //TODO: SmartItems disabled until kernel has them implemented
-            if (!sceneObject.IsSmartItem())
-                catalogItemPack.assets.Add(CreateCatalogItem(sceneObject));
+            if (sceneObject.IsSmartItem())
+                continue;
+
+            //TODO: Voxels disabled for Builder In World V1
+            if (sceneObject.IsVoxel())
+                continue;
+
+            catalogItemPack.assets.Add(CreateCatalogItem(sceneObject));
         }
 
         return catalogItemPack;
