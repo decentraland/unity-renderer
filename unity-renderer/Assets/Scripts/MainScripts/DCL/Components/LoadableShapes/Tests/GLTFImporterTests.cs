@@ -17,7 +17,7 @@ public class GLTFImporterTests : IntegrationTestSuite_Legacy
 {
     public IEnumerator LoadModel(string path, System.Action<IDCLEntity, InstantiatedGLTFObject> OnFinishLoading)
     {
-        string src = Utils.GetTestsAssetsPath() + path;
+        string src = TestAssetsUtils.GetPath() + path;
 
         IDCLEntity entity = null;
 
