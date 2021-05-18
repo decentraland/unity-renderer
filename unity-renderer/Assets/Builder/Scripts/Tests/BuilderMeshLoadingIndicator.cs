@@ -22,7 +22,7 @@ public class BuilderMeshLoadingIndicator : IntegrationTestSuite_Legacy
         var objectEntity = TestHelpers.CreateSceneEntity(scene);
         var objectShape = TestHelpers.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
-            src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+            src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
         });
 
         CheckActiveIndicatorsAmount(expectedAmount: 1);

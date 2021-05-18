@@ -31,7 +31,7 @@ namespace AvatarShape_Tests
 
         public static AvatarModel GetTestAvatarModel(string name, string fileName)
         {
-            var avatarjson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + "/Avatar/" + fileName);
+            var avatarjson = File.ReadAllText(TestAssetsUtils.GetPathRaw() + "/Avatar/" + fileName);
             AvatarModel model = JsonUtility.FromJson<AvatarModel>(avatarjson);
             model.name = name;
             return model;
