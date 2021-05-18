@@ -12,7 +12,7 @@ namespace AssetPromiseKeeper_AssetBundle_Tests
     {
         protected AssetPromise_AB CreatePromise(string hash = null)
         {
-            string contentUrl = Utils.GetTestsAssetsPath() + "/AssetBundles/";
+            string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
             hash = hash ?? "QmYACL8SnbXEonXQeRHdWYbfm8vxvaFAWnsLHUaDG4ABp5";
             var prom = new AssetPromise_AB(contentUrl, hash);
             return prom;
