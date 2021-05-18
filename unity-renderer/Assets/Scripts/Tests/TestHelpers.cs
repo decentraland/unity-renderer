@@ -521,7 +521,7 @@ namespace DCL.Helpers
         {
             yield return LoadAudioClip(entity.scene as ParcelScene,
                 audioClipId: "audioClipTest",
-                url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
+                url: TestAssetsUtils.GetPath() + "/Audio/Train.wav",
                 loop: true,
                 loading: true,
                 volume: 1f,

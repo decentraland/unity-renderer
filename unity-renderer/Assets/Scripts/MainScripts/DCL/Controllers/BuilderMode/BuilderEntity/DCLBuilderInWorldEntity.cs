@@ -502,7 +502,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         }
     }
 
-    void OnNameUpdate(DCLName.Model model) { OnStatusUpdate?.Invoke(this); }
+    void OnNameUpdate(object model) { OnStatusUpdate?.Invoke(this); }
 
     void OnShapeUpdate(IDCLEntity entity)
     {

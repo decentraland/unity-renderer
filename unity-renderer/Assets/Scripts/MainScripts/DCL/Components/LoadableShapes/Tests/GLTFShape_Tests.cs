@@ -24,7 +24,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -62,7 +62,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
             new
             {
                 assetId = mockupAssetId,
-                src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
 
@@ -88,7 +88,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -104,7 +104,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
         gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -128,7 +128,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -137,7 +137,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
             new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
 
         gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -157,7 +157,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         string gltfId1 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
             }));
         var gltf1 = scene.GetSharedComponent(gltfId1);
 
@@ -170,7 +170,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
         string gltfId2 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             }));
 
         gltfLoader = GLTFShape.GetLoaderForEntity(entity);
@@ -194,7 +194,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         // Create shape component
         var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
-        shapeModel.src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
+        shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb";
 
         var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
         yield return shapeComponent.routine;
@@ -219,7 +219,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
 
         // Create shape component
         var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
-        shapeModel.src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
+        shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb";
 
         var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
         yield return shapeComponent.routine;
@@ -235,7 +235,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [Test]
     public void OnReadyBeforeLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
 
         bool isOnReady = false;
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
@@ -246,7 +246,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyWaitLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
 
         bool isOnReady = false;
         gltfShape.CallWhenReady((x) => { isOnReady = true; });
@@ -262,7 +262,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     {
         GLTFShape gltfShape = TestHelpers.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
         {
-            src = Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb"
+            src = TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb"
         });
 
         bool isOnReady = false;
@@ -274,7 +274,7 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnReadyAfterLoadingInstantlyCalled()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
         yield return TestHelpers.WaitForGLTFLoad(entity);
 
         bool isOnReady = false;
@@ -285,9 +285,9 @@ public class GLTFShape_Tests : IntegrationTestSuite_Legacy
     [UnityTest]
     public IEnumerator OnDestroyWhileLoading()
     {
-        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
-        GLTFShape gltfShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb", out IDCLEntity entity2);
-        GLTFShape gltfShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out IDCLEntity entity3);
+        GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/Trevor/Trevor.glb", out IDCLEntity entity);
+        GLTFShape gltfShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out IDCLEntity entity2);
+        GLTFShape gltfShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb", out IDCLEntity entity3);
 
         TestHelpers.SetEntityParent(scene, entity2, entity);
         TestHelpers.SetEntityParent(scene, entity3, entity);
