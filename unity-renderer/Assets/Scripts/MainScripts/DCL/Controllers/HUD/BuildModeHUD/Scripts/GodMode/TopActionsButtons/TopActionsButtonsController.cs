@@ -69,8 +69,8 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnTranslateClicked += TranslateClicked;
         topActionsButtonsView.OnRotateClicked += RotateClicked;
         topActionsButtonsView.OnScaleClicked += ScaleClicked;
-        topActionsButtonsView.OnUndoClicked += OnUndoClick;
-        topActionsButtonsView.OnRedoClicked += OnRedoClick;
+        topActionsButtonsView.OnUndoClicked += UndoClicked;
+        topActionsButtonsView.OnRedoClicked += RedoClicked;
         topActionsButtonsView.OnDuplicateClicked += DuplicateClicked;
         topActionsButtonsView.OnDeleteClicked += DeleteClicked;
         topActionsButtonsView.OnLogOutClicked += LogoutClicked;
