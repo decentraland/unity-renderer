@@ -111,7 +111,7 @@ namespace DCL.Components
                 {
                     AnimationState unityState = animComponent[state.clip];
                     unityState.weight = state.weight;
-                    unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.ClampForever;
+                    unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.Default;
                     unityState.clip.wrapMode = unityState.wrapMode;
                     unityState.speed = state.speed;
 
