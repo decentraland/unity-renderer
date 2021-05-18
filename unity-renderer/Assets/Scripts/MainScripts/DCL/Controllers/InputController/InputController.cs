@@ -301,7 +301,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Backspace, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeDuplicate:
-                    InputProcessor.FromKey(action, KeyCode.D, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.D, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
                     break;
                 case DCLAction_Trigger.BuildEditModeTranslate:
                     InputProcessor.FromKey(action, KeyCode.G, modifiers: InputProcessor.Modifier.FocusNotInInput);

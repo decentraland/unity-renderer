@@ -115,7 +115,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal string scaleTooltipText = "Scale (G)";
     [SerializeField] internal string undoTooltipText = "Undo (Shift+Z)";
     [SerializeField] internal string redoTooltipText = "Redo (Shift+Y)";
-    [SerializeField] internal string duplicateTooltipText = "Duplicate (Control+D)";
+    [SerializeField] internal string duplicateTooltipText = "Duplicate (Shift+D)";
     [SerializeField] internal string deleteTooltipText = "Delete (Del) or (Backspace)";
     [SerializeField] internal string moreActionsTooltipText = "Extra Actions";
     [SerializeField] internal string logoutTooltipText = "Exit from edition";
