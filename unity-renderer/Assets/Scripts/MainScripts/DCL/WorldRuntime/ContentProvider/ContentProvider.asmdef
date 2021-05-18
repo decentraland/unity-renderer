@@ -1,0 +1,17 @@
+{
+    "name": "ContentProvider",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b308ae946900fa04080222d7daf47d9a",
+        "GUID:6e6a87f97192ec947993f360104e75b7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
