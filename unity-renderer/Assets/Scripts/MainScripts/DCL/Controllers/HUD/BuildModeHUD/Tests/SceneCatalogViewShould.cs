@@ -96,25 +96,40 @@ namespace Tests.BuildModeHUDViews
 
             // Act
             sceneCatalogView.CloseCatalog();
-            yield return null;
 
             // Assert
+            Assert.IsTrue(sceneCatalogView.isClosing, "The isClosing flag should be activated!");
+            yield return null;
             Assert.IsFalse(sceneCatalogView.gameObject.activeSelf, "The catalog is not deactivated!");
+            Assert.IsFalse(sceneCatalogView.isClosing, "The isClosing flag should be deactivated!");
         }
 
-        [Test]
-        [TestCase(true)]
-        [TestCase(false)]
-        public void SetActiveCorrectly(bool isActive)
+        [UnityTest]
+        [TestCase(true, true, ExpectedResult = null)]
+        [TestCase(true, false, ExpectedResult = null)]
+        [TestCase(false, true, ExpectedResult = null)]
+        [TestCase(false, false, ExpectedResult = null)]
+        public IEnumerator SetActiveCorrectly(bool isActive, bool isClosing)
         {
             // Arrange
+            sceneCatalogView.isClosing = isClosing;
             sceneCatalogView.gameObject.SetActive(!isActive);
 
             // Act
             sceneCatalogView.SetActive(isActive);
 
             // Assert
+            if (isActive && isClosing)
+            {
+                Assert.AreEqual(!isActive, sceneCatalogView.gameObject.activeSelf);
+                sceneCatalogView.isClosing = false;
+                yield return null;
+            }
+
             Assert.AreEqual(isActive, sceneCatalogView.gameObject.activeSelf, "The catalog has not been activated properly!");
+
+            yield return null;
+            Assert.IsTrue(true);
         }
 
         [Test]

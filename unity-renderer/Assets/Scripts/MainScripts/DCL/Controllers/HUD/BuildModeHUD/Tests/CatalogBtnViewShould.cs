@@ -63,5 +63,20 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.IsTrue(isHidden, "isHidden is false!");
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetActiveCorrectly(bool isActive)
+        {
+            // Arrange
+            catalogBtnView.gameObject.SetActive(!isActive);
+
+            // Act
+            catalogBtnView.SetActive(isActive);
+
+            // Assert
+            Assert.AreEqual(isActive, catalogBtnView.gameObject.activeSelf, "The active property does not match!");
+        }
     }
 }
