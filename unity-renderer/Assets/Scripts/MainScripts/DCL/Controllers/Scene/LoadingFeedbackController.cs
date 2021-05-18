@@ -49,7 +49,11 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private void SceneController_OnNewSceneAdded(IParcelScene scene)
     {
-        var parcelScene = (ParcelScene)scene;
+        var parcelScene = scene as ParcelScene;
+
+        if ( parcelScene == null )
+            return;
+
         parcelScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
     }
 
