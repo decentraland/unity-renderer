@@ -189,7 +189,7 @@ namespace Builder
             panTarget += panOffset;
         }
 
-        private void Zoom(float amount) { zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin); }
+        private void Zoom(float amount) { zoomTarget = Mathf.Clamp(zoomTarget + Mathf.Sign(amount) * 5, -zoomMax, -zoomMin); }
 
         private void OnDragObjectStart() { isObjectBeingDrag = true; }
 

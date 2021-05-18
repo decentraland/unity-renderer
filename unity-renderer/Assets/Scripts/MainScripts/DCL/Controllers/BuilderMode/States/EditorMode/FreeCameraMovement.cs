@@ -12,6 +12,7 @@ public class FreeCameraMovement : CameraStateBase
 
     [Header("Manual Camera Movement")]
     public float keyboardMovementSpeed = 5f;
+
     public float lookSpeedH = 2f;
 
     public float lookSpeedV = 2f;
@@ -22,6 +23,7 @@ public class FreeCameraMovement : CameraStateBase
 
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold advanceFowardInputAction;
+
     [SerializeField] internal InputAction_Hold advanceBackInputAction;
     [SerializeField] internal InputAction_Hold advanceLeftInputAction;
     [SerializeField] internal InputAction_Hold advanceRightInputAction;
@@ -231,15 +233,20 @@ public class FreeCameraMovement : CameraStateBase
 
     private void MouseWheel(float axis) { wheelAxisValue = axis; }
 
+    private float scrollVelocity = 0;
+
     private void MouseWheelUpdate(float axis)
     {
         if (!isCameraAbleToMove)
             return;
 
-        float scrollMovementDestination = axis * zoomSpeed;
+        float scrollAcceleration = axis * zoomSpeed;
+
+        scrollVelocity += scrollAcceleration;
+        scrollVelocity *= 0.9f; // inertia
 
         var position = transform.position;
-        Vector3 targetPosition = position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
+        Vector3 targetPosition = position + transform.TransformDirection(Vector3.forward * scrollVelocity);
         Vector3 result = Vector3.Lerp(position, targetPosition, smoothLookAtSpeed * Time.deltaTime);
         position = result;
         transform.position = position;
@@ -298,6 +305,7 @@ public class FreeCameraMovement : CameraStateBase
     }
 
     public void SmoothLookAt(Transform transform) { SmoothLookAt(transform.position); }
+
     public void SmoothLookAt(Vector3 position)
     {
         if (smoothLookAtCor != null)
@@ -318,11 +326,11 @@ public class FreeCameraMovement : CameraStateBase
                 {
                     midPointFromEntity += render.bounds.center;
                 }
+
                 midPointFromEntity /= entity.rootEntity.renderers.Length;
                 finalPosition += midPointFromEntity;
                 totalPoints++;
             }
-
         }
 
         finalPosition /= totalPoints;
@@ -352,6 +360,7 @@ public class FreeCameraMovement : CameraStateBase
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, advance);
             yield return null;
         }
+
         yaw = transform.eulerAngles.y;
         pitch = transform.eulerAngles.x;
     }

@@ -10,8 +10,11 @@ namespace Builder
         [SerializeField] float mouseWheelThrottle = 0.1f;
 
         public delegate void MouseClickDelegate(int buttonId, Vector3 mousePosition);
+
         public delegate void MouseDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
+
         public delegate void MouseRawDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
+
         public delegate void MouseWheelDelegate(float axisValue);
 
         public static event MouseClickDelegate OnMouseDown;
@@ -26,7 +29,6 @@ namespace Builder
 
         private void Update()
         {
-
             for (int i = 0; i <= 2; i++)
             {
                 if (HasMouseButtonInput(i))
@@ -84,14 +86,19 @@ namespace Builder
             lastMouseWheelDelta = delta;
         }
 
+        private float lastTime;
+
         private void UpdateMouseWheelInput()
         {
             float axisValue = Input.GetAxis("Mouse ScrollWheel");
             if (axisValue != 0)
             {
                 OnMouseWheelInput((int)Mathf.Sign(axisValue));
+                OnMouseWheelRaw?.Invoke(axisValue);
+                return;
             }
-            OnMouseWheelRaw?.Invoke(axisValue);
+
+            OnMouseWheelRaw?.Invoke(0);
         }
 
 #if UNITY_EDITOR
@@ -103,18 +110,22 @@ namespace Builder
             {
                 SendMessageToBridge("OnBuilderKeyDown", "UpArrow");
             }
+
             if (Input.GetKey(KeyCode.DownArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "DownArrow");
             }
+
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "LeftArrow");
             }
+
             if (Input.GetKey(KeyCode.RightArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "RightArrow");
             }
+
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "LeftShift");
@@ -125,10 +136,12 @@ namespace Builder
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.MOVE);
             }
+
             if (Input.GetKeyDown(KeyCode.R))
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.ROTATE);
             }
+
             if (Input.GetKeyDown(KeyCode.S))
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.SCALE);
@@ -141,12 +154,12 @@ namespace Builder
             {
                 bridgeGameObject = GameObject.Find("BuilderController");
             }
+
             if (bridgeGameObject != null)
             {
                 bridgeGameObject.SendMessage(method, arg);
             }
         }
 #endif
-
     }
 }
