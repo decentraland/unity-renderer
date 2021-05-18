@@ -93,6 +93,13 @@ namespace Builder
             float axisValue = Input.GetAxis("Mouse ScrollWheel");
             if (axisValue != 0)
             {
+                float interval = Time.time - lastTime;
+
+                if ( interval < 0.001f )
+                    return;
+
+                lastTime = Time.time;
+
                 OnMouseWheelInput((int)Mathf.Sign(axisValue));
                 OnMouseWheelRaw?.Invoke(axisValue);
                 return;

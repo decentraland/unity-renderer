@@ -21,6 +21,10 @@ public class FreeCameraMovement : CameraStateBase
 
     public float dragSpeed = 3f;
 
+    public float zoomVelocityMax = 10;
+    public float zoomAcceleration = 100;
+    public float zoomInertia = 0.95f;
+
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold advanceFowardInputAction;
 
@@ -240,15 +244,17 @@ public class FreeCameraMovement : CameraStateBase
         if (!isCameraAbleToMove)
             return;
 
-        float scrollAcceleration = axis * zoomSpeed;
+        float scrollAcceleration = axis * zoomAcceleration;
 
         scrollVelocity += scrollAcceleration;
-        scrollVelocity *= 0.9f; // inertia
+        scrollVelocity *= zoomInertia;
+
+        scrollVelocity = Mathf.Clamp(Mathf.Abs(scrollVelocity), 0, zoomVelocityMax) * Mathf.Sign(scrollVelocity);
 
         var position = transform.position;
         Vector3 targetPosition = position + transform.TransformDirection(Vector3.forward * scrollVelocity);
-        Vector3 result = Vector3.Lerp(position, targetPosition, smoothLookAtSpeed * Time.deltaTime);
-        position = result;
+        //Vector3 result = Vector3.Lerp(position, targetPosition, smoothLookAtSpeed * Time.deltaTime);
+        position = targetPosition;
         transform.position = position;
     }
 
