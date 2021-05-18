@@ -386,10 +386,10 @@ public class BuilderInWorldEntityHandler : BIWController
         if (entityEditable == null)
             return;
 
-        SelectEntity(entityEditable);
+        SelectEntity(entityEditable, true);
     }
 
-    public bool SelectEntity(DCLBuilderInWorldEntity entityEditable)
+    public bool SelectEntity(DCLBuilderInWorldEntity entityEditable, bool selectedFromCatalog = false)
     {
         if (entityEditable.IsLocked)
             return false;
@@ -406,7 +406,7 @@ public class BuilderInWorldEntityHandler : BIWController
         if (HUDController.i.builderInWorldMainHud != null)
         {
             hudController.UpdateEntitiesSelection(selectedEntities.Count);
-            hudController.ShowEntityInformation();
+            hudController.ShowEntityInformation(selectedFromCatalog);
             hudController.EntityInformationSetEntity(entityEditable, sceneToEdit);
         }
 
