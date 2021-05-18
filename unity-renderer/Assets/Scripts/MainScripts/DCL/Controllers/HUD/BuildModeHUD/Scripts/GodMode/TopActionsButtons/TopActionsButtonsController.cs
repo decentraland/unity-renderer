@@ -85,6 +85,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter += TooltipPointerEntered;
+        topActionsButtonsView.OnSnapModePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnSnapModeClicked += SnapModeClicked;
 
         extraActionsController = new ExtraActionsController();
@@ -115,6 +116,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter -= TooltipPointerEntered;
+        topActionsButtonsView.OnSnapModePointerEnter -= TooltipPointerEntered;
     }
 
     public void ChangeModeClicked() { OnChangeModeClick?.Invoke(); }
