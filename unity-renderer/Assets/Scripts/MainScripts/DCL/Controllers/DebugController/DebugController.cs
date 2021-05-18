@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,11 +12,13 @@ namespace DCL
         void ShowFPSPanel();
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
+        void RunPerformanceMeterTool(float durationInMilliseconds);
     }
 
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
+        private PerformanceMeterController performanceMeterController;
 
         public DebugView debugView;
 
@@ -62,6 +63,16 @@ namespace DCL
         {
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
+        }
+
+        public void RunPerformanceMeterTool(float durationInMilliseconds)
+        {
+            Debug.Log("PRAVS - DebugController - RunPerformanceMeterTool() -> " + durationInMilliseconds);
+
+            if (performanceMeterController == null)
+                performanceMeterController = new PerformanceMeterController();
+
+            performanceMeterController.StartSampling(durationInMilliseconds);
         }
 
         public void Dispose()

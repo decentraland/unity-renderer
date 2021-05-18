@@ -485,6 +485,12 @@ namespace DCL
                             case "PublishSceneResult":
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
                                 break;
+                            case "RunPerformanceMeterTool":
+                                if (float.TryParse(msg.payload, out float floatValue))
+                                {
+                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(floatValue);
+                                }
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +

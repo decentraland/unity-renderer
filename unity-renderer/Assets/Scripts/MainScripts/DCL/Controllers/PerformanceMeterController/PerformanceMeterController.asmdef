@@ -1,9 +1,9 @@
 {
-    "name": "DebugController",
+    "name": "PerformanceMeterController",
     "rootNamespace": "",
     "references": [
-        "GUID:28f74c468a54948bfa9f625c5d428f56",
-        "GUID:86fc86d79514649949d189c1ef89260a"
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:e945202cffc30cc479229aef4577a74c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
