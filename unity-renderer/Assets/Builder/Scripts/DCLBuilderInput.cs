@@ -84,14 +84,18 @@ namespace Builder
             lastMouseWheelDelta = delta;
         }
 
+        private float lastime = 0;
         private void UpdateMouseWheelInput()
         {
             float axisValue = Input.GetAxis("Mouse ScrollWheel");
             if (axisValue != 0)
             {
                 OnMouseWheelInput((int)Mathf.Sign(axisValue));
+                var delta = Time.time - lastime;
+                lastime = Time.time;
+                var mul = axisValue * Mathf.Clamp01(delta);
+                OnMouseWheelRaw?.Invoke(axisValue);
             }
-            OnMouseWheelRaw?.Invoke(axisValue);
         }
 
 #if UNITY_EDITOR
