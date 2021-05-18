@@ -247,7 +247,7 @@ public class FreeCameraMovement : CameraStateBase
         float scrollAcceleration = axis * zoomAcceleration;
 
         scrollVelocity += scrollAcceleration;
-        scrollVelocity *= zoomInertia;
+        scrollVelocity *= 1 / (1f + Time.deltaTime * zoomInertia);
 
         scrollVelocity = Mathf.Clamp(Mathf.Abs(scrollVelocity), 0, zoomVelocityMax) * Mathf.Sign(scrollVelocity);
 
