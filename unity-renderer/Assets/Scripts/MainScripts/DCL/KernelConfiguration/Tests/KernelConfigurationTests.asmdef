@@ -1,10 +1,12 @@
 {
     "name": "KernelConfigurationTests",
+    "rootNamespace": "",
     "references": [
         "GUID:c44f6fd10d3d94432a107d581e0096b5",
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e99faafecbf8dd74d8130597511b9b27"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
