@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Interface;
 
 public interface IAnalytics : IDisposable
 {
-    void SendAnalytic(string eventName, Dictionary<object, object> data);
+    void SendAnalytic(string eventName, Dictionary<string, object> data);
 }
 
 public class Analytics : IAnalytics
@@ -13,9 +14,9 @@ public class Analytics : IAnalytics
     public static IAnalytics i;
     public Analytics() { i = this; }
 
-    public void SendAnalytic(string eventName, Dictionary<object, object> data) { SendToSegment(eventName, data); }
+    public void SendAnalytic(string eventName, Dictionary<string, object> data) { SendToSegment(eventName, data); }
 
-    internal void SendToSegment(string eventName, Dictionary<object, object> data) { WebInterface.SendGenericAnalytic(eventName, data); }
+    internal void SendToSegment(string eventName, Dictionary<string, object> data) { WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new WebInterface.AnalyticsPayload.Property(x.Key, x.Value)).ToArray()); }
 
     public void Dispose() { }
 }

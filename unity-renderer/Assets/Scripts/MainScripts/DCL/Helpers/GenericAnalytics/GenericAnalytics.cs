@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public static class GenericAnalytics
 {
-    public static void SendAnalytic(string eventName, Dictionary<object, object> data)
+    public static void SendAnalytic(string eventName, Dictionary<string, object> data)
     {
         FillGenericData(data);
 
@@ -11,5 +11,5 @@ public static class GenericAnalytics
         Analytics.i.SendAnalytic(eventName, data);
     }
 
-    internal static void FillGenericData(Dictionary<object, object> data) { }
+    internal static void FillGenericData(Dictionary<string, object> data) { }
 }

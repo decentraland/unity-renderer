@@ -510,9 +510,9 @@ namespace DCL.Interface
             public class Property
             {
                 public string key;
-                public string value;
+                public object value;
 
-                public Property(string key, string value)
+                public Property(string key, object value)
                 {
                     this.key = key;
                     this.value = value;
@@ -1194,7 +1194,5 @@ namespace DCL.Interface
         }
 
         public static void ReportAvatarFatalError() { SendMessage("ReportAvatarFatalError"); }
-
-        public static void SendGenericAnalytic(string eventName, Dictionary<object, object> data) { SendMessage("GenericAnalytic", new GenericAnalyticPayload { eventName = eventName, data = data }); }
     }
 }
