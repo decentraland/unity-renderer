@@ -486,9 +486,9 @@ namespace DCL
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
                                 break;
                             case "RunPerformanceMeterTool":
-                                if (float.TryParse(msg.payload, out float floatValue))
+                                if (float.TryParse(msg.payload, out float durationInMilliseconds))
                                 {
-                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(floatValue);
+                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(durationInMilliseconds);
                                 }
                                 break;
                             default:

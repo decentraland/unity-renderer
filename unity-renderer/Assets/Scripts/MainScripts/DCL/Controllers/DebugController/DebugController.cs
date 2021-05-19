@@ -67,8 +67,6 @@ namespace DCL
 
         public void RunPerformanceMeterTool(float durationInMilliseconds)
         {
-            Debug.Log("PRAVS - DebugController - RunPerformanceMeterTool() -> " + durationInMilliseconds);
-
             if (performanceMeterController == null)
                 performanceMeterController = new PerformanceMeterController();
 

@@ -66,6 +66,6 @@ namespace DCL
         }
 
         [ContextMenu("Run Performance Meter Tool for X seconds")]
-        public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+        public void DebugPerformanceMeter() { RunPerformanceMeterTool(10 * 1000); }
     }
 }

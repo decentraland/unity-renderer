@@ -9,9 +9,14 @@ namespace DCL
         {
             public int frameNumber;
             public float fpsCount;
-            public int hiccupCount;
-            public float hiccupSum;
             public float totalSeconds;
+
+            public override string ToString()
+            {
+                return "frame number: " + frameNumber
+                                        + "\n frame consumed seconds: " + totalSeconds
+                                        + "\n fps until this frame: " + fpsCount;
+            }
         }
 
         private class SamplesFPSComparer : IComparer<SampleData>
@@ -35,6 +40,9 @@ namespace DCL
                     return 1;
                 }
 
+                if (sampleA == sampleB)
+                    return 0;
+
                 return sampleA.fpsCount > sampleB.fpsCount ? 1 : -1;
             }
         }
@@ -49,7 +57,6 @@ namespace DCL
 
         // auxiliar data
         private SampleData lastSavedSample;
-        private float samplingStartTime;
         private float fpsSum = 0;
 
         // reported data
@@ -70,8 +77,6 @@ namespace DCL
             samples.Clear();
             lastSavedSample = null;
 
-            samplingStartTime = Time.timeSinceLevelLoad;
-
             fpsSum = 0;
 
             highestFPS = 0;
@@ -88,7 +93,7 @@ namespace DCL
         public void StartSampling(float durationInMilliseconds)
         {
             if (VERBOSE)
-                Debug.Log("PerformanceMeterController - Start running... target duration: " + durationInMilliseconds);
+                Debug.Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
 
             metricsData.OnChange += OnMetricsChange;
 
@@ -103,6 +108,12 @@ namespace DCL
                 Debug.Log("PerformanceMeterController - Stopped running.");
 
             metricsData.OnChange -= OnMetricsChange;
+
+            if (samples.Count == 0)
+            {
+                Debug.Log("PerformanceMeterController - No samples were gathered, the duration time in milliseconds set is probably too small");
+                return;
+            }
 
             ProcessSamples();
 
@@ -122,19 +133,17 @@ namespace DCL
             {
                 frameNumber = Time.frameCount,
                 fpsCount = newData.fpsCount,
-                hiccupCount = newData.hiccupCount,
-                hiccupSum = newData.hiccupSum,
                 totalSeconds = newData.totalSeconds
             };
             samples.Add(newSample);
             lastSavedSample = newSample;
 
             fpsSum += newData.fpsCount;
-            totalHiccups += newData.hiccupCount; // TODO: confirm this is per frame and not since level load
-            totalHiccupsTime += newData.hiccupSum; // TODO: confirm this is per frame and not since level load
+            // totalHiccups += newData.hiccupCount; // TODO: confirm this is per frame and not since level load
+            // totalHiccupsTime += newData.hiccupSum; // TODO: confirm this is per frame and not since level load
             totalFrames++;
 
-            currentDuration += Time.deltaTime;
+            currentDuration += Time.deltaTime * 1000;
             if (currentDuration > targetDuration)
             {
                 totalFramesTime = currentDuration;
@@ -153,7 +162,6 @@ namespace DCL
 
             averageFPS = fpsSum / samples.Count;
 
-            // based on https://github.com/decentraland/explorer/blob/bf7fc03f00b990cc4c5c65ee3e5da194b5281d1a/kernel/packages/shared/session/getPerformanceInfo.ts
             percentile50FPS = samples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsCount;
             percentile95FPS = samples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsCount;
         }
@@ -169,13 +177,18 @@ namespace DCL
                       + "\n * lowest FPS -> " + lowestFPS
                       + "\n * 50 percentile (median) FPS -> " + percentile50FPS
                       + "\n * 95 percentile FPS -> " + percentile95FPS
-                      + "\n * total hiccups -> " + totalHiccups
-                      + "\n * total hiccups time -> " + totalHiccupsTime
+                      // + "\n * total hiccups -> " + totalHiccups
+                      // + "\n * total hiccups time -> " + totalHiccupsTime
                       + "\n * total frames -> " + totalFrames
                       + "\n * total frames time -> " + totalFramesTime
             );
 
-            // print/dump all samples data 
+            // print/dump all samples data
+            Debug.Log("PerformanceMeterController - Data report step 3...");
+            foreach (SampleData sample in samples)
+            {
+                Debug.Log(sample);
+            }
         }
     }
 }
