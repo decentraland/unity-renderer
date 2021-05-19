@@ -16,7 +16,7 @@ public static class CompilerOptions
 
         if ( target == BuildTarget.WebGL)
         {
-            PlayerSettings.WebGL.emscriptenArgs = ""; // " --profiling-funcs ";
+            PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
         }
     }
 }
