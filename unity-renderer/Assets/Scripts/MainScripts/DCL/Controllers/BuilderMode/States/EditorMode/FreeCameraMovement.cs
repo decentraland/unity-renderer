@@ -28,6 +28,8 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
     [SerializeField] internal InputAction_Hold cameraPanInputAction;
+    [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
+    [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -71,6 +73,9 @@ public class FreeCameraMovement : CameraStateBase
 
     private InputAction_Hold.Started cameraPanStartDelegate;
     private InputAction_Hold.Finished cameraPanFinishedDelegate;
+
+    private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
+    private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
@@ -128,6 +133,12 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted += cameraPanStartDelegate;
         cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
+        zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
+
+        zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
+        zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
     }
 
     public void StartDectectingMovement()
@@ -185,6 +196,9 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
         cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
+        zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
     }
 
     private void Update()

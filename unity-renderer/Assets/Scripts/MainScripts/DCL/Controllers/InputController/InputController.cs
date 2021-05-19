@@ -64,7 +64,9 @@ public enum DCLAction_Trigger
     BuildEditModeReset = 443,
     BuildEditHideSelectedEntities = 444,
     BuildEditShowAllEntities = 445,
-    BuildEditModeResetCamera = 446
+    BuildEditModeResetCamera = 446,
+    BuildEditModeZoomIn = 447,
+    BuildEditModeZoomOut = 448
 }
 
 /// <summary>
@@ -334,6 +336,14 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.BuildEditModeResetCamera:
                     InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
+                    break;
+                case DCLAction_Trigger.BuildEditModeZoomIn:
+                    InputProcessor.FromKey(action, KeyCode.KeypadPlus, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Plus, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.BuildEditModeZoomOut:
+                    InputProcessor.FromKey(action, KeyCode.KeypadMinus, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.Minus, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
