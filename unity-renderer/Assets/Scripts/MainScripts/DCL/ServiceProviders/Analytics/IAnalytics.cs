@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Interface;
+using Newtonsoft.Json;
 
 public interface IAnalytics : IDisposable
 {
@@ -10,11 +11,19 @@ public interface IAnalytics : IDisposable
 
 public class Analytics : IAnalytics
 {
+    private static bool VERBOSE = false;
+
     //Remove this once environment is on its own assembly and can be accessed properly
     public static IAnalytics i;
     public Analytics() { i = this; }
 
-    public void SendAnalytic(string eventName, Dictionary<string, object> data) { SendToSegment(eventName, data); }
+    public void SendAnalytic(string eventName, Dictionary<string, object> data)
+    {
+        if (VERBOSE)
+            UnityEngine.Debug.Log($"{eventName}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}");
+
+        SendToSegment(eventName, data);
+    }
 
     internal void SendToSegment(string eventName, Dictionary<string, object> data) { WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new WebInterface.AnalyticsPayload.Property(x.Key, x.Value)).ToArray()); }
 
