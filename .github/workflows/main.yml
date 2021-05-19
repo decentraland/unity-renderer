@@ -1,0 +1,20 @@
+name: Deployment Notification
+
+on:
+  pull_request:
+    types: [ opened ]
+
+jobs:
+  deployment_notification:
+    runs-on: ubuntu-latest
+    name: Decentraland Unity-Renderer Deployment Notification
+    steps:
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@master
+        with:
+          message: |
+            After the CI passes:
+
+            - This branch can be previewed at [https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:${{ github.head_ref }}](https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:${{ github.head_ref }}&ENV=org)
+
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
