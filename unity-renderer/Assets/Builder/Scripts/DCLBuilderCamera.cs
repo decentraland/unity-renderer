@@ -160,7 +160,7 @@ namespace Builder
             }
         }
 
-        private void OnMouseWheel(float axisValue) { Zoom(axisValue * zoomAmount); }
+        private void OnMouseWheel(float axisValue) { Zoom(Mathf.Sign(axisValue) * zoomAmount); }
 
         private void OnKeyboardButtonHold(KeyCode keyCode)
         {

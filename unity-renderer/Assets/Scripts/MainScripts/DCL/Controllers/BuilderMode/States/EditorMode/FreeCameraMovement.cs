@@ -1,10 +1,7 @@
 using Builder.Gizmos;
-using DCL.Models;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class FreeCameraMovement : CameraStateBase
 {
@@ -29,8 +26,6 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
     [SerializeField] internal InputAction_Hold cameraPanInputAction;
-
-    public InputField speedInputField;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -78,21 +73,13 @@ public class FreeCameraMovement : CameraStateBase
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
 
+    private float lastMouseWheelTime = 0;
+
     private void Awake()
     {
-        speedInputField.text = zoomSpeed.ToString("0.##");
-        speedInputField.onEndEdit.AddListener(value =>
-        {
-            if (!float.TryParse(value, out zoomSpeed))
-            {
-                Debug.LogError("PARSE NUMBER ERROR");
-            }
-        });
-
-
         BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
         BuilderInWorldInputWrapper.OnMouseDragRaw += MouseDragRaw;
-        BuilderInWorldInputWrapper.OnMouseWheelRaw += MouseWheel;
+        BuilderInWorldInputWrapper.OnMouseWheel += MouseWheel;
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -173,7 +160,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         BuilderInWorldInputWrapper.OnMouseDrag -= MouseDrag;
         BuilderInWorldInputWrapper.OnMouseDragRaw -= MouseDragRaw;
-        BuilderInWorldInputWrapper.OnMouseWheelRaw -= MouseWheel;
+        BuilderInWorldInputWrapper.OnMouseWheel -= MouseWheel;
 
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -245,10 +232,14 @@ public class FreeCameraMovement : CameraStateBase
         if (!isCameraAbleToMove)
             return;
 
-        if (smoothScrollCor != null )
+        if (smoothScrollCor != null)
             CoroutineStarter.Stop(smoothScrollCor);
 
-        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
+        float delta = Time.time - lastMouseWheelTime;
+        float scrollValue = axis * Mathf.Clamp01(delta);
+        lastMouseWheelTime = Time.time;
+
+        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
