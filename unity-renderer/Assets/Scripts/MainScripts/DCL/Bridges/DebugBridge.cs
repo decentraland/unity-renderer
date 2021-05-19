@@ -49,6 +49,8 @@ namespace DCL
             bool prevLogValue = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
 
+            SomeMethodThatFails();
+
             RenderingController renderingController = FindObjectOfType<RenderingController>();
             if (renderingController == null)
             {
@@ -68,6 +70,17 @@ namespace DCL
             }
 
             Debug.unityLogger.logEnabled = prevLogValue;
+        }
+
+        private static void SomeMethodThatFails()
+        {
+            void CallStackTestMethod()
+            {
+                GameObject nullGameObject = null;
+                Debug.Log("Null gameObject is " + nullGameObject.layer);
+            }
+
+            CallStackTestMethod();
         }
     }
 }

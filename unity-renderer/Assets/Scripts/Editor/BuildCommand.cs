@@ -145,6 +145,11 @@ static class BuildCommand
         var buildName = GetBuildName();
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
 
+        if (buildTarget.ToString().ToLower().Contains("webgl"))
+        {
+            PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
+        }
+
         BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
     }
