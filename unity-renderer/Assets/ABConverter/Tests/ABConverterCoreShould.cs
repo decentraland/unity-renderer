@@ -327,7 +327,7 @@ namespace DCL.ABConverter.Tests
                 new ContentServerUtils.MappingPair { file = "Textures/Test.png", hash = "Test.png" }
             };
 
-            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = TestAssetsUtils.GetPath() + "/GLTF/SimpleCube/";
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, core.settings);
@@ -367,7 +367,7 @@ namespace DCL.ABConverter.Tests
                 new ContentServerUtils.MappingPair { file = "Textures/Test.png", hash = "Test.png" }
             };
 
-            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = TestAssetsUtils.GetPath() + "/GLTF/SimpleCube/";
             core.settings.verbose = true;
             core.settings.dumpOnly = true;
             core.settings.deleteDownloadPathAfterFinished = false;
@@ -397,7 +397,7 @@ namespace DCL.ABConverter.Tests
                 new ContentServerUtils.MappingPair { file = "SimpleCubeWithSharedNormal.bin", hash = "SimpleCubeWithSharedNormal.bin" },
             };
 
-            core.settings.baseUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLTF/SimpleCube/";
+            core.settings.baseUrl = TestAssetsUtils.GetPath() + "/GLTF/SimpleCube/";
 
             env = ABConverter.Environment.CreateWithDefaultImplementations();
             core = new ABConverter.Core(env, core.settings);

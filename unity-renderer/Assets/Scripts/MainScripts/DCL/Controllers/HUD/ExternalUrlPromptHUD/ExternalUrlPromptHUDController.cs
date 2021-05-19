@@ -53,7 +53,7 @@ public class ExternalUrlPromptHUDController : IHUD
             UnityEngine.Object.Destroy(view.gameObject);
     }
 
-    internal void ProcessOpenUrlRequest(ParcelScene scene, string url)
+    internal void ProcessOpenUrlRequest(IParcelScene scene, string url)
     {
         Uri uri;
         if (Uri.TryCreate(url, UriKind.Absolute, out uri))

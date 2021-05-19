@@ -551,10 +551,18 @@ public class TaskbarHUDController : IHUD
             view.moreMenu.ShowTutorialButton(isActive);
     }
 
-    private void SceneController_OnNewPortableExperienceSceneAdded(GlobalScene newPortableExperienceScene)
+    private void SceneController_OnNewPortableExperienceSceneAdded(IParcelScene scene)
     {
+        GlobalScene newPortableExperienceScene = scene as GlobalScene;
+
+        if ( newPortableExperienceScene == null )
+        {
+            Debug.LogError("Portable experience must be of type GlobalScene!");
+            return;
+        }
+
         view.AddPortableExperienceElement(
-            newPortableExperienceScene.sceneData.id,
+            scene.sceneData.id,
             newPortableExperienceScene.sceneName,
             newPortableExperienceScene.iconUrl);
     }
