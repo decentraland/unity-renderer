@@ -1520,7 +1520,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3193610344662969367}
   m_HandleRect: {fileID: 5235652312118844955}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -9048,6 +9048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4423669712238568307}
   - component: {fileID: 8987509843347612041}
+  - component: {fileID: 2843118901853578330}
   m_Layer: 5
   m_Name: EntityInformationView
   m_TagString: Untagged
@@ -9090,6 +9091,7 @@ MonoBehaviour:
   openMenuSprite: {fileID: -4039189695975759474, guid: afc4aded8ae84e94c807b44d4c25706a,
     type: 3}
   closeMenuSprite: {fileID: 21300000, guid: dd91a090e21ff6745ad3a82ac279b074, type: 3}
+  canvasGroup: {fileID: 2843118901853578330}
   individualEntityPanel: {fileID: 2999432825142859745}
   multipleEntitiesPanel: {fileID: 2694162219859954569}
   multipleEntitiesText: {fileID: 2774372933765268120}
@@ -9109,6 +9111,18 @@ MonoBehaviour:
   backButton: {fileID: 2965905026032899351}
   detailsToggleButton: {fileID: 5461605552408377446}
   basicInfoTogglekButton: {fileID: 1808548721378345531}
+--- !u!225 &2843118901853578330
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8159827402407109029}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8191867194651948674
 GameObject:
   m_ObjectHideFlags: 0

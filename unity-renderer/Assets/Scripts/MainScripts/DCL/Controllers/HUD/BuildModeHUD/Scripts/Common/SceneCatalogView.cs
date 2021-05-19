@@ -72,6 +72,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
     [SerializeField] internal RectTransform assetPackMaxSizeRT;
 
     internal bool isCatalogExpanded = false;
+    internal bool isClosing = false;
 
     private const string VIEW_PATH = "Common/SceneCatalogView";
 
@@ -145,9 +146,23 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     internal IEnumerator CloseCatalogAfterOneFrame()
     {
+        isClosing = true;
         yield return null;
         gameObject.SetActive(false);
+        isClosing = false;
     }
 
-    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
+    public void SetActive(bool isActive)
+    {
+        if (isActive && isClosing)
+            CoroutineStarter.Start(OpenCatalogWhenIsAlreadyClosed());
+        else
+            gameObject.SetActive(isActive);
+    }
+
+    internal IEnumerator OpenCatalogWhenIsAlreadyClosed()
+    {
+        yield return new WaitUntil(() => !isClosing);
+        gameObject.SetActive(true);
+    }
 }

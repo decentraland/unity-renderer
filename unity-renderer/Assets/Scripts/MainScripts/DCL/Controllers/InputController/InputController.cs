@@ -137,25 +137,31 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         if (!renderingEnabled)
+        {
+            Stop_Measurable(measurableActions);
             return;
+        }
 
         switch (inputTypeMode)
         {
             case InputTypeMode.OFF:
+                Stop_Measurable(measurableActions);
                 return;
             case InputTypeMode.GENERAL:
                 Update_Trigger(triggerTimeActions);
                 Update_Hold(holdActions);
+                Update_Measurable(measurableActions);
                 break;
             case InputTypeMode.BUILD_MODE_LOADING:
                 Update_Trigger(loadingBuilderTriggerTimeActions);
+                Stop_Measurable(measurableActions);
                 break;
             case InputTypeMode.BUILD_MODE:
                 Update_Trigger(builderTriggerTimeActions);
                 Update_Hold(builderHoldActions);
+                Update_Measurable(measurableActions);
                 break;
         }
-        Update_Measurable(measurableActions);
     }
 
     /// <summary>
@@ -428,6 +434,14 @@ public class InputController : MonoBehaviour
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+    }
+
+    private void Stop_Measurable(InputAction_Measurable[] measurableActions)
+    {
+        for (var i = 0; i < measurableActions.Length; i++)
+        {
+            measurableActions[i].RaiseOnValueChanged(0);
         }
     }
 }
