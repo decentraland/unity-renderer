@@ -3795,7 +3795,7 @@ PrefabInstance:
     - target: {fileID: 3820961470333951648, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: m_text
-      value: Hide UI       [U]
+      value: Hide UI           (U)
       objectReference: {fileID: 0}
     - target: {fileID: 3820961470333951648, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
@@ -3831,6 +3831,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820961470333951663, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12.700014
       objectReference: {fileID: 0}
     - target: {fileID: 3820961470363358826, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
@@ -4026,10 +4031,15 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3820961470538246276, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12.700014
+      objectReference: {fileID: 0}
     - target: {fileID: 3820961470538246277, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: m_text
-      value: Controls     [N]
+      value: Controls         (C)
       objectReference: {fileID: 0}
     - target: {fileID: 3820961470538246277, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
@@ -4462,6 +4472,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3820961471283079979, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12.700014
+      objectReference: {fileID: 0}
     - target: {fileID: 3820961471283079980, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: m_fontColor.b
@@ -4481,6 +4496,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820961471283079980, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4292138197
       objectReference: {fileID: 0}
     - target: {fileID: 3820961471283079980, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
@@ -4541,6 +4561,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3820961471361727892, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12.700014
       objectReference: {fileID: 0}
     - target: {fileID: 3820961471361727893, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
@@ -5156,6 +5181,16 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.8352941
       objectReference: {fileID: 0}
+    - target: {fileID: 4451981037824112433, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5127593872766953183, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: snapModeTooltipText
+      value: Toggle Snapping (O)
+      objectReference: {fileID: 0}
     - target: {fileID: 5127593872766953183, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: duplicateTooltipText
@@ -5172,6 +5207,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 7c0afe1bfb8e1429380b5fbb15925982,
         type: 3}
+    - target: {fileID: 5239156692722553902, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_text
+      value: Reset     (Shift+R)
+      objectReference: {fileID: 0}
     - target: {fileID: 5239156692722553902, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: m_fontColor.b
@@ -5273,6 +5313,16 @@ PrefabInstance:
       propertyPath: m_PixelsPerUnitMultiplier
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6516936449994683077, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 135.3452
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516936449994683077, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 30.3726
+      objectReference: {fileID: 0}
     - target: {fileID: 6628568173431319366, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
       propertyPath: m_Type
@@ -5303,6 +5353,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PixelsPerUnitMultiplier
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6882887347697264074, guid: f8027087020999148b343f3dcbb03692,
+        type: 3}
+      propertyPath: m_text
+      value: Reset Camera (Shift+C)
       objectReference: {fileID: 0}
     - target: {fileID: 6882887347697264074, guid: f8027087020999148b343f3dcbb03692,
         type: 3}
