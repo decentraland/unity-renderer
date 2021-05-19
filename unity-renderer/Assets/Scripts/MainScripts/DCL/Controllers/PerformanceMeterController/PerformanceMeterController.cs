@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.FPSDisplay;
 
 namespace DCL
 {
@@ -9,12 +10,15 @@ namespace DCL
         {
             public int frameNumber;
             public float fpsCount;
-            public float totalSeconds;
+            public float totalMilliseconds;
+            public float currentTime;
+            public bool isHiccup = false;
 
             public override string ToString()
             {
                 return "frame number: " + frameNumber
-                                        + "\n frame consumed seconds: " + totalSeconds
+                                        + "\n frame consumed milliseconds: " + totalMilliseconds
+                                        + "\n is hiccup: " + isHiccup
                                         + "\n fps until this frame: " + fpsCount;
             }
         }
@@ -66,7 +70,7 @@ namespace DCL
         private float percentile50FPS;
         private float percentile95FPS;
         private int totalHiccups;
-        private float totalHiccupsTime;
+        private float totalHiccupsTimeInSeconds;
         private int totalFrames;
         private float totalFramesTime;
 
@@ -85,7 +89,7 @@ namespace DCL
             percentile50FPS = 0;
             percentile95FPS = 0;
             totalHiccups = 0;
-            totalHiccupsTime = 0;
+            totalHiccupsTimeInSeconds = 0;
             totalFrames = 0;
             totalFramesTime = 0;
         }
@@ -133,14 +137,21 @@ namespace DCL
             {
                 frameNumber = Time.frameCount,
                 fpsCount = newData.fpsCount,
-                totalSeconds = newData.totalSeconds
+                totalMilliseconds = lastSavedSample != null ? (Time.timeSinceLevelLoad - lastSavedSample.currentTime) * 1000 : -1,
+                currentTime = Time.timeSinceLevelLoad
             };
+            newSample.isHiccup = newSample.totalMilliseconds / 1000 > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
             samples.Add(newSample);
             lastSavedSample = newSample;
 
+            if (newSample.isHiccup)
+            {
+                totalHiccups++;
+                totalHiccupsTimeInSeconds += newSample.totalMilliseconds / 1000;
+            }
+
             fpsSum += newData.fpsCount;
-            // totalHiccups += newData.hiccupCount; // TODO: confirm this is per frame and not since level load
-            // totalHiccupsTime += newData.hiccupSum; // TODO: confirm this is per frame and not since level load
+
             totalFrames++;
 
             currentDuration += Time.deltaTime * 1000;
@@ -154,16 +165,17 @@ namespace DCL
         private void ProcessSamples()
         {
             // Sort the samples based on FPS count of each one, to be able to calculate the percentiles later
-            samples.Sort(samplesFPSComparer);
-            int samplesCount = samples.Count;
+            var sortedSamples = new List<SampleData>(samples);
+            sortedSamples.Sort(samplesFPSComparer);
+            int samplesCount = sortedSamples.Count;
 
-            highestFPS = samples[samplesCount - 1].fpsCount;
-            lowestFPS = samples[0].fpsCount;
+            highestFPS = sortedSamples[samplesCount - 1].fpsCount;
+            lowestFPS = sortedSamples[0].fpsCount;
 
-            averageFPS = fpsSum / samples.Count;
+            averageFPS = fpsSum / sortedSamples.Count;
 
-            percentile50FPS = samples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsCount;
-            percentile95FPS = samples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsCount;
+            percentile50FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsCount;
+            percentile95FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsCount;
         }
 
         private void ReportData()
@@ -177,8 +189,8 @@ namespace DCL
                       + "\n * lowest FPS -> " + lowestFPS
                       + "\n * 50 percentile (median) FPS -> " + percentile50FPS
                       + "\n * 95 percentile FPS -> " + percentile95FPS
-                      // + "\n * total hiccups -> " + totalHiccups
-                      // + "\n * total hiccups time -> " + totalHiccupsTime
+                      + "\n * total hiccups -> " + totalHiccups
+                      + "\n * total hiccups time in seconds -> " + totalHiccupsTimeInSeconds
                       + "\n * total frames -> " + totalFrames
                       + "\n * total frames time -> " + totalFramesTime
             );
