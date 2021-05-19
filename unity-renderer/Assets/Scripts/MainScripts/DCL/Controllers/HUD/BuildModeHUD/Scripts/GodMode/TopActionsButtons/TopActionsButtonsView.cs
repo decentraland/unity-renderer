@@ -119,7 +119,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
     [SerializeField] internal string deleteTooltipText = "Delete (Del) or (Backspace)";
     [SerializeField] internal string moreActionsTooltipText = "Extra Actions";
     [SerializeField] internal string logoutTooltipText = "Exit from edition";
-    [SerializeField] internal string snapModeTooltipText = "Change snap (O)";
+    [SerializeField] internal string snapModeTooltipText = "Toggle Snapping (O)";
 
     [Header("Sub-Views")]
     [SerializeField] internal ExtraActionsView extraActionsView;
