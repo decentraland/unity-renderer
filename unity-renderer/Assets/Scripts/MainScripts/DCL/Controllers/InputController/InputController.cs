@@ -63,7 +63,8 @@ public enum DCLAction_Trigger
     BuildEditModeFocusSelectedEntities = 435,
     BuildEditModeReset = 443,
     BuildEditHideSelectedEntities = 444,
-    BuildEditShowAllEntities = 445
+    BuildEditShowAllEntities = 445,
+    BuildEditModeResetCamera = 446
 }
 
 /// <summary>
@@ -327,6 +328,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.BuildEditShowAllEntities:
                     InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
+                    break;
+                case DCLAction_Trigger.BuildEditModeResetCamera:
+                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);

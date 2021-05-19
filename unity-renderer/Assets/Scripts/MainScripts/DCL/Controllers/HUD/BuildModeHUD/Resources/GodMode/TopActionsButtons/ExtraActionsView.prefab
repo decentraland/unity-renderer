@@ -1067,6 +1067,8 @@ MonoBehaviour:
     type: 2}
   toggleControlsVisibilityInputAction: {fileID: 11400000, guid: efecb0671e927ba4fa1dffff33d267a2,
     type: 2}
+  toggleResetCameraInputAction: {fileID: 11400000, guid: 9a68859202fcf34468394512b661a138,
+    type: 2}
 --- !u!1 &1949570749038049156
 GameObject:
   m_ObjectHideFlags: 0
