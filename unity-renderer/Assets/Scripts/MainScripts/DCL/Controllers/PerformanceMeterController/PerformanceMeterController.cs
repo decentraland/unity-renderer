@@ -94,11 +94,11 @@ namespace DCL
         {
             Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
 
-            metricsData.OnChange += OnMetricsChange;
-
             targetDurationInMilliseconds = durationInMilliseconds;
 
             ResetDataValues();
+
+            metricsData.OnChange += OnMetricsChange;
         }
 
         public void StopSampling()
