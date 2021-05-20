@@ -686,6 +686,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void OnGizmosTransformStart(string gizmoType)
     {
+        CenterGameObjectToEdit();
         outlinerController.SetOutlineCheckActive(false);
         foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
