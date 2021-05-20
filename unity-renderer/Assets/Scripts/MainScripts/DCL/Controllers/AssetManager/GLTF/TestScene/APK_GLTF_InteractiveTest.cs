@@ -41,15 +41,15 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
             switch (counter)
             {
                 case 0:
-                    string url = Utils.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
+                    string url = TestAssetsUtils.GetPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
                     Generate(url);
                     break;
                 case 1:
-                    string url2 = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+                    string url2 = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
                     Generate(url2);
                     break;
                 case 2:
-                    string url3 = Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb";
+                    string url3 = TestAssetsUtils.GetPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb";
                     Generate(url3);
                     break;
             }

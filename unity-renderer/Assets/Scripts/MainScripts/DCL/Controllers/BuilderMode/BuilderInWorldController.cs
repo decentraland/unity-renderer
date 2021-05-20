@@ -12,6 +12,7 @@ public class BuilderInWorldController : MonoBehaviour
 {
     [Header("Activation of Feature")]
     public bool activeFeature = false;
+
     public bool bypassLandOwnershipCheck = false;
 
     [Header("DesignVariables")]
@@ -27,6 +28,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     [Header("Prefab References")]
     public BIWOutlinerController outlinerController;
+
     public BIWInputHandler bIWInputHandler;
     public BIWPublishController biwPublishController;
     public BIWCreatorController biwCreatorController;
@@ -39,6 +41,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     [Header("Build Modes")]
     public BuilderInWorldGodMode editorMode;
+
     public LayerMask layerToRaycast;
 
     private ParcelScene sceneToEdit;
@@ -238,6 +241,7 @@ public class BuilderInWorldController : MonoBehaviour
         biwFloorHandler.Init();
         bIWInputHandler.Init();
         biwSaveController.Init();
+        actionController.Init();
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -321,17 +325,18 @@ public class BuilderInWorldController : MonoBehaviour
                 }
             }
         }
+
         return voxelEntityHit;
     }
 
-    private void NewSceneAdded(ParcelScene newScene)
+    private void NewSceneAdded(IParcelScene newScene)
     {
         if (newScene.sceneData.id != sceneToEditId)
             return;
 
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
 
-        sceneToEdit = Environment.i.world.state.GetScene(sceneToEditId) as ParcelScene;
+        sceneToEdit = (ParcelScene)Environment.i.world.state.GetScene(sceneToEditId);
         sceneToEdit.OnLoadingStateUpdated += UpdateSceneLoadingProgress;
     }
 
@@ -361,6 +366,7 @@ public class BuilderInWorldController : MonoBehaviour
                     return true;
             }
         }
+
         return false;
     }
 
@@ -581,14 +587,16 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void FindSceneToEdit()
     {
-        foreach (ParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
+        foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
-            if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+            if (WorldStateUtils.IsCharacterInsideScene(scene))
             {
-                if (sceneToEdit != null && sceneToEdit != scene)
-                    actionController.Clear();
-                sceneToEdit = scene;
+                ParcelScene parcelScene = (ParcelScene)scene;
 
+                if (sceneToEdit != null && sceneToEdit != parcelScene)
+                    actionController.Clear();
+
+                sceneToEdit = parcelScene;
                 break;
             }
         }

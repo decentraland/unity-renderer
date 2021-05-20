@@ -34,6 +34,7 @@ public interface IEntityInformationView
     void ToggleBasicInfo();
     void ToggleDetailsInfo();
     void UpdateEntitiesSelection(int numberOfSelectedEntities);
+    void SetTransparencyMode(float alphaValue, bool interactable = true);
 }
 
 public class EntityInformationView : MonoBehaviour, IEntityInformationView
@@ -43,6 +44,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
     [SerializeField] internal Sprite closeMenuSprite;
 
     [Header("Prefab references")]
+    [SerializeField] internal CanvasGroup canvasGroup;
     [SerializeField] internal GameObject individualEntityPanel;
     [SerializeField] internal GameObject multipleEntitiesPanel;
     [SerializeField] internal TextMeshProUGUI multipleEntitiesText;
@@ -191,5 +193,12 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             individualEntityPanel.SetActive(true);
             multipleEntitiesPanel.SetActive(false);
         }
+    }
+
+    public void SetTransparencyMode(float alphaValue, bool interactable = true)
+    {
+        canvasGroup.alpha = alphaValue;
+        canvasGroup.blocksRaycasts = interactable;
+        canvasGroup.interactable = interactable;
     }
 }

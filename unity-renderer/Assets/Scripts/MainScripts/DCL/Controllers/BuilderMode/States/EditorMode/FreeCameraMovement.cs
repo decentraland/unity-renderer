@@ -1,6 +1,4 @@
 using Builder.Gizmos;
-using DCL.Models;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +26,8 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
     [SerializeField] internal InputAction_Hold cameraPanInputAction;
+    [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
+    [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -72,8 +72,13 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Hold.Started cameraPanStartDelegate;
     private InputAction_Hold.Finished cameraPanFinishedDelegate;
 
+    private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
+    private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
+
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
+
+    private float lastMouseWheelTime = 0;
 
     private void Awake()
     {
@@ -128,6 +133,12 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted += cameraPanStartDelegate;
         cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
+        zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
+
+        zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
+        zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
     }
 
     public void StartDectectingMovement()
@@ -185,6 +196,9 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
         cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
+        zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
     }
 
     private void Update()
@@ -232,10 +246,14 @@ public class FreeCameraMovement : CameraStateBase
         if (!isCameraAbleToMove)
             return;
 
-        if (smoothScrollCor != null )
+        if (smoothScrollCor != null)
             CoroutineStarter.Stop(smoothScrollCor);
 
-        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
+        float delta = Time.time - lastMouseWheelTime;
+        float scrollValue = axis * Mathf.Clamp01(delta);
+        lastMouseWheelTime = Time.time;
+
+        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)

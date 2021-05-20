@@ -63,7 +63,10 @@ public enum DCLAction_Trigger
     BuildEditModeFocusSelectedEntities = 435,
     BuildEditModeReset = 443,
     BuildEditHideSelectedEntities = 444,
-    BuildEditShowAllEntities = 445
+    BuildEditShowAllEntities = 445,
+    BuildEditModeResetCamera = 446,
+    BuildEditModeZoomIn = 447,
+    BuildEditModeZoomOut = 448
 }
 
 /// <summary>
@@ -137,25 +140,31 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         if (!renderingEnabled)
+        {
+            Stop_Measurable(measurableActions);
             return;
+        }
 
         switch (inputTypeMode)
         {
             case InputTypeMode.OFF:
+                Stop_Measurable(measurableActions);
                 return;
             case InputTypeMode.GENERAL:
                 Update_Trigger(triggerTimeActions);
                 Update_Hold(holdActions);
+                Update_Measurable(measurableActions);
                 break;
             case InputTypeMode.BUILD_MODE_LOADING:
                 Update_Trigger(loadingBuilderTriggerTimeActions);
+                Stop_Measurable(measurableActions);
                 break;
             case InputTypeMode.BUILD_MODE:
                 Update_Trigger(builderTriggerTimeActions);
                 Update_Hold(builderHoldActions);
+                Update_Measurable(measurableActions);
                 break;
         }
-        Update_Measurable(measurableActions);
     }
 
     /// <summary>
@@ -301,7 +310,7 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.Backspace, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeDuplicate:
-                    InputProcessor.FromKey(action, KeyCode.D, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    InputProcessor.FromKey(action, KeyCode.D, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
                     break;
                 case DCLAction_Trigger.BuildEditModeTranslate:
                     InputProcessor.FromKey(action, KeyCode.G, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -316,11 +325,23 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.BuildEditModeFocusSelectedEntities:
                     InputProcessor.FromKey(action, KeyCode.F, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
+                case DCLAction_Trigger.BuildEditModeReset:
+                    InputProcessor.FromKey(action, KeyCode.R, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
+                    break;
                 case DCLAction_Trigger.BuildEditHideSelectedEntities:
                     InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditShowAllEntities:
                     InputProcessor.FromKey(action, KeyCode.H, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
+                    break;
+                case DCLAction_Trigger.BuildEditModeResetCamera:
+                    InputProcessor.FromKey(action, KeyCode.C, modifiers: InputProcessor.Modifier.FocusNotInInput, modifierKeys: new KeyCode[] { KeyCode.LeftShift });
+                    break;
+                case DCLAction_Trigger.BuildEditModeZoomIn:
+                    InputProcessor.FromKey(action, KeyCode.KeypadPlus, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.BuildEditModeZoomOut:
+                    InputProcessor.FromKey(action, KeyCode.KeypadMinus, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -428,6 +449,14 @@ public class InputController : MonoBehaviour
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+    }
+
+    private void Stop_Measurable(InputAction_Measurable[] measurableActions)
+    {
+        for (var i = 0; i < measurableActions.Length; i++)
+        {
+            measurableActions[i].RaiseOnValueChanged(0);
         }
     }
 }

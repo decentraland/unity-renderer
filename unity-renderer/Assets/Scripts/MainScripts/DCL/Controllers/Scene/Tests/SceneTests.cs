@@ -128,14 +128,14 @@ namespace Tests
             var lanternEntity = TestHelpers.CreateSceneEntity(scene);
             var lanternShape = TestHelpers.AttachGLTFShape(lanternEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
             yield return TestHelpers.WaitForGLTFLoad(lanternEntity);
 
             var cesiumManEntity = TestHelpers.CreateSceneEntity(scene);
             var cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
+                src = TestAssetsUtils.GetPath() + "/GLB/Shark/shark_anim.gltf"
             });
             yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
 
@@ -145,7 +145,7 @@ namespace Tests
             TestHelpers.DetachSharedComponent(scene, cesiumManEntity.entityId, cesiumManShape.id);
             cesiumManShape = TestHelpers.AttachGLTFShape(cesiumManEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
             });
             yield return TestHelpers.WaitForGLTFLoad(cesiumManEntity);
 
@@ -347,7 +347,7 @@ namespace Tests
 
             TestHelpers.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
             {
-                src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             });
 
             Assert.AreEqual(1, scene.sceneLifecycleHandler.disposableNotReadyCount);

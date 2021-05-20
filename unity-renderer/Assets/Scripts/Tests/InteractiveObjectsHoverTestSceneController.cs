@@ -25,7 +25,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
         string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
             JsonConvert.SerializeObject(new
             {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
         LoadWrapper_GLTF gltfShape = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;

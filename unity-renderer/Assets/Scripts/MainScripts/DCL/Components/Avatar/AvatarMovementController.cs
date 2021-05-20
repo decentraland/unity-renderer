@@ -60,11 +60,13 @@ namespace DCL
 
         void OnWorldReposition(Vector3 current, Vector3 previous) { avatarTransform.position = PositionUtils.WorldToUnityPosition(currentWorldPosition); }
 
-        public void OnTransformChanged(DCLTransform.Model model)
+        public void OnTransformChanged(object model)
         {
+            DCLTransform.Model transformModel = (DCLTransform.Model)model;
+
             MoveTo(
-                model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                model.rotation);
+                transformModel.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
+                transformModel.rotation);
         }
 
         public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)

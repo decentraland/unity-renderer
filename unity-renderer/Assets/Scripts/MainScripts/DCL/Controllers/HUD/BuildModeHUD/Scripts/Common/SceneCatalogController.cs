@@ -40,6 +40,7 @@ public interface ISceneCatalogController
     void RefreshAssetPack();
     void RefreshCatalog();
     CatalogItemAdapter GetLastCatalogItemDragged();
+    void SetActive(bool isActive);
 }
 
 public class SceneCatalogController : ISceneCatalogController
@@ -365,4 +366,6 @@ public class SceneCatalogController : ISceneCatalogController
                 break;
         }
     }
+
+    public void SetActive(bool isActive) { sceneCatalogView.SetActive(isActive); }
 }
