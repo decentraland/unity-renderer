@@ -32,17 +32,12 @@ namespace DCL
                 // -1   -> sampleB is greater
 
                 if (sampleA == null)
-                {
-                    if (sampleB == null)
-                        return 0;
-
                     return -1;
-                }
 
                 if (sampleB == null)
                     return 1;
 
-                if (sampleA == sampleB)
+                if (sampleA.fpsCount == sampleB.fpsCount)
                     return 0;
 
                 return sampleA.fpsCount > sampleB.fpsCount ? 1 : -1;
@@ -75,8 +70,10 @@ namespace DCL
         private void ResetDataValues()
         {
             samples.Clear();
-            lastSavedSample = null;
+            currentDurationInMilliseconds = 0f;
+            targetDurationInMilliseconds = 0f;
 
+            lastSavedSample = null;
             fpsSum = 0;
 
             highestFPS = 0;
@@ -94,9 +91,9 @@ namespace DCL
         {
             Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
 
-            targetDurationInMilliseconds = durationInMilliseconds;
-
             ResetDataValues();
+
+            targetDurationInMilliseconds = durationInMilliseconds;
 
             metricsData.OnChange += OnMetricsChange;
         }
@@ -175,7 +172,7 @@ namespace DCL
         private void ReportData()
         {
             // print relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
-            // TODO
+            // TODO access system.info for most of the data
 
             // print processed data
             Log("PerformanceMeterController - Data report step 2 - Processed values:"
@@ -191,6 +188,8 @@ namespace DCL
             );
 
             // print/dump all samples data
+            // TODO: Serialize into a JSON
+            // TODO: Try logging into a file as well (if it doesn't work in browser put a conditional for non-browser platforms)
             Log("PerformanceMeterController - Data report step 3 - Raw samples:");
             foreach (SampleData sample in samples)
             {
