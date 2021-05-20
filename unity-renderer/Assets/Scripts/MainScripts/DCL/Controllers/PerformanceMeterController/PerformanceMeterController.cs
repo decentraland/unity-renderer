@@ -40,9 +40,7 @@ namespace DCL
                 }
 
                 if (sampleB == null)
-                {
                     return 1;
-                }
 
                 if (sampleA == sampleB)
                     return 0;
@@ -51,12 +49,10 @@ namespace DCL
             }
         }
 
-        private const bool VERBOSE = true;
-
         private PerformanceMetricsDataVariable metricsData;
         private SamplesFPSComparer samplesFPSComparer = new SamplesFPSComparer();
-        private float currentDuration = 0f;
-        private float targetDuration = 0f;
+        private float currentDurationInMilliseconds = 0f;
+        private float targetDurationInMilliseconds = 0f;
         private List<SampleData> samples = new List<SampleData>();
 
         // auxiliar data
@@ -72,7 +68,7 @@ namespace DCL
         private int totalHiccups;
         private float totalHiccupsTimeInSeconds;
         private int totalFrames;
-        private float totalFramesTime;
+        private float totalFramesTimeInSeconds;
 
         public PerformanceMeterController() { metricsData = Resources.Load<PerformanceMetricsDataVariable>("ScriptableObjects/PerformanceMetricsData"); }
 
@@ -91,31 +87,29 @@ namespace DCL
             totalHiccups = 0;
             totalHiccupsTimeInSeconds = 0;
             totalFrames = 0;
-            totalFramesTime = 0;
+            totalFramesTimeInSeconds = 0;
         }
 
         public void StartSampling(float durationInMilliseconds)
         {
-            if (VERBOSE)
-                Debug.Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
+            Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
 
             metricsData.OnChange += OnMetricsChange;
 
-            targetDuration = durationInMilliseconds;
+            targetDurationInMilliseconds = durationInMilliseconds;
 
             ResetDataValues();
         }
 
         public void StopSampling()
         {
-            if (VERBOSE)
-                Debug.Log("PerformanceMeterController - Stopped running.");
+            Log("PerformanceMeterController - Stopped running.");
 
             metricsData.OnChange -= OnMetricsChange;
 
             if (samples.Count == 0)
             {
-                Debug.Log("PerformanceMeterController - No samples were gathered, the duration time in milliseconds set is probably too small");
+                Log("PerformanceMeterController - No samples were gathered, the duration time in milliseconds set is probably too small");
                 return;
             }
 
@@ -129,7 +123,7 @@ namespace DCL
         {
             if (lastSavedSample != null && lastSavedSample.frameNumber == Time.frameCount)
             {
-                Debug.Log("PerformanceMeterController - PerformanceMetricsDataVariable changed more than once in the same frame!");
+                Log("PerformanceMeterController - PerformanceMetricsDataVariable changed more than once in the same frame!");
                 return;
             }
 
@@ -154,10 +148,10 @@ namespace DCL
 
             totalFrames++;
 
-            currentDuration += Time.deltaTime * 1000;
-            if (currentDuration > targetDuration)
+            currentDurationInMilliseconds += Time.deltaTime * 1000;
+            if (currentDurationInMilliseconds > targetDurationInMilliseconds)
             {
-                totalFramesTime = currentDuration;
+                totalFramesTimeInSeconds = currentDurationInMilliseconds / 1000;
                 StopSampling();
             }
         }
@@ -181,26 +175,37 @@ namespace DCL
         private void ReportData()
         {
             // print relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
+            // TODO
 
             // print processed data
-            Debug.Log("PerformanceMeterController - Data report step 2: "
-                      + "\n * average FPS -> " + averageFPS
-                      + "\n * highest FPS -> " + highestFPS
-                      + "\n * lowest FPS -> " + lowestFPS
-                      + "\n * 50 percentile (median) FPS -> " + percentile50FPS
-                      + "\n * 95 percentile FPS -> " + percentile95FPS
-                      + "\n * total hiccups -> " + totalHiccups
-                      + "\n * total hiccups time in seconds -> " + totalHiccupsTimeInSeconds
-                      + "\n * total frames -> " + totalFrames
-                      + "\n * total frames time -> " + totalFramesTime
+            Log("PerformanceMeterController - Data report step 2 - Processed values:"
+                + "\n * average FPS -> " + averageFPS
+                + "\n * highest FPS -> " + highestFPS
+                + "\n * lowest FPS -> " + lowestFPS
+                + "\n * 50 percentile (median) FPS -> " + percentile50FPS
+                + "\n * 95 percentile FPS -> " + percentile95FPS
+                + "\n * total hiccups -> " + totalHiccups
+                + "\n * total hiccups time (seconds) -> " + totalHiccupsTimeInSeconds
+                + "\n * total frames -> " + totalFrames
+                + "\n * total frames time (seconds) -> " + totalFramesTimeInSeconds
             );
 
             // print/dump all samples data
-            Debug.Log("PerformanceMeterController - Data report step 3...");
+            Log("PerformanceMeterController - Data report step 3 - Raw samples:");
             foreach (SampleData sample in samples)
             {
-                Debug.Log(sample);
+                Log(sample.ToString());
             }
+        }
+
+        private void Log(string message)
+        {
+            bool originalLogEnabled = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            Debug.Log(message);
+
+            Debug.unityLogger.logEnabled = originalLogEnabled;
         }
     }
 }
