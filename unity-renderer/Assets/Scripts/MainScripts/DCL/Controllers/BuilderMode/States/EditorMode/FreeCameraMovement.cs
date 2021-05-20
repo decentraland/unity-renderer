@@ -1,6 +1,4 @@
 using Builder.Gizmos;
-using DCL.Models;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -74,6 +72,8 @@ public class FreeCameraMovement : CameraStateBase
 
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
+
+    private float lastMouseWheelTime = 0;
 
     private void Awake()
     {
@@ -232,10 +232,14 @@ public class FreeCameraMovement : CameraStateBase
         if (!isCameraAbleToMove)
             return;
 
-        if (smoothScrollCor != null )
+        if (smoothScrollCor != null)
             CoroutineStarter.Stop(smoothScrollCor);
 
-        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
+        float delta = Time.time - lastMouseWheelTime;
+        float scrollValue = axis * Mathf.Clamp01(delta);
+        lastMouseWheelTime = Time.time;
+
+        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
