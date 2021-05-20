@@ -849,6 +849,10 @@ MonoBehaviour:
     type: 2}
   cameraPanInputAction: {fileID: 11400000, guid: eb66fafd45ae9b947979e198f552f36c,
     type: 2}
+  zoomInFromKeyboardInputAction: {fileID: 11400000, guid: a6ca7be9bd4adcd40b76097581e1a536,
+    type: 2}
+  zoomOutFromKeyboardInputAction: {fileID: 11400000, guid: abf668fc33025914d8ee6da4153c882f,
+    type: 2}
 --- !u!1 &2211258559095576586
 GameObject:
   m_ObjectHideFlags: 0
