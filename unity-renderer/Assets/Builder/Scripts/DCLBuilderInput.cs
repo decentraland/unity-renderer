@@ -20,7 +20,7 @@ namespace Builder
         public static event MouseRawDragDelegate OnMouseRawDrag;
         public static event MouseWheelDelegate OnMouseWheel;
 
-        private float lastMouseWheelDelta = 0;
+        private int lastMouseWheelAxisDirection = 0;
         private float lastMouseWheelTime = 0;
 
         private void Update()
@@ -61,26 +61,27 @@ namespace Builder
             return false;
         }
 
-        private void OnMouseWheelInput(int delta)
+        private void OnMouseWheelInput(float axisValue)
         {
-            if (lastMouseWheelDelta == delta)
+            int axisDirection = (int)Mathf.Sign(axisValue);
+            if (lastMouseWheelAxisDirection == axisDirection)
             {
                 if (Time.unscaledTime - lastMouseWheelTime >= mouseWheelThrottle)
                 {
-                    SetMouseWheelDelta(delta);
+                    SetMouseWheelDelta(axisValue, axisDirection);
                 }
             }
             else
             {
-                SetMouseWheelDelta(delta);
+                SetMouseWheelDelta(axisValue, axisDirection);
             }
         }
 
-        private void SetMouseWheelDelta(int delta)
+        private void SetMouseWheelDelta(float axisValue, int axisDirection)
         {
-            OnMouseWheel?.Invoke(delta);
+            OnMouseWheel?.Invoke(axisValue);
             lastMouseWheelTime = Time.unscaledTime;
-            lastMouseWheelDelta = delta;
+            lastMouseWheelAxisDirection = axisDirection;
         }
 
         private void UpdateMouseWheelInput()
@@ -88,7 +89,7 @@ namespace Builder
             float axisValue = Input.GetAxis("Mouse ScrollWheel");
             if (axisValue != 0)
             {
-                OnMouseWheelInput((int)Mathf.Sign(axisValue));
+                OnMouseWheelInput(axisValue);
             }
         }
 
