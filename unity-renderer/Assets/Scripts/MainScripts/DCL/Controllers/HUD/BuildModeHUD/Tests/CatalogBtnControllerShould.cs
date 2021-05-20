@@ -58,5 +58,17 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             catalogBtnController.tooltipController.Received(1).HideTooltip();
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetActiveCorrectly(bool isActive)
+        {
+            // Act
+            catalogBtnController.SetActive(isActive);
+
+            // Assert
+            catalogBtnController.catalogBtnView.Received(1).SetActive(isActive);
+        }
     }
 }

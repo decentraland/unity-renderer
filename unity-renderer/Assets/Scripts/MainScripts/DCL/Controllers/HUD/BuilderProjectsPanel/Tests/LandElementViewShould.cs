@@ -59,8 +59,8 @@ namespace Tests
         [Test]
         public void SetSizeCorrectly()
         {
-            view.SetSize(1);
-            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 1), view.landSize.text);
+            view.SetSize(0);
+            Assert.AreEqual(string.Format(LandElementView.SIZE_TEXT_FORMAT, 0), view.landSize.text);
             Assert.IsFalse(view.landSizeGO.activeSelf);
 
             view.SetSize(2);

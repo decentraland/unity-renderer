@@ -7,7 +7,7 @@ public class LandWithAccess
     public string id => rawData.id;
     public LandType type => rawData.type;
     public LandRole role => rawData.role;
-    public int size => rawData.size;
+    public int size { get; }
     public string name => rawData.name;
     public string owner => rawData.owner;
 
@@ -21,5 +21,6 @@ public class LandWithAccess
         rawData = land;
         parcels = land.parcels.Select(parcel => new Vector2Int(parcel.x, parcel.y)).ToArray();
         baseCoords = land.type == LandType.PARCEL ? new Vector2Int(land.x, land.y) : parcels[0];
+        size = land.type == LandType.PARCEL ? 1 : land.size;
     }
 }
