@@ -262,5 +262,24 @@ namespace Tests.BuildModeHUDViews
                 Assert.IsFalse(entityInformationView.multipleEntitiesPanel.activeInHierarchy, "The active property does not match!");
             }
         }
+
+        [Test]
+        [TestCase(0.5f, true)]
+        [TestCase(0.5f, false)]
+        public void SetTransparencyModeCorrectly(float alphaValue, bool interactable = true)
+        {
+            // Arrange
+            entityInformationView.canvasGroup.alpha = 1f;
+            entityInformationView.canvasGroup.blocksRaycasts = !interactable;
+            entityInformationView.canvasGroup.interactable = !interactable;
+
+            // Act
+            entityInformationView.SetTransparencyMode(alphaValue, interactable);
+
+            // Assert
+            Assert.AreEqual(alphaValue, entityInformationView.canvasGroup.alpha);
+            Assert.AreEqual(interactable, entityInformationView.canvasGroup.blocksRaycasts);
+            Assert.AreEqual(interactable, entityInformationView.canvasGroup.interactable);
+        }
     }
 }

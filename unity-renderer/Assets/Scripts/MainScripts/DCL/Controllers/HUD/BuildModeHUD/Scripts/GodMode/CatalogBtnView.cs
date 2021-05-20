@@ -12,6 +12,7 @@ public interface ICatalogBtnView
     void OnPointerClick(DCLAction_Trigger action);
     void OnPointerEnter(PointerEventData eventData);
     void OnPointerExit();
+    void SetActive(bool isActive);
 }
 
 public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
@@ -58,4 +59,6 @@ public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
     public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
     public void OnPointerExit() { OnHideTooltip?.Invoke(); }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }
