@@ -510,9 +510,9 @@ namespace DCL.Interface
             public class Property
             {
                 public string key;
-                public object value;
+                public string value;
 
-                public Property(string key, object value)
+                public Property(string key, string value)
                 {
                     this.key = key;
                     this.value = value;

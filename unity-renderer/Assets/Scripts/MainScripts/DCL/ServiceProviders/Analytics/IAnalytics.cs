@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 public interface IAnalytics : IDisposable
 {
-    void SendAnalytic(string eventName, Dictionary<string, object> data);
+    void SendAnalytic(string eventName, Dictionary<string, string> data);
 }
 
 public class Analytics : IAnalytics
@@ -17,7 +17,7 @@ public class Analytics : IAnalytics
     public static IAnalytics i;
     public Analytics() { i = this; }
 
-    public void SendAnalytic(string eventName, Dictionary<string, object> data)
+    public void SendAnalytic(string eventName, Dictionary<string, string> data)
     {
         if (VERBOSE)
             UnityEngine.Debug.Log($"{eventName}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}");
@@ -25,7 +25,7 @@ public class Analytics : IAnalytics
         SendToSegment(eventName, data);
     }
 
-    internal void SendToSegment(string eventName, Dictionary<string, object> data) { WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new WebInterface.AnalyticsPayload.Property(x.Key, x.Value)).ToArray()); }
+    internal void SendToSegment(string eventName, Dictionary<string, string> data) { WebInterface.ReportAnalyticsEvent(eventName, data.Select(x => new WebInterface.AnalyticsPayload.Property(x.Key, x.Value)).ToArray()); }
 
     public void Dispose() { }
 }
