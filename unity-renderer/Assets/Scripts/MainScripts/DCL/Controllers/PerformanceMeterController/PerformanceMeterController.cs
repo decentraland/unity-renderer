@@ -172,7 +172,30 @@ namespace DCL
         private void ReportData()
         {
             // print relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
-            // TODO access system.info for most of the data
+            Log("PerformanceMeterController - Data report step 1 - System and Graphics info:"
+                + "\n * Sampling duration in seconds -> " + (targetDurationInMilliseconds / 1000)
+                + "\n * System Info -> Operating System -> " + SystemInfo.operatingSystem
+                + "\n * System Info -> Device Name -> " + SystemInfo.deviceName
+                + "\n * System Info -> Graphics Device Name -> " + SystemInfo.graphicsDeviceName
+                + "\n * System Info -> System RAM Size -> " + SystemInfo.systemMemorySize
+                + "\n * General Settings -> Auto Quality ON -> " + Settings.i.generalSettings.autoqualityOn
+                + "\n * General Settings -> Scenes Load Radius -> " + Settings.i.generalSettings.scenesLoadRadius
+                + "\n * Quality Settings -> FPSCap -> " + Settings.i.currentQualitySettings.fpsCap
+                + "\n * Quality Settings -> Bloom -> " + Settings.i.currentQualitySettings.bloom
+                + "\n * Quality Settings -> Shadow -> " + Settings.i.currentQualitySettings.shadows
+                + "\n * Quality Settings -> Antialising -> " + Settings.i.currentQualitySettings.antiAliasing
+                + "\n * Quality Settings -> Base Resolution -> " + Settings.i.currentQualitySettings.baseResolution
+                + "\n * Quality Settings -> Color Grading -> " + Settings.i.currentQualitySettings.colorGrading
+                + "\n * Quality Settings -> Display Name -> " + Settings.i.currentQualitySettings.displayName
+                + "\n * Quality Settings -> Render Scale -> " + Settings.i.currentQualitySettings.renderScale
+                + "\n * Quality Settings -> Shadow Distance -> " + Settings.i.currentQualitySettings.shadowDistance
+                + "\n * Quality Settings -> Shadow Resolution -> " + Settings.i.currentQualitySettings.shadowResolution
+                + "\n * Quality Settings -> Soft Shadows -> " + Settings.i.currentQualitySettings.softShadows
+                + "\n * Quality Settings -> SSAO Quality -> " + Settings.i.currentQualitySettings.ssaoQuality
+                + "\n * Quality Settings -> Camera Draw Distance -> " + Settings.i.currentQualitySettings.cameraDrawDistance
+                + "\n * Quality Settings -> Detail Object Culling Enabled -> " + Settings.i.currentQualitySettings.enableDetailObjectCulling
+                + "\n * Quality Settings -> Detail Object Culling Limit -> " + Settings.i.currentQualitySettings.detailObjectCullingLimit
+            );
 
             // print processed data
             Log("PerformanceMeterController - Data report step 2 - Processed values:"
