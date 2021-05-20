@@ -339,11 +339,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.BuildEditModeZoomIn:
                     InputProcessor.FromKey(action, KeyCode.KeypadPlus, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Plus, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.BuildEditModeZoomOut:
                     InputProcessor.FromKey(action, KeyCode.KeypadMinus, modifiers: InputProcessor.Modifier.FocusNotInInput);
-                    InputProcessor.FromKey(action, KeyCode.Minus, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
