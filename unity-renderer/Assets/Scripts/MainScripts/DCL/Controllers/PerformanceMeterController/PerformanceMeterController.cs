@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.FPSDisplay;
+using Newtonsoft.Json;
 
 namespace DCL
 {
@@ -171,7 +172,7 @@ namespace DCL
 
         private void ReportData()
         {
-            // print relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
+            // Step 1 - report relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
             Log("PerformanceMeterController - Data report step 1 - System and Graphics info:"
                 + "\n * Sampling duration in seconds -> " + (targetDurationInMilliseconds / 1000)
                 + "\n * System Info -> Operating System -> " + SystemInfo.operatingSystem
@@ -197,7 +198,7 @@ namespace DCL
                 + "\n * Quality Settings -> Detail Object Culling Limit -> " + Settings.i.currentQualitySettings.detailObjectCullingLimit
             );
 
-            // print processed data
+            // Step 2 - report processed data
             Log("PerformanceMeterController - Data report step 2 - Processed values:"
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
@@ -210,14 +211,12 @@ namespace DCL
                 + "\n * total frames time (seconds) -> " + totalFramesTimeInSeconds
             );
 
-            // print/dump all samples data
-            // TODO: Serialize into a JSON
+            // Step 3 - report all samples data
             // TODO: Try logging into a file as well (if it doesn't work in browser put a conditional for non-browser platforms)
-            Log("PerformanceMeterController - Data report step 3 - Raw samples:");
-            foreach (SampleData sample in samples)
-            {
-                Log(sample.ToString());
-            }
+            Log("PerformanceMeterController - Data report step 3 - Raw samples:"
+                + "\n "
+                + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}"
+            );
         }
 
         private void Log(string message)
