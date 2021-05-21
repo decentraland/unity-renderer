@@ -396,6 +396,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
+        randomizeAnimator = null;
         if (wearableGridPairs != null)
         {
             int nPairs = wearableGridPairs.Length;
