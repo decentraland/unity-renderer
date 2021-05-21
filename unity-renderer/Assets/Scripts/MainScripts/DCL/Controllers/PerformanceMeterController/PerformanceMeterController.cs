@@ -221,14 +221,11 @@ namespace DCL
                                     + "\n "
                                     + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}";
 
-            string fileName = "PerformanceMeterRawFrames.txt";
-            string targetFilePath = Application.persistentDataPath + "/" + fileName;
-            Log("PerformanceMeterController - Data report step 3 - Trying to dump at: " + targetFilePath);
+#if !UNITY_WEBGL
+            string targetFilePath = Application.persistentDataPath + "/PerformanceMeterRawFrames.txt";
+            Log("PerformanceMeterController - Data report step 3 - Trying to dump raw samples JSON at: " + targetFilePath);
             System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
-
-            targetFilePath = Application.dataPath + "/" + fileName;
-            Log("PerformanceMeterController - Data report step 3 - Trying to dump at: " + targetFilePath);
-            System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
+#endif
 
             Log(rawSamplesJSON);
         }
