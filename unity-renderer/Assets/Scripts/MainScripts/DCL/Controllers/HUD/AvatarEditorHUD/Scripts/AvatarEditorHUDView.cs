@@ -7,8 +7,7 @@ using UnityEngine.UI;
 
 public class AvatarEditorHUDView : MonoBehaviour
 {
-    private static readonly int RANDOMIZE_ANIMATOR_LOADING_TRIGGER = Animator.StringToHash("Loading");
-    private static readonly int RANDOMIZE_ANIMATOR_IDLE_TRIGGER = Animator.StringToHash("Idle");
+    private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
@@ -301,7 +300,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
                 OnAvatarAppear?.Invoke(avatarModel);
                 ClearWearablesLoadingSpinner();
-                randomizeAnimator?.SetTrigger(RANDOMIZE_ANIMATOR_IDLE_TRIGGER);
+                randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             });
     }
 
@@ -356,7 +355,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         OnRandomize?.Invoke();
         controller.RandomizeWearables();
-        randomizeAnimator?.SetTrigger(RANDOMIZE_ANIMATOR_LOADING_TRIGGER);
+        randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, true);
     }
 
     private void OnDoneButton()
@@ -397,7 +396,6 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
-        randomizeAnimator = null;
         if (wearableGridPairs != null)
         {
             int nPairs = wearableGridPairs.Length;
