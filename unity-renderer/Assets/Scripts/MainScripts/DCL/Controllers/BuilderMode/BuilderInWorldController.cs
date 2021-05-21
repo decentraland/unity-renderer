@@ -241,6 +241,7 @@ public class BuilderInWorldController : MonoBehaviour
         biwFloorHandler.Init();
         bIWInputHandler.Init();
         biwSaveController.Init();
+        actionController.Init();
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }

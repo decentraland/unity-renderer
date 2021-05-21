@@ -833,7 +833,7 @@ MonoBehaviour:
   keyboardMovementSpeed: 15
   lookSpeedH: 2.5
   lookSpeedV: 2.5
-  zoomSpeed: 6
+  zoomSpeed: 30
   dragSpeed: 15
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
@@ -848,6 +848,10 @@ MonoBehaviour:
   advanceDownInputAction: {fileID: 11400000, guid: 04728f8a663911e4abf4424936bb9753,
     type: 2}
   cameraPanInputAction: {fileID: 11400000, guid: eb66fafd45ae9b947979e198f552f36c,
+    type: 2}
+  zoomInFromKeyboardInputAction: {fileID: 11400000, guid: a6ca7be9bd4adcd40b76097581e1a536,
+    type: 2}
+  zoomOutFromKeyboardInputAction: {fileID: 11400000, guid: abf668fc33025914d8ee6da4153c882f,
     type: 2}
 --- !u!1 &2211258559095576586
 GameObject:
