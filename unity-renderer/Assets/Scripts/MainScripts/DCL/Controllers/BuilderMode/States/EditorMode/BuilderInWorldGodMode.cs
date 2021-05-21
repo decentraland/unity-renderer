@@ -269,19 +269,30 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (canDragSelectedEntities)
         {
-            Vector3 destination;
             Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
+            Vector3 initialEntityPosition = editionGO.transform.position;
 
             if (isSnapActive)
             {
-                currentPoint.x = Mathf.Round(currentPoint.x / snapDragFactor) * snapDragFactor;
-                currentPoint.z = Mathf.Round(currentPoint.z / snapDragFactor) * snapDragFactor;
+                currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
+                initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
             }
 
-            destination = currentPoint - dragStartedPoint + editionGO.transform.position;
+            Vector3 move = currentPoint - dragStartedPoint;
+            Vector3 destination = initialEntityPosition + move;
             editionGO.transform.position = destination;
             dragStartedPoint = currentPoint;
         }
+    }
+
+    private Vector3 GetPositionRoundedToSnapFactor(Vector3 position)
+    {
+        position = new Vector3(
+            Mathf.Round(position.x / snapDragFactor) * snapDragFactor,
+            position.y,
+            Mathf.Round(position.z / snapDragFactor) * snapDragFactor);
+
+        return position;
     }
 
     private void OnInputMouseUp(int buttonID, Vector3 position)
