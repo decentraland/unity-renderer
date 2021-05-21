@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 {
+    private static readonly int LOADING_ANIMATOR_TRIGGER_LOADED = Animator.StringToHash("Loaded");
+
     public event System.Action<ItemToggle> OnClicked;
     public event System.Action<ItemToggle> OnSellClicked;
 
@@ -17,7 +19,9 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] private GameObject loadingSpinner;
     [SerializeField] internal RectTransform amountContainer;
+    [SerializeField] internal Animator loadingAnimator;
     [SerializeField] internal TextMeshProUGUI amountText;
 
     private bool selectedValue;
@@ -45,6 +49,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         if (selectionHighlight != null)
             selectionHighlight.enabled = isSelected;
     }
+
+    public void SetLoadingSpinner(bool isActive) { loadingSpinner?.SetActive(isActive); }
 
     protected new virtual void Awake()
     {
@@ -92,6 +98,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void OnThumbnailReady(Asset_Texture texture)
     {
+        loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
+
         if (thumbnail.sprite != null)
             Destroy(thumbnail.sprite);
 
@@ -114,19 +122,24 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     private void GetThumbnail()
     {
-        var url = wearableItem?.ComposeThumbnailUrl();
+        string url = wearableItem?.ComposeThumbnailUrl();
 
         if (url == loadedThumbnailURL)
+        {
+            loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
             return;
+        }
 
         if (wearableItem == null || string.IsNullOrEmpty(url))
+        {
+            loadingAnimator.SetTrigger(LOADING_ANIMATOR_TRIGGER_LOADED);
             return;
+        }
 
-        string newLoadedThumbnailURL = url;
+        loadedThumbnailURL = url;
         var newLoadedThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
         ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
         loadedThumbnailPromise = newLoadedThumbnailPromise;
-        loadedThumbnailURL = newLoadedThumbnailURL;
     }
 
     private void ForgetThumbnail()
