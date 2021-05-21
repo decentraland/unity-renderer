@@ -21,17 +21,21 @@ namespace DCL.Huds.QuestsPanel
 
         public void Awake() { jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); }); }
 
-        public void Populate(QuestTask task)
+        public void Populate( QuestModel quest, QuestTask task)
         {
             payload = JsonUtility.FromJson<TaskPayload_Numeric>(task.payload);
 
             jumpInButton.gameObject.SetActive(task.progress < 1 && !string.IsNullOrEmpty(task.coordinates));
-            jumpInDelegate = () => WebInterface.SendChatMessage(new ChatMessage
+            jumpInDelegate = () =>
             {
-                messageType = ChatMessage.Type.NONE,
-                recipient = string.Empty,
-                body = $"/goto {task.coordinates}",
-            });
+                QuestsUIAnalytics.SendJumpInPressed(quest.id, task.id, task.coordinates, QuestsUIAnalytics.UISource.QuestsLog );
+                WebInterface.SendChatMessage(new ChatMessage
+                {
+                    messageType = ChatMessage.Type.NONE,
+                    recipient = string.Empty,
+                    body = $"/goto {task.coordinates}",
+                });
+            };
 
             taskName.text = task.name;
             progressText.text = $"{payload.current}/{payload.end}";

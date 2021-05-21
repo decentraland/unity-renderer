@@ -275,6 +275,7 @@ namespace DCL.Huds.QuestsTracker
             {
                 pinnedQuests.Remove(quest.id);
             }
+            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UISource.QuestsTracker);
         }
 
         public void SetPinStatus(bool newIsPinned)

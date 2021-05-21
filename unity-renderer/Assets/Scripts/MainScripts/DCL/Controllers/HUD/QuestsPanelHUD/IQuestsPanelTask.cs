@@ -2,6 +2,6 @@ namespace DCL.Huds.QuestsPanel
 {
     public interface IQuestsPanelTask
     {
-        void Populate(QuestTask task);
+        void Populate( QuestModel quest, QuestTask task);
     }
 }

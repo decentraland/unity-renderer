@@ -28,7 +28,7 @@ namespace DCL.Huds.QuestsPanel
 
         internal QuestModel quest;
         internal readonly List<QuestsPanelSection> sections = new List<QuestsPanelSection>();
-        private static BaseCollection<string> baseCollection => DataStore.i.Quests.pinnedQuests;
+        private static BaseCollection<string> pinnedQuests => DataStore.i.Quests.pinnedQuests;
         private RectTransform rectTransform;
 
         private void Awake()
@@ -38,8 +38,8 @@ namespace DCL.Huds.QuestsPanel
             closeButton.onClick.AddListener(Close);
 
             pinQuestToggle.onValueChanged.AddListener(OnPinToggleValueChanged);
-            baseCollection.OnAdded += OnPinnedQuests;
-            baseCollection.OnRemoved += OnUnpinnedQuest;
+            pinnedQuests.OnAdded += OnPinnedQuests;
+            pinnedQuests.OnRemoved += OnUnpinnedQuest;
 
             closePopupAreaButton.onClick.AddListener(Close);
         }
@@ -55,9 +55,9 @@ namespace DCL.Huds.QuestsPanel
             SetThumbnail(quest.thumbnail_banner);
             for (int i = 0; i < availableSections.Length; i++)
             {
-                sections[i].Populate(availableSections[i]);
+                sections[i].Populate(quest, availableSections[i]);
             }
-            pinQuestToggle.SetIsOnWithoutNotify(baseCollection.Contains(quest.id));
+            pinQuestToggle.SetIsOnWithoutNotify(pinnedQuests.Contains(quest.id));
             pinQuestToggle.gameObject.SetActive(!quest.isCompleted);
             forceRebuildLayout = true;
 
@@ -71,14 +71,15 @@ namespace DCL.Huds.QuestsPanel
 
             if (isOn)
             {
-                if (!baseCollection.Contains(quest.id))
-                    baseCollection.Add(quest.id);
+                if (!pinnedQuests.Contains(quest.id))
+                    pinnedQuests.Add(quest.id);
             }
             else
             {
-                if (baseCollection.Contains(quest.id))
-                    baseCollection.Remove(quest.id);
+                if (pinnedQuests.Contains(quest.id))
+                    pinnedQuests.Remove(quest.id);
             }
+            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UISource.QuestDetails);
         }
 
         private void OnPinnedQuests(string questId)
