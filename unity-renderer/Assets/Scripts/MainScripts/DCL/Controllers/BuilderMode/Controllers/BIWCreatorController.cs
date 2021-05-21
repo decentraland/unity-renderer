@@ -46,6 +46,7 @@ public class BIWCreatorController : BIWController
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
             HUDController.i.builderInWorldMainHud.OnCatalogItemDropped -= OnCatalogItemDropped;
         }
+
         Clean();
     }
 
@@ -74,8 +75,8 @@ public class BIWCreatorController : BIWController
         if (HUDController.i.builderInWorldMainHud == null)
             return false;
 
-        SceneMetricsController.Model limits = sceneToEdit.metricsController.GetLimits();
-        SceneMetricsController.Model usage = sceneToEdit.metricsController.GetModel();
+        SceneMetricsModel limits = sceneToEdit.metricsController.GetLimits();
+        SceneMetricsModel usage = sceneToEdit.metricsController.GetModel();
 
         if (limits.bodies < usage.bodies + sceneObject.metrics.bodies)
         {

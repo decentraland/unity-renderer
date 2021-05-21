@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using DCL.Helpers;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -62,6 +63,7 @@ namespace DCL
                     Debug.Log(e.Message);
                 }
             }
+
             if (!isQualitySettingsSet)
             {
                 currentQualitySettings = qualitySettingsPreset.defaultPreset;

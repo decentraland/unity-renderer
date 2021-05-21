@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Reflection;
+using System.Collections.Generic;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Interface;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace DCL
 {
@@ -69,5 +66,13 @@ namespace DCL
 
             Debug.unityLogger.logEnabled = prevLogValue;
         }
+
+        public void CrashPayloadRequest()
+        {
+            var crashPayload = CrashPayloadUtils.ComputePayload( DCL.Environment.i.world.state.loadedScenes );
+            CrashPayloadResponse(crashPayload);
+        }
+
+        public void CrashPayloadResponse(CrashPayload payload) { WebInterface.SendMessage("CrashPayloadResponse", payload); }
     }
 }

@@ -1,15 +1,17 @@
 {
-    "name": "DebugController",
-    "references": [
-        "GUID:28f74c468a54948bfa9f625c5d428f56"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "DebugController",
+  "rootNamespace": "",
+  "references": [
+    "GUID:28f74c468a54948bfa9f625c5d428f56",
+    "GUID:4973650d2444c4561a15d50f24d91cd9"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }
