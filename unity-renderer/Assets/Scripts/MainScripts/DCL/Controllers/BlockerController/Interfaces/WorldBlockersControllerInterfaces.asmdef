@@ -1,0 +1,18 @@
+{
+  "name": "WorldBlockersControllerInterfaces",
+  "rootNamespace": "",
+  "references": [
+    "GUID:f71b8c619c7cf404ebe3a1fa4c7742fd",
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:b97702e026e0dbd4397dc4013ef9fcb3"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

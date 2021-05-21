@@ -1,0 +1,28 @@
+{
+  "name": "WorldBlockersController",
+  "rootNamespace": "",
+  "references": [
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+    "GUID:edd6917fa0e214e44b6592eeab419ce7",
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+    "GUID:3f13bd1a926f03a4cab988f06a80c1fd",
+    "GUID:f71b8c619c7cf404ebe3a1fa4c7742fd",
+    "GUID:760a1d365aad58044916992b072cf2a6",
+    "GUID:f070f44586498a44c9e6d2ea3e166379",
+    "GUID:fb529e4714eec4e4da9a3ff3e4da8eee",
+    "GUID:82873c2d9c9cbe94391e6b33e5153865",
+    "GUID:b97702e026e0dbd4397dc4013ef9fcb3",
+    "GUID:28f74c468a54948bfa9f625c5d428f56"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
