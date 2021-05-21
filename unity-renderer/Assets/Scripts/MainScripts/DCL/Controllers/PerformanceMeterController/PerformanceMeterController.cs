@@ -10,17 +10,17 @@ namespace DCL
         private class SampleData
         {
             public int frameNumber;
-            public float fpsCount;
-            public float totalMilliseconds;
-            public float currentTime;
+            public float millisecondsConsumed;
             public bool isHiccup = false;
+            public float currentTime;
+            public float fpsAtThisFrameInTime;
 
             public override string ToString()
             {
                 return "frame number: " + frameNumber
-                                        + "\n frame consumed milliseconds: " + totalMilliseconds
+                                        + "\n frame consumed milliseconds: " + millisecondsConsumed
                                         + "\n is hiccup: " + isHiccup
-                                        + "\n fps until this frame: " + fpsCount;
+                                        + "\n fps at this frame: " + fpsAtThisFrameInTime;
             }
         }
 
@@ -38,10 +38,10 @@ namespace DCL
                 if (sampleB == null)
                     return 1;
 
-                if (sampleA.fpsCount == sampleB.fpsCount)
+                if (sampleA.fpsAtThisFrameInTime == sampleB.fpsAtThisFrameInTime)
                     return 0;
 
-                return sampleA.fpsCount > sampleB.fpsCount ? 1 : -1;
+                return sampleA.fpsAtThisFrameInTime > sampleB.fpsAtThisFrameInTime ? 1 : -1;
             }
         }
 
@@ -90,7 +90,7 @@ namespace DCL
 
         public void StartSampling(float durationInMilliseconds)
         {
-            Log("PerformanceMeterController - Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
+            Log("Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
 
             ResetDataValues();
 
@@ -101,13 +101,13 @@ namespace DCL
 
         public void StopSampling()
         {
-            Log("PerformanceMeterController - Stopped running.");
+            Log("Stopped running.");
 
             metricsData.OnChange -= OnMetricsChange;
 
             if (samples.Count == 0)
             {
-                Log("PerformanceMeterController - No samples were gathered, the duration time in milliseconds set is probably too small");
+                Log("No samples were gathered, the duration time in milliseconds set is probably too small");
                 return;
             }
 
@@ -121,25 +121,25 @@ namespace DCL
         {
             if (lastSavedSample != null && lastSavedSample.frameNumber == Time.frameCount)
             {
-                Log("PerformanceMeterController - PerformanceMetricsDataVariable changed more than once in the same frame!");
+                Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
                 return;
             }
 
             SampleData newSample = new SampleData()
             {
                 frameNumber = Time.frameCount,
-                fpsCount = newData.fpsCount,
-                totalMilliseconds = lastSavedSample != null ? (Time.timeSinceLevelLoad - lastSavedSample.currentTime) * 1000 : -1,
+                fpsAtThisFrameInTime = newData.fpsCount,
+                millisecondsConsumed = lastSavedSample != null ? (Time.timeSinceLevelLoad - lastSavedSample.currentTime) * 1000 : -1,
                 currentTime = Time.timeSinceLevelLoad
             };
-            newSample.isHiccup = newSample.totalMilliseconds / 1000 > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
+            newSample.isHiccup = newSample.millisecondsConsumed / 1000 > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
             samples.Add(newSample);
             lastSavedSample = newSample;
 
             if (newSample.isHiccup)
             {
                 totalHiccups++;
-                totalHiccupsTimeInSeconds += newSample.totalMilliseconds / 1000;
+                totalHiccupsTimeInSeconds += newSample.millisecondsConsumed / 1000;
             }
 
             fpsSum += newData.fpsCount;
@@ -161,19 +161,19 @@ namespace DCL
             sortedSamples.Sort(samplesFPSComparer);
             int samplesCount = sortedSamples.Count;
 
-            highestFPS = sortedSamples[samplesCount - 1].fpsCount;
-            lowestFPS = sortedSamples[0].fpsCount;
+            highestFPS = sortedSamples[samplesCount - 1].fpsAtThisFrameInTime;
+            lowestFPS = sortedSamples[0].fpsAtThisFrameInTime;
 
             averageFPS = fpsSum / sortedSamples.Count;
 
-            percentile50FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsCount;
-            percentile95FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsCount;
+            percentile50FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.5f)].fpsAtThisFrameInTime;
+            percentile95FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsAtThisFrameInTime;
         }
 
         private void ReportData()
         {
             // Step 1 - report relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
-            Log("PerformanceMeterController - Data report step 1 - System and Graphics info:"
+            Log("Data report step 1 - System and Graphics info:"
                 + "\n * Sampling duration in seconds -> " + (targetDurationInMilliseconds / 1000)
                 + "\n * System Info -> Operating System -> " + SystemInfo.operatingSystem
                 + "\n * System Info -> Device Name -> " + SystemInfo.deviceName
@@ -203,7 +203,7 @@ namespace DCL
             //float fpsRate = 
             // float performanceRate = 
 
-            Log("PerformanceMeterController - Data report step 2 - Processed values:"
+            Log("Data report step 2 - Processed values:"
                 //+ "\n * CALCULATED PERFORMANCE RATE -> " + 
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
@@ -217,13 +217,13 @@ namespace DCL
             );
 
             // Step 3 - report all samples data
-            string rawSamplesJSON = "PerformanceMeterController - Data report step 3 - Raw samples:"
+            string rawSamplesJSON = "Data report step 3 - Raw samples:"
                                     + "\n "
                                     + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}";
 
 #if !UNITY_WEBGL
             string targetFilePath = Application.persistentDataPath + "/PerformanceMeterRawFrames.txt";
-            Log("PerformanceMeterController - Data report step 3 - Trying to dump raw samples JSON at: " + targetFilePath);
+            Log("Data report step 3 - Trying to dump raw samples JSON at: " + targetFilePath);
             System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
 #endif
 
@@ -235,7 +235,7 @@ namespace DCL
             bool originalLogEnabled = Debug.unityLogger.logEnabled;
             Debug.unityLogger.logEnabled = true;
 
-            Debug.Log(message);
+            Debug.Log("PerformanceMeter - " + message);
 
             Debug.unityLogger.logEnabled = originalLogEnabled;
         }
