@@ -199,7 +199,12 @@ namespace DCL
             );
 
             // Step 2 - report processed data
+            //float performanceRateTopFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
+            //float fpsRate = 
+            // float performanceRate = 
+
             Log("PerformanceMeterController - Data report step 2 - Processed values:"
+                //+ "\n * CALCULATED PERFORMANCE RATE -> " + 
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
                 + "\n * lowest FPS -> " + lowestFPS
@@ -212,11 +217,20 @@ namespace DCL
             );
 
             // Step 3 - report all samples data
-            // TODO: Try logging into a file as well (if it doesn't work in browser put a conditional for non-browser platforms)
-            Log("PerformanceMeterController - Data report step 3 - Raw samples:"
-                + "\n "
-                + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}"
-            );
+            string rawSamplesJSON = "PerformanceMeterController - Data report step 3 - Raw samples:"
+                                    + "\n "
+                                    + "{\"frame-samples\": " + JsonConvert.SerializeObject(samples) + "}";
+
+            string fileName = "PerformanceMeterRawFrames.txt";
+            string targetFilePath = Application.persistentDataPath + "/" + fileName;
+            Log("PerformanceMeterController - Data report step 3 - Trying to dump at: " + targetFilePath);
+            System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
+
+            targetFilePath = Application.dataPath + "/" + fileName;
+            Log("PerformanceMeterController - Data report step 3 - Trying to dump at: " + targetFilePath);
+            System.IO.File.WriteAllText (targetFilePath, rawSamplesJSON);
+
+            Log(rawSamplesJSON);
         }
 
         private void Log(string message)
