@@ -301,7 +301,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
                 OnAvatarAppear?.Invoke(avatarModel);
                 ClearWearablesLoadingSpinner();
-                randomizeAnimator.SetTrigger(RANDOMIZE_ANIMATOR_IDLE_TRIGGER);
+                randomizeAnimator?.SetTrigger(RANDOMIZE_ANIMATOR_IDLE_TRIGGER);
             });
     }
 
@@ -356,7 +356,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         OnRandomize?.Invoke();
         controller.RandomizeWearables();
-        randomizeAnimator.SetTrigger(RANDOMIZE_ANIMATOR_LOADING_TRIGGER);
+        randomizeAnimator?.SetTrigger(RANDOMIZE_ANIMATOR_LOADING_TRIGGER);
     }
 
     private void OnDoneButton()
@@ -397,6 +397,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
+        randomizeAnimator = null;
         if (wearableGridPairs != null)
         {
             int nPairs = wearableGridPairs.Length;
