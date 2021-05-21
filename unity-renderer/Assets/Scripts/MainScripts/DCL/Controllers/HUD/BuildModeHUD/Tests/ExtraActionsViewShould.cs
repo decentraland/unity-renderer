@@ -78,7 +78,7 @@ namespace Tests.BuildModeHUDViews
             extraActionsView.OnResetClicked += () => isClicked = true;
 
             // Act
-            extraActionsView.OnResetClick();
+            extraActionsView.OnResetClick(new DCLAction_Trigger());
 
             // Assert
             Assert.IsTrue(isClicked, "isClicked is false!");
@@ -92,7 +92,7 @@ namespace Tests.BuildModeHUDViews
             extraActionsView.OnResetCameraClicked += () => isClicked = true;
 
             // Act
-            extraActionsView.OnResetCameraClick();
+            extraActionsView.OnResetCameraClick(new DCLAction_Trigger());
 
             // Assert
             Assert.IsTrue(isClicked, "isClicked is false!");
