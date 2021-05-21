@@ -5,6 +5,15 @@ using Newtonsoft.Json;
 
 namespace DCL
 {
+    /// <summary>
+    /// Performance Meter Tool
+    ///
+    /// It samples frames performance data for the target duration and prints a complete report when finished.
+    ///
+    /// There are 2 ways to trigger this tool usage:
+    /// A: While the client is running in the browser, open the browser console and run "clientDebug.RunPerformanceMeterTool(10000);" to run for 10 seconds.
+    /// B: In Unity Editor select the "Main" gameobject and right-click on its DebugBridge Monobehaviour, from there a debug method can be selected to run the tool for 10 seconds.
+    /// </summary>
     public class PerformanceMeterController
     {
         private class SampleData
@@ -61,7 +70,7 @@ namespace DCL
         private float averageFPS;
         private float percentile50FPS;
         private float percentile95FPS;
-        private int totalHiccups;
+        private int totalHiccupFrames;
         private float totalHiccupsTimeInSeconds;
         private int totalFrames;
         private float totalFramesTimeInSeconds;
@@ -82,12 +91,16 @@ namespace DCL
             averageFPS = 0;
             percentile50FPS = 0;
             percentile95FPS = 0;
-            totalHiccups = 0;
+            totalHiccupFrames = 0;
             totalHiccupsTimeInSeconds = 0;
             totalFrames = 0;
             totalFramesTimeInSeconds = 0;
         }
 
+        /// <summary>
+        /// Starts the Performance Meter Tool sampling.
+        /// </summary>
+        /// <param name="durationInMilliseconds">The target duration for the running of the tool, after which a report will be printed in the console</param>
         public void StartSampling(float durationInMilliseconds)
         {
             Log("Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
@@ -99,6 +112,9 @@ namespace DCL
             metricsData.OnChange += OnMetricsChange;
         }
 
+        /// <summary>
+        /// Stops the Performance Meter Tool sampling, processes the data gathered and prints a full report in the console.
+        /// </summary>
         public void StopSampling()
         {
             Log("Stopped running.");
@@ -116,7 +132,11 @@ namespace DCL
             ReportData();
         }
 
-        // PerformanceMetricsController updates the PerformanceMetricsDataVariable SO on every frame
+        /// <summary>
+        /// Callback triggered on every update made to the PerformanceMetricsDataVariable ScriptableObject, done every frame by the PerformanceMetricsController
+        /// </summary>
+        /// /// <param name="newData">NEW version of the PerformanceMetricsDataVariable ScriptableObject</param>
+        /// /// <param name="oldData">OLD version of the PerformanceMetricsDataVariable ScriptableObject</param>
         private void OnMetricsChange(PerformanceMetricsData newData, PerformanceMetricsData oldData)
         {
             if (lastSavedSample != null && lastSavedSample.frameNumber == Time.frameCount)
@@ -138,7 +158,7 @@ namespace DCL
 
             if (newSample.isHiccup)
             {
-                totalHiccups++;
+                totalHiccupFrames++;
                 totalHiccupsTimeInSeconds += newSample.millisecondsConsumed / 1000;
             }
 
@@ -154,6 +174,9 @@ namespace DCL
             }
         }
 
+        /// <summary>
+        /// Process the data gathered from every frame sample to calculate the final highestFPS, lowestFPS, averageFPS, percentile50FPS, percentile95FPS
+        /// </summary>
         private void ProcessSamples()
         {
             // Sort the samples based on FPS count of each one, to be able to calculate the percentiles later
@@ -170,6 +193,9 @@ namespace DCL
             percentile95FPS = sortedSamples[Mathf.CeilToInt(samplesCount * 0.95f)].fpsAtThisFrameInTime;
         }
 
+        /// <summary>
+        /// Formats and prints the final data report following the 3 steps: system info, processed values and frame samples raw data
+        /// </summary>
         private void ReportData()
         {
             // Step 1 - report relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
@@ -199,18 +225,14 @@ namespace DCL
             );
 
             // Step 2 - report processed data
-            //float performanceRateTopFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
-            //float fpsRate = 
-            // float performanceRate = 
-
             Log("Data report step 2 - Processed values:"
-                //+ "\n * CALCULATED PERFORMANCE RATE -> " + 
+                + "\n * CALCULATED PERFORMANCE RATE -> " + CalculatePerformanceRating()
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
                 + "\n * lowest FPS -> " + lowestFPS
                 + "\n * 50 percentile (median) FPS -> " + percentile50FPS
                 + "\n * 95 percentile FPS -> " + percentile95FPS
-                + "\n * total hiccups -> " + totalHiccups
+                + "\n * total hiccups -> " + totalHiccupFrames
                 + "\n * total hiccups time (seconds) -> " + totalHiccupsTimeInSeconds
                 + "\n * total frames -> " + totalFrames
                 + "\n * total frames time (seconds) -> " + totalFramesTimeInSeconds
@@ -230,6 +252,23 @@ namespace DCL
             Log(rawSamplesJSON);
         }
 
+        /// <summary>
+        /// Calculates a performance rating from 0 to 10 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
+        /// </summary>
+        private float CalculatePerformanceRating()
+        {
+            float topFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
+            float fpsRating = Mathf.Min(averageFPS / topFPS, 1);
+            float hiccupsRating = 1 - totalHiccupFrames / samples.Count;
+            float performanceRating = (fpsRating + hiccupsRating) / 2 * 10; // rates sum / amount of rates * 10 to have a 0-10 scale
+            performanceRating = Mathf.Round(performanceRating * 100f) / 100f; // to save only 2 decimals
+
+            return performanceRating;
+        }
+
+        /// <summary>
+        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value. 
+        /// </summary>
         private void Log(string message)
         {
             bool originalLogEnabled = Debug.unityLogger.logEnabled;
