@@ -16,7 +16,7 @@ namespace DCL.Components
 
         public IDCLEntity entity { get; set; }
 
-        public PoolableObject poolableObject { get; set; }
+        public IPoolableObject poolableObject { get; set; }
 
         public string componentName => "BaseComponent";
 
