@@ -1568,6 +1568,7 @@ MonoBehaviour:
     type: 3}
   characterPreviewRotation: {fileID: 6749458557699296124}
   randomizeButton: {fileID: 1450360507441575512}
+  randomizeAnimator: {fileID: 4292949885884074233}
   doneButton: {fileID: 8118935322395685570}
   exitButton: {fileID: 178893782665926146}
   web3Container: {fileID: 233924306434789069}

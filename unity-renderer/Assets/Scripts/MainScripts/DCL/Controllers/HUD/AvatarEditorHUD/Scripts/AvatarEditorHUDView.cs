@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class AvatarEditorHUDView : MonoBehaviour
 {
+    private static readonly int RANDOMIZE_ANIMATOR_LOADING_TRIGGER = Animator.StringToHash("Loading");
+    private static readonly int RANDOMIZE_ANIMATOR_IDLE_TRIGGER = Animator.StringToHash("Idle");
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
@@ -72,6 +74,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [SerializeField]
     internal Button randomizeButton;
+    [SerializeField]
+    internal Animator randomizeAnimator;
 
     [SerializeField]
     internal Button doneButton;
@@ -297,6 +301,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
                 OnAvatarAppear?.Invoke(avatarModel);
                 ClearWearablesLoadingSpinner();
+                randomizeAnimator.SetTrigger(RANDOMIZE_ANIMATOR_IDLE_TRIGGER);
             });
     }
 
@@ -351,6 +356,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         OnRandomize?.Invoke();
         controller.RandomizeWearables();
+        randomizeAnimator.SetTrigger(RANDOMIZE_ANIMATOR_LOADING_TRIGGER);
     }
 
     private void OnDoneButton()
