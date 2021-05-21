@@ -46,10 +46,6 @@ namespace DCL
 
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
-            //var debugController = Environment.i.platform.debugController;
-            //debugController.OnPopulateCrashPayload += PoolManager.i.OnCrashPayloadRequest;
-            //debugController.OnPopulateCrashPayload += Environment.i.;
-
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
             Debug.unityLogger.logEnabled = false;

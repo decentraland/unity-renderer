@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
 using Newtonsoft.Json;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 namespace DCL
