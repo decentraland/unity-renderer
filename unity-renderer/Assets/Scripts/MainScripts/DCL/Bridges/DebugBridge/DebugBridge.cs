@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DCL
@@ -69,10 +70,21 @@ namespace DCL
 
         public void CrashPayloadRequest()
         {
-            var crashPayload = CrashPayloadUtils.ComputePayload( DCL.Environment.i.world.state.loadedScenes );
+            var crashPayload = CrashPayloadUtils.ComputePayload
+            (
+                DCL.Environment.i.world.state.loadedScenes,
+                Environment.i.platform.debugController.GetTrackedMovements(),
+                Environment.i.platform.debugController.GetTrackedTeleportPositions()
+            );
+
             CrashPayloadResponse(crashPayload);
         }
 
-        public void CrashPayloadResponse(CrashPayload payload) { WebInterface.SendMessage("CrashPayloadResponse", payload); }
+        public void CrashPayloadResponse(CrashPayload payload)
+        {
+            string json = JsonConvert.SerializeObject(payload);
+            WebInterface.MessageFromEngine("CrashPayloadResponse", json);
+            Debug.Log("Crash payload: " + json);
+        }
     }
 }

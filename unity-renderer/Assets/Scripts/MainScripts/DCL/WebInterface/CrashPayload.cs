@@ -16,6 +16,8 @@ namespace DCL.Interface
             public const string GLTFS = "gltf-dump";
             public const string ASSET_BUNDLES = "asset-bundle-dump";
             public const string TEXTURES = "texture-dump";
+            public const string TRAIL = "trail";
+            public const string TELEPORTS = "teleports";
         }
 
         public Dictionary<string, object> fields = new Dictionary<string, object>();

@@ -7,12 +7,15 @@ using DCL.Interface;
 using DCL.Models;
 using DCL.SettingsData;
 using UnityGLTF.Cache;
+using UnityEngine;
 
 namespace DCL.Helpers
 {
     public static class CrashPayloadUtils
     {
-        public static CrashPayload ComputePayload(Dictionary<string, IParcelScene> allScenes)
+        public static CrashPayload ComputePayload(Dictionary<string, IParcelScene> allScenes,
+            List<Vector3> trackedMovements,
+            List<Vector3> trackedTeleports)
         {
             CrashPayload result = new CrashPayload();
 
@@ -22,8 +25,18 @@ namespace DCL.Helpers
             GltfDumper.Dump( AssetPromiseKeeper_GLTF.i as AssetPromiseKeeper_GLTF, result );
             AssetBundleDumper.Dump( AssetPromiseKeeper_AB.i as AssetPromiseKeeper_AB, result );
             TextureDumper.Dump( AssetPromiseKeeper_Texture.i as AssetPromiseKeeper_Texture, PersistentAssetCache.ImageCacheByUri, result );
+            PositionDumper.Dump( trackedMovements, trackedTeleports, result );
 
             return result;
+        }
+    }
+
+    static class PositionDumper
+    {
+        public static void Dump(List<Vector3> movePositions, List<Vector3> teleportPositions, CrashPayload payload)
+        {
+            payload.fields.Add( CrashPayload.DumpLiterals.TRAIL, movePositions.ToArray() );
+            payload.fields.Add( CrashPayload.DumpLiterals.TELEPORTS, teleportPositions.ToArray() );
         }
     }
 
@@ -40,12 +53,12 @@ namespace DCL.Helpers
             var assets = new AssetInfo[ apk.library.masterAssets.Count ];
 
             var ids = apk.library.masterAssets
-                .Select( x =>
-                    new AssetInfo()
-                    {
-                        id = x.Key as string
-                    } )
-                .ToArray();
+                         .Select( x =>
+                             new AssetInfo()
+                             {
+                                 id = x.Key as string
+                             } )
+                         .ToArray();
 
             payload.fields.Add( CrashPayload.DumpLiterals.GLTFS, ids );
         }
@@ -64,12 +77,12 @@ namespace DCL.Helpers
             var assets = new AssetInfo[ apk.library.masterAssets.Count ];
 
             var ids = apk.library.masterAssets
-                .Select( x =>
-                    new AssetInfo()
-                    {
-                        id = x.Key as string
-                    } )
-                .ToArray();
+                         .Select( x =>
+                             new AssetInfo()
+                             {
+                                 id = x.Key as string
+                             } )
+                         .ToArray();
 
             payload.fields.Add( CrashPayload.DumpLiterals.ASSET_BUNDLES, ids );
         }
@@ -90,16 +103,16 @@ namespace DCL.Helpers
         public static void Dump(AssetPromiseKeeper_Texture apk, Dictionary<string, RefCountedTextureData> textureData, CrashPayload payload)
         {
             var apkData = apk.library.masterAssets
-                .Select( x =>
-                    new TextureInfo()
-                    {
-                        id = x.Key as string,
-                        width = x.Value.asset.texture.width,
-                        height = x.Value.asset.texture.height,
-                        mipmaps = x.Value.asset.texture.mipmapCount,
-                        format = x.Value.asset.texture.graphicsFormat.ToString(),
-                        refCount = x.Value.referenceCount
-                    } );
+                             .Select( x =>
+                                 new TextureInfo()
+                                 {
+                                     id = x.Key as string,
+                                     width = x.Value.asset.texture.width,
+                                     height = x.Value.asset.texture.height,
+                                     mipmaps = x.Value.asset.texture.mipmapCount,
+                                     format = x.Value.asset.texture.graphicsFormat.ToString(),
+                                     refCount = x.Value.referenceCount
+                                 } );
 
             var persistentCacheData = textureData
                 .Select( x =>
@@ -177,13 +190,13 @@ namespace DCL.Helpers
             var totalSceneLimits = new WebInterface.MetricsModel();
 
             loadedScenes = allScenes
-                .Select( x =>
-                    new LoadedScenesDump
-                    {
-                        id = x.Key
-                    }
-                )
-                .ToList();
+                           .Select( x =>
+                               new LoadedScenesDump
+                               {
+                                   id = x.Key
+                               }
+                           )
+                           .ToList();
 
             // <class, count>
             Dictionary<int, int> sharedComponentsCount = new Dictionary<int, int>();
