@@ -49,6 +49,10 @@ public class BIWOutlinerController : BIWController
                 if (entity != null && !entity.IsSelected)
                     OutlineEntity(entity);
             }
+            else
+            {
+                CancelUnselectedOutlines();
+            }
 
             outlinerOptimizationCounter = 0;
         }
