@@ -108,6 +108,8 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
         RectTransform newAdapterRT = GetComponent<RectTransform>();
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
+        favImg.enabled = false;
+        backgroundImg.enabled = false;
         newAdapterRT.sizeDelta = sizeDelta * ADAPTER_DRAGGING_SIZE_SCALE;
     }
 
