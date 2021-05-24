@@ -198,6 +198,8 @@ namespace DCL
         /// </summary>
         private void ReportData()
         {
+			// TODO: We could build a text file (or html) template with replaceable tags like #OPERATING_SYSTEM, #GRAPHICS_DEVICE, etc. and just replace those values in that output file, instead of printing them in the console.
+
             // Step 1 - report relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
             Log("Data report step 1 - System and Graphics info:"
                 + "\n * Sampling duration in seconds -> " + (targetDurationInMilliseconds / 1000)
