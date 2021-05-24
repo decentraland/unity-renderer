@@ -226,7 +226,7 @@ namespace DCL
 
             // Step 2 - report processed data
             Log("Data report step 2 - Processed values:"
-                + "\n * CALCULATED PERFORMANCE RATE -> " + CalculatePerformanceRating()
+                + "\n * PERFORMANCE SCORE (0-10) -> " + CalculatePerformanceScore()
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
                 + "\n * lowest FPS -> " + lowestFPS
@@ -253,17 +253,17 @@ namespace DCL
         }
 
         /// <summary>
-        /// Calculates a performance rating from 0 to 10 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
+        /// Calculates a performance score from 0 to 10 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
         /// </summary>
-        private float CalculatePerformanceRating()
+        private float CalculatePerformanceScore()
         {
             float topFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
-            float fpsRating = Mathf.Min(averageFPS / topFPS, 1);
-            float hiccupsRating = 1 - totalHiccupFrames / samples.Count;
-            float performanceRating = (fpsRating + hiccupsRating) / 2 * 10; // rates sum / amount of rates * 10 to have a 0-10 scale
-            performanceRating = Mathf.Round(performanceRating * 100f) / 100f; // to save only 2 decimals
+            float fpsScore = Mathf.Min(averageFPS / topFPS, 1); // from 0 to 1
+            float hiccupsScore = 1 - totalHiccupFrames / samples.Count; // from 0 to 1
+            float performanceScore = (fpsScore + hiccupsScore) / 2 * 10; // scores sum / amount of scores * 10 to have a 0-10 scale
+            performanceScore = Mathf.Round(performanceScore * 100f) / 100f; // to save only 2 decimals
 
-            return performanceRating;
+            return performanceScore;
         }
 
         /// <summary>
