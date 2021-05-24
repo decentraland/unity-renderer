@@ -28,7 +28,7 @@ namespace DCL.Huds.QuestsPanel
             jumpInButton.gameObject.SetActive(task.progress < 1 && !string.IsNullOrEmpty(task.coordinates));
             jumpInDelegate = () =>
             {
-                QuestsUIAnalytics.SendJumpInPressed(quest.id, task.id, task.coordinates, QuestsUIAnalytics.UISource.QuestsLog );
+                QuestsUIAnalytics.SendJumpInPressed(quest.id, task.id, task.coordinates, QuestsUIAnalytics.UIContext.QuestsLog );
                 WebInterface.SendChatMessage(new ChatMessage
                 {
                     messageType = ChatMessage.Type.NONE,

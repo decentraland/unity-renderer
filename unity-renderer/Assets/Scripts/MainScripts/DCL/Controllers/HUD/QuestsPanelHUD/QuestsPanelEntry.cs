@@ -65,7 +65,7 @@ namespace DCL.Huds.QuestsPanel
                 if (incompletedTask == null)
                     return;
 
-                QuestsUIAnalytics.SendJumpInPressed(quest.id, incompletedTask.id, incompletedTask.coordinates, QuestsUIAnalytics.UISource.QuestsLog );
+                QuestsUIAnalytics.SendJumpInPressed(quest.id, incompletedTask.id, incompletedTask.coordinates, QuestsUIAnalytics.UIContext.QuestsLog );
                 WebInterface.SendChatMessage(new ChatMessage
                 {
                     messageType = ChatMessage.Type.NONE,
@@ -109,7 +109,7 @@ namespace DCL.Huds.QuestsPanel
             {
                 pinnedQuests.Remove(quest.id);
             }
-            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UISource.QuestsLog);
+            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestsLog);
         }
 
         private void OnPinnedQuests(string questId)

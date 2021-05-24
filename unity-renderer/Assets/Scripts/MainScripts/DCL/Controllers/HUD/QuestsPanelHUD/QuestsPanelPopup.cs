@@ -79,7 +79,7 @@ namespace DCL.Huds.QuestsPanel
                 if (pinnedQuests.Contains(quest.id))
                     pinnedQuests.Remove(quest.id);
             }
-            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UISource.QuestDetails);
+            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestDetails);
         }
 
         private void OnPinnedQuests(string questId)
