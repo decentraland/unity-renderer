@@ -1,9 +1,8 @@
 {
-    "name": "ServiceProviders",
+    "name": "GenericAnalytics",
     "rootNamespace": "",
     "references": [
-        "GUID:1b07639381de24d0f932014911b5b207",
-        "GUID:3d1a503a92d494d8aa3f35909695fa1f",
+        "GUID:4e6796037298c492ea25360846f48fc3",
         "GUID:2ac9dcbe2d83f4e4e8718930a56a2791"
     ],
     "includePlatforms": [],
