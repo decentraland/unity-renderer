@@ -1,13 +1,9 @@
 using Builder;
-using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.Models;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 public class BIWOutlinerController : BIWController
 {
@@ -18,6 +14,7 @@ public class BIWOutlinerController : BIWController
 
     [SerializeField] internal BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public BIWInputHandler biwInputHandler;
+    public LayerMask layerToStopOutline;
 
     private List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
     private int outlinerOptimizationCounter = 0;
@@ -41,13 +38,17 @@ public class BIWOutlinerController : BIWController
     {
         if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
         {
-            if (!BuilderInWorldUtils.IsPointerOverUIElement())
+            if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopOutline))
             {
                 DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.GetEntityOnPointer();
                 RemoveEntitiesOutsidePointerOrUnselected();
 
                 if (entity != null && !entity.IsSelected)
                     OutlineEntity(entity);
+            }
+            else
+            {
+                CancelUnselectedOutlines();
             }
 
             outlinerOptimizationCounter = 0;
