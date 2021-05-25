@@ -125,7 +125,11 @@ public class TaskbarHUDController : IHUD
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
     }
 
-    private void View_OnQuestPanelToggled(bool value) { DataStore.i.HUDs.questsPanelVisible.Set(value); }
+    private void View_OnQuestPanelToggled(bool value)
+    {
+        QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "taskbar");
+        DataStore.i.HUDs.questsPanelVisible.Set(value);
+    }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
 

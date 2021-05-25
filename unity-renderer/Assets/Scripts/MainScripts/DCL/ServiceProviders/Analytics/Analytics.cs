@@ -11,7 +11,7 @@ public interface IAnalytics : IDisposable
 
 public class Analytics : IAnalytics
 {
-    private static bool VERBOSE = true;
+    private static bool VERBOSE = false;
 
     //Remove this once environment is on its own assembly and can be accessed properly
     public static IAnalytics i;
@@ -22,7 +22,6 @@ public class Analytics : IAnalytics
         if (VERBOSE)
             UnityEngine.Debug.Log($"{eventName}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}");
 
-        return;
         SendToSegment(eventName, data);
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -8,22 +9,22 @@ public static class QuestsUIAnalytics
 {
     private const string QUEST_PIN_CHANGED = "quest_pin_changed";
     private const string QUEST_JUMP_IN_PRESSED = "quest_jump_in_pressed";
-    private const string QUEST_LOG_OPENED = "quest_log_opened";
-    private const string QUEST_LOG_CLOSED = "quest_log_closed";
+    private const string QUEST_LOG_VISIBILITY_CHANGED = "quest_log_visibility_changed";
+
+    private static DateTime? questLogSetVisibleTimeStamp = null;
 
     public enum UIContext
     {
         QuestsLog,
         QuestDetails,
         QuestsTracker,
-        QuestsTaskbarButton,
     }
 
     public static void SendQuestPinChanged(string questId, bool isPinned, UIContext uiContext)
     {
         Dictionary<string, string> data = new Dictionary<string, string>();
         data.Add("quest_id", questId);
-        data.Add("ui_source", uiContext.ToString());
+        data.Add("ui_context", uiContext.ToString());
         data.Add("quest_is_pinned", isPinned.ToString());
         GenericAnalytics.SendAnalytic(QUEST_PIN_CHANGED, data);
     }
@@ -34,15 +35,25 @@ public static class QuestsUIAnalytics
         data.Add("quest_id", questId);
         data.Add("task_id", taskId);
         data.Add("jump_in_coordinates", coordinates);
-        data.Add("quest_ui_source", uiContext.ToString());
+        data.Add("quest_ui_context", uiContext.ToString());
         GenericAnalytics.SendAnalytic(QUEST_JUMP_IN_PRESSED, data);
     }
 
-    public static void SendQuestLogVisibiltyChanged(bool isVisible, UIContext uiContext)
+    public static void SendQuestLogVisibiltyChanged(bool isVisible, string triggerContext)
     {
         Dictionary<string, string> data = new Dictionary<string, string>();
         data.Add("quests_log_visible", isVisible.ToString());
-        data.Add("quest_ui_source", uiContext.ToString());
-        GenericAnalytics.SendAnalytic(QUEST_LOG_OPENED, data);
+        data.Add("trigger_context", triggerContext);
+        if (isVisible)
+            questLogSetVisibleTimeStamp = DateTime.Now;
+        else
+        {
+            if (questLogSetVisibleTimeStamp.HasValue)
+            {
+                data.Add("open_duration_ms", (DateTime.Now - questLogSetVisibleTimeStamp.Value).TotalMilliseconds.ToString());
+                questLogSetVisibleTimeStamp = null;
+            }
+        }
+        GenericAnalytics.SendAnalytic(QUEST_LOG_VISIBILITY_CHANGED, data);
     }
 }
