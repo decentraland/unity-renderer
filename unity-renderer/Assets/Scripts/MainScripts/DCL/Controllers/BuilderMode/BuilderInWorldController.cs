@@ -38,6 +38,7 @@ public class BuilderInWorldController : MonoBehaviour
     public ActionController actionController;
     public BuilderInWorldBridge builderInWorldBridge;
     public BIWSaveController biwSaveController;
+    public BuilderInWorldAudioHandler biwAudioHandler;
 
     [Header("Build Modes")]
     public BuilderInWorldGodMode editorMode;
@@ -242,6 +243,7 @@ public class BuilderInWorldController : MonoBehaviour
         bIWInputHandler.Init();
         biwSaveController.Init();
         actionController.Init();
+        biwAudioHandler.Init();
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -564,6 +566,7 @@ public class BuilderInWorldController : MonoBehaviour
         outlinerController.EnterEditMode(sceneToEdit);
         biwSaveController.EnterEditMode(sceneToEdit);
         actionController.EnterEditMode(sceneToEdit);
+        biwAudioHandler.EnterEditMode(sceneToEdit);
     }
 
     public void ExitBiwControllers()
@@ -577,6 +580,7 @@ public class BuilderInWorldController : MonoBehaviour
         outlinerController.ExitEditMode();
         biwSaveController.ExitEditMode();
         actionController.ExitEditMode();
+        biwAudioHandler.ExitEditMode();
     }
 
     public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
