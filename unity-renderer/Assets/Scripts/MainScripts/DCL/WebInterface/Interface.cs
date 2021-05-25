@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -409,6 +410,13 @@ namespace DCL.Interface
             public string processorType = SystemInfo.processorType;
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
+        }
+
+        [System.Serializable]
+        public class GenericAnalyticPayload
+        {
+            public string eventName;
+            public Dictionary<object, object> data;
         }
 
         [System.Serializable]
