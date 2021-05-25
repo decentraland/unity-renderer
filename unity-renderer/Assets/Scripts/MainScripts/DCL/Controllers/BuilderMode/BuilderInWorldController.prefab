@@ -2296,6 +2296,9 @@ MonoBehaviour:
     type: 2}
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   biwInputHandler: {fileID: 6563051222090226857}
+  layerToStopOutline:
+    serializedVersion: 2
+    m_Bits: 2048
 --- !u!1 &5373867681970374750
 GameObject:
   m_ObjectHideFlags: 0
