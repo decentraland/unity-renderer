@@ -268,7 +268,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7fecc3c29a5aa584282e2b11e687fa8b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bf9d78bc84e2a4b95947a3cbfe61b323, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -860,6 +860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contentPanelTransform: {fileID: 2634397279653339128}
+  emptyContentMark: {fileID: 0}
   entityListAdapter: {fileID: 432930780331652289, guid: 34e6f7de66a823040945e7e3b317df87,
     type: 3}
   dynamicScrollSensitivity: {fileID: 6107345409022938915}
@@ -1382,6 +1383,12 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 512
       objectReference: {fileID: 0}
+    - target: {fileID: 8633157937983439365, guid: 0deae7e7e551b584aa0fff2b768118a7,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dd91a090e21ff6745ad3a82ac279b074,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0deae7e7e551b584aa0fff2b768118a7, type: 3}
 --- !u!224 &4127646747526491743 stripped

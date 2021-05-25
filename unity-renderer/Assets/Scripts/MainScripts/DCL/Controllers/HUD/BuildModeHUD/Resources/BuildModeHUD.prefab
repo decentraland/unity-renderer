@@ -2265,6 +2265,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5878438133623635184, guid: b2a6643fbcb4f48489266dfd55d41f8f,
+        type: 3}
+      propertyPath: closeMenuSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e5c88d99396794c4cabc8ef0e5d781da,
+        type: 3}
     - target: {fileID: 8494469310671118298, guid: b2a6643fbcb4f48489266dfd55d41f8f,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -9934,6 +9940,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8987509843347612041, guid: 7a32b28ae22a8914bb4ad345be91e30f,
+        type: 3}
+      propertyPath: openMenuSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dd91a090e21ff6745ad3a82ac279b074,
+        type: 3}
+    - target: {fileID: 8987509843347612041, guid: 7a32b28ae22a8914bb4ad345be91e30f,
+        type: 3}
+      propertyPath: closeMenuSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e5c88d99396794c4cabc8ef0e5d781da,
+        type: 3}
     - target: {fileID: 9107373666609500756, guid: 7a32b28ae22a8914bb4ad345be91e30f,
         type: 3}
       propertyPath: m_fontSize
