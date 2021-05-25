@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// These events should be tracked in the quest server.
-/// In the meantime we will implement them here
-/// </summary>
 public static class QuestsUIAnalytics
 {
     private const string QUEST_PIN_CHANGED = "quest_pin_changed";
