@@ -183,6 +183,12 @@ namespace DCL.Huds.QuestsPanel
                 thumbnailPromise.ClearEvents();
                 AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             }
+
+            if (pinnedQuests != null)
+            {
+                pinnedQuests.OnAdded -= OnPinnedQuests;
+                pinnedQuests.OnRemoved -= OnUnpinnedQuest;
+            }
         }
 
         public void SetPositionToReadMoreButton(Vector3 position)
