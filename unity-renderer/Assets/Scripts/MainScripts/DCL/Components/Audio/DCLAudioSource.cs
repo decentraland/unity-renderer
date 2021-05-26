@@ -114,13 +114,19 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
+            if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
+            {
+                audioSource.volume = ((Model)model).volume;
+                return;
+            }
+
             if (isOutOfBoundaries)
             {
                 audioSource.volume = 0;
                 return;
             }
 
-            audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? ((Model)model).volume : 0f;
+            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? ((Model)model).volume : 0f;
         }
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
