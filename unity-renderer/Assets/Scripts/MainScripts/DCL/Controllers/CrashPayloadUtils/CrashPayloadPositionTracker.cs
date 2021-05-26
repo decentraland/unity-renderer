@@ -6,8 +6,8 @@ namespace DCL.Helpers
 {
     public class CrashPayloadPositionTracker : IDisposable
     {
-        public List<Vector3> movePositions;
-        public List<Vector3> teleportPositions;
+        public List<Vector3> movePositions = new List<Vector3>();
+        public List<Vector3> teleportPositions = new List<Vector3>();
 
         private float lastPositionUpdate;
         private float positionUpdateInterval = 30.0f;

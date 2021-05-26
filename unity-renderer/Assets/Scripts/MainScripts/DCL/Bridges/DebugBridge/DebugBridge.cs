@@ -80,12 +80,30 @@ namespace DCL
             CrashPayloadResponse(crashPayload);
         }
 
-        [ContextMenu("Dump Crash Payload")]
         public void CrashPayloadResponse(CrashPayload payload)
         {
             string json = JsonConvert.SerializeObject(payload);
             WebInterface.MessageFromEngine("CrashPayloadResponse", json);
-            Debug.Log("Crash payload: " + json);
+        }
+
+        [ContextMenu("Dump Crash Payload")]
+        public void DumpCrashPayload()
+        {
+            var payload = CrashPayloadUtils.ComputePayload
+            (
+                DCL.Environment.i.world.state.loadedScenes,
+                Environment.i.platform.debugController.GetTrackedMovements(),
+                Environment.i.platform.debugController.GetTrackedTeleportPositions()
+            );
+
+            foreach ( var field in payload.fields)
+            {
+                string dump = JsonConvert.SerializeObject(field.Value);
+                Debug.Log($"Crash payload ({field.Key}): {dump}");
+            }
+
+            string fullDump = JsonConvert.SerializeObject(payload);
+            Debug.Log($"Full crash payload size: {fullDump.Length}");
         }
     }
 }
