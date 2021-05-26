@@ -60,12 +60,19 @@ namespace DCL.Huds.QuestsPanel
 
             QuestTask incompletedTask = quest.sections.FirstOrDefault(x => x.progress < 1)?.tasks.FirstOrDefault(x => x.progress < 1);
             jumpInButton.gameObject.SetActive(incompletedTask != null && !string.IsNullOrEmpty(incompletedTask?.coordinates));
-            jumpInDelegate = () => WebInterface.SendChatMessage(new ChatMessage
+            jumpInDelegate = () =>
             {
-                messageType = ChatMessage.Type.NONE,
-                recipient = string.Empty,
-                body = $"/goto {incompletedTask?.coordinates}",
-            });
+                if (incompletedTask == null)
+                    return;
+
+                QuestsUIAnalytics.SendJumpInPressed(quest.id, incompletedTask.id, incompletedTask.coordinates, QuestsUIAnalytics.UIContext.QuestsLog );
+                WebInterface.SendChatMessage(new ChatMessage
+                {
+                    messageType = ChatMessage.Type.NONE,
+                    recipient = string.Empty,
+                    body = $"/goto {incompletedTask.coordinates}",
+                });
+            };
 
             readMoreDelegate = () => OnReadMoreClicked?.Invoke(quest.id);
             questName.text = quest.name;
@@ -102,6 +109,7 @@ namespace DCL.Huds.QuestsPanel
             {
                 pinnedQuests.Remove(quest.id);
             }
+            QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestsLog);
         }
 
         private void OnPinnedQuests(string questId)

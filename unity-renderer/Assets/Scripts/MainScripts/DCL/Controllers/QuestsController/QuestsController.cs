@@ -16,7 +16,6 @@ namespace DCL.QuestsController
     {
         event NewQuest OnNewQuest;
         event QuestUpdated OnQuestUpdated;
-        event QuestCompleted OnQuestCompleted;
         event RewardObtained OnRewardObtained;
 
         void InitializeQuests(List<QuestModel> parsedQuests);
@@ -32,7 +31,6 @@ namespace DCL.QuestsController
 
         public event NewQuest OnNewQuest;
         public event QuestUpdated OnQuestUpdated;
-        public event QuestCompleted OnQuestCompleted;
         public event RewardObtained OnRewardObtained;
 
         private static BaseCollection<string> pinnedQuests => DataStore.i.Quests.pinnedQuests;
@@ -93,7 +91,10 @@ namespace DCL.QuestsController
                 RestoreProgressFlags(progressedQuest);
                 quests.Add(progressedQuest.id, progressedQuest);
                 if (!progressedQuest.isCompleted)
+                {
                     OnNewQuest?.Invoke(progressedQuest.id);
+                    QuestsControllerAnalytics.SendQuestDiscovered(progressedQuest);
+                }
                 return;
             }
 
@@ -113,8 +114,13 @@ namespace DCL.QuestsController
                     {
                         bool oldTaskFound = oldQuestSection.TryGetTask(currentTask.id, out QuestTask oldTask);
                         currentTask.justProgressed = !oldTaskFound || currentTask.progress != oldTask.progress;
+                        if (currentTask.justProgressed)
+                            QuestsControllerAnalytics.SendTaskProgressed(progressedQuest, newQuestSection, currentTask);
+
                         currentTask.justUnlocked = !oldTaskFound || (currentTask.status != QuestsLiterals.Status.BLOCKED && oldTask.status == QuestsLiterals.Status.BLOCKED);
                         currentTask.oldProgress = oldTaskFound ? oldTask.progress : 0;
+                        if (oldTaskFound && oldTask.status != QuestsLiterals.Status.COMPLETED && currentTask.status == QuestsLiterals.Status.COMPLETED)
+                            QuestsControllerAnalytics.SendTaskCompleted(progressedQuest, newQuestSection, currentTask);
                     }
                     else
                     {
@@ -130,11 +136,14 @@ namespace DCL.QuestsController
             if (!progressedQuest.isCompleted &&
                 ((oldQuest.status == QuestsLiterals.Status.BLOCKED && progressedQuest.status != QuestsLiterals.Status.BLOCKED) ||
                  (progressedQuest.visibility == QuestsLiterals.Visibility.SECRET && oldQuest.status == QuestsLiterals.Status.NOT_STARTED && progressedQuest.status != QuestsLiterals.Status.NOT_STARTED )))
+            {
                 OnNewQuest?.Invoke(progressedQuest.id);
+                QuestsControllerAnalytics.SendQuestDiscovered(progressedQuest);
+            }
 
             OnQuestUpdated?.Invoke(progressedQuest.id, HasProgressed(progressedQuest, oldQuest));
             if (!oldQuest.isCompleted && progressedQuest.isCompleted)
-                OnQuestCompleted?.Invoke(progressedQuest.id);
+                QuestsControllerAnalytics.SendQuestCompleted(progressedQuest);
 
             if (progressedQuest.rewards == null)
                 progressedQuest.rewards = new QuestReward[0];
@@ -150,6 +159,7 @@ namespace DCL.QuestsController
                 if (rewardObtained)
                 {
                     OnRewardObtained?.Invoke(progressedQuest.id, newReward.id);
+                    QuestsControllerAnalytics.SendRewardObtained(progressedQuest, newReward);
                 }
             }
 
