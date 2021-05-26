@@ -80,6 +80,7 @@ namespace DCL
             CrashPayloadResponse(crashPayload);
         }
 
+        [ContextMenu("Dump Crash Payload")]
         public void CrashPayloadResponse(CrashPayload payload)
         {
             string json = JsonConvert.SerializeObject(payload);
