@@ -550,8 +550,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             createdEntity.rootEntity.gameObject.tag = BuilderInWorldSettings.VOXEL_TAG;
             voxelController.SetVoxelSelected(createdEntity);
 
-            // TODO: Voxels tools will be deactivated for Builder In World V1
-            //ActivateVoxelMode();
+            ActivateVoxelMode();
         }
     }
 
