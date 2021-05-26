@@ -56,7 +56,7 @@ namespace DCL.Helpers
                 .Select( x =>
                     new AssetInfo()
                     {
-                        id = x.Key as string
+                        id = x.Key.ToString()
                     } )
                 .ToArray();
 
@@ -80,7 +80,7 @@ namespace DCL.Helpers
                 .Select( x =>
                     new AssetInfo()
                     {
-                        id = x.Key as string
+                        id = x.Key.ToString()
                     } )
                 .ToArray();
 
@@ -106,7 +106,7 @@ namespace DCL.Helpers
                 .Select( x =>
                     new TextureInfo()
                     {
-                        id = x.Key as string,
+                        id = x.Key.ToString(),
                         width = x.Value.asset.texture.width,
                         height = x.Value.asset.texture.height,
                         mipmaps = x.Value.asset.texture.mipmapCount,
@@ -118,7 +118,7 @@ namespace DCL.Helpers
                 .Select( x =>
                     new TextureInfo()
                     {
-                        id = x.Key as string,
+                        id = x.Key,
                         height = x.Value.Texture.width,
                         mipmaps = x.Value.Texture.mipmapCount,
                         format = x.Value.Texture.graphicsFormat.ToString(),
@@ -156,7 +156,7 @@ namespace DCL.Helpers
             {
                 pools[index] = new PoolInfo
                 {
-                    id = (string)pool.Value.id,
+                    id = pool.Value.id.ToString(),
                     used = pool.Value.usedObjectsCount,
                     unused = pool.Value.unusedObjectsCount
                 };
