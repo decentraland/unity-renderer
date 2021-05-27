@@ -13,3 +13,4 @@ Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
 AssetBundles/
 Logs/
+Assets/BuildReports*
