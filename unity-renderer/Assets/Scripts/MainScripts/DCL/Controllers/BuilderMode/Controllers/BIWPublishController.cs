@@ -12,6 +12,8 @@ public class BIWPublishController : BIWController
     private int checkerSceneLimitsOptimizationCounter = 0;
 
     private const int FRAMES_BEETWEN_UPDATES = 10;
+    private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
+    private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
     public override void Init()
     {
@@ -64,11 +66,11 @@ public class BIWPublishController : BIWController
         string feedbackMessage = "";
         if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
         {
-            feedbackMessage = "Some entities are outside of the Scene boundaries.";
+            feedbackMessage = FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES;
         }
         else if (!sceneToEdit.metricsController.IsInsideTheLimits())
         {
-            feedbackMessage = "You exceededed the scene limits!";
+            feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
         }
 
         HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
