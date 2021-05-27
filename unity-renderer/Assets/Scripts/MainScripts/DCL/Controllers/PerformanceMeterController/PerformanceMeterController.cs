@@ -11,7 +11,7 @@ namespace DCL
     /// It samples frames performance data for the target duration and prints a complete report when finished.
     ///
     /// There are 2 ways to trigger this tool usage:
-    /// A: While the client is running in the browser, open the browser console and run "clientDebug.RunPerformanceMeterTool(10000);" to run for 10 seconds.
+    /// A: While the client is running in the browser, open the browser console and run "clientDebug.RunPerformanceMeterTool(10);" to run for 10 seconds.
     /// B: In Unity Editor select the "Main" gameobject and right-click on its DebugBridge Monobehaviour, from there a debug method can be selected to run the tool for 10 seconds.
     /// </summary>
     public class PerformanceMeterController
@@ -56,8 +56,8 @@ namespace DCL
 
         private PerformanceMetricsDataVariable metricsData;
         private SamplesFPSComparer samplesFPSComparer = new SamplesFPSComparer();
-        private float currentDurationInMilliseconds = 0f;
-        private float targetDurationInMilliseconds = 0f;
+        private float currentDurationInSeconds = 0f;
+        private float targetDurationInSeconds = 0f;
         private List<SampleData> samples = new List<SampleData>();
 
         // auxiliar data
@@ -80,8 +80,8 @@ namespace DCL
         private void ResetDataValues()
         {
             samples.Clear();
-            currentDurationInMilliseconds = 0f;
-            targetDurationInMilliseconds = 0f;
+            currentDurationInSeconds = 0f;
+            targetDurationInSeconds = 0f;
 
             lastSavedSample = null;
             fpsSum = 0;
@@ -100,14 +100,14 @@ namespace DCL
         /// <summary>
         /// Starts the Performance Meter Tool sampling.
         /// </summary>
-        /// <param name="durationInMilliseconds">The target duration for the running of the tool, after which a report will be printed in the console</param>
-        public void StartSampling(float durationInMilliseconds)
+        /// <param name="durationInSeconds">The target duration for the running of the tool, after which a report will be printed in the console</param>
+        public void StartSampling(float durationInSeconds)
         {
-            Log("Start running... target duration: " + (durationInMilliseconds / 1000) + " seconds");
+            Log("Start running... target duration: " + durationInSeconds + " seconds");
 
             ResetDataValues();
 
-            targetDurationInMilliseconds = durationInMilliseconds;
+            targetDurationInSeconds = durationInSeconds;
 
             metricsData.OnChange += OnMetricsChange;
         }
@@ -123,7 +123,7 @@ namespace DCL
 
             if (samples.Count == 0)
             {
-                Log("No samples were gathered, the duration time in milliseconds set is probably too small");
+                Log("No samples were gathered, the duration time in seconds set is probably too small");
                 return;
             }
 
@@ -139,37 +139,44 @@ namespace DCL
         /// /// <param name="oldData">OLD version of the PerformanceMetricsDataVariable ScriptableObject</param>
         private void OnMetricsChange(PerformanceMetricsData newData, PerformanceMetricsData oldData)
         {
-            if (lastSavedSample != null && lastSavedSample.frameNumber == Time.frameCount)
+            float secondsConsumed = 0;
+
+            if (lastSavedSample != null)
             {
-                Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
-                return;
+                if (lastSavedSample.frameNumber == Time.frameCount)
+                {
+                    Log("PerformanceMetricsDataVariable changed more than once in the same frame!");
+                    return;
+                }
+
+                secondsConsumed = Time.timeSinceLevelLoad - lastSavedSample.currentTime;
             }
 
             SampleData newSample = new SampleData()
             {
                 frameNumber = Time.frameCount,
                 fpsAtThisFrameInTime = newData.fpsCount,
-                millisecondsConsumed = lastSavedSample != null ? (Time.timeSinceLevelLoad - lastSavedSample.currentTime) * 1000 : -1,
+                millisecondsConsumed = secondsConsumed * 1000,
                 currentTime = Time.timeSinceLevelLoad
             };
-            newSample.isHiccup = newSample.millisecondsConsumed / 1000 > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
+            newSample.isHiccup = secondsConsumed > FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS;
             samples.Add(newSample);
             lastSavedSample = newSample;
 
             if (newSample.isHiccup)
             {
                 totalHiccupFrames++;
-                totalHiccupsTimeInSeconds += newSample.millisecondsConsumed / 1000;
+                totalHiccupsTimeInSeconds += secondsConsumed;
             }
 
             fpsSum += newData.fpsCount;
 
             totalFrames++;
 
-            currentDurationInMilliseconds += Time.deltaTime * 1000;
-            if (currentDurationInMilliseconds > targetDurationInMilliseconds)
+            currentDurationInSeconds += Time.deltaTime;
+            if (currentDurationInSeconds > targetDurationInSeconds)
             {
-                totalFramesTimeInSeconds = currentDurationInMilliseconds / 1000;
+                totalFramesTimeInSeconds = currentDurationInSeconds;
                 StopSampling();
             }
         }
@@ -198,11 +205,11 @@ namespace DCL
         /// </summary>
         private void ReportData()
         {
-			// TODO: We could build a text file (or html) template with replaceable tags like #OPERATING_SYSTEM, #GRAPHICS_DEVICE, etc. and just replace those values in that output file, instead of printing them in the console.
+            // TODO: We could build a text file (or html) template with replaceable tags like #OPERATING_SYSTEM, #GRAPHICS_DEVICE, etc. and just replace those values in that output file, instead of printing them in the console.
 
             // Step 1 - report relevant system info: hardware, cappedFPS, OS, sampling duration, etc.
             Log("Data report step 1 - System and Graphics info:"
-                + "\n * Sampling duration in seconds -> " + (targetDurationInMilliseconds / 1000)
+                + "\n * Sampling duration in seconds -> " + targetDurationInSeconds
                 + "\n * System Info -> Operating System -> " + SystemInfo.operatingSystem
                 + "\n * System Info -> Device Name -> " + SystemInfo.deviceName
                 + "\n * System Info -> Graphics Device Name -> " + SystemInfo.graphicsDeviceName
@@ -228,7 +235,7 @@ namespace DCL
 
             // Step 2 - report processed data
             Log("Data report step 2 - Processed values:"
-                + "\n * PERFORMANCE SCORE (0-10) -> " + CalculatePerformanceScore()
+                + "\n * PERFORMANCE SCORE (0-100) -> " + CalculatePerformanceScore()
                 + "\n * average FPS -> " + averageFPS
                 + "\n * highest FPS -> " + highestFPS
                 + "\n * lowest FPS -> " + lowestFPS
@@ -255,14 +262,14 @@ namespace DCL
         }
 
         /// <summary>
-        /// Calculates a performance score from 0 to 10 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
+        /// Calculates a performance score from 0 to 100 based on the average FPS (compared to the max possible FPS) and the amount of hiccup frames (compared to the total amount of frames).
         /// </summary>
         private float CalculatePerformanceScore()
         {
             float topFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
             float fpsScore = Mathf.Min(averageFPS / topFPS, 1); // from 0 to 1
             float hiccupsScore = 1 - totalHiccupFrames / samples.Count; // from 0 to 1
-            float performanceScore = (fpsScore + hiccupsScore) / 2 * 10; // scores sum / amount of scores * 10 to have a 0-10 scale
+            float performanceScore = (fpsScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale
             performanceScore = Mathf.Round(performanceScore * 100f) / 100f; // to save only 2 decimals
 
             return performanceScore;

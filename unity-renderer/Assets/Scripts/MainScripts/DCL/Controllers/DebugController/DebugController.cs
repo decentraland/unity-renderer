@@ -12,13 +12,13 @@ namespace DCL
         void ShowFPSPanel();
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
-        void RunPerformanceMeterTool(float durationInMilliseconds);
+        void RunPerformanceMeterTool(float durationInSeconds);
     }
 
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
-        private PerformanceMeterController performanceMeterController;
+        private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
 
         public DebugView debugView;
 
@@ -65,13 +65,7 @@ namespace DCL
                 debugView.SetEngineDebugPanel();
         }
 
-        public void RunPerformanceMeterTool(float durationInMilliseconds)
-        {
-            if (performanceMeterController == null)
-                performanceMeterController = new PerformanceMeterController();
-
-            performanceMeterController.StartSampling(durationInMilliseconds);
-        }
+        public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
 
         public void Dispose()
         {
