@@ -1,6 +1,6 @@
 using UnityEngine;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
 using System.Runtime.InteropServices;
 #endif
 
@@ -17,7 +17,7 @@ namespace DCL.SettingsControls
             ToggleFPSCap(currentQualitySetting.fpsCap);
         }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
         [DllImport("__Internal")] public static extern void ToggleFPSCap(bool useFPSCap);
 #else
         public static void ToggleFPSCap(bool useFPSCap) { }

@@ -23,7 +23,7 @@ namespace DCL.Components.Video.Plugin
         private bool shouldBePlaying = false;
         private float pausedAtTime = -1;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
     [DllImport("__Internal")]
     private static extern void WebVideoPlayerCreate(string id, string url, bool useHls);
     [DllImport("__Internal")]

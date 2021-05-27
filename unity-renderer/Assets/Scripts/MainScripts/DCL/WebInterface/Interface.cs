@@ -5,7 +5,7 @@ using DCL.Models;
 using UnityEngine;
 using Ray = UnityEngine.Ray;
 
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
 using System.Runtime.InteropServices;
 #endif
 
@@ -609,7 +609,7 @@ namespace DCL.Interface
             public int maxResults;
         }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
     /**
      * This method is called after the first render. It marks the loading of the
      * rest of the JS client.
