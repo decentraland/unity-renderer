@@ -61,6 +61,32 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        public void ShowTooltipFeedbackCorrectly()
+        {
+            // Arrange
+            string testText = "Test text";
+
+            // Act
+            publishBtnController.ShowTooltipFeedback(testText);
+
+            // Assert
+            publishBtnController.feedbackTooltipController.Received(1).SetTooltipText(testText);
+            publishBtnController.feedbackTooltipController.Received(1).ShowTooltip(publishBtnController.publishBtnView.feedbackTooltipPos);
+            Assert.IsTrue(publishBtnController.isFeedbackMessageActive);
+        }
+
+        [Test]
+        public void HideTooltipFeedbackCorrectly()
+        {
+            // Act
+            publishBtnController.HideTooltipFeedback();
+
+            // Assert
+            publishBtnController.feedbackTooltipController.Received(1).HideTooltip();
+            Assert.IsFalse(publishBtnController.isFeedbackMessageActive);
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetInteractableCorrectly(bool isInteractable)
