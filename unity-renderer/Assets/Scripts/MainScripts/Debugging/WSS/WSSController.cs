@@ -471,6 +471,7 @@ namespace DCL
                             case "SetENSOwnerQueryResult":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
+                            case "CrashPayloadRequest":
                             case "SetDisableAssetBundles":
                             case "DumpRendererLockersInfo":
                                 //TODO(Brian): Move this to bridges

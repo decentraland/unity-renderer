@@ -75,7 +75,7 @@ namespace DCL
         public void CrashPayloadResponse(CrashPayload payload)
         {
             string json = JsonConvert.SerializeObject(payload);
-            WebInterface.MessageFromEngine("CrashPayloadResponse", $"{{ \"data\":{json} }}");
+            WebInterface.MessageFromEngine("CrashPayloadResponse", json);
         }
 
         [ContextMenu("Dump Crash Payload")]
