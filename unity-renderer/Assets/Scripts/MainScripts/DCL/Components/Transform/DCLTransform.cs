@@ -8,6 +8,8 @@ namespace DCL.Components
 {
     public class DCLTransform : IEntityComponent
     {
+        const float VECTOR3_MEMBER_CAP = 1000000; // Value measured when genesis plaza glitch triggered a physics engine breakdown
+
         [System.Serializable]
         public class Model : BaseModel
         {
@@ -53,12 +55,30 @@ namespace DCL.Components
             }
             else
             {
+                // If we don't cap these vectors, some scenes may trigger a physics breakdown when messaging enormous values
+                DCLTransform.model.position = CapVector3(DCLTransform.model.position);
+                DCLTransform.model.scale = CapVector3(DCLTransform.model.scale);
+
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                 entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
                 DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
             }
+        }
+
+        private Vector3 CapVector3(Vector3 targetVector)
+        {
+            if (Mathf.Abs(targetVector.x) > VECTOR3_MEMBER_CAP)
+                targetVector.x = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.x);
+
+            if (Mathf.Abs(targetVector.y) > VECTOR3_MEMBER_CAP)
+                targetVector.y = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.y);
+
+            if (Mathf.Abs(targetVector.z) > VECTOR3_MEMBER_CAP)
+                targetVector.z = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.z);
+
+            return targetVector;
         }
 
         public IEnumerator ApplyChanges(BaseModel model) { return null; }
