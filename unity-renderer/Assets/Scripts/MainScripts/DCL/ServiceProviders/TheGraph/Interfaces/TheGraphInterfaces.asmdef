@@ -1,0 +1,16 @@
+{
+  "name": "TheGraphInterfaces",
+  "rootNamespace": "",
+  "references": [
+    "GUID:e99faafecbf8dd74d8130597511b9b27"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

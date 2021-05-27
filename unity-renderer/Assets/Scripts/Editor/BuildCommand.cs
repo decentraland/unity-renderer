@@ -149,7 +149,8 @@ static class BuildCommand
         var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
 
-        if (buildSummary.summary.result != BuildResult.Succeeded) {
+        if (buildSummary.summary.result != BuildResult.Succeeded)
+        {
             throw new Exception("The build was not successful");
         }
     }

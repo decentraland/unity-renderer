@@ -72,6 +72,7 @@ public class WearableController
             {
                 loader.OnSuccessEvent -= OnSuccessWrapper;
             }
+
             assetRenderers = gameObject.GetComponentsInChildren<Renderer>();
             PrepareWearable(gameObject);
             onSuccess?.Invoke(this);
@@ -88,6 +89,7 @@ public class WearableController
                 lastMainFileLoaded = null;
                 loader = null;
             }
+
             onFail?.Invoke(this);
         }
 

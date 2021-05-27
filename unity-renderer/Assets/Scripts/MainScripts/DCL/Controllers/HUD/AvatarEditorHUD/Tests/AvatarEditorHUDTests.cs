@@ -122,7 +122,7 @@ namespace AvatarEditorHUD_Tests
             var bandana = catalog.Get(bandanaId);
 
             bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE)
-                   .overrideReplaces = new[] { sunglasses.data.category };
+                .overrideReplaces = new[] { sunglasses.data.category };
             controller.WearableClicked(sunglassesId);
             controller.WearableClicked(bandanaId);
 

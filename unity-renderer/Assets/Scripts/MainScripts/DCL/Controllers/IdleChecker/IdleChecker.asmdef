@@ -1,0 +1,17 @@
+{
+  "name": "IdleChecker",
+  "rootNamespace": "",
+  "references": [
+    "GUID:549f13eacf902a54793dd7d1095d4157",
+    "GUID:4973650d2444c4561a15d50f24d91cd9"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

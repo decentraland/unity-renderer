@@ -15,6 +15,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
 
@@ -247,6 +248,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             builderInWorldEntityHandler.DeselectEntities();
             return;
         }
+
         base.MouseClickDetected();
     }
 
@@ -319,6 +321,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isSquareMultiSelectionInputActive = false;
             mouseMainBtnPressed = false;
         }
+
         outlinerController.SetOutlineCheckActive(true);
 
         isMouseDragging = false;
@@ -358,6 +361,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
+
         mouseMainBtnPressed = true;
         freeCameraController.SetCameraCanMove(false);
     }
@@ -434,6 +438,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 }
             }
         }
+
         if (selectedInsideBoundsEntities.Count == alreadySelectedEntities && alreadySelectedEntities > 0)
         {
             foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
@@ -575,6 +580,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             editionGO.transform.position = voxelController.ConverPositionToVoxelPosition(editionGO.transform.position);
         }
+
         UpdateActionsInteractable();
     }
 

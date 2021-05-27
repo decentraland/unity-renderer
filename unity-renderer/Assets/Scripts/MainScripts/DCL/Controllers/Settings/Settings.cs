@@ -62,6 +62,7 @@ namespace DCL
                     Debug.Log(e.Message);
                 }
             }
+
             if (!isQualitySettingsSet)
             {
                 currentQualitySettings = qualitySettingsPreset.defaultPreset;

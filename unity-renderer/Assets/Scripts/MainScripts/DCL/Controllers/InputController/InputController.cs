@@ -125,11 +125,13 @@ public class InputController : MonoBehaviour
 
     [Header("General Input")]
     public InputAction_Trigger[] triggerTimeActions;
+
     public InputAction_Hold[] holdActions;
     public InputAction_Measurable[] measurableActions;
 
     [Header("BuildMode Input")]
     public InputAction_Trigger[] builderTriggerTimeActions;
+
     public InputAction_Hold[] builderHoldActions;
     public InputAction_Trigger[] loadingBuilderTriggerTimeActions;
 
@@ -419,7 +421,6 @@ public class InputController : MonoBehaviour
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-
             }
         }
     }

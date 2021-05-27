@@ -14,7 +14,9 @@ using UnityGLTF;
 using static DCL.ContentServerUtils;
 using Utils = DCL.Helpers.Utils;
 
-namespace DCL.ABConverter { }
+namespace DCL.ABConverter
+{
+}
 
 namespace DCL
 {

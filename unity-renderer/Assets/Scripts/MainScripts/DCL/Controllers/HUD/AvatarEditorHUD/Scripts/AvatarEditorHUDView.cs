@@ -73,6 +73,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     [SerializeField]
     internal Button randomizeButton;
+
     [SerializeField]
     internal Animator randomizeAnimator;
 
@@ -257,6 +258,7 @@ public class AvatarEditorHUDView : MonoBehaviour
             selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, false);
             collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, false);
         }
+
         wearablesWithLoadingSpinner.Clear();
     }
 

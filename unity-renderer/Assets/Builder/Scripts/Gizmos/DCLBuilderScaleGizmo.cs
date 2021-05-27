@@ -60,6 +60,7 @@ namespace Builder.Gizmos
 
                 entity.position = originalPosition;
             }
+
             entitiesOriginalPositions.Clear();
 
             return axisValue;
@@ -76,6 +77,7 @@ namespace Builder.Gizmos
                 {
                     scaleDirection = -Vector3.one;
                 }
+
                 initialMousePosition = lastMousePosition;
                 initialHitPoint = lastHitPoint;
             }
@@ -139,10 +141,12 @@ namespace Builder.Gizmos
                     initialMousePosition = mousePosition;
                     initialHitPoint = hitPoint;
                 }
+
                 lastMousePosition = mousePosition;
                 lastHitPoint = hitPoint;
                 return Vector3.Distance(initialHitPoint, hitPoint);
             }
+
             return axis.transform.InverseTransformPoint(hitPoint).z;
         }
     }

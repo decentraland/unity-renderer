@@ -41,10 +41,12 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
 {
     [Header("Sprites")]
     [SerializeField] internal Sprite openMenuSprite;
+
     [SerializeField] internal Sprite closeMenuSprite;
 
     [Header("Prefab references")]
     [SerializeField] internal CanvasGroup canvasGroup;
+
     [SerializeField] internal GameObject individualEntityPanel;
     [SerializeField] internal GameObject multipleEntitiesPanel;
     [SerializeField] internal TextMeshProUGUI multipleEntitiesText;

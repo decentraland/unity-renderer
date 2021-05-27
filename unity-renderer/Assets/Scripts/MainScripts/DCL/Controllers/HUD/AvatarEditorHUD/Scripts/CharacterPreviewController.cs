@@ -82,6 +82,7 @@ public class CharacterPreviewController : MonoBehaviour
             onFailed?.Invoke();
             return;
         }
+
         StartCoroutine(TakeSnapshots_Routine(onSuccess));
     }
 

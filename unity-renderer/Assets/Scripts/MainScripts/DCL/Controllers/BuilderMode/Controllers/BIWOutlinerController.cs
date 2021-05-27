@@ -9,6 +9,7 @@ public class BIWOutlinerController : BIWController
 {
     [Header("Build References")]
     public int builderRendererIndex = 1;
+
     public Material outlineMaterial;
     public Material cameraOutlinerMaterial;
 
@@ -127,8 +128,8 @@ public class BIWOutlinerController : BIWController
                 entityToQuitOutline.rootEntity.meshesInfo.renderers[x].gameObject.layer = BuilderInWorldSettings.DEFAULT_LAYER;
             }
         }
-        entitiesOutlined.Remove(entityToQuitOutline);
 
+        entitiesOutlined.Remove(entityToQuitOutline);
     }
 
     public void ActivateBuilderInWorldCamera()
