@@ -1,0 +1,16 @@
+{
+    "name": "SignupHUD",
+    "rootNamespace": "",
+    "references": [
+        "GUID:555c1f3c6d18648df910b7a1de75b424"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
