@@ -28,6 +28,7 @@ namespace DCL.Components
 
         private bool isDestroyed = false;
         public long playedAtTimestamp = 0;
+        private bool isOutOfBoundaries = false;
 
         private void Awake()
         {
@@ -73,7 +74,7 @@ namespace DCL.Components
             }
 
             Model model = (Model) this.model;
-            audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? model.volume : 0f;
+            UpdateAudioSourceVolume();
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
             audioSource.spatialBlend = 1;
@@ -111,6 +112,23 @@ namespace DCL.Components
             }
         }
 
+        private void UpdateAudioSourceVolume()
+        {
+            if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
+            {
+                audioSource.volume = ((Model)model).volume;
+                return;
+            }
+
+            if (isOutOfBoundaries)
+            {
+                audioSource.volume = 0;
+                return;
+            }
+
+            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? ((Model)model).volume : 0f;
+        }
+
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
             if (audioSource != null)
@@ -137,12 +155,8 @@ namespace DCL.Components
 
         public void UpdateOutOfBoundariesState(bool isEnabled)
         {
-            bool isDirty = audioSource.enabled != isEnabled;
-            audioSource.enabled = isEnabled;
-            if (isDirty && isEnabled)
-            {
-                ApplyCurrentModel();
-            }
+            isOutOfBoundaries = !isEnabled;
+            UpdateAudioSourceVolume();
         }
 
         private void DclAudioClip_OnLoadingFinished(DCLAudioClip obj)
