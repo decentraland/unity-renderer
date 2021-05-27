@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Net.Configuration;
+using System.Runtime.CompilerServices;
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
+
+[assembly: InternalsVisibleTo("TransformTests")]
 
 namespace DCL.Components
 {
     public class DCLTransform : IEntityComponent
     {
-        const float VECTOR3_MEMBER_CAP = 1000000; // Value measured when genesis plaza glitch triggered a physics engine breakdown
+        internal const float VECTOR3_MEMBER_CAP = 1000000; // Value measured when genesis plaza glitch triggered a physics engine breakdown
 
         [System.Serializable]
         public class Model : BaseModel

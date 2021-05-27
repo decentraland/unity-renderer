@@ -1,8 +1,10 @@
+using System.Collections;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -128,6 +130,27 @@ namespace Tests
             Assert.IsTrue(targetPosition == entity.gameObject.transform.localPosition);
             Assert.IsTrue(targetRotation == entity.gameObject.transform.localRotation);
             Assert.IsTrue(targetScale == entity.gameObject.transform.localScale);
+        }
+
+        [UnityTest]
+        public IEnumerator TransformPosAndScaleAreCapped()
+        {
+            IDCLEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            Vector3 targetPosition = new Vector3(999999999f, 999999999f, 999999999f);
+            Vector3 targetScale = new Vector3(999999999f, 999999999f, 999999999f);
+
+            DCLTransform.Model componentModel = new DCLTransform.Model
+            {
+                position = targetPosition,
+                scale = targetScale
+            };
+
+            TestHelpers.SetEntityTransform(scene, entity, componentModel);
+            yield return null;
+
+            // If we don't cap these vectors, some scenes may trigger a physics breakdown when messaging enormous values
+            Assert.IsFalse(entity.gameObject.transform.position.x > DCLTransform.VECTOR3_MEMBER_CAP);
         }
     }
 }
