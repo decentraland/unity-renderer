@@ -14,6 +14,7 @@ namespace Tests.BuildModeHUDControllers
             publishBtnController = new PublishBtnController();
             publishBtnController.Initialize(
                 Substitute.For<IPublishBtnView>(),
+                Substitute.For<ITooltipController>(),
                 Substitute.For<ITooltipController>());
         }
 

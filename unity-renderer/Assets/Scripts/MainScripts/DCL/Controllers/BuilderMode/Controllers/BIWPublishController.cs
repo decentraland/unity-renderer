@@ -52,6 +52,7 @@ public class BIWPublishController : BIWController
 
         if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
             return false;
+
         return true;
     }
 
@@ -60,7 +61,17 @@ public class BIWPublishController : BIWController
         if (HUDController.i.builderInWorldMainHud is null)
             return;
 
-        HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish());
+        string feedbackMessage = "";
+        if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
+        {
+            feedbackMessage = "Some entities are outside of the Scene boundaries.";
+        }
+        else if (!sceneToEdit.metricsController.IsInsideTheLimits())
+        {
+            feedbackMessage = "You exceededed the scene limits!";
+        }
+
+        HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
     }
 
     void StartPublishFlow()

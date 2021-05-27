@@ -9,6 +9,7 @@ public interface ITooltipController
     void SetTooltipText(string text);
     void ShowTooltip(BaseEventData data);
     void ShowTooltip(BaseEventData data, Vector3 offset);
+    void ShowTooltip(Vector3 pos);
     void HideTooltip();
 }
 
@@ -43,7 +44,12 @@ public class TooltipController : ITooltipController
             return;
 
         RectTransform selectedRT = dataConverted.pointerEnter.GetComponent<RectTransform>();
-        view.SetTooltipPosition(offset + selectedRT.position - Vector3.up * selectedRT.rect.height);
+        ShowTooltip(offset + selectedRT.position - Vector3.up * selectedRT.rect.height);
+    }
+
+    public void ShowTooltip(Vector3 pos)
+    {
+        view.SetTooltipPosition(pos);
 
         KillTooltipCoroutine();
 
@@ -58,6 +64,9 @@ public class TooltipController : ITooltipController
 
     internal IEnumerator ChangeAlpha(float from, float to)
     {
+        if (view.currentAlpha == to)
+            yield break;
+
         view.SetTooltipAlpha(from);
 
         float currentAlpha = from;

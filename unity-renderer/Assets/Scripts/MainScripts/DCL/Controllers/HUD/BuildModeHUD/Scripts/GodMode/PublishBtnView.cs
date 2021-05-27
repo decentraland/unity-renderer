@@ -9,6 +9,8 @@ public interface IPublishBtnView
     event Action OnPublishButtonClick;
     event Action<BaseEventData, string> OnShowTooltip;
 
+    Vector3 feedbackTooltipPos { get; }
+
     void OnPointerClick();
     void OnPointerEnter(PointerEventData eventData);
     void OnPointerExit();
@@ -21,9 +23,12 @@ public class PublishBtnView : MonoBehaviour, IPublishBtnView
     public event Action<BaseEventData, string> OnShowTooltip;
     public event Action OnHideTooltip;
 
+    public Vector3 feedbackTooltipPos { get => feedbackAnchor.position; }
+
     [SerializeField] internal Button mainButton;
     [SerializeField] internal string tooltipText = "Publish Scene";
     [SerializeField] internal EventTrigger publishButtonEventTrigger;
+    [SerializeField] internal Transform feedbackAnchor;
 
     private const string VIEW_PATH = "GodMode/PublishBtnView";
 
