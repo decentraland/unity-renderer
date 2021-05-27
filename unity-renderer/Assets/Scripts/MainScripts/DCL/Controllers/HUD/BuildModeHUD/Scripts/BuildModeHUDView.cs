@@ -117,15 +117,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "")
     {
         controllers.publishBtnController.SetInteractable(isAvailable);
-
-        if (isAvailable && controllers.publishBtnController.isFeedbackMessageActive)
-        {
-            controllers.publishBtnController.HideTooltipFeedback();
-        }
-        else if (!isAvailable && !controllers.publishBtnController.isFeedbackMessageActive)
-        {
-            controllers.publishBtnController.ShowTooltipFeedback(feedbackMessage);
-        }
+        controllers.publishBtnController.SetFeedbackMessage(feedbackMessage);
     }
 
     public void RefreshCatalogAssetPack() { controllers.sceneCatalogController.RefreshAssetPack(); }
