@@ -20,7 +20,6 @@ namespace DCL
         public readonly DebugConfig debugConfig = new DebugConfig();
         public readonly BaseVariable<bool> isSignUpFlow = new BaseVariable<bool>();
         public readonly BaseDictionary<string, WearableItem> wearables = new BaseDictionary<string, WearableItem>();
-        public readonly BaseDictionary<string, Item> items = new BaseDictionary<string, Item>();
         public readonly BuilderInWorld builderInWorld = new BuilderInWorld();
         public readonly DataStore_Quests Quests = new DataStore_Quests();
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
@@ -38,9 +37,6 @@ namespace DCL
         {
             public readonly BaseDictionary<string, QuestModel> quests = new BaseDictionary<string, QuestModel>();
             public readonly BaseCollection<string> pinnedQuests = new BaseCollection<string>();
-
-            public readonly BaseCollection<string> questsCompletedNotification = new BaseCollection<string>();
-            public readonly BaseCollection<(string, string)> rewardsNotification = new BaseCollection<(string, string)>();
         }
 
         public class DataStore_HUDs

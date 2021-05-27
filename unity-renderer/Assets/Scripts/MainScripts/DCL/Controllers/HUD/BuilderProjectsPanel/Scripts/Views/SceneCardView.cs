@@ -42,26 +42,38 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
+
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
+
     [SerializeField] private TextMeshProUGUI sceneName;
+
     [Space]
     [SerializeField] internal GameObject coordsContainer;
+
     [SerializeField] private TextMeshProUGUI coordsText;
+
     [Space]
     [SerializeField] internal GameObject sizeContainer;
+
     [SerializeField] private TextMeshProUGUI sizeText;
+
     [Space]
     [SerializeField] internal Button jumpInButton;
+
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button settingsButton;
+
     [Space]
     [SerializeField] internal GameObject roleOwnerGO;
+
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
+
     [Space]
     [SerializeField] internal GameObject editorLockedGO;
+
     [SerializeField] internal GameObject editorLockedTooltipGO;
 
     [SerializeField] internal Animator loadingAnimator;
@@ -73,6 +85,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
 
     private ISceneData sceneData;
+    private string thumbnailUrl = null;
     private AssetPromise_Texture thumbnailPromise;
     private bool isDestroyed = false;
     private Transform defaultParent;
@@ -144,6 +157,11 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     void ISceneCardView.SetThumbnail(string thumbnailUrl)
     {
+        if (this.thumbnailUrl == thumbnailUrl)
+            return;
+
+        this.thumbnailUrl = thumbnailUrl;
+
         isLoadingThumbnail = true;
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
 
@@ -152,6 +170,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             thumbnailPromise = null;
         }
+
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {

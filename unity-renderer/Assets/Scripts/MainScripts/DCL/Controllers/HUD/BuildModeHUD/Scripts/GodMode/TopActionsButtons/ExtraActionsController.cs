@@ -3,9 +3,10 @@ using System;
 public interface IExtraActionsController
 {
     event Action OnControlsClick,
-                 OnHideUIClick,
-                 OnTutorialClick,
-                 OnResetClick;
+        OnHideUIClick,
+        OnTutorialClick,
+        OnResetClick,
+        OnResetCameraClick;
 
     void Initialize(IExtraActionsView extraActionsView);
     void Dispose();
@@ -13,14 +14,16 @@ public interface IExtraActionsController
     void ControlsClicked();
     void HideUIClicked();
     void TutorialClicked();
+    void ResetCameraClicked();
 }
 
 public class ExtraActionsController : IExtraActionsController
 {
     public event Action OnControlsClick,
-                        OnHideUIClick,
-                        OnTutorialClick,
-                        OnResetClick;
+        OnHideUIClick,
+        OnTutorialClick,
+        OnResetClick,
+        OnResetCameraClick;
 
     internal IExtraActionsView extraActionsView;
 
@@ -32,6 +35,7 @@ public class ExtraActionsController : IExtraActionsController
         extraActionsView.OnHideUIClicked += HideUIClicked;
         extraActionsView.OnTutorialClicked += TutorialClicked;
         extraActionsView.OnResetClicked += ResetClicked;
+        extraActionsView.OnResetCameraClicked += ResetCameraClicked;
     }
 
     public void Dispose()
@@ -40,6 +44,7 @@ public class ExtraActionsController : IExtraActionsController
         extraActionsView.OnHideUIClicked -= HideUIClicked;
         extraActionsView.OnTutorialClicked -= TutorialClicked;
         extraActionsView.OnResetClicked -= ResetClicked;
+        extraActionsView.OnResetCameraClicked -= ResetCameraClicked;
     }
 
     public void SetActive(bool isActive)
@@ -48,11 +53,33 @@ public class ExtraActionsController : IExtraActionsController
             extraActionsView.SetActive(isActive);
     }
 
-    public void ResetClicked() { OnResetClick?.Invoke(); }
+    public void ResetClicked()
+    {
+        OnResetClick?.Invoke();
+        SetActive(false);
+    }
 
-    public void ControlsClicked() { OnControlsClick?.Invoke(); }
+    public void ControlsClicked()
+    {
+        OnControlsClick?.Invoke();
+        SetActive(false);
+    }
 
-    public void HideUIClicked() { OnHideUIClick?.Invoke(); }
+    public void HideUIClicked()
+    {
+        OnHideUIClick?.Invoke();
+        SetActive(false);
+    }
 
-    public void TutorialClicked() { OnTutorialClick?.Invoke(); }
+    public void TutorialClicked()
+    {
+        OnTutorialClick?.Invoke();
+        SetActive(false);
+    }
+
+    public void ResetCameraClicked()
+    {
+        OnResetCameraClick?.Invoke();
+        SetActive(false);
+    }
 }

@@ -1,6 +1,4 @@
 using Builder.Gizmos;
-using DCL.Models;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +10,7 @@ public class FreeCameraMovement : CameraStateBase
 
     [Header("Manual Camera Movement")]
     public float keyboardMovementSpeed = 5f;
+
     public float lookSpeedH = 2f;
 
     public float lookSpeedV = 2f;
@@ -22,12 +21,15 @@ public class FreeCameraMovement : CameraStateBase
 
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold advanceFowardInputAction;
+
     [SerializeField] internal InputAction_Hold advanceBackInputAction;
     [SerializeField] internal InputAction_Hold advanceLeftInputAction;
     [SerializeField] internal InputAction_Hold advanceRightInputAction;
     [SerializeField] internal InputAction_Hold advanceUpInputAction;
     [SerializeField] internal InputAction_Hold advanceDownInputAction;
     [SerializeField] internal InputAction_Hold cameraPanInputAction;
+    [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
+    [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -71,6 +73,14 @@ public class FreeCameraMovement : CameraStateBase
 
     private InputAction_Hold.Started cameraPanStartDelegate;
     private InputAction_Hold.Finished cameraPanFinishedDelegate;
+
+    private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
+    private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
+
+    private Vector3 originalCameraPosition;
+    private Transform originalCameraLookAt;
+
+    private float lastMouseWheelTime = 0;
 
     private void Awake()
     {
@@ -125,6 +135,12 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted += cameraPanStartDelegate;
         cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
+        zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
+
+        zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
+        zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
     }
 
     public void StartDectectingMovement()
@@ -182,6 +198,9 @@ public class FreeCameraMovement : CameraStateBase
 
         cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
         cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
+
+        zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
+        zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
     }
 
     private void Update()
@@ -229,10 +248,14 @@ public class FreeCameraMovement : CameraStateBase
         if (!isCameraAbleToMove)
             return;
 
-        if (smoothScrollCor != null )
+        if (smoothScrollCor != null)
             CoroutineStarter.Stop(smoothScrollCor);
 
-        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(axis));
+        float delta = Time.time - lastMouseWheelTime;
+        float scrollValue = axis * Mathf.Clamp01(delta);
+        lastMouseWheelTime = Time.time;
+
+        smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
     }
 
     private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -288,6 +311,7 @@ public class FreeCameraMovement : CameraStateBase
     }
 
     public void SmoothLookAt(Transform transform) { SmoothLookAt(transform.position); }
+
     public void SmoothLookAt(Vector3 position)
     {
         if (smoothLookAtCor != null)
@@ -308,11 +332,11 @@ public class FreeCameraMovement : CameraStateBase
                 {
                     midPointFromEntity += render.bounds.center;
                 }
+
                 midPointFromEntity /= entity.rootEntity.renderers.Length;
                 finalPosition += midPointFromEntity;
                 totalPoints++;
             }
-
         }
 
         finalPosition /= totalPoints;
@@ -358,7 +382,20 @@ public class FreeCameraMovement : CameraStateBase
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, advance);
             yield return null;
         }
+
         yaw = transform.eulerAngles.y;
         pitch = transform.eulerAngles.x;
+    }
+
+    public void SetResetConfiguration(Vector3 position, Transform lookAt)
+    {
+        originalCameraPosition = position;
+        originalCameraLookAt = lookAt;
+    }
+
+    public void ResetCameraPosition()
+    {
+        SetPosition(originalCameraPosition);
+        LookAt(originalCameraLookAt);
     }
 }

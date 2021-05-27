@@ -22,7 +22,7 @@ namespace DCL.Huds.QuestsPanel
 
         public void Awake() { jumpInButton.onClick.AddListener(() => { jumpInDelegate?.Invoke(); }); }
 
-        public void Populate(QuestTask task)
+        public void Populate( QuestModel quest, QuestTask task)
         {
             payload = JsonUtility.FromJson<TaskPayload_Single>(task.payload);
 

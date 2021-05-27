@@ -69,8 +69,8 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnTranslateClicked += TranslateClicked;
         topActionsButtonsView.OnRotateClicked += RotateClicked;
         topActionsButtonsView.OnScaleClicked += ScaleClicked;
-        topActionsButtonsView.OnUndoClicked += OnUndoClick;
-        topActionsButtonsView.OnRedoClicked += OnRedoClick;
+        topActionsButtonsView.OnUndoClicked += UndoClicked;
+        topActionsButtonsView.OnRedoClicked += RedoClicked;
         topActionsButtonsView.OnDuplicateClicked += DuplicateClicked;
         topActionsButtonsView.OnDeleteClicked += DeleteClicked;
         topActionsButtonsView.OnLogOutClicked += LogoutClicked;
@@ -85,6 +85,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter += TooltipPointerEntered;
+        topActionsButtonsView.OnSnapModePointerEnter += TooltipPointerEntered;
         topActionsButtonsView.OnSnapModeClicked += SnapModeClicked;
 
         extraActionsController = new ExtraActionsController();
@@ -115,6 +116,7 @@ public class TopActionsButtonsController : ITopActionsButtonsController
         topActionsButtonsView.OnDeletePointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnMoreActionsPointerEnter -= TooltipPointerEntered;
         topActionsButtonsView.OnLogoutPointerEnter -= TooltipPointerEntered;
+        topActionsButtonsView.OnSnapModePointerEnter -= TooltipPointerEntered;
     }
 
     public void ChangeModeClicked() { OnChangeModeClick?.Invoke(); }

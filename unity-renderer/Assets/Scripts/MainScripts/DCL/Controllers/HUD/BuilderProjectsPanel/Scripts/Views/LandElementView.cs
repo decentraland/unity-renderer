@@ -76,7 +76,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
         SetId(land.id);
         SetName(land.name);
-        SetCoords(land.@base.x, land.@base.y);
+        SetCoords(land.baseCoords.x, land.baseCoords.y);
         SetSize(land.size);
         SetRole(land.role == LandRole.OWNER);
         SetEditable(!estate);
@@ -116,7 +116,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
     public void SetSize(int size)
     {
-        landSizeGO.SetActive(size > 1);
+        landSizeGO.SetActive(size > 0);
         landSize.text = string.Format(SIZE_TEXT_FORMAT, size);
         searchInfo.SetSize(size);
     }

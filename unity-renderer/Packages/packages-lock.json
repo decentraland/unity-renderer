@@ -19,6 +19,13 @@
       "source": "builtin",
       "dependencies": {}
     },
+    "com.unity.build-report-inspector": {
+      "version": "https://github.com/needle-mirror/com.unity.build-report-inspector.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "01770beeeb81d33f13f01f86720705cc004075c3"
+    },
     "com.unity.cinemachine": {
       "version": "2.5.0",
       "depth": 0,

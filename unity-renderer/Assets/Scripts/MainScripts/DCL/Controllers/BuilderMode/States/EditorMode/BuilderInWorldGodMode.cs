@@ -15,6 +15,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
 
@@ -50,7 +51,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool isMouseDragging = false;
     private bool isTypeOfBoundSelectionSelected = false;
     private bool isVoxelBoundMultiSelection = false;
-    private bool multiSelectionButtonPressed = false;
     private bool changeSnapTemporaryButtonPressed = false;
 
     private bool wasGizmosActive = false;
@@ -75,9 +75,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
-        multiSelectionInputAction.OnStarted += (o) => multiSelectionButtonPressed = true;
-        multiSelectionInputAction.OnFinished += (o) => multiSelectionButtonPressed = false;
-
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
 
@@ -101,10 +98,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange -= UpdateSelectionPosition;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange -= UpdateSelectionRotation;
         HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange -= UpdateSelectionScale;
-
         HUDController.i.builderInWorldMainHud.OnTranslateSelectedAction -= TranslateMode;
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
+        HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
     }
 
     private void Update()
@@ -172,7 +169,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void ChangeSnapTemporaryActivated()
     {
-        if (!mouseMainBtnPressed || !gizmoManager.HasAxisHover())
+        if (selectedEntities.Count == 0)
             return;
 
         changeSnapTemporaryButtonPressed = true;
@@ -240,6 +237,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectPositionChange += UpdateSelectionPosition;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
+            HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
         }
     }
 
@@ -250,6 +248,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             builderInWorldEntityHandler.DeselectEntities();
             return;
         }
+
         base.MouseClickDetected();
     }
 
@@ -264,8 +263,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (buttonId != 0 ||
             selectedEntities.Count <= 0 ||
             BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick) ||
-            isSquareMultiSelectionInputActive ||
-            multiSelectionButtonPressed)
+            isSquareMultiSelectionInputActive)
             return;
 
         if (!isDraggingStarted)
@@ -273,19 +271,30 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (canDragSelectedEntities)
         {
-            Vector3 destination;
             Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
+            Vector3 initialEntityPosition = editionGO.transform.position;
 
             if (isSnapActive)
             {
-                currentPoint.x = Mathf.Round(currentPoint.x / snapDragFactor) * snapDragFactor;
-                currentPoint.z = Mathf.Round(currentPoint.z / snapDragFactor) * snapDragFactor;
+                currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
+                initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
             }
 
-            destination = currentPoint - dragStartedPoint + editionGO.transform.position;
+            Vector3 move = currentPoint - dragStartedPoint;
+            Vector3 destination = initialEntityPosition + move;
             editionGO.transform.position = destination;
             dragStartedPoint = currentPoint;
         }
+    }
+
+    private Vector3 GetPositionRoundedToSnapFactor(Vector3 position)
+    {
+        position = new Vector3(
+            Mathf.Round(position.x / snapDragFactor) * snapDragFactor,
+            position.y,
+            Mathf.Round(position.z / snapDragFactor) * snapDragFactor);
+
+        return position;
     }
 
     private void OnInputMouseUp(int buttonID, Vector3 position)
@@ -312,6 +321,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isSquareMultiSelectionInputActive = false;
             mouseMainBtnPressed = false;
         }
+
         outlinerController.SetOutlineCheckActive(true);
 
         isMouseDragging = false;
@@ -332,6 +342,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         dragStartedPoint = GetFloorPointAtMouse(position);
 
+        if (isSnapActive)
+        {
+            dragStartedPoint.x = Mathf.Round(dragStartedPoint.x);
+            dragStartedPoint.z = Mathf.Round(dragStartedPoint.z);
+        }
+
         if (isPlacingNewObject)
             return;
 
@@ -345,6 +361,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
+
         mouseMainBtnPressed = true;
         freeCameraController.SetCameraCanMove(false);
     }
@@ -421,6 +438,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 }
             }
         }
+
         if (selectedInsideBoundsEntities.Count == alreadySelectedEntities && alreadySelectedEntities > 0)
         {
             foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
@@ -469,11 +487,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         SetLookAtObject(parcelScene);
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition;
-        freeCameraController.SetPosition(cameraPosition + Vector3.up * distanceEagleCamera);
-        //
-
+        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition + Vector3.up * distanceEagleCamera;
+        freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
+        freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
 
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
@@ -563,6 +580,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             editionGO.transform.position = voxelController.ConverPositionToVoxelPosition(editionGO.transform.position);
         }
+
         UpdateActionsInteractable();
     }
 
@@ -760,4 +778,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         return Vector3.zero;
     }
+
+    private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 }

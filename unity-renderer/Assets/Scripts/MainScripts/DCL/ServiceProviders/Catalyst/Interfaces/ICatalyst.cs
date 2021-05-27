@@ -19,6 +19,14 @@ public interface ICatalyst : IDisposable
     Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels);
 
     /// <summary>
+    /// get scenes deployed in parcels
+    /// </summary>
+    /// <param name="parcels">parcels to get scenes from</param>
+    /// <param name="cacheMaxAgeSeconds">discard cache if it's older than cacheMaxAgeSeconds ago</param>
+    /// <returns>promise of an array of scenes entities</returns>
+    Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels, float cacheMaxAgeSeconds);
+
+    /// <summary>
     /// get entities of entityType
     /// </summary>
     /// <param name="entityType">type of the entity to fetch. see CatalystEntitiesType class</param>

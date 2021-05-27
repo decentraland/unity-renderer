@@ -9,6 +9,12 @@ namespace DCL
 {
     public class AvatarRenderer : MonoBehaviour
     {
+        public enum VisualCue
+        {
+            CleanedUp,
+            Loaded
+        }
+
         private const int MAX_RETRIES = 5;
 
         public Material defaultMaterial;
@@ -16,11 +22,9 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public bool useFx = false;
-        public GameObject fxSpawnPrefab;
-
         private AvatarModel model;
 
+        public event Action<VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<bool> OnFailEvent;
 
@@ -123,6 +127,7 @@ namespace DCL
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
+            OnVisualCue?.Invoke(VisualCue.CleanedUp);
         }
 
         void CleanUpUnusedItems()
@@ -137,7 +142,7 @@ namespace DCL
                 var currentId = ids[i];
                 var wearable = wearableControllers[currentId];
 
-                if (!model.wearables.Contains(wearable.id))
+                if (!model.wearables.Contains(wearable.id) || !wearable.IsLoadedForBodyShape(model.bodyShape))
                 {
                     wearable.CleanUp();
                     wearableControllers.Remove(currentId);
@@ -261,7 +266,7 @@ namespace DCL
                 if (wearable == null)
                     continue;
 
-                unusedCategories.Remove(wearable.category);
+                unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
                     if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
@@ -272,7 +277,7 @@ namespace DCL
                 else
                 {
                     AddWearableController(wearable);
-                    if (wearable.category != Categories.EYES && wearable.category != Categories.MOUTH && wearable.category != Categories.EYEBROWS)
+                    if (wearable.data.category != Categories.EYES && wearable.data.category != Categories.MOUTH && wearable.data.category != Categories.EYEBROWS)
                         wearablesIsDirty = true;
                 }
             }
@@ -293,7 +298,6 @@ namespace DCL
                 }
             }
 
-            CleanUpUnusedItems();
 
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
@@ -312,7 +316,6 @@ namespace DCL
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
             mouthController?.Load(bodyShapeController, model.skinColor);
@@ -322,13 +325,9 @@ namespace DCL
                 (eyesController == null || (eyesController != null && eyesController.isReady)) &&
                 (mouthController == null || (mouthController != null && mouthController.isReady)));
 
-            if (useFx && (bodyIsDirty || wearablesIsDirty))
+            if (bodyIsDirty || wearablesIsDirty)
             {
-                var particles = Instantiate(fxSpawnPrefab);
-                var particlesFollow = particles.AddComponent<FollowObject>();
-                particles.transform.position += transform.position;
-                particlesFollow.target = transform;
-                particlesFollow.offset = fxSpawnPrefab.transform.position;
+                OnVisualCue?.Invoke(VisualCue.Loaded);
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
@@ -337,6 +336,8 @@ namespace DCL
             {
                 wearableController.UpdateVisibility(hiddenList);
             }
+
+            CleanUpUnusedItems();
 
             isLoading = false;
 
@@ -416,7 +417,7 @@ namespace DCL
         {
             if (wearable == null)
                 return;
-            switch (wearable.category)
+            switch (wearable.data.category)
             {
                 case Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, eyeMaterial);

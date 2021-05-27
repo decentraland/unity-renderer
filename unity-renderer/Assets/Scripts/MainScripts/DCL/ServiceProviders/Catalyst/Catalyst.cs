@@ -1,14 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 public class Catalyst : ICatalyst
 {
-    private const float CACHE_TIME = 5 * 60;
+    private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const int MAX_POINTERS_PER_REQUEST = 90;
 
     public string contentUrl => realmContentServerUrl;
@@ -16,7 +16,7 @@ public class Catalyst : ICatalyst
     private string realmDomain = "https://peer.decentraland.org";
     private string realmContentServerUrl = "https://peer.decentraland.org/content";
 
-    private readonly Dictionary<string, string> cache = new Dictionary<string, string>();
+    private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
 
     public Catalyst()
     {
@@ -29,11 +29,31 @@ public class Catalyst : ICatalyst
         DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
-    public void Dispose() { DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange; }
+    public void Dispose()
+    {
+        DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange;
+        deployedScenesCache.Dispose();
+    }
 
-    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels)
+    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels) { return GetDeployedScenes(parcels, DEFAULT_CACHE_TIME); }
+
+    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels, float cacheMaxAgeSeconds)
     {
         var promise = new Promise<CatalystSceneEntityPayload[]>();
+
+        string cacheKey = string.Join(";", parcels);
+
+        if (cacheMaxAgeSeconds >= 0)
+        {
+            if (deployedScenesCache.TryGet(cacheKey, out CatalystSceneEntityPayload[] cacheValue, out float lastUpdate))
+            {
+                if (Time.unscaledTime - lastUpdate <= cacheMaxAgeSeconds)
+                {
+                    promise.Resolve(cacheValue);
+                    return promise;
+                }
+            }
+        }
 
         GetEntities(CatalystEntitiesType.SCENE, parcels)
             .Then(json =>
@@ -65,7 +85,10 @@ public class Catalyst : ICatalyst
                 finally
                 {
                     if (!hasException)
+                    {
+                        deployedScenesCache.Add(cacheKey, scenes, DEFAULT_CACHE_TIME);
                         promise.Resolve(scenes);
+                    }
                 }
             })
             .Catch(error => promise.Reject(error));
@@ -146,15 +169,8 @@ public class Catalyst : ICatalyst
     {
         Promise<string> promise = new Promise<string>();
 
-        if (cache.TryGetValue(url, out string cachedResult))
-        {
-            promise.Resolve(cachedResult);
-            return promise;
-        }
-
         WebRequestController.i.Get(url, null , request =>
         {
-            AddToCache(url, request.downloadHandler.text);
             promise.Resolve(request.downloadHandler.text);
         }, request =>
         {
@@ -168,19 +184,5 @@ public class Catalyst : ICatalyst
     {
         realmDomain = current.domain;
         realmContentServerUrl = current.contentServerUrl;
-    }
-
-    private void AddToCache(string url, string result)
-    {
-        cache[url] = result;
-
-        // NOTE: remove from cache after CACHE_TIME time passed
-        CoroutineStarter.Start(RemoveCache(url, CACHE_TIME));
-    }
-
-    private IEnumerator RemoveCache(string url, float delay)
-    {
-        yield return WaitForSecondsCache.Get(delay);
-        cache?.Remove(url);
     }
 }

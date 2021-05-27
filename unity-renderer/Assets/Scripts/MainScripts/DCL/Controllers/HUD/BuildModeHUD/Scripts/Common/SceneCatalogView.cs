@@ -41,6 +41,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("Prefab References")]
     [SerializeField] internal TextMeshProUGUI catalogTitleTxt;
+
     [SerializeField] internal CatalogAssetPackListView catalogAssetPackListView;
     [SerializeField] internal CatalogGroupListView catalogGroupListView;
     [SerializeField] internal TMP_InputField searchInputField;
@@ -54,6 +55,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelRT;
+
     [SerializeField] internal RectTransform headerRT;
     [SerializeField] internal RectTransform searchBarRT;
     [SerializeField] internal RectTransform assetPackRT;
@@ -61,17 +63,20 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("MinSize Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelMinSizeRT;
+
     [SerializeField] internal RectTransform headerMinSizeRT;
     [SerializeField] internal RectTransform searchBarMinSizeRT;
     [SerializeField] internal RectTransform assetPackMinSizeRT;
 
     [Header("MaxSize Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelMaxSizeRT;
+
     [SerializeField] internal RectTransform headerMaxSizeRT;
     [SerializeField] internal RectTransform searchBarMaxSizeRT;
     [SerializeField] internal RectTransform assetPackMaxSizeRT;
 
     internal bool isCatalogExpanded = false;
+    internal bool isClosing = false;
 
     private const string VIEW_PATH = "Common/SceneCatalogView";
 
@@ -145,9 +150,23 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     internal IEnumerator CloseCatalogAfterOneFrame()
     {
+        isClosing = true;
         yield return null;
         gameObject.SetActive(false);
+        isClosing = false;
     }
 
-    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
+    public void SetActive(bool isActive)
+    {
+        if (isActive && isClosing)
+            CoroutineStarter.Start(OpenCatalogWhenIsAlreadyClosed());
+        else
+            gameObject.SetActive(isActive);
+    }
+
+    internal IEnumerator OpenCatalogWhenIsAlreadyClosed()
+    {
+        yield return new WaitUntil(() => !isClosing);
+        gameObject.SetActive(true);
+    }
 }

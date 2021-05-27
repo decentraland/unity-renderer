@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 
 public enum TheGraphCache
@@ -7,9 +8,10 @@ public enum TheGraphCache
     UseCache
 }
 
-public interface ITheGraph
+public interface ITheGraph : IDisposable
 {
     Promise<string> Query(string url, string query);
     Promise<string> Query(string url, string query, QueryVariablesBase variables);
-    Promise<List<Land>> QueryLands(string tld, string address, TheGraphCache cache);
+    Promise<List<Land>> QueryLands(string tld, string address);
+    Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds);
 }
