@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -58,8 +59,8 @@ namespace DCL.Components
             else
             {
                 // If we don't cap these vectors, some scenes may trigger a physics breakdown when messaging enormous values
-                DCLTransform.model.position = CapVector3(DCLTransform.model.position);
-                DCLTransform.model.scale = CapVector3(DCLTransform.model.scale);
+                DCLTransform.model.position = DCLTransform.model.position.Capped(VECTOR3_MEMBER_CAP);
+                DCLTransform.model.scale = DCLTransform.model.scale.Capped(VECTOR3_MEMBER_CAP);
 
                 entity.gameObject.transform.localPosition = DCLTransform.model.position;
                 entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
@@ -67,20 +68,6 @@ namespace DCL.Components
 
                 DCL.Environment.i.world.sceneBoundsChecker?.AddEntityToBeChecked(entity);
             }
-        }
-
-        private Vector3 CapVector3(Vector3 targetVector)
-        {
-            if (Mathf.Abs(targetVector.x) > VECTOR3_MEMBER_CAP)
-                targetVector.x = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.x);
-
-            if (Mathf.Abs(targetVector.y) > VECTOR3_MEMBER_CAP)
-                targetVector.y = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.y);
-
-            if (Mathf.Abs(targetVector.z) > VECTOR3_MEMBER_CAP)
-                targetVector.z = VECTOR3_MEMBER_CAP * Mathf.Sign(targetVector.z);
-
-            return targetVector;
         }
 
         public IEnumerator ApplyChanges(BaseModel model) { return null; }

@@ -592,5 +592,24 @@ namespace DCL.Helpers
                 SetLayerRecursively(child, layer);
             }
         }
+
+        /// <summary>
+        /// Returns this vector with its members capped (signs will remain intact).
+        /// </summary>
+        /// <param name="cap">The cap to be applied (signs will be kept)</param>
+        /// <returns>The capped vector</returns>
+        public static Vector3 Capped(this Vector3 vec, float cap)
+        {
+            if (Mathf.Abs(vec.x) > cap)
+                vec.x = cap * Mathf.Sign(vec.x);
+
+            if (Mathf.Abs(vec.y) > cap)
+                vec.y = cap * Mathf.Sign(vec.y);
+
+            if (Mathf.Abs(vec.z) > cap)
+                vec.z = cap * Mathf.Sign(vec.z);
+
+            return vec;
+        }
     }
 }
