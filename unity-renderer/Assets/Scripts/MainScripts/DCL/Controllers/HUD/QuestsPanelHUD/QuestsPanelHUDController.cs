@@ -1,4 +1,5 @@
-﻿using DCL.Helpers;
+﻿using System;
+using DCL.Helpers;
 using DCL.QuestsController;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,9 +33,15 @@ namespace DCL.Huds.QuestsPanel
 
             OnQuestSet(quests.Get());
         }
+
         private void OnQuestPanelVisibleChanged(bool current, bool previous) { SetViewActive(current); }
 
-        private void OnToggleActionTriggered(DCLAction_Trigger action) { SetVisibility(!DataStore.i.HUDs.questsPanelVisible.Get()); }
+        private void OnToggleActionTriggered(DCLAction_Trigger action)
+        {
+            bool value = !DataStore.i.HUDs.questsPanelVisible.Get();
+            QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "input_action");
+            SetVisibility(value);
+        }
 
         private void OnQuestUpdated(string questId, bool hasProgress)
         {

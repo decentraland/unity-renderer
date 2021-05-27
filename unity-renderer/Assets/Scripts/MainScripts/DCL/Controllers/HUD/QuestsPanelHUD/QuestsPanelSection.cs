@@ -11,7 +11,7 @@ namespace DCL.Huds.QuestsPanel
         [SerializeField] internal RectTransform tasksContainer;
         [SerializeField] internal QuestsPanelTaskFactory factory;
 
-        public void Populate(QuestSection section)
+        public void Populate(QuestModel quest, QuestSection section)
         {
             CleanUpTasksList();
             titleContainer.gameObject.SetActive(!string.IsNullOrEmpty(section.name));
@@ -19,11 +19,11 @@ namespace DCL.Huds.QuestsPanel
             var orderedTasks = section.tasks.OrderBy(x => x.progress >= 1).ThenBy(x => x.completionTime).ToArray();
             foreach (QuestTask task in orderedTasks)
             {
-                CreateTask(task);
+                CreateTask(quest, task);
             }
         }
 
-        internal void CreateTask(QuestTask task)
+        internal void CreateTask(QuestModel quest, QuestTask task)
         {
             if (task.status == QuestsLiterals.Status.BLOCKED)
                 return;
@@ -36,7 +36,7 @@ namespace DCL.Huds.QuestsPanel
             }
 
             var taskUIEntry = Instantiate(prefab, tasksContainer).GetComponent<IQuestsPanelTask>();
-            taskUIEntry.Populate(task);
+            taskUIEntry.Populate(quest, task);
         }
 
         internal void CleanUpTasksList()

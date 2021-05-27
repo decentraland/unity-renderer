@@ -53,7 +53,11 @@ namespace DCL.Huds.QuestsPanel
         {
             questPopup.gameObject.SetActive(false);
             noQuestsTitle.SetActive(false);
-            closeButton.onClick.AddListener(() => DataStore.i.HUDs.questsPanelVisible.Set(false));
+            closeButton.onClick.AddListener(() =>
+            {
+                QuestsUIAnalytics.SendQuestLogVisibiltyChanged(false, "quest_log_close_button");
+                DataStore.i.HUDs.questsPanelVisible.Set(false);
+            });
         }
 
         public void RequestAddOrUpdateQuest(string questId)
