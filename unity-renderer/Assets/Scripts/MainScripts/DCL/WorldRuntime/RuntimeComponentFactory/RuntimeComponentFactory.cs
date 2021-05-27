@@ -9,12 +9,6 @@ using UnityEngine;
 
 namespace DCL
 {
-    public interface IRuntimeComponentFactory
-    {
-        IComponent CreateComponent(int classId);
-        void Initialize();
-    }
-
     public class RuntimeComponentFactory : IRuntimeComponentFactory
     {
         private delegate IComponent ComponentBuilder(int classId);

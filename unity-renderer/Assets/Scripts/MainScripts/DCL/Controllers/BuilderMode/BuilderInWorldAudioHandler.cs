@@ -1,9 +1,9 @@
+using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class BuilderInWorldAudioHandler : MonoBehaviour
+public class BuilderInWorldAudioHandler : BIWController
 {
     const float MUSIC_DELAY_TIME_ON_START = 4f;
     const float MUSIC_FADE_OUT_TIME_ON_EXIT = 5f;
@@ -52,19 +52,10 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         playPlacementSoundOnDeselect = false;
 
-        inWorldController.OnEnterEditMode += OnEnterEditMode;
-        inWorldController.OnExitEditMode += OnExitEditMode;
-
         AddListeners();
     }
 
-    private void OnDestroy()
-    {
-        inWorldController.OnEnterEditMode -= OnEnterEditMode;
-        inWorldController.OnExitEditMode -= OnExitEditMode;
-
-        RemoveListeners();
-    }
+    private void OnDestroy() { RemoveListeners(); }
 
     private void AddListeners()
     {
@@ -94,20 +85,28 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnEntitySelected -= OnAssetSelect;
     }
 
-    private void OnEnterEditMode()
+    public override void EnterEditMode(ParcelScene scene)
     {
+        base.EnterEditMode(scene);
+
         UpdateEntityCount();
         CoroutineStarter.Start(StartBuilderMusic());
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
+
+        gameObject.SetActive(true);
     }
 
-    private void OnExitEditMode()
+    public override void ExitEditMode()
     {
+        base.ExitEditMode();
+
         eventBuilderExit.Play();
         CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
+
+        gameObject.SetActive(false);
     }
 
     private void OnAssetSpawn() { eventAssetSpawn.Play(); }
