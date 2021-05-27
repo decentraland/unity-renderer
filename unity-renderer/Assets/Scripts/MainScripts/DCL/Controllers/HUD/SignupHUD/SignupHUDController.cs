@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace SignupHUD
 {
@@ -17,8 +16,9 @@ namespace SignupHUD
             view = CreateView();
             if (view != null)
             {
-                view.OnNameScreenDone += OnNameScreenDone;
-                view.OnTermsOfServiceScreenDone += OnTermsOfServiceScreenDone;
+                view.OnNameScreenNext += OnNameScreenNext;
+                view.OnTermsOfServiceAgreed += TermsOfServiceAgreed;
+                view.OnTermsOfServiceBack += TermsOfServiceBack;
             }
         }
 
@@ -26,58 +26,47 @@ namespace SignupHUD
         {
             name = null;
             email = null;
+            view?.SetVisibility(true);
             view?.ShowNameScreen();
         }
 
-        private void OnNameScreenDone(string newName, string newemail)
+        private void OnNameScreenNext(string newName, string newEmail)
         {
             name = newName;
-            email = newemail;
+            email = newEmail;
             view?.ShowTermsOfServiceScreen();
         }
 
-        private void OnTermsOfServiceScreenDone()
+        private void TermsOfServiceAgreed()
         {
             //Send data to kernel
-            view?.HideEverything();
+            view?.SetVisibility(false);
         }
 
+        private void TermsOfServiceBack() { StartSignupProcess(); }
+
         public void SetVisibility(bool visible) { throw new System.NotImplementedException(); }
+
         public void Dispose()
         {
             if (view == null)
                 return;
             view.Dispose();
-            view.OnNameScreenDone += OnNameScreenDone;
-            view.OnTermsOfServiceScreenDone += OnTermsOfServiceScreenDone;
+            view.OnNameScreenNext -= OnNameScreenNext;
+            view.OnTermsOfServiceAgreed -= TermsOfServiceAgreed;
         }
     }
 
     public interface ISignupHUDView : IDisposable
     {
         delegate void NameScreenDone(string newName, string newEmail);
-        event NameScreenDone OnNameScreenDone;
-        event Action OnTermsOfServiceScreenDone;
+        event NameScreenDone OnNameScreenNext;
+        event Action OnTermsOfServiceAgreed;
+        event Action OnTermsOfServiceBack;
 
-        void HideEverything();
+        void SetVisibility(bool visible);
         void ShowNameScreen();
         void ShowTermsOfServiceScreen();
     }
 
-    public class SignupHUDView : MonoBehaviour, ISignupHUDView
-    {
-        public event ISignupHUDView.NameScreenDone OnNameScreenDone;
-        public event Action OnTermsOfServiceScreenDone;
-
-        public static SignupHUDView CreateView() { return null; }
-
-        public void HideEverything() { throw new NotImplementedException(); }
-        public void ShowNameScreen() { throw new NotImplementedException(); }
-        public void ShowTermsOfServiceScreen() { throw new NotImplementedException(); }
-        public void Dispose()
-        {
-            if (this != null)
-                Destroy(gameObject);
-        }
-    }
 }
