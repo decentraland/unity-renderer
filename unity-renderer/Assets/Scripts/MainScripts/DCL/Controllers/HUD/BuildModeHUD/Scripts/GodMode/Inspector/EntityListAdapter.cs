@@ -1,7 +1,8 @@
-using DCL;
 using DCL.Models;
+using DCL;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class EntityListAdapter : MonoBehaviour
@@ -19,30 +20,13 @@ public class EntityListAdapter : MonoBehaviour
     public Button unlockButton;
     public Button lockButton;
     public Image showImg;
-    public Image textBoxImage;
     public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
     public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
     DCLBuilderInWorldEntity currentEntity;
     internal AssetPromise_Texture loadedThumbnailPromise;
 
-    private void Start()
-    {
-        nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
-
-        nameInputField.onEndEdit.AddListener((newText) =>
-        {
-            Rename(newText);
-            SetTextboxActive(false);
-        });
-
-        SetTextboxActive(false);
-    }
-
     private void OnDestroy()
     {
-        nameInputField.onSelect.RemoveAllListeners();
-        nameInputField.onEndEdit.RemoveAllListeners();
-
         if (currentEntity != null)
         {
             currentEntity.OnStatusUpdate -= SetInfo;
@@ -168,6 +152,4 @@ public class EntityListAdapter : MonoBehaviour
 
         nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;
     }
-
-    private void SetTextboxActive(bool isActive) { textBoxImage.enabled = isActive; }
 }
