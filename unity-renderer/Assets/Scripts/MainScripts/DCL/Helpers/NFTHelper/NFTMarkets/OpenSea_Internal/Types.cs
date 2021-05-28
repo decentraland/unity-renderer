@@ -3,13 +3,13 @@
 namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 {
     [Serializable]
-    internal class AssetsResponse
+    public class AssetsResponse
     {
         public AssetResponse[] assets;
     }
 
     [Serializable]
-    internal class AssetResponse
+    public class AssetResponse
     {
         public string token_id;
         public long? num_sales = null;
@@ -29,7 +29,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
-    internal class AssetContract
+    public class AssetContract
     {
         public string address;
         public string asset_contract_type;
@@ -46,14 +46,14 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
-    internal class AccountInfo
+    public class AccountInfo
     {
         public string profile_img_url;
         public string address;
     }
 
     [Serializable]
-    internal class AssetSaleInfo
+    public class AssetSaleInfo
     {
         public string event_type;
         public string event_timestamp;
@@ -63,7 +63,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
-    internal class PaymentTokenInfo
+    public class PaymentTokenInfo
     {
         public long id;
         public string symbol;
@@ -76,7 +76,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
-    internal class TransactionInfo
+    public class TransactionInfo
     {
         public long id;
         public AccountInfo from_account;
@@ -85,7 +85,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
-    internal class OrderInfo
+    public class OrderInfo
     {
         public AccountInfo maker;
         public string current_price;

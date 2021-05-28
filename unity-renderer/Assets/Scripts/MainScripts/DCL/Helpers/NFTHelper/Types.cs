@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace DCL.Helpers.NFT
 {
+
     public struct NFTOwner
     {
         public string ethAddress;

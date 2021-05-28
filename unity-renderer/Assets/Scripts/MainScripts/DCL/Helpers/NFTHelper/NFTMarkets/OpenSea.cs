@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers.NFT.Markets.OpenSea_Internal;
 
@@ -8,61 +7,40 @@ namespace DCL.Helpers.NFT.Markets
 {
     internal class OpenSea : INFTMarket
     {
-        MarketInfo openSeaMarketInfo = new MarketInfo() { name = "OpenSea" };
-        OpenSeaRequestController requestController = new OpenSeaRequestController();
-        Dictionary<string, NFTInfo> cachedResponses = new Dictionary<string, NFTInfo>();
-        Dictionary<string, NFTOwner> ownerCachedResponses = new Dictionary<string, NFTOwner>();
+        readonly MarketInfo openSeaMarketInfo = new MarketInfo() { name = "OpenSea" };
 
-        IEnumerator INFTMarket.FetchNFTsFromOwner(string assetContractAddress, Action<NFTOwner> onSuccess, Action<string> onError)
+        private readonly RequestController requestController = new RequestController();
+
+        IEnumerator INFTMarket.FetchNFTsFromOwner(string address, Action<NFTOwner> onSuccess, Action<string> onError)
         {
-            string ownerId = assetContractAddress;
-            if (cachedResponses.ContainsKey(ownerId))
+            var request = requestController.FetchOwnedNFT(address);
+
+            yield return new UnityEngine.WaitUntil(() => !request.pending);
+
+            if (request.resolved)
             {
-                onSuccess?.Invoke(ownerCachedResponses[ownerId]);
-                yield break;
+                onSuccess?.Invoke( ResponseToNFTOwner(address, request.resolvedValue));
             }
-
-            OpenSeaRequestAllNFTs request = new OpenSeaRequestAllNFTs(assetContractAddress,
-                (assetsResponse) =>
-                {
-                    NFTOwner nftOwner = ResponseToNFTOwner(assetContractAddress, assetsResponse);
-
-                    if (!ownerCachedResponses.ContainsKey(ownerId))
-                    {
-                        ownerCachedResponses.Add(ownerId, nftOwner);
-                    }
-                    onSuccess?.Invoke(nftOwner);
-                },
-                (error) =>
-                {
-                    onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress} {error}");
-                });
+            else
+            {
+                onError?.Invoke(request.error);
+            }
         }
 
         IEnumerator INFTMarket.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            string nftId = $"{assetContractAddress}/{tokenId}";
-            if (cachedResponses.ContainsKey(nftId))
-            {
-                onSuccess?.Invoke(cachedResponses[nftId]);
-                yield break;
-            }
+            var request = requestController.FetchNFT(assetContractAddress, tokenId);
 
-            OpenSeaRequest request = requestController.AddRequest(assetContractAddress, tokenId);
-            yield return request.OnResolved(
-                (assetResponse) =>
-                {
-                    NFTInfo nftInfo = ResponseToNFTInfo(assetResponse);
-                    if (!cachedResponses.ContainsKey(nftId))
-                    {
-                        cachedResponses.Add(nftId, nftInfo);
-                    }
-                    onSuccess?.Invoke(nftInfo);
-                },
-                (error) =>
-                {
-                    onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress}/{tokenId} {error}");
-                });
+            yield return new UnityEngine.WaitUntil(() => !request.pending);
+
+            if (request.resolved)
+            {
+                onSuccess?.Invoke( ResponseToNFTInfo(request.resolvedValue));
+            }
+            else
+            {
+                onError?.Invoke(request.error);
+            }
         }
 
         private NFTOwner ResponseToNFTOwner(string ethAddress, AssetsResponse response)
