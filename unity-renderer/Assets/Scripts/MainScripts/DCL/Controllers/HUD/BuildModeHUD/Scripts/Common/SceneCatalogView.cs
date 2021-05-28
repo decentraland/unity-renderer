@@ -41,6 +41,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("Prefab References")]
     [SerializeField] internal TextMeshProUGUI catalogTitleTxt;
+
     [SerializeField] internal CatalogAssetPackListView catalogAssetPackListView;
     [SerializeField] internal CatalogGroupListView catalogGroupListView;
     [SerializeField] internal TMP_InputField searchInputField;
@@ -54,6 +55,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelRT;
+
     [SerializeField] internal RectTransform headerRT;
     [SerializeField] internal RectTransform searchBarRT;
     [SerializeField] internal RectTransform assetPackRT;
@@ -61,12 +63,14 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
 
     [Header("MinSize Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelMinSizeRT;
+
     [SerializeField] internal RectTransform headerMinSizeRT;
     [SerializeField] internal RectTransform searchBarMinSizeRT;
     [SerializeField] internal RectTransform assetPackMinSizeRT;
 
     [Header("MaxSize Catalog RectTransforms")]
     [SerializeField] internal RectTransform panelMaxSizeRT;
+
     [SerializeField] internal RectTransform headerMaxSizeRT;
     [SerializeField] internal RectTransform searchBarMaxSizeRT;
     [SerializeField] internal RectTransform assetPackMaxSizeRT;

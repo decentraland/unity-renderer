@@ -37,9 +37,6 @@ namespace DCL
         {
             public readonly BaseDictionary<string, QuestModel> quests = new BaseDictionary<string, QuestModel>();
             public readonly BaseCollection<string> pinnedQuests = new BaseCollection<string>();
-
-            public readonly BaseCollection<string> questsCompletedNotification = new BaseCollection<string>();
-            public readonly BaseCollection<(string, string)> rewardsNotification = new BaseCollection<(string, string)>();
         }
 
         public class DataStore_HUDs

@@ -131,7 +131,9 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
+        public class OnClickEvent : UUIDEvent<OnClickEventPayload>
+        {
+        };
 
         [System.Serializable]
         public class CameraModePayload
@@ -146,7 +148,9 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
+        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload>
+        {
+        };
 
         [System.Serializable]
         public class OnGlobalPointerEvent
@@ -155,25 +159,39 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload> { };
+        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload>
+        {
+        };
 
         [System.Serializable]
-        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload> { };
+        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload>
+        {
+        };
 
         [System.Serializable]
-        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload> { };
+        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload>
+        {
+        };
 
         [System.Serializable]
-        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload> { };
+        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload>
+        {
+        };
 
         [System.Serializable]
-        private class OnFocusEvent : UUIDEvent<EmptyPayload> { };
+        private class OnFocusEvent : UUIDEvent<EmptyPayload>
+        {
+        };
 
         [System.Serializable]
-        private class OnBlurEvent : UUIDEvent<EmptyPayload> { };
+        private class OnBlurEvent : UUIDEvent<EmptyPayload>
+        {
+        };
 
         [System.Serializable]
-        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload> { };
+        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload>
+        {
+        };
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -255,7 +273,9 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class EmptyPayload { }
+        public class EmptyPayload
+        {
+        }
 
         [System.Serializable]
         public class MetricsModel
@@ -276,7 +296,9 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnEnterEventPayload { }
+        public class OnEnterEventPayload
+        {
+        }
 
         [System.Serializable]
         public class TransformPayload
@@ -355,10 +377,14 @@ namespace DCL.Interface
         // Note (Zak): We need to explicitly define this classes for the JsonUtility to
         // be able to serialize them
         [System.Serializable]
-        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity> { }
+        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity>
+        {
+        }
 
         [System.Serializable]
-        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities> { }
+        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities>
+        {
+        }
 
         [System.Serializable]
         public class SendExpressionPayload

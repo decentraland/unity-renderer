@@ -137,7 +137,8 @@ public class PlayerInfoCardHUDViewShould : IntegrationTestSuite_Legacy
         {
             id = rarity,
             rarity = rarity,
-            data = new WearableItem.Data() {
+            data = new WearableItem.Data()
+            {
                 tags = new string[] { },
                 category = WearableLiterals.Categories.UPPER_BODY
             }

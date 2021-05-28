@@ -125,7 +125,11 @@ public class TaskbarHUDController : IHUD
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
     }
 
-    private void View_OnQuestPanelToggled(bool value) { DataStore.i.HUDs.questsPanelVisible.Set(value); }
+    private void View_OnQuestPanelToggled(bool value)
+    {
+        QuestsUIAnalytics.SendQuestLogVisibiltyChanged(value, "taskbar");
+        DataStore.i.HUDs.questsPanelVisible.Set(value);
+    }
 
     private void ChatHeadsGroup_OnHeadClose(TaskbarButton obj) { privateChatWindowHud.SetVisibility(false); }
 
@@ -296,9 +300,9 @@ public class TaskbarHUDController : IHUD
         privateChatWindowHud.view.OnMinimize += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                    .FirstOrDefault(
+                        (x) => x is ChatHeadButton &&
+                               (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)
@@ -310,9 +314,9 @@ public class TaskbarHUDController : IHUD
         privateChatWindowHud.view.OnClose += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                    .FirstOrDefault(
+                        (x) => x is ChatHeadButton &&
+                               (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)

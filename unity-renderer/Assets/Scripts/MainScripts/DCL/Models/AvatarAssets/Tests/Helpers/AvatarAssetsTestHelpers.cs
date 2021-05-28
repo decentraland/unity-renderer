@@ -15,11 +15,11 @@ public static class AvatarAssetsTestHelpers
             foreach (var rep in wearableItem.data.representations)
             {
                 rep.contents = rep.contents.Select((x) =>
-                                  {
-                                      x.hash = x.key;
-                                      return x;
-                                  })
-                                  .ToArray();
+                    {
+                        x.hash = x.key;
+                        return x;
+                    })
+                    .ToArray();
             }
 
             wearableItem.thumbnail = "";

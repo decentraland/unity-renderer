@@ -66,7 +66,7 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator HeightIsEvaluated() { yield return SBC_Asserts.HeightIsEvaluated(scene); }
 
         [UnityTest]
-        public IEnumerator AudioSourceIsDisabled()
+        public IEnumerator AudioSourceIsMuted()
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
 
@@ -74,7 +74,7 @@ namespace SceneBoundariesCheckerTests
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
-            Assert.IsFalse(dclAudioSource.enabled);
+            Assert.AreEqual(0, dclAudioSource.volume);
         }
 
         [UnityTest]
@@ -87,7 +87,7 @@ namespace SceneBoundariesCheckerTests
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
-            Assert.IsFalse(dclAudioSource.enabled);
+            Assert.AreEqual(0, dclAudioSource.volume);
         }
 
         [UnityTest]
