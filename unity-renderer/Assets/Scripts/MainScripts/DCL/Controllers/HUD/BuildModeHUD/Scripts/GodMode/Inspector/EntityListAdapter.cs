@@ -27,21 +27,27 @@ public class EntityListAdapter : MonoBehaviour
 
     private void Start()
     {
-        nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
-
-        nameInputField.onEndEdit.AddListener((newText) =>
+        if (nameInputField != null)
         {
-            Rename(newText);
-            SetTextboxActive(false);
-        });
+            nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
+
+            nameInputField.onEndEdit.AddListener((newText) =>
+            {
+                Rename(newText);
+                SetTextboxActive(false);
+            });
+        }
 
         SetTextboxActive(false);
     }
 
     private void OnDestroy()
     {
-        nameInputField.onSelect.RemoveAllListeners();
-        nameInputField.onEndEdit.RemoveAllListeners();
+        if (nameInputField != null)
+        {
+            nameInputField.onSelect.RemoveAllListeners();
+            nameInputField.onEndEdit.RemoveAllListeners();
+        }
 
         if (currentEntity != null)
         {
