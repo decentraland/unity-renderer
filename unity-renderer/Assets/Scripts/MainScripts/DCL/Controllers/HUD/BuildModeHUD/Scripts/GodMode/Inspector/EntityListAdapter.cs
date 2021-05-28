@@ -169,5 +169,11 @@ public class EntityListAdapter : MonoBehaviour
         nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;
     }
 
-    private void SetTextboxActive(bool isActive) { textBoxImage.enabled = isActive; }
+    private void SetTextboxActive(bool isActive)
+    {
+        if (textBoxImage == null)
+            return;
+
+        textBoxImage.enabled = isActive;
+    }
 }
