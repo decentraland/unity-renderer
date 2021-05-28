@@ -1,5 +1,6 @@
 {
   "name": "WSSController",
+  "rootNamespace": "",
   "references": [
     "GUID:e555144732b726c4cba5b0f6337fea75",
     "GUID:7deefc26eb4ef824586f2f51caa3b0e7",
@@ -25,7 +26,8 @@
     "GUID:a1e1473c53889c2489c0822a9dd5fa33",
     "GUID:9b06d63e1a13bc34c995683595d8d849",
     "GUID:81a6b1347b86bfe4aa02ed089ff533c1",
-    "GUID:97d8897529779cb49bebd400c7f402a6"
+    "GUID:97d8897529779cb49bebd400c7f402a6",
+    "GUID:335b5dc19a4772e43a9cbc73799fc914"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

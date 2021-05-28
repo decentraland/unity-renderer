@@ -132,7 +132,6 @@ namespace DCL
         public bool enableTutorial = false;
         public bool builderInWorld = false;
         public bool soloScene = true;
-        public bool questsEnabled = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake() { i = this; }
@@ -210,11 +209,6 @@ namespace DCL
                 if (builderInWorld)
                 {
                     debugString += "ENABLE_BUILDER_IN_WORLD&";
-                }
-
-                if (questsEnabled)
-                {
-                    debugString += "QUESTS_ENABLED&";
                 }
 
                 string debugPanelString = "";

@@ -93,6 +93,7 @@ public static class BIWCatalogManager
                 }
             }
         }
+
         return assetPackDic.Values.OrderBy(x => x.title).ToList();
     }
 
@@ -143,6 +144,7 @@ public static class BIWCatalogManager
                 if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(catalogItem.id))
                     DataStore.i.builderInWorld.catalogItemDict.Remove(catalogItem.id);
             }
+
             collectiblesItemPack.assets.Clear();
         }
 

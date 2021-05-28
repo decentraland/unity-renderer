@@ -4,17 +4,6 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public interface IDebugController : IDisposable
-    {
-        event Action OnDebugModeSet;
-        void SetDebug();
-        void HideFPSPanel();
-        void ShowFPSPanel();
-        void SetSceneDebugPanel();
-        void SetEngineDebugPanel();
-        void RunPerformanceMeterTool(float durationInSeconds);
-    }
-
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;

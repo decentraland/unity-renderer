@@ -62,6 +62,7 @@ public class DeployedScene
         {
             return new Vector2Int(x, y);
         }
+
         return Vector2Int.zero;
     }
 
