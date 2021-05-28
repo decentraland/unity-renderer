@@ -76,6 +76,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             requestController.requestScheduler.EnqueueRequest(this);
             retryCount ++;
         }
+
         void TryRetryBatchAssets()
         {
             if (VERBOSE)
@@ -99,10 +100,11 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
                 newHandler.AddRequest(batchedRequests[i]);
             }
             requestController.requestScheduler.EnqueueRequest(newHandler);
-            ((IRequestHandler)newHandler).schedulableRequestHandler.SetReadyToBeScheduled(newHandler);
+            newHandler.schedulableHandler.SetReadyToBeScheduled(newHandler);
         }
 
         string IRequestHandler.GetUrl() { return $"{Constants.MULTIPLE_ASSETS_URL}?{query}"; }
+
         void IRequestHandler.SetApiResponse(string responseJson, Action onSuccess, Action<string> onError)
         {
             AssetsResponse response = null;
