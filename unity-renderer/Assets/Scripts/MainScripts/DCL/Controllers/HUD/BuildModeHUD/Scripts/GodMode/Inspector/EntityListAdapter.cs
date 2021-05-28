@@ -177,9 +177,9 @@ public class EntityListAdapter : MonoBehaviour
 
     private void SetTextboxActive(bool isActive)
     {
-        //if (textBoxImage == null)
-        //    return;
+        if (textBoxImage == null)
+            return;
 
-        //textBoxImage.enabled = isActive;
+        textBoxImage.enabled = isActive;
     }
 }
