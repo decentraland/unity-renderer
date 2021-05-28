@@ -35,10 +35,10 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             if (openBatchAssetsRequestHandler == null || !openBatchAssetsRequestHandler.isOpen)
             {
                 openBatchAssetsRequestHandler = new BatchAssetsRequestHandler(this);
+                requestScheduler.EnqueueRequest(openBatchAssetsRequestHandler);
             }
 
             openBatchAssetsRequestHandler.AddRequest(newRequest);
-            requestScheduler.EnqueueRequest(openBatchAssetsRequestHandler);
 
             return newRequest;
         }
