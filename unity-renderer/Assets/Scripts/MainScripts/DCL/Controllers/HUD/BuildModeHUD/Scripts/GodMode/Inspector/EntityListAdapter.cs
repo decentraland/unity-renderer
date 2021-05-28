@@ -2,6 +2,7 @@ using DCL;
 using DCL.Models;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EntityListAdapter : MonoBehaviour
@@ -29,13 +30,15 @@ public class EntityListAdapter : MonoBehaviour
     {
         if (nameInputField != null)
         {
-            nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
+            nameInputField.onSelect.AddListener((currentText) => SetTextboxActive(true));
 
             nameInputField.onEndEdit.AddListener((newText) =>
             {
                 Rename(newText);
                 SetTextboxActive(false);
             });
+
+            nameInputField.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
         }
 
         SetTextboxActive(false);
@@ -47,6 +50,7 @@ public class EntityListAdapter : MonoBehaviour
         {
             nameInputField.onSelect.RemoveAllListeners();
             nameInputField.onEndEdit.RemoveAllListeners();
+            nameInputField.onSubmit.RemoveAllListeners();
         }
 
         if (currentEntity != null)

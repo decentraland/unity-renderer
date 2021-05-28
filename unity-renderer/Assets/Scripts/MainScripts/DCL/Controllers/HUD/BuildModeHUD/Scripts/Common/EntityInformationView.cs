@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public interface IEntityInformationView
@@ -106,6 +107,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             SetNameIFTextboxActive(true);
             StartChangingName();
         });
+        nameIF.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
         nameIF.onDeselect.AddListener((newName) => EndChangingName());
 
         SetNameIFTextboxActive(false);
@@ -118,6 +120,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         basicInfoTogglekButton.onClick.RemoveListener(ToggleBasicInfo);
         nameIF.onEndEdit.RemoveAllListeners();
         nameIF.onSelect.RemoveAllListeners();
+        nameIF.onSubmit.RemoveAllListeners();
         nameIF.onDeselect.RemoveAllListeners();
     }
 
