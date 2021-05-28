@@ -10,7 +10,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data(){
+                data = new WearableItem.Data()
+                {
                     replaces = new [] { "category1", "category2", "category3" }
                 }
             };
@@ -27,11 +28,13 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     replaces = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
-                        new WearableItem.Representation(){
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new [] { "bodyShape1" },
                             overrideReplaces = new [] { "override1", "override2", "override3" },
                         }
@@ -54,11 +57,13 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     replaces = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
-                        new WearableItem.Representation(){
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new [] { "bodyShape1" },
                             overrideReplaces = new [] { "override1", "override2", "override3" },
                         }
@@ -81,7 +86,8 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     hides = new [] { "category1", "category2", "category3" }
                 }
             };
@@ -98,11 +104,13 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     hides = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
-                        new WearableItem.Representation(){
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new [] { "bodyShape1" },
                             overrideHides = new [] { "override1", "override2", "override3" },
                         }
@@ -125,11 +133,13 @@ namespace AvatarAssets_Test
         {
             WearableItem wearableItem = new WearableItem
             {
-                data = new WearableItem.Data() {
+                data = new WearableItem.Data()
+                {
                     hides = new [] { "category1", "category2", "category3" },
                     representations = new []
                     {
-                        new WearableItem.Representation() {
+                        new WearableItem.Representation()
+                        {
                             bodyShapes = new [] { "bodyShape1" },
                             overrideHides = new [] { "override1", "override2", "override3" },
                         }

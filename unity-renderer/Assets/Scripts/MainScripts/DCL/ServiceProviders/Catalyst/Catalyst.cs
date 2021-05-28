@@ -1,52 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
 using UnityEngine;
 using Variables.RealmsInfo;
-
-/// <summary>
-/// GET Entities from connected Catalyst
-/// </summary>
-public interface ICatalyst : IDisposable
-{
-    /// <summary>
-    /// url for content server
-    /// </summary>
-    public string contentUrl { get; }
-
-    /// <summary>
-    /// get scenes deployed in parcels
-    /// </summary>
-    /// <param name="parcels">parcels to get scenes from</param>
-    /// <returns>promise of an array of scenes entities</returns>
-    Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels);
-
-    /// <summary>
-    /// get scenes deployed in parcels
-    /// </summary>
-    /// <param name="parcels">parcels to get scenes from</param>
-    /// <param name="cacheMaxAgeSeconds">discard cache if it's older than cacheMaxAgeSeconds ago</param>
-    /// <returns>promise of an array of scenes entities</returns>
-    Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels, float cacheMaxAgeSeconds);
-
-    /// <summary>
-    /// get entities of entityType
-    /// </summary>
-    /// <param name="entityType">type of the entity to fetch. see CatalystEntitiesType class</param>
-    /// <param name="pointers">pointers to fetch</param>
-    /// <returns>promise of a string containing catalyst response json</returns>
-    Promise<string> GetEntities(string entityType, string[] pointers);
-
-    /// <summary>
-    /// wraps a WebRequest inside a promise and cache it result
-    /// </summary>
-    /// <param name="url">url to make the request to</param>
-    /// <returns>promise of the server response</returns>
-    Promise<string> Get(string url);
-}
 
 public class Catalyst : ICatalyst
 {
@@ -67,6 +25,7 @@ public class Catalyst : ICatalyst
             realmDomain = DataStore.i.playerRealm.Get().domain;
             realmContentServerUrl = DataStore.i.playerRealm.Get().contentServerUrl;
         }
+
         DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
@@ -115,6 +74,7 @@ public class Catalyst : ICatalyst
 
                         noDuplicates.Add(sceneToCheck);
                     }
+
                     scenes = noDuplicates.ToArray();
                 }
                 catch (Exception e)
@@ -196,6 +156,7 @@ public class Catalyst : ICatalyst
                         string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
                         json += $",{jsonContent}";
                     }
+
                     promise.Resolve($"[{json}]");
                 });
             splittedPromises[i].Catch(error => promise.Reject(error));

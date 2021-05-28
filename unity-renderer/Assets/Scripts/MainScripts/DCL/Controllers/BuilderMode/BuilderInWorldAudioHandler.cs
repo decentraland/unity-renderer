@@ -27,20 +27,28 @@ public class BuilderInWorldAudioHandler : BIWController
     [Header("Audio Events")]
     [SerializeField]
     AudioEvent eventAssetSpawn;
+
     [SerializeField]
     AudioEvent eventAssetPlace;
+
     [SerializeField]
     AudioEvent eventAssetSelect;
+
     [SerializeField]
     AudioEvent eventAssetDeselect;
+
     [SerializeField]
     AudioEvent eventBuilderOutOfBounds;
+
     [SerializeField]
     AudioEvent eventBuilderOutOfBoundsPlaced;
+
     [SerializeField]
     AudioEvent eventAssetDelete;
+
     [SerializeField]
     AudioEvent eventBuilderExit;
+
     [SerializeField]
     AudioEvent eventBuilderMusic;
 

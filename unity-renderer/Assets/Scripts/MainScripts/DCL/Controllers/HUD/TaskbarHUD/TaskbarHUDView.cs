@@ -13,6 +13,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Left Side Config")]
     [SerializeField] internal RectTransform leftWindowContainer;
+
     [SerializeField] internal ShowHideAnimator leftWindowContainerAnimator;
     [SerializeField] internal LayoutGroup leftWindowContainerLayout;
     [SerializeField] internal GameObject voiceChatButtonPlaceholder;
@@ -23,6 +24,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("Right Side Config")]
     [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
+
     [SerializeField] internal TaskbarButton settingsButton;
     [SerializeField] internal TaskbarButton exploreButton;
     [SerializeField] internal TaskbarButton builderInWorldButton;
@@ -32,15 +34,18 @@ public class TaskbarHUDView : MonoBehaviour
 
     [Header("More Button Config")]
     [SerializeField] internal TaskbarButton moreButton;
+
     [SerializeField] internal TaskbarMoreMenu moreMenu;
 
     [Header("Tutorial Config")]
     [SerializeField] internal RectTransform exploreTooltipReference;
+
     [SerializeField] internal RectTransform moreTooltipReference;
     [SerializeField] internal RectTransform socialTooltipReference;
 
     [Header("Old TaskbarCompatibility (temporal)")]
     [SerializeField] internal RectTransform taskbarPanelTransf;
+
     [SerializeField] internal Image taskbarPanelImage;
     [SerializeField] internal GameObject rightButtonsContainer;
 

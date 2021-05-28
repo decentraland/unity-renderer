@@ -185,6 +185,7 @@ namespace DCL.Components
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
             }
+
             playedAtTimestamp = model.playedAtTimestamp;
         }
 

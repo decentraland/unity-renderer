@@ -27,7 +27,9 @@ internal class SectionLandController : SectionBase, ILandsListener, ISectionOpen
 
     public SectionLandController() : this(
         Object.Instantiate(Resources.Load<SectionLandView>(VIEW_PREFAB_PATH))
-    ) { }
+    )
+    {
+    }
 
     public SectionLandController(SectionLandView view)
     {
@@ -76,8 +78,8 @@ internal class SectionLandController : SectionBase, ILandsListener, ISectionOpen
             return;
 
         List<LandElementView> toRemove = landElementViews.Values
-                                                         .Where(landElementView => lands.All(land => land.id != landElementView.GetId()))
-                                                         .ToList();
+            .Where(landElementView => lands.All(land => land.id != landElementView.GetId()))
+            .ToList();
 
         for (int i = 0; i < toRemove.Count; i++)
         {
@@ -97,6 +99,7 @@ internal class SectionLandController : SectionBase, ILandsListener, ISectionOpen
             landElementView.Setup(lands[i]);
             landElementView.SetThumbnail(GetLandThumbnailUrl(lands[i], isEstate));
         }
+
         landSearchHandler.SetSearchableList(landElementViews.Values.Select(scene => scene.searchInfo).ToList());
     }
 

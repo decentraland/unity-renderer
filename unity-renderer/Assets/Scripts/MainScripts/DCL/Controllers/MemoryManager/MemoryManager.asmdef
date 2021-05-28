@@ -1,0 +1,21 @@
+{
+  "name": "MemoryManager",
+  "rootNamespace": "",
+  "references": [
+    "GUID:a1c18f72e2b2d234a9c8f5368f6da538",
+    "GUID:82873c2d9c9cbe94391e6b33e5153865",
+    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+    "GUID:760a1d365aad58044916992b072cf2a6",
+    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+    "GUID:4bca15ec88eae72498e62f9a5c04bcf1"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

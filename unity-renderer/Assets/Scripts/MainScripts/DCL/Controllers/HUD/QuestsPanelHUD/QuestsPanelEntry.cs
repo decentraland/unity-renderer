@@ -109,6 +109,7 @@ namespace DCL.Huds.QuestsPanel
             {
                 pinnedQuests.Remove(quest.id);
             }
+
             QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestsLog);
         }
 
@@ -178,6 +179,7 @@ namespace DCL.Huds.QuestsPanel
                 thumbnailPromise.ClearEvents();
                 AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             }
+
             pinnedQuests.OnAdded -= OnUnpinnedQuest;
             pinnedQuests.OnRemoved -= OnPinnedQuests;
             isDestroyed = true;

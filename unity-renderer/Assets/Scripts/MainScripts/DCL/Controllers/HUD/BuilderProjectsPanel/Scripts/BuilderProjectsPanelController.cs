@@ -39,7 +39,9 @@ public class BuilderProjectsPanelController : IHUD
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
     public BuilderProjectsPanelController() : this(
-        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
+        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH)))
+    {
+    }
 
     internal BuilderProjectsPanelController(IBuilderProjectsPanelView view)
     {
@@ -177,9 +179,9 @@ public class BuilderProjectsPanelController : IHUD
                 try
                 {
                     var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                      .Select(land => land.scenes.Select(scene => (ISceneData)new SceneData(scene)))
-                                      .Aggregate((i, j) => i.Concat(j))
-                                      .ToArray();
+                        .Select(land => land.scenes.Select(scene => (ISceneData)new SceneData(scene)))
+                        .Aggregate((i, j) => i.Concat(j))
+                        .ToArray();
 
                     landsController.SetLands(lands);
                     scenesViewController.SetScenes(scenes);
