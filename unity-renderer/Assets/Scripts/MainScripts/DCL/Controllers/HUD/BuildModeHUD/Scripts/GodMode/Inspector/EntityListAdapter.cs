@@ -25,23 +25,23 @@ public class EntityListAdapter : MonoBehaviour
     DCLBuilderInWorldEntity currentEntity;
     internal AssetPromise_Texture loadedThumbnailPromise;
 
-    //private void Start()
-    //{
-    //    nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
+    private void Start()
+    {
+        nameInputField.onSelect.AddListener((currentText) => { SetTextboxActive(true); });
 
-    //    nameInputField.onEndEdit.AddListener((newText) =>
-    //    {
-    //        Rename(newText);
-    //        SetTextboxActive(false);
-    //    });
+        nameInputField.onEndEdit.AddListener((newText) =>
+        {
+            Rename(newText);
+            SetTextboxActive(false);
+        });
 
-    //    SetTextboxActive(false);
-    //}
+        SetTextboxActive(false);
+    }
 
     private void OnDestroy()
     {
-        //nameInputField.onSelect.RemoveAllListeners();
-        //nameInputField.onEndEdit.RemoveAllListeners();
+        nameInputField.onSelect.RemoveAllListeners();
+        nameInputField.onEndEdit.RemoveAllListeners();
 
         if (currentEntity != null)
         {
@@ -169,11 +169,11 @@ public class EntityListAdapter : MonoBehaviour
         nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;
     }
 
-    //private void SetTextboxActive(bool isActive)
-    //{
-    //    if (textBoxImage == null)
-    //        return;
+    private void SetTextboxActive(bool isActive)
+    {
+        //if (textBoxImage == null)
+        //    return;
 
-    //    textBoxImage.enabled = isActive;
-    //}
+        //textBoxImage.enabled = isActive;
+    }
 }
