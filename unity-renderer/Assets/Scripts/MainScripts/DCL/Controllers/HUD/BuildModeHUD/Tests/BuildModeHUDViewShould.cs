@@ -15,6 +15,7 @@ namespace Tests.BuildModeHUDViews
             testControllers = new BuildModeHUDInitializationModel
             {
                 tooltipController = Substitute.For<ITooltipController>(),
+                feedbackTooltipController = Substitute.For<ITooltipController>(),
                 sceneCatalogController = Substitute.For<ISceneCatalogController>(),
                 quickBarController = Substitute.For<IQuickBarController>(),
                 entityInformationController = Substitute.For<IEntityInformationController>(),
@@ -59,7 +60,7 @@ namespace Tests.BuildModeHUDViews
             Assert.AreEqual(testControllers.dragAndDropSceneObjectController, buildModeHUDView.controllers.dragAndDropSceneObjectController, "The dragAndDropSceneObjectController does not match!");
             testControllers.dragAndDropSceneObjectController.Received(1).Initialize(buildModeHUDView.dragAndDropSceneObjectView);
             Assert.AreEqual(testControllers.publishBtnController, buildModeHUDView.controllers.publishBtnController, "The publishBtnController does not match!");
-            testControllers.publishBtnController.Received(1).Initialize(buildModeHUDView.publishBtnView, testControllers.tooltipController);
+            testControllers.publishBtnController.Received(1).Initialize(buildModeHUDView.publishBtnView, testControllers.tooltipController, testControllers.feedbackTooltipController);
             Assert.AreEqual(testControllers.inspectorBtnController, buildModeHUDView.controllers.inspectorBtnController, "The inspectorBtnController does not match!");
             testControllers.inspectorBtnController.Received(1).Initialize(buildModeHUDView.inspectorBtnView, testControllers.tooltipController);
             Assert.AreEqual(testControllers.catalogBtnController, buildModeHUDView.controllers.catalogBtnController, "The catalogBtnController does not match!");

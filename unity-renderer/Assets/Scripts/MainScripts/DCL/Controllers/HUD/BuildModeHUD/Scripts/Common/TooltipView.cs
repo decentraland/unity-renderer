@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public interface ITooltipView
 {
     float alphaTranstionSpeed { get; }
+    float currentAlpha { get; }
 
     event Action OnHideTooltip;
     event Action<BaseEventData> OnShowTooltip;
@@ -17,6 +18,7 @@ public interface ITooltipView
 public class TooltipView : MonoBehaviour, ITooltipView
 {
     public float alphaTranstionSpeed => alphaSpeed;
+    public float currentAlpha => tooltipCG.alpha;
 
     public event Action<BaseEventData> OnShowTooltip;
 
