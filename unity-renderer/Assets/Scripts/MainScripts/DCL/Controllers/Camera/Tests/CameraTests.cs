@@ -56,18 +56,18 @@ namespace CameraController_Test
             Assert.AreEqual(cameraController.GetRotation().x, rotationEuler.x);
         }
 
-        //[UnityTest]
-        //public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
-        //{
-        //    RenderingController renderingController = GameObject.FindObjectOfType<RenderingController>();
-        //    renderingController.DeactivateRendering();
-        //    Assert.IsFalse(cameraController.camera.enabled);
+        [UnityTest]
+        public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
+        {
+            RenderingController renderingController = GameObject.FindObjectOfType<RenderingController>();
+            renderingController.DeactivateRendering();
+            Assert.IsFalse(cameraController.camera.enabled);
 
-        //    yield return null;
+            yield return null;
 
-        //    renderingController.renderingActivatedAckLock.RemoveAllLocks();
-        //    renderingController.ActivateRendering();
-        //    Assert.IsTrue(cameraController.camera.enabled);
-        //}
+            renderingController.renderingActivatedAckLock.RemoveAllLocks();
+            renderingController.ActivateRendering();
+            Assert.IsTrue(cameraController.camera.enabled);
+        }
     }
 }
