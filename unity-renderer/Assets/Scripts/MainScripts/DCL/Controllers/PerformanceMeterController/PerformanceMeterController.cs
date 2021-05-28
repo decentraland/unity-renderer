@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.FPSDisplay;
@@ -16,7 +17,7 @@ namespace DCL
     /// </summary>
     public class PerformanceMeterController
     {
-        private class SampleData
+        private class SampleData : IComparable
         {
             public int frameNumber;
             public float millisecondsConsumed;
@@ -31,31 +32,26 @@ namespace DCL
                                         + "\n is hiccup: " + isHiccup
                                         + "\n fps at this frame: " + fpsAtThisFrameInTime;
             }
-        }
 
-        private class SamplesFPSComparer : IComparer<SampleData>
-        {
-            public int Compare (SampleData sampleA, SampleData sampleB)
+            public int CompareTo(object obj)
             {
-                // 0    -> sampleA and sampleB are equal
-                // 1    -> sampleA is greater
-                // -1   -> sampleB is greater
+                // 0    -> this and otherSample are equal
+                // 1    -> this is greater
+                // -1   -> otherSample is greater
 
-                if (sampleA == null)
-                    return -1;
+                SampleData otherSample = obj as SampleData;
 
-                if (sampleB == null)
+                if (otherSample == null)
                     return 1;
 
-                if (sampleA.fpsAtThisFrameInTime == sampleB.fpsAtThisFrameInTime)
+                if (this.fpsAtThisFrameInTime == otherSample.fpsAtThisFrameInTime)
                     return 0;
 
-                return sampleA.fpsAtThisFrameInTime > sampleB.fpsAtThisFrameInTime ? 1 : -1;
+                return this.fpsAtThisFrameInTime > otherSample.fpsAtThisFrameInTime ? 1 : -1;
             }
         }
 
         private PerformanceMetricsDataVariable metricsData;
-        private SamplesFPSComparer samplesFPSComparer = new SamplesFPSComparer();
         private float currentDurationInSeconds = 0f;
         private float targetDurationInSeconds = 0f;
         private List<SampleData> samples = new List<SampleData>();
@@ -188,7 +184,8 @@ namespace DCL
         {
             // Sort the samples based on FPS count of each one, to be able to calculate the percentiles later
             var sortedSamples = new List<SampleData>(samples);
-            sortedSamples.Sort(samplesFPSComparer);
+            sortedSamples.Sort();
+
             int samplesCount = sortedSamples.Count;
 
             highestFPS = sortedSamples[samplesCount - 1].fpsAtThisFrameInTime;
