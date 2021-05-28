@@ -11,11 +11,11 @@ public static class DeployedScenesFetcher
     {
         Promise<DeployedScene[]> promise = new Promise<DeployedScene[]>();
         catalyst.GetDeployedScenes(parcels, cacheMaxAgeSeconds)
-                .Then(result =>
-                {
-                    promise.Resolve(result.Select(deployment => new DeployedScene(deployment, catalyst.contentUrl)).ToArray());
-                })
-                .Catch(err => promise.Reject(err));
+            .Then(result =>
+            {
+                promise.Resolve(result.Select(deployment => new DeployedScene(deployment, catalyst.contentUrl)).ToArray());
+            })
+            .Catch(err => promise.Reject(err));
         return promise;
     }
 
@@ -30,42 +30,43 @@ public static class DeployedScenesFetcher
         Promise<DeployedScene[]> getDeployedScenesPromise = new Promise<DeployedScene[]>();
 
         theGraph.QueryLands(tld, ethAddress, cacheMaxAgeSecondsLand)
-                .Then(landsReceived =>
+            .Then(landsReceived =>
+            {
+                lands = landsReceived;
+
+                List<string> parcels = new List<string>();
+                for (int i = 0; i < landsReceived.Count; i++)
                 {
-                    lands = landsReceived;
+                    if (landsReceived[i].parcels == null)
+                        continue;
 
-                    List<string> parcels = new List<string>();
-                    for (int i = 0; i < landsReceived.Count; i++)
-                    {
-                        if (landsReceived[i].parcels == null)
-                            continue;
+                    parcels.AddRange(landsReceived[i].parcels.Select(parcel => $"{parcel.x},{parcel.y}"));
+                }
 
-                        parcels.AddRange(landsReceived[i].parcels.Select(parcel => $"{parcel.x},{parcel.y}"));
-                    }
-                    getOwnedParcelsPromise.Resolve(parcels.ToArray());
-                })
-                .Catch(err => getOwnedParcelsPromise.Reject(err));
+                getOwnedParcelsPromise.Resolve(parcels.ToArray());
+            })
+            .Catch(err => getOwnedParcelsPromise.Reject(err));
 
         getOwnedParcelsPromise.Then(parcels =>
-                              {
-                                  if (parcels.Length > 0)
-                                  {
-                                      FetchScenes(catalyst, parcels, cacheMaxAgeSecondsScenes)
-                                          .Then(scenes => getDeployedScenesPromise.Resolve(scenes))
-                                          .Catch(err => getDeployedScenesPromise.Reject(err));
-                                  }
-                                  else
-                                  {
-                                      getDeployedScenesPromise.Resolve(new DeployedScene[] { });
-                                  }
-                              })
-                              .Catch(err => getDeployedScenesPromise.Reject(err));
+            {
+                if (parcels.Length > 0)
+                {
+                    FetchScenes(catalyst, parcels, cacheMaxAgeSecondsScenes)
+                        .Then(scenes => getDeployedScenesPromise.Resolve(scenes))
+                        .Catch(err => getDeployedScenesPromise.Reject(err));
+                }
+                else
+                {
+                    getDeployedScenesPromise.Resolve(new DeployedScene[] { });
+                }
+            })
+            .Catch(err => getDeployedScenesPromise.Reject(err));
 
         getDeployedScenesPromise.Then(scenes =>
-                                {
-                                    resultPromise.Resolve(GetLands(lands, scenes));
-                                })
-                                .Catch(err => resultPromise.Reject(err));
+            {
+                resultPromise.Resolve(GetLands(lands, scenes));
+            })
+            .Catch(err => resultPromise.Reject(err));
 
         return resultPromise;
     }
@@ -96,6 +97,7 @@ public static class DeployedScenesFetcher
                 scenesInLand.Add(sceneInParcel);
             }
         }
+
         result.scenes = scenesInLand;
 
         return result;

@@ -62,7 +62,7 @@ public static class WearableLiterals
             { (BodyShapes.MALE, Categories.EYEBROWS), "urn:decentraland:off-chain:base-avatars:eyebrows_00" },
             { (BodyShapes.MALE, Categories.MOUTH), "urn:decentraland:off-chain:base-avatars:mouth_00" },
             { (BodyShapes.MALE, Categories.HAIR), "urn:decentraland:off-chain:base-avatars:casual_hair_01" },
-            { (BodyShapes.MALE, Categories.FACIAL), "urn:decentraland:off-chain:base-avatars:beard"},
+            { (BodyShapes.MALE, Categories.FACIAL), "urn:decentraland:off-chain:base-avatars:beard" },
             { (BodyShapes.MALE, Categories.UPPER_BODY), "urn:decentraland:off-chain:base-avatars:green_hoodie" },
             { (BodyShapes.MALE, Categories.LOWER_BODY), "urn:decentraland:off-chain:base-avatars:brown_pants" },
             { (BodyShapes.MALE, Categories.FEET), "urn:decentraland:off-chain:base-avatars:sneakers" },

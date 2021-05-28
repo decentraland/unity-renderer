@@ -13,11 +13,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
 
     [Header("Smart Items")]
     public GameObject smartItemGO;
+
     public Color smartItemColor;
     public Color normalColor;
 
     [Header("Favorites")]
     public Color offFavoriteColor;
+
     public Color onFavoriteColor;
     public Image favImg;
 

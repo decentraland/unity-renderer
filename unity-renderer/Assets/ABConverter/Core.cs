@@ -358,9 +358,9 @@ namespace DCL.ABConverter
                 int gltfCount = gltfPaths.Count;
 
                 gltfPaths = gltfPaths.Where(
-                                         assetPath =>
-                                             !env.file.Exists(settings.finalAssetBundlePath + assetPath.hash))
-                                     .ToList();
+                        assetPath =>
+                            !env.file.Exists(settings.finalAssetBundlePath + assetPath.hash))
+                    .ToList();
 
                 int skippedCount = gltfCount - gltfPaths.Count;
                 skippedAssets += skippedCount;

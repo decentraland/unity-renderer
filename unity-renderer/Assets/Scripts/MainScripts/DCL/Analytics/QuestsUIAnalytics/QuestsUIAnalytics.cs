@@ -50,6 +50,7 @@ public static class QuestsUIAnalytics
                 questLogSetVisibleTimeStamp = null;
             }
         }
+
         GenericAnalytics.SendAnalytic(QUEST_LOG_VISIBILITY_CHANGED, data);
     }
 }

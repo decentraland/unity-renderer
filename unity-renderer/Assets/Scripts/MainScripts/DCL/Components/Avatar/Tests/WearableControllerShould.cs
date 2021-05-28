@@ -93,6 +93,7 @@ namespace AvatarShape_Tests
             {
                 skinnedMeshRenderer.bones[i] = CreateTestGameObject($"_rootBone_{i}").transform;
             }
+
             catalog.TryGetValue(SUNGLASSES_ID, out WearableItem wereableItem);
             WearableController wearable = new WearableController(wereableItem);
             toCleanUp.Add(wearable);
@@ -155,6 +156,7 @@ namespace AvatarShape_Tests
             {
                 toCleanUp[index].CleanUp();
             }
+
             toCleanUp.Clear();
             return base.TearDown();
         }

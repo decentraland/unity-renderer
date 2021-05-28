@@ -302,6 +302,7 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogAssetPackList.SetAssetPackStyle();
             sceneCatalogView.catalogAssetPackList.gameObject.SetActive(true);
         }
+
         isShowingAssetPacks = true;
         sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
         RefreshCatalog();

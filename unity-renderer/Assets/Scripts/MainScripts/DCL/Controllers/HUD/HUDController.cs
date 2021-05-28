@@ -323,6 +323,7 @@ public class HUDController : MonoBehaviour
                             {
                                 taskbarHud.OnAddVoiceChat();
                             }
+
                             taskbarHud.SetQuestsPanelStatus(config.enableQuestPanel);
                         }
 
@@ -409,6 +410,7 @@ public class HUDController : MonoBehaviour
                     builderProjectsPanelController.Initialize();
                     taskbarHud.SetBuilderInWorldStatus(true);
                 }
+
                 break;
         }
 

@@ -99,11 +99,11 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                                  .Configure(
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>());
+                .Configure(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
         }
 
@@ -140,11 +140,11 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                                  .Configure(
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>());
+                .Configure(
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>(),
+                    Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.EXIT);
         }
 

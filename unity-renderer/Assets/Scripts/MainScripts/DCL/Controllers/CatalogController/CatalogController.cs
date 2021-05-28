@@ -53,7 +53,7 @@ public class CatalogController : MonoBehaviour
             Debug.Log("add wearables: " + payload);
 
         WearablesRequestResponse request = null;
-        
+
         try
         {
             request = JsonUtility.FromJson<WearablesRequestResponse>(payload);
@@ -62,10 +62,10 @@ public class CatalogController : MonoBehaviour
         {
             Debug.LogError($"Fail to parse wearables json {e}");
         }
-        
+
         if (request == null)
             return;
-        
+
         for (int i = 0; i < request.wearables.Length; i++)
         {
             WearableItem wearableItem = request.wearables[i];
@@ -77,7 +77,7 @@ public class CatalogController : MonoBehaviour
                 ResolvePendingWearablePromise(wearableItem.id, wearableItem);
                 pendingWearableRequestedTimes.Remove(wearableItem.id);
             }
-        }        
+        }
 
         if (!string.IsNullOrEmpty(request.context))
         {
@@ -133,7 +133,7 @@ public class CatalogController : MonoBehaviour
     {
         if (VERBOSE)
             Debug.Log("request wearables: " + wearableId);
-        
+
         Promise<WearableItem> promiseResult;
 
         if (wearableCatalog.TryGetValue(wearableId, out WearableItem wearable))
