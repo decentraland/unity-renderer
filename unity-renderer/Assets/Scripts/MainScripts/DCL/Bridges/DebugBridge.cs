@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Reflection;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Controllers;
-using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace DCL
 {
@@ -24,6 +17,8 @@ namespace DCL
         public void SetSceneDebugPanel() { Environment.i.platform.debugController.SetSceneDebugPanel(); }
 
         public void SetEngineDebugPanel() { Environment.i.platform.debugController.SetEngineDebugPanel(); }
+
+        public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
 
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
@@ -69,5 +64,10 @@ namespace DCL
 
             Debug.unityLogger.logEnabled = prevLogValue;
         }
+
+#if UNITY_EDITOR
+        [ContextMenu("Run Performance Meter Tool for 10 seconds")]
+        public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+#endif
     }
 }
