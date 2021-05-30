@@ -29,6 +29,13 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     }
 
     [Serializable]
+    public class SingleAssetResponse : AssetResponse
+    {
+        public OrderInfo[] orders;
+        public OwnershipInfo[] top_ownerships;
+    }
+
+    [Serializable]
     public class AssetContract
     {
         public string address;
@@ -90,5 +97,12 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         public AccountInfo maker;
         public string current_price;
         public PaymentTokenInfo payment_token_contract;
+    }
+
+    [Serializable]
+    public class OwnershipInfo
+    {
+        public AccountInfo owner;
+        public string quantity;
     }
 }

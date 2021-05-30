@@ -12,6 +12,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
         internal readonly RequestScheduler requestScheduler = new RequestScheduler();
         private readonly Dictionary<string, RequestBase<AssetResponse>> cacheAssetResponses = new Dictionary<string, RequestBase<AssetResponse>>();
         private readonly Dictionary<string, RequestBase<AssetsResponse>> cacheSeveralAssetsResponse = new Dictionary<string, RequestBase<AssetsResponse>>();
+        private readonly Dictionary<string, RequestBase<SingleAssetResponse>> cacheSingleAssetResponses = new Dictionary<string, RequestBase<SingleAssetResponse>>();
 
         private BatchAssetsRequestHandler openBatchAssetsRequestHandler = null;
 
@@ -57,6 +58,25 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             newRequest.OnFail += OnRequestFailed;
 
             var requestHandler = new OwnedNFTRequestHandler(newRequest, this);
+            requestScheduler.EnqueueRequest(requestHandler);
+
+            return newRequest;
+        }
+
+        public RequestBase<SingleAssetResponse> FetchSingleNFT(string contractAddress, string tokenId)
+        {
+            if (cacheSingleAssetResponses.TryGetValue(RequestAssetSingle.GetId(contractAddress, tokenId), out RequestBase<SingleAssetResponse> request))
+            {
+                return request;
+            }
+
+            var newRequest = new RequestAssetSingle(contractAddress, tokenId);
+
+            AddToCache(newRequest);
+
+            newRequest.OnFail += OnRequestFailed;
+
+            var requestHandler = new SingleAssetRequestHandler(newRequest, this);
             requestScheduler.EnqueueRequest(requestHandler);
 
             return newRequest;
@@ -130,6 +150,13 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             RemoveFromCache(request);
         }
 
+        private void OnRequestFailed(RequestBase<SingleAssetResponse> request)
+        {
+            request.OnFail -= OnRequestFailed;
+
+            RemoveFromCache(request);
+        }
+
         private void AddToCache(RequestBase<AssetResponse> request)
         {
             if (cacheAssetResponses.ContainsKey(request.requestId))
@@ -146,8 +173,18 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             cacheSeveralAssetsResponse.Add(request.requestId, request);
         }
 
+        private void AddToCache(RequestBase<SingleAssetResponse> request)
+        {
+            if (cacheSingleAssetResponses.ContainsKey(request.requestId))
+                return;
+
+            cacheSingleAssetResponses.Add(request.requestId, request);
+        }
+
         private void RemoveFromCache(RequestBase<AssetResponse> request) { cacheAssetResponses.Remove(request.requestId); }
 
         private void RemoveFromCache(RequestBase<AssetsResponse> request) { cacheSeveralAssetsResponse.Remove(request.requestId); }
+
+        private void RemoveFromCache(RequestBase<SingleAssetResponse> request) { cacheSingleAssetResponses.Remove(request.requestId); }
     }
 }
