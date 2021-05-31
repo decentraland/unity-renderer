@@ -454,10 +454,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
+  m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 10
   m_fontSizeMax: 15
   m_fontStyle: 0
@@ -923,9 +923,9 @@ MonoBehaviour:
   entitySelectedColor: {r: 1, g: 1, b: 1, a: 0.02745098}
   entityUnselectedColor: {r: 1, g: 1, b: 1, a: 0}
   entityInsideOfBoundsColor: {r: 1, g: 1, b: 1, a: 1}
-  entityOutOfBoundsColor: {r: 1, g: 0, b: 0, a: 1}
+  entityOutOfBoundsColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   iconsSelectedColor: {r: 1, g: 1, b: 1, a: 1}
-  iconsUnselectedColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
+  iconsUnselectedColor: {r: 0.28627452, g: 0.27450982, b: 0.27450982, a: 1}
   nameInputField: {fileID: 3144001738933584821}
   nameInputField_Text: {fileID: 7920033379189279600}
   selectedImg: {fileID: 8050221025963402010}
