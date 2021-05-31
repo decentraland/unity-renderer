@@ -83,6 +83,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField]
     internal Button exitButton;
 
+    [SerializeField] internal GameObject loadingSpinnerGameObject;
+
     [Header("Collectibles")]
     [SerializeField]
     internal GameObject web3Container;
@@ -111,7 +113,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         toggleAction.OnTriggered += ToggleAction_OnTriggered;
         closeAction.OnTriggered += CloseAction_OnTriggered;
-
+        loadingSpinnerGameObject.SetActive(false);
         if (characterPreviewController == null)
         {
             characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
@@ -294,12 +296,14 @@ public class AvatarEditorHUDView : MonoBehaviour
             return;
 
         doneButton.interactable = false;
+        loadingSpinnerGameObject.SetActive(true);
         characterPreviewController.UpdateModel(avatarModel,
             () =>
             {
                 if (doneButton != null)
                     doneButton.interactable = true;
 
+                loadingSpinnerGameObject.SetActive(false);
                 OnAvatarAppear?.Invoke(avatarModel);
                 ClearWearablesLoadingSpinner();
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
