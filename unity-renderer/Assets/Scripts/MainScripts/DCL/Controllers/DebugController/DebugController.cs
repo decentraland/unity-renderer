@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,6 +7,7 @@ namespace DCL
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
+        private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
 
         public DebugView debugView;
 
@@ -53,6 +53,8 @@ namespace DCL
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
         }
+
+        public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
 
         public void Dispose()
         {
