@@ -218,6 +218,7 @@ namespace DCL
                 yield break;
             }
 
+            List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
             foreach (var avatarWearablePromise in avatarWearablePromises)
             {
                 yield return avatarWearablePromise;
@@ -229,8 +230,37 @@ namespace DCL
                 }
                 else
                 {
-                    resolvedWearables.Add(avatarWearablePromise.value);
-                    wearablesInUse.Add(avatarWearablePromise.value.id);
+                    WearableItem wearableItem = avatarWearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                        resolvedWearables.Add(wearableItem);
+                    else
+                    {
+                        model.wearables.Remove(wearableItem.id);
+                        string defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
+                        if (!string.IsNullOrEmpty(defaultReplacement))
+                        {
+                            model.wearables.Add(defaultReplacement);
+                            replacementPromises.Add(CatalogController.RequestWearable(defaultReplacement));
+                        }
+                    }
+                }
+            }
+
+            foreach (var wearablePromise in replacementPromises)
+            {
+                yield return wearablePromise;
+
+                if (!string.IsNullOrEmpty(wearablePromise.error))
+                {
+                    Debug.LogError(wearablePromise.error);
+                    loadSoftFailed = true;
+                }
+                else
+                {
+                    WearableItem wearableItem = wearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    resolvedWearables.Add(wearableItem);
                 }
             }
 
