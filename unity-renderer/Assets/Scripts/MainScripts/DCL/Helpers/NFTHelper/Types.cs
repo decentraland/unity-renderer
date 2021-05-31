@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace DCL.Helpers.NFT
 {
+
     public struct NFTOwner
     {
         public string ethAddress;
@@ -49,6 +50,40 @@ namespace DCL.Helpers.NFT
                 ret.owner = "0x0000000000000000000000000000000000000000";
                 ret.numSales = 0;
                 ret.assetContract = new AssetContract();
+                return ret;
+            }
+        }
+    }
+
+    public struct NFTInfoSingleAsset
+    {
+        public struct Owners
+        {
+            public string owner;
+            public float quantity;
+        }
+
+        public string name;
+        public string description;
+        public string previewImageUrl;
+        public string originalImageUrl;
+        public string marketLink;
+        public MarketInfo? marketInfo;
+        public string assetLink;
+        public Owners[] owners;
+        public string lastSaleDate;
+        public string lastSaleAmount;
+        public PaymentTokenInfo? lastSaleToken;
+        public string currentPrice;
+        public PaymentTokenInfo? currentPriceToken;
+        public UnityEngine.Color? backgroundColor;
+
+        public static NFTInfoSingleAsset defaultNFTInfoSingleAsset
+        {
+            get
+            {
+                NFTInfoSingleAsset ret = new NFTInfoSingleAsset();
+                ret.owners = new [] { new Owners() { owner = "0x0000000000000000000000000000000000000000", quantity = 0 } };
                 return ret;
             }
         }

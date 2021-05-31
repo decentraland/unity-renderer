@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace DCL.FPSDisplay
+﻿namespace DCL.FPSDisplay
 {
     public class LinealBufferHiccupCounter
     {

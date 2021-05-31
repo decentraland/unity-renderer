@@ -9,6 +9,12 @@ namespace DCL
 {
     public class AvatarRenderer : MonoBehaviour
     {
+        public enum VisualCue
+        {
+            CleanedUp,
+            Loaded
+        }
+
         private const int MAX_RETRIES = 5;
 
         public Material defaultMaterial;
@@ -16,11 +22,9 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public bool useFx = false;
-        public GameObject fxSpawnPrefab;
-
         private AvatarModel model;
 
+        public event Action<VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<bool> OnFailEvent;
 
@@ -123,6 +127,7 @@ namespace DCL
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
+            OnVisualCue?.Invoke(VisualCue.CleanedUp);
         }
 
         void CleanUpUnusedItems()
@@ -137,7 +142,7 @@ namespace DCL
                 var currentId = ids[i];
                 var wearable = wearableControllers[currentId];
 
-                if (!model.wearables.Contains(wearable.id))
+                if (!model.wearables.Contains(wearable.id) || !wearable.IsLoadedForBodyShape(model.bodyShape))
                 {
                     wearable.CleanUp();
                     wearableControllers.Remove(currentId);
@@ -213,6 +218,7 @@ namespace DCL
                 yield break;
             }
 
+            List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
             foreach (var avatarWearablePromise in avatarWearablePromises)
             {
                 yield return avatarWearablePromise;
@@ -224,8 +230,37 @@ namespace DCL
                 }
                 else
                 {
-                    resolvedWearables.Add(avatarWearablePromise.value);
-                    wearablesInUse.Add(avatarWearablePromise.value.id);
+                    WearableItem wearableItem = avatarWearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                        resolvedWearables.Add(wearableItem);
+                    else
+                    {
+                        model.wearables.Remove(wearableItem.id);
+                        string defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
+                        if (!string.IsNullOrEmpty(defaultReplacement))
+                        {
+                            model.wearables.Add(defaultReplacement);
+                            replacementPromises.Add(CatalogController.RequestWearable(defaultReplacement));
+                        }
+                    }
+                }
+            }
+
+            foreach (var wearablePromise in replacementPromises)
+            {
+                yield return wearablePromise;
+
+                if (!string.IsNullOrEmpty(wearablePromise.error))
+                {
+                    Debug.LogError(wearablePromise.error);
+                    loadSoftFailed = true;
+                }
+                else
+                {
+                    WearableItem wearableItem = wearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    resolvedWearables.Add(wearableItem);
                 }
             }
 
@@ -293,7 +328,6 @@ namespace DCL
                 }
             }
 
-            CleanUpUnusedItems();
 
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
@@ -312,7 +346,6 @@ namespace DCL
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
             mouthController?.Load(bodyShapeController, model.skinColor);
@@ -322,13 +355,9 @@ namespace DCL
                 (eyesController == null || (eyesController != null && eyesController.isReady)) &&
                 (mouthController == null || (mouthController != null && mouthController.isReady)));
 
-            if (useFx && (bodyIsDirty || wearablesIsDirty))
+            if (bodyIsDirty || wearablesIsDirty)
             {
-                var particles = Instantiate(fxSpawnPrefab);
-                var particlesFollow = particles.AddComponent<FollowObject>();
-                particles.transform.position += transform.position;
-                particlesFollow.target = transform;
-                particlesFollow.offset = fxSpawnPrefab.transform.position;
+                OnVisualCue?.Invoke(VisualCue.Loaded);
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
@@ -337,6 +366,8 @@ namespace DCL
             {
                 wearableController.UpdateVisibility(hiddenList);
             }
+
+            CleanUpUnusedItems();
 
             isLoading = false;
 

@@ -132,7 +132,6 @@ namespace DCL
         public bool enableTutorial = false;
         public bool builderInWorld = false;
         public bool soloScene = true;
-        public bool questsEnabled = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
         private void Awake() { i = this; }
@@ -210,11 +209,6 @@ namespace DCL
                 if (builderInWorld)
                 {
                     debugString += "ENABLE_BUILDER_IN_WORLD&";
-                }
-
-                if (questsEnabled)
-                {
-                    debugString += "QUESTS_ENABLED&";
                 }
 
                 string debugPanelString = "";
@@ -484,6 +478,12 @@ namespace DCL
                                 break;
                             case "PublishSceneResult":
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
+                                break;
+                            case "RunPerformanceMeterTool":
+                                if (float.TryParse(msg.payload, out float durationInMilliseconds))
+                                {
+                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(durationInMilliseconds);
+                                }
                                 break;
                             default:
                                 Debug.Log(

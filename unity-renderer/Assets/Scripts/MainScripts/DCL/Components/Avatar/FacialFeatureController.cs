@@ -44,7 +44,6 @@ public class FacialFeatureController
 
     void PrepareWearable()
     {
-
         if (baseMaterialCopy == null)
             baseMaterialCopy = new Material(baseMaterial);
 

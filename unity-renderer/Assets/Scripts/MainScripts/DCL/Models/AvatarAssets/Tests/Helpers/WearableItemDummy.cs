@@ -11,7 +11,7 @@ public class WearableItemDummy : WearableItem
         return new ContentProvider_Dummy
         {
             baseUrl = baseUrl,
-            contents = contents.Select(mapping => new ContentServerUtils.MappingPair(){file = mapping.key, hash = mapping.hash}).ToList()
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair() { file = mapping.key, hash = mapping.hash }).ToList()
         };
     }
 

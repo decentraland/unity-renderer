@@ -149,12 +149,12 @@ public class AvatarEditorHUDController : IHUD
                     equippedOwnedWearables.Add(userProfile.avatar.wearables[i]);
                 }
             }
+
             userProfile.SetInventory(equippedOwnedWearables.ToArray());
         }
 
         LoadUserProfile(userProfile, true);
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-
     }
 
     public void LoadUserProfile(UserProfile userProfile, bool forceLoading)
@@ -249,6 +249,8 @@ public class AvatarEditorHUDController : IHUD
 
         if (wearable.data.category == Categories.BODY_SHAPE)
         {
+            if (wearable.id == model.bodyShape.id)
+                return;
             EquipBodyShape(wearable);
         }
         else
@@ -258,6 +260,10 @@ public class AvatarEditorHUDController : IHUD
                 if (!categoriesThatMustHaveSelection.Contains(wearable.data.category))
                 {
                     UnequipWearable(wearable);
+                }
+                else
+                {
+                    return;
                 }
             }
             else
@@ -376,7 +382,7 @@ public class AvatarEditorHUDController : IHUD
             var toReplace = GetWearablesReplacedBy(wearable);
             toReplace.ForEach(UnequipWearable);
             model.wearables.Add(wearable);
-            view.SelectWearable(wearable);
+            view.EquipWearable(wearable);
         }
     }
 
@@ -385,7 +391,7 @@ public class AvatarEditorHUDController : IHUD
         if (model.wearables.Contains(wearable))
         {
             model.wearables.Remove(wearable);
-            view.UnselectWearable(wearable);
+            view.UnequipWearable(wearable);
         }
     }
 
@@ -393,7 +399,7 @@ public class AvatarEditorHUDController : IHUD
     {
         foreach (var wearable in model.wearables)
         {
-            view.UnselectWearable(wearable);
+            view.UnequipWearable(wearable);
         }
 
         model.wearables.Clear();

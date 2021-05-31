@@ -15,6 +15,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
 
@@ -50,7 +51,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool isMouseDragging = false;
     private bool isTypeOfBoundSelectionSelected = false;
     private bool isVoxelBoundMultiSelection = false;
-    private bool multiSelectionButtonPressed = false;
     private bool changeSnapTemporaryButtonPressed = false;
 
     private bool wasGizmosActive = false;
@@ -74,9 +74,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         BuilderInWorldInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
-
-        multiSelectionInputAction.OnStarted += (o) => multiSelectionButtonPressed = true;
-        multiSelectionInputAction.OnFinished += (o) => multiSelectionButtonPressed = false;
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
@@ -172,7 +169,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void ChangeSnapTemporaryActivated()
     {
-        if (!mouseMainBtnPressed || !gizmoManager.HasAxisHover())
+        if (selectedEntities.Count == 0)
             return;
 
         changeSnapTemporaryButtonPressed = true;
@@ -213,7 +210,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
-        editionGO.transform.localScale = scale;
+        var entityToUpdate = selectedEntities[0];
+
+        // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
+        entityToUpdate.transform.SetParent(null);
+        entityToUpdate.transform.localScale = scale;
+        editionGO.transform.localScale = Vector3.one;
+        entityToUpdate.transform.SetParent(editionGO.transform);
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -251,6 +254,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             builderInWorldEntityHandler.DeselectEntities();
             return;
         }
+
         base.MouseClickDetected();
     }
 
@@ -265,8 +269,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (buttonId != 0 ||
             selectedEntities.Count <= 0 ||
             BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick) ||
-            isSquareMultiSelectionInputActive ||
-            multiSelectionButtonPressed)
+            isSquareMultiSelectionInputActive)
             return;
 
         if (!isDraggingStarted)
@@ -274,19 +277,30 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (canDragSelectedEntities)
         {
-            Vector3 destination;
             Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
+            Vector3 initialEntityPosition = editionGO.transform.position;
 
             if (isSnapActive)
             {
-                currentPoint.x = Mathf.Round(currentPoint.x / snapDragFactor) * snapDragFactor;
-                currentPoint.z = Mathf.Round(currentPoint.z / snapDragFactor) * snapDragFactor;
+                currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
+                initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
             }
 
-            destination = currentPoint - dragStartedPoint + editionGO.transform.position;
+            Vector3 move = currentPoint - dragStartedPoint;
+            Vector3 destination = initialEntityPosition + move;
             editionGO.transform.position = destination;
             dragStartedPoint = currentPoint;
         }
+    }
+
+    private Vector3 GetPositionRoundedToSnapFactor(Vector3 position)
+    {
+        position = new Vector3(
+            Mathf.Round(position.x / snapDragFactor) * snapDragFactor,
+            position.y,
+            Mathf.Round(position.z / snapDragFactor) * snapDragFactor);
+
+        return position;
     }
 
     private void OnInputMouseUp(int buttonID, Vector3 position)
@@ -313,6 +327,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isSquareMultiSelectionInputActive = false;
             mouseMainBtnPressed = false;
         }
+
         outlinerController.SetOutlineCheckActive(true);
 
         isMouseDragging = false;
@@ -333,6 +348,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         dragStartedPoint = GetFloorPointAtMouse(position);
 
+        if (isSnapActive)
+        {
+            dragStartedPoint.x = Mathf.Round(dragStartedPoint.x);
+            dragStartedPoint.z = Mathf.Round(dragStartedPoint.z);
+        }
+
         if (isPlacingNewObject)
             return;
 
@@ -346,6 +367,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
+
         mouseMainBtnPressed = true;
         freeCameraController.SetCameraCanMove(false);
     }
@@ -422,6 +444,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 }
             }
         }
+
         if (selectedInsideBoundsEntities.Count == alreadySelectedEntities && alreadySelectedEntities > 0)
         {
             foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
@@ -563,6 +586,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             editionGO.transform.position = voxelController.ConverPositionToVoxelPosition(editionGO.transform.position);
         }
+
         UpdateActionsInteractable();
     }
 

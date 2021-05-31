@@ -7,29 +7,29 @@ using UnityEngine.UI;
 public interface ITopActionsButtonsView
 {
     event Action OnChangeModeClicked,
-                 OnExtraClicked,
-                 OnTranslateClicked,
-                 OnRotateClicked,
-                 OnScaleClicked,
-                 OnUndoClicked,
-                 OnRedoClicked,
-                 OnDuplicateClicked,
-                 OnDeleteClicked,
-                 OnLogOutClicked,
-                 OnSnapModeClicked,
-                 OnPointerExit;
+        OnExtraClicked,
+        OnTranslateClicked,
+        OnRotateClicked,
+        OnScaleClicked,
+        OnUndoClicked,
+        OnRedoClicked,
+        OnDuplicateClicked,
+        OnDeleteClicked,
+        OnLogOutClicked,
+        OnSnapModeClicked,
+        OnPointerExit;
 
     event Action<BaseEventData, string> OnChangeCameraModePointerEnter,
-                                        OnTranslatePointerEnter,
-                                        OnRotatePointerEnter,
-                                        OnScalePointerEnter,
-                                        OnUndoPointerEnter,
-                                        OnRedoPointerEnter,
-                                        OnDuplicatePointerEnter,
-                                        OnDeletePointerEnter,
-                                        OnMoreActionsPointerEnter,
-                                        OnLogoutPointerEnter,
-                                        OnSnapModePointerEnter;
+        OnTranslatePointerEnter,
+        OnRotatePointerEnter,
+        OnScalePointerEnter,
+        OnUndoPointerEnter,
+        OnRedoPointerEnter,
+        OnDuplicatePointerEnter,
+        OnDeletePointerEnter,
+        OnMoreActionsPointerEnter,
+        OnLogoutPointerEnter,
+        OnSnapModePointerEnter;
 
     void ConfigureExtraActions(IExtraActionsController extraActionsController);
     void OnChangeModeClick(DCLAction_Trigger action);
@@ -50,32 +50,33 @@ public interface ITopActionsButtonsView
 public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
 {
     public event Action OnChangeModeClicked,
-                        OnExtraClicked,
-                        OnTranslateClicked,
-                        OnRotateClicked,
-                        OnScaleClicked,
-                        OnUndoClicked,
-                        OnRedoClicked,
-                        OnDuplicateClicked,
-                        OnDeleteClicked,
-                        OnLogOutClicked,
-                        OnSnapModeClicked,
-                        OnPointerExit;
+        OnExtraClicked,
+        OnTranslateClicked,
+        OnRotateClicked,
+        OnScaleClicked,
+        OnUndoClicked,
+        OnRedoClicked,
+        OnDuplicateClicked,
+        OnDeleteClicked,
+        OnLogOutClicked,
+        OnSnapModeClicked,
+        OnPointerExit;
 
     public event Action<BaseEventData, string> OnChangeCameraModePointerEnter,
-                                               OnTranslatePointerEnter,
-                                               OnRotatePointerEnter,
-                                               OnScalePointerEnter,
-                                               OnUndoPointerEnter,
-                                               OnRedoPointerEnter,
-                                               OnDuplicatePointerEnter,
-                                               OnDeletePointerEnter,
-                                               OnMoreActionsPointerEnter,
-                                               OnLogoutPointerEnter,
-                                               OnSnapModePointerEnter;
+        OnTranslatePointerEnter,
+        OnRotatePointerEnter,
+        OnScalePointerEnter,
+        OnUndoPointerEnter,
+        OnRedoPointerEnter,
+        OnDuplicatePointerEnter,
+        OnDeletePointerEnter,
+        OnMoreActionsPointerEnter,
+        OnLogoutPointerEnter,
+        OnSnapModePointerEnter;
 
     [Header("Buttons")]
     [SerializeField] internal Button changeModeBtn;
+
     [SerializeField] internal Button extraBtn;
     [SerializeField] internal Button translateBtn;
     [SerializeField] internal Button rotateBtn;
@@ -89,6 +90,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleChangeCameraInputAction;
+
     [SerializeField] internal InputAction_Trigger toggleTranslateInputAction;
     [SerializeField] internal InputAction_Trigger toggleRotateInputAction;
     [SerializeField] internal InputAction_Trigger toggleScaleInputAction;
@@ -97,6 +99,7 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
 
     [Header("Event Triggers")]
     [SerializeField] internal EventTrigger changeCameraModeEventTrigger;
+
     [SerializeField] internal EventTrigger translateEventTrigger;
     [SerializeField] internal EventTrigger rotateEventTrigger;
     [SerializeField] internal EventTrigger scaleEventTrigger;
@@ -110,28 +113,31 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
 
     [Header("Tooltip Texts")]
     [SerializeField] internal string changeCameraModeTooltipText = "Change Camera (V)";
+
     [SerializeField] internal string translateTooltipText = "Translate (M)";
     [SerializeField] internal string rotateTooltipText = "Rotate (R)";
     [SerializeField] internal string scaleTooltipText = "Scale (G)";
     [SerializeField] internal string undoTooltipText = "Undo (Shift+Z)";
     [SerializeField] internal string redoTooltipText = "Redo (Shift+Y)";
-    [SerializeField] internal string duplicateTooltipText = "Duplicate (Control+D)";
+    [SerializeField] internal string duplicateTooltipText = "Duplicate (Shift+D)";
     [SerializeField] internal string deleteTooltipText = "Delete (Del) or (Backspace)";
     [SerializeField] internal string moreActionsTooltipText = "Extra Actions";
     [SerializeField] internal string logoutTooltipText = "Exit from edition";
-    [SerializeField] internal string snapModeTooltipText = "Change snap (O)";
+    [SerializeField] internal string snapModeTooltipText = "Toggle Snapping (O)";
 
     [Header("Sub-Views")]
     [SerializeField] internal ExtraActionsView extraActionsView;
 
     [Header("Images")]
     [SerializeField] internal Image translateGizmosBtnImg;
+
     [SerializeField] internal Image rotateGizmosBtnImg;
     [SerializeField] internal Image scaleGizmosBtnImg;
     [SerializeField] internal Image snapModeBtnImg;
 
     [Header("Colors")]
     [SerializeField] internal Color normalBtnImgColor;
+
     [SerializeField] internal Color selectedBtnImgColor;
 
     private DCLAction_Trigger dummyActionTrigger = new DCLAction_Trigger();

@@ -27,6 +27,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
     [Header("Build References")]
     public Material editMaterial;
+
     [SerializeField] internal LayerMask layerToRaycast;
 
     [Header("InputActions")]
@@ -291,6 +292,7 @@ public class BuilderInWorldEntityHandler : BIWController
                 return GetConvertedEntity(sceneToEdit.entities[entityID]);
             }
         }
+
         return null;
     }
 
@@ -386,10 +388,10 @@ public class BuilderInWorldEntityHandler : BIWController
         if (entityEditable == null)
             return;
 
-        SelectEntity(entityEditable);
+        SelectEntity(entityEditable, true);
     }
 
-    public bool SelectEntity(DCLBuilderInWorldEntity entityEditable)
+    public bool SelectEntity(DCLBuilderInWorldEntity entityEditable, bool selectedFromCatalog = false)
     {
         if (entityEditable.IsLocked)
             return false;
@@ -406,7 +408,7 @@ public class BuilderInWorldEntityHandler : BIWController
         if (HUDController.i.builderInWorldMainHud != null)
         {
             hudController.UpdateEntitiesSelection(selectedEntities.Count);
-            hudController.ShowEntityInformation();
+            hudController.ShowEntityInformation(selectedFromCatalog);
             hudController.EntityInformationSetEntity(entityEditable, sceneToEdit);
         }
 
@@ -597,6 +599,7 @@ public class BuilderInWorldEntityHandler : BIWController
         {
             DeleteEntity(entity, false);
         }
+
         hudController.HideEntityInformation();
     }
 
@@ -696,7 +699,6 @@ public class BuilderInWorldEntityHandler : BIWController
 
     public void DeleteEntity(DCLBuilderInWorldEntity entityToDelete, bool checkSelection)
     {
-
         if (entityToDelete.IsSelected && checkSelection)
             DeselectEntity(entityToDelete);
 
@@ -787,6 +789,7 @@ public class BuilderInWorldEntityHandler : BIWController
     public void UpdateSmartItemComponentInKernel(DCLBuilderInWorldEntity entityToUpdate) { builderInWorldBridge?.UpdateSmartItemComponent(entityToUpdate, sceneToEdit); }
 
     public void SetEntityName(DCLBuilderInWorldEntity entityToApply, string newName) { SetEntityName(entityToApply, newName, true); }
+
     public void SetEntityName(DCLBuilderInWorldEntity entityToApply, string newName, bool sendUpdateToKernel = true)
     {
         string currentName = entityToApply.GetDescriptiveName();

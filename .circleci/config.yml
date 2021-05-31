@@ -268,6 +268,9 @@ jobs:
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/build-logs.txt
+      - store_artifacts:
+          name: Store build report
+          path: ./unity-renderer/Library/LastBuild.buildreport
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:
@@ -286,6 +289,11 @@ jobs:
           when: on_fail
           command: |
             find "./unity-renderer"
+      - run:
+          name: Print build summary (in failure)
+          when: on_fail
+          command: |
+            cat ./unity-renderer/Library/LastBuild.buildreport
 
   build-js-interface:
     <<: *working_directory_root

@@ -5,29 +5,30 @@ using UnityEngine.UI;
 public interface IExtraActionsView
 {
     event Action OnControlsClicked,
-                 OnHideUIClicked,
-                 OnTutorialClicked,
-                 OnResetClicked,
-                 OnResetCameraClicked;
+        OnHideUIClicked,
+        OnTutorialClicked,
+        OnResetClicked,
+        OnResetCameraClicked;
 
     void OnControlsClick(DCLAction_Trigger action);
     void OnHideUIClick(DCLAction_Trigger action);
     void OnTutorialClick();
     void SetActive(bool isActive);
-    void OnResetClick();
-    void OnResetCameraClick();
+    void OnResetClick(DCLAction_Trigger action);
+    void OnResetCameraClick(DCLAction_Trigger action);
 }
 
 public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 {
     public event Action OnControlsClicked,
-                        OnHideUIClicked,
-                        OnTutorialClicked,
-                        OnResetClicked,
-                        OnResetCameraClicked;
+        OnHideUIClicked,
+        OnTutorialClicked,
+        OnResetClicked,
+        OnResetCameraClicked;
 
     [Header("Buttons")]
     [SerializeField] internal Button hideUIBtn;
+
     [SerializeField] internal Button controlsBtn;
     [SerializeField] internal Button tutorialBtn;
     [SerializeField] internal Button resetBtn;
@@ -35,7 +36,10 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
+
     [SerializeField] internal InputAction_Trigger toggleControlsVisibilityInputAction;
+    [SerializeField] internal InputAction_Trigger toggleResetInputAction;
+    [SerializeField] internal InputAction_Trigger toggleResetCameraInputAction;
 
     private DCLAction_Trigger dummyActionTrigger = new DCLAction_Trigger();
 
@@ -53,12 +57,14 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     {
         hideUIBtn.onClick.AddListener(() => OnHideUIClick(dummyActionTrigger));
         controlsBtn.onClick.AddListener(() => OnControlsClick(dummyActionTrigger));
-        resetBtn.onClick.AddListener(OnResetClick);
-        resetCameraBtn.onClick.AddListener(OnResetCameraClick);
+        resetBtn.onClick.AddListener(() => OnResetClick(dummyActionTrigger));
+        resetCameraBtn.onClick.AddListener(() => OnResetCameraClick(dummyActionTrigger));
         tutorialBtn.onClick.AddListener(OnTutorialClick);
 
         toggleUIVisibilityInputAction.OnTriggered += OnHideUIClick;
         toggleControlsVisibilityInputAction.OnTriggered += OnControlsClick;
+        toggleResetInputAction.OnTriggered += OnResetClick;
+        toggleResetCameraInputAction.OnTriggered += OnResetCameraClick;
     }
 
     private void OnDestroy()
@@ -71,6 +77,8 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
         toggleUIVisibilityInputAction.OnTriggered -= OnHideUIClick;
         toggleControlsVisibilityInputAction.OnTriggered -= OnControlsClick;
+        toggleResetInputAction.OnTriggered -= OnResetClick;
+        toggleResetCameraInputAction.OnTriggered -= OnResetCameraClick;
     }
 
     public void SetActive(bool isActive)
@@ -85,7 +93,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
     public void OnTutorialClick() { OnTutorialClicked?.Invoke(); }
 
-    public void OnResetClick() { OnResetClicked?.Invoke(); }
+    public void OnResetClick(DCLAction_Trigger action) { OnResetClicked?.Invoke(); }
 
-    public void OnResetCameraClick() { OnResetCameraClicked?.Invoke(); }
+    public void OnResetCameraClick(DCLAction_Trigger action) { OnResetCameraClicked?.Invoke(); }
 }

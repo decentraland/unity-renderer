@@ -3,10 +3,10 @@ using System;
 public interface IExtraActionsController
 {
     event Action OnControlsClick,
-                 OnHideUIClick,
-                 OnTutorialClick,
-                 OnResetClick,
-                 OnResetCameraClick;
+        OnHideUIClick,
+        OnTutorialClick,
+        OnResetClick,
+        OnResetCameraClick;
 
     void Initialize(IExtraActionsView extraActionsView);
     void Dispose();
@@ -20,10 +20,10 @@ public interface IExtraActionsController
 public class ExtraActionsController : IExtraActionsController
 {
     public event Action OnControlsClick,
-                        OnHideUIClick,
-                        OnTutorialClick,
-                        OnResetClick,
-                        OnResetCameraClick;
+        OnHideUIClick,
+        OnTutorialClick,
+        OnResetClick,
+        OnResetCameraClick;
 
     internal IExtraActionsView extraActionsView;
 

@@ -94,11 +94,9 @@ namespace Tests.QuestsTrackerHUD
         public void UpdateQuestProgressProcessNewQuest()
         {
             bool newQuestReceived = false;
-            bool questCompletedReceived = false;
             bool questUpdatedReceived = false;
             bool rewardObtainedReceived = false;
             questsController.OnNewQuest += (questId) => newQuestReceived = true;
-            questsController.OnQuestCompleted += (questId) => questCompletedReceived = true;
             questsController.OnQuestUpdated += (questId, hasProgressed) => questUpdatedReceived = true;
             questsController.OnRewardObtained += (questId, rewardId) => rewardObtainedReceived = true;
 
@@ -111,7 +109,6 @@ namespace Tests.QuestsTrackerHUD
             Assert.IsFalse(quests["0"].sections[0].tasks[0].justProgressed);
             Assert.IsFalse(quests["0"].sections[0].tasks[0].justUnlocked);
             Assert.IsTrue(newQuestReceived);
-            Assert.IsFalse(questCompletedReceived);
             Assert.IsFalse(questUpdatedReceived);
             Assert.IsFalse(rewardObtainedReceived);
         }
@@ -119,15 +116,17 @@ namespace Tests.QuestsTrackerHUD
         [Test]
         public void UpdateQuestProgressUpdateQuest()
         {
-            quests.Add("0", new QuestModel { id = "0", status = QuestsLiterals.Status.NOT_STARTED, 
+            quests.Add("0", new QuestModel
+            {
+                id = "0", status = QuestsLiterals.Status.NOT_STARTED,
                 sections = new [] { new QuestSection { id = "0_0", tasks = new [] { new QuestTask { id = "0_0_0" } } } },
-                rewards = new [] { new QuestReward{id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN} }
+                rewards = new [] { new QuestReward { id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN } }
             });
 
             QuestModel progressedQuest = new QuestModel
             {
-                id = "0", status = QuestsLiterals.Status.NOT_STARTED, 
-                sections = new [] 
+                id = "0", status = QuestsLiterals.Status.NOT_STARTED,
+                sections = new []
                 {
                     new QuestSection
                     {
@@ -139,15 +138,13 @@ namespace Tests.QuestsTrackerHUD
                         }
                     },
                 },
-                rewards = new [] { new QuestReward{id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN} }
+                rewards = new [] { new QuestReward { id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN } }
             };
 
             bool newQuestReceived = false;
-            bool questCompletedReceived = false;
             bool questUpdatedReceived = false;
             bool rewardObtainedReceived = false;
             questsController.OnNewQuest += (questId) => newQuestReceived = true;
-            questsController.OnQuestCompleted += (questId) => questCompletedReceived = true;
             questsController.OnQuestUpdated += (questId, hasProgressed) =>
             {
                 questUpdatedReceived = true;
@@ -162,7 +159,6 @@ namespace Tests.QuestsTrackerHUD
             questsController.UpdateQuestProgress(progressedQuest);
 
             Assert.IsFalse(newQuestReceived);
-            Assert.IsFalse(questCompletedReceived);
             Assert.IsTrue(questUpdatedReceived);
             Assert.IsFalse(rewardObtainedReceived);
 
@@ -177,15 +173,17 @@ namespace Tests.QuestsTrackerHUD
         [Test]
         public void UpdateQuestProgressUpdateQuest_Completed()
         {
-            quests.Add("0", new QuestModel { id = "0", status = QuestsLiterals.Status.NOT_STARTED, 
+            quests.Add("0", new QuestModel
+            {
+                id = "0", status = QuestsLiterals.Status.NOT_STARTED,
                 sections = new [] { new QuestSection { id = "0_0", tasks = new [] { new QuestTask { id = "0_0_0" } } } },
-                rewards = new [] { new QuestReward{id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN} }
+                rewards = new [] { new QuestReward { id = "reward0", status = QuestsLiterals.RewardStatus.NOT_GIVEN } }
             });
 
             QuestModel progressedQuest = new QuestModel
             {
-                id = "0", 
-                status = QuestsLiterals.Status.COMPLETED, 
+                id = "0",
+                status = QuestsLiterals.Status.COMPLETED,
                 sections = new []
                 {
                     new QuestSection
@@ -194,19 +192,17 @@ namespace Tests.QuestsTrackerHUD
                         progress = 1f,
                         tasks = new []
                         {
-                            new QuestTask { id = "0_0_0", progress = 1f, status = QuestsLiterals.Status.COMPLETED}
+                            new QuestTask { id = "0_0_0", progress = 1f, status = QuestsLiterals.Status.COMPLETED }
                         }
                     }
                 },
-                rewards = new [] { new QuestReward{id = "reward0", status = QuestsLiterals.RewardStatus.OK} }
+                rewards = new [] { new QuestReward { id = "reward0", status = QuestsLiterals.RewardStatus.OK } }
             };
 
             bool newQuestReceived = false;
-            bool questCompletedReceived = false;
             bool questUpdatedReceived = false;
             bool rewardObtainedReceived = false;
             questsController.OnNewQuest += (questId) => newQuestReceived = true;
-            questsController.OnQuestCompleted += (questId) => questCompletedReceived = true;
             questsController.OnQuestUpdated += (questId, hasProgressed) =>
             {
                 questUpdatedReceived = true;
@@ -227,7 +223,6 @@ namespace Tests.QuestsTrackerHUD
             questsController.UpdateQuestProgress(progressedQuest);
 
             Assert.IsFalse(newQuestReceived);
-            Assert.IsTrue(questCompletedReceived);
             Assert.IsTrue(questUpdatedReceived);
             Assert.IsTrue(rewardObtainedReceived);
 
@@ -238,7 +233,7 @@ namespace Tests.QuestsTrackerHUD
             Assert.IsFalse(quests["0"].sections[0].tasks[0].justProgressed);
             Assert.IsFalse(quests["0"].sections[0].tasks[0].justUnlocked);
         }
-        
+
         [TearDown]
         public void TearDown() { DataStore.Clear(); }
     }

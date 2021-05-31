@@ -62,6 +62,7 @@ namespace DCL
                     Debug.Log(e.Message);
                 }
             }
+
             if (!isQualitySettingsSet)
             {
                 currentQualitySettings = qualitySettingsPreset.defaultPreset;
@@ -110,6 +111,7 @@ namespace DCL
             {
                 sfxVolume = 1,
                 mouseSensitivity = 0.6f,
+                scenesLoadRadius = 4,
                 voiceChatVolume = 1,
                 voiceChatAllow = SettingsData.GeneralSettings.VoiceChatAllow.ALL_USERS,
                 autoqualityOn = false
@@ -175,11 +177,13 @@ namespace DCL.SettingsData
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
         public bool autoqualityOn;
+        public float scenesLoadRadius;
 
         public bool Equals(GeneralSettings settings)
         {
             return sfxVolume == settings.sfxVolume
                    && mouseSensitivity == settings.mouseSensitivity
+                   && scenesLoadRadius == settings.scenesLoadRadius
                    && voiceChatVolume == settings.voiceChatVolume
                    && voiceChatAllow == settings.voiceChatAllow
                    && autoqualityOn == settings.autoqualityOn;

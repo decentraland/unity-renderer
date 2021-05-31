@@ -46,6 +46,7 @@ public class BIWCreatorController : BIWController
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
             HUDController.i.builderInWorldMainHud.OnCatalogItemDropped -= OnCatalogItemDropped;
         }
+
         Clean();
     }
 

@@ -13,7 +13,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
         protected override AssetPromise_AB_GameObject CreatePromise()
         {
-            string contentUrl = Utils.GetTestsAssetsPath() + "/AssetBundles/";
+            string contentUrl = TestAssetsUtils.GetPath() + "/AssetBundles/";
             string hash = "QmNS4K7GaH63T9rhAfkrra7ADLXSEeco8FTGknkPnAVmKM";
             var prom = new AssetPromise_AB_GameObject(contentUrl, hash);
             return prom;

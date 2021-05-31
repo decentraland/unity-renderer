@@ -62,6 +62,7 @@ public class WearableController
         loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         loader.settings.parent = parent;
+        loader.settings.layer = parent.gameObject.layer;
 
         assetRenderers = null;
 
@@ -71,6 +72,7 @@ public class WearableController
             {
                 loader.OnSuccessEvent -= OnSuccessWrapper;
             }
+
             assetRenderers = gameObject.GetComponentsInChildren<Renderer>();
             PrepareWearable(gameObject);
             onSuccess?.Invoke(this);
@@ -87,6 +89,7 @@ public class WearableController
                 lastMainFileLoaded = null;
                 loader = null;
             }
+
             onFail?.Invoke(this);
         }
 

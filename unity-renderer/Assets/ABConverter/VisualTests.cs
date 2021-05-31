@@ -13,8 +13,8 @@ namespace DCL.ABConverter
 {
     public static class VisualTests
     {
-        static readonly string baselinePath = VisualTestHelpers.baselineImagesPath;
-        static readonly string testImagesPath = VisualTestHelpers.testImagesPath;
+        static readonly string baselinePath = AssetBundlesVisualTestHelpers.baselineImagesPath;
+        static readonly string testImagesPath = AssetBundlesVisualTestHelpers.testImagesPath;
         static string abPath = Application.dataPath + "/../AssetBundles/";
         static int skippedAssets = 0;
 
@@ -48,8 +48,8 @@ namespace DCL.ABConverter
             var scene = EditorSceneManager.OpenScene($"Assets/ABConverter/VisualTestScene.unity", OpenSceneMode.Single);
             yield return new WaitUntil(() => scene.isLoaded);
 
-            VisualTestHelpers.baselineImagesPath += "ABConverter/";
-            VisualTestHelpers.testImagesPath += "ABConverter/";
+            AssetBundlesVisualTestHelpers.baselineImagesPath += "ABConverter/";
+            AssetBundlesVisualTestHelpers.testImagesPath += "ABConverter/";
             skippedAssets = 0;
 
             var gltfs = LoadAndInstantiateAllGltfAssets();
@@ -65,7 +65,7 @@ namespace DCL.ABConverter
             // Take prewarm snapshot to make sure the scene is correctly loaded
             yield return TakeObjectSnapshot(new GameObject(), $"ABConverter_Warmup.png");
 
-            VisualTestHelpers.generateBaseline = true;
+            AssetBundlesVisualTestHelpers.generateBaseline = true;
 
             foreach (GameObject go in gltfs)
             {
@@ -90,7 +90,7 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            VisualTestHelpers.generateBaseline = false;
+            AssetBundlesVisualTestHelpers.generateBaseline = false;
 
             var abs = LoadAndInstantiateAllAssetBundles();
 
@@ -115,9 +115,9 @@ namespace DCL.ABConverter
 
                 yield return TakeObjectSnapshot(go, testName);
 
-                bool result = VisualTestHelpers.TestSnapshot(
-                    VisualTestHelpers.baselineImagesPath + testName,
-                    VisualTestHelpers.testImagesPath + testName,
+                bool result = AssetBundlesVisualTestHelpers.TestSnapshot(
+                    AssetBundlesVisualTestHelpers.baselineImagesPath + testName,
+                    AssetBundlesVisualTestHelpers.testImagesPath + testName,
                     95,
                     false);
 
@@ -140,8 +140,8 @@ namespace DCL.ABConverter
                 go.SetActive(false);
             }
 
-            VisualTestHelpers.baselineImagesPath = baselinePath;
-            VisualTestHelpers.testImagesPath = testImagesPath;
+            AssetBundlesVisualTestHelpers.baselineImagesPath = baselinePath;
+            AssetBundlesVisualTestHelpers.testImagesPath = testImagesPath;
 
             Debug.Log("Visual Test Detection: Finished converted assets testing...skipped assets: " + skippedAssets);
             OnFinish?.Invoke(skippedAssets);
@@ -161,13 +161,13 @@ namespace DCL.ABConverter
             var renderers = targetGO.GetComponentsInChildren<Renderer>();
 
             // unify all child renderer bounds and use that to position the snapshot camera
-            var mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+            var mergedBounds = MeshUtils.BuildMergedBounds(renderers);
 
             // Some objects are imported super small (like 0.00x in scale) and we can barely see them in the snapshots
             if (mergedBounds.size.magnitude < 1f)
             {
                 targetGO.transform.localScale *= 100;
-                mergedBounds = Helpers.Utils.BuildMergedBounds(renderers);
+                mergedBounds = MeshUtils.BuildMergedBounds(renderers);
             }
 
             Vector3 offset = mergedBounds.extents;
@@ -177,7 +177,7 @@ namespace DCL.ABConverter
 
             Vector3 cameraPosition = new Vector3(mergedBounds.min.x - offset.x, mergedBounds.max.y + offset.y, mergedBounds.min.z - offset.z);
 
-            yield return VisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
+            yield return AssetBundlesVisualTestHelpers.TakeSnapshot(testName, Camera.main, cameraPosition, mergedBounds.center);
 
             targetGO.transform.localScale = originalScale;
         }

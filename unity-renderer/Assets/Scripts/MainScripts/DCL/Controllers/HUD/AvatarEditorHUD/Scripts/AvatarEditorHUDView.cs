@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class AvatarEditorHUDView : MonoBehaviour
 {
+    private static readonly int RANDOMIZE_ANIMATOR_LOADING_BOOL = Animator.StringToHash("Loading");
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
@@ -71,16 +72,18 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal PreviewCameraRotation characterPreviewRotation;
 
     [SerializeField]
-    internal GameObject loadingPanel;
+    internal Button randomizeButton;
 
     [SerializeField]
-    internal Button randomizeButton;
+    internal Animator randomizeAnimator;
 
     [SerializeField]
     internal Button doneButton;
 
     [SerializeField]
     internal Button exitButton;
+
+    [SerializeField] internal GameObject loadingSpinnerGameObject;
 
     [Header("Collectibles")]
     [SerializeField]
@@ -98,6 +101,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
+    private readonly HashSet<WearableItem> wearablesWithLoadingSpinner = new HashSet<WearableItem>();
 
     public event System.Action<AvatarModel> OnAvatarAppear;
     public event System.Action<bool> OnSetVisibility;
@@ -109,7 +113,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         toggleAction.OnTriggered += ToggleAction_OnTriggered;
         closeAction.OnTriggered += CloseAction_OnTriggered;
-
+        loadingSpinnerGameObject.SetActive(false);
         if (characterPreviewController == null)
         {
             characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
@@ -225,16 +229,39 @@ public class AvatarEditorHUDView : MonoBehaviour
         collectiblesItemSelector.SetBodyShape(bodyShape.id);
     }
 
-    public void SelectWearable(WearableItem wearable)
+    public void EquipWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.data.category].Select(wearable.id);
+        SetWearableLoadingSpinner(wearable, true);
         collectiblesItemSelector.Select(wearable.id);
     }
 
-    public void UnselectWearable(WearableItem wearable)
+    public void UnequipWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.data.category].Unselect(wearable.id);
+        SetWearableLoadingSpinner(wearable, false);
         collectiblesItemSelector.Unselect(wearable.id);
+    }
+
+    internal void SetWearableLoadingSpinner(WearableItem wearable, bool isActive)
+    {
+        selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, isActive);
+        collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, isActive);
+        if (isActive)
+            wearablesWithLoadingSpinner.Add(wearable);
+        else
+            wearablesWithLoadingSpinner.Remove(wearable);
+    }
+
+    internal void ClearWearablesLoadingSpinner()
+    {
+        foreach (WearableItem wearable in wearablesWithLoadingSpinner)
+        {
+            selectorsByCategory[wearable.data.category].SetWearableLoadingSpinner(wearable.id, false);
+            collectiblesItemSelector.SetWearableLoadingSpinner(wearable.id, false);
+        }
+
+        wearablesWithLoadingSpinner.Clear();
     }
 
     public void SelectHairColor(Color hairColor) { hairColorSelector.Select(hairColor); }
@@ -268,24 +295,19 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (avatarModel?.wearables == null)
             return;
 
-        SetLoadingPanel(true);
         doneButton.interactable = false;
+        loadingSpinnerGameObject.SetActive(true);
         characterPreviewController.UpdateModel(avatarModel,
             () =>
             {
-                SetLoadingPanel(false);
-
                 if (doneButton != null)
                     doneButton.interactable = true;
 
+                loadingSpinnerGameObject?.SetActive(false);
                 OnAvatarAppear?.Invoke(avatarModel);
+                ClearWearablesLoadingSpinner();
+                randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
             });
-    }
-
-    private void SetLoadingPanel(bool active)
-    {
-        if (loadingPanel != null)
-            loadingPanel.SetActive(active);
     }
 
     public void AddWearable(WearableItem wearableItem, int amount)
@@ -339,6 +361,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         OnRandomize?.Invoke();
         controller.RandomizeWearables();
+        randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, true);
     }
 
     private void OnDoneButton()
@@ -353,15 +376,9 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         doneButton.interactable = true;
         controller.SaveAvatar(face, face128, face256, body);
-
-        characterPreviewController.ResetRenderersLayer();
     }
 
-    private void OnSnapshotsFailed()
-    {
-        doneButton.interactable = true;
-        characterPreviewController.ResetRenderersLayer();
-    }
+    private void OnSnapshotsFailed() { doneButton.interactable = true; }
 
     public void SetVisibility(bool visible)
     {
@@ -385,6 +402,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
+        loadingSpinnerGameObject = null;
+        randomizeAnimator = null;
         if (wearableGridPairs != null)
         {
             int nPairs = wearableGridPairs.Length;

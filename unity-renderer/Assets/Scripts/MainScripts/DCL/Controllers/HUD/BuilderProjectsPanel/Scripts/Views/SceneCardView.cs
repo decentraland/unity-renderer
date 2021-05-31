@@ -42,26 +42,38 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
+
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
+
     [SerializeField] private TextMeshProUGUI sceneName;
+
     [Space]
     [SerializeField] internal GameObject coordsContainer;
+
     [SerializeField] private TextMeshProUGUI coordsText;
+
     [Space]
     [SerializeField] internal GameObject sizeContainer;
+
     [SerializeField] private TextMeshProUGUI sizeText;
+
     [Space]
     [SerializeField] internal Button jumpInButton;
+
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button settingsButton;
+
     [Space]
     [SerializeField] internal GameObject roleOwnerGO;
+
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
+
     [Space]
     [SerializeField] internal GameObject editorLockedGO;
+
     [SerializeField] internal GameObject editorLockedTooltipGO;
 
     [SerializeField] internal Animator loadingAnimator;

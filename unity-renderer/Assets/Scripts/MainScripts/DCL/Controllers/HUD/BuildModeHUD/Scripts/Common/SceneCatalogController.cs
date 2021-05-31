@@ -40,6 +40,7 @@ public interface ISceneCatalogController
     void RefreshAssetPack();
     void RefreshCatalog();
     CatalogItemAdapter GetLastCatalogItemDragged();
+    void SetActive(bool isActive);
 }
 
 public class SceneCatalogController : ISceneCatalogController
@@ -301,6 +302,7 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogAssetPackList.SetAssetPackStyle();
             sceneCatalogView.catalogAssetPackList.gameObject.SetActive(true);
         }
+
         isShowingAssetPacks = true;
         sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
         RefreshCatalog();
@@ -365,4 +367,6 @@ public class SceneCatalogController : ISceneCatalogController
                 break;
         }
     }
+
+    public void SetActive(bool isActive) { sceneCatalogView.SetActive(isActive); }
 }

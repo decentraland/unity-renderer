@@ -89,7 +89,7 @@ public class WearableItem
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents = contents.Select(mapping => new ContentServerUtils.MappingPair(){file = mapping.key, hash = mapping.hash}).ToList()
+            contents = contents.Select(mapping => new ContentServerUtils.MappingPair() { file = mapping.key, hash = mapping.hash }).ToList()
         };
     }
 
@@ -137,6 +137,7 @@ public class WearableItem
         {
             cachedI18n.Add(langCode, i18n.FirstOrDefault(x => x.code == langCode)?.text);
         }
+
         return cachedI18n[langCode];
     }
 
@@ -181,7 +182,6 @@ public class WearableItem
 
         return result;
     }
-
 }
 
 [System.Serializable]

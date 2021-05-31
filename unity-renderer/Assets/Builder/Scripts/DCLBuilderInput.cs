@@ -10,8 +10,11 @@ namespace Builder
         [SerializeField] float mouseWheelThrottle = 0.1f;
 
         public delegate void MouseClickDelegate(int buttonId, Vector3 mousePosition);
+
         public delegate void MouseDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
+
         public delegate void MouseRawDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
+
         public delegate void MouseWheelDelegate(float axisValue);
 
         public static event MouseClickDelegate OnMouseDown;
@@ -20,12 +23,11 @@ namespace Builder
         public static event MouseRawDragDelegate OnMouseRawDrag;
         public static event MouseWheelDelegate OnMouseWheel;
 
-        private float lastMouseWheelDelta = 0;
+        private int lastMouseWheelAxisDirection = 0;
         private float lastMouseWheelTime = 0;
 
         private void Update()
         {
-
             for (int i = 0; i <= 2; i++)
             {
                 if (HasMouseButtonInput(i))
@@ -61,26 +63,27 @@ namespace Builder
             return false;
         }
 
-        private void OnMouseWheelInput(int delta)
+        private void OnMouseWheelInput(float axisValue)
         {
-            if (lastMouseWheelDelta == delta)
+            int axisDirection = (int)Mathf.Sign(axisValue);
+            if (lastMouseWheelAxisDirection == axisDirection)
             {
                 if (Time.unscaledTime - lastMouseWheelTime >= mouseWheelThrottle)
                 {
-                    SetMouseWheelDelta(delta);
+                    SetMouseWheelDelta(axisValue, axisDirection);
                 }
             }
             else
             {
-                SetMouseWheelDelta(delta);
+                SetMouseWheelDelta(axisValue, axisDirection);
             }
         }
 
-        private void SetMouseWheelDelta(int delta)
+        private void SetMouseWheelDelta(float axisValue, int axisDirection)
         {
-            OnMouseWheel?.Invoke(delta);
+            OnMouseWheel?.Invoke(axisValue);
             lastMouseWheelTime = Time.unscaledTime;
-            lastMouseWheelDelta = delta;
+            lastMouseWheelAxisDirection = axisDirection;
         }
 
         private void UpdateMouseWheelInput()
@@ -88,7 +91,7 @@ namespace Builder
             float axisValue = Input.GetAxis("Mouse ScrollWheel");
             if (axisValue != 0)
             {
-                OnMouseWheelInput((int)Mathf.Sign(axisValue));
+                OnMouseWheelInput(axisValue);
             }
         }
 
@@ -101,18 +104,22 @@ namespace Builder
             {
                 SendMessageToBridge("OnBuilderKeyDown", "UpArrow");
             }
+
             if (Input.GetKey(KeyCode.DownArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "DownArrow");
             }
+
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "LeftArrow");
             }
+
             if (Input.GetKey(KeyCode.RightArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "RightArrow");
             }
+
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "LeftShift");
@@ -123,10 +130,12 @@ namespace Builder
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.MOVE);
             }
+
             if (Input.GetKeyDown(KeyCode.R))
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.ROTATE);
             }
+
             if (Input.GetKeyDown(KeyCode.S))
             {
                 SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.SCALE);
@@ -139,12 +148,12 @@ namespace Builder
             {
                 bridgeGameObject = GameObject.Find("BuilderController");
             }
+
             if (bridgeGameObject != null)
             {
                 bridgeGameObject.SendMessage(method, arg);
             }
         }
 #endif
-
     }
 }

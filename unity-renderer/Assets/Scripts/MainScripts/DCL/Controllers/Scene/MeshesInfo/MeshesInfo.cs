@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
-using DCL.Helpers;
 using TMPro;
 using UnityEngine;
 
@@ -87,7 +86,7 @@ namespace DCL.Models
             lastBoundsCalculationScale = meshRootGameObject.transform.lossyScale;
             lastBoundsCalculationRotation = meshRootGameObject.transform.rotation;
 
-            mergedBoundsValue = Utils.BuildMergedBounds(renderers);
+            mergedBoundsValue = MeshesInfoUtils.BuildMergedBounds(renderers);
         }
 
         public void CleanReferences()

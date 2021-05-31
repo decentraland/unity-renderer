@@ -1,5 +1,6 @@
 {
     "name": "PlayerInfoCardHUD",
+    "rootNamespace": "",
     "references": [
         "GUID:555c1f3c6d18648df910b7a1de75b424",
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
@@ -18,7 +19,8 @@
         "GUID:a3ceb534947fac14da25035bc5c24788",
         "GUID:99cea83ca76dcd846abed7e61a8c90bd",
         "GUID:a1e1473c53889c2489c0822a9dd5fa33",
-        "GUID:28f74c468a54948bfa9f625c5d428f56"
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:e99faafecbf8dd74d8130597511b9b27"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
