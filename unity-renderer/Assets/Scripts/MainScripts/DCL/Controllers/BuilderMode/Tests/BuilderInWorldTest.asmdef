@@ -1,5 +1,6 @@
 {
   "name": "BuilderInWorldTests",
+  "rootNamespace": "",
   "references": [
     "GUID:cc6bfabbfe87b7949aa248893f89ce37",
     "GUID:b1087c5731ff68448a0a9c625bb7e52d",

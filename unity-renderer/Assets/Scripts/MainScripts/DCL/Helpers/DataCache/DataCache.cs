@@ -65,6 +65,7 @@ public class DataCache<T> : IDataCache<T>
                 CoroutineStarter.Stop(iterator.Current.Value.expireCacheRoutine);
             }
         }
+
         cache.Clear();
     }
 

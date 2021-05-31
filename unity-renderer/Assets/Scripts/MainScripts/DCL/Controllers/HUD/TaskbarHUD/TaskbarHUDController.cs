@@ -300,9 +300,9 @@ public class TaskbarHUDController : IHUD
         privateChatWindowHud.view.OnMinimize += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                    .FirstOrDefault(
+                        (x) => x is ChatHeadButton &&
+                               (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)
@@ -314,9 +314,9 @@ public class TaskbarHUDController : IHUD
         privateChatWindowHud.view.OnClose += () =>
         {
             ChatHeadButton btn = view.GetButtonList()
-                                     .FirstOrDefault(
-                                         (x) => x is ChatHeadButton &&
-                                                (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
+                    .FirstOrDefault(
+                        (x) => x is ChatHeadButton &&
+                               (x as ChatHeadButton).profile.userId == privateChatWindowHud.conversationUserId) as
                 ChatHeadButton;
 
             if (btn != null)

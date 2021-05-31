@@ -464,8 +464,8 @@ namespace DCL.ABConverter
             EnsureEnvironment();
 
             List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
-                                                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
-                                                .ToList();
+                .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
+                .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new Settings();
@@ -488,8 +488,8 @@ namespace DCL.ABConverter
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
             List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
-                                                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
-                                                .ToList();
+                .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
+                .ToList();
 
             Queue<WearableItem> itemQueue = new Queue<WearableItem>(avatarItemList);
             var settings = new Settings();
@@ -551,7 +551,7 @@ namespace DCL.ABConverter
                 {
                     foreach (var datum in representation.contents)
                     {
-                        result.Add(new ContentServerUtils.MappingPair(){file = datum.key, hash = datum.hash});
+                        result.Add(new ContentServerUtils.MappingPair() { file = datum.key, hash = datum.hash });
                     }
                 }
             }
@@ -596,6 +596,7 @@ namespace DCL.ABConverter
             obj.importSkeleton = false;
             obj.maxTextureSize = 512;
         }
+
         private static void GLTFImporter_OnBodyWearableLoad(UnityGLTF.GLTFSceneImporter obj)
         {
             obj.importSkeleton = true;

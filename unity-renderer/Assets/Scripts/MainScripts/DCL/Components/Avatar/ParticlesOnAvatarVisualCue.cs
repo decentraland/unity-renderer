@@ -9,6 +9,7 @@ public class ParticlesOnAvatarVisualCue : MonoBehaviour
     [SerializeField] private bool followAvatar;
 
     private AvatarRenderer avatarRenderer;
+
     private void Awake()
     {
         avatarRenderer = GetComponent<AvatarRenderer>();

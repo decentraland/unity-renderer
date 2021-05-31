@@ -9,13 +9,16 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
 {
     [SerializeField]
     AvatarEditorHUDView view;
+
     [SerializeField]
     ItemSelector nftItemSelector;
+
     [SerializeField]
     Button randomizeButton;
+
     [SerializeField]
     AudioEvent eventMusic, eventRarity, eventAvatarAppear, eventReactionMale, eventReactionFemale, eventWearableClothing, eventWearableEyewear, eventWearableJewelry,
-               eventWearableFootwear, eventWearableHair, eventWearableHatMask, eventWearableRarity;
+        eventWearableFootwear, eventWearableHair, eventWearableHatMask, eventWearableRarity;
 
     WearableItem lastSelectedWearable = null;
     bool hasClickedRandomize = false, wearableIsSameAsPrevious = false;

@@ -5,10 +5,10 @@ using UnityEngine.UI;
 public interface IExtraActionsView
 {
     event Action OnControlsClicked,
-                 OnHideUIClicked,
-                 OnTutorialClicked,
-                 OnResetClicked,
-                 OnResetCameraClicked;
+        OnHideUIClicked,
+        OnTutorialClicked,
+        OnResetClicked,
+        OnResetCameraClicked;
 
     void OnControlsClick(DCLAction_Trigger action);
     void OnHideUIClick(DCLAction_Trigger action);
@@ -21,13 +21,14 @@ public interface IExtraActionsView
 public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 {
     public event Action OnControlsClicked,
-                        OnHideUIClicked,
-                        OnTutorialClicked,
-                        OnResetClicked,
-                        OnResetCameraClicked;
+        OnHideUIClicked,
+        OnTutorialClicked,
+        OnResetClicked,
+        OnResetCameraClicked;
 
     [Header("Buttons")]
     [SerializeField] internal Button hideUIBtn;
+
     [SerializeField] internal Button controlsBtn;
     [SerializeField] internal Button tutorialBtn;
     [SerializeField] internal Button resetBtn;
@@ -35,6 +36,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
+
     [SerializeField] internal InputAction_Trigger toggleControlsVisibilityInputAction;
     [SerializeField] internal InputAction_Trigger toggleResetInputAction;
     [SerializeField] internal InputAction_Trigger toggleResetCameraInputAction;

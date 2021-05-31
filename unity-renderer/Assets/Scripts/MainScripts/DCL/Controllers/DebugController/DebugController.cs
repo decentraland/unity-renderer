@@ -1,23 +1,13 @@
 ﻿using System;
-using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public interface IDebugController : IDisposable
-    {
-        event Action OnDebugModeSet;
-        void SetDebug();
-        void HideFPSPanel();
-        void ShowFPSPanel();
-        void SetSceneDebugPanel();
-        void SetEngineDebugPanel();
-    }
-
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
+        private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
 
         public DebugView debugView;
 
@@ -63,6 +53,8 @@ namespace DCL
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
         }
+
+        public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
 
         public void Dispose()
         {
