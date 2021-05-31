@@ -210,7 +210,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
-        editionGO.transform.localScale = scale;
+        var entityToUpdate = selectedEntities[0];
+
+        // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
+        entityToUpdate.transform.SetParent(null);
+        entityToUpdate.transform.localScale = scale;
+        editionGO.transform.localScale = Vector3.one;
+        entityToUpdate.transform.SetParent(editionGO.transform);
     }
 
     public void UpdateGizmosToSelectedEntities()
