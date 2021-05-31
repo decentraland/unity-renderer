@@ -1,4 +1,4 @@
-using System;
+using DCL;
 
 namespace SignupHUD
 {
@@ -8,25 +8,32 @@ namespace SignupHUD
 
         private string name;
         private string email;
+        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
 
         protected virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
         public void Initialize()
         {
             view = CreateView();
-            if (view != null)
-            {
-                view.OnNameScreenNext += OnNameScreenNext;
-                view.OnTermsOfServiceAgreed += TermsOfServiceAgreed;
-                view.OnTermsOfServiceBack += TermsOfServiceBack;
-            }
+            if (view == null)
+                return;
+
+            signupVisible.OnChange += OnSignupVisibleChanged;
+            signupVisible.Set(false);
+
+            view.OnNameScreenNext += OnNameScreenNext;
+            view.OnEditAvatar += OnEditAvatar;
+            view.OnTermsOfServiceAgreed += OnTermsOfServiceAgreed;
+            view.OnTermsOfServiceBack += OnTermsOfServiceBack;
+
         }
+        private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
 
         public void StartSignupProcess()
         {
             name = null;
             email = null;
-            view?.SetVisibility(true);
+            signupVisible.Set(true);
             view?.ShowNameScreen();
         }
 
@@ -37,36 +44,32 @@ namespace SignupHUD
             view?.ShowTermsOfServiceScreen();
         }
 
-        private void TermsOfServiceAgreed()
+        private void OnEditAvatar()
         {
-            //Send data to kernel
-            view?.SetVisibility(false);
+            signupVisible.Set(false);
+            //TODO: Open Avatar Editor
         }
 
-        private void TermsOfServiceBack() { StartSignupProcess(); }
+        private void OnTermsOfServiceAgreed()
+        {
+            //Send data to kernel
+            signupVisible.Set(false);
+        }
 
-        public void SetVisibility(bool visible) { throw new System.NotImplementedException(); }
+        private void OnTermsOfServiceBack() { StartSignupProcess(); }
+
+        public void SetVisibility(bool visible) { view?.SetVisibility(visible); }
 
         public void Dispose()
         {
+            signupVisible.OnChange -= OnSignupVisibleChanged;
             if (view == null)
                 return;
-            view.Dispose();
             view.OnNameScreenNext -= OnNameScreenNext;
-            view.OnTermsOfServiceAgreed -= TermsOfServiceAgreed;
+            view.OnEditAvatar -= OnEditAvatar;
+            view.OnTermsOfServiceAgreed -= OnTermsOfServiceAgreed;
+            view.OnTermsOfServiceBack -= OnTermsOfServiceBack;
+            view.Dispose();
         }
     }
-
-    public interface ISignupHUDView : IDisposable
-    {
-        delegate void NameScreenDone(string newName, string newEmail);
-        event NameScreenDone OnNameScreenNext;
-        event Action OnTermsOfServiceAgreed;
-        event Action OnTermsOfServiceBack;
-
-        void SetVisibility(bool visible);
-        void ShowNameScreen();
-        void ShowTermsOfServiceScreen();
-    }
-
 }
