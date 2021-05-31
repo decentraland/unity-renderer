@@ -112,4 +112,4 @@ For more advanced topics, don't forget to check out our [Architecture Decisions 
 
 ## Copyright info
 
-This repository is protected with a standard Apache 2 license. See the terms and conditions in the [LICENSE](https://github.com/decentraland/unity-client/blob/master/LICENSE) file.
+This repository is protected with a standard Apache 2 license. See the terms and conditions in the [LICENSE](https://github.com/decentraland/unity-renderer/blob/master/LICENSE) file.
