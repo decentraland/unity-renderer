@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +17,11 @@ public static class SearchHelper
         if (string.IsNullOrEmpty(text))
             return true;
 
-        return item.keywords.Any(keyword => !string.IsNullOrEmpty(keyword) && keyword.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
+        // NOTE: Due to an Unity known issue, the use of 'StringComparison.OrdinalIgnoreCase' in WebGL is case sensitive when shouldn't be.
+        // Absurd as it may seem, Unity says it is working in this way "by design", so it seems they're not going to fix it.
+        // A work-around is to use '.ToLower()' in both strings.
+        // More info: https://issuetracker.unity3d.com/issues/webgl-build-system-dot-stringcomparison-dot-ordinalignorecase-is-case-sensitive
+        return item.keywords.Any(keyword => !string.IsNullOrEmpty(keyword) && keyword.ToLower().IndexOf(text.ToLower(), StringComparison.OrdinalIgnoreCase) >= 0);
     }
 
     public static void Sort<T>(string sortType, List<T> input, bool descendingOrder) where T : ISortable<T> { input.Sort((a, b) => a.Compare(sortType, descendingOrder, b)); }
