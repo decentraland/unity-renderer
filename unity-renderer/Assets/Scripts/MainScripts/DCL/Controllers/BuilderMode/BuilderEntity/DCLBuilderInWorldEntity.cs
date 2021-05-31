@@ -448,7 +448,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         int totalMaterials = 0;
         foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
-            totalMaterials += renderer.materials.Length;
+            totalMaterials += renderer.sharedMaterials.Length;
 
         if (!isNFT || (isNFT && originalMaterials == null))
             originalMaterials = new Material[totalMaterials];
@@ -464,7 +464,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
                     continue;
                 }
 
-                originalMaterials[matCont] = renderer.materials[i];
+                originalMaterials[matCont] = renderer.sharedMaterials[i];
                 matCont++;
             }
         }
