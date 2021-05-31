@@ -303,7 +303,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 if (doneButton != null)
                     doneButton.interactable = true;
 
-                loadingSpinnerGameObject.SetActive(false);
+                loadingSpinnerGameObject?.SetActive(false);
                 OnAvatarAppear?.Invoke(avatarModel);
                 ClearWearablesLoadingSpinner();
                 randomizeAnimator?.SetBool(RANDOMIZE_ANIMATOR_LOADING_BOOL, false);
@@ -402,6 +402,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
+        loadingSpinnerGameObject = null;
         randomizeAnimator = null;
         if (wearableGridPairs != null)
         {
