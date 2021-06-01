@@ -15,4 +15,5 @@ public class BuildModeHUDInitializationModel
     public ITopActionsButtonsController topActionsButtonsController;
     public IBuildModeConfirmationModalController buildModeConfirmationModalController;
     public ISaveHUDController saveHUDController;
+    public IPublicationDetailsController publicationDetailsController;
 }

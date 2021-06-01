@@ -29,7 +29,9 @@ namespace Tests.BuildModeHUDControllers
                 catalogBtnController = Substitute.For<ICatalogBtnController>(),
                 inspectorController = Substitute.For<IInspectorController>(),
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
-                topActionsButtonsController = Substitute.For<ITopActionsButtonsController>()
+                topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
+                saveHUDController = Substitute.For<ISaveHUDController>(),
+                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
             };
 
             buildModeHUDController = Substitute.ForPartsOf<BuildModeHUDController>();
@@ -57,6 +59,8 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.controllers.catalogBtnController = null;
             buildModeHUDController.controllers.inspectorController = null;
             buildModeHUDController.controllers.topActionsButtonsController = null;
+            buildModeHUDController.controllers.saveHUDController = null;
+            buildModeHUDController.controllers.publicationDetailsController = null;
 
             // Act
             buildModeHUDController.CreateBuildModeControllers();
@@ -75,6 +79,8 @@ namespace Tests.BuildModeHUDControllers
             Assert.NotNull(buildModeHUDController.controllers.catalogBtnController, "The catalogBtnController is null!");
             Assert.NotNull(buildModeHUDController.controllers.inspectorController, "The inspectorController is null!");
             Assert.NotNull(buildModeHUDController.controllers.topActionsButtonsController, "The topActionsButtonsController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.saveHUDController, "The saveHUDController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.publicationDetailsController, "The publicationDetailsController is null!");
         }
 
         [Test]
@@ -98,23 +104,44 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.PublishStart();
 
             // Assert
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void ConfirmPublicationDetailsCorrectly()
+        {
+            // Act
+            buildModeHUDController.ConfirmPublicationDetails();
+
+            // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                .Configure(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>());
+                                  .Configure(
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
         }
 
         [Test]
-        public void CancelPublishModalCorrectly()
+        public void CancelPublicationDetailsCorrectly()
         {
             // Act
             buildModeHUDController.CancelPublishModal(BuildModeModalType.PUBLISH);
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(false, BuildModeModalType.PUBLISH);
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void CancelPublishModalCorrectly()
+        {
+            // Act
+            buildModeHUDController.CancelPublicationDetails();
+
+            // Assert
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(false);
         }
 
         [Test]
@@ -140,11 +167,11 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                .Configure(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>());
+                                  .Configure(
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.EXIT);
         }
 

@@ -70,6 +70,7 @@ public class BuildModeHUDController : IHUD
         ConfigureTopActionsButtonsController();
         ConfigureCatalogItemDropController();
         ConfigureSaveHUDController();
+        ConfigurePublicationDetailsController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -98,7 +99,8 @@ public class BuildModeHUDController : IHUD
             inspectorController = new InspectorController(),
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
-            saveHUDController = new SaveHUDController()
+            saveHUDController = new SaveHUDController(),
+            publicationDetailsController = new PublicationDetailsController()
         };
 
         catalogItemDropController = new CatalogItemDropController();
@@ -184,9 +186,17 @@ public class BuildModeHUDController : IHUD
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
+    private void ConfigurePublicationDetailsController()
+    {
+        controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
+        controllers.publicationDetailsController.OnPublish += ConfirmPublicationDetails;
+    }
+
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void PublishStart()
+    public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
+
+    internal void ConfirmPublicationDetails()
     {
         UnsubscribeConfirmationModal();
 
@@ -199,7 +209,10 @@ public class BuildModeHUDController : IHUD
             BuilderInWorldSettings.PUBLISH_MODAL_CANCEL_BUTTON,
             BuilderInWorldSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
+        controllers.publicationDetailsController.SetActive(false);
     }
+
+    internal void CancelPublicationDetails() { controllers.publicationDetailsController.SetActive(false); }
 
     internal void CancelPublishModal(BuildModeModalType modalType)
     {
@@ -207,6 +220,7 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
+        controllers.publicationDetailsController.SetActive(true);
 
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
