@@ -19,7 +19,7 @@ public class PublicationDetailsController : IPublicationDetailsController
     public event Action OnCancel;
     public event Action<string, string> OnPublish;
 
-    private const string DEFAULT_SCENE_NAME = "My new place";
+    internal const string DEFAULT_SCENE_NAME = "My new place";
 
     internal IPublicationDetailsView publicationDetailsView;
     internal bool isValidated = false;
