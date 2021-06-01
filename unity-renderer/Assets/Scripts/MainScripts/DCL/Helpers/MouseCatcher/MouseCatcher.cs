@@ -30,7 +30,7 @@ namespace DCL
 
         void Update()
         {
-#if UNITY_EDITOR
+#if !WEB_PLATFORM
             //Browser is changing this automatically
             if (Input.GetKeyDown(KeyCode.Escape))
             {
