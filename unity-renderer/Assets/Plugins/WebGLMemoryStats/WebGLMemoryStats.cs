@@ -10,7 +10,7 @@ namespace Kongregate {
             return GetTotalStackSize() + GetStaticMemorySize() + GetDynamicMemorySize();
         }
 
-#if UNITY_WEBGL && !(UNITY_EDITOR || UNITY_STANDALONE)
+#if UNITY_WEBGL && !UNITY_EDITOR
         public static uint GetFreeMemorySize() {
             return GetTotalMemorySize() - GetUsedMemorySize();
         }

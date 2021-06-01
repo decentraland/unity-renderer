@@ -97,7 +97,7 @@ namespace DCL
             yield return WaitForConcurrentRequestsSlot();
 
             RegisterConcurrentRequest();
-#if UNITY_EDITOR // TODO(Mateo): Maybe use (UNITY_EDITOR || UNITY_STANDALONE) here?
+#if (UNITY_EDITOR || UNITY_STANDALONE)
             asyncOp = WebRequestController.i.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash), disposeOnCompleted: false);
 #else
             //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
