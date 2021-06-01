@@ -104,14 +104,19 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.PublishStart();
 
             // Assert
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
             buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
         }
 
         [Test]
         public void ConfirmPublicationDetailsCorrectly()
         {
+            // Arrange
+            string testName = "Test name";
+            string testDesc = "Test description";
+
             // Act
-            buildModeHUDController.ConfirmPublicationDetails();
+            buildModeHUDController.ConfirmPublicationDetails(testName, testDesc);
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)

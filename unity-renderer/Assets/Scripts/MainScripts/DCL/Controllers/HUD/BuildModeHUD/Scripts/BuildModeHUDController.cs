@@ -194,9 +194,13 @@ public class BuildModeHUDController : IHUD
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
+    public void PublishStart()
+    {
+        controllers.publicationDetailsController.SetDefaultPublicationInfo();
+        controllers.publicationDetailsController.SetActive(true);
+    }
 
-    internal void ConfirmPublicationDetails()
+    internal void ConfirmPublicationDetails(string sceneName, string sceneDescription)
     {
         UnsubscribeConfirmationModal();
 

@@ -3,21 +3,26 @@ using System;
 public interface IPublicationDetailsController
 {
     event Action OnCancel;
-    event Action OnPublish;
+    event Action<string, string> OnPublish;
 
     void Initialize(IPublicationDetailsView publicationDetailsView);
     void Dispose();
     void SetActive(bool isActive);
     void Cancel();
-    void Publish();
+    void Publish(string sceneName, string sceneDescription);
+    void ValidatePublicationInfo(string sceneName);
+    void SetDefaultPublicationInfo();
 }
 
 public class PublicationDetailsController : IPublicationDetailsController
 {
     public event Action OnCancel;
-    public event Action OnPublish;
+    public event Action<string, string> OnPublish;
+
+    private const string DEFAULT_SCENE_NAME = "My new place";
 
     internal IPublicationDetailsView publicationDetailsView;
+    internal bool isValidated = false;
 
     public void Initialize(IPublicationDetailsView publicationDetailsView)
     {
@@ -25,12 +30,17 @@ public class PublicationDetailsController : IPublicationDetailsController
 
         publicationDetailsView.OnCancel += Cancel;
         publicationDetailsView.OnPublish += Publish;
+        publicationDetailsView.OnSceneNameChange += ValidatePublicationInfo;
+
+        SetDefaultPublicationInfo();
+        ValidatePublicationInfo(publicationDetailsView.currentSceneName);
     }
 
     public void Dispose()
     {
         publicationDetailsView.OnCancel -= Cancel;
         publicationDetailsView.OnPublish -= Publish;
+        publicationDetailsView.OnSceneNameChange -= ValidatePublicationInfo;
     }
 
     public void SetActive(bool isActive) { publicationDetailsView.SetActive(isActive); }
@@ -41,9 +51,21 @@ public class PublicationDetailsController : IPublicationDetailsController
         OnCancel?.Invoke();
     }
 
-    public void Publish()
+    public void Publish(string sceneName, string sceneDescription)
     {
+        if (!isValidated)
+            return;
+
         SetActive(false);
-        OnPublish?.Invoke();
+        OnPublish?.Invoke(sceneName, sceneDescription);
     }
+
+    public void ValidatePublicationInfo(string sceneName)
+    {
+        isValidated = sceneName.Length > 0;
+        publicationDetailsView.SetSceneNameValidationActive(!isValidated);
+        publicationDetailsView.SetPublishButtonActive(isValidated);
+    }
+
+    public void SetDefaultPublicationInfo() { publicationDetailsView.SetSceneName(DEFAULT_SCENE_NAME); }
 }
