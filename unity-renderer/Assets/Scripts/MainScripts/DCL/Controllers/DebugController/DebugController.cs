@@ -8,6 +8,7 @@ namespace DCL
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
         private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
+        private readonly BotsController botsController = new BotsController();
 
         public DebugView debugView;
 
@@ -55,6 +56,22 @@ namespace DCL
         }
 
         public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
+
+        public void InstantiateBotsAtWorldPos(string configJson)
+        {
+            var config = new BotsController.WorldPosInstantiationConfig();
+            JsonUtility.FromJsonOverwrite(configJson, config);
+
+            botsController.InstantiateBotsAtWorldPos(config);
+        }
+
+        public void InstantiateBotsAtCoords(string configJson)
+        {
+            var config = new BotsController.CoordsInstantiationConfig();
+            JsonUtility.FromJsonOverwrite(configJson, config);
+
+            botsController.InstantiateBotsAtCoords(config);
+        }
 
         public void Dispose()
         {

@@ -20,6 +20,10 @@ namespace DCL
 
         public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
 
+        public void InstantiateBotsAtWorldPos(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtWorldPos(configJson); }
+
+        public void InstantiateBotsAtCoords(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtCoords(configJson); }
+
         [ContextMenu("Dump Scenes Load Info")]
         public void DumpScenesLoadInfo()
         {

@@ -11,5 +11,7 @@ namespace DCL
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
         void RunPerformanceMeterTool(float durationInSeconds);
+        void InstantiateBotsAtWorldPos(string config);
+        void InstantiateBotsAtCoords(string config);
     }
 }
