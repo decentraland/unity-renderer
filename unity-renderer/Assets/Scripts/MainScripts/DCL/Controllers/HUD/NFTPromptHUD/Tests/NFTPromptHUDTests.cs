@@ -1,41 +1,94 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using NSubstitute;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class NFTPromptHUDTests : IntegrationTestSuite_Legacy
+    public class NFTPromptHUDTests
     {
         private NFTPromptHUDController controller;
+        private NFTPromptHUDView view;
 
-        protected override IEnumerator SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            yield return base.SetUp();
             controller = new NFTPromptHUDController();
+            view = (NFTPromptHUDView)controller.view;
         }
 
-        protected override IEnumerator TearDown()
+        [TearDown]
+        public void TearDown() { controller.Dispose(); }
+
+        [Test]
+        public void CreateView()
         {
-            controller.Dispose();
-            yield return base.TearDown();
+            Assert.NotNull(view);
+            Assert.NotNull(view.gameObject);
         }
 
-        [UnityTest]
-        public IEnumerator CreateView()
-        {
-            Assert.NotNull(controller.view);
-            Assert.NotNull(controller.view.gameObject);
-            yield break;
-        }
-
-        [UnityTest]
-        public IEnumerator OpenAndCloseCorrectly()
+        [Test]
+        public void OpenAndCloseCorrectly()
         {
             controller.OpenNftInfoDialog("0xf64dc33a192e056bb5f0e5049356a0498b502d50", "2481", null);
-            Assert.IsTrue(controller.view.content.activeSelf, "NFT dialog should be visible");
-            controller.view.buttonClose.onClick.Invoke();
-            Assert.IsFalse(controller.view.content.activeSelf, "NFT dialog should not be visible");
-            yield break;
+            Assert.IsTrue(view.content.activeSelf, "NFT dialog should be visible");
+            view.buttonClose.onClick.Invoke();
+            Assert.IsFalse(view.content.activeSelf, "NFT dialog should not be visible");
+        }
+
+        [Test]
+        public void OwnersTooltipSetupCorrectly()
+        {
+            var tooltip = view.ownersTooltip;
+            Assert.AreEqual(0, tooltip.ownerElementsContainer.childCount);
+        }
+
+        [Test]
+        public void OwnersTooltipShowCorrectly()
+        {
+            var tooltip = view.ownersTooltip;
+            IOwnersTooltipView tooltipView = tooltip;
+
+            List<IOwnerInfoElement> owners = new List<IOwnerInfoElement>();
+            for (int i = 0; i < OwnersTooltipView.MAX_ELEMENTS; i++)
+            {
+                owners.Add(Substitute.For<IOwnerInfoElement>());
+            }
+
+            tooltipView.SetElements(owners);
+            Assert.IsFalse(tooltip.viewAllButton.gameObject.activeSelf, "View All button shouldn't be active");
+
+            owners.Add(Substitute.For<IOwnerInfoElement>());
+            tooltipView.SetElements(owners);
+
+            Assert.IsTrue(tooltip.viewAllButton.gameObject.activeSelf, "View All button should be active");
+
+            Assert.IsFalse(tooltipView.IsActive());
+            tooltipView.Show();
+            Assert.IsTrue(tooltipView.IsActive());
+            tooltipView.Hide(true);
+            Assert.IsFalse(tooltipView.IsActive());
+        }
+
+        [Test]
+        public void OwnersPopupSetupCorrectly()
+        {
+            var popup = view.ownersPopup;
+            Assert.AreEqual(0, popup.ownerElementsContainer.childCount);
+        }
+
+        [Test]
+        public void OwnersPopupShowCorrectly()
+        {
+            var popup = view.ownersPopup;
+            IOwnersPopupView popupView = popup;
+
+            Assert.IsFalse(popupView.IsActive());
+            popupView.Show();
+            Assert.IsTrue(popupView.IsActive());
+            popupView.Hide(true);
+            Assert.IsFalse(popupView.IsActive());
         }
     }
 }

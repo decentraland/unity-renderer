@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -7,14 +8,39 @@ using DCL.Helpers.NFT;
 using DCL.Interface;
 using System.Collections;
 
-public class NFTPromptHUDView : MonoBehaviour
+internal interface INFTPromptHUDView : IDisposable
 {
+    public event Action OnOwnersTooltipOpen;
+    public event Action OnOwnersTooltipFocusLost;
+    public event Action OnViewAllPressed;
+    public event Action OnOwnersPopupClosed;
+    void SetActive(bool active);
+    bool IsActive();
+    IOwnersTooltipView GetOwnersTooltip();
+    IOwnersPopupView GetOwnersPopup();
+    OwnerInfoElement GetOwnerElementPrefab();
+    void SetLoading();
+    void SetNFTInfo(NFTInfoSingleAsset info, string comment);
+    void OnError(string error);
+}
+
+internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
+{
+    private const string MULTIPLE_OWNERS_FORMAT = "{0} owners";
+    private const int ADDRESS_MAX_CHARS = 11;
+
+    public event Action OnOwnersTooltipOpen;
+    public event Action OnOwnersTooltipFocusLost;
+    public event Action OnViewAllPressed;
+    public event Action OnOwnersPopupClosed;
+
     [SerializeField] internal GameObject content;
 
     [SerializeField] RawImage imageNft;
     [SerializeField] Image imageNftBackground;
     [SerializeField] TextMeshProUGUI textNftName;
     [SerializeField] TextMeshProUGUI textOwner;
+    [SerializeField] Image imageOwnerIcon;
 
     [Header("Last Sale")] [SerializeField] TextMeshProUGUI textLastSaleSymbol;
     [SerializeField] TextMeshProUGUI textLastSalePrice;
@@ -40,7 +66,12 @@ public class NFTPromptHUDView : MonoBehaviour
     [SerializeField] internal Button buttonOpenMarket;
     [SerializeField] TextMeshProUGUI textOpenMarketButton;
 
-    Coroutine fetchNFTRoutine = null;
+    [Header("Owners")]
+    [SerializeField] internal OwnerInfoElement ownerElementPrefab;
+    [SerializeField] internal OwnersTooltipView ownersTooltip;
+    [SerializeField] internal OwnersPopupView ownersPopup;
+    [SerializeField] internal Button buttonOpenOwnersTooltip;
+
     Coroutine fetchNFTImageRoutine = null;
 
     private IPromiseLike_TextureAsset imagePromise = null;
@@ -49,55 +80,67 @@ public class NFTPromptHUDView : MonoBehaviour
     bool backgroundColorSet = false;
     string marketUrl = null;
 
+    private bool isDestroyed = false;
+
     private void Awake()
     {
+        name = "_NFTPromptHUD";
+
         buttonClose.onClick.AddListener(Hide);
         buttonCancel.onClick.AddListener(Hide);
         buttonOpenMarket.onClick.AddListener(OpenMarketUrl);
+        buttonOpenOwnersTooltip.onClick.AddListener(() => OnOwnersTooltipOpen?.Invoke());
+
+        ownersTooltip.OnViewAllPressed += OnViewAllOwnersPressed;
+        ownersTooltip.OnFocusLost += OnOwnersTooltipLostFocus;
+        ownersPopup.OnClosePopup += OnOwnersPopupClose;
     }
 
-    internal void ShowNFT(string assetContractAddress, string tokenId, string comment)
+    public void Dispose()
     {
-        content.SetActive(true);
-        Utils.UnlockCursor();
-
-        if (fetchNFTRoutine != null)
-            StopCoroutine(fetchNFTRoutine);
-        if (fetchNFTImageRoutine != null)
-            StopCoroutine(fetchNFTImageRoutine);
-
-        SetLoading();
-
-        fetchNFTRoutine = StartCoroutine(NFTHelper.FetchNFTInfo(assetContractAddress, tokenId,
-            (nftInfo) => SetNFTInfo(nftInfo, comment),
-            (error) => OnError(error)
-        ));
+        if (!isDestroyed)
+        {
+            Destroy(gameObject);
+        }
     }
 
     internal void Hide()
     {
         content.SetActive(false);
 
-        OnDestroy();
+        ForgetPromises();
 
-        if (fetchNFTRoutine != null)
-            StopCoroutine(fetchNFTRoutine);
         if (fetchNFTImageRoutine != null)
             StopCoroutine(fetchNFTImageRoutine);
 
-        fetchNFTRoutine = null;
         fetchNFTImageRoutine = null;
 
         AudioScriptableObjects.dialogClose.Play(true);
     }
 
-    private void SetLoading()
+    IOwnersPopupView INFTPromptHUDView.GetOwnersPopup() { return ownersPopup; }
+
+    IOwnersTooltipView INFTPromptHUDView.GetOwnersTooltip() { return ownersTooltip; }
+
+    void INFTPromptHUDView.SetActive(bool active) { content.SetActive(active); }
+
+    bool INFTPromptHUDView.IsActive() { return content.activeSelf; }
+
+    OwnerInfoElement INFTPromptHUDView.GetOwnerElementPrefab() { return ownerElementPrefab; }
+
+    void INFTPromptHUDView.SetLoading()
     {
+        Show();
+
+        if (fetchNFTImageRoutine != null)
+            StopCoroutine(fetchNFTImageRoutine);
+
         imageNftBackground.color = Color.white;
 
         imageNft.gameObject.SetActive(false);
         textNftName.gameObject.SetActive(false);
         textOwner.gameObject.SetActive(false);
+        imageOwnerIcon.gameObject.SetActive(false);
         textLastSaleSymbol.gameObject.SetActive(false);
         textLastSalePrice.gameObject.SetActive(false);
         textLastSaleNeverSold.gameObject.SetActive(false);
@@ -113,8 +156,10 @@ public class NFTPromptHUDView : MonoBehaviour
         spinnerNftImage.SetActive(false);
     }
 
-    private void SetNFTInfo(NFTInfo info, string comment)
+    void INFTPromptHUDView.SetNFTInfo(NFTInfoSingleAsset info, string comment)
     {
+        Show();
+
         spinnerGeneral.SetActive(false);
 
         imageNftBackground.color = Color.white;
@@ -127,8 +172,19 @@ public class NFTPromptHUDView : MonoBehaviour
         textNftName.text = info.name;
         textNftName.gameObject.SetActive(true);
 
-        textOwner.text = FormatOwnerAddress(info.owner);
+        bool hasMultipleOwners = info.owners.Length > 1;
+        if (hasMultipleOwners)
+        {
+            textOwner.text = string.Format(MULTIPLE_OWNERS_FORMAT, info.owners.Length);
+        }
+        else
+        {
+            textOwner.text = info.owners.Length == 1
+                ? NFTPromptHUDController.FormatOwnerAddress(info.owners[0].owner, ADDRESS_MAX_CHARS)
+                : NFTPromptHUDController.FormatOwnerAddress("0x0000000000000000000000000000000000000000", ADDRESS_MAX_CHARS);
+        }
         textOwner.gameObject.SetActive(true);
+        imageOwnerIcon.gameObject.SetActive(hasMultipleOwners);
 
         if (!string.IsNullOrEmpty(info.lastSaleAmount))
         {
@@ -194,7 +250,13 @@ public class NFTPromptHUDView : MonoBehaviour
         fetchNFTImageRoutine = StartCoroutine(FetchNFTImage(info));
     }
 
-    private IEnumerator FetchNFTImage(NFTInfo nftInfo)
+    private void Show()
+    {
+        content.SetActive(true);
+        Utils.UnlockCursor();
+    }
+
+    private IEnumerator FetchNFTImage(NFTInfoSingleAsset nftInfo)
     {
         spinnerNftImage.SetActive(true);
 
@@ -280,24 +342,6 @@ public class NFTPromptHUDView : MonoBehaviour
         return ret;
     }
 
-    private string FormatOwnerAddress(string address)
-    {
-        const int maxCharacters = 27;
-        const string ellipsis = "...";
-
-        if (address.Length <= maxCharacters)
-        {
-            return address;
-        }
-        else
-        {
-            int segmentLength = Mathf.FloorToInt((maxCharacters - ellipsis.Length) * 0.5f);
-            return string.Format("{1}{0}{2}", ellipsis,
-                address.Substring(0, segmentLength),
-                address.Substring(address.Length - segmentLength, segmentLength));
-        }
-    }
-
     private void SetSmartBackgroundColor(Texture2D texture) { imageNftBackground.color = texture.GetPixel(0, 0); }
 
     private void SetTokenSymbol(TextMeshProUGUI textToken, string symbol)
@@ -318,7 +362,7 @@ public class NFTPromptHUDView : MonoBehaviour
         }
     }
 
-    private void OnError(string error)
+    void INFTPromptHUDView.OnError(string error)
     {
         Debug.LogError(error);
         Hide();
@@ -326,6 +370,17 @@ public class NFTPromptHUDView : MonoBehaviour
     }
 
     private void OnDestroy()
+    {
+        isDestroyed = true;
+
+        ownersTooltip.OnViewAllPressed -= OnViewAllOwnersPressed;
+        ownersTooltip.OnFocusLost -= OnOwnersTooltipLostFocus;
+        ownersPopup.OnClosePopup -= OnOwnersPopupClose;
+
+        ForgetPromises();
+    }
+
+    private void ForgetPromises()
     {
         if (imagePromise != null)
         {
@@ -346,4 +401,10 @@ public class NFTPromptHUDView : MonoBehaviour
         gifPlayer.SetGif(gif);
         gifPlayer.Play(true);
     }
+
+    private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
+
+    private void OnOwnersTooltipLostFocus() { OnOwnersTooltipFocusLost?.Invoke(); }
+
+    private void OnOwnersPopupClose() { OnOwnersPopupClosed?.Invoke(); }
 }

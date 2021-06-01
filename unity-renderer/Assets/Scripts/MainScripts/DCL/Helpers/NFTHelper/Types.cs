@@ -64,6 +64,7 @@ namespace DCL.Helpers.NFT
         }
 
         public string name;
+        public string tokenId;
         public string description;
         public string previewImageUrl;
         public string originalImageUrl;
@@ -77,6 +78,7 @@ namespace DCL.Helpers.NFT
         public string currentPrice;
         public PaymentTokenInfo? currentPriceToken;
         public UnityEngine.Color? backgroundColor;
+        public AssetContract assetContract;
 
         public static NFTInfoSingleAsset defaultNFTInfoSingleAsset
         {
@@ -84,8 +86,15 @@ namespace DCL.Helpers.NFT
             {
                 NFTInfoSingleAsset ret = new NFTInfoSingleAsset();
                 ret.owners = new [] { new Owners() { owner = "0x0000000000000000000000000000000000000000", quantity = 0 } };
+                ret.assetContract = new AssetContract();
                 return ret;
             }
+        }
+
+        public bool Equals(string assetContract, string tokenId)
+        {
+            return this.assetContract.address.ToLower() == assetContract.ToLower()
+                   && this.tokenId == tokenId;
         }
     }
 

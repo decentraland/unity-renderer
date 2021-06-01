@@ -592,5 +592,18 @@ namespace DCL.Helpers
                 SetLayerRecursively(child, layer);
             }
         }
+
+        /// <summary>
+        /// Randomize color using `address` as seed
+        /// </summary>
+        /// <param name="address">eth address</param>
+        /// <returns>color</returns>
+        public static Color GetColorForEthAddress(string address)
+        {
+            System.Random rand = new System.Random(address.GetHashCode());
+            Color randomColor = new Color( (float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble());
+            Color.RGBToHSV(randomColor, out float h, out float s, out float v);
+            return (Color.HSVToRGB(h, s * 1.1f, v, false) + Color.white) * 0.5f;
+        }
     }
 }
