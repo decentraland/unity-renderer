@@ -975,6 +975,13 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class SendPassportPayload
+        {
+            public string name;
+            public string email;
+        }
+
+        [System.Serializable]
         public class SendSaveUserUnverifiedNamePayload
         {
             public string newUnverifiedName;
@@ -995,6 +1002,8 @@ namespace DCL.Interface
             };
             SendMessage("SaveUserAvatar", payload);
         }
+
+        public static void SendPassport(string name, string email) { SendMessage("SendPassport", new SendPassportPayload { name = name, email = email }); }
 
         public static void SendSaveUserUnverifiedName(string newName)
         {

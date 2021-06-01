@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Interface;
 
 namespace SignupHUD
 {
@@ -52,7 +53,7 @@ namespace SignupHUD
 
         private void OnTermsOfServiceAgreed()
         {
-            //Send data to kernel
+            WebInterface.SendPassport(name, email);
             signupVisible.Set(false);
         }
 
