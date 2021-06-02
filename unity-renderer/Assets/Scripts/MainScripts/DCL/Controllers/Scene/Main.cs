@@ -22,8 +22,6 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         private EntryPoint_World worldEntryPoint;
 
-        private CrashPayloadPositionTracker positionTracker;
-
         void Awake()
         {
             if (i != null)
