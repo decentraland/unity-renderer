@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -51,7 +51,17 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
         AddInvalidMeshEffect(meshesInfo);
     }
-    public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) { return new List<Material>(); }
+    public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
+    {
+        List<Material> result = new List<Material>();
+
+        for (int i = 0; i < meshesInfo.renderers.Length; i++)
+        {
+            result.AddRange(meshesInfo.renderers[i].sharedMaterials);
+        }
+
+        return result;
+    }
 
     void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
     {
