@@ -15,6 +15,8 @@ internal interface IOwnersPopupView
 internal class OwnersPopupView : MonoBehaviour, IOwnersPopupView
 {
     private const int ADDRESS_MAX_CHARS = 19;
+    private const float ELEMENT_FONT_SIZE = 17;
+    private const float ELEMENT_HORIZONTAL_SPACING = 17;
 
     [SerializeField] internal Transform ownerElementsContainer;
     [SerializeField] internal Button closeButton;
@@ -46,6 +48,8 @@ internal class OwnersPopupView : MonoBehaviour, IOwnersPopupView
         {
             elements[i].SetParent(ownerElementsContainer);
             elements[i].SetAddressLength(ADDRESS_MAX_CHARS);
+            elements[i].SetColorIndex(i);
+            elements[i].SetConfig(ELEMENT_FONT_SIZE, ELEMENT_HORIZONTAL_SPACING);
             elements[i].SetActive(true);
         }
     }
@@ -56,6 +60,5 @@ internal class OwnersPopupView : MonoBehaviour, IOwnersPopupView
     {
         closeButton.onClick.AddListener(() => OnClosePopup?.Invoke());
         backgroundCloseButton.onClick.AddListener(() => OnClosePopup?.Invoke());
-        gameObject.SetActive(false);
     }
 }

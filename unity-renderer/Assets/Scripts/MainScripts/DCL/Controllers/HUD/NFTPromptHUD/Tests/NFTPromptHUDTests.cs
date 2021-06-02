@@ -64,7 +64,6 @@ namespace Tests
 
             Assert.IsTrue(tooltip.viewAllButton.gameObject.activeSelf, "View All button should be active");
 
-            Assert.IsFalse(tooltipView.IsActive());
             tooltipView.Show();
             Assert.IsTrue(tooltipView.IsActive());
             tooltipView.Hide(true);
@@ -84,7 +83,6 @@ namespace Tests
             var popup = view.ownersPopup;
             IOwnersPopupView popupView = popup;
 
-            Assert.IsFalse(popupView.IsActive());
             popupView.Show();
             Assert.IsTrue(popupView.IsActive());
             popupView.Hide(true);

@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0xd0...a58ca
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c0f2e4affe3f2438d9042ca1db45764f, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 70f3d6b07a517476dbd2b89cf148f858, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -98,7 +98,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -187,6 +187,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textOwner: {fileID: 7904335827645952814}
   imageEllipse: {fileID: 410823340489056242}
+  horizontalLayout: {fileID: 6748458691042630673}
+  colorsEllipse:
+  - {r: 0.61960787, g: 0.33333334, b: 0.8862745, a: 1}
+  - {r: 0.98039216, g: 0.63529414, b: 0.31764707, a: 1}
+  - {r: 0.5882353, g: 0.88235295, b: 0.3529412, a: 1}
+  - {r: 0.38039216, g: 0.8862745, b: 0.9529412, a: 1}
+  - {r: 0.98039216, g: 0.31764707, b: 0.31764707, a: 1}
+  - {r: 0.19607843, g: 0.3019608, b: 0.85490197, a: 1}
+  - {r: 0.98039216, g: 0.31764707, b: 0.7137255, a: 1}
 --- !u!114 &6748458691042630673
 MonoBehaviour:
   m_ObjectHideFlags: 0

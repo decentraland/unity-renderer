@@ -9,8 +9,10 @@ internal interface IOwnerInfoElement : IDisposable
 {
     void SetOwner(string address);
     void SetAddressLength(int length);
+    void SetColorIndex(int index);
     void SetParent(Transform parent);
     void SetActive(bool active);
+    void SetConfig(float fontSize, float horizontalSpacing);
 }
 
 internal class OwnerInfoElement : MonoBehaviour, IOwnerInfoElement
@@ -19,6 +21,8 @@ internal class OwnerInfoElement : MonoBehaviour, IOwnerInfoElement
 
     [SerializeField] private TextMeshProUGUI textOwner;
     [SerializeField] private Image imageEllipse;
+    [SerializeField] private HorizontalLayoutGroup horizontalLayout;
+    [SerializeField] private Color[] colorsEllipse;
 
     private bool isDestroyed = false;
     private string address;
@@ -28,7 +32,6 @@ internal class OwnerInfoElement : MonoBehaviour, IOwnerInfoElement
     {
         address = ownerAddress;
         textOwner.text = NFTPromptHUDController.FormatOwnerAddress(ownerAddress, lastAddressLength);
-        imageEllipse.color = Utils.GetColorForEthAddress(ownerAddress);
     }
 
     void IOwnerInfoElement.SetAddressLength(int length)
@@ -40,10 +43,22 @@ internal class OwnerInfoElement : MonoBehaviour, IOwnerInfoElement
         }
     }
 
+    void IOwnerInfoElement.SetColorIndex(int index)
+    {
+        int colorIndex = index % colorsEllipse.Length;
+        imageEllipse.color = colorsEllipse[colorIndex];
+    }
+
     void IOwnerInfoElement.SetParent(Transform parent)
     {
         transform.SetParent(parent);
         transform.ResetLocalTRS();
+    }
+
+    void IOwnerInfoElement.SetConfig(float fontSize, float horizontalSpacing)
+    {
+        textOwner.fontSize = fontSize;
+        horizontalLayout.spacing = horizontalSpacing;
     }
 
     void IOwnerInfoElement.SetActive(bool active) { gameObject.SetActive(active); }

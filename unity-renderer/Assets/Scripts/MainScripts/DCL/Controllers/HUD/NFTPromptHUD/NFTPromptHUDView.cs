@@ -10,8 +10,10 @@ using System.Collections;
 
 internal interface INFTPromptHUDView : IDisposable
 {
-    public event Action OnOwnersTooltipOpen;
+    public event Action OnOwnerLabelPointerEnter;
+    public event Action OnOwnerLabelPointerExit;
     public event Action OnOwnersTooltipFocusLost;
+    public event Action OnOwnersTooltipFocus;
     public event Action OnViewAllPressed;
     public event Action OnOwnersPopupClosed;
     void SetActive(bool active);
@@ -29,8 +31,10 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private const string MULTIPLE_OWNERS_FORMAT = "{0} owners";
     private const int ADDRESS_MAX_CHARS = 11;
 
-    public event Action OnOwnersTooltipOpen;
+    public event Action OnOwnerLabelPointerEnter;
+    public event Action OnOwnerLabelPointerExit;
     public event Action OnOwnersTooltipFocusLost;
+    public event Action OnOwnersTooltipFocus;
     public event Action OnViewAllPressed;
     public event Action OnOwnersPopupClosed;
 
@@ -40,7 +44,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     [SerializeField] Image imageNftBackground;
     [SerializeField] TextMeshProUGUI textNftName;
     [SerializeField] TextMeshProUGUI textOwner;
-    [SerializeField] Image imageOwnerIcon;
+    [SerializeField] TextMeshProUGUI textMultipleOwner;
+    [SerializeField] UIHoverCallback multipleOwnersContainer;
 
     [Header("Last Sale")] [SerializeField] TextMeshProUGUI textLastSaleSymbol;
     [SerializeField] TextMeshProUGUI textLastSalePrice;
@@ -70,7 +75,6 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     [SerializeField] internal OwnerInfoElement ownerElementPrefab;
     [SerializeField] internal OwnersTooltipView ownersTooltip;
     [SerializeField] internal OwnersPopupView ownersPopup;
-    [SerializeField] internal Button buttonOpenOwnersTooltip;
 
     Coroutine fetchNFTImageRoutine = null;
 
@@ -89,10 +93,12 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         buttonClose.onClick.AddListener(Hide);
         buttonCancel.onClick.AddListener(Hide);
         buttonOpenMarket.onClick.AddListener(OpenMarketUrl);
-        buttonOpenOwnersTooltip.onClick.AddListener(() => OnOwnersTooltipOpen?.Invoke());
 
+        multipleOwnersContainer.OnPointerEnter += OwnerLabelPointerEnter;
+        multipleOwnersContainer.OnPointerExit += OwnerLabelPointerExit;
         ownersTooltip.OnViewAllPressed += OnViewAllOwnersPressed;
         ownersTooltip.OnFocusLost += OnOwnersTooltipLostFocus;
+        ownersTooltip.OnFocus += OnOwnersTooltipGainFocus;
         ownersPopup.OnClosePopup += OnOwnersPopupClose;
     }
 
@@ -140,7 +146,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         imageNft.gameObject.SetActive(false);
         textNftName.gameObject.SetActive(false);
         textOwner.gameObject.SetActive(false);
-        imageOwnerIcon.gameObject.SetActive(false);
+        multipleOwnersContainer.gameObject.SetActive(false);
         textLastSaleSymbol.gameObject.SetActive(false);
         textLastSalePrice.gameObject.SetActive(false);
         textLastSaleNeverSold.gameObject.SetActive(false);
@@ -175,7 +181,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         bool hasMultipleOwners = info.owners.Length > 1;
         if (hasMultipleOwners)
         {
-            textOwner.text = string.Format(MULTIPLE_OWNERS_FORMAT, info.owners.Length);
+            textMultipleOwner.text = string.Format(MULTIPLE_OWNERS_FORMAT, info.owners.Length);
         }
         else
         {
@@ -183,8 +189,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
                 ? NFTPromptHUDController.FormatOwnerAddress(info.owners[0].owner, ADDRESS_MAX_CHARS)
                 : NFTPromptHUDController.FormatOwnerAddress("0x0000000000000000000000000000000000000000", ADDRESS_MAX_CHARS);
         }
-        textOwner.gameObject.SetActive(true);
-        imageOwnerIcon.gameObject.SetActive(hasMultipleOwners);
+        textOwner.gameObject.SetActive(!hasMultipleOwners);
+        multipleOwnersContainer.gameObject.SetActive(hasMultipleOwners);
 
         if (!string.IsNullOrEmpty(info.lastSaleAmount))
         {
@@ -373,8 +379,11 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     {
         isDestroyed = true;
 
+        multipleOwnersContainer.OnPointerEnter -= OwnerLabelPointerEnter;
+        multipleOwnersContainer.OnPointerExit -= OwnerLabelPointerExit;
         ownersTooltip.OnViewAllPressed -= OnViewAllOwnersPressed;
         ownersTooltip.OnFocusLost -= OnOwnersTooltipLostFocus;
+        ownersTooltip.OnFocus -= OnOwnersTooltipGainFocus;
         ownersPopup.OnClosePopup -= OnOwnersPopupClose;
 
         ForgetPromises();
@@ -404,7 +413,13 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     private void OnViewAllOwnersPressed() { OnViewAllPressed?.Invoke(); }
 
+    private void OnOwnersTooltipGainFocus() { OnOwnersTooltipFocus?.Invoke(); }
+
     private void OnOwnersTooltipLostFocus() { OnOwnersTooltipFocusLost?.Invoke(); }
 
     private void OnOwnersPopupClose() { OnOwnersPopupClosed?.Invoke(); }
+
+    private void OwnerLabelPointerEnter() { OnOwnerLabelPointerEnter?.Invoke(); }
+
+    private void OwnerLabelPointerExit() { OnOwnerLabelPointerExit?.Invoke(); }
 }

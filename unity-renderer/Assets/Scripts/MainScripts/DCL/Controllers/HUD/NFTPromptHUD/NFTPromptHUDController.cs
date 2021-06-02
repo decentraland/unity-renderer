@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class NFTPromptHUDController : IHUD
 {
+    internal const string VIEW_PREFAB_PATH = "NFTPromptHUD";
+
     internal INFTPromptHUDView view { get; private set; }
 
     private readonly OwnersInfoController ownersInfoController;
@@ -11,14 +13,19 @@ public class NFTPromptHUDController : IHUD
     private Coroutine fetchNFTRoutine = null;
     private NFTInfoSingleAsset? lastNFTInfo = null;
 
+    private bool isPointerInTooltipArea = false;
+    private bool isPointerInOwnerArea = false;
+
     public NFTPromptHUDController()
     {
-        view = Object.Instantiate(Resources.Load<GameObject>("NFTPromptHUD"))
+        view = Object.Instantiate(Resources.Load<GameObject>(VIEW_PREFAB_PATH))
                      .GetComponent<NFTPromptHUDView>();
         view.SetActive(false);
 
-        view.OnOwnersTooltipOpen += ShowOwnersTooltip;
-        view.OnOwnersTooltipFocusLost += HideOwnersTooltip;
+        view.OnOwnerLabelPointerEnter += ShowOwnersTooltip;
+        view.OnOwnerLabelPointerExit += TryHideOwnersTooltip;
+        view.OnOwnersTooltipFocusLost += OnOwnersTooltipFocusLost;
+        view.OnOwnersTooltipFocus += OnOwnersTooltipFocus;
         view.OnViewAllPressed += ShowOwnersPopup;
         view.OnOwnersPopupClosed += HideOwnersPopup;
 
@@ -68,8 +75,10 @@ public class NFTPromptHUDController : IHUD
 
     public void Dispose()
     {
-        view.OnOwnersTooltipOpen -= ShowOwnersTooltip;
-        view.OnOwnersTooltipFocusLost -= HideOwnersTooltip;
+        view.OnOwnerLabelPointerEnter -= ShowOwnersTooltip;
+        view.OnOwnerLabelPointerExit -= TryHideOwnersTooltip;
+        view.OnOwnersTooltipFocusLost -= OnOwnersTooltipFocusLost;
+        view.OnOwnersTooltipFocus -= OnOwnersTooltipFocus;
         view.OnViewAllPressed -= ShowOwnersPopup;
         view.OnOwnersPopupClosed -= HideOwnersPopup;
 
@@ -93,24 +102,69 @@ public class NFTPromptHUDController : IHUD
 
     private void ShowOwnersTooltip()
     {
+        isPointerInOwnerArea = true;
+
         if (lastNFTInfo == null || lastNFTInfo.Value.owners.Length <= 1)
             return;
 
         var tooltip = view.GetOwnersTooltip();
 
         if (tooltip.IsActive())
+        {
+            tooltip.KeepOnScreen();
             return;
+        }
 
         tooltip.SetElements(ownersInfoController.GetElements());
         tooltip.Show();
     }
 
+    void TryHideOwnersTooltip()
+    {
+        isPointerInOwnerArea = false;
+
+        if (!isPointerInTooltipArea)
+        {
+            HideOwnersTooltip();
+        }
+    }
+
+    void OnOwnersTooltipFocusLost()
+    {
+        isPointerInTooltipArea = false;
+        if (!isPointerInOwnerArea)
+        {
+            HideOwnersTooltip();
+        }
+    }
+
+    void OnOwnersTooltipFocus()
+    {
+        isPointerInTooltipArea = true;
+        var tooltip = view.GetOwnersTooltip();
+        if (tooltip.IsActive())
+        {
+            tooltip.KeepOnScreen();
+        }
+    }
+
     private void HideOwnersTooltip() { HideOwnersTooltip(false); }
 
-    private void HideOwnersTooltip(bool instant) { view.GetOwnersTooltip().Hide(instant); }
+    private void HideOwnersTooltip(bool instant)
+    {
+        var tooltip = view.GetOwnersTooltip();
+        if (!tooltip.IsActive())
+            return;
+
+        tooltip.Hide(instant);
+    }
 
     private void ShowOwnersPopup()
     {
+        HideOwnersTooltip(true);
+        isPointerInTooltipArea = false;
+        isPointerInOwnerArea = false;
+
         var popup = view.GetOwnersPopup();
 
         if (popup.IsActive())

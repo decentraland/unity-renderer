@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 5350442013073056479}
   - component: {fileID: 8721408346532662841}
   - component: {fileID: 7245553556503679527}
+  - component: {fileID: 5507253938641132703}
   m_Layer: 5
   m_Name: OwnersTooltip
   m_TagString: Untagged
@@ -195,6 +196,7 @@ MonoBehaviour:
   ownerElementsContainer: {fileID: 3357857908974747141}
   viewAllButton: {fileID: 5931849451310851288}
   showHideAnimator: {fileID: 8721408346532662841}
+  hoverArea: {fileID: 5507253938641132703}
 --- !u!222 &3953524348948152312
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -320,6 +322,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5507253938641132703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770217003989670373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c571141d7b674d80b8ba9d9606ef819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4259611382640950661
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +388,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 14
+  m_Spacing: 18
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -559,7 +573,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 11.300018, y: -31.9}
+  m_AnchoredPosition: {x: 11.300018, y: -58.1}
   m_SizeDelta: {x: 20.585297, y: 21.290802}
   m_Pivot: {x: 0.5000001, y: 0.5}
 --- !u!222 &9190814705420890690
