@@ -7,7 +7,7 @@ public class WebGLScrollRect : ScrollRect
     Vector2 fixedScrollDelta;
 
     // In the WebGL BUILD the horizontal scrolling on the scrollrect has a bug and is inverted
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !(UNITY_EDITOR || UNITY_STANDALONE) && UNITY_WEBGL
     public override void OnScroll(PointerEventData eventData)
     {
         fixedScrollDelta.Set(-eventData.scrollDelta.x, eventData.scrollDelta.y);
