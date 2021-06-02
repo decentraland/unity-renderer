@@ -181,7 +181,7 @@ namespace Tests
         void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
             int textures)
         {
-            SceneMetricsController.Model inputModel = scene.metricsController.GetModel();
+            SceneMetricsModel inputModel = scene.metricsController.GetModel();
 
             Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles);
             Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");

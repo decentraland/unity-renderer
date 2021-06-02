@@ -24,9 +24,9 @@
     "System.Threading.Tasks.Extensions.dll"
   ],
   "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
