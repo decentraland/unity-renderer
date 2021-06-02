@@ -15,6 +15,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
     public float distanceEagleCamera = 20f;
+
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
 
@@ -209,7 +210,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
-        editionGO.transform.localScale = scale;
+        var entityToUpdate = selectedEntities[0];
+
+        // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
+        entityToUpdate.transform.SetParent(null);
+        entityToUpdate.transform.localScale = scale;
+        editionGO.transform.localScale = Vector3.one;
+        entityToUpdate.transform.SetParent(editionGO.transform);
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -247,6 +254,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             builderInWorldEntityHandler.DeselectEntities();
             return;
         }
+
         base.MouseClickDetected();
     }
 
@@ -319,6 +327,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isSquareMultiSelectionInputActive = false;
             mouseMainBtnPressed = false;
         }
+
         outlinerController.SetOutlineCheckActive(true);
 
         isMouseDragging = false;
@@ -358,6 +367,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
+
         mouseMainBtnPressed = true;
         freeCameraController.SetCameraCanMove(false);
     }
@@ -434,6 +444,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 }
             }
         }
+
         if (selectedInsideBoundsEntities.Count == alreadySelectedEntities && alreadySelectedEntities > 0)
         {
             foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
@@ -575,6 +586,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             editionGO.transform.position = voxelController.ConverPositionToVoxelPosition(editionGO.transform.position);
         }
+
         UpdateActionsInteractable();
     }
 

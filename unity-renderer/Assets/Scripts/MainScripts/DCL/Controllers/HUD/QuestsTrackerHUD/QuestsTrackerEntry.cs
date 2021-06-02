@@ -195,6 +195,7 @@ namespace DCL.Huds.QuestsTracker
                 newSections[i].gameObject.SetActive(true);
                 sectionRoutines.Add(StartCoroutine(newSections[i].Sequence()));
             }
+
             OnLayoutRebuildRequested?.Invoke();
             yield return WaitForTaskRoutines();
 
@@ -210,6 +211,7 @@ namespace DCL.Huds.QuestsTracker
             {
                 OnRewardObtained?.Invoke(rewardsToNotify[i]);
             }
+
             rewardsToNotify.Clear();
 
             isReadyForDisposal = true;
@@ -231,8 +233,10 @@ namespace DCL.Huds.QuestsTracker
                     if (sectionRoutines[i] != null)
                         StopCoroutine(sectionRoutines[i]);
                 }
+
                 sectionRoutines.Clear();
             }
+
             foreach (var section in sectionEntries)
             {
                 section.Value.ClearTaskRoutines();
@@ -275,6 +279,7 @@ namespace DCL.Huds.QuestsTracker
             {
                 pinnedQuests.Remove(quest.id);
             }
+
             QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestsTracker);
         }
 
@@ -305,6 +310,7 @@ namespace DCL.Huds.QuestsTracker
                 progress.fillAmount = Mathf.MoveTowards(progress.fillAmount, progressTarget, Time.deltaTime);
                 yield return null;
             }
+
             progressRoutine = null;
         }
 
@@ -326,5 +332,4 @@ namespace DCL.Huds.QuestsTracker
             }
         }
     }
-
 }

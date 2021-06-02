@@ -8,23 +8,10 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public interface IDebugController : IDisposable
-    {
-        event Action OnDebugModeSet;
-        void SetDebug();
-        void HideFPSPanel();
-        void ShowFPSPanel();
-        void SetSceneDebugPanel();
-        void SetEngineDebugPanel();
-
-        List<Vector3> GetTrackedTeleportPositions();
-
-        List<Vector3> GetTrackedMovements();
-    }
-
     public class DebugController : IDebugController
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
+        private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
 
         public DebugView debugView;
 
@@ -74,6 +61,8 @@ namespace DCL
             if (debugView != null)
                 debugView.SetEngineDebugPanel();
         }
+
+        public void RunPerformanceMeterTool(float durationInSeconds) { performanceMeterController.StartSampling(durationInSeconds); }
 
         public List<Vector3> GetTrackedTeleportPositions() { return positionTracker.teleportPositions; }
 

@@ -54,8 +54,8 @@ namespace DCL
             model.messaging.manager.Initialize(i.world.sceneController);
 
             // Platform systems
-            model.platform.memoryManager.Initialize();
             model.platform.parcelScenesCleaner.Start();
+            model.platform.memoryManager.Initialize(model.platform.parcelScenesCleaner);
             model.platform.cullingController.Start();
 
             // World context systems

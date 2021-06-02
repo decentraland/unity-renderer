@@ -51,7 +51,18 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
         AddInvalidMeshEffect(meshesInfo);
     }
-    public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo) { return new List<Material>(); }
+
+    public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
+    {
+        List<Material> result = new List<Material>();
+
+        for (int i = 0; i < meshesInfo.renderers.Length; i++)
+        {
+            result.AddRange(meshesInfo.renderers[i].sharedMaterials);
+        }
+
+        return result;
+    }
 
     void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
     {
@@ -115,5 +126,4 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
     }
 
     public bool WasGameObjectInAValidPosition(GameObject gameObject) { return !invalidMeshesInfo.ContainsKey(gameObject); }
-
 }

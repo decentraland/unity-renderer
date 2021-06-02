@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace DCL.FPSDisplay
+﻿namespace DCL.FPSDisplay
 {
     public class LinealBufferHiccupCounter
     {
@@ -23,11 +21,13 @@ namespace DCL.FPSDisplay
                 hiccupsCountInBuffer -= 1;
                 hiccupsSum -= counter.values[counter.end];
             }
+
             if (IsHiccup(valueInSeconds))
             {
                 hiccupsCountInBuffer += 1;
                 hiccupsSum += valueInSeconds;
             }
+
             bufferCount -= counter.values[counter.end];
             bufferCount += valueInSeconds;
 

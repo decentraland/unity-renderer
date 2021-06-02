@@ -8,8 +8,11 @@ using UnityEngine;
 namespace DCL.QuestsController
 {
     public delegate void NewQuest(string questId);
+
     public delegate void QuestUpdated(string questId, bool hasProgress);
+
     public delegate void QuestCompleted(string questId);
+
     public delegate void RewardObtained(string questId, string rewardId);
 
     public interface IQuestsController : IDisposable
@@ -45,6 +48,7 @@ namespace DCL.QuestsController
             {
                 pinnedQuests.Set(Utils.ParseJsonArray<string[]>(savedPinnedQuests));
             }
+
             pinnedQuests.OnAdded += OnPinnedQuestUpdated;
             pinnedQuests.OnRemoved += OnPinnedQuestUpdated;
         }
@@ -95,6 +99,7 @@ namespace DCL.QuestsController
                     OnNewQuest?.Invoke(progressedQuest.id);
                     QuestsControllerAnalytics.SendQuestDiscovered(progressedQuest);
                 }
+
                 return;
             }
 
@@ -213,6 +218,7 @@ namespace DCL.QuestsController
                 if (Math.Abs(newQuestSection.progress - oldSection.progress) > Mathf.Epsilon)
                     return true;
             }
+
             return false;
         }
     }

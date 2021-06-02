@@ -1,4 +1,3 @@
-using System.Text;
 using DCL.Interface;
 using DCL.FPSDisplay;
 using UnityEngine;

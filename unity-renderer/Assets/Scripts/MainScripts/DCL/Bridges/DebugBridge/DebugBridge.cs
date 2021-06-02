@@ -97,5 +97,12 @@ namespace DCL
             string fullDump = JsonConvert.SerializeObject(payload);
             debugLogger.Log($"Full crash payload size: {fullDump.Length}");
         }
+
+        public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
+
+#if UNITY_EDITOR
+        [ContextMenu("Run Performance Meter Tool for 10 seconds")]
+        public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+#endif
     }
 }

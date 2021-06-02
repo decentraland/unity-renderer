@@ -12,6 +12,7 @@ internal static class LandHelper
         {
             lands.Add(FromParcel(queryResult.ownerParcels[i], LandRole.OWNER));
         }
+
         for (int i = 0; i < queryResult.ownerEstates.Length; i++)
         {
             lands.Add(FromEstate(queryResult.ownerEstates[i], LandRole.OWNER));
@@ -22,6 +23,7 @@ internal static class LandHelper
         {
             lands.Add(FromParcel(queryResult.updateOperatorParcels[i], LandRole.OPERATOR));
         }
+
         for (int i = 0; i < queryResult.updateOperatorEstates.Length; i++)
         {
             lands.Add(FromEstate(queryResult.updateOperatorEstates[i], LandRole.OPERATOR));
@@ -42,6 +44,7 @@ internal static class LandHelper
                     lands.Add(authLand);
                 }
             }
+
             for (int j = 0; j < owner.estates.Length; j++)
             {
                 if (owner.estates[i].parcels.Length == 0)
@@ -59,8 +62,8 @@ internal static class LandHelper
         }
 
         return lands
-               .Where(land => land.type == LandType.PARCEL || land.parcels.Count > 0)
-               .ToList();
+            .Where(land => land.type == LandType.PARCEL || land.parcels.Count > 0)
+            .ToList();
     }
 
     static Land FromParcel(ParcelFields parcel, LandRole role)
@@ -111,11 +114,11 @@ internal static class LandHelper
 
         for (int i = 0; i < estate.parcels.Length; i++)
         {
-
             if (!(int.TryParse(estate.parcels[i].x, out int x) && (int.TryParse(estate.parcels[i].y, out int y))))
             {
                 continue;
             }
+
             result.parcels.Add(new Parcel()
             {
                 x = x,

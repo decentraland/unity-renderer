@@ -57,6 +57,7 @@ namespace DCL.Huds.QuestsPanel
             {
                 sections[i].Populate(quest, availableSections[i]);
             }
+
             pinQuestToggle.SetIsOnWithoutNotify(pinnedQuests.Contains(quest.id));
             pinQuestToggle.gameObject.SetActive(!quest.isCompleted);
             forceRebuildLayout = true;
@@ -79,6 +80,7 @@ namespace DCL.Huds.QuestsPanel
                 if (pinnedQuests.Contains(quest.id))
                     pinnedQuests.Remove(quest.id);
             }
+
             QuestsUIAnalytics.SendQuestPinChanged(quest.id, isOn, QuestsUIAnalytics.UIContext.QuestDetails);
         }
 

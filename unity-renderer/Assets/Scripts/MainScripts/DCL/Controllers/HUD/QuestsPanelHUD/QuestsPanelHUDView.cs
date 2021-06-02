@@ -128,6 +128,7 @@ namespace DCL.Huds.QuestsPanel
                 questEntry.transform.SetParent(null);
                 Destroy(questEntry.gameObject);
             }
+
             questEntries.Clear();
             questsToBeAdded.Clear();
             questsContainerSeparators.SetActive(completedQuestsContainer.childCount > 0);

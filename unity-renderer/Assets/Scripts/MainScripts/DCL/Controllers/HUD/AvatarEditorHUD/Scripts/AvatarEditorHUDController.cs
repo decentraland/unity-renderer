@@ -95,36 +95,36 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         CatalogController.RequestOwnedWearables(userProfile.userId)
-                         .Then((ownedWearables) =>
-                         {
-                             ownedWearablesAlreadyLoaded = true;
-                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                             LoadUserProfile(userProfile, true);
-                             view.ShowCollectiblesLoadingSpinner(false);
-                         })
-                         .Catch((error) =>
-                         {
-                             ownedWearablesRemainingRequests--;
-                             if (ownedWearablesRemainingRequests > 0)
-                             {
-                                 Debug.LogWarning("Retrying owned wereables loading...");
-                                 LoadOwnedWereables(userProfile);
-                             }
-                             else
-                             {
-                                 NotificationsController.i.ShowNotification(new Notification.Model
-                                 {
-                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                                     type = NotificationFactory.Type.GENERIC,
-                                     timer = 10f,
-                                     destroyOnFinish = true
-                                 });
+            .Then((ownedWearables) =>
+            {
+                ownedWearablesAlreadyLoaded = true;
+                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                LoadUserProfile(userProfile, true);
+                view.ShowCollectiblesLoadingSpinner(false);
+            })
+            .Catch((error) =>
+            {
+                ownedWearablesRemainingRequests--;
+                if (ownedWearablesRemainingRequests > 0)
+                {
+                    Debug.LogWarning("Retrying owned wereables loading...");
+                    LoadOwnedWereables(userProfile);
+                }
+                else
+                {
+                    NotificationsController.i.ShowNotification(new Notification.Model
+                    {
+                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                        type = NotificationFactory.Type.GENERIC,
+                        timer = 10f,
+                        destroyOnFinish = true
+                    });
 
-                                 view.ShowCollectiblesLoadingSpinner(false);
-                                 view.ShowCollectiblesLoadingRetry(true);
-                                 Debug.LogError(error);
-                             }
-                         });
+                    view.ShowCollectiblesLoadingSpinner(false);
+                    view.ShowCollectiblesLoadingRetry(true);
+                    Debug.LogError(error);
+                }
+            });
     }
 
     public void RetryLoadOwnedWearables()
@@ -149,12 +149,12 @@ public class AvatarEditorHUDController : IHUD
                     equippedOwnedWearables.Add(userProfile.avatar.wearables[i]);
                 }
             }
+
             userProfile.SetInventory(equippedOwnedWearables.ToArray());
         }
 
         LoadUserProfile(userProfile, true);
         DataStore.i.isPlayerRendererLoaded.OnChange -= PlayerRendererLoaded;
-
     }
 
     public void LoadUserProfile(UserProfile userProfile, bool forceLoading)
@@ -249,6 +249,8 @@ public class AvatarEditorHUDController : IHUD
 
         if (wearable.data.category == Categories.BODY_SHAPE)
         {
+            if (wearable.id == model.bodyShape.id)
+                return;
             EquipBodyShape(wearable);
         }
         else
@@ -258,6 +260,10 @@ public class AvatarEditorHUDController : IHUD
                 if (!categoriesThatMustHaveSelection.Contains(wearable.data.category))
                 {
                     UnequipWearable(wearable);
+                }
+                else
+                {
+                    return;
                 }
             }
             else
