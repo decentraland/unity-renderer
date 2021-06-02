@@ -98,13 +98,30 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        [TestCase("")]
+        [TestCase("Test name")]
+        public void SetBuilderProjectInfoCorrectly(string projectName)
+        {
+            // Arrange
+            string testDesc = "Test name";
+
+            // Act
+            buildModeHUDController.SetBuilderProjectInfo(projectName, testDesc);
+
+            // Assert
+            if (!string.IsNullOrEmpty(projectName))
+                buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
+            else
+                buildModeHUDController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
+        }
+
+        [Test]
         public void PublishStartCorrectly()
         {
             // Act
             buildModeHUDController.PublishStart();
 
             // Assert
-            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
             buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
         }
 

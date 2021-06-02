@@ -16,6 +16,7 @@ public interface IPublicationDetailsView
     void Publish();
     void SetSceneNameValidationActive(bool isActive);
     void SetSceneName(string newtext);
+    void SetSceneDescription(string newtext);
     void SetPublishButtonActive(bool isActive);
 }
 
@@ -71,6 +72,8 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
     public void SetSceneNameValidationActive(bool isActive) { sceneNameValidationText.enabled = isActive; }
 
     public void SetSceneName(string newtext) { sceneNameInput.text = newtext; }
+
+    public void SetSceneDescription(string newtext) { sceneDescriptionInput.text = newtext; }
 
     public void SetPublishButtonActive(bool isActive) { publishButton.interactable = isActive; }
 }

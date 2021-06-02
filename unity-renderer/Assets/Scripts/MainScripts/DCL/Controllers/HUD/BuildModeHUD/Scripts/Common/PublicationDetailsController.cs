@@ -12,6 +12,7 @@ public interface IPublicationDetailsController
     void Publish(string sceneName, string sceneDescription);
     void ValidatePublicationInfo(string sceneName);
     void SetDefaultPublicationInfo();
+    void SetCustomPublicationInfo(string sceneName, string sceneDescription);
 }
 
 public class PublicationDetailsController : IPublicationDetailsController
@@ -20,6 +21,7 @@ public class PublicationDetailsController : IPublicationDetailsController
     public event Action<string, string> OnPublish;
 
     internal const string DEFAULT_SCENE_NAME = "My new place";
+    internal const string DEFAULT_SCENE_DESC = "";
 
     internal IPublicationDetailsView publicationDetailsView;
     internal bool isValidated = false;
@@ -67,5 +69,15 @@ public class PublicationDetailsController : IPublicationDetailsController
         publicationDetailsView.SetPublishButtonActive(isValidated);
     }
 
-    public void SetDefaultPublicationInfo() { publicationDetailsView.SetSceneName(DEFAULT_SCENE_NAME); }
+    public void SetDefaultPublicationInfo()
+    {
+        publicationDetailsView.SetSceneName(DEFAULT_SCENE_NAME);
+        publicationDetailsView.SetSceneDescription(DEFAULT_SCENE_DESC);
+    }
+
+    public void SetCustomPublicationInfo(string sceneName, string sceneDescription)
+    {
+        publicationDetailsView.SetSceneName(sceneName);
+        publicationDetailsView.SetSceneDescription(sceneDescription);
+    }
 }

@@ -69,6 +69,12 @@ public class BuilderInWorldBridge : MonoBehaviour
         HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
+    public void SetBuilderProjectInfo(string payload)
+    {
+        BuilderProjectPayload builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
+        HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(builderProjectPayload.title, builderProjectPayload.description);
+    }
+
     public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;

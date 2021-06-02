@@ -99,6 +99,19 @@ namespace Tests.BuildModeHUDViews
         }
 
         [Test]
+        public void SetSceneDescriptionCorrectly()
+        {
+            // Arrange
+            string testDesc = "Test desc";
+
+            // Act
+            publicationDetailsView.SetSceneDescription(testDesc);
+
+            // Assert
+            Assert.AreEqual(testDesc, publicationDetailsView.sceneDescriptionInput.text, "sceneDescriptionInput text does not match!");
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetPublishButtonActiveCorrectly(bool isActive)

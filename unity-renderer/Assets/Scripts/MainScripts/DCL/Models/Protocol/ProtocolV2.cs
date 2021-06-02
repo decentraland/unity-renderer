@@ -161,6 +161,13 @@ public class ProtocolV2
         public string payload = "";
     }
 
+    [System.Serializable]
+    public class BuilderProjectPayload
+    {
+        public string title;
+        public string description;
+    }
+
     #endregion
 
 }

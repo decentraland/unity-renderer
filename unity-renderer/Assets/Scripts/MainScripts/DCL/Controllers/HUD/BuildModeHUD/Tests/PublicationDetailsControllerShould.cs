@@ -102,6 +102,22 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             publicationDetailsController.publicationDetailsView.Received().SetSceneName(PublicationDetailsController.DEFAULT_SCENE_NAME);
+            publicationDetailsController.publicationDetailsView.Received().SetSceneDescription(PublicationDetailsController.DEFAULT_SCENE_DESC);
+        }
+
+        [Test]
+        public void SetCustomPublicationInfoCorrectly()
+        {
+            // Arrange
+            string testName = "Test name";
+            string testDesc = "Test desc";
+
+            // Act
+            publicationDetailsController.SetCustomPublicationInfo(testName, testDesc);
+
+            // Assert
+            publicationDetailsController.publicationDetailsView.Received().SetSceneName(testName);
+            publicationDetailsController.publicationDetailsView.Received().SetSceneDescription(testDesc);
         }
     }
 }
