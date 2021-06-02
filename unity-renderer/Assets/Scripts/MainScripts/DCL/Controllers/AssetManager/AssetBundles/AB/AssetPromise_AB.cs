@@ -101,8 +101,9 @@ namespace DCL
             asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, hash: Hash128.Compute(hash), disposeOnCompleted: false);
 #else
             //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
-            asyncOp = Environment.i.platform.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
+            asyncOp = Environment.i.platform.webRequest.GetAssetBundle(url: finalUrl, disposeOnCompleted: false);
 #endif
+
             if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
                 CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
 
