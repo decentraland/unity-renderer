@@ -21,11 +21,13 @@
                 hiccupsCountInBuffer -= 1;
                 hiccupsSum -= counter.values[counter.end];
             }
+
             if (IsHiccup(valueInSeconds))
             {
                 hiccupsCountInBuffer += 1;
                 hiccupsSum += valueInSeconds;
             }
+
             bufferCount -= counter.values[counter.end];
             bufferCount += valueInSeconds;
 

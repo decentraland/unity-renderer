@@ -132,6 +132,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
                         requestHandler.SetApiResponseError(serverResponse);
                     }
                 }
+
                 unityWebRequest.Dispose();
             };
         }

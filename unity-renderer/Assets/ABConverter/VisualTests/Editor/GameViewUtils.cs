@@ -81,6 +81,7 @@ public static class GameViewUtils
             if (display == text)
                 return i;
         }
+
         return -1;
     }
 

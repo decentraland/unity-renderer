@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -51,6 +51,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
         AddInvalidMeshEffect(meshesInfo);
     }
+
     public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
     {
         List<Material> result = new List<Material>();
@@ -125,5 +126,4 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
     }
 
     public bool WasGameObjectInAValidPosition(GameObject gameObject) { return !invalidMeshesInfo.ContainsKey(gameObject); }
-
 }
