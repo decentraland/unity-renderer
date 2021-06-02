@@ -6,6 +6,7 @@ namespace DCL.Rendering
 {
     public interface ICullingObjectsTracker : IDisposable
     {
+        void SetIgnoredLayersMask(int ignoredLayersMask);
         void MarkDirty();
         bool IsDirty();
         Renderer[] GetRenderers();
