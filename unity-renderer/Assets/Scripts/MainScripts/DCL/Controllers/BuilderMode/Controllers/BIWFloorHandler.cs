@@ -116,6 +116,7 @@ public class BIWFloorHandler : BIWController
                 true,
                 OnFloorLoaded);
 
+            // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
             if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
             {
                 dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
