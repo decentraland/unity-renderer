@@ -69,7 +69,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
-    public void SetBuilderProjectInfo(string payload)
+    public void BuilderProjectInfo(string payload)
     {
         BuilderProjectPayload builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
         HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(builderProjectPayload.title, builderProjectPayload.description);

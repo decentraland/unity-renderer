@@ -480,7 +480,7 @@ namespace DCL
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
                                 break;
                             case "BuilderProjectInfo":
-                                GetBuilderInWorldBridge()?.SetBuilderProjectInfo(msg.payload);
+                                GetBuilderInWorldBridge()?.BuilderProjectInfo(msg.payload);
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInMilliseconds))
