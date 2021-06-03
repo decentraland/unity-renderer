@@ -72,6 +72,9 @@ namespace DCL
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 10 seconds")]
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+
+        [ContextMenu("Instantiate 3 bots at player position")]
+        public void DebugBotsInstantiation() { InstantiateBotsAtCoords("{ \"amount\":3 }"); }
 #endif
     }
 }

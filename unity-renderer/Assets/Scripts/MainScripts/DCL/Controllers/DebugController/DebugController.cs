@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Bots;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,16 +9,17 @@ namespace DCL
     {
         private DebugConfig debugConfig => DataStore.i.debugConfig;
         private readonly PerformanceMeterController performanceMeterController = new PerformanceMeterController();
-        private readonly BotsController botsController = new BotsController();
+        private readonly IBotsController botsController;
 
         public DebugView debugView;
 
         public event Action OnDebugModeSet;
 
-        public DebugController()
+        public DebugController(IBotsController botsController)
         {
             GameObject view = Object.Instantiate(UnityEngine.Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
+            this.botsController = botsController;
         }
 
         public void SetDebug()
@@ -59,7 +61,7 @@ namespace DCL
 
         public void InstantiateBotsAtWorldPos(string configJson)
         {
-            var config = new BotsController.WorldPosInstantiationConfig();
+            var config = new DCL.Bots.WorldPosInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
             botsController.InstantiateBotsAtWorldPos(config);
@@ -67,7 +69,7 @@ namespace DCL
 
         public void InstantiateBotsAtCoords(string configJson)
         {
-            var config = new BotsController.CoordsInstantiationConfig();
+            var config = new DCL.Bots.CoordsInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
             botsController.InstantiateBotsAtCoords(config);
