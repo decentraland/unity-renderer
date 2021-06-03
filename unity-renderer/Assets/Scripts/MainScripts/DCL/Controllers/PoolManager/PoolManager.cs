@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using DCL.Interface;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -58,6 +61,8 @@ namespace DCL
             if (containerValue == null)
                 containerValue = new GameObject("_PoolManager");
         }
+
+        public System.Action<CrashPayload> CrashPayloadEvent;
 
         public PoolManager()
         {

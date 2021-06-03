@@ -62,8 +62,8 @@ internal static class LandHelper
         }
 
         return lands
-               .Where(land => land.type == LandType.PARCEL || land.parcels.Count > 0)
-               .ToList();
+            .Where(land => land.type == LandType.PARCEL || land.parcels.Count > 0)
+            .ToList();
     }
 
     static Land FromParcel(ParcelFields parcel, LandRole role)
