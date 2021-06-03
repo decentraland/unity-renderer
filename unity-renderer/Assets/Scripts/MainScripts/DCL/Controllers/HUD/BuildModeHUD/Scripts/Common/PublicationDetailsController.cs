@@ -13,6 +13,8 @@ public interface IPublicationDetailsController
     void ValidatePublicationInfo(string sceneName);
     void SetDefaultPublicationInfo();
     void SetCustomPublicationInfo(string sceneName, string sceneDescription);
+    string GetSceneName();
+    string GetSceneDescription();
 }
 
 public class PublicationDetailsController : IPublicationDetailsController
@@ -80,4 +82,8 @@ public class PublicationDetailsController : IPublicationDetailsController
         publicationDetailsView.SetSceneName(sceneName);
         publicationDetailsView.SetSceneDescription(sceneDescription);
     }
+
+    public string GetSceneName() { return publicationDetailsView.GetSceneName(); }
+
+    public string GetSceneDescription() { return publicationDetailsView.GetSceneDescription(); }
 }

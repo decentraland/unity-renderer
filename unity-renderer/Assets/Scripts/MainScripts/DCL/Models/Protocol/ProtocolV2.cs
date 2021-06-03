@@ -151,7 +151,7 @@ public class ProtocolV2
     public class StoreSceneStateEvent
     {
         public string type = "PublishSceneState";
-        public string payload = "";
+        public BuilderProjectPayload payload = new BuilderProjectPayload();
     }
 
     [System.Serializable]

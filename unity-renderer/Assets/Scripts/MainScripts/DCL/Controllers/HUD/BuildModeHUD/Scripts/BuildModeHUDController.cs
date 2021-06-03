@@ -23,7 +23,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action OnConfirmPublishAction;
+    public event Action<string, string> OnConfirmPublishAction;
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
@@ -240,7 +240,9 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.publishPopupController.PublishStart();
-        OnConfirmPublishAction?.Invoke();
+        OnConfirmPublishAction?.Invoke(
+            controllers.publicationDetailsController.GetSceneName(),
+            controllers.publicationDetailsController.GetSceneDescription());
 
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.

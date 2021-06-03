@@ -30,6 +30,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
+    BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
@@ -46,7 +47,11 @@ public class BuilderInWorldBridge : MonoBehaviour
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
-    public void SaveSceneState(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState); }
+    public void SaveSceneState(ParcelScene scene)
+    {
+        saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState);
+    }
 
     public void PublishSceneResult(string payload)
     {
@@ -71,7 +76,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void BuilderProjectInfo(string payload)
     {
-        BuilderProjectPayload builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
+        builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
         HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(builderProjectPayload.title, builderProjectPayload.description);
     }
 
@@ -225,7 +230,13 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
-    public void PublishScene(ParcelScene scene) { WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState); }
+    public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription)
+    {
+        storeSceneState.payload.title = sceneName;
+        storeSceneState.payload.description = sceneDescription;
+
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState);
+    }
 
     // ReSharper disable Unity.PerformanceAnalysis
     void SendNewEntityToKernel(string sceneId, string entityId, ComponentPayload[] componentsPayload)

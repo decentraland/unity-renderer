@@ -125,5 +125,33 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.AreEqual(isActive, publicationDetailsView.publishButton.interactable, "publishButton interactable property does not match!");
         }
+
+        [Test]
+        public void GetSceneNameCorrectly()
+        {
+            // Arrange
+            string testName = "Test name";
+            publicationDetailsView.sceneNameInput.text = testName;
+
+            // Act
+            string currentName = publicationDetailsView.GetSceneName();
+
+            // Assert
+            Assert.AreEqual(testName, currentName, "The returned name does not match!");
+        }
+
+        [Test]
+        public void GetSceneDescriptionCorrectly()
+        {
+            // Arrange
+            string testDesc = "Test description";
+            publicationDetailsView.sceneDescriptionInput.text = testDesc;
+
+            // Act
+            string currentDesc = publicationDetailsView.GetSceneDescription();
+
+            // Assert
+            Assert.AreEqual(testDesc, currentDesc, "The returned description does not match!");
+        }
     }
 }

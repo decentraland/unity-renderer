@@ -119,5 +119,25 @@ namespace Tests.BuildModeHUDControllers
             publicationDetailsController.publicationDetailsView.Received().SetSceneName(testName);
             publicationDetailsController.publicationDetailsView.Received().SetSceneDescription(testDesc);
         }
+
+        [Test]
+        public void GetSceneNameCorrectly()
+        {
+            // Act
+            publicationDetailsController.GetSceneName();
+
+            // Assert
+            publicationDetailsController.publicationDetailsView.Received().GetSceneName();
+        }
+
+        [Test]
+        public void GetSceneDescriptionCorrectly()
+        {
+            // Act
+            publicationDetailsController.GetSceneDescription();
+
+            // Assert
+            publicationDetailsController.publicationDetailsView.Received().GetSceneDescription();
+        }
     }
 }

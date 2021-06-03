@@ -18,6 +18,8 @@ public interface IPublicationDetailsView
     void SetSceneName(string newtext);
     void SetSceneDescription(string newtext);
     void SetPublishButtonActive(bool isActive);
+    string GetSceneName();
+    string GetSceneDescription();
 }
 
 public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
@@ -76,4 +78,8 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
     public void SetSceneDescription(string newtext) { sceneDescriptionInput.text = newtext; }
 
     public void SetPublishButtonActive(bool isActive) { publishButton.interactable = isActive; }
+
+    public string GetSceneName() { return sceneNameInput.text; }
+
+    public string GetSceneDescription() { return sceneDescriptionInput.text; }
 }

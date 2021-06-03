@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Interface;
@@ -41,7 +41,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestKernelPublishScene()
     {
         //Act
-        biwBridge.PublishScene(scene);
+        biwBridge.PublishScene(scene, "Test title", "Test description");
 
         //Assert
         CheckMessageReceived();

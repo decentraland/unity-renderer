@@ -171,7 +171,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             bool publishConfirmed = false;
-            buildModeHUDController.OnConfirmPublishAction += () => { publishConfirmed = true; };
+            buildModeHUDController.OnConfirmPublishAction += (sceneName, sceneDesc) => { publishConfirmed = true; };
 
             // Act
             buildModeHUDController.ConfirmPublishModal(BuildModeModalType.PUBLISH);
