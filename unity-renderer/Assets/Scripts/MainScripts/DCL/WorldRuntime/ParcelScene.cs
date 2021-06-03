@@ -19,8 +19,7 @@ namespace DCL.Controllers
 
         public HashSet<Vector2Int> parcels = new HashSet<Vector2Int>();
         public SceneController ownerController;
-        public SceneMetricsController metricsController;
-
+        public ISceneMetricsController metricsController { get; set; }
         public event System.Action<IDCLEntity> OnEntityAdded;
         public event System.Action<IDCLEntity> OnEntityRemoved;
         public event System.Action<IComponent> OnComponentAdded;

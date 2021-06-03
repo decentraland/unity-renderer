@@ -68,6 +68,7 @@ namespace DCL.Helpers.NFT.Markets
             {
                 ownerInfo.assets.Add(ResponseToNFTInfo(assetResponse));
             }
+
             return ownerInfo;
         }
 
@@ -205,6 +206,7 @@ namespace DCL.Helpers.NFT.Markets
             {
                 priceString = price.Split('.')[0];
             }
+
             int pointPosition = priceString.Length - tokenInfo.decimals;
             if (pointPosition <= 0)
             {
@@ -230,6 +232,7 @@ namespace DCL.Helpers.NFT.Markets
                     break;
                 }
             }
+
             return ret;
         }
 
@@ -245,6 +248,7 @@ namespace DCL.Helpers.NFT.Markets
                     return orders[i];
                 }
             }
+
             return null;
         }
     }

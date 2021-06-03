@@ -18,6 +18,7 @@ namespace DCL.Rendering
         Animation[] animations;
 
         bool dirty = true;
+        private int ignoredLayersMask;
 
         /// <summary>
         /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
@@ -28,15 +29,27 @@ namespace DCL.Rendering
                 yield break;
 
             renderers = Object.FindObjectsOfType<Renderer>()
-                              .Where(x => !(x is SkinnedMeshRenderer) && !(x is ParticleSystemRenderer))
-                              .ToArray();
+                .Where(x => !(x is SkinnedMeshRenderer)
+                            && !(x is ParticleSystemRenderer)
+                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
 
             yield return null;
-            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
+
+            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>()
+                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                .ToArray();
+
             yield return null;
+
             animations = Object.FindObjectsOfType<Animation>();
 
             dirty = false;
+        }
+
+        public void SetIgnoredLayersMask(int ignoredLayersMask)
+        {
+            this.ignoredLayersMask = ignoredLayersMask;
         }
 
         /// <summary>

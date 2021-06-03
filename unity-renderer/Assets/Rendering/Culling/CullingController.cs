@@ -53,6 +53,8 @@ namespace DCL.Rendering
             else
                 objectsTracker = cullingObjectsTracker;
 
+            objectsTracker.SetIgnoredLayersMask(settings.ignoredLayersMask);
+
             this.urpAsset = urpAsset;
             this.settings = settings;
         }
@@ -330,12 +332,14 @@ namespace DCL.Rendering
 
             for (var i = 0; i < animations?.Length; i++)
             {
-                animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
+                if ( animations[i] != null )
+                    animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
             }
 
             for (var i = 0; i < renderers?.Length; i++)
             {
-                renderers[i].forceRenderingOff = false;
+                if ( renderers[i] != null )
+                    renderers[i].forceRenderingOff = false;
             }
         }
 
@@ -386,6 +390,8 @@ namespace DCL.Rendering
         {
             this.settings = settings;
             profiles = new List<CullingControllerProfile> { settings.rendererProfile, settings.skinnedRendererProfile };
+
+            objectsTracker?.SetIgnoredLayersMask(settings.ignoredLayersMask);
             objectsTracker?.MarkDirty();
             MarkDirty();
         }

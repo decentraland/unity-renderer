@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL
 {
@@ -11,5 +13,8 @@ namespace DCL
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
         void RunPerformanceMeterTool(float durationInSeconds);
+
+        List<Vector3> GetTrackedTeleportPositions();
+        List<Vector3> GetTrackedMovements();
     }
 }

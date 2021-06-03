@@ -565,7 +565,7 @@ namespace Builder
 
         private void SetCaptureKeyboardInputEnabled(bool value)
         {
-#if !UNITY_EDITOR && UNITY_WEBGL
+#if !(UNITY_EDITOR || UNITY_STANDALONE) && UNITY_WEBGL
             WebGLInput.captureAllKeyboardInput = value;
 #endif
         }
