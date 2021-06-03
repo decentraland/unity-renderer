@@ -10,14 +10,17 @@ namespace SignupHUD
         private string name;
         private string email;
         private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        private AvatarEditorHUDController avatarEditorHUD;
 
         protected virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
-        public void Initialize()
+        public void Initialize(AvatarEditorHUDController avatarEditorHUD)
         {
             view = CreateView();
             if (view == null)
                 return;
+
+            this.avatarEditorHUD = avatarEditorHUD;
 
             signupVisible.OnChange += OnSignupVisibleChanged;
             signupVisible.Set(false);
@@ -48,12 +51,13 @@ namespace SignupHUD
         private void OnEditAvatar()
         {
             signupVisible.Set(false);
-            //TODO: Open Avatar Editor
+            avatarEditorHUD.SetVisibility(true);
         }
 
         private void OnTermsOfServiceAgreed()
         {
             WebInterface.SendPassport(name, email);
+            DataStore.i.isSignUpFlow.Set(false);
             signupVisible.Set(false);
         }
 

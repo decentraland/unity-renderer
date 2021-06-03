@@ -211,6 +211,7 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ProfileHUDController>(configuration, hudElementId);
                 if (profileHud != null)
                 {
+                    //TODO This coupling might introduce a race condition if kernel configures this HUD before AvatarEditorHUD
                     profileHud?.AddBackpackWindow(avatarEditorHud);
                 }
 
@@ -409,7 +410,13 @@ public class HUDController : MonoBehaviour
             case HUDElementID.SIGNUP:
                 CreateHudElement<SignupHUDController>(configuration, hudElementId);
                 if (configuration.active)
-                    signupHUD.Initialize();
+                {
+                    //Same race condition risks as with the ProfileHUD
+                    //TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
+                    //Then this reference can be removed so we just work with a BaseVariable<bool>.
+                    //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
+                    signupHUD.Initialize(avatarEditorHud);
+                }
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 CreateHudElement<BuilderProjectsPanelController>(configuration, hudElementId);
