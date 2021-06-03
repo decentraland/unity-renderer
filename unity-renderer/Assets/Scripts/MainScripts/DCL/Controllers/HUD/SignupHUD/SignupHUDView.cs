@@ -54,6 +54,7 @@ namespace SignupHUD
                 UpdateNameAndEmailNextButton();
                 nameCurrentCharacters.text = $"{text.Length} / {MAX_NAME_LENGTH}";
             });
+            nameInputField.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
             emailInputField.onValueChanged.AddListener((text) =>
             {
                 UpdateNameAndEmailNextButton();
