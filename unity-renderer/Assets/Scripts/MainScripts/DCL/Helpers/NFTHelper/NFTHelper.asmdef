@@ -1,16 +1,16 @@
 {
-    "name": "NFTHelper",
-    "rootNamespace": "",
-    "references": [
-        "GUID:1b40a35339ccf4959b5c54cab05b32c3"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
+  "name": "NFTHelper",
+  "rootNamespace": "",
+  "references": [
+    "GUID:1b40a35339ccf4959b5c54cab05b32c3"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

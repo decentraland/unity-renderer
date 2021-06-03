@@ -286,6 +286,19 @@ namespace DCL.Interface
             public int textures;
             public int triangles;
             public int entities;
+
+            public static MetricsModel operator + (MetricsModel lhs, MetricsModel rhs)
+            {
+                return new MetricsModel()
+                {
+                    meshes = lhs.meshes + rhs.meshes,
+                    bodies = lhs.bodies + rhs.bodies,
+                    materials = lhs.materials + rhs.materials,
+                    textures = lhs.textures + rhs.textures,
+                    triangles = lhs.triangles + rhs.triangles,
+                    entities = lhs.entities + rhs.entities
+                };
+            }
         }
 
         [System.Serializable]

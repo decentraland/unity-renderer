@@ -99,6 +99,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             {
                 newHandler.AddRequest(batchedRequests[i]);
             }
+
             requestController.requestScheduler.EnqueueRequest(newHandler);
             newHandler.schedulableHandler.SetReadyToBeScheduled(newHandler);
         }
