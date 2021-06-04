@@ -5,29 +5,118 @@ using DCL.Models;
 using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
+using UnityEngine.Networking;
 
 namespace DCL.Bots
 {
     public class BotsController : IBotsController
     {
+        private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
+
         private ParcelScene globalScene;
         private int botsCount = 0;
+        List<string> eyesWearableIds = new List<string>();
+        List<string> eyebrowsWearableIds = new List<string>();
+        List<string> mouthWearableIds = new List<string>();
+        List<string> hairWearableIds = new List<string>();
+        List<string> facialWearableIds = new List<string>();
+        List<string> upperBodyWearableIds = new List<string>();
+        List<string> lowerBodyWearableIds = new List<string>();
+        List<string> feetWearableIds = new List<string>();
+        List<string> bodyshapeWearableIds = new List<string>();
 
         // TODO Implement ClearBots()
+        // TODO Implement RemoveBot(string targetEntityId)
 
-        private void EnsureGlobalScene()
+        /*public BotsController()
+        {
+            Random.InitState(); // TODO: Add a way to report the used seed and force it somehow for deterministic tests?
+        }*/
+
+        private void EnsureGlobalSceneAndCatalog()
         {
             if (globalScene != null)
                 return;
 
             globalScene = GameObject.FindObjectOfType<GlobalScene>(); // TODO: fetch this in a more direct and performant way?
+
+            ConstructFullCatalog();
+        }
+
+        private void ConstructFullCatalog()
+        {
+            CatalogController.wearableCatalog.Clear();
+
+            var wearableItems = GetAllWearableItems(ALL_WEARABLES_FETCH_URL);
+            foreach (var wearableItem in wearableItems)
+            {
+                switch (wearableItem.data.category)
+                {
+                    case WearableLiterals.Categories.EYES:
+                        eyesWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.EYEBROWS:
+                        eyebrowsWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.MOUTH:
+                        mouthWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.FEET:
+                        feetWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.HAIR:
+                        hairWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.FACIAL:
+                        facialWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.LOWER_BODY:
+                        lowerBodyWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.UPPER_BODY:
+                        upperBodyWearableIds.Add(wearableItem.id);
+                        break;
+                    case WearableLiterals.Categories.BODY_SHAPE:
+                        bodyshapeWearableIds.Add(wearableItem.id);
+                        break;
+                }
+            }
+
+            CatalogController.i.AddWearablesToCatalog(wearableItems);
+        }
+
+        private List<WearableItem> GetAllWearableItems(string url, int paginationElementOffset = 0)
+        {
+            UnityWebRequest w = UnityWebRequest.Get(url + $"&offset={paginationElementOffset}");
+            w.SendWebRequest();
+
+            while (!w.isDone) { }
+
+            if (!w.WebRequestSucceded())
+            {
+                Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {w.error}");
+                return null;
+            }
+
+            var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
+            var resultList = wearablesApiData.GetWearableItemsList();
+
+            // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
+            // batches sequentially
+            if (wearablesApiData.pagination.moreData)
+            {
+                var nextPageResults = GetAllWearableItems(url, paginationElementOffset + wearablesApiData.pagination.limit);
+                resultList.AddRange(nextPageResults);
+            }
+
+            return resultList;
         }
 
         public void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
         {
-            Debug.Log("PRAVS - BotsController - InstantiateBotsAtWorldPos -> " + config);
+            // Debug.Log("PRAVS - BotsController - InstantiateBotsAtWorldPos -> " + config);
 
-            EnsureGlobalScene();
+            EnsureGlobalSceneAndCatalog();
 
             Vector3 randomizedAreaPosition = new Vector3();
             for (int i = 0; i < config.amount; i++)
@@ -39,7 +128,7 @@ namespace DCL.Bots
 
         public void InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
-            Debug.Log("PRAVS - BotsController - InstantiateBotsAtCoords -> " + config);
+            // Debug.Log("PRAVS - BotsController - InstantiateBotsAtCoords -> " + config);
 
             var worldPosConfig = new WorldPosInstantiationConfig()
             {
@@ -63,9 +152,8 @@ namespace DCL.Bots
                 eyeColor = Color.white,
                 skinColor = Color.white,
                 bodyShape = WearableLiterals.BodyShapes.FEMALE,
-                wearables = new List<string>() { }
+                wearables = GetRandomizedWearablesSet()
             };
-            // var catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
 
             string entityId = "BOT-" + botsCount;
             globalScene.CreateEntity(entityId);
@@ -73,6 +161,40 @@ namespace DCL.Bots
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
 
             botsCount++;
+        }
+
+        List<string> GetRandomizedWearablesSet()
+        {
+            var wearablesSet = new List<string>();
+
+            if (eyesWearableIds.Count > 0)
+                wearablesSet.Add(eyesWearableIds[Random.Range(0, eyesWearableIds.Count)]);
+
+            if (eyebrowsWearableIds.Count > 0)
+                wearablesSet.Add(eyebrowsWearableIds[Random.Range(0, eyebrowsWearableIds.Count)]);
+
+            if (mouthWearableIds.Count > 0)
+                wearablesSet.Add(mouthWearableIds[Random.Range(0, mouthWearableIds.Count)]);
+
+            if (hairWearableIds.Count > 0)
+                wearablesSet.Add(hairWearableIds[Random.Range(0, hairWearableIds.Count)]);
+
+            if (facialWearableIds.Count > 0)
+                wearablesSet.Add(facialWearableIds[Random.Range(0, facialWearableIds.Count)]);
+
+            if (upperBodyWearableIds.Count > 0)
+                wearablesSet.Add(upperBodyWearableIds[Random.Range(0, upperBodyWearableIds.Count)]);
+
+            if (lowerBodyWearableIds.Count > 0)
+                wearablesSet.Add(lowerBodyWearableIds[Random.Range(0, lowerBodyWearableIds.Count)]);
+
+            if (feetWearableIds.Count > 0)
+                wearablesSet.Add(feetWearableIds[Random.Range(0, feetWearableIds.Count)]);
+
+            if (bodyshapeWearableIds.Count > 0)
+                wearablesSet.Add(bodyshapeWearableIds[Random.Range(0, bodyshapeWearableIds.Count)]);
+
+            return wearablesSet;
         }
 
         void UpdateEntityTransform(ParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
@@ -103,31 +225,5 @@ namespace DCL.Bots
             pbTranf.Scale.Z = scale.z;
             return pbTranf;
         }
-
-        //-----------------------
-        /*public AvatarShape CreateAvatarShape(IParcelScene scene, string name, string fileName)
-        {
-            var model = GetTestAvatarModel(name, fileName);
-
-            return CreateAvatarShape(scene, model);
-        }
-
-        public AvatarShape CreateAvatarShape(IParcelScene scene, AvatarModel model)
-        {
-            GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-            var entity = TestHelpers.CreateSceneEntity(scene);
-            AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarModel>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
-            return shape;
-        }
-
-        public AvatarModel GetTestAvatarModel(string name, string fileName)
-        {
-            var avatarjson = File.ReadAllText(TestAssetsUtils.GetPathRaw() + "/Avatar/" + fileName);
-            AvatarModel model = JsonUtility.FromJson<AvatarModel>(avatarjson);
-            model.name = name;
-            return model;
-        }*/
-        //-----------------------
     }
 }
