@@ -74,7 +74,16 @@ namespace DCL
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
 
         [ContextMenu("Instantiate 3 bots at player position")]
-        public void DebugBotsInstantiation() { InstantiateBotsAtCoords("{ \"amount\":3 }"); }
+        public void DebugBotsInstantiation()
+        {
+            InstantiateBotsAtCoords("{ " +
+                                    "\"amount\":3, " +
+                                    "\"xCoord\":-110, " +
+                                    "\"yCoord\":-110, " +
+                                    "\"areaWidth\":15, " +
+                                    "\"areaDepth\":15 " +
+                                    "}");
+        }
 #endif
     }
 }

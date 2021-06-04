@@ -4,25 +4,61 @@ using DCL.Interface;
 using DCL.Models;
 using Google.Protobuf;
 using UnityEngine;
+using DCL.Configuration;
 
 namespace DCL.Bots
 {
     public class BotsController : IBotsController
     {
+        private ParcelScene globalScene;
+        private int botsCount = 0;
+
+        // TODO Implement ClearBots()
+
+        private void EnsureGlobalScene()
+        {
+            if (globalScene != null)
+                return;
+
+            globalScene = GameObject.FindObjectOfType<GlobalScene>(); // TODO: fetch this in a more direct and performant way?
+        }
+
         public void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
         {
             Debug.Log("PRAVS - BotsController - InstantiateBotsAtWorldPos -> " + config);
 
-            // TODO
+            EnsureGlobalScene();
+
+            Vector3 randomizedAreaPosition = new Vector3();
+            for (int i = 0; i < config.amount; i++)
+            {
+                randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
+                InstantiateBot(randomizedAreaPosition);
+            }
         }
 
         public void InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
             Debug.Log("PRAVS - BotsController - InstantiateBotsAtCoords -> " + config);
 
-            /*AvatarModel avatarModel = new AvatarModel()
+            var worldPosConfig = new WorldPosInstantiationConfig()
             {
-                name = " test",
+                amount = config.amount,
+                xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
+                yPos = 0f, // TODO: Read player's Y position
+                zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
+                areaWidth = config.areaWidth,
+                areaDepth = config.areaDepth
+            };
+
+            InstantiateBotsAtWorldPos(worldPosConfig);
+        }
+
+        void InstantiateBot(Vector3 position)
+        {
+            AvatarModel avatarModel = new AvatarModel()
+            {
+                name = "BotAvatar",
                 hairColor = Color.white,
                 eyeColor = Color.white,
                 skinColor = Color.white,
@@ -30,18 +66,18 @@ namespace DCL.Bots
                 wearables = new List<string>() { }
             };
             // var catalog = AvatarAssetsTestHelpers.CreateTestCatalogLocal();
-            
-            var globalScene = GameObject.FindObjectOfType<GlobalScene>(); // TODO: fetch this in a more direct and performant way?
-            
-            var entity = globalScene.CreateEntity("test-avatar-shape");
-            globalScene.EntityComponentCreateOrUpdateWithModel(entity.entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
-            
-            UpdateEntityTransform(globalScene, entity.entityId,new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);*/
+
+            string entityId = "BOT-" + botsCount;
+            globalScene.CreateEntity(entityId);
+            globalScene.EntityComponentCreateOrUpdateWithModel(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
+            UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
+
+            botsCount++;
         }
 
         void UpdateEntityTransform(ParcelScene scene, string entityId, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            PB_Transform pB_Transform = GetPBTransform(new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
+            PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.EntityComponentCreateOrUpdate(
                 entityId,
                 CLASS_ID_COMPONENT.TRANSFORM,
