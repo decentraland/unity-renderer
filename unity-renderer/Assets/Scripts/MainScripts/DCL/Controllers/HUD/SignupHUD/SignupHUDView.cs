@@ -64,7 +64,7 @@ namespace SignupHUD
 
             termsOfServiceScrollView.onValueChanged.AddListener(pos =>
             {
-                if (pos.y >= 0.95f)
+                if (pos.y <= 0.1f)
                     termsOfServiceAgreeButton.interactable = true;
             });
             termsOfServiceAgreeButton.interactable = false;
