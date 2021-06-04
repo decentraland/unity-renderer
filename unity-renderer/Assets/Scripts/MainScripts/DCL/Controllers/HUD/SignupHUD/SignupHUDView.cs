@@ -36,6 +36,7 @@ namespace SignupHUD
         [SerializeField] private TMP_InputField emailInputField;
         [SerializeField] private RectTransform termsOfServicePanel;
         [SerializeField] private Button editAvatarButton;
+        [SerializeField] private ScrollRect termsOfServiceScrollView;
         [SerializeField] private Button termsOfServiceBackButton;
         [SerializeField] private Button termsOfServiceAgreeButton;
         [SerializeField] private RawImage avatarPic;
@@ -60,6 +61,13 @@ namespace SignupHUD
                 UpdateNameAndEmailNextButton();
             });
             nameAndEmailNextButton.onClick.AddListener(() => OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text));
+
+            termsOfServiceScrollView.onValueChanged.AddListener(pos =>
+            {
+                if (pos.y >= 0.95f)
+                    termsOfServiceAgreeButton.interactable = true;
+            });
+            termsOfServiceAgreeButton.interactable = false;
             termsOfServiceBackButton.onClick.AddListener(() => OnTermsOfServiceBack?.Invoke());
             termsOfServiceAgreeButton.onClick.AddListener(() => OnTermsOfServiceAgreed?.Invoke());
             editAvatarButton.onClick.AddListener(() => OnEditAvatar?.Invoke());

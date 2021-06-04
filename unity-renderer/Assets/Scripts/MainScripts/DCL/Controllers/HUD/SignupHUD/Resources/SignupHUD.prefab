@@ -3205,6 +3205,7 @@ MonoBehaviour:
   emailInputField: {fileID: 8114059859674282854}
   termsOfServicePanel: {fileID: 1708820703440617360}
   editAvatarButton: {fileID: 5015071582490340425}
+  termsOfServiceScrollView: {fileID: 0}
   termsOfServiceBackButton: {fileID: 1582803013687417717}
   termsOfServiceAgreeButton: {fileID: 9072696058159935937}
   avatarPic: {fileID: 6149029933457668031}
@@ -3712,7 +3713,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 30
   m_Viewport: {fileID: 8105101591905075985}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 116537027949743306}
