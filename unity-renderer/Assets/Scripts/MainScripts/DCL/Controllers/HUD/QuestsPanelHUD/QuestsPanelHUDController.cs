@@ -74,10 +74,13 @@ namespace DCL.Huds.QuestsPanel
 
         public void SetVisibility(bool visible)
         {
-            if (visible)
-                Utils.UnlockCursor();
-            else
-                Utils.LockCursor();
+            if ( CommonScriptableObjects.rendererState.Get() )
+            {
+                if (visible)
+                    Utils.UnlockCursor();
+                else
+                    Utils.LockCursor();
+            }
 
             DataStore.i.HUDs.questsPanelVisible.Set(visible);
         }

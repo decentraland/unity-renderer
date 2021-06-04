@@ -61,6 +61,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
                 SendRequest(scheduledRequests[0]);
                 scheduledRequests.RemoveAt(0);
             }
+
             scheduleTask = null;
         }
     }

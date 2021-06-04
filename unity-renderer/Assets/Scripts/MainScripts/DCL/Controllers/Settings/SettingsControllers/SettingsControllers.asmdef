@@ -14,15 +14,15 @@
     "GUID:e5e0eb4db75e1fb428f720319518e32c",
     "GUID:b97702e026e0dbd4397dc4013ef9fcb3"
   ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": true,
-    "overrideReferences": false,
-    "precompiledReferences": [
-        ""
-    ],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": true,
+  "overrideReferences": false,
+  "precompiledReferences": [
+    ""
+  ],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
     "noEngineReferences": false
 }

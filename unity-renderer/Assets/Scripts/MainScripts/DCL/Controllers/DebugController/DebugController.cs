@@ -1,5 +1,9 @@
 ﻿using System;
 using DCL.Bots;
+using System.Collections.Generic;
+using DCL.Helpers;
+using DCL.Interface;
+using UnityEngine.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,10 +17,14 @@ namespace DCL
 
         public DebugView debugView;
 
+        public readonly CrashPayloadPositionTracker positionTracker;
+
         public event Action OnDebugModeSet;
 
         public DebugController(IBotsController botsController)
         {
+            positionTracker = new CrashPayloadPositionTracker();
+
             GameObject view = Object.Instantiate(UnityEngine.Resources.Load("DebugView")) as GameObject;
             debugView = view.GetComponent<DebugView>();
             this.botsController = botsController;
@@ -74,9 +82,14 @@ namespace DCL
 
             botsController.InstantiateBotsAtCoords(config);
         }
+        
+        public List<Vector3> GetTrackedTeleportPositions() { return positionTracker.teleportPositions; }
+
+        public List<Vector3> GetTrackedMovements() { return positionTracker.movePositions; }
 
         public void Dispose()
         {
+            positionTracker.Dispose();
             if (debugView != null)
                 Object.Destroy(debugView.gameObject);
         }

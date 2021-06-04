@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL
 {
@@ -13,5 +15,7 @@ namespace DCL
         void RunPerformanceMeterTool(float durationInSeconds);
         void InstantiateBotsAtWorldPos(string config);
         void InstantiateBotsAtCoords(string config);
+        List<Vector3> GetTrackedTeleportPositions();
+        List<Vector3> GetTrackedMovements();
     }
 }
