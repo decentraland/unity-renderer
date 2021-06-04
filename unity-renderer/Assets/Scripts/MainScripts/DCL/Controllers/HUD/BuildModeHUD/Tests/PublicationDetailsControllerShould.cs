@@ -139,5 +139,15 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             publicationDetailsController.publicationDetailsView.Received().GetSceneDescription();
         }
+
+        [Test]
+        public void GetSceneScreenshotTextureCorrectly()
+        {
+            // Act
+            publicationDetailsController.GetSceneScreenshotTexture();
+
+            // Assert
+            publicationDetailsController.publicationDetailsView.Received().GetSceneScreenshotTexture();
+        }
     }
 }

@@ -67,5 +67,5 @@ public class BIWPublishController : BIWController
         biwSaveController.ForceSave();
     }
 
-    void ConfirmPublishScene(string sceneName, string sceneDescription) { builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription); }
+    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 }

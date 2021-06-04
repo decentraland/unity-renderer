@@ -230,10 +230,11 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void ExitKernelEditMode(ParcelScene scene) { WebInterface.ReportControlEvent(new WebInterface.StopStatefulMode(scene.sceneData.id)); }
 
-    public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription)
+    public void PublishScene(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {
         storeSceneState.payload.title = sceneName;
         storeSceneState.payload.description = sceneDescription;
+        storeSceneState.payload.screenshot = sceneScreenshot;
 
         WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, storeSceneState);
     }

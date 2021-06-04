@@ -18,8 +18,10 @@ public interface IPublicationDetailsView
     void SetSceneName(string newtext);
     void SetSceneDescription(string newtext);
     void SetPublishButtonActive(bool isActive);
+    void SetPublicationScreenshot(Texture2D screenshotTexture);
     string GetSceneName();
     string GetSceneDescription();
+    Texture2D GetSceneScreenshotTexture();
 }
 
 public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
@@ -34,6 +36,7 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
     [SerializeField] internal TMP_InputField sceneNameInput;
     [SerializeField] internal TMP_Text sceneNameValidationText;
     [SerializeField] internal TMP_InputField sceneDescriptionInput;
+    [SerializeField] internal Image sceneScreenshot;
 
     private const string VIEW_PATH = "Common/PublicationDetailsView";
 
@@ -79,7 +82,11 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
 
     public void SetPublishButtonActive(bool isActive) { publishButton.interactable = isActive; }
 
+    public void SetPublicationScreenshot(Texture2D screenshotTexture) { sceneScreenshot.sprite = Sprite.Create(screenshotTexture, new Rect(0.0f, 0.0f, screenshotTexture.width, screenshotTexture.height), new Vector2(0.5f, 0.5f)); }
+
     public string GetSceneName() { return sceneNameInput.text; }
 
     public string GetSceneDescription() { return sceneDescriptionInput.text; }
+
+    public Texture2D GetSceneScreenshotTexture() { return sceneScreenshot.sprite.texture; }
 }

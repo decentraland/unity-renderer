@@ -153,5 +153,19 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.AreEqual(testDesc, currentDesc, "The returned description does not match!");
         }
+
+        [Test]
+        public void GetSceneScreenshotTextureCorrectly()
+        {
+            // Arrange
+            Texture2D testTexture = new Texture2D(512, 512);
+            publicationDetailsView.sceneScreenshot.sprite = Sprite.Create(testTexture, new Rect(0.0f, 0.0f, testTexture.width, testTexture.height), new Vector2(0.5f, 0.5f));
+
+            // Act
+            Texture2D returnedTexture = publicationDetailsView.GetSceneScreenshotTexture();
+
+            // Assert
+            Assert.AreEqual(testTexture, returnedTexture, "The returned texture does not match!");
+        }
     }
 }

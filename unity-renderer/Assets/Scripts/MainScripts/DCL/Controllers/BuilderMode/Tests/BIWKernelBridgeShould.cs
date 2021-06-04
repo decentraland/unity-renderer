@@ -41,7 +41,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestKernelPublishScene()
     {
         //Act
-        biwBridge.PublishScene(scene, "Test title", "Test description");
+        biwBridge.PublishScene(scene, "Test title", "Test description", "test_screenshot");
 
         //Assert
         CheckMessageReceived();

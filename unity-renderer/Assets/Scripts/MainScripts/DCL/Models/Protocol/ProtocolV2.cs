@@ -166,6 +166,7 @@ public class ProtocolV2
     {
         public string title;
         public string description;
+        public string screenshot;
     }
 
     #endregion

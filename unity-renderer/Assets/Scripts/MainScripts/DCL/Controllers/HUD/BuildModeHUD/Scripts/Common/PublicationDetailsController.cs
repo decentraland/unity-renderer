@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public interface IPublicationDetailsController
 {
@@ -13,8 +14,10 @@ public interface IPublicationDetailsController
     void ValidatePublicationInfo(string sceneName);
     void SetDefaultPublicationInfo();
     void SetCustomPublicationInfo(string sceneName, string sceneDescription);
+    void SetPublicationScreenshot(Texture2D sceneScreenshot);
     string GetSceneName();
     string GetSceneDescription();
+    Texture2D GetSceneScreenshotTexture();
 }
 
 public class PublicationDetailsController : IPublicationDetailsController
@@ -83,7 +86,11 @@ public class PublicationDetailsController : IPublicationDetailsController
         publicationDetailsView.SetSceneDescription(sceneDescription);
     }
 
+    public void SetPublicationScreenshot(Texture2D sceneScreenshot) { publicationDetailsView.SetPublicationScreenshot(sceneScreenshot); }
+
     public string GetSceneName() { return publicationDetailsView.GetSceneName(); }
 
     public string GetSceneDescription() { return publicationDetailsView.GetSceneDescription(); }
+
+    public Texture2D GetSceneScreenshotTexture() { return publicationDetailsView.GetSceneScreenshotTexture(); }
 }

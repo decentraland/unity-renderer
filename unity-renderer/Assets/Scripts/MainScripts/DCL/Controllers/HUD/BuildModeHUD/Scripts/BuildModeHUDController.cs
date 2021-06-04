@@ -23,7 +23,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action<string, string> OnConfirmPublishAction;
+    public event Action<string, string, string> OnConfirmPublishAction;
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
@@ -202,6 +202,8 @@ public class BuildModeHUDController : IHUD
             controllers.publicationDetailsController.SetDefaultPublicationInfo();
     }
 
+    public void SetBuilderProjectScreenshot(Texture2D screenshot) { controllers.publicationDetailsController.SetPublicationScreenshot(screenshot); }
+
     public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
     internal void ConfirmPublicationDetails(string sceneName, string sceneDescription)
@@ -240,9 +242,13 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.publishPopupController.PublishStart();
+
+        Texture2D sceneScreenshotTexture = controllers.publicationDetailsController.GetSceneScreenshotTexture();
+
         OnConfirmPublishAction?.Invoke(
             controllers.publicationDetailsController.GetSceneName(),
-            controllers.publicationDetailsController.GetSceneDescription());
+            controllers.publicationDetailsController.GetSceneDescription(),
+            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToPNG()) : "");
 
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.
