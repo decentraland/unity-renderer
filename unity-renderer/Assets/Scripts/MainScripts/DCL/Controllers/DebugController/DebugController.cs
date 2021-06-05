@@ -82,7 +82,11 @@ namespace DCL
 
             botsController.InstantiateBotsAtCoords(config);
         }
-        
+
+        public void RemoveBot(string targetEntityId) { botsController.RemoveBot(targetEntityId); }
+
+        public void ClearBots() { botsController.ClearBots(); }
+
         public List<Vector3> GetTrackedTeleportPositions() { return positionTracker.teleportPositions; }
 
         public List<Vector3> GetTrackedMovements() { return positionTracker.movePositions; }

@@ -6,6 +6,8 @@ namespace DCL.Bots
     {
         void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config);
         void InstantiateBotsAtCoords(CoordsInstantiationConfig config);
+        void ClearBots();
+        void RemoveBot(string targetEntityId);
     }
 
     public class WorldPosInstantiationConfig

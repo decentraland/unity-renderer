@@ -493,6 +493,12 @@ namespace DCL
                             case "InstantiateBotsAtCoords":
                                 DCL.Environment.i.platform.debugController.InstantiateBotsAtCoords(msg.payload);
                                 break;
+                            case "RemoveBot":
+                                DCL.Environment.i.platform.debugController.RemoveBot(msg.payload);
+                                break;
+                            case "ClearBots":
+                                DCL.Environment.i.platform.debugController.ClearBots();
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +

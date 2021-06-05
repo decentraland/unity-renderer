@@ -14,19 +14,16 @@ namespace DCL.Bots
         private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
 
         private ParcelScene globalScene;
-        private int botsCount = 0;
-        List<string> eyesWearableIds = new List<string>();
-        List<string> eyebrowsWearableIds = new List<string>();
-        List<string> mouthWearableIds = new List<string>();
-        List<string> hairWearableIds = new List<string>();
-        List<string> facialWearableIds = new List<string>();
-        List<string> upperBodyWearableIds = new List<string>();
-        List<string> lowerBodyWearableIds = new List<string>();
-        List<string> feetWearableIds = new List<string>();
-        List<string> bodyshapeWearableIds = new List<string>();
-
-        // TODO Implement ClearBots()
-        // TODO Implement RemoveBot(string targetEntityId)
+        private List<string> instantiatedBots = new List<string>();
+        private List<string> eyesWearableIds = new List<string>();
+        private List<string> eyebrowsWearableIds = new List<string>();
+        private List<string> mouthWearableIds = new List<string>();
+        private List<string> hairWearableIds = new List<string>();
+        private List<string> facialWearableIds = new List<string>();
+        private List<string> upperBodyWearableIds = new List<string>();
+        private List<string> lowerBodyWearableIds = new List<string>();
+        private List<string> feetWearableIds = new List<string>();
+        private List<string> bodyshapeWearableIds = new List<string>();
 
         /*public BotsController()
         {
@@ -161,9 +158,11 @@ namespace DCL.Bots
 
         void InstantiateBot(Vector3 position)
         {
+            string entityId = "BOT-" + instantiatedBots.Count;
+
             AvatarModel avatarModel = new AvatarModel()
             {
-                name = "BotAvatar",
+                name = entityId,
                 hairColor = Color.white,
                 eyeColor = Color.white,
                 skinColor = Color.white,
@@ -171,12 +170,28 @@ namespace DCL.Bots
                 wearables = GetRandomizedWearablesSet()
             };
 
-            string entityId = "BOT-" + botsCount;
             globalScene.CreateEntity(entityId);
             globalScene.EntityComponentCreateOrUpdateWithModel(entityId, CLASS_ID_COMPONENT.AVATAR_SHAPE, avatarModel);
             UpdateEntityTransform(globalScene, entityId, position, Quaternion.identity, Vector3.one);
 
-            botsCount++;
+            instantiatedBots.Add(entityId);
+        }
+
+        public void RemoveBot(string targetEntityId)
+        {
+            if (!instantiatedBots.Contains(targetEntityId))
+                return;
+
+            globalScene.RemoveEntity(targetEntityId);
+            instantiatedBots.Remove(targetEntityId);
+        }
+
+        public void ClearBots()
+        {
+            while (instantiatedBots.Count > 0)
+            {
+                RemoveBot(instantiatedBots[0]);
+            }
         }
 
         List<string> GetRandomizedWearablesSet()
