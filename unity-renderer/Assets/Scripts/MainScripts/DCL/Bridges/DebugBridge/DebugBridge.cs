@@ -103,7 +103,7 @@ namespace DCL
         public void InstantiateBotsAtWorldPos(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtWorldPos(configJson); }
 
         public void InstantiateBotsAtCoords(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtCoords(configJson); }
-        
+
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 10 seconds")]
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
@@ -113,8 +113,8 @@ namespace DCL
         {
             InstantiateBotsAtCoords("{ " +
                                     "\"amount\":3, " +
-                                    "\"xCoord\":-110, " +
-                                    "\"yCoord\":-110, " +
+                                    // "\"xCoord\":-110, " +
+                                    // "\"yCoord\":-110, " +
                                     "\"areaWidth\":15, " +
                                     "\"areaDepth\":15 " +
                                     "}");

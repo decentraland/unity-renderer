@@ -38,7 +38,7 @@ namespace DCL.Bots
             if (globalScene != null)
                 return;
 
-            globalScene = GameObject.FindObjectOfType<GlobalScene>(); // TODO: fetch this in a more direct and performant way?
+            globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]] as ParcelScene;
 
             ConstructFullCatalog();
         }
@@ -85,6 +85,7 @@ namespace DCL.Bots
             CatalogController.i.AddWearablesToCatalog(wearableItems);
         }
 
+        // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
         private List<WearableItem> GetAllWearableItems(string url, int paginationElementOffset = 0)
         {
             UnityWebRequest w = UnityWebRequest.Get(url + $"&offset={paginationElementOffset}");
@@ -118,6 +119,15 @@ namespace DCL.Bots
 
             EnsureGlobalSceneAndCatalog();
 
+            if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+                config.xPos = DCLCharacterController.i.characterPosition.unityPosition.x;
+
+            if (config.yPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+                config.yPos = DCLCharacterController.i.characterPosition.unityPosition.y;
+
+            if (config.zPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+                config.zPos = DCLCharacterController.i.characterPosition.unityPosition.z;
+
             Vector3 randomizedAreaPosition = new Vector3();
             for (int i = 0; i < config.amount; i++)
             {
@@ -130,11 +140,17 @@ namespace DCL.Bots
         {
             // Debug.Log("PRAVS - BotsController - InstantiateBotsAtCoords -> " + config);
 
+            if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+                config.xCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.x / ParcelSettings.PARCEL_SIZE);
+
+            if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+                config.yCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.z / ParcelSettings.PARCEL_SIZE);
+
             var worldPosConfig = new WorldPosInstantiationConfig()
             {
                 amount = config.amount,
                 xPos = config.xCoord * ParcelSettings.PARCEL_SIZE,
-                yPos = 0f, // TODO: Read player's Y position
+                yPos = DCLCharacterController.i.characterPosition.unityPosition.y - DCLCharacterController.i.characterController.height / 2,
                 zPos = config.yCoord * ParcelSettings.PARCEL_SIZE,
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth

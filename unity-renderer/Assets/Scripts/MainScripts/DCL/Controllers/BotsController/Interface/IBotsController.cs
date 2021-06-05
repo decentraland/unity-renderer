@@ -1,3 +1,5 @@
+using DCL.Configuration;
+
 namespace DCL.Bots
 {
     public interface IBotsController
@@ -9,9 +11,9 @@ namespace DCL.Bots
     public class WorldPosInstantiationConfig
     {
         public int amount = 1;
-        public float xPos;
-        public float yPos;
-        public float zPos;
+        public float xPos = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float yPos = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float zPos = EnvironmentSettings.UNINITIALIZED_FLOAT;
         public float areaWidth = 0;
         public float areaDepth = 0;
 
@@ -29,8 +31,8 @@ namespace DCL.Bots
     public class CoordsInstantiationConfig
     {
         public int amount = 1;
-        public float xCoord;
-        public float yCoord;
+        public float xCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
+        public float yCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
         public float areaWidth = 0;
         public float areaDepth = 0;
 
