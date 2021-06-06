@@ -169,7 +169,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1100586092924230688
 RectTransform:
   m_ObjectHideFlags: 0
@@ -186,7 +186,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -9.2805, y: -9.5007}
+  m_AnchoredPosition: {x: -10.4, y: -10.4}
   m_SizeDelta: {x: 12.6914, y: 11.4827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1017459789129835665
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -357,7 +357,7 @@ MonoBehaviour:
   smartItemGO: {fileID: 1630529308205124801}
   smartItemColor: {r: 0.43529412, g: 0.18431373, b: 0.5019608, a: 1}
   normalColor: {r: 0.3137255, g: 0.30980393, b: 0.34901962, a: 1}
-  offFavoriteColor: {r: 1, g: 1, b: 1, a: 1}
+  offFavoriteColor: {r: 0.9056604, g: 0.9056604, b: 0.9056604, a: 1}
   onFavoriteColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   favImg: {fileID: 2856383264796359546}
 --- !u!114 &6081803941121651566
