@@ -277,7 +277,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 2
 --- !u!1 &2634397279274150251
 GameObject:
   m_ObjectHideFlags: 0
@@ -749,8 +749,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 6531193840763176120, guid: ad7b2afa9169b4d4ea47e951ff944b2d,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7b9d8b2a13149489fac02d8d802c41b6, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1238,6 +1237,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: SceneLimitsView
       objectReference: {fileID: 0}
+    - target: {fileID: 4103045442843736023, guid: 0deae7e7e551b584aa0fff2b768118a7,
+        type: 3}
+      propertyPath: closeMenuSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e5c88d99396794c4cabc8ef0e5d781da,
+        type: 3}
     - target: {fileID: 5614818988471613637, guid: 0deae7e7e551b584aa0fff2b768118a7,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -1368,6 +1373,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6518281017931198417, guid: 0deae7e7e551b584aa0fff2b768118a7,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9542616ed37ec4213b07f1127bd8d938,
+        type: 3}
     - target: {fileID: 7590770976284290461, guid: 0deae7e7e551b584aa0fff2b768118a7,
         type: 3}
       propertyPath: m_textAlignment
