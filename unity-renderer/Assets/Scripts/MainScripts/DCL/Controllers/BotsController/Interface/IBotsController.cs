@@ -35,8 +35,8 @@ namespace DCL.Bots
         public int amount = 1;
         public float xCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
         public float yCoord = EnvironmentSettings.UNINITIALIZED_FLOAT;
-        public float areaWidth = 0;
-        public float areaDepth = 0;
+        public float areaWidth = ParcelSettings.PARCEL_SIZE;
+        public float areaDepth = ParcelSettings.PARCEL_SIZE;
 
         public override string ToString()
         {
