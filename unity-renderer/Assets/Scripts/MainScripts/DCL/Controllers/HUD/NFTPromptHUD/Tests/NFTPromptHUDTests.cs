@@ -31,7 +31,8 @@ namespace Tests
         [Test]
         public void OpenAndCloseCorrectly()
         {
-            controller.OpenNftInfoDialog("0xf64dc33a192e056bb5f0e5049356a0498b502d50", "2481", null);
+            controller.OpenNftInfoDialog(new NFTPromptModel("0xf64dc33a192e056bb5f0e5049356a0498b502d50",
+                "2481", null), null);
             Assert.IsTrue(view.content.activeSelf, "NFT dialog should be visible");
             view.buttonClose.onClick.Invoke();
             Assert.IsFalse(view.content.activeSelf, "NFT dialog should not be visible");

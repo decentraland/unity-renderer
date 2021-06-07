@@ -30,12 +30,10 @@ public class NFTPromptHUDController : IHUD
         view.OnOwnersPopupClosed += HideOwnersPopup;
 
         ownersInfoController = new OwnersInfoController(view.GetOwnerElementPrefab());
-
-        if (Environment.i.world.sceneController != null)
-            Environment.i.world.sceneController.OnOpenNFTDialogRequest += OpenNftInfoDialog;
+        DataStore.i.onOpenNFTPrompt.OnChange += OpenNftInfoDialog;
     }
 
-    public void OpenNftInfoDialog(string assetContractAddress, string tokenId, string comment)
+    public void OpenNftInfoDialog(NFTPromptModel model, NFTPromptModel prevModel)
     {
         if (!view.IsActive())
         {
@@ -45,16 +43,16 @@ public class NFTPromptHUDController : IHUD
             if (fetchNFTRoutine != null)
                 CoroutineStarter.Stop(fetchNFTRoutine);
 
-            if (lastNFTInfo != null && lastNFTInfo.Value.Equals(assetContractAddress, tokenId))
+            if (lastNFTInfo != null && lastNFTInfo.Value.Equals(model.contactAddress, model.tokenId))
             {
-                SetNFT(lastNFTInfo.Value, comment, false);
+                SetNFT(lastNFTInfo.Value, model.comment, false);
                 return;
             }
 
             view.SetLoading();
 
-            fetchNFTRoutine = CoroutineStarter.Start(NFTHelper.FetchNFTInfoSingleAsset(assetContractAddress, tokenId,
-                (nftInfo) => SetNFT(nftInfo, comment, true),
+            fetchNFTRoutine = CoroutineStarter.Start(NFTHelper.FetchNFTInfoSingleAsset(model.contactAddress, model.tokenId,
+                (nftInfo) => SetNFT(nftInfo, model.comment, true),
                 (error) => view.OnError(error)
             ));
         }
@@ -86,8 +84,7 @@ public class NFTPromptHUDController : IHUD
 
         view?.Dispose();
 
-        if (Environment.i != null)
-            Environment.i.world.sceneController.OnOpenNFTDialogRequest -= OpenNftInfoDialog;
+        DataStore.i.onOpenNFTPrompt.OnChange -= OpenNftInfoDialog;
     }
 
     private void SetNFT(NFTInfoSingleAsset info, string comment, bool shouldRefreshOwners)
@@ -189,9 +186,7 @@ public class NFTPromptHUDController : IHUD
         else
         {
             int segmentLength = Mathf.FloorToInt((maxCharacters - ellipsis.Length) * 0.5f);
-            return string.Format("{1}{0}{2}", ellipsis,
-                address.Substring(0, segmentLength),
-                address.Substring(address.Length - segmentLength, segmentLength));
+            return $"{address.Substring(0, segmentLength)}{ellipsis}{address.Substring(address.Length - segmentLength, segmentLength)}";
         }
     }
 }

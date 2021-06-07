@@ -10,12 +10,12 @@ using System.Collections;
 
 internal interface INFTPromptHUDView : IDisposable
 {
-    public event Action OnOwnerLabelPointerEnter;
-    public event Action OnOwnerLabelPointerExit;
-    public event Action OnOwnersTooltipFocusLost;
-    public event Action OnOwnersTooltipFocus;
-    public event Action OnViewAllPressed;
-    public event Action OnOwnersPopupClosed;
+    event Action OnOwnerLabelPointerEnter;
+    event Action OnOwnerLabelPointerExit;
+    event Action OnOwnersTooltipFocusLost;
+    event Action OnOwnersTooltipFocus;
+    event Action OnViewAllPressed;
+    event Action OnOwnersPopupClosed;
     void SetActive(bool active);
     bool IsActive();
     IOwnersTooltipView GetOwnersTooltip();
