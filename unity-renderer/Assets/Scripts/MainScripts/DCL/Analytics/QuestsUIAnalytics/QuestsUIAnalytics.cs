@@ -20,7 +20,7 @@ public static class QuestsUIAnalytics
     {
         Dictionary<string, string> data = new Dictionary<string, string>();
         data.Add("quest_id", questId);
-        data.Add("ui_context", uiContext.ToString());
+        data.Add("quest_ui_context", uiContext.ToString());
         data.Add("quest_is_pinned", isPinned.ToString());
         GenericAnalytics.SendAnalytic(QUEST_PIN_CHANGED, data);
     }

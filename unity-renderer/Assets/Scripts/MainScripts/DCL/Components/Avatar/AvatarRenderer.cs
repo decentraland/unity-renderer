@@ -108,6 +108,9 @@ namespace DCL
             eyesController?.CleanUp();
             eyesController = null;
 
+            mouthController?.CleanUp();
+            mouthController = null;
+
             bodyShapeController?.CleanUp();
             bodyShapeController = null;
 
@@ -147,21 +150,6 @@ namespace DCL
                     wearable.CleanUp();
                     wearableControllers.Remove(currentId);
                 }
-            }
-
-            if (eyebrowsController != null && !model.wearables.Contains(eyebrowsController.wearableId))
-            {
-                eyebrowsController.CleanUp();
-            }
-
-            if (eyesController != null && !model.wearables.Contains(eyesController.wearableId))
-            {
-                eyesController.CleanUp();
-            }
-
-            if (mouthController != null && !model.wearables.Contains(mouthController.wearableId))
-            {
-                mouthController.CleanUp();
             }
         }
 
