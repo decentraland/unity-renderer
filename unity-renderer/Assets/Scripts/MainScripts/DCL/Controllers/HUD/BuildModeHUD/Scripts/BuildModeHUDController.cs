@@ -85,6 +85,7 @@ public class BuildModeHUDController : IHUD
         controllers = new BuildModeHUDInitializationModel
         {
             tooltipController = new TooltipController(),
+            feedbackTooltipController = new TooltipController(),
             sceneCatalogController = new SceneCatalogController(),
             quickBarController = new QuickBarController(),
             entityInformationController = new EntityInformationController(),
@@ -302,7 +303,7 @@ public class BuildModeHUDController : IHUD
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }
     public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
 
-    public void SetPublishBtnAvailability(bool isAvailable) { view.SetPublishBtnAvailability(isAvailable); }
+    public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "") { view.SetPublishBtnAvailability(isAvailable, feedbackMessage); }
 
     #region Catalog
 

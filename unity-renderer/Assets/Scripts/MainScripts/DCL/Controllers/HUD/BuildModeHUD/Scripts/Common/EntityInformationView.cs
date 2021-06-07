@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public interface IEntityInformationView
@@ -54,6 +55,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
     [SerializeField] internal TextMeshProUGUI entityLimitsMaterialsTxt;
     [SerializeField] internal TextMeshProUGUI entityLimitsTextureTxt;
     [SerializeField] internal TMP_InputField nameIF;
+    [SerializeField] internal Image nameIFTextBoxImage;
     [SerializeField] internal RawImage entitytTumbailImg;
     [SerializeField] internal AttributeXYZ positionAttribute;
     [SerializeField] internal AttributeXYZ rotationAttribute;
@@ -95,9 +97,20 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         backButton.onClick.AddListener(Disable);
         detailsToggleButton.onClick.AddListener(ToggleDetailsInfo);
         basicInfoTogglekButton.onClick.AddListener(ToggleBasicInfo);
-        nameIF.onEndEdit.AddListener((newName) => ChangeEntityName(newName));
-        nameIF.onSelect.AddListener((newName) => StartChangingName());
+        nameIF.onEndEdit.AddListener((newName) =>
+        {
+            ChangeEntityName(newName);
+            SetNameIFTextboxActive(false);
+        });
+        nameIF.onSelect.AddListener((newName) =>
+        {
+            SetNameIFTextboxActive(true);
+            StartChangingName();
+        });
+        nameIF.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
         nameIF.onDeselect.AddListener((newName) => EndChangingName());
+
+        SetNameIFTextboxActive(false);
     }
 
     private void OnDestroy()
@@ -105,9 +118,10 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         backButton.onClick.RemoveListener(Disable);
         detailsToggleButton.onClick.RemoveListener(ToggleDetailsInfo);
         basicInfoTogglekButton.onClick.RemoveListener(ToggleBasicInfo);
-        nameIF.onEndEdit.RemoveListener((newName) => ChangeEntityName(newName));
-        nameIF.onSelect.RemoveListener((newName) => StartChangingName());
-        nameIF.onDeselect.RemoveListener((newName) => EndChangingName());
+        nameIF.onEndEdit.RemoveAllListeners();
+        nameIF.onSelect.RemoveAllListeners();
+        nameIF.onSubmit.RemoveAllListeners();
+        nameIF.onDeselect.RemoveAllListeners();
     }
 
     private void LateUpdate()
@@ -202,5 +216,13 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         canvasGroup.alpha = alphaValue;
         canvasGroup.blocksRaycasts = interactable;
         canvasGroup.interactable = interactable;
+    }
+
+    private void SetNameIFTextboxActive(bool isActive)
+    {
+        if (nameIFTextBoxImage == null)
+            return;
+
+        nameIFTextBoxImage.enabled = isActive;
     }
 }

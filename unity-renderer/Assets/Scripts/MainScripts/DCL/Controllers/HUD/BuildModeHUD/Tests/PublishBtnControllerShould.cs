@@ -14,6 +14,7 @@ namespace Tests.BuildModeHUDControllers
             publishBtnController = new PublishBtnController();
             publishBtnController.Initialize(
                 Substitute.For<IPublishBtnView>(),
+                Substitute.For<ITooltipController>(),
                 Substitute.For<ITooltipController>());
         }
 
@@ -57,6 +58,19 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             publishBtnController.tooltipController.Received(1).HideTooltip();
+        }
+
+        [Test]
+        public void ShowTooltipFeedbackCorrectly()
+        {
+            // Arrange
+            string testText = "Test text";
+
+            // Act
+            publishBtnController.SetFeedbackMessage(testText);
+
+            // Assert
+            Assert.AreEqual(testText, publishBtnController.currentFeedbackmessage);
         }
 
         [Test]
