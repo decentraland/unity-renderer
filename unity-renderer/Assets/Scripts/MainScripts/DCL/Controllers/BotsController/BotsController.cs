@@ -25,11 +25,6 @@ namespace DCL.Bots
         private List<string> feetWearableIds = new List<string>();
         private List<string> bodyshapeWearableIds = new List<string>();
 
-        /*public BotsController()
-        {
-            Random.InitState(); // TODO: Add a way to report the used seed and force it somehow for deterministic tests?
-        }*/
-
         private void EnsureGlobalSceneAndCatalog()
         {
             if (globalScene != null)
@@ -112,8 +107,6 @@ namespace DCL.Bots
 
         public void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
         {
-            // Debug.Log("PRAVS - BotsController - InstantiateBotsAtWorldPos -> " + config);
-
             EnsureGlobalSceneAndCatalog();
 
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
@@ -135,8 +128,6 @@ namespace DCL.Bots
 
         public void InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
-            // Debug.Log("PRAVS - BotsController - InstantiateBotsAtCoords -> " + config);
-
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
                 config.xCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.x / ParcelSettings.PARCEL_SIZE);
 
