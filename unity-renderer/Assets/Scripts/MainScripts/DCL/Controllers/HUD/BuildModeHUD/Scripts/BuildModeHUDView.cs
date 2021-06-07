@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -19,7 +20,7 @@ public interface IBuildModeHUDView
     void SetActive(bool isActive);
     void SetFirstPersonView();
     void SetGodModeView();
-    void SetPublishBtnAvailability(bool isAvailable);
+    void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "");
     void SetVisibilityOfCatalog(bool isVisible);
     void SetVisibilityOfControls(bool isVisible);
     void SetVisibilityOfExtraBtns(bool isVisible);
@@ -43,6 +44,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
 
     [Header("UI Modules")]
     [SerializeField] internal TooltipView tooltipView;
+    [SerializeField] internal TooltipView feedbackTtooltipView;
     [SerializeField] internal QuickBarView quickBarView;
     [SerializeField] internal SceneCatalogView sceneCatalogView;
     [SerializeField] internal EntityInformationView entityInformationView;
@@ -75,6 +77,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     {
         this.controllers = controllers;
         this.controllers.tooltipController.Initialize(tooltipView);
+        this.controllers.feedbackTooltipController.Initialize(feedbackTtooltipView);
         this.controllers.sceneCatalogController.Initialize(sceneCatalogView, this.controllers.quickBarController);
         this.controllers.quickBarController.Initialize(quickBarView, this.controllers.sceneCatalogController);
         this.controllers.entityInformationController.Initialize(entityInformationView);
@@ -82,7 +85,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.shortcutsController.Initialize(shortcutsView);
         this.controllers.publishPopupController.Initialize(publishPopupView);
         this.controllers.dragAndDropSceneObjectController.Initialize(dragAndDropSceneObjectView);
-        this.controllers.publishBtnController.Initialize(publishBtnView, this.controllers.tooltipController);
+        this.controllers.publishBtnController.Initialize(publishBtnView, this.controllers.tooltipController, this.controllers.feedbackTooltipController);
         this.controllers.inspectorBtnController.Initialize(inspectorBtnView, this.controllers.tooltipController);
         this.controllers.catalogBtnController.Initialize(catalogBtnView, this.controllers.tooltipController);
         this.controllers.inspectorController.Initialize(inspectorView);
@@ -111,7 +114,11 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         controllers.saveHUDController.Dispose();
     }
 
-    public void SetPublishBtnAvailability(bool isAvailable) { controllers.publishBtnController.SetInteractable(isAvailable); }
+    public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "")
+    {
+        controllers.publishBtnController.SetInteractable(isAvailable);
+        controllers.publishBtnController.SetFeedbackMessage(feedbackMessage);
+    }
 
     public void RefreshCatalogAssetPack() { controllers.sceneCatalogController.RefreshAssetPack(); }
 
