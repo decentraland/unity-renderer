@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using DCL.Helpers;
+using DCL.Interface;
 
 namespace DCL
 {

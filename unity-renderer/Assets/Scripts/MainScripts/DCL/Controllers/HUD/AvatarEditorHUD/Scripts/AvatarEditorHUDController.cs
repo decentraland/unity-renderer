@@ -249,6 +249,8 @@ public class AvatarEditorHUDController : IHUD
 
         if (wearable.data.category == Categories.BODY_SHAPE)
         {
+            if (wearable.id == model.bodyShape.id)
+                return;
             EquipBodyShape(wearable);
         }
         else
@@ -258,6 +260,10 @@ public class AvatarEditorHUDController : IHUD
                 if (!categoriesThatMustHaveSelection.Contains(wearable.data.category))
                 {
                     UnequipWearable(wearable);
+                }
+                else
+                {
+                    return;
                 }
             }
             else

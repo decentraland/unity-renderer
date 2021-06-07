@@ -7,10 +7,10 @@ using UnityEngine;
 namespace DCL
 {
     [System.Serializable]
-    public class SceneMetricsController
+    public class SceneMetricsController : ISceneMetricsController
     {
         private static bool VERBOSE = false;
-        public ParcelScene scene;
+        public IParcelScene scene;
 
         public static class LimitsConfig
         {
@@ -26,33 +26,6 @@ namespace DCL
 
             public const float height = 20;
             public const float visibleRadius = 10;
-        }
-
-        [System.Serializable]
-        public class Model
-        {
-            public int meshes;
-            public int bodies;
-            public int materials;
-            public int textures;
-            public int triangles;
-            public int entities;
-            public float sceneHeight;
-
-            public Model Clone() { return (Model) MemberwiseClone(); }
-
-            public WebInterface.MetricsModel ToMetricsModel()
-            {
-                return new WebInterface.MetricsModel()
-                {
-                    meshes = this.meshes,
-                    bodies = this.bodies,
-                    materials = this.materials,
-                    textures = this.textures,
-                    triangles = this.triangles,
-                    entities = this.entities
-                };
-            }
         }
 
         protected class EntityMetrics
@@ -71,7 +44,7 @@ namespace DCL
         }
 
         [SerializeField]
-        protected Model model;
+        protected SceneMetricsModel model;
 
         protected Dictionary<IDCLEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
@@ -79,16 +52,16 @@ namespace DCL
 
         public bool isDirty { get; protected set; }
 
-        public Model GetModel() { return model.Clone(); }
+        public SceneMetricsModel GetModel() { return model.Clone(); }
 
-        public SceneMetricsController(ParcelScene sceneOwner)
+        public SceneMetricsController(IParcelScene sceneOwner)
         {
             this.scene = sceneOwner;
 
             uniqueMeshesRefCount = new Dictionary<Mesh, int>();
             uniqueMaterialsRefCount = new Dictionary<Material, int>();
             entitiesMetrics = new Dictionary<IDCLEntity, EntityMetrics>();
-            model = new Model();
+            model = new SceneMetricsModel();
 
             if (VERBOSE)
             {
@@ -116,13 +89,13 @@ namespace DCL
             scene.OnEntityRemoved -= OnEntityRemoved;
         }
 
-        Model cachedModel = null;
+        SceneMetricsModel cachedModel = null;
 
-        public Model GetLimits()
+        public SceneMetricsModel GetLimits()
         {
             if (cachedModel == null)
             {
-                cachedModel = new Model();
+                cachedModel = new SceneMetricsModel();
 
                 int parcelCount = scene.sceneData.parcels.Length;
                 float log = Mathf.Log(parcelCount + 1, 2);
@@ -142,8 +115,8 @@ namespace DCL
 
         public bool IsInsideTheLimits()
         {
-            Model limits = GetLimits();
-            Model usage = GetModel();
+            SceneMetricsModel limits = GetLimits();
+            SceneMetricsModel usage = GetModel();
 
             if (usage.triangles > limits.triangles)
                 return false;
