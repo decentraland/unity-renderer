@@ -29,17 +29,17 @@ namespace SignupHUD
         public event Action OnTermsOfServiceAgreed;
         public event Action OnTermsOfServiceBack;
 
-        [SerializeField] private RectTransform nameAndEmailPanel;
-        [SerializeField] private Button nameAndEmailNextButton;
-        [SerializeField] private TMP_InputField nameInputField;
-        [SerializeField] private TextMeshProUGUI nameCurrentCharacters;
-        [SerializeField] private TMP_InputField emailInputField;
-        [SerializeField] private RectTransform termsOfServicePanel;
-        [SerializeField] private Button editAvatarButton;
-        [SerializeField] private ScrollRect termsOfServiceScrollView;
-        [SerializeField] private Button termsOfServiceBackButton;
-        [SerializeField] private Button termsOfServiceAgreeButton;
-        [SerializeField] private RawImage avatarPic;
+        [SerializeField] internal RectTransform nameAndEmailPanel;
+        [SerializeField] internal Button nameAndEmailNextButton;
+        [SerializeField] internal TMP_InputField nameInputField;
+        [SerializeField] internal TextMeshProUGUI nameCurrentCharacters;
+        [SerializeField] internal TMP_InputField emailInputField;
+        [SerializeField] internal RectTransform termsOfServicePanel;
+        [SerializeField] internal Button editAvatarButton;
+        [SerializeField] internal ScrollRect termsOfServiceScrollView;
+        [SerializeField] internal Button termsOfServiceBackButton;
+        [SerializeField] internal Button termsOfServiceAgreeButton;
+        [SerializeField] internal RawImage avatarPic;
 
         private void Awake()
         {
@@ -102,7 +102,7 @@ namespace SignupHUD
                 Destroy(gameObject);
         }
 
-        private void UpdateNameAndEmailNextButton()
+        internal void UpdateNameAndEmailNextButton()
         {
             string name = nameInputField.text;
             string email = emailInputField.text;

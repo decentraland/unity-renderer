@@ -5,16 +5,16 @@ namespace SignupHUD
 {
     public class SignupHUDController : IHUD
     {
-        private ISignupHUDView view;
+        internal ISignupHUDView view;
 
-        private string name;
-        private string email;
-        private BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
-        private AvatarEditorHUDController avatarEditorHUD;
+        internal string name;
+        internal string email;
+        internal BaseVariable<bool> signupVisible => DataStore.i.HUDs.signupVisible;
+        internal IHUD avatarEditorHUD;
 
-        protected virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
+        internal virtual ISignupHUDView CreateView() => SignupHUDView.CreateView();
 
-        public void Initialize(AvatarEditorHUDController avatarEditorHUD)
+        public void Initialize(IHUD avatarEditorHUD)
         {
             view = CreateView();
             if (view == null)
@@ -33,37 +33,41 @@ namespace SignupHUD
         }
         private void OnSignupVisibleChanged(bool current, bool previous) { SetVisibility(current); }
 
-        public void StartSignupProcess()
+        internal void StartSignupProcess()
         {
             name = null;
             email = null;
-            signupVisible.Set(true);
             view?.ShowNameScreen();
         }
 
-        private void OnNameScreenNext(string newName, string newEmail)
+        internal void OnNameScreenNext(string newName, string newEmail)
         {
             name = newName;
             email = newEmail;
             view?.ShowTermsOfServiceScreen();
         }
 
-        private void OnEditAvatar()
+        internal void OnEditAvatar()
         {
             signupVisible.Set(false);
-            avatarEditorHUD.SetVisibility(true);
+            avatarEditorHUD?.SetVisibility(true);
         }
 
-        private void OnTermsOfServiceAgreed()
+        internal void OnTermsOfServiceAgreed()
         {
             WebInterface.SendPassport(name, email);
             DataStore.i.isSignUpFlow.Set(false);
             signupVisible.Set(false);
         }
 
-        private void OnTermsOfServiceBack() { StartSignupProcess(); }
+        internal void OnTermsOfServiceBack() { StartSignupProcess(); }
 
-        public void SetVisibility(bool visible) { view?.SetVisibility(visible); }
+        public void SetVisibility(bool visible)
+        {
+            view?.SetVisibility(visible);
+            if (visible)
+                StartSignupProcess();
+        }
 
         public void Dispose()
         {
