@@ -9,7 +9,7 @@ using Variables.RealmsInfo;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
-public class BuilderProjectsPanelController : IHUD, IUnpublishListener
+public class BuilderProjectsPanelController : IHUD
 {
     private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
     private const string TESTING_TLD = "org";
@@ -30,7 +30,6 @@ public class BuilderProjectsPanelController : IHUD, IUnpublishListener
     private SceneContextMenuHandler sceneContextMenuHandler;
     private LeftMenuHandler leftMenuHandler;
     private LeftMenuSettingsViewHandler leftMenuSettingsViewHandler;
-    private UnpublishHandler unpublishHandler;
 
     private ITheGraph theGraph;
     private ICatalyst catalyst;
@@ -54,10 +53,10 @@ public class BuilderProjectsPanelController : IHUD, IUnpublishListener
         StopFetchInterval();
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
 
         unpublishPopupController?.Dispose();
-        unpublishHandler?.Dispose();
 
         fetchLandPromise?.Dispose();
 
@@ -97,10 +96,6 @@ public class BuilderProjectsPanelController : IHUD, IUnpublishListener
         this.catalyst = catalyst;
 
         this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
-        this.unpublishHandler = new UnpublishHandler();
-        unpublishHandler.AddListener(unpublishPopupController);
-        unpublishHandler.AddListener(this);
-        unpublishHandler.AddRequester(unpublishPopupController);
 
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsController, view.GetSearchBar());
@@ -121,6 +116,7 @@ public class BuilderProjectsPanelController : IHUD, IUnpublishListener
         scenesViewController.OnEditorPressed += OnGoToEditScene;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -253,9 +249,9 @@ public class BuilderProjectsPanelController : IHUD, IUnpublishListener
         }
     }
 
-    void IUnpublishListener.OnUnpublishResult(PublishSceneResultPayload result)
+    private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)
     {
-        if (result.ok)
+        if (current.ok)
         {
             FetchLandsAndScenes(CACHE_TIME_LAND, 0);
         }

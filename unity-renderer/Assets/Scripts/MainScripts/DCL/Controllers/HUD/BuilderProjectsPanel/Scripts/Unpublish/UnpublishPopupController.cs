@@ -1,16 +1,16 @@
 using System;
 using System.Collections;
+using DCL;
+using DCL.Interface;
 using UnityEngine;
 
-internal class UnpublishPopupController : IUnpublishListener, IUnpublishRequester, IDisposable
+internal class UnpublishPopupController : IDisposable
 {
     private const string TITLE = "Unpublish Scene";
     private const string DESCRIPTION = "Are you sure you want to unpublish this scene?";
     private const string SUCCESS_DESCRIPTION = "Scene unpublished";
     private const string ERROR_TITLE = "Error";
     private const string PROGRESS_TITLE = "Unpublishing...";
-
-    public event Action<Vector2Int> OnRequestUnpublish;
 
     private IUnpublishPopupView view;
     private Vector2Int coordinates;
@@ -26,6 +26,7 @@ internal class UnpublishPopupController : IUnpublishListener, IUnpublishRequeste
 
     public void Dispose()
     {
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         CoroutineStarter.Stop(fakeProgressRoutine);
         view.OnCancelPressed -= OnCancel;
         view.OnConfirmPressed -= OnConfirmUnpublish;
@@ -38,23 +39,10 @@ internal class UnpublishPopupController : IUnpublishListener, IUnpublishRequeste
         view.Show(TITLE, DESCRIPTION);
     }
 
-    void IUnpublishListener.OnUnpublishResult(PublishSceneResultPayload result)
-    {
-        CoroutineStarter.Stop(fakeProgressRoutine);
-
-        if (result.ok)
-        {
-            view.SetSuccess(TITLE, SUCCESS_DESCRIPTION);
-        }
-        else
-        {
-            view.SetError(ERROR_TITLE, result.error);
-        }
-    }
-
     void OnConfirmUnpublish()
     {
-        OnRequestUnpublish?.Invoke(coordinates);
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+        WebInterface.UnpublishScene(coordinates);
         fakeProgressRoutine = CoroutineStarter.Start(ProgressRoutine());
     }
 
@@ -72,6 +60,21 @@ internal class UnpublishPopupController : IUnpublishListener, IUnpublishRequeste
             progress = Mathf.Clamp(progress + UnityEngine.Random.Range(0.01f, 0.03f), progress, 0.99f);
             view.SetProgress(PROGRESS_TITLE, progress);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
+        }
+    }
+
+    private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)
+    {
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
+        CoroutineStarter.Stop(fakeProgressRoutine);
+
+        if (current.ok)
+        {
+            view.SetSuccess(TITLE, SUCCESS_DESCRIPTION);
+        }
+        else
+        {
+            view.SetError(ERROR_TITLE, current.error);
         }
     }
 }
