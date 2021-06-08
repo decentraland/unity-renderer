@@ -9,7 +9,7 @@ using Variables.RealmsInfo;
 using Environment = DCL.Environment;
 using Object = UnityEngine.Object;
 
-public class BuilderProjectsPanelController : IHUD
+public class BuilderProjectsPanelController : IHUD, IUnpublishListener
 {
     private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
     private const string TESTING_TLD = "org";
@@ -24,11 +24,13 @@ public class BuilderProjectsPanelController : IHUD
     private ISectionsController sectionsController;
     private IScenesViewController scenesViewController;
     private ILandController landsController;
+    private UnpublishPopupController unpublishPopupController;
 
     private SectionsHandler sectionsHandler;
     private SceneContextMenuHandler sceneContextMenuHandler;
     private LeftMenuHandler leftMenuHandler;
     private LeftMenuSettingsViewHandler leftMenuSettingsViewHandler;
+    private UnpublishHandler unpublishHandler;
 
     private ITheGraph theGraph;
     private ICatalyst catalyst;
@@ -53,6 +55,9 @@ public class BuilderProjectsPanelController : IHUD
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
         view.OnClosePressed -= OnClose;
+
+        unpublishPopupController?.Dispose();
+        unpublishHandler?.Dispose();
 
         fetchLandPromise?.Dispose();
 
@@ -91,6 +96,12 @@ public class BuilderProjectsPanelController : IHUD
         this.theGraph = theGraph;
         this.catalyst = catalyst;
 
+        this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
+        this.unpublishHandler = new UnpublishHandler();
+        unpublishHandler.AddListener(unpublishPopupController);
+        unpublishHandler.AddListener(this);
+        unpublishHandler.AddRequester(unpublishPopupController);
+
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsController, view.GetSearchBar());
         // handle if main panel or settings panel should be shown in current section
@@ -98,7 +109,7 @@ public class BuilderProjectsPanelController : IHUD
         // handle project scene info on the left menu panel
         leftMenuSettingsViewHandler = new LeftMenuSettingsViewHandler(view.GetSettingsViewReferences(), scenesViewController);
         // handle scene's context menu options
-        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController);
+        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
 
         SetView();
 
@@ -141,7 +152,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.AddListener((IProjectSceneListener) view);
     }
 
-    private void FetchLandsAndScenes()
+    private void FetchLandsAndScenes(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
     {
         if (isFetching)
             return;
@@ -167,7 +178,7 @@ public class BuilderProjectsPanelController : IHUD
 
         sectionsController.SetFetchingDataStart();
 
-        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, CACHE_TIME_LAND, CACHE_TIME_SCENES);
+        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, landCacheTime, scenesCacheTime);
         fetchLandPromise
             .Then(lands =>
             {
@@ -239,6 +250,14 @@ public class BuilderProjectsPanelController : IHUD
         {
             yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
             FetchLandsAndScenes();
+        }
+    }
+
+    void IUnpublishListener.OnUnpublishResult(PublishSceneResultPayload result)
+    {
+        if (result.ok)
+        {
+            FetchLandsAndScenes(CACHE_TIME_LAND, 0);
         }
     }
 }
