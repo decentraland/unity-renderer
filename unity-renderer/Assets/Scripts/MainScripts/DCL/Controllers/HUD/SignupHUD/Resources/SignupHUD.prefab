@@ -146,7 +146,6 @@ GameObject:
   - component: {fileID: 72238369309359061}
   - component: {fileID: 6859779996693374826}
   - component: {fileID: 8114059859674282854}
-  - component: {fileID: 2491884501784871636}
   m_Layer: 5
   m_Name: InputEmail
   m_TagString: Untagged
@@ -225,7 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 4
+    m_Mode: -1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 9184319383788704797}
     m_SelectOnDown: {fileID: 9184319383788704797}
@@ -310,20 +309,6 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
---- !u!114 &2491884501784871636
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579543157188496642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84676f0c44ed1c04d86ab99502da536b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  previous: {fileID: 6588702801670224650}
-  next: {fileID: 9184319383788704797}
 --- !u!1 &706022184231525018
 GameObject:
   m_ObjectHideFlags: 0
@@ -2422,7 +2407,6 @@ GameObject:
   - component: {fileID: 1551997721391603307}
   - component: {fileID: 4554737333371424649}
   - component: {fileID: 6588702801670224650}
-  - component: {fileID: 5795902124594140717}
   m_Layer: 5
   m_Name: InputName
   m_TagString: Untagged
@@ -2501,7 +2485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 4
+    m_Mode: -1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 8114059859674282854}
     m_SelectOnDown: {fileID: 8114059859674282854}
@@ -2586,20 +2570,6 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
---- !u!114 &5795902124594140717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4491748286744018315}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84676f0c44ed1c04d86ab99502da536b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  previous: {fileID: 5015071582490340425}
-  next: {fileID: 8114059859674282854}
 --- !u!1 &4681674058129223728
 GameObject:
   m_ObjectHideFlags: 0
@@ -3598,7 +3568,6 @@ GameObject:
   - component: {fileID: 5015071582490340425}
   - component: {fileID: 8691260117890298637}
   - component: {fileID: 7215560944637355738}
-  - component: {fileID: 4455465279333003211}
   m_Layer: 5
   m_Name: EditAvatarButton
   m_TagString: Untagged
@@ -3677,7 +3646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 4
+    m_Mode: -1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 6588702801670224650}
     m_SelectOnDown: {fileID: 6588702801670224650}
@@ -3739,20 +3708,6 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 11400000, guid: 1ddcfb8a893601e4097bd3c4b7cd6af6, type: 2}
---- !u!114 &4455465279333003211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6635446422300425105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84676f0c44ed1c04d86ab99502da536b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  previous: {fileID: 9184319383788704797}
-  next: {fileID: 6588702801670224650}
 --- !u!1 &7079458543602174244
 GameObject:
   m_ObjectHideFlags: 0
@@ -4499,7 +4454,6 @@ GameObject:
   - component: {fileID: 9184319383788704797}
   - component: {fileID: 368333541529971941}
   - component: {fileID: 1825362624847299204}
-  - component: {fileID: 5438240147443362796}
   m_Layer: 5
   m_Name: NextButton
   m_TagString: Untagged
@@ -4578,7 +4532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 4
+    m_Mode: -1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 5015071582490340425}
     m_SelectOnDown: {fileID: 5015071582490340425}
@@ -4640,17 +4594,3 @@ MonoBehaviour:
   playClick: 1
   playRelease: 1
   extraClickEvent: {fileID: 11400000, guid: 1ddcfb8a893601e4097bd3c4b7cd6af6, type: 2}
---- !u!114 &5438240147443362796
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8375915011272481112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84676f0c44ed1c04d86ab99502da536b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  previous: {fileID: 8114059859674282854}
-  next: {fileID: 5015071582490340425}
