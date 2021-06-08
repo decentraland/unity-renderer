@@ -4,8 +4,6 @@ using DCL.Models;
 
 namespace DCL
 {
-    public delegate void OnOpenNFTDialogDelegate(string assetContractAddress, string tokenId, string comment);
-
     public interface ISceneController : IMessageProcessHandler, IMessageQueueHandler
     {
         bool enabled { get; set; }
@@ -40,6 +38,5 @@ namespace DCL
         event Action<IParcelScene> OnNewSceneAdded;
         event Action<IParcelScene> OnNewPortableExperienceSceneAdded;
         event Action<string> OnNewPortableExperienceSceneRemoved;
-        event OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
     }
 }

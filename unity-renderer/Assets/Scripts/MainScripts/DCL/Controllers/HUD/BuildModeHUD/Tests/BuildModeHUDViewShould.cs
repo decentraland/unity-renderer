@@ -29,7 +29,8 @@ namespace Tests.BuildModeHUDViews
                 inspectorController = Substitute.For<IInspectorController>(),
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
-                saveHUDController =  Substitute.For<ISaveHUDController>()
+                saveHUDController =  Substitute.For<ISaveHUDController>(),
+                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
             };
 
             buildModeHUDView = BuildModeHUDView.Create();
@@ -74,6 +75,8 @@ namespace Tests.BuildModeHUDViews
             testControllers.topActionsButtonsController.Received(1).Initialize(buildModeHUDView.topActionsButtonsView, testControllers.tooltipController);
             Assert.AreEqual(testControllers.saveHUDController, buildModeHUDView.controllers.saveHUDController, "The SaveHUDController does not match!");
             testControllers.saveHUDController.Received(1).Initialize(buildModeHUDView.saveView);
+            Assert.AreEqual(testControllers.publicationDetailsController, buildModeHUDView.controllers.publicationDetailsController, "The publicationDetailsController does not match!");
+            testControllers.publicationDetailsController.Received(1).Initialize(buildModeHUDView.publicationDetailsView);
         }
 
         [Test]

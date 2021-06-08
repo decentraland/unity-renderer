@@ -31,6 +31,7 @@ public class BIWFloorHandler : BIWController
 
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
+    private readonly List<string> loadedFloorEntities = new List<string>();
 
     private void Start()
     {
@@ -104,16 +105,25 @@ public class BIWFloorHandler : BIWController
         Vector3 initialPosition = new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
         Vector2Int[] parcelsPoints = sceneToEdit.sceneData.parcels;
         numberOfParcelsLoaded = 0;
+        loadedFloorEntities.Clear();
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(floorSceneObject, WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel), false, true);
-            decentralandEntity.rootEntity.OnShapeUpdated += OnFloorLoaded;
-            dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
+            DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(
+                floorSceneObject,
+                WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel),
+                false,
+                true,
+                OnFloorLoaded);
 
-            GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
-            floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
-            decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
+            // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
+            if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
+            {
+                dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
+                GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
+                floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
+                decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
+            }
         }
 
         builderInWorldEntityHandler.DeselectEntities();
@@ -129,10 +139,11 @@ public class BIWFloorHandler : BIWController
     private void OnFloorLoaded(IDCLEntity entity)
     {
         entity.OnShapeUpdated -= OnFloorLoaded;
+        loadedFloorEntities.Add(entity.entityId);
         RemovePlaceHolder(entity.entityId);
 
         numberOfParcelsLoaded++;
-        if (numberOfParcelsLoaded >= sceneToEdit.sceneData.parcels.Count())
+        if (sceneToEdit != null && numberOfParcelsLoaded >= sceneToEdit.sceneData.parcels.Count())
             OnAllParcelsFloorLoaded?.Invoke();
     }
 

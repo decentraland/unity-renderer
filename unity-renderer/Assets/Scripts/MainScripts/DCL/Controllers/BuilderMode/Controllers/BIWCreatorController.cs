@@ -119,7 +119,7 @@ public class BIWCreatorController : BIWController
 
     public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
 
-    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false)
+    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null)
     {
         if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
             return null;
@@ -138,6 +138,7 @@ public class BIWCreatorController : BIWController
         if (!isFloor)
             CreateLoadingObject(entity);
 
+        entity.rootEntity.OnShapeUpdated += (entity) => onFloorLoadedAction?.Invoke(entity);
         AddShape(catalogItem, entity);
 
         AddEntityNameComponent(catalogItem, entity);
