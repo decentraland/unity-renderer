@@ -231,7 +231,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         editorButton.gameObject.SetActive(isEditable);
         editorLockedGO.SetActive(!isEditable);
-        settingsButton.gameObject.SetActive(isEditable);
     }
 
     public void Dispose()
