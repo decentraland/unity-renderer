@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
-    private const int SCENE_SNAPSHOT_WIDTH_RES = 512;
-    private const int SCENE_SNAPSHOT_HEIGHT_RES = 512;
+    private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
+    private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
     public float smoothLookAtSpeed = 5f;
     public float focusDistance = 5f;
 

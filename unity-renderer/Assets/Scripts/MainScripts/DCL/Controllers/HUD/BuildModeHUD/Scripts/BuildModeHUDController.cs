@@ -249,7 +249,7 @@ public class BuildModeHUDController : IHUD
         OnConfirmPublishAction?.Invoke(
             controllers.publicationDetailsController.GetSceneName(),
             controllers.publicationDetailsController.GetSceneDescription(),
-            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToPNG()) : "");
+            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToJPG(90)) : "");
 
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.
