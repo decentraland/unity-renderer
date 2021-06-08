@@ -156,7 +156,7 @@ public class ProfileHUDController : IHUD
         while (true)
         {
             yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
-            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId);
+            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
             yield return promise;
             SetPolygonManaBalance(promise.value);
 
