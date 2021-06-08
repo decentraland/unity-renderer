@@ -1,6 +1,7 @@
 public class BuildModeHUDInitializationModel
 {
     public ITooltipController tooltipController;
+    public ITooltipController feedbackTooltipController;
     public ISceneCatalogController sceneCatalogController;
     public IQuickBarController quickBarController;
     public IEntityInformationController entityInformationController;

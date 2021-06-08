@@ -1,8 +1,8 @@
-using DCL.Models;
 using DCL;
+using DCL.Models;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EntityListAdapter : MonoBehaviour
@@ -20,13 +20,39 @@ public class EntityListAdapter : MonoBehaviour
     public Button unlockButton;
     public Button lockButton;
     public Image showImg;
+    public Image textBoxImage;
     public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
     public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
     DCLBuilderInWorldEntity currentEntity;
     internal AssetPromise_Texture loadedThumbnailPromise;
 
+    private void Start()
+    {
+        if (nameInputField != null)
+        {
+            nameInputField.onSelect.AddListener((currentText) => SetTextboxActive(true));
+
+            nameInputField.onEndEdit.AddListener((newText) =>
+            {
+                Rename(newText);
+                SetTextboxActive(false);
+            });
+
+            nameInputField.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
+        }
+
+        SetTextboxActive(false);
+    }
+
     private void OnDestroy()
     {
+        if (nameInputField != null)
+        {
+            nameInputField.onSelect.RemoveAllListeners();
+            nameInputField.onEndEdit.RemoveAllListeners();
+            nameInputField.onSubmit.RemoveAllListeners();
+        }
+
         if (currentEntity != null)
         {
             currentEntity.OnStatusUpdate -= SetInfo;
@@ -151,5 +177,13 @@ public class EntityListAdapter : MonoBehaviour
             return;
 
         nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;
+    }
+
+    private void SetTextboxActive(bool isActive)
+    {
+        if (textBoxImage == null)
+            return;
+
+        textBoxImage.enabled = isActive;
     }
 }
