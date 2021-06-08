@@ -58,6 +58,9 @@ public class TooltipController : ITooltipController
 
     internal IEnumerator ChangeAlpha(float from, float to)
     {
+        if (view.currentAlpha == to)
+            yield break;
+
         view.SetTooltipAlpha(from);
 
         float currentAlpha = from;
