@@ -12,6 +12,11 @@ using Random = UnityEngine.Random;
 
 namespace DCL.Bots
 {
+    /// <summary>
+    /// Bots Tool: BotsController
+    ///
+    /// Used to spawn bots/avatarShapes for debugging and profiling purposes.
+    /// </summary>
     public class BotsController : IBotsController
     {
         private const string ALL_WEARABLES_FETCH_BASE_URL = "https://peer.decentraland.org/content/deployments";
@@ -29,6 +34,9 @@ namespace DCL.Bots
         private List<string> feetWearableIds = new List<string>();
         private List<string> bodyshapeWearableIds = new List<string>();
 
+        /// <summary>
+        /// Makes sure the Catalogue with all the wearables has already been loaded, otherwise it loads it
+        /// </summary>
         private IEnumerator EnsureGlobalSceneAndCatalog()
         {
             if (globalScene != null)
@@ -41,8 +49,12 @@ namespace DCL.Bots
             yield return GetAllWearableItems(ALL_WEARABLES_FETCH_FIRST_URL);
         }
 
-        // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
-        private IEnumerator GetAllWearableItems(string url)
+        /// <summary>
+        /// Given a base url for fetching wearables, this method recursively downloads all the 'pages' responded by the server
+        /// and populates the global Catalogue with those wearables.
+        /// </summary>
+        /// <param name="url">The API url to fetch the list of wearables</param>
+        private IEnumerator GetAllWearableItems(string url) // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
         {
             string nextPageParams = null;
 
@@ -71,6 +83,10 @@ namespace DCL.Bots
             }
         }
 
+        /// <summary>
+        /// Populates the catalogue and internal avatar-part divided collections for optimized randomization
+        /// </summary>
+        /// <param name="newWearables">The list of WearableItem objects to be added to the catalog</param>
         private void PopulateCatalog(List<WearableItem> newWearables)
         {
             foreach (var wearableItem in newWearables)
@@ -110,6 +126,10 @@ namespace DCL.Bots
             CatalogController.i.AddWearablesToCatalog(newWearables);
         }
 
+        /// <summary>
+        /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's position
+        /// </summary>
+        /// <param name="config">The config file to be used</param>
         public IEnumerator InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
         {
             yield return EnsureGlobalSceneAndCatalog();
@@ -131,6 +151,10 @@ namespace DCL.Bots
             }
         }
 
+        /// <summary>
+        /// Instantiates bots using the config file param values. It defaults some uninitialized values using the player's coords
+        /// </summary>
+        /// <param name="config">The config file to be used</param>
         public IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
@@ -152,6 +176,10 @@ namespace DCL.Bots
             yield return InstantiateBotsAtWorldPos(worldPosConfig);
         }
 
+        /// <summary>
+        /// Instantiates an entity with an AvatarShape component, with randomized wearables, at the given position
+        /// </summary>
+        /// <param name="position">The world position of the randomized bot</param>
         void InstantiateBot(Vector3 position)
         {
             string entityId = "BOT-" + instantiatedBots.Count;
@@ -173,6 +201,10 @@ namespace DCL.Bots
             instantiatedBots.Add(entityId);
         }
 
+        /// <summary>
+        ///Removes an instantiated bot. Every bot has its ID as its avatar name.
+        /// </summary>
+        /// <param name="targetEntityId">The target bot ID. Every bot has its ID as its avatar name.</param>
         public void RemoveBot(string targetEntityId)
         {
             if (!instantiatedBots.Contains(targetEntityId))
@@ -182,6 +214,9 @@ namespace DCL.Bots
             instantiatedBots.Remove(targetEntityId);
         }
 
+        /// <summary>
+        /// Removes all instantiated bots.
+        /// </summary>
         public void ClearBots()
         {
             while (instantiatedBots.Count > 0)
