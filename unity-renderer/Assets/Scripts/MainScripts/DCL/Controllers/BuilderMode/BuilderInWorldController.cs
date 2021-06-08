@@ -56,13 +56,15 @@ public class BuilderInWorldController : MonoBehaviour
     [HideInInspector]
     public bool isBuilderInWorldActivated = false;
 
+    private const float RAYCAST_MAX_DISTANCE = 10000f;
+    private const string LAND_EDITION_NOT_ALLOWED_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
+
     private GameObject editionGO;
     private GameObject undoGO;
     private GameObject snapGO;
     private GameObject freeMovementGO;
     private int checkerInsideSceneOptimizationCounter = 0;
     private string sceneToEditId;
-    private const float RAYCAST_MAX_DISTANCE = 10000f;
     private bool catalogAdded = false;
     private bool sceneReady = false;
     private bool isInit = false;
@@ -146,11 +148,9 @@ public class BuilderInWorldController : MonoBehaviour
     private void EnableFeature(bool enable)
     {
         activeFeature = enable;
+
         if (enable)
-        {
-            bypassLandOwnershipCheck = true;
             Init();
-        }
     }
 
     private void CatalogReceived(string catalogJson)
@@ -390,7 +390,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
             Notification.Model notificationModel = new Notification.Model();
-            notificationModel.message = "You don't have permissions to operate this land";
+            notificationModel.message = LAND_EDITION_NOT_ALLOWED_MESSAGE;
             notificationModel.type = NotificationFactory.Type.GENERIC;
             HUDController.i.notificationHud.ShowNotification(notificationModel);
             return;
