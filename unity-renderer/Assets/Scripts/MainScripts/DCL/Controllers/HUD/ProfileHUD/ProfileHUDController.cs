@@ -5,6 +5,7 @@ using System.Collections;
 using System;
 using DCL.Helpers;
 using Environment = DCL.Environment;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
@@ -154,12 +155,11 @@ public class ProfileHUDController : IHUD
     {
         while (true)
         {
-            if (ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId))
-            {
-                Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId);
-                yield return promise;
-                SetPolygonManaBalance(promise.value);
-            }
+            yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId);
+            yield return promise;
+            SetPolygonManaBalance(promise.value);
+
             yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
         }
     }
