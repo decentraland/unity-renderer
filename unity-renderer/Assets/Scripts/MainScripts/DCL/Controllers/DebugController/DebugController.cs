@@ -72,7 +72,7 @@ namespace DCL
             var config = new DCL.Bots.WorldPosInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
-            botsController.InstantiateBotsAtWorldPos(config);
+            CoroutineStarter.Start(botsController.InstantiateBotsAtWorldPos(config));
         }
 
         public void InstantiateBotsAtCoords(string configJson)
@@ -80,7 +80,7 @@ namespace DCL
             var config = new DCL.Bots.CoordsInstantiationConfig();
             JsonUtility.FromJsonOverwrite(configJson, config);
 
-            botsController.InstantiateBotsAtCoords(config);
+            CoroutineStarter.Start(botsController.InstantiateBotsAtCoords(config));
         }
 
         public void RemoveBot(string targetEntityId) { botsController.RemoveBot(targetEntityId); }

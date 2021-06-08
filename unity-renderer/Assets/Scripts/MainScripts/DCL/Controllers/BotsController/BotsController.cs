@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Interface;
@@ -6,12 +8,14 @@ using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
 using UnityEngine.Networking;
+using Random = UnityEngine.Random;
 
 namespace DCL.Bots
 {
     public class BotsController : IBotsController
     {
-        private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
+        private const string ALL_WEARABLES_FETCH_BASE_URL = "https://peer.decentraland.org/content/deployments";
+        private const string ALL_WEARABLES_FETCH_FIRST_URL = ALL_WEARABLES_FETCH_BASE_URL + "?entityType=wearable&onlyCurrentlyPointed=true";
 
         private ParcelScene globalScene;
         private List<string> instantiatedBots = new List<string>();
@@ -25,22 +29,51 @@ namespace DCL.Bots
         private List<string> feetWearableIds = new List<string>();
         private List<string> bodyshapeWearableIds = new List<string>();
 
-        private void EnsureGlobalSceneAndCatalog()
+        private IEnumerator EnsureGlobalSceneAndCatalog()
         {
             if (globalScene != null)
-                return;
+                yield break;
 
             globalScene = Environment.i.world.state.loadedScenes[Environment.i.world.state.globalSceneIds[0]] as ParcelScene;
 
-            ConstructFullCatalog();
-        }
-
-        private void ConstructFullCatalog()
-        {
             CatalogController.wearableCatalog.Clear();
 
-            var wearableItems = GetAllWearableItems(ALL_WEARABLES_FETCH_URL);
-            foreach (var wearableItem in wearableItems)
+            yield return GetAllWearableItems(ALL_WEARABLES_FETCH_FIRST_URL);
+        }
+
+        // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
+        private IEnumerator GetAllWearableItems(string url)
+        {
+            string nextPageParams = null;
+
+            yield return Environment.i.platform.webRequest.Get(
+                url: url,
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 5000,
+                disposeOnCompleted: false,
+                OnFail: (webRequest) =>
+                {
+                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.downloadHandler.text);
+                    PopulateCatalog(wearablesApiData.GetWearableItemsList());
+
+                    nextPageParams = wearablesApiData.pagination.next;
+                });
+
+            if (!string.IsNullOrEmpty(nextPageParams))
+            {
+                // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
+                // batches sequentially
+                yield return GetAllWearableItems(ALL_WEARABLES_FETCH_BASE_URL + nextPageParams);
+            }
+        }
+
+        private void PopulateCatalog(List<WearableItem> newWearables)
+        {
+            foreach (var wearableItem in newWearables)
             {
                 switch (wearableItem.data.category)
                 {
@@ -74,40 +107,12 @@ namespace DCL.Bots
                 }
             }
 
-            CatalogController.i.AddWearablesToCatalog(wearableItems);
+            CatalogController.i.AddWearablesToCatalog(newWearables);
         }
 
-        // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
-        private List<WearableItem> GetAllWearableItems(string url, int paginationElementOffset = 0)
+        public IEnumerator InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
         {
-            UnityWebRequest w = UnityWebRequest.Get(url + $"&offset={paginationElementOffset}");
-            w.SendWebRequest();
-
-            while (!w.isDone) { }
-
-            if (!w.WebRequestSucceded())
-            {
-                Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {w.error}");
-                return null;
-            }
-
-            var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
-            var resultList = wearablesApiData.GetWearableItemsList();
-
-            // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
-            // batches sequentially
-            if (wearablesApiData.pagination.moreData)
-            {
-                var nextPageResults = GetAllWearableItems(url, paginationElementOffset + wearablesApiData.pagination.limit);
-                resultList.AddRange(nextPageResults);
-            }
-
-            return resultList;
-        }
-
-        public void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config)
-        {
-            EnsureGlobalSceneAndCatalog();
+            yield return EnsureGlobalSceneAndCatalog();
 
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
                 config.xPos = DCLCharacterController.i.characterPosition.unityPosition.x;
@@ -126,7 +131,7 @@ namespace DCL.Bots
             }
         }
 
-        public void InstantiateBotsAtCoords(CoordsInstantiationConfig config)
+        public IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
                 config.xCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.x / ParcelSettings.PARCEL_SIZE);
@@ -144,7 +149,7 @@ namespace DCL.Bots
                 areaDepth = config.areaDepth
             };
 
-            InstantiateBotsAtWorldPos(worldPosConfig);
+            yield return InstantiateBotsAtWorldPos(worldPosConfig);
         }
 
         void InstantiateBot(Vector3 position)

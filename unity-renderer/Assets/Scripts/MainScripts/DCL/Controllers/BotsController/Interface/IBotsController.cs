@@ -1,11 +1,12 @@
+using System.Collections;
 using DCL.Configuration;
 
 namespace DCL.Bots
 {
     public interface IBotsController
     {
-        void InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config);
-        void InstantiateBotsAtCoords(CoordsInstantiationConfig config);
+        IEnumerator InstantiateBotsAtWorldPos(WorldPosInstantiationConfig config);
+        IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config);
         void ClearBots();
         void RemoveBot(string targetEntityId);
     }

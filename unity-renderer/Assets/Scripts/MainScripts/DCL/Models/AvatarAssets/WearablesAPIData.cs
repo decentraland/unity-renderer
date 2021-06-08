@@ -59,6 +59,7 @@ public class WearablesAPIData
         public int offset;
         public int limit;
         public bool moreData;
+        public string next;
     }
 
     public List<WearableResponseRootData> deployments;
