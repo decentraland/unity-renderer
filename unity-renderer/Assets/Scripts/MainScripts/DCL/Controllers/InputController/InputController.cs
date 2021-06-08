@@ -66,7 +66,11 @@ public enum DCLAction_Trigger
     BuildEditShowAllEntities = 445,
     BuildEditModeResetCamera = 446,
     BuildEditModeZoomIn = 447,
-    BuildEditModeZoomOut = 448
+    BuildEditModeZoomOut = 448,
+
+    //UI Utils 5xx
+    UINavigationNext = 500,
+    UINavigationPrevious = 501,
 }
 
 /// <summary>
@@ -347,6 +351,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleQuestsPanelHud:
                     InputProcessor.FromKey(action, KeyCode.J, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.UINavigationNext:
+                    InputProcessor.FromKey(action, KeyCode.Tab);
+                    break;
+                case DCLAction_Trigger.UINavigationPrevious:
+                    InputProcessor.FromKey(action, KeyCode.Tab, modifierKeys: new [] { KeyCode.LeftShift });
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
