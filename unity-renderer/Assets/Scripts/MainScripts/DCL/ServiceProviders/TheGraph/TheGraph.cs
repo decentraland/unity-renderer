@@ -91,6 +91,7 @@ public class TheGraph : ITheGraph
 
         return promise;
     }
+
     public Promise<double> QueryMana(string address)
     {
         Promise<double> promise = new Promise<double>();
