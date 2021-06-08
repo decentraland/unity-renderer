@@ -462,9 +462,9 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (IsNewScene())
         {
-            SetupNewScene();
             biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
             biwFloorHandler.OnAllParcelsFloorLoaded += OnAllParcelsFloorLoaded;
+            SetupNewScene();
         }
         else
         {
