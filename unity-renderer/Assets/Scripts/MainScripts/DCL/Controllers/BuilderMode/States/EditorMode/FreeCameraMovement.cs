@@ -1,10 +1,13 @@
 using Builder.Gizmos;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
+    private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
+    private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
     public float smoothLookAtSpeed = 5f;
     public float focusDistance = 5f;
 
@@ -81,6 +84,8 @@ public class FreeCameraMovement : CameraStateBase
     private Transform originalCameraLookAt;
 
     private float lastMouseWheelTime = 0;
+
+    public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
 
     private void Awake()
     {
@@ -397,5 +402,35 @@ public class FreeCameraMovement : CameraStateBase
     {
         SetPosition(originalCameraPosition);
         LookAt(originalCameraLookAt);
+    }
+
+    public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+
+    private IEnumerator TakeSceneScreenshotCoroutine(OnSnapshotsReady callback)
+    {
+        var current = camera.targetTexture;
+        camera.targetTexture = null;
+
+        yield return null;
+
+        Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+
+        yield return null;
+
+        camera.targetTexture = current;
+        callback?.Invoke(sceneScreenshot);
+    }
+
+    private Texture2D ScreenshotFromCamera(int width, int height)
+    {
+        RenderTexture rt = new RenderTexture(width, height, 32);
+        camera.targetTexture = rt;
+        Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+        camera.Render();
+        RenderTexture.active = rt;
+        screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        screenShot.Apply();
+
+        return screenShot;
     }
 }
