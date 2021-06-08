@@ -19,6 +19,7 @@ public class DeployedScene
     public bool voiceEnabled => metadata.policy?.voiceEnabled ?? false;
     public string[] bannedUsers => metadata.policy?.blacklist;
     public string projectId => metadata.source?.projectId;
+    public bool isEmpty => metadata.source?.isEmpty ?? false;
 
     private CatalystSceneEntityMetadata metadata;
     private Source deploymentSource;
@@ -35,6 +36,7 @@ public class DeployedScene
     {
         const string builderInWorldStateJson = "scene-state-definition.json";
         const string builderSourceName = "builder";
+        const string builderInWorldSourceName = "builder-in-world";
 
         metadata = pointerData.metadata;
         entityId = pointerData.id;
@@ -42,6 +44,10 @@ public class DeployedScene
         deploymentSource = Source.SDK;
 
         if (pointerData.content != null && pointerData.content.Any(content => content.file == builderInWorldStateJson))
+        {
+            deploymentSource = Source.BUILDER_IN_WORLD;
+        }
+        else if (metadata.source != null && metadata.source.origin == builderInWorldSourceName)
         {
             deploymentSource = Source.BUILDER_IN_WORLD;
         }
