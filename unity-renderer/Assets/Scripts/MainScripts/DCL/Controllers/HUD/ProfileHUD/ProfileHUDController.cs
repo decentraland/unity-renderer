@@ -154,9 +154,12 @@ public class ProfileHUDController : IHUD
     {
         while (true)
         {
-            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId);
-            yield return promise;
-            SetPolygonManaBalance(promise.value);
+            if (ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId))
+            {
+                Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryMana(ownUserProfile.userId);
+                yield return promise;
+                SetPolygonManaBalance(promise.value);
+            }
             yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
         }
     }
