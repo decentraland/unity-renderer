@@ -64,4 +64,13 @@ public static class TheGraphQueries
     }
   }
 ";
+
+    public static readonly string getPolygonManaQuery = @"
+    query MANA($address: ID){
+        accounts(where: {id:$address}){
+            id,
+            mana
+        }
+    }
+";
 }

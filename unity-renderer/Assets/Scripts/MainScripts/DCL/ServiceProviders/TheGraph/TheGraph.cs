@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using DCL;
 using DCL.Helpers;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -12,6 +13,7 @@ public class TheGraph : ITheGraph
     private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
     private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-ropsten";
+    private const string LAND_SUBGRAPH_URL_MATIC = "https://api.thegraph.com/subgraphs/name/decentraland/mana-matic-mainnet";
 
     private readonly IDataCache<List<Land>> landQueryCache = new DataCache<List<Land>>();
 
@@ -87,6 +89,31 @@ public class TheGraph : ITheGraph
             })
             .Catch(error => promise.Reject(error));
 
+        return promise;
+    }
+    public Promise<double> QueryMana(string address)
+    {
+        Promise<double> promise = new Promise<double>();
+
+        string lowerCaseAddress = address.ToLower();
+        Query(LAND_SUBGRAPH_URL_MATIC, TheGraphQueries.getPolygonManaQuery, new AddressVariable() { address = lowerCaseAddress })
+            .Then(resultJson =>
+            {
+                try
+                {
+                    JObject result = JObject.Parse(resultJson);
+                    JToken manaObject = result["data"]?["accounts"].First?["mana"];
+                    if (manaObject == null || !double.TryParse(manaObject.Value<string>(), out double parsedMana))
+                        throw new Exception($"QueryMana response couldn't be parsed: {resultJson}");
+
+                    promise.Resolve(parsedMana / 1e18);
+                }
+                catch (Exception e)
+                {
+                    promise.Reject(e.ToString());
+                }
+            })
+            .Catch(error => promise.Reject(error));
         return promise;
     }
 
