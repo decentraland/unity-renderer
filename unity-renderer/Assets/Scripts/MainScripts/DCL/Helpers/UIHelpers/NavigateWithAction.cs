@@ -14,6 +14,8 @@ public class NavigateWithAction : MonoBehaviour
     private InputAction_Trigger nextTrigger;
     private InputAction_Trigger previousTrigger;
 
+    private Action actOnLateUpdate;
+
     private void Awake()
     {
         nextTrigger = Resources.Load<InputAction_Trigger>("UINavigationNext");
@@ -40,7 +42,7 @@ public class NavigateWithAction : MonoBehaviour
         if (next == null || !next.interactable)
             return;
 
-        next.Select();
+        actOnLateUpdate = () => next.Select();
     }
 
     private void OnPreviousTrigger(DCLAction_Trigger action)
@@ -51,7 +53,23 @@ public class NavigateWithAction : MonoBehaviour
         if (previous == null || !previous.interactable)
             return;
 
-        previous.Select();
+        actOnLateUpdate = () => previous.Select();
+    }
+
+    // We delay the navigation until the LateUpdate to prevent the following scenario:
+    // UI_A <-> UI_B <-> UI_C 
+    // Let's say UI_B subscribed to the next/previous triggers after UI_A.
+    // 1) Next is triggered
+    // 2) UI_A reacts and call next.Select() (now UI_B is currentSelectedGameObject)
+    // 3) UI_B also reacts to the trigger and since now it's the currentSelected,
+    //    it will perform a next.Select() as well
+    private void LateUpdate()
+    {
+        if (actOnLateUpdate == null)
+            return;
+
+        actOnLateUpdate.Invoke();
+        actOnLateUpdate = null;
     }
 
 }
