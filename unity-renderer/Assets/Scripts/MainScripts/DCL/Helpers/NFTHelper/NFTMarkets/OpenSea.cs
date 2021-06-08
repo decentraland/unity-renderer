@@ -135,6 +135,7 @@ namespace DCL.Helpers.NFT.Markets
         private NFTInfoSingleAsset ResponseToNFTInfo(SingleAssetResponse response)
         {
             NFTInfoSingleAsset ret = NFTInfoSingleAsset.defaultNFTInfoSingleAsset;
+            ret.tokenId = response.token_id;
             ret.marketInfo = openSeaMarketInfo;
             ret.name = response.name;
             ret.description = response.description;
@@ -142,6 +143,9 @@ namespace DCL.Helpers.NFT.Markets
             ret.originalImageUrl = response.image_original_url;
             ret.assetLink = response.external_link;
             ret.marketLink = response.permalink;
+
+            ret.assetContract.address = response.asset_contract.address;
+            ret.assetContract.name = response.asset_contract.name;
 
             if (response.last_sale != null)
             {

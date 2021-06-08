@@ -1,8 +1,3 @@
-using DCL.Controllers;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class BIWPublishController : BIWController
 {
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
@@ -85,5 +80,5 @@ public class BIWPublishController : BIWController
         biwSaveController.ForceSave();
     }
 
-    void ConfirmPublishScene() { builderInWorldBridge.PublishScene(sceneToEdit); }
+    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 }

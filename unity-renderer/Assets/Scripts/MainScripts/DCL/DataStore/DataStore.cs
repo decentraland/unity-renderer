@@ -26,6 +26,7 @@ namespace DCL
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly DataStore_Player player = new DataStore_Player();
+        public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
 
         public class BuilderInWorld
         {

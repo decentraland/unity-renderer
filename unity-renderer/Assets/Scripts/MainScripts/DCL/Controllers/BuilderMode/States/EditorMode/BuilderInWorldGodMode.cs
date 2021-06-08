@@ -102,6 +102,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
         HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
+        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakeSceneScreenshot;
     }
 
     private void Update()
@@ -244,6 +245,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
             HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
+            HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshot;
         }
     }
 
@@ -786,4 +788,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     }
 
     private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
+
+    private void TakeSceneScreenshot()
+    {
+        freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
+        {
+            HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+        });
+    }
 }
