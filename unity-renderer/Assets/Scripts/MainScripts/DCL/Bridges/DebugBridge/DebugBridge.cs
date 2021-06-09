@@ -110,13 +110,11 @@ namespace DCL
         [ContextMenu("Run Performance Meter Tool for 10 seconds")]
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
 
-        [ContextMenu("Instantiate 3 bots at player position")]
+        [ContextMenu("Instantiate 3 bots at player coordinates")]
         public void DebugBotsInstantiation()
         {
             InstantiateBotsAtCoords("{ " +
                                     "\"amount\":3, " +
-                                    // "\"xCoord\":-110, " +
-                                    // "\"yCoord\":-110, " +
                                     "\"areaWidth\":15, " +
                                     "\"areaDepth\":15 " +
                                     "}");
