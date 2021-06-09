@@ -24,6 +24,13 @@ public class DCLCharacterController : MonoBehaviour
 
     public DCLCharacterPosition characterPosition;
 
+    [Header("Target Probe")]
+    public FollowWithDamping cameraTargetProbe;
+
+    public float dampingOnAir;
+    public float dampingOnGround;
+    public float dampingOnMovingPlatform;
+
     [Header("Collisions")]
     public LayerMask groundLayers;
 
@@ -229,6 +236,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnPositionSet.Invoke(characterPosition);
         }
+
         DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
@@ -375,6 +383,7 @@ public class DCLCharacterController : MonoBehaviour
         ResetGround();
 
         velocity.y = jumpForce;
+        cameraTargetProbe.damping.y = dampingOnAir;
 
         OnJump?.Invoke();
     }
@@ -438,6 +447,22 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         isGrounded = groundTransform != null && groundTransform.gameObject.activeInHierarchy;
+
+        if ( isGrounded )
+        {
+            if ( isOnMovingPlatform )
+            {
+                cameraTargetProbe.damping.y = dampingOnMovingPlatform;
+            }
+            else
+            {
+                cameraTargetProbe.damping.y = dampingOnGround;
+            }
+        }
+        else
+        {
+            cameraTargetProbe.damping.y = dampingOnAir;
+        }
     }
 
     // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
