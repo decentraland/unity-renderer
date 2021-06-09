@@ -3,6 +3,9 @@ using UnityEngine;
 using DCL.Interface;
 using System.Collections;
 using System;
+using DCL.Helpers;
+using Environment = DCL.Environment;
+using WaitUntil = UnityEngine.WaitUntil;
 
 public class ProfileHUDController : IHUD
 {
@@ -20,12 +23,12 @@ public class ProfileHUDController : IHUD
     private const float FETCH_MANA_INTERVAL = 60;
 
     internal ProfileHUDView view;
-    internal ManaCounterView manaCounterView;
     internal AvatarEditorHUDController avatarEditorHud;
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private IMouseCatcher mouseCatcher;
     private Coroutine fetchManaIntervalRoutine = null;
+    private Coroutine fetchPolygonManaIntervalRoutine = null;
 
     public RectTransform backpackTooltipReference { get => view.backpackTooltipReference; }
 
@@ -62,11 +65,16 @@ public class ProfileHUDController : IHUD
         };
         view.OnClose += () => OnClose?.Invoke();
 
-        manaCounterView = view.GetComponentInChildren<ManaCounterView>(true);
-        if (manaCounterView)
+        if (view.manaCounterView)
         {
-            manaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
-            manaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
+            view.manaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
+            view.manaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
+        }
+
+        if (view.polygonManaCounterView)
+        {
+            view.polygonManaCounterView.buttonManaInfo.onPointerDown += () => WebInterface.OpenURL(URL_MANA_INFO);
+            view.polygonManaCounterView.buttonManaPurchase.onClick.AddListener(() => WebInterface.OpenURL(URL_MANA_PURCHASE));
         }
 
         ownUserProfile.OnUpdate += OnProfileUpdated;
@@ -94,6 +102,16 @@ public class ProfileHUDController : IHUD
         {
             CoroutineStarter.Stop(fetchManaIntervalRoutine);
             fetchManaIntervalRoutine = null;
+        }
+
+        if (visible && fetchPolygonManaIntervalRoutine == null)
+        {
+            fetchPolygonManaIntervalRoutine = CoroutineStarter.Start(PolygonManaIntervalRoutine());
+        }
+        else if (!visible && fetchPolygonManaIntervalRoutine != null)
+        {
+            CoroutineStarter.Stop(fetchPolygonManaIntervalRoutine);
+            fetchPolygonManaIntervalRoutine = null;
         }
     }
 
@@ -133,11 +151,26 @@ public class ProfileHUDController : IHUD
         }
     }
 
+    IEnumerator PolygonManaIntervalRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitUntil(() => ownUserProfile != null && !string.IsNullOrEmpty(ownUserProfile.userId));
+            Promise<double> promise = Environment.i.platform.serviceProviders.theGraph.QueryPolygonMana(ownUserProfile.userId);
+            yield return promise;
+            SetPolygonManaBalance(promise.value);
+
+            yield return WaitForSecondsCache.Get(FETCH_MANA_INTERVAL);
+        }
+    }
+
     /// <summary>
     /// Set an amount of MANA on the HUD.
     /// </summary>
     /// <param name="balance">Amount of MANA.</param>
-    public void SetManaBalance(string balance) { manaCounterView?.SetBalance(balance); }
+    public void SetManaBalance(string balance) { view.manaCounterView?.SetBalance(balance); }
+
+    public void SetPolygonManaBalance(double balance) { view.polygonManaCounterView.SetBalance(balance); }
 
     /// <summary>
     /// Configure an AvatarEditorHUDController for the Backpack button.
