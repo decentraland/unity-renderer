@@ -66,7 +66,7 @@ public enum DCLAction_Trigger
     BuildEditShowAllEntities = 445,
     BuildEditModeResetCamera = 446,
     BuildEditModeZoomIn = 447,
-    BuildEditModeZoomOut = 448,
+    BuildEditModeZoomOut = 448
 }
 
 /// <summary>
