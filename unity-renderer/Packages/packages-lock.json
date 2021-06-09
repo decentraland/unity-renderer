@@ -27,7 +27,7 @@
       "hash": "01770beeeb81d33f13f01f86720705cc004075c3"
     },
     "com.unity.cinemachine": {
-      "version": "2.5.0",
+      "version": "2.6.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
