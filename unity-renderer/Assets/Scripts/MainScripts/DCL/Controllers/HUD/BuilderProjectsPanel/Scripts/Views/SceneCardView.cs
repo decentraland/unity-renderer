@@ -36,7 +36,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     const int THMBL_MARKETPLACE_HEIGHT = 143;
     const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
 
-    static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(5.2f, 13, 0);
+    static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 9.91f, 0);
 
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
