@@ -29,7 +29,7 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
     public event Action OnConfirmPressed;
     public event Action OnCancelPressed;
 
-    private enum State
+    internal enum State
     {
         NONE,
         CONFIRM_UNPUBLISH,
@@ -38,8 +38,9 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
         ERROR_UNPUBLISH
     }
 
+    internal State state { private set; get; } = State.NONE;
+
     private bool isDestroyed = false;
-    private State state = State.NONE;
     private float loadingImageFullWidth;
 
     private void Awake()
