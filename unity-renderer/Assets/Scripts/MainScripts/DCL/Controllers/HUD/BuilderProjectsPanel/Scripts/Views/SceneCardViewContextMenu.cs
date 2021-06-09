@@ -6,6 +6,7 @@ internal class SceneCardViewContextMenu : MonoBehaviour
 {
     [Header("Containers")]
     [SerializeField] internal GameObject headerContainer;
+    [SerializeField] internal GameObject headerSeparator;
 
     [Header("Buttons")]
     [SerializeField] internal Button settingsButton;
@@ -110,6 +111,7 @@ internal class SceneCardViewContextMenu : MonoBehaviour
     private void Build(ConfigFlags flags)
     {
         headerContainer.SetActive((flags & headerFlags) != 0);
+        headerSeparator.SetActive((flags & headerFlags) != 0);
         settingsButton.gameObject.SetActive((flags & ConfigFlags.Settings) != 0);
         duplicateAsProjectButton.gameObject.SetActive((flags & ConfigFlags.DuplicateAsProject) != 0);
         duplicateButton.gameObject.SetActive((flags & ConfigFlags.Duplicate) != 0);
