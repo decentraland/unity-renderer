@@ -135,13 +135,24 @@ namespace DCL.Bots
             yield return EnsureGlobalSceneAndCatalog();
 
             if (config.xPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"X Position value wasn't provided... using player's current X Position.");
                 config.xPos = DCLCharacterController.i.characterPosition.unityPosition.x;
+            }
 
             if (config.yPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"Y Position value wasn't provided... using player's current Y Position.");
                 config.yPos = DCLCharacterController.i.characterPosition.unityPosition.y;
+            }
 
             if (config.zPos == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"Z Position value wasn't provided... using player's current Z Position.");
                 config.zPos = DCLCharacterController.i.characterPosition.unityPosition.z;
+            }
+
+            Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xPos}, {config.yPos}, {config.zPos})...");
 
             Vector3 randomizedAreaPosition = new Vector3();
             for (int i = 0; i < config.amount; i++)
@@ -149,6 +160,8 @@ namespace DCL.Bots
                 randomizedAreaPosition.Set(Random.Range(config.xPos, config.xPos + config.areaWidth), config.yPos, Random.Range(config.zPos, config.zPos + config.areaDepth));
                 InstantiateBot(randomizedAreaPosition);
             }
+
+            Log($"Finished instantiating {config.amount} avatars.");
         }
 
         /// <summary>
@@ -158,10 +171,16 @@ namespace DCL.Bots
         public IEnumerator InstantiateBotsAtCoords(CoordsInstantiationConfig config)
         {
             if (config.xCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"X Coordinate value wasn't provided... using player's current scene base X coordinate.");
                 config.xCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.x / ParcelSettings.PARCEL_SIZE);
+            }
 
             if (config.yCoord == EnvironmentSettings.UNINITIALIZED_FLOAT)
+            {
+                Log($"Y Coordinate value wasn't provided... using player's current scene base Y coordinate.");
                 config.yCoord = Mathf.Floor(DCLCharacterController.i.characterPosition.worldPosition.z / ParcelSettings.PARCEL_SIZE);
+            }
 
             var worldPosConfig = new WorldPosInstantiationConfig()
             {
@@ -172,6 +191,8 @@ namespace DCL.Bots
                 areaWidth = config.areaWidth,
                 areaDepth = config.areaDepth
             };
+
+            Log($"Instantiating {config.amount} randomized avatars inside a {config.areaWidth}x{config.areaDepth} area positioned at ({config.xCoord}, {config.yCoord}) coords...");
 
             yield return InstantiateBotsAtWorldPos(worldPosConfig);
         }
@@ -225,6 +246,9 @@ namespace DCL.Bots
             }
         }
 
+        /// <summary>
+        /// Randomizes a whole avatar set of wearables and returns a list with all the wearable IDs
+        /// </summary>
         List<string> GetRandomizedWearablesSet()
         {
             var wearablesSet = new List<string>();
@@ -286,6 +310,19 @@ namespace DCL.Bots
             pbTranf.Scale.Y = scale.y;
             pbTranf.Scale.Z = scale.z;
             return pbTranf;
+        }
+
+        /// <summary>
+        /// Logs the tool messages in console regardless of the "Debug.unityLogger.logEnabled" value. 
+        /// </summary>
+        private void Log(string message)
+        {
+            bool originalLogEnabled = Debug.unityLogger.logEnabled;
+            Debug.unityLogger.logEnabled = true;
+
+            Debug.Log("BotsController - " + message);
+
+            Debug.unityLogger.logEnabled = originalLogEnabled;
         }
     }
 }
