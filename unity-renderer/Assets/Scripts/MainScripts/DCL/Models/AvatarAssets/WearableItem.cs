@@ -188,7 +188,7 @@ public class WearableItem
     //To retrieve this properly first we need the catalyst to send the net of each wearable, not just the ID
     public bool IsInL2()
     {
-        if (id.Contains("matic") || id.Contains("mumbai"))
+        if (id.StartsWith("urn:decentraland:matic") || id.StartsWith("urn:decentraland:mumbai"))
             return true;
         return false;
     }
