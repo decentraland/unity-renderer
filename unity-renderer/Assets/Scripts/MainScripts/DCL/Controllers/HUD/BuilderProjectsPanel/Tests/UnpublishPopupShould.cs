@@ -32,9 +32,10 @@ namespace Tests
             Assert.IsTrue(view.cancelButton.gameObject.activeSelf);
             Assert.IsTrue(view.unpublishButton.gameObject.activeSelf);
             Assert.IsTrue(view.infoText.gameObject.activeSelf);
+            Assert.IsTrue(view.closeButton.gameObject.activeSelf);
             Assert.IsFalse(view.doneButton.gameObject.activeSelf);
             Assert.IsFalse(view.errorText.gameObject.activeSelf);
-            Assert.IsFalse(view.loadingBar.gameObject.activeSelf);
+            Assert.IsFalse(view.loadingBarContainer.gameObject.activeSelf);
         }
 
         [Test]
@@ -46,12 +47,13 @@ namespace Tests
             iview.SetProgress("", 0.5f);
             Assert.AreEqual("50%", view.loadingText.text);
 
-            Assert.IsTrue(view.loadingBar.gameObject.activeSelf);
+            Assert.IsTrue(view.loadingBarContainer.gameObject.activeSelf);
             Assert.IsFalse(view.cancelButton.gameObject.activeSelf);
             Assert.IsFalse(view.unpublishButton.gameObject.activeSelf);
             Assert.IsFalse(view.infoText.gameObject.activeSelf);
             Assert.IsFalse(view.doneButton.gameObject.activeSelf);
             Assert.IsFalse(view.errorText.gameObject.activeSelf);
+            Assert.IsFalse(view.closeButton.gameObject.activeSelf);
         }
 
         [Test]
@@ -63,12 +65,13 @@ namespace Tests
             iview.SetError("", error);
             Assert.AreEqual(error, view.errorText.text);
 
-            Assert.IsFalse(view.loadingBar.gameObject.activeSelf);
+            Assert.IsFalse(view.loadingBarContainer.gameObject.activeSelf);
             Assert.IsFalse(view.cancelButton.gameObject.activeSelf);
             Assert.IsFalse(view.unpublishButton.gameObject.activeSelf);
             Assert.IsFalse(view.infoText.gameObject.activeSelf);
             Assert.IsTrue(view.doneButton.gameObject.activeSelf);
             Assert.IsTrue(view.errorText.gameObject.activeSelf);
+            Assert.IsTrue(view.closeButton.gameObject.activeSelf);
         }
 
         [Test]
@@ -82,10 +85,11 @@ namespace Tests
 
             Assert.IsTrue(view.infoText.gameObject.activeSelf);
             Assert.IsTrue(view.doneButton.gameObject.activeSelf);
-            Assert.IsFalse(view.loadingBar.gameObject.activeSelf);
+            Assert.IsFalse(view.loadingBarContainer.gameObject.activeSelf);
             Assert.IsFalse(view.cancelButton.gameObject.activeSelf);
             Assert.IsFalse(view.unpublishButton.gameObject.activeSelf);
             Assert.IsFalse(view.errorText.gameObject.activeSelf);
+            Assert.IsTrue(view.closeButton.gameObject.activeSelf);
         }
 
         [Test]

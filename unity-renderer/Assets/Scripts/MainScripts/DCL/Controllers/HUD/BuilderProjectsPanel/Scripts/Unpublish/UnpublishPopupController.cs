@@ -57,7 +57,7 @@ internal class UnpublishPopupController : IDisposable
         float progress = 0;
         while (true)
         {
-            progress = Mathf.Clamp(progress + UnityEngine.Random.Range(0.01f, 0.03f), progress, 0.99f);
+            progress = Mathf.Clamp(progress + UnityEngine.Random.Range(0.01f, 0.03f), 0, 0.99f);
             view.SetProgress(PROGRESS_TITLE, progress);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 0.5f));
         }

@@ -22,7 +22,8 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
     [SerializeField] internal Button cancelButton;
     [SerializeField] internal Button unpublishButton;
     [SerializeField] internal Button doneButton;
-    [SerializeField] internal GameObject loadingBar;
+    [SerializeField] internal Button closeButton;
+    [SerializeField] internal GameObject loadingBarContainer;
     [SerializeField] internal RectTransform loadingImageRT;
     [SerializeField] internal TextMeshProUGUI loadingText;
 
@@ -47,6 +48,7 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
     {
         unpublishButton.onClick.AddListener(() => { OnConfirmPressed?.Invoke(); });
         cancelButton.onClick.AddListener(() => { OnCancelPressed?.Invoke(); });
+        closeButton.onClick.AddListener(() => { OnCancelPressed?.Invoke(); });
         doneButton.onClick.AddListener(() => { OnCancelPressed?.Invoke(); });
         loadingImageFullWidth = loadingImageRT.rect.size.x;
     }
@@ -107,7 +109,8 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
                 doneButton.gameObject.SetActive(false);
                 infoText.gameObject.SetActive(true);
                 errorText.gameObject.SetActive(false);
-                loadingBar.SetActive(false);
+                loadingBarContainer.SetActive(false);
+                closeButton.gameObject.SetActive(true);
                 break;
             case State.UNPUBLISHING:
                 cancelButton.gameObject.SetActive(false);
@@ -115,7 +118,8 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
                 doneButton.gameObject.SetActive(false);
                 infoText.gameObject.SetActive(false);
                 errorText.gameObject.SetActive(false);
-                loadingBar.SetActive(true);
+                loadingBarContainer.SetActive(true);
+                closeButton.gameObject.SetActive(false);
                 break;
             case State.DONE_UNPUBLISH:
                 cancelButton.gameObject.SetActive(false);
@@ -123,7 +127,8 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
                 doneButton.gameObject.SetActive(true);
                 infoText.gameObject.SetActive(true);
                 errorText.gameObject.SetActive(false);
-                loadingBar.SetActive(false);
+                loadingBarContainer.SetActive(false);
+                closeButton.gameObject.SetActive(true);
                 break;
             case State.ERROR_UNPUBLISH:
                 cancelButton.gameObject.SetActive(false);
@@ -131,7 +136,8 @@ internal class UnpublishPopupView : MonoBehaviour, IUnpublishPopupView
                 doneButton.gameObject.SetActive(true);
                 infoText.gameObject.SetActive(false);
                 errorText.gameObject.SetActive(true);
-                loadingBar.SetActive(false);
+                loadingBarContainer.SetActive(false);
+                closeButton.gameObject.SetActive(true);
                 break;
         }
     }
