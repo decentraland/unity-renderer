@@ -780,7 +780,22 @@ PrefabInstance:
     - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
       propertyPath: m_Damping
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_DampingWhenOccluded
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_OptimalTargetDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_MinimumDistanceFromTarget
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
