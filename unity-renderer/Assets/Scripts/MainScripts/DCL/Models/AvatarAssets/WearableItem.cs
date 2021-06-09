@@ -182,6 +182,16 @@ public class WearableItem
 
         return result;
     }
+
+    //Workaround to know the net of a wearable. 
+    //Once wearables are allowed to be moved from Ethereum to Polygon this method wont be reliable anymore
+    //To retrieve this properly first we need the catalyst to send the net of each wearable, not just the ID
+    public bool IsInL2()
+    {
+        if (id.Contains("matic") || id.Contains("mumbai"))
+            return true;
+        return false;
+    }
 }
 
 [System.Serializable]
