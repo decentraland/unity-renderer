@@ -19,10 +19,10 @@ internal class ManaCounterView : MonoBehaviour
     {
         double manaBalance = 0;
         if (double.TryParse(balance, out manaBalance))
-        {
-            balanceText.text = FormatBalanceToString(manaBalance);
-        }
+            SetBalance(manaBalance);
     }
+
+    public void SetBalance(double balance) { balanceText.text = FormatBalanceToString(balance); }
 
     private string FormatBalanceToString(double balance)
     {
