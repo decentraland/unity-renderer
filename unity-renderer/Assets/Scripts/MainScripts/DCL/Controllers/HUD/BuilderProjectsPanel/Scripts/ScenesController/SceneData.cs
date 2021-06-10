@@ -25,6 +25,7 @@ internal interface ISceneData
     bool isEditable { get; }
     Vector2Int[] parcels { get; }
     string projectId { get; }
+    bool isEmpty { get; }
 }
 
 [Serializable]
@@ -55,6 +56,7 @@ internal class SceneData : ISceneData
     public bool isEditable;
     public Vector2Int[] parcels;
     public string projectId;
+    public bool isEmpty;
 
     Vector2Int ISceneData.coords => coords;
     Vector2Int ISceneData.size => size;
@@ -78,6 +80,7 @@ internal class SceneData : ISceneData
     bool ISceneData.isEditable => isEditable;
     Vector2Int[] ISceneData.parcels => parcels;
     string ISceneData.projectId => projectId;
+    bool ISceneData.isEmpty => isEmpty;
 
     public SceneData() { }
 
@@ -98,6 +101,7 @@ internal class SceneData : ISceneData
         isEditable = deployedScene.source != DeployedScene.Source.SDK;
         parcels = deployedScene.parcels;
         projectId = deployedScene.projectId;
+        isEmpty = deployedScene.isEmpty;
 
         isMatureContent = false;
         if (!string.IsNullOrEmpty(deployedScene.contentRating))
