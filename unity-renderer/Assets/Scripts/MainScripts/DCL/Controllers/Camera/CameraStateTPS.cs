@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ public class CameraStateTPS : CameraStateBase
 {
     private CinemachineFreeLook defaultVirtualCameraAsFreeLook => defaultVirtualCamera as CinemachineFreeLook;
 
+    [SerializeField] private CinemachineVirtualCamera fallingVirtualCamera;
     [SerializeField] private InputAction_Measurable characterYAxis;
     [SerializeField] private InputAction_Measurable characterXAxis;
     private CinemachineTransposer freeLookTopRig;
@@ -24,6 +26,11 @@ public class CameraStateTPS : CameraStateBase
 
     public float rotationLerpSpeed = 10;
 
+
+    public FollowWithDamping cameraTargetProbe;
+    public float dampingOnAir;
+    public float dampingOnGround;
+
     public override void Init(Camera camera)
     {
         freeLookTopRig = defaultVirtualCameraAsFreeLook.GetRig(0).GetCinemachineComponent<CinemachineTransposer>();
@@ -39,9 +46,15 @@ public class CameraStateTPS : CameraStateBase
         base.Init(camera);
     }
 
-    private void OnEnable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera; }
+    private void OnEnable()
+    {
+        CommonScriptableObjects.playerIsOnMovingPlatform.OnChange += UpdateMovingPlatformCamera;
+    }
 
-    private void OnDisable() { CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera; }
+    private void OnDisable()
+    {
+        CommonScriptableObjects.playerIsOnMovingPlatform.OnChange -= UpdateMovingPlatformCamera;
+    }
 
     void UpdateMovingPlatformCamera(bool isOnMovingPlatform, bool wasOnMovingPlatform)
     {
@@ -86,8 +99,17 @@ public class CameraStateTPS : CameraStateBase
         base.OnSelect();
     }
 
+    private Vector3 charLastPosition;
+
+    [Tooltip("Min raycast ground distance to be considered airborne")]
+    [SerializeField] private float groundCheckThreshold;
+
+    [Tooltip("Min raycast ground distance to be considered a fall")]
+    [SerializeField] private float fallGroundDistanceThreshold = 5;
+
     public override void OnUpdate()
     {
+        charLastPosition = characterPosition;
         defaultVirtualCameraAsFreeLook.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
 
         var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));
@@ -120,6 +142,67 @@ public class CameraStateTPS : CameraStateBase
                 var lerpedForward = Vector3.Slerp(characterForward.Get().Value, forwardTarget, rotationLerpSpeed * Time.deltaTime);
                 characterForward.Set(lerpedForward);
             }
+        }
+
+        UpdateGroundCamera();
+    }
+
+
+    public float fallDetectionDelay = 0.5f;
+    private float fallDetectionTimer = 0;
+
+    private Vector3 lastPosition;
+
+    void UpdateGroundCamera()
+    {
+        RaycastHit hitInfo;
+
+        bool didHit = DCLCharacterController.i.CastGroundCheckingRays(20, 0.1f, out hitInfo);
+
+        bool useFallingCamera = false;
+
+        if ( didHit )
+        {
+            if ( hitInfo.distance < groundCheckThreshold )
+                cameraTargetProbe.damping.y = dampingOnGround;
+            else
+                cameraTargetProbe.damping.y = dampingOnAir;
+
+            useFallingCamera = hitInfo.distance > fallGroundDistanceThreshold;
+        }
+        else
+        {
+            useFallingCamera = true;
+        }
+
+
+        Vector3 velocity = characterPosition - lastPosition;
+
+        if ( velocity.y < 0 )
+        {
+            fallDetectionTimer += Time.deltaTime;
+
+            if ( fallDetectionTimer < fallDetectionDelay )
+            {
+                useFallingCamera = false;
+            }
+        }
+        else
+        {
+            fallDetectionTimer = 0;
+        }
+
+        lastPosition = characterPosition;
+
+        if ( fallingVirtualCamera.gameObject.activeSelf != useFallingCamera)
+            fallingVirtualCamera.gameObject.SetActive(useFallingCamera);
+
+        if ( useFallingCamera )
+        {
+            var orbitalTransposer = fallingVirtualCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
+
+            if ( orbitalTransposer != null )
+                orbitalTransposer.m_XAxis = defaultVirtualCameraAsFreeLook.m_XAxis;
         }
     }
 

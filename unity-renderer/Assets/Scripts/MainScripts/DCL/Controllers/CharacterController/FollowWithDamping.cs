@@ -1,13 +1,21 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class FollowWithDamping : MonoBehaviour
 {
     public Transform target;
     public Vector3 damping;
+    public float dampingChangeSpeed = 0.5f;
 
-    public void Start()
+    [Header("Debug Zone")]
+    public Vector3 currentDamping;
+
+    private void Start()
     {
-        transform.parent = null;
+        currentDamping = damping;
+
+        if (target != null)
+            transform.position = target.position;
     }
 
     public void LateUpdate()
@@ -16,9 +24,13 @@ public class FollowWithDamping : MonoBehaviour
         Vector3 targetPosition = target.position;
         Vector3 finalPosition = myPosition;
 
-        finalPosition.x += Damp(targetPosition.x - myPosition.x,  damping.x, Time.deltaTime);
-        finalPosition.y += Damp(targetPosition.y - myPosition.y, damping.y, Time.deltaTime);
-        finalPosition.z += Damp(targetPosition.z - myPosition.z, damping.z, Time.deltaTime);
+        currentDamping.x += Damp( damping.x - currentDamping.x, dampingChangeSpeed, Time.deltaTime );
+        currentDamping.y += Damp( damping.y - currentDamping.y, dampingChangeSpeed, Time.deltaTime );
+        currentDamping.z += Damp( damping.z - currentDamping.z, dampingChangeSpeed, Time.deltaTime );
+
+        finalPosition.x += Damp(targetPosition.x - myPosition.x,  currentDamping.x, Time.deltaTime);
+        finalPosition.y += Damp(targetPosition.y - myPosition.y, currentDamping.y, Time.deltaTime);
+        finalPosition.z += Damp(targetPosition.z - myPosition.z, currentDamping.z, Time.deltaTime);
 
         transform.position = finalPosition;
         transform.forward = target.forward;
