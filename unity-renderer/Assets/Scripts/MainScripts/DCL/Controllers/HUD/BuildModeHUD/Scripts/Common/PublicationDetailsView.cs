@@ -34,6 +34,7 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
 
     [SerializeField] internal Button cancelButton;
     [SerializeField] internal Button publishButton;
+    [SerializeField] internal TMP_Text publishButtonText;
     [SerializeField] internal TMP_InputField sceneNameInput;
     [SerializeField] internal TMP_Text sceneNameValidationText;
     [SerializeField] internal TMP_InputField sceneDescriptionInput;
@@ -104,7 +105,11 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
         UpdateSceneDescriptionCharCounter();
     }
 
-    public void SetPublishButtonActive(bool isActive) { publishButton.interactable = isActive; }
+    public void SetPublishButtonActive(bool isActive)
+    {
+        publishButton.interactable = isActive;
+        publishButtonText.color = new Color(publishButtonText.color.r, publishButtonText.color.g, publishButtonText.color.b, isActive ? 1f : 0.5f);
+    }
 
     public void SetPublicationScreenshot(Texture2D screenshotTexture) { sceneScreenshot.sprite = Sprite.Create(screenshotTexture, new Rect(0.0f, 0.0f, screenshotTexture.width, screenshotTexture.height), new Vector2(0.5f, 0.5f)); }
 
