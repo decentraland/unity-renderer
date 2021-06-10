@@ -22,6 +22,8 @@ public interface IPublicationDetailsView
     string GetSceneName();
     string GetSceneDescription();
     Texture2D GetSceneScreenshotTexture();
+    void UpdateSceneNameCharCounter();
+    void UpdateSceneDescriptionCharCounter();
 }
 
 public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
@@ -30,13 +32,16 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
     public event Action<string, string> OnPublish;
     public event Action<string> OnSceneNameChange;
 
-    [SerializeField] internal Button closeButton;
     [SerializeField] internal Button cancelButton;
     [SerializeField] internal Button publishButton;
     [SerializeField] internal TMP_InputField sceneNameInput;
     [SerializeField] internal TMP_Text sceneNameValidationText;
     [SerializeField] internal TMP_InputField sceneDescriptionInput;
     [SerializeField] internal Image sceneScreenshot;
+    [SerializeField] internal TMP_Text sceneNameCharCounterText;
+    [SerializeField] internal int sceneNameCharLimit = 30;
+    [SerializeField] internal TMP_Text sceneDescriptionCharCounterText;
+    [SerializeField] internal int sceneDescriptionCharLimit = 140;
 
     private const string VIEW_PATH = "Common/PublicationDetailsView";
 
@@ -52,20 +57,31 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
 
     private void Awake()
     {
-        closeButton.onClick.AddListener(Cancel);
         cancelButton.onClick.AddListener(Cancel);
         publishButton.onClick.AddListener(Publish);
 
-        sceneNameInput.onValueChanged.AddListener((newText) => OnSceneNameChange?.Invoke(newText));
+        sceneNameInput.onValueChanged.AddListener((newText) =>
+        {
+            UpdateSceneNameCharCounter();
+            OnSceneNameChange?.Invoke(newText);
+        });
+
+        sceneDescriptionInput.onValueChanged.AddListener((newText) =>
+        {
+            UpdateSceneDescriptionCharCounter();
+        });
+
+        sceneNameInput.characterLimit = sceneNameCharLimit;
+        sceneDescriptionInput.characterLimit = sceneDescriptionCharLimit;
     }
 
     private void OnDestroy()
     {
-        closeButton.onClick.RemoveListener(Cancel);
         cancelButton.onClick.RemoveListener(Cancel);
         publishButton.onClick.RemoveListener(Publish);
 
         sceneNameInput.onValueChanged.RemoveAllListeners();
+        sceneDescriptionInput.onValueChanged.RemoveAllListeners();
     }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
@@ -76,9 +92,17 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
 
     public void SetSceneNameValidationActive(bool isActive) { sceneNameValidationText.enabled = isActive; }
 
-    public void SetSceneName(string newtext) { sceneNameInput.text = newtext; }
+    public void SetSceneName(string newtext)
+    {
+        sceneNameInput.text = newtext;
+        UpdateSceneNameCharCounter();
+    }
 
-    public void SetSceneDescription(string newtext) { sceneDescriptionInput.text = newtext; }
+    public void SetSceneDescription(string newtext)
+    {
+        sceneDescriptionInput.text = newtext;
+        UpdateSceneDescriptionCharCounter();
+    }
 
     public void SetPublishButtonActive(bool isActive) { publishButton.interactable = isActive; }
 
@@ -89,4 +113,8 @@ public class PublicationDetailsView : MonoBehaviour, IPublicationDetailsView
     public string GetSceneDescription() { return sceneDescriptionInput.text; }
 
     public Texture2D GetSceneScreenshotTexture() { return sceneScreenshot.sprite.texture; }
+
+    public void UpdateSceneNameCharCounter() { sceneNameCharCounterText.text = $"{sceneNameInput.text.Length}/{sceneNameCharLimit}"; }
+
+    public void UpdateSceneDescriptionCharCounter() { sceneDescriptionCharCounterText.text = $"{sceneDescriptionInput.text.Length}/{sceneDescriptionCharLimit}"; }
 }
