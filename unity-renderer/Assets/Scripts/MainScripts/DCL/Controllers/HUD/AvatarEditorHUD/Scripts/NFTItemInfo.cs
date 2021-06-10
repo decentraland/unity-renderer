@@ -24,6 +24,7 @@ public class NFTItemInfo : MonoBehaviour
         public string description;
         public int issuedId;
         public int issuedTotal;
+        public bool isInL2;
 
         public bool Equals(Model other)
         {
@@ -47,7 +48,8 @@ public class NFTItemInfo : MonoBehaviour
                 iconIds = iconsIds,
                 description = wearable.description,
                 issuedId = wearable.issuedId,
-                issuedTotal = wearable.GetIssuedCountFromRarity(wearable.rarity)
+                issuedTotal = wearable.GetIssuedCountFromRarity(wearable.rarity),
+                isInL2 = wearable.IsInL2()
             };
         }
     }
@@ -57,6 +59,8 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal IconToGameObjectMap[] icons;
     [SerializeField] internal TextMeshProUGUI description;
     [SerializeField] internal TextMeshProUGUI minted;
+    [SerializeField] internal GameObject ethNetwork;
+    [SerializeField] internal GameObject l2Network;
 
     private Model currentModel;
     private AssetPromise_Texture thumbnailPromise;
@@ -90,6 +94,10 @@ public class NFTItemInfo : MonoBehaviour
             RectTransform rt = x.transform as RectTransform;
             Utils.ForceRebuildLayoutImmediate(rt);
         }, transform);
+
+
+        ethNetwork.SetActive(!currentModel.isInL2);
+        l2Network.SetActive(currentModel.isInL2);
 
         if (gameObject.activeInHierarchy)
             GetThumbnail();
