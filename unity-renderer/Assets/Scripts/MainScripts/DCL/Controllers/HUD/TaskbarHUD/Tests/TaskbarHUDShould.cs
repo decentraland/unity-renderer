@@ -160,6 +160,7 @@ public class TaskbarHUDShould : IntegrationTestSuite_Legacy
 
         ChatHeadButton headButton = buttonList[2] as ChatHeadButton;
         Assert.IsFalse(headButton.toggledOn);
+        Assert.IsTrue(headButton.toggleButton.interactable);
 
         //NOTE(Brian): Toggle chat head on and test it works as intended
         headButton.toggleButton.onClick.Invoke();
