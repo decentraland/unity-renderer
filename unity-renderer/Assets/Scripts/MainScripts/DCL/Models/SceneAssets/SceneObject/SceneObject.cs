@@ -47,6 +47,4 @@ public class SceneObject
     public string GetBaseURL() { return baseUrl; }
 
     public bool IsSmartItem() { return !string.IsNullOrEmpty(script); }
-
-    public bool IsVoxel() { return asset_pack_id == BuilderInWorldSettings.VOXEL_ASSETS_PACK_ID; }
 }
