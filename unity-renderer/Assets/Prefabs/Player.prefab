@@ -396,17 +396,125 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 326638023455565217}
     m_Modifications:
+    - target: {fileID: 163332511, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0051870346
+      objectReference: {fileID: 0}
+    - target: {fileID: 573743093, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8063285
+      objectReference: {fileID: 0}
     - target: {fileID: 573743093, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.4046995
+      value: -0.57244503
+      objectReference: {fileID: 0}
+    - target: {fileID: 573743093, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.14867388
       objectReference: {fileID: 0}
     - target: {fileID: 573743093, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0075405687
+      value: -0.006097708
+      objectReference: {fileID: 0}
+    - target: {fileID: 659778075, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_FollowOffset.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 989669553, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_FollowOffset.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1128386904, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_Orbits.Array.data[1].m_Height
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1128386904, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_Orbits.Array.data[2].m_Height
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: Damping.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: Damping.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: Damping.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: CameraSide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: CameraRadius
+      value: 0.108
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: CameraDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: ShoulderOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: ShoulderOffset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1353335591, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: VerticalArmLength
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404322283, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7915992
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404322283, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5970465
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404322283, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.13001458
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404322283, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0015804693
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548268436, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_Lens.FieldOfView
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548268436, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_Transitions.m_BlendHint
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1548268436, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_Transitions.m_InheritPosition
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1915684162, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_FollowOffset.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072030609, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8329199
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072030609, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5421852
+      objectReference: {fileID: 0}
+    - target: {fileID: 2072030609, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.11044752
       objectReference: {fileID: 0}
     - target: {fileID: 2072030609, guid: bc570f5e94906eb47814191e0beaee7a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.036127314
+      value: -0.009001203
       objectReference: {fileID: 0}
     - target: {fileID: 1379362891393605244, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
@@ -465,18 +573,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1526003882666009685, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0051870346
+      objectReference: {fileID: 0}
+    - target: {fileID: 1526003882666009685, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.94808716
+      objectReference: {fileID: 0}
+    - target: {fileID: 1526003882666009685, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.21023184
+      value: -0.2810511
       objectReference: {fileID: 0}
     - target: {fileID: 1526003882666009685, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7046382
+      value: 0.14266253
       objectReference: {fileID: 0}
     - target: {fileID: 1526003882666009685, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.2327412
+      value: 0.042290896
       objectReference: {fileID: 0}
     - target: {fileID: 3920995719202391552, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
@@ -487,6 +605,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CameraController
+      objectReference: {fileID: 0}
+    - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_Damping
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8178417388690000508, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: m_DampingWhenOccluded
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8626957695305342742, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: dampingOnAir
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8626957695305342742, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: groundCheckThreshold
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8626957695305342742, guid: bc570f5e94906eb47814191e0beaee7a,
+        type: 3}
+      propertyPath: fallGroundDistanceThreshold
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9058585267122995640, guid: bc570f5e94906eb47814191e0beaee7a,
         type: 3}
