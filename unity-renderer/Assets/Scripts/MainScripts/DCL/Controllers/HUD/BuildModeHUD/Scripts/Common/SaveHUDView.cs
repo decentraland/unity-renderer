@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +28,8 @@ public class SaveHUDView : MonoBehaviour, ISaveHUDView
 
     private Coroutine animationCourutine;
 
+    private void OnDisable() { StopAnimation(); }
+
     public void SceneStateSaved()
     {
         StopAnimation();
@@ -42,6 +42,8 @@ public class SaveHUDView : MonoBehaviour, ISaveHUDView
             CoroutineStarter.Stop(animationCourutine);
             animationCourutine = null;
         }
+
+        HideSaveImage();
     }
 
     public void SetFirstPersonView() { saveImg.rectTransform.anchoredPosition = firstPersonModePosition.anchoredPosition; }
@@ -50,7 +52,7 @@ public class SaveHUDView : MonoBehaviour, ISaveHUDView
 
     public void SetViewByEntityListOpen(bool isOpen) { saveImg.rectTransform.anchoredPosition = isOpen ? godModeEntityListOpenPosition.anchoredPosition : godModePosition.anchoredPosition; }
 
-    IEnumerator SceneStateSaveAnimation()
+    private IEnumerator SceneStateSaveAnimation()
     {
         float initialValue = percentMinVisible;
         float finalValue = 1;
@@ -89,6 +91,11 @@ public class SaveHUDView : MonoBehaviour, ISaveHUDView
             yield return null;
         }
 
+        HideSaveImage();
+    }
+
+    private void HideSaveImage()
+    {
         Color final = saveImg.color;
         final.a = 0;
         saveImg.color = final;

@@ -77,7 +77,6 @@ public class BIWPublishController : BIWController
             return;
 
         HUDController.i.builderInWorldMainHud.PublishStart();
-        biwSaveController.ForceSave();
     }
 
     void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
