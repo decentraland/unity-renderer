@@ -21,13 +21,13 @@ namespace DCL
         /// <param name="platformBuilder">A func returning a PlatformContext to be used by the environment.</param>
         /// <param name="worldRuntimeBuilder">A func returning a WorldRuntimeContext to be used by the environment.</param>
         public static void SetupWithBuilders(
-            System.Func<MessagingContext> messagingBuilder = null,
-            System.Func<PlatformContext> platformBuilder = null,
-            System.Func<WorldRuntimeContext> worldRuntimeBuilder = null)
+            System.Func<MessagingContext> messagingBuilder,
+            System.Func<PlatformContext> platformBuilder,
+            System.Func<WorldRuntimeContext> worldRuntimeBuilder)
         {
-            Environment.messagingBuilder = messagingBuilder ?? MessagingContextFactory.CreateDefault;
-            Environment.platformBuilder = platformBuilder ?? PlatformContextFactory.CreateDefault;
-            Environment.worldRuntimeBuilder = worldRuntimeBuilder ?? WorldRuntimeContextFactory.CreateDefault;
+            Environment.messagingBuilder = messagingBuilder;
+            Environment.platformBuilder = platformBuilder;
+            Environment.worldRuntimeBuilder = worldRuntimeBuilder;
             Setup();
         }
 
@@ -88,14 +88,12 @@ namespace DCL
             public readonly PlatformContext platform;
             public readonly WorldRuntimeContext world;
 
-            public Model(System.Func<MessagingContext> messagingBuilder = null,
-                System.Func<PlatformContext> platformBuilder = null,
-                System.Func<WorldRuntimeContext> worldBuilder = null)
-            {
-                messagingBuilder = messagingBuilder ?? MessagingContextFactory.CreateDefault;
-                platformBuilder = platformBuilder ?? PlatformContextFactory.CreateDefault;
-                worldBuilder = worldBuilder ?? WorldRuntimeContextFactory.CreateDefault;
+            public Model () { }
 
+            public Model(System.Func<MessagingContext> messagingBuilder,
+                System.Func<PlatformContext> platformBuilder,
+                System.Func<WorldRuntimeContext> worldBuilder)
+            {
                 this.messaging = messagingBuilder();
                 this.platform = platformBuilder();
                 this.world = worldBuilder();

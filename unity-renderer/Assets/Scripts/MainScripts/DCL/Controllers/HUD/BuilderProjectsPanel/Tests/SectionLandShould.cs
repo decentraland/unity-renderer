@@ -22,7 +22,7 @@ namespace Tests
         public void TearDown()
         {
             Object.Destroy(view.gameObject);
-            WebRequestController.i.Dispose();
+            DCL.Environment.i.platform.webRequest.Dispose();
         }
 
         [Test]

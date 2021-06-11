@@ -16,7 +16,12 @@ namespace AssetPromiseKeeper_Tests
         [UnitySetUp]
         protected virtual IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders();
+            Environment.SetupWithBuilders
+            (
+                MessagingContextFactory.CreateDefault,
+                PlatformContextFactory.CreateDefault,
+                WorldRuntimeContextFactory.CreateDefault
+            );
             keeper = new APKType();
             yield break;
         }
