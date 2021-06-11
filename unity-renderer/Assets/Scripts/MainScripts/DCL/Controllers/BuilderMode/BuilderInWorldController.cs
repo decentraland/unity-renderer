@@ -420,18 +420,12 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
-            Notification.Model notificationModel = new Notification.Model();
-            notificationModel.message = LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE;
-            notificationModel.type = NotificationFactory.Type.GENERIC;
-            HUDController.i.notificationHud.ShowNotification(notificationModel);
+            ShowGenericNotification(LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
         else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
-            Notification.Model notificationModel = new Notification.Model();
-            notificationModel.message = LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE;
-            notificationModel.type = NotificationFactory.Type.GENERIC;
-            HUDController.i.notificationHud.ShowNotification(notificationModel);
+            ShowGenericNotification(LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
             return;
         }
 
@@ -672,5 +666,13 @@ public class BuilderInWorldController : MonoBehaviour
                                  CACHE_TIME_LAND,
                                  CACHE_TIME_SCENES)
                              .Then(lands => landsWithAccess = lands.ToList());
+    }
+
+    private static void ShowGenericNotification(string message)
+    {
+        Notification.Model notificationModel = new Notification.Model();
+        notificationModel.message = message;
+        notificationModel.type = NotificationFactory.Type.GENERIC;
+        HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }
