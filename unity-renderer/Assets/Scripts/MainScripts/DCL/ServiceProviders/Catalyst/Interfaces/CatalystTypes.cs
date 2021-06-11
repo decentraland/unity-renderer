@@ -97,6 +97,7 @@ public class CatalystSceneEntityMetadata
         public Vector2Int point;
         public string rotation;
         public Layout layout;
+        public bool isEmpty;
     }
 
     public Display display;
