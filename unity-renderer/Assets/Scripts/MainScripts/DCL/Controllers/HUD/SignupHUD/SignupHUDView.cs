@@ -39,6 +39,7 @@ namespace SignupHUD
         [SerializeField] internal TextMeshProUGUI nameCurrentCharacters;
         [SerializeField] internal GameObject emailInputFieldInvalid;
         [SerializeField] internal TMP_InputField emailInputField;
+        [SerializeField] internal GameObject emailInputInvalidLabel;
         [SerializeField] internal Color colorForCharLimit;
 
         [Header("Terms of Service Screen")]
@@ -74,10 +75,11 @@ namespace SignupHUD
                 nameCurrentCharacters.text = $"{text.Length} / {MAX_NAME_LENGTH}";
                 nameCurrentCharacters.color = text.Length < MAX_NAME_LENGTH ? Color.black : colorForCharLimit;
                 nameInputInvalidLabel.SetActive(!IsValidName(text));
-                nameInputFieldFullOrInvalid.SetActive(text.Length >= MAX_NAME_LENGTH);
+                nameInputFieldFullOrInvalid.SetActive(text.Length >= MAX_NAME_LENGTH || !IsValidName(text));
             });
             emailInputField.onValueChanged.AddListener((text) =>
             {
+                emailInputFieldInvalid.SetActive(!IsValidEmail(text));
                 emailInputFieldInvalid.SetActive(!IsValidEmail(text));
                 UpdateNameAndEmailNextButton();
             });
