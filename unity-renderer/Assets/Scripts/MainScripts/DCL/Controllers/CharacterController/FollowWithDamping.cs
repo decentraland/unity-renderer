@@ -15,7 +15,10 @@ public class FollowWithDamping : MonoBehaviour
         currentDamping = damping;
 
         if (target != null)
+        {
             transform.position = target.position;
+            transform.forward = target.forward;
+        }
 
         transform.parent = null;
     }
