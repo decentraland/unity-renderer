@@ -1,5 +1,6 @@
 using System;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,11 +30,18 @@ namespace SignupHUD
         public event Action OnTermsOfServiceAgreed;
         public event Action OnTermsOfServiceBack;
 
+        [Header("Name and Email Screen")]
         [SerializeField] internal RectTransform nameAndEmailPanel;
         [SerializeField] internal Button nameAndEmailNextButton;
         [SerializeField] internal TMP_InputField nameInputField;
+        [SerializeField] internal GameObject nameInputFieldFullOrInvalid;
+        [SerializeField] internal GameObject nameInputInvalidLabel;
         [SerializeField] internal TextMeshProUGUI nameCurrentCharacters;
+        [SerializeField] internal GameObject emailInputFieldInvalid;
         [SerializeField] internal TMP_InputField emailInputField;
+        [SerializeField] internal Color colorForCharLimit;
+
+        [Header("Terms of Service Screen")]
         [SerializeField] internal RectTransform termsOfServicePanel;
         [SerializeField] internal Button editAvatarButton;
         [SerializeField] internal ScrollRect termsOfServiceScrollView;
@@ -43,6 +51,12 @@ namespace SignupHUD
 
         private void Awake()
         {
+            InitNameAndEmailScreen();
+            InitTermsOfServicesScreen();
+        }
+
+        private void InitNameAndEmailScreen()
+        {
             UserProfile userProfile = UserProfile.GetOwnUserProfile();
             OnFaceSnapshotReady(userProfile.faceSnapshot);
             userProfile.OnFaceSnapshotReadyEvent += OnFaceSnapshotReady;
@@ -50,18 +64,29 @@ namespace SignupHUD
             nameAndEmailNextButton.interactable = false;
             nameCurrentCharacters.text = $"{0} / {MAX_NAME_LENGTH}";
             nameInputField.characterLimit = MAX_NAME_LENGTH;
+            nameInputInvalidLabel.SetActive(false);
+            nameInputFieldFullOrInvalid.SetActive(false);
+            emailInputFieldInvalid.SetActive(false);
+
             nameInputField.onValueChanged.AddListener((text) =>
             {
                 UpdateNameAndEmailNextButton();
                 nameCurrentCharacters.text = $"{text.Length} / {MAX_NAME_LENGTH}";
+                nameCurrentCharacters.color = text.Length < MAX_NAME_LENGTH ? Color.black : colorForCharLimit;
+                nameInputInvalidLabel.SetActive(!IsValidName(text));
+                nameInputFieldFullOrInvalid.SetActive(text.Length >= MAX_NAME_LENGTH);
             });
-            nameInputField.characterValidation = TMP_InputField.CharacterValidation.Alphanumeric;
             emailInputField.onValueChanged.AddListener((text) =>
             {
+                emailInputFieldInvalid.SetActive(!IsValidEmail(text));
                 UpdateNameAndEmailNextButton();
             });
             nameAndEmailNextButton.onClick.AddListener(() => OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text));
+            editAvatarButton.onClick.AddListener(() => OnEditAvatar?.Invoke());
+        }
 
+        private void InitTermsOfServicesScreen()
+        {
             termsOfServiceScrollView.onValueChanged.AddListener(pos =>
             {
                 if (pos.y <= 0.1f)
@@ -70,7 +95,6 @@ namespace SignupHUD
             termsOfServiceAgreeButton.interactable = false;
             termsOfServiceBackButton.onClick.AddListener(() => OnTermsOfServiceBack?.Invoke());
             termsOfServiceAgreeButton.onClick.AddListener(() => OnTermsOfServiceAgreed?.Invoke());
-            editAvatarButton.onClick.AddListener(() => OnEditAvatar?.Invoke());
         }
 
         private void OnFaceSnapshotReady(Texture2D texture) { avatarPic.texture = texture; }
@@ -107,7 +131,7 @@ namespace SignupHUD
             string name = nameInputField.text;
             string email = emailInputField.text;
 
-            nameAndEmailNextButton.interactable = name.Length >= MIN_NAME_LENGTH && (email.Length == 0 || IsValidEmail(email));
+            nameAndEmailNextButton.interactable = name.Length >= MIN_NAME_LENGTH && IsValidName(name) && (email.Length == 0 || IsValidEmail(email));
         }
 
         private bool IsValidEmail(string email)
@@ -122,5 +146,7 @@ namespace SignupHUD
                 return false;
             }
         }
+
+        private bool IsValidName(string name) { return Regex.IsMatch(name, "^[a-zA-Z0-9]*$"); }
     }
 }
