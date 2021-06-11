@@ -106,10 +106,6 @@ public static class BIWCatalogManager
         if (sceneObject.IsSmartItem())
             return;
 
-        //TODO: Voxels disabled for Builder In World V1
-        if (sceneObject.IsVoxel())
-            return;
-
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);
         DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
     }
@@ -184,10 +180,6 @@ public static class BIWCatalogManager
         {
             //TODO: SmartItems disabled until kernel has them implemented
             if (sceneObject.IsSmartItem())
-                continue;
-
-            //TODO: Voxels disabled for Builder In World V1
-            if (sceneObject.IsVoxel())
                 continue;
 
             catalogItemPack.assets.Add(CreateCatalogItem(sceneObject));
