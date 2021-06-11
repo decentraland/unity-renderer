@@ -24,6 +24,7 @@ public class BuilderProjectsPanelController : IHUD
     private ISectionsController sectionsController;
     private IScenesViewController scenesViewController;
     private ILandController landsController;
+    private UnpublishPopupController unpublishPopupController;
 
     private SectionsHandler sectionsHandler;
     private SceneContextMenuHandler sceneContextMenuHandler;
@@ -39,9 +40,7 @@ public class BuilderProjectsPanelController : IHUD
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
     public BuilderProjectsPanelController() : this(
-        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH)))
-    {
-    }
+        Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
 
     internal BuilderProjectsPanelController(IBuilderProjectsPanelView view)
     {
@@ -54,7 +53,10 @@ public class BuilderProjectsPanelController : IHUD
         StopFetchInterval();
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
+
+        unpublishPopupController?.Dispose();
 
         fetchLandPromise?.Dispose();
 
@@ -93,6 +95,8 @@ public class BuilderProjectsPanelController : IHUD
         this.theGraph = theGraph;
         this.catalyst = catalyst;
 
+        this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
+
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsController, view.GetSearchBar());
         // handle if main panel or settings panel should be shown in current section
@@ -100,7 +104,7 @@ public class BuilderProjectsPanelController : IHUD
         // handle project scene info on the left menu panel
         leftMenuSettingsViewHandler = new LeftMenuSettingsViewHandler(view.GetSettingsViewReferences(), scenesViewController);
         // handle scene's context menu options
-        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController);
+        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
 
         SetView();
 
@@ -112,6 +116,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.OnEditorPressed += OnGoToEditScene;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -143,7 +148,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.AddListener((IProjectSceneListener) view);
     }
 
-    private void FetchLandsAndScenes()
+    private void FetchLandsAndScenes(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
     {
         if (isFetching)
             return;
@@ -169,7 +174,7 @@ public class BuilderProjectsPanelController : IHUD
 
         sectionsController.SetFetchingDataStart();
 
-        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, CACHE_TIME_LAND, CACHE_TIME_SCENES);
+        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, landCacheTime, scenesCacheTime);
         fetchLandPromise
             .Then(lands =>
             {
@@ -179,9 +184,9 @@ public class BuilderProjectsPanelController : IHUD
                 try
                 {
                     var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                        .Select(land => land.scenes.Select(scene => (ISceneData)new SceneData(scene)))
-                        .Aggregate((i, j) => i.Concat(j))
-                        .ToArray();
+                                      .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                                      .Aggregate((i, j) => i.Concat(j))
+                                      .ToArray();
 
                     landsController.SetLands(lands);
                     scenesViewController.SetScenes(scenes);
@@ -241,6 +246,14 @@ public class BuilderProjectsPanelController : IHUD
         {
             yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
             FetchLandsAndScenes();
+        }
+    }
+
+    private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)
+    {
+        if (current.ok)
+        {
+            FetchLandsAndScenes(CACHE_TIME_LAND, 0);
         }
     }
 }

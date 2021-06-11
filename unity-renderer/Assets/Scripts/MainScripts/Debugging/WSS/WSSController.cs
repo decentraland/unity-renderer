@@ -469,6 +469,7 @@ namespace DCL
                             case "InitializeQuests":
                             case "UpdateQuestProgress":
                             case "SetENSOwnerQueryResult":
+                            case "UnpublishSceneResult":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "CrashPayloadRequest":
@@ -479,6 +480,9 @@ namespace DCL
                                 break;
                             case "PublishSceneResult":
                                 GetBuilderInWorldBridge()?.PublishSceneResult(msg.payload);
+                                break;
+                            case "BuilderProjectInfo":
+                                GetBuilderInWorldBridge()?.BuilderProjectInfo(msg.payload);
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds))

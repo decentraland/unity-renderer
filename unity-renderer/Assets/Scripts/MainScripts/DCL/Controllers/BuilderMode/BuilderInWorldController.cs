@@ -3,10 +3,9 @@ using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
+using System;
 using UnityEngine;
 using Environment = DCL.Environment;
-using System;
-using DCL;
 
 public class BuilderInWorldController : MonoBehaviour
 {
@@ -462,9 +461,9 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (IsNewScene())
         {
-            SetupNewScene();
             biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
             biwFloorHandler.OnAllParcelsFloorLoaded += OnAllParcelsFloorLoaded;
+            SetupNewScene();
         }
         else
         {
@@ -511,7 +510,6 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
-        biwSaveController.ForceSave();
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;

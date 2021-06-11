@@ -14,4 +14,5 @@ public interface ITheGraph : IDisposable
     Promise<string> Query(string url, string query, QueryVariablesBase variables);
     Promise<List<Land>> QueryLands(string tld, string address);
     Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds);
+    Promise<double> QueryPolygonMana(string address);
 }

@@ -10,7 +10,10 @@ namespace Tests
 
         protected virtual PlatformContext CreatePlatformContext() { return DCL.Tests.PlatformContextFactory.CreateMocked(); }
 
-        protected virtual MessagingContext CreateMessagingContext() { return DCL.Tests.MessagingContextFactory.CreateMocked(); }
+        protected virtual MessagingContext CreateMessagingContext()
+        {
+            return DCL.Tests.MessagingContextFactory.CreateMocked();
+        }
 
         [UnitySetUp]
         protected virtual IEnumerator SetUp()

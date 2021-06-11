@@ -23,7 +23,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action OnConfirmPublishAction;
+    public event Action<string, string, string> OnConfirmPublishAction;
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
@@ -70,6 +70,7 @@ public class BuildModeHUDController : IHUD
         ConfigureTopActionsButtonsController();
         ConfigureCatalogItemDropController();
         ConfigureSaveHUDController();
+        ConfigurePublicationDetailsController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -85,6 +86,7 @@ public class BuildModeHUDController : IHUD
         controllers = new BuildModeHUDInitializationModel
         {
             tooltipController = new TooltipController(),
+            feedbackTooltipController = new TooltipController(),
             sceneCatalogController = new SceneCatalogController(),
             quickBarController = new QuickBarController(),
             entityInformationController = new EntityInformationController(),
@@ -98,7 +100,8 @@ public class BuildModeHUDController : IHUD
             inspectorController = new InspectorController(),
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
-            saveHUDController = new SaveHUDController()
+            saveHUDController = new SaveHUDController(),
+            publicationDetailsController = new PublicationDetailsController()
         };
 
         catalogItemDropController = new CatalogItemDropController();
@@ -184,9 +187,27 @@ public class BuildModeHUDController : IHUD
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
+    private void ConfigurePublicationDetailsController()
+    {
+        controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
+        controllers.publicationDetailsController.OnPublish += ConfirmPublicationDetails;
+    }
+
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
-    public void PublishStart()
+    public void SetBuilderProjectInfo(string projectName, string projectDescription)
+    {
+        if (!string.IsNullOrEmpty(projectName))
+            controllers.publicationDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
+        else
+            controllers.publicationDetailsController.SetDefaultPublicationInfo();
+    }
+
+    public void SetBuilderProjectScreenshot(Texture2D screenshot) { controllers.publicationDetailsController.SetPublicationScreenshot(screenshot); }
+
+    public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
+
+    internal void ConfirmPublicationDetails(string sceneName, string sceneDescription)
     {
         UnsubscribeConfirmationModal();
 
@@ -199,7 +220,10 @@ public class BuildModeHUDController : IHUD
             BuilderInWorldSettings.PUBLISH_MODAL_CANCEL_BUTTON,
             BuilderInWorldSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
+        controllers.publicationDetailsController.SetActive(false);
     }
+
+    internal void CancelPublicationDetails() { controllers.publicationDetailsController.SetActive(false); }
 
     internal void CancelPublishModal(BuildModeModalType modalType)
     {
@@ -207,6 +231,7 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.buildModeConfirmationModalController.SetActive(false, BuildModeModalType.PUBLISH);
+        controllers.publicationDetailsController.SetActive(true);
 
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmPublishModal;
@@ -218,7 +243,13 @@ public class BuildModeHUDController : IHUD
             return;
 
         controllers.publishPopupController.PublishStart();
-        OnConfirmPublishAction?.Invoke();
+
+        Texture2D sceneScreenshotTexture = controllers.publicationDetailsController.GetSceneScreenshotTexture();
+
+        OnConfirmPublishAction?.Invoke(
+            controllers.publicationDetailsController.GetSceneName(),
+            controllers.publicationDetailsController.GetSceneDescription(),
+            sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToJPG(90)) : "");
 
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.
@@ -302,7 +333,7 @@ public class BuildModeHUDController : IHUD
     public void SetGizmosActive(string gizmos) { controllers.topActionsButtonsController.SetGizmosActive(gizmos); }
     public void SetParcelScene(ParcelScene parcelScene) { controllers.inspectorController.sceneLimitsController.SetParcelScene(parcelScene); }
 
-    public void SetPublishBtnAvailability(bool isAvailable) { view.SetPublishBtnAvailability(isAvailable); }
+    public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "") { view.SetPublishBtnAvailability(isAvailable, feedbackMessage); }
 
     #region Catalog
 

@@ -12,7 +12,8 @@ namespace DCL.Configuration
         public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
         public static readonly int COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
 
-        public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
+        // TODO: This ID should be changed by 'b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169' when we point to .org in the future
+        public const string VOXEL_ASSETS_PACK_ID = "e3b7f596-3389-451d-bc7c-a095a7ba08da";
         public const string FLOOR_CATEGORY = "ground";
 
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";

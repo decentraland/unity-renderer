@@ -4,11 +4,8 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using Environment = DCL.Environment;
 
 public class BuilderInWorldGodMode : BuilderInWorldMode
@@ -102,6 +99,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
         HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
+        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakeSceneScreenshot;
     }
 
     private void Update()
@@ -195,6 +193,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
+        biwSaveController.ForceSave();
     }
 
     public void UpdateSelectionRotation(Vector3 rotation)
@@ -203,6 +202,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             return;
 
         selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
+        biwSaveController.ForceSave();
     }
 
     public void UpdateSelectionScale(Vector3 scale)
@@ -217,6 +217,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         entityToUpdate.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
         entityToUpdate.transform.SetParent(editionGO.transform);
+        biwSaveController.ForceSave();
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -244,6 +245,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
             HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
+            HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshot;
         }
     }
 
@@ -252,6 +254,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (isPlacingNewObject)
         {
             builderInWorldEntityHandler.DeselectEntities();
+            biwSaveController.ForceSave();
             return;
         }
 
@@ -400,6 +403,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (wasGizmosActive && !isPlacingNewObject)
         {
             gizmoManager.ShowGizmo();
+            biwSaveController.ForceSave();
         }
 
         wasGizmosActive = false;
@@ -507,6 +511,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void OnDeleteEntity(DCLBuilderInWorldEntity entity)
     {
         base.OnDeleteEntity(entity);
+        biwSaveController.ForceSave();
+
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
     }
@@ -560,7 +566,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             createdEntity.rootEntity.gameObject.tag = BuilderInWorldSettings.VOXEL_TAG;
             voxelController.SetVoxelSelected(createdEntity);
-            ActivateVoxelMode();
+
+            // TODO: Voxels tools will be deactivated for Builder In World V1
+            //ActivateVoxelMode();
         }
     }
 
@@ -731,13 +739,14 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
                 break;
             case BuilderInWorldSettings.ROTATE_GIZMO_NAME:
-
                 ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
                 break;
             case BuilderInWorldSettings.SCALE_GIZMO_NAME:
                 ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
                 break;
         }
+
+        biwSaveController.ForceSave();
     }
 
     #endregion
@@ -786,4 +795,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     }
 
     private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
+
+    private void TakeSceneScreenshot()
+    {
+        freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
+        {
+            HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+        });
+    }
 }

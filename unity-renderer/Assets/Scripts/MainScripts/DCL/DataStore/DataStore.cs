@@ -26,11 +26,13 @@ namespace DCL
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly DataStore_Player player = new DataStore_Player();
+        public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
 
         public class BuilderInWorld
         {
             public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
+            public readonly BaseVariable<PublishSceneResultPayload> unpublishSceneResult = new BaseVariable<PublishSceneResultPayload>();
         }
 
         public class DataStore_Quests

@@ -14,7 +14,12 @@ namespace Tests
     {
         protected override IEnumerator SetUp()
         {
-            Environment.SetupWithBuilders();
+            Environment.SetupWithBuilders
+            (
+                MessagingContextFactory.CreateDefault,
+                PlatformContextFactory.CreateDefault,
+                WorldRuntimeContextFactory.CreateDefault
+            );
             yield break;
         }
 
