@@ -10,7 +10,8 @@ namespace DCL.ABConverter
 {
     public static class Client
     {
-        private const string ALL_WEARABLES_FETCH_URL = "https://peer.decentraland.org/content/deployments?entityType=wearable&onlyCurrentlyPointed=true";
+        private const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
+        private const string WEARABLES_FETCH_URL = "https://peer.decentraland.org/lambdas/collections/wearables?";
 
         public class Settings
         {
@@ -65,7 +66,6 @@ namespace DCL.ABConverter
         }
 
         private static Logger log = new Logger("ABConverter.Client");
-
         public static Environment env;
 
         public static Environment EnsureEnvironment()
@@ -74,6 +74,31 @@ namespace DCL.ABConverter
                 env = Environment.CreateWithDefaultImplementations();
 
             return env;
+        }
+
+        public static string BuildAllWearableCollectionsURL()
+        {
+            UnityWebRequest w = UnityWebRequest.Get(COLLECTIONS_FETCH_URL);
+            w.SendWebRequest();
+
+            while (!w.isDone) { }
+
+            if (!w.WebRequestSucceded())
+            {
+                Debug.LogError($"Request error! Wearable collections at '{COLLECTIONS_FETCH_URL}' couldn't be fetched! -- {w.error}");
+                return null;
+            }
+
+            var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(w.downloadHandler.text);
+
+            string finalUrl = WEARABLES_FETCH_URL;
+            finalUrl += "collectionId=" + collectionsApiData.collections[0].id;
+            for (int i = 1; i < collectionsApiData.collections.Length; i++)
+            {
+                finalUrl += "&collectionId=" + collectionsApiData.collections[i].id;
+            }
+
+            return finalUrl;
         }
 
         /// <summary>
@@ -335,7 +360,7 @@ namespace DCL.ABConverter
         {
             EnsureEnvironment();
 
-            List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
+            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL())
                                                 .Where(x => x.data.category == WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
@@ -359,7 +384,7 @@ namespace DCL.ABConverter
             EnsureEnvironment();
 
             // For debugging purposes we can intercept this item list with LinQ for specific wearables
-            List<WearableItem> avatarItemList = GetAvatarMappingList(ALL_WEARABLES_FETCH_URL)
+            List<WearableItem> avatarItemList = GetWearableItems(BuildAllWearableCollectionsURL())
                                                 .Where(x => x.data.category != WearableLiterals.Categories.BODY_SHAPE)
                                                 .ToList();
 
@@ -436,27 +461,27 @@ namespace DCL.ABConverter
         /// </summary>
         /// <param name="url">base-url to fetch the wearables collections</param>
         /// <returns>A list of all the WearableItems found</returns>
-        private static List<WearableItem> GetAvatarMappingList(string url, int paginationElementOffset = 0)
+        private static List<WearableItem> GetWearableItems(string url)
         {
-            UnityWebRequest w = UnityWebRequest.Get(url + $"&offset={paginationElementOffset}");
+            UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
 
             while (!w.isDone) { }
 
             if (!w.WebRequestSucceded())
             {
-                Debug.LogWarning($"Request error! Parcels couldn't be fetched! -- {w.error}");
+                Debug.LogError($"Request error! Wearable at '{url}' couldn't be fetched! -- {w.error}");
                 return null;
             }
 
             var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(w.downloadHandler.text);
-            var resultList = wearablesApiData.GetWearableItemsList();
+            var resultList = wearablesApiData.GetWearableItems();
 
             // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
             // batches sequentially
-            if (wearablesApiData.pagination.moreData)
+            if (!string.IsNullOrEmpty(wearablesApiData.pagination.next))
             {
-                var nextPageResults = GetAvatarMappingList(url, paginationElementOffset + wearablesApiData.pagination.limit);
+                var nextPageResults = GetWearableItems(WEARABLES_FETCH_URL + wearablesApiData.pagination.next);
                 resultList.AddRange(nextPageResults);
             }
 

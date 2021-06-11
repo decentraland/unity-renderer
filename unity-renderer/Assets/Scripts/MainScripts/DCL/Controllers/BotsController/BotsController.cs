@@ -19,10 +19,12 @@ namespace DCL.Bots
     /// </summary>
     public class BotsController : IBotsController
     {
-        private const string ALL_WEARABLES_FETCH_BASE_URL = "https://peer.decentraland.org/content/deployments";
-        private const string ALL_WEARABLES_FETCH_FIRST_URL = ALL_WEARABLES_FETCH_BASE_URL + "?entityType=wearable&onlyCurrentlyPointed=true";
+        private const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
+        private const string WEARABLES_FETCH_URL = "https://peer.decentraland.org/lambdas/collections/wearables?";
+        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
 
         private ParcelScene globalScene;
+        private string[] randomizedCollections = new string[20];
         private List<string> instantiatedBots = new List<string>();
         private List<string> eyesWearableIds = new List<string>();
         private List<string> eyebrowsWearableIds = new List<string>();
@@ -46,7 +48,72 @@ namespace DCL.Bots
 
             CatalogController.wearableCatalog.Clear();
 
-            yield return GetAllWearableItems(ALL_WEARABLES_FETCH_FIRST_URL);
+            yield return FetchRandomCollections();
+
+            yield return LoadWearableItems(BuildRandomizedCollectionsURL());
+        }
+
+        string BuildRandomizedCollectionsURL()
+        {
+            string finalUrl = WEARABLES_FETCH_URL;
+
+            finalUrl += "collectionId=" + randomizedCollections[0];
+            for (int i = 1; i < randomizedCollections.Length; i++)
+            {
+                finalUrl += "&collectionId=" + randomizedCollections[i];
+            }
+
+            return finalUrl;
+        }
+
+        /// <summary>
+        /// Fetches all the existent collection ids and triggers a randomized selection to be loaded
+        /// </summary>
+        private IEnumerator FetchRandomCollections()
+        {
+            yield return Environment.i.platform.webRequest.Get(
+                url: COLLECTIONS_FETCH_URL,
+                downloadHandler: new DownloadHandlerBuffer(),
+                timeout: 5000,
+                disposeOnCompleted: false,
+                OnFail: (webRequest) =>
+                {
+                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {webRequest.error}");
+                },
+                OnSuccess: (webRequest) =>
+                {
+                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.downloadHandler.text);
+                    LoadRandomizedCollections(collectionsApiData.collections);
+                });
+        }
+
+        /// <summary>
+        /// Loads the base wearables collection and randomizes another 9 collections given and array of collections data
+        /// </summary>
+        /// <param name="allCollections">An array of collections data</param>
+        private void LoadRandomizedCollections(WearableCollectionsAPIData.Collection[] allCollections)
+        {
+            List<int> randomizedIndices = new List<int>();
+            int randomIndex;
+            bool addedBaseWearablesCollection = false;
+            for (int i = 0; i < randomizedCollections.Length; i++)
+            {
+                randomIndex = Random.Range(0, allCollections.Length);
+                while (randomizedIndices.Contains(randomIndex))
+                {
+                    randomIndex = Random.Range(0, allCollections.Length);
+                }
+
+                if (allCollections[randomIndex].id == BASE_WEARABLES_COLLECTION_ID)
+                    addedBaseWearablesCollection = true;
+
+                randomizedCollections[i] = allCollections[randomIndex].id;
+                randomizedIndices.Add(randomIndex);
+            }
+
+            // We always load the base wearables collection to make sure we have at least 1 of each avatar body-part
+            if (!addedBaseWearablesCollection)
+                randomizedCollections[0] = BASE_WEARABLES_COLLECTION_ID;
         }
 
         /// <summary>
@@ -54,7 +121,7 @@ namespace DCL.Bots
         /// and populates the global Catalogue with those wearables.
         /// </summary>
         /// <param name="url">The API url to fetch the list of wearables</param>
-        private IEnumerator GetAllWearableItems(string url) // TODO: Move this to a new assembly and make ABConverter Client.cs use it from there as well
+        private IEnumerator LoadWearableItems(string url)
         {
             string nextPageParams = null;
 
@@ -70,7 +137,7 @@ namespace DCL.Bots
                 OnSuccess: (webRequest) =>
                 {
                     var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.downloadHandler.text);
-                    PopulateCatalog(wearablesApiData.GetWearableItemsList());
+                    PopulateCatalog(wearablesApiData.GetWearableItems());
 
                     nextPageParams = wearablesApiData.pagination.next;
                 });
@@ -79,7 +146,7 @@ namespace DCL.Bots
             {
                 // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
                 // batches sequentially
-                yield return GetAllWearableItems(ALL_WEARABLES_FETCH_BASE_URL + nextPageParams);
+                yield return LoadWearableItems(WEARABLES_FETCH_URL + nextPageParams);
             }
         }
 
@@ -161,7 +228,7 @@ namespace DCL.Bots
                 InstantiateBot(randomizedAreaPosition);
             }
 
-            Log($"Finished instantiating {config.amount} avatars.");
+            Log($"Finished instantiating {config.amount} avatars. They may take some time to appear while their wearables are being loaded.");
         }
 
         /// <summary>
@@ -211,7 +278,7 @@ namespace DCL.Bots
                 hairColor = Color.white,
                 eyeColor = Color.white,
                 skinColor = Color.white,
-                bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                bodyShape = Random.Range(0, 2) == 0 ? WearableLiterals.BodyShapes.FEMALE : WearableLiterals.BodyShapes.MALE,
                 wearables = GetRandomizedWearablesSet()
             };
 
