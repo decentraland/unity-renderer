@@ -131,11 +131,14 @@ namespace SignupHUD
             string name = nameInputField.text;
             string email = emailInputField.text;
 
-            nameAndEmailNextButton.interactable = name.Length >= MIN_NAME_LENGTH && IsValidName(name) && (email.Length == 0 || IsValidEmail(email));
+            nameAndEmailNextButton.interactable = name.Length >= MIN_NAME_LENGTH && IsValidName(name) && IsValidEmail(email);
         }
 
         private bool IsValidEmail(string email)
         {
+            if (email.Length == 0)
+                return true;
+
             try
             {
                 MailAddress mailAddress = new MailAddress(email);
