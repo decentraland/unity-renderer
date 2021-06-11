@@ -68,6 +68,7 @@ namespace SignupHUD
             nameInputInvalidLabel.SetActive(false);
             nameInputFieldFullOrInvalid.SetActive(false);
             emailInputFieldInvalid.SetActive(false);
+            emailInputInvalidLabel.SetActive(false);
 
             nameInputField.onValueChanged.AddListener((text) =>
             {
@@ -80,7 +81,7 @@ namespace SignupHUD
             emailInputField.onValueChanged.AddListener((text) =>
             {
                 emailInputFieldInvalid.SetActive(!IsValidEmail(text));
-                emailInputFieldInvalid.SetActive(!IsValidEmail(text));
+                emailInputInvalidLabel.SetActive(!IsValidEmail(text));
                 UpdateNameAndEmailNextButton();
             });
             nameAndEmailNextButton.onClick.AddListener(() => OnNameScreenNext?.Invoke(nameInputField.text, emailInputField.text));
