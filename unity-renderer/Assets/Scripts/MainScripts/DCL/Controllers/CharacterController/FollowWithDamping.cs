@@ -16,6 +16,18 @@ public class FollowWithDamping : MonoBehaviour
 
         if (target != null)
             transform.position = target.position;
+
+        transform.parent = null;
+    }
+
+    private void OnEnable()
+    {
+        CommonScriptableObjects.worldOffset.OnChange += OnWorldOffsetChange;
+    }
+
+    private void OnDisable()
+    {
+        CommonScriptableObjects.worldOffset.OnChange -= OnWorldOffsetChange;
     }
 
     public void LateUpdate()
@@ -24,21 +36,33 @@ public class FollowWithDamping : MonoBehaviour
         Vector3 targetPosition = target.position;
         Vector3 finalPosition = myPosition;
 
-        currentDamping.x += Damp( damping.x - currentDamping.x, dampingChangeSpeed, Time.deltaTime );
-        currentDamping.y += Damp( damping.y - currentDamping.y, dampingChangeSpeed, Time.deltaTime );
-        currentDamping.z += Damp( damping.z - currentDamping.z, dampingChangeSpeed, Time.deltaTime );
+        currentDamping += Damp( damping - currentDamping, Vector3.one * dampingChangeSpeed, Time.deltaTime);
+        finalPosition += Damp(targetPosition - myPosition,  currentDamping, Time.deltaTime);
 
-        finalPosition.x += Damp(targetPosition.x - myPosition.x,  currentDamping.x, Time.deltaTime);
-        finalPosition.y += Damp(targetPosition.y - myPosition.y, currentDamping.y, Time.deltaTime);
-        finalPosition.z += Damp(targetPosition.z - myPosition.z, currentDamping.z, Time.deltaTime);
+        Transform t = this.transform;
+        t.position = finalPosition;
+        t.forward = target.forward;
+    }
 
-        transform.position = finalPosition;
-        transform.forward = target.forward;
+    private void OnWorldOffsetChange(Vector3 current, Vector3 previous)
+    {
+        transform.position -= current - previous;
     }
 
     // NOTE: Code stolen from own cinemachine damping implementation
     const float Epsilon = 0.0001f;
     const float kLogNegligibleResidual = -4.605170186f;
+
+    Vector3 Damp( Vector3 initial, Vector3 dampTime, float deltaTime )
+    {
+        Vector3 result = Vector3.zero;
+
+        result.x += Damp(initial.x, dampTime.x, deltaTime);
+        result.y += Damp(initial.y, dampTime.y, deltaTime);
+        result.z += Damp(initial.z, dampTime.z, deltaTime);
+
+        return result;
+    }
 
     float Damp(float initial, float dampTime, float deltaTime)
     {
