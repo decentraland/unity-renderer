@@ -54,8 +54,8 @@ public class DCLCharacterController : MonoBehaviour
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
 
-    bool supportsMovingPlatforms = true;
     internal Transform groundTransform;
+
     Vector3 lastPosition;
     Vector3 groundLastPosition;
     Quaternion groundLastRotation;
@@ -128,7 +128,6 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-        Environment.i.platform.debugController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
         transform.parent = null;
@@ -229,6 +228,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnPositionSet.Invoke(characterPosition);
         }
+
         DataStore.i.player.lastTeleportPosition.Set(newPosition, true);
 
         if (!initialPositionAlreadySet)
@@ -411,8 +411,7 @@ public class DCLCharacterController : MonoBehaviour
             {
                 bool groundHasMoved = (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation);
 
-                if (supportsMovingPlatforms
-                    && !characterPosition.RepositionedWorldLastFrame()
+                if (!characterPosition.RepositionedWorldLastFrame()
                     && groundHasMoved)
                 {
                     isOnMovingPlatform = true;

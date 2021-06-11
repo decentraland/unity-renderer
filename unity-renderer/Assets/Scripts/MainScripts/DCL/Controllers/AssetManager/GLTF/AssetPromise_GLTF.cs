@@ -39,7 +39,7 @@ namespace DCL
         protected override void OnLoad(System.Action OnSuccess, System.Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
-            gltfComponent.Initialize(WebRequestController.i);
+            gltfComponent.Initialize(DCL.Environment.i.platform.webRequest);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
             {
