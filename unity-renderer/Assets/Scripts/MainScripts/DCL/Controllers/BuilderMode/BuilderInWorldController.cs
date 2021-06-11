@@ -4,6 +4,8 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -56,7 +58,10 @@ public class BuilderInWorldController : MonoBehaviour
     public bool isBuilderInWorldActivated = false;
 
     private const float RAYCAST_MAX_DISTANCE = 10000f;
-    private const string LAND_EDITION_NOT_ALLOWED_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
+    private const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
+    private const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
+    private const float CACHE_TIME_LAND = 5 * 60;
+    private const float CACHE_TIME_SCENES = 1 * 60;
 
     private GameObject editionGO;
     private GameObject undoGO;
@@ -77,6 +82,9 @@ public class BuilderInWorldController : MonoBehaviour
     public event Action OnExitEditMode;
     internal IBuilderInWorldLoadingController initialLoadingController;
 
+    private UserProfile userProfile;
+    private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
+
     private void Awake() { BIWCatalogManager.Init(); }
 
     void Start()
@@ -87,6 +95,8 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void OnDestroy()
     {
+        userProfile.OnUpdate -= OnUserProfileUpdate;
+
         if (sceneToEdit != null)
             sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
 
@@ -173,6 +183,12 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         isInit = true;
+
+        userProfile = UserProfile.GetOwnUserProfile();
+        if (!string.IsNullOrEmpty(userProfile.userId))
+            UpdateLandsWithAccess();
+        else
+            userProfile.OnUpdate += OnUserProfileUpdate;
 
         InitGameObjects();
 
@@ -353,17 +369,33 @@ public class BuilderInWorldController : MonoBehaviour
         CheckEnterEditMode();
     }
 
-    private bool UserHasPermissionOnParcelScene(ParcelScene scene)
+    private bool UserHasPermissionOnParcelScene(ParcelScene sceneToCheck)
     {
         if (bypassLandOwnershipCheck)
             return true;
 
-        UserProfile userProfile = UserProfile.GetOwnUserProfile();
-        foreach (UserProfileModel.ParcelsWithAccess parcelWithAccess in userProfile.parcelsWithAccess)
+        List<Vector2Int> allParcelsWithAccess = landsWithAccess.SelectMany(land => land.parcels).ToList();
+        foreach (Vector2Int parcel in allParcelsWithAccess)
         {
-            foreach (Vector2Int parcel in scene.sceneData.parcels)
+            if (sceneToCheck.sceneData.parcels.Any(currentParcel => currentParcel.x == parcel.x && currentParcel.y == parcel.y))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
+    {
+        List<DeployedScene> allDeployedScenesWithAccess = landsWithAccess.SelectMany(land => land.scenes).ToList();
+        foreach (DeployedScene scene in allDeployedScenesWithAccess)
+        {
+            if (scene.source != DeployedScene.Source.SDK)
+                continue;
+
+            List<Vector2Int> parcelsDeployedFromSDK = scene.parcels.ToList();
+            foreach (Vector2Int parcel in parcelsDeployedFromSDK)
             {
-                if (parcel.x == parcelWithAccess.x && parcel.y == parcelWithAccess.y)
+                if (sceneToCheck.sceneData.parcels.Any(currentParcel => currentParcel.x == parcel.x && currentParcel.y == parcel.y))
                     return true;
             }
         }
@@ -389,7 +421,15 @@ public class BuilderInWorldController : MonoBehaviour
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
             Notification.Model notificationModel = new Notification.Model();
-            notificationModel.message = LAND_EDITION_NOT_ALLOWED_MESSAGE;
+            notificationModel.message = LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE;
+            notificationModel.type = NotificationFactory.Type.GENERIC;
+            HUDController.i.notificationHud.ShowNotification(notificationModel);
+            return;
+        }
+        else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
+        {
+            Notification.Model notificationModel = new Notification.Model();
+            notificationModel.message = LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE;
             notificationModel.type = NotificationFactory.Type.GENERIC;
             HUDController.i.notificationHud.ShowNotification(notificationModel);
             return;
@@ -615,4 +655,22 @@ public class BuilderInWorldController : MonoBehaviour
     private void UpdateCatalogLoadingProgress(float catalogLoadingProgress) { initialLoadingController.SetPercentage(catalogLoadingProgress / 2); }
 
     private void UpdateSceneLoadingProgress(float sceneLoadingProgress) { initialLoadingController.SetPercentage(50f + (sceneLoadingProgress / 2)); }
+
+    private void OnUserProfileUpdate(UserProfile user)
+    {
+        userProfile.OnUpdate -= OnUserProfileUpdate;
+        UpdateLandsWithAccess();
+    }
+
+    private void UpdateLandsWithAccess()
+    {
+        DeployedScenesFetcher.FetchLandsFromOwner(
+                                 Environment.i.platform.serviceProviders.catalyst,
+                                 Environment.i.platform.serviceProviders.theGraph,
+                                 userProfile.ethAddress,
+                                 KernelConfig.i.Get().tld,
+                                 CACHE_TIME_LAND,
+                                 CACHE_TIME_SCENES)
+                             .Then(lands => landsWithAccess = lands.ToList());
+    }
 }
