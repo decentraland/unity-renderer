@@ -1,13 +1,12 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
+using DCL.Helpers;
 using Google.Protobuf;
 using UnityEngine;
 using DCL.Configuration;
-using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 namespace DCL.Bots
@@ -19,12 +18,8 @@ namespace DCL.Bots
     /// </summary>
     public class BotsController : IBotsController
     {
-        private const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
-        private const string WEARABLES_FETCH_URL = "https://peer.decentraland.org/lambdas/collections/wearables?";
-        private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
-
         private ParcelScene globalScene;
-        private string[] randomizedCollections = new string[20];
+        private List<string> randomizedCollections = new List<string>();
         private List<string> instantiatedBots = new List<string>();
         private List<string> eyesWearableIds = new List<string>();
         private List<string> eyebrowsWearableIds = new List<string>();
@@ -48,106 +43,28 @@ namespace DCL.Bots
 
             CatalogController.wearableCatalog.Clear();
 
-            yield return FetchRandomCollections();
+            yield return WearablesFetchingHelper.GetRandomCollections(20, true, randomizedCollections);
 
-            yield return LoadWearableItems(BuildRandomizedCollectionsURL());
+            List<WearableItem> wearableItems = new List<WearableItem>();
+            yield return WearablesFetchingHelper.GetWearableItems(BuildRandomizedCollectionsURL(), wearableItems);
+
+            PopulateCatalog(wearableItems);
         }
 
         string BuildRandomizedCollectionsURL()
         {
-            string finalUrl = WEARABLES_FETCH_URL;
+            if (randomizedCollections.Count == 0)
+                return null;
+
+            string finalUrl = WearablesFetchingHelper.WEARABLES_FETCH_URL;
 
             finalUrl += "collectionId=" + randomizedCollections[0];
-            for (int i = 1; i < randomizedCollections.Length; i++)
+            for (int i = 1; i < randomizedCollections.Count; i++)
             {
                 finalUrl += "&collectionId=" + randomizedCollections[i];
             }
 
             return finalUrl;
-        }
-
-        /// <summary>
-        /// Fetches all the existent collection ids and triggers a randomized selection to be loaded
-        /// </summary>
-        private IEnumerator FetchRandomCollections()
-        {
-            yield return Environment.i.platform.webRequest.Get(
-                url: COLLECTIONS_FETCH_URL,
-                downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
-                disposeOnCompleted: false,
-                OnFail: (webRequest) =>
-                {
-                    Debug.LogWarning($"Request error! collections couldn't be fetched! -- {webRequest.error}");
-                },
-                OnSuccess: (webRequest) =>
-                {
-                    var collectionsApiData = JsonUtility.FromJson<WearableCollectionsAPIData>(webRequest.downloadHandler.text);
-                    LoadRandomizedCollections(collectionsApiData.collections);
-                });
-        }
-
-        /// <summary>
-        /// Loads the base wearables collection and randomizes another 9 collections given and array of collections data
-        /// </summary>
-        /// <param name="allCollections">An array of collections data</param>
-        private void LoadRandomizedCollections(WearableCollectionsAPIData.Collection[] allCollections)
-        {
-            List<int> randomizedIndices = new List<int>();
-            int randomIndex;
-            bool addedBaseWearablesCollection = false;
-            for (int i = 0; i < randomizedCollections.Length; i++)
-            {
-                randomIndex = Random.Range(0, allCollections.Length);
-                while (randomizedIndices.Contains(randomIndex))
-                {
-                    randomIndex = Random.Range(0, allCollections.Length);
-                }
-
-                if (allCollections[randomIndex].id == BASE_WEARABLES_COLLECTION_ID)
-                    addedBaseWearablesCollection = true;
-
-                randomizedCollections[i] = allCollections[randomIndex].id;
-                randomizedIndices.Add(randomIndex);
-            }
-
-            // We always load the base wearables collection to make sure we have at least 1 of each avatar body-part
-            if (!addedBaseWearablesCollection)
-                randomizedCollections[0] = BASE_WEARABLES_COLLECTION_ID;
-        }
-
-        /// <summary>
-        /// Given a base url for fetching wearables, this method recursively downloads all the 'pages' responded by the server
-        /// and populates the global Catalogue with those wearables.
-        /// </summary>
-        /// <param name="url">The API url to fetch the list of wearables</param>
-        private IEnumerator LoadWearableItems(string url)
-        {
-            string nextPageParams = null;
-
-            yield return Environment.i.platform.webRequest.Get(
-                url: url,
-                downloadHandler: new DownloadHandlerBuffer(),
-                timeout: 5000,
-                disposeOnCompleted: false,
-                OnFail: (webRequest) =>
-                {
-                    Debug.LogWarning($"Request error! wearables couldn't be fetched! -- {webRequest.error}");
-                },
-                OnSuccess: (webRequest) =>
-                {
-                    var wearablesApiData = JsonUtility.FromJson<WearablesAPIData>(webRequest.downloadHandler.text);
-                    PopulateCatalog(wearablesApiData.GetWearableItems());
-
-                    nextPageParams = wearablesApiData.pagination.next;
-                });
-
-            if (!string.IsNullOrEmpty(nextPageParams))
-            {
-                // Since the wearables deployments response returns only a batch of elements, we need to fetch all the
-                // batches sequentially
-                yield return LoadWearableItems(WEARABLES_FETCH_URL + nextPageParams);
-            }
         }
 
         /// <summary>
