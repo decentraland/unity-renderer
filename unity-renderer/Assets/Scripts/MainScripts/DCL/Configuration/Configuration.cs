@@ -76,6 +76,7 @@ namespace DCL.Configuration
         public static bool DEBUG = true;
         public static readonly Vector3 MORDOR = new Vector3(10000, 10000, 10000);
         public static readonly int MORDOR_SCALAR = 10000;
+        public const float UNINITIALIZED_FLOAT = 999999f;
     }
 
     public static class InputSettings
