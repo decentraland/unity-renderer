@@ -238,7 +238,7 @@ namespace DCL
                 + "\n * lowest FPS -> " + lowestFPS
                 + "\n * 50 percentile (median) FPS -> " + percentile50FPS
                 + "\n * 95 percentile FPS -> " + percentile95FPS
-                + "\n * total hiccups -> " + totalHiccupFrames
+                + $"\n * total hiccups (>{FPSEvaluation.HICCUP_THRESHOLD_IN_SECONDS}ms frames) -> {totalHiccupFrames} ({CalculateHiccupsPercentage()}% of frames were hiccups)"
                 + "\n * total hiccups time (seconds) -> " + totalHiccupsTimeInSeconds
                 + "\n * total frames -> " + totalFrames
                 + "\n * total frames time (seconds) -> " + totalFramesTimeInSeconds
@@ -265,11 +265,18 @@ namespace DCL
         {
             float topFPS = Settings.i.currentQualitySettings.fpsCap ? 30f : 60f;
             float fpsScore = Mathf.Min(averageFPS / topFPS, 1); // from 0 to 1
-            float hiccupsScore = 1 - totalHiccupFrames / samples.Count; // from 0 to 1
+            float hiccupsScore = 1 - ((float)totalHiccupFrames / samples.Count); // from 0 to 1
             float performanceScore = (fpsScore + hiccupsScore) / 2 * 100; // scores sum / amount of scores * 100 to have a 0-100 scale
             performanceScore = Mathf.Round(performanceScore * 100f) / 100f; // to save only 2 decimals
 
             return performanceScore;
+        }
+
+        private float CalculateHiccupsPercentage()
+        {
+            float percentage = ((float)totalHiccupFrames / totalFrames) * 100;
+            percentage = Mathf.Round(percentage * 100f) / 100f; // to have 2 decimals
+            return percentage;
         }
 
         /// <summary>
