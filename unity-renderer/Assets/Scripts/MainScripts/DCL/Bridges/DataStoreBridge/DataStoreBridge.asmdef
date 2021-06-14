@@ -1,8 +1,9 @@
 {
-    "name": "MessagingContext",
+    "name": "DataStoreBridge",
+    "rootNamespace": "",
     "references": [
-        "GUID:132013f160565434195ba5960832b346",
-        "GUID:760a1d365aad58044916992b072cf2a6"
+        "GUID:28f74c468a54948bfa9f625c5d428f56",
+        "GUID:ab51014c3b16840e184de81d8c359192"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

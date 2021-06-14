@@ -2,7 +2,6 @@
     "name": "Protocol",
     "rootNamespace": "",
     "references": [
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:6e6a87f97192ec947993f360104e75b7"
     ],
     "includePlatforms": [],

@@ -1,0 +1,16 @@
+{
+  "name": "MessagingInterfaces",
+  "rootNamespace": "",
+  "references": [
+    "GUID:132013f160565434195ba5960832b346"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
