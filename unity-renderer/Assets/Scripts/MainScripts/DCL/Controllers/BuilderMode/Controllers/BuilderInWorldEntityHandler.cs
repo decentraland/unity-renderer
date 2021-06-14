@@ -147,10 +147,15 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
-            if (!entity.HasMovedSinceLastReport() && !forceReport)
+            if (!entity.HasMovedSinceLastReport() &&
+                !entity.HasScaledSinceLastReport() &&
+                !entity.HasRotatedSinceLastReport() &&
+                !forceReport)
                 return;
             builderInWorldBridge.EntityTransformReport(entity.rootEntity, sceneToEdit);
             entity.PositionReported();
+            entity.ScaleReported();
+            entity.RotationReported();
         }
 
         lastTransformReportTime = DCLTime.realtimeSinceStartup;

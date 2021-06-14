@@ -193,6 +193,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
+        builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
 
@@ -202,6 +203,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             return;
 
         selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
+        builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
 
@@ -217,6 +219,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         entityToUpdate.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
         entityToUpdate.transform.SetParent(editionGO.transform);
+        builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
 
