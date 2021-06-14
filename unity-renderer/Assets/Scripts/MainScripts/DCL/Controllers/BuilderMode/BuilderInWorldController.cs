@@ -4,6 +4,7 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -62,6 +63,7 @@ public class BuilderInWorldController : MonoBehaviour
     private const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
     private const float CACHE_TIME_LAND = 5 * 60;
     private const float CACHE_TIME_SCENES = 1 * 60;
+    private const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
 
     private GameObject editionGO;
     private GameObject undoGO;
@@ -84,6 +86,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
+    private Coroutine updateLandsWithAcessCoroutine;
 
     private void Awake() { BIWCatalogManager.Init(); }
 
@@ -96,6 +99,7 @@ public class BuilderInWorldController : MonoBehaviour
     private void OnDestroy()
     {
         userProfile.OnUpdate -= OnUserProfileUpdate;
+        CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
 
         if (sceneToEdit != null)
             sceneToEdit.OnLoadingStateUpdated -= UpdateSceneLoadingProgress;
@@ -186,7 +190,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
-            UpdateLandsWithAccess();
+            updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
         else
             userProfile.OnUpdate += OnUserProfileUpdate;
 
@@ -653,7 +657,16 @@ public class BuilderInWorldController : MonoBehaviour
     private void OnUserProfileUpdate(UserProfile user)
     {
         userProfile.OnUpdate -= OnUserProfileUpdate;
-        UpdateLandsWithAccess();
+        updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+    }
+
+    private IEnumerator CheckLandsAccess()
+    {
+        while (true)
+        {
+            UpdateLandsWithAccess();
+            yield return WaitForSecondsCache.Get(REFRESH_LANDS_WITH_ACCESS_INTERVAL);
+        }
     }
 
     private void UpdateLandsWithAccess()
