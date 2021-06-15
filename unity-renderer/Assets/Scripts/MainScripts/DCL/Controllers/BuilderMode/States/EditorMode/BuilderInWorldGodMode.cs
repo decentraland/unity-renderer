@@ -798,6 +798,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void TakeSceneScreenshot()
     {
+        builderInWorldEntityHandler.DeselectEntities();
+
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
             HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
