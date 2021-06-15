@@ -50,7 +50,7 @@ namespace DCL
             return SendWebRequest(genericWebRequest, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
         }
 
-        public WebRequestAsyncOperation GetWithHeaders(
+        public WebRequestAsyncOperation Get(
             string url,
             Dictionary<string, string> headers,
             DownloadHandler downloadHandler = null,

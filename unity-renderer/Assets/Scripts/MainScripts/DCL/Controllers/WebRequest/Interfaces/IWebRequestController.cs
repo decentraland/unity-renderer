@@ -53,7 +53,7 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        WebRequestAsyncOperation GetWithHeaders(
+        WebRequestAsyncOperation Get(
             string url,
             Dictionary<string, string> headers,
             DownloadHandler downloadHandler = null,

@@ -70,8 +70,8 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void AskKernelForCatalogHeaders()
     {
-        WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.BIW_EVENT_NAME, "");
-        WebInterface.SendMessage(BuilderInWorldSettings.BIW_EVENT_NAME);
+        WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.BIW_HEADER_REQUEST_EVENT_NAME, "");
+        WebInterface.SendMessage(BuilderInWorldSettings.BIW_HEADER_REQUEST_EVENT_NAME);
     }
 
     public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
@@ -79,7 +79,6 @@ public class BuilderInWorldBridge : MonoBehaviour
         SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
         if (smartItemComponent == null)
             return;
-
 
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
@@ -100,7 +99,6 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
 
-
         foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
         {
             if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.LOCKED_ON_EDIT)
@@ -116,7 +114,6 @@ public class BuilderInWorldBridge : MonoBehaviour
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;
-
 
         foreach (KeyValuePair<Type, ISharedComponent> keyValuePairBaseDisposable in entity.rootEntity.sharedComponents)
         {
@@ -199,7 +196,6 @@ public class BuilderInWorldBridge : MonoBehaviour
                 componentPayLoad.data = keyValuePairBaseDisposable.Value.GetModel();
             }
 
-
             list.Add(componentPayLoad);
         }
 
@@ -223,7 +219,6 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.sceneId = scene.sceneData.id;
         sceneEvent.eventType = BuilderInWorldSettings.STATE_EVENT_NAME;
         sceneEvent.payload = modifyEntityComponentEvent;
-
 
         //Note (Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
         string message = JsonConvert.SerializeObject(sceneEvent);

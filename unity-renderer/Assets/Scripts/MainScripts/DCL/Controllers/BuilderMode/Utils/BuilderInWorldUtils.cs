@@ -332,7 +332,7 @@ public static partial class BuilderInWorldUtils
 
     public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall, Dictionary<string, string> headers)
     {
-        return Environment.i.platform.webRequest.GetWithHeaders(
+        return Environment.i.platform.webRequest.Get(
             url: url,
             headers: headers,
             OnSuccess: (webRequestResult) =>

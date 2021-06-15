@@ -82,7 +82,7 @@ public class BuilderInWorldController : MonoBehaviour
     private void Awake()
     {
         BIWCatalogManager.Init();
-        builderInWorldBridge.OnCatalogHeadersReceived += HeadersReceived;
+        builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
     }
 
     void Start()
@@ -119,6 +119,7 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+        builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         CleanItems();
     }
 
@@ -209,7 +210,7 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
     }
 
-    private void HeadersReceived(string rawHeaders)
+    private void CatalogHeadersReceived(string rawHeaders)
     {
         Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
         areCatalogHeadersReady = true;

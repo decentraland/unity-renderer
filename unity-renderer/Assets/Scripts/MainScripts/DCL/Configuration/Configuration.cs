@@ -27,7 +27,7 @@ namespace DCL.Configuration
         //Kernel Report
         public const string STATE_EVENT_NAME = "stateEvent";
         public const string SCENE_EVENT_NAME = "SceneEvent";
-        public const string BIW_EVENT_NAME = "RequestBIWCatalogHeader";
+        public const string BIW_HEADER_REQUEST_EVENT_NAME = "RequestBIWCatalogHeader";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
         public static float ENTITY_POSITION_POSITION_THRESHOLD = 0.04f; // In meters
 
