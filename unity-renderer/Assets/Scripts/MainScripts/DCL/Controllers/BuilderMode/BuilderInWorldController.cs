@@ -58,13 +58,6 @@ public class BuilderInWorldController : MonoBehaviour
     [HideInInspector]
     public bool isBuilderInWorldActivated = false;
 
-    private const float RAYCAST_MAX_DISTANCE = 10000f;
-    private const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
-    private const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
-    private const float CACHE_TIME_LAND = 5 * 60;
-    private const float CACHE_TIME_SCENES = 1 * 60;
-    private const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
-
     private GameObject editionGO;
     private GameObject undoGO;
     private GameObject snapGO;
@@ -321,7 +314,7 @@ public class BuilderInWorldController : MonoBehaviour
         float currentDistance = 9999;
         VoxelEntityHit voxelEntityHit = null;
 
-        hits = Physics.RaycastAll(ray, RAYCAST_MAX_DISTANCE, layerToRaycast);
+        hits = Physics.RaycastAll(ray, BuilderInWorldSettings.RAYCAST_MAX_DISTANCE, layerToRaycast);
 
         foreach (RaycastHit hit in hits)
         {
@@ -424,12 +417,12 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
-            ShowGenericNotification(LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
         else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
-            ShowGenericNotification(LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
             return;
         }
 
@@ -665,7 +658,7 @@ public class BuilderInWorldController : MonoBehaviour
         while (true)
         {
             UpdateLandsWithAccess();
-            yield return WaitForSecondsCache.Get(REFRESH_LANDS_WITH_ACCESS_INTERVAL);
+            yield return WaitForSecondsCache.Get(BuilderInWorldSettings.REFRESH_LANDS_WITH_ACCESS_INTERVAL);
         }
     }
 
@@ -676,8 +669,8 @@ public class BuilderInWorldController : MonoBehaviour
                                  Environment.i.platform.serviceProviders.theGraph,
                                  userProfile.ethAddress,
                                  KernelConfig.i.Get().tld,
-                                 CACHE_TIME_LAND,
-                                 CACHE_TIME_SCENES)
+                                 BuilderInWorldSettings.CACHE_TIME_LAND,
+                                 BuilderInWorldSettings.CACHE_TIME_SCENES)
                              .Then(lands => landsWithAccess = lands.ToList());
     }
 
