@@ -100,9 +100,25 @@ namespace DCL
 
         public void RunPerformanceMeterTool(float durationInSeconds) { Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds); }
 
+        public void InstantiateBotsAtWorldPos(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtWorldPos(configJson); }
+
+        public void InstantiateBotsAtCoords(string configJson) { Environment.i.platform.debugController.InstantiateBotsAtCoords(configJson); }
+        public void RemoveBot(string targetEntityId) { Environment.i.platform.debugController.RemoveBot(targetEntityId); }
+        public void ClearBots() { Environment.i.platform.debugController.ClearBots(); }
+
 #if UNITY_EDITOR
         [ContextMenu("Run Performance Meter Tool for 10 seconds")]
         public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+
+        [ContextMenu("Instantiate 3 bots at player coordinates")]
+        public void DebugBotsInstantiation()
+        {
+            InstantiateBotsAtCoords("{ " +
+                                    "\"amount\":3, " +
+                                    "\"areaWidth\":15, " +
+                                    "\"areaDepth\":15 " +
+                                    "}");
+        }
 #endif
     }
 }

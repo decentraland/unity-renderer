@@ -1,0 +1,16 @@
+{
+    "name": "BotsControllerInterface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
