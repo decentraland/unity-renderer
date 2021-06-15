@@ -12,11 +12,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
 {
     public string entityUniqueId;
 
-    public event System.Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
-    public event System.Action<DCLBuilderInWorldEntity> OnStatusUpdate;
-    public event System.Action<DCLBuilderInWorldEntity> OnDelete;
-
-    private bool isLockedValue = false;
+    public event Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
+    public event Action<DCLBuilderInWorldEntity> OnStatusUpdate;
+    public event Action<DCLBuilderInWorldEntity> OnDelete;
 
     public bool IsLocked
     {
@@ -85,6 +83,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
     private Dictionary<string, List<GameObject>> collidersGameObjectDictionary = new Dictionary<string, List<GameObject>>();
 
     private Vector3 lastPositionReported;
+    private Vector3 lastScaleReported;
+    private Quaternion lastRotationReported;
 
     public void Init(IDCLEntity entity, Material editMaterial)
     {
@@ -130,9 +130,17 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
-    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, transform.position) >= BuilderInWorldSettings.ENTITY_POSITION_POSITION_THRESHOLD; }
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, transform.position) >= BuilderInWorldSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
+
+    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - transform.lossyScale.magnitude) >= BuilderInWorldSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
+
+    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, transform.rotation) >= BuilderInWorldSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
 
     public void PositionReported() { lastPositionReported = transform.position; }
+
+    public void ScaleReported() { lastScaleReported = transform.lossyScale; }
+
+    public void RotationReported() { lastRotationReported = transform.rotation; }
 
     public void Select()
     {
@@ -140,6 +148,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
         lastPositionReported = transform.position;
+        lastScaleReported = transform.lossyScale;
+        lastRotationReported = transform.rotation;
     }
 
     public void Deselect()
