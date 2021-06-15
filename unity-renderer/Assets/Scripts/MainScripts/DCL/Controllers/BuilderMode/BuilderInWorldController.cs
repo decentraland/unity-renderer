@@ -4,6 +4,8 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -70,12 +72,18 @@ public class BuilderInWorldController : MonoBehaviour
     private bool previousAllUIHidden;
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
+    private bool areCatalogHeadersReady = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
+
     internal IBuilderInWorldLoadingController initialLoadingController;
 
-    private void Awake() { BIWCatalogManager.Init(); }
+    private void Awake()
+    {
+        BIWCatalogManager.Init();
+        builderInWorldBridge.OnCatalogHeadersReceived += HeadersReceived;
+    }
 
     void Start()
     {
@@ -116,7 +124,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void Update()
     {
-        if (isCatalogLoading && catalogAsyncOp.webRequest != null)
+        if (isCatalogLoading && catalogAsyncOp?.webRequest != null)
             UpdateCatalogLoadingProgress(catalogAsyncOp.webRequest.downloadProgress * 100);
 
         if (!isBuilderInWorldActivated)
@@ -194,10 +202,18 @@ public class BuilderInWorldController : MonoBehaviour
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
-        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+        builderInWorldBridge.AskKernelForCatalogHeaders();
+
         isCatalogLoading = true;
         BuilderInWorldNFTController.i.Initialize();
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+    }
+
+    private void HeadersReceived(string rawHeaders)
+    {
+        Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
+        areCatalogHeadersReady = true;
+        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, headers);
     }
 
     private void ConfigureLoadingController()

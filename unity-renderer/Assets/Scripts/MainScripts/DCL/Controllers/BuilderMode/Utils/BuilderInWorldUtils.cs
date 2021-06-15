@@ -330,10 +330,11 @@ public static partial class BuilderInWorldUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall)
+    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall, Dictionary<string, string> headers)
     {
-        return Environment.i.platform.webRequest.Get(
+        return Environment.i.platform.webRequest.GetWithHeaders(
             url: url,
+            headers: headers,
             OnSuccess: (webRequestResult) =>
             {
                 if (functionToCall != null)

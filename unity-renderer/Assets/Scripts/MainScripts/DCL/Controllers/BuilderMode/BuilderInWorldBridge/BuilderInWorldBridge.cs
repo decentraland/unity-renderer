@@ -21,6 +21,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     public event Action OnKernelUpdated;
     public event Action OnPublishSuccess;
     public event Action<string> OnPublishError;
+    public event Action<string> OnCatalogHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
     TransformComponent entityTransformComponentModel = new TransformComponent();
@@ -32,26 +33,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
     BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
-    public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
-    {
-        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
-        if (smartItemComponent == null)
-            return;
-
-
-        entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
-        entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
-
-        entitySingleComponentPayload.data = smartItemComponent.GetValues();
-
-        ChangeEntityComponent(entitySingleComponentPayload, scene);
-    }
-
-    public void SaveSceneState(ParcelScene scene)
-    {
-        saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
-        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState);
-    }
+    #region MessagesFromKernel
 
     public void PublishSceneResult(string payload)
     {
@@ -74,10 +56,43 @@ public class BuilderInWorldBridge : MonoBehaviour
         HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
+    public void CatalogHeaderReceived(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }
+
     public void BuilderProjectInfo(string payload)
     {
         builderProjectPayload = JsonUtility.FromJson<BuilderProjectPayload>(payload);
         HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(builderProjectPayload.title, builderProjectPayload.description);
+    }
+
+    #endregion
+
+    #region MessagesToKernel
+
+    public void AskKernelForCatalogHeaders()
+    {
+        WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.BIW_EVENT_NAME, "");
+        WebInterface.SendMessage(BuilderInWorldSettings.BIW_EVENT_NAME);
+    }
+
+    public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    {
+        SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
+        if (smartItemComponent == null)
+            return;
+
+
+        entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
+        entitySingleComponentPayload.componentId = (int) CLASS_ID_COMPONENT.SMART_ITEM;
+
+        entitySingleComponentPayload.data = smartItemComponent.GetValues();
+
+        ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
+
+    public void SaveSceneState(ParcelScene scene)
+    {
+        saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState);
     }
 
     public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
@@ -259,4 +274,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.SCENE_EVENT_NAME, message);
         OnKernelUpdated?.Invoke();
     }
+
+    #endregion
+
 }
