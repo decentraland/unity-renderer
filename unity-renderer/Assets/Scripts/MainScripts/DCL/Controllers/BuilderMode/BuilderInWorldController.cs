@@ -664,6 +664,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void UpdateLandsWithAccess()
     {
+        if (isBuilderInWorldActivated)
+            return;
+
         DeployedScenesFetcher.FetchLandsFromOwner(
                                  Environment.i.platform.serviceProviders.catalyst,
                                  Environment.i.platform.serviceProviders.theGraph,
