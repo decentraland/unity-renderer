@@ -66,18 +66,7 @@ public class CatalogController : MonoBehaviour
         if (request == null)
             return;
 
-        for (int i = 0; i < request.wearables.Length; i++)
-        {
-            WearableItem wearableItem = request.wearables[i];
-
-            if (!wearableCatalog.ContainsKey(wearableItem.id))
-            {
-                wearableCatalog.Add(wearableItem.id, wearableItem);
-                wearablesInUseCounters.Add(wearableItem.id, 1);
-                ResolvePendingWearablePromise(wearableItem.id, wearableItem);
-                pendingWearableRequestedTimes.Remove(wearableItem.id);
-            }
-        }
+        AddWearablesToCatalog(request.wearables);
 
         if (!string.IsNullOrEmpty(request.context))
         {
@@ -85,6 +74,26 @@ public class CatalogController : MonoBehaviour
             pendingWearablesByContextRequestedTimes.Remove(request.context);
         }
     }
+
+    public void AddWearablesToCatalog(WearableItem[] wearableItems)
+    {
+        foreach (WearableItem wearableItem in wearableItems)
+        {
+            if (!wearableCatalog.ContainsKey(wearableItem.id))
+            {
+                wearableCatalog.Add(wearableItem.id, wearableItem);
+
+                if (!wearablesInUseCounters.ContainsKey(wearableItem.id))
+                    wearablesInUseCounters.Add(wearableItem.id, 1);
+
+                ResolvePendingWearablePromise(wearableItem.id, wearableItem);
+
+                pendingWearableRequestedTimes.Remove(wearableItem.id);
+            }
+        }
+    }
+
+    public void AddWearablesToCatalog(List<WearableItem> wearableItems) { AddWearablesToCatalog(wearableItems.ToArray()); }
 
     public void WearablesRequestFailed(string payload)
     {
