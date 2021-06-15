@@ -249,13 +249,21 @@ namespace Tests.BuildModeHUDControllers
         public void SetDisableCorrectly()
         {
             // Arrange
+            bool hidden = false;
             entityInformationController.entityInformationView.SetActive(true);
+
+            entityInformationController.OnDisable += () =>
+            {
+                hidden = true;
+            };
 
             // Act
             entityInformationController.Disable();
 
             // Assert
+            entityInformationController.entityInformationView.Received(1).SetActive(false);
             entityInformationController.entityInformationView.Received(1).SetCurrentEntity(null);
+            Assert.IsTrue(hidden);
         }
 
         [Test]
