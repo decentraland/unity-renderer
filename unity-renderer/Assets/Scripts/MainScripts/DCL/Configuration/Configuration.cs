@@ -29,7 +29,9 @@ namespace DCL.Configuration
         public const string SCENE_EVENT_NAME = "SceneEvent";
         public const string BIW_EVENT_NAME = "RequestBIWCatalogHeader";
         public static float ENTITY_POSITION_REPORTING_DELAY = 0.1f; // In seconds
-        public static float ENTITY_POSITION_POSITION_THRESHOLD = 0.04f; // In meters
+        public static float ENTITY_POSITION_REPORTING_THRESHOLD = 0.04f; // In meters
+        public static float ENTITY_SCALE_REPORTING_THRESHOLD = 0.04f; // In meters
+        public static float ENTITY_ROTATION_REPORTING_THRESHOLD = 0.1f; // In degrees
 
         //Floor Scene Object
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
