@@ -1,9 +1,8 @@
 using DCL.Controllers;
 using DCL.Models;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class BuilderInWorldMode : MonoBehaviour
 {
@@ -140,11 +139,7 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
 
-    public virtual void OnDeselectedEntities()
-    {
-        builderInWorldEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
-    }
+    public virtual void OnDeselectedEntities() { builderInWorldEntityHandler.ReportTransform(true); }
 
     public virtual void CheckInput() { }
 

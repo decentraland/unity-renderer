@@ -169,7 +169,7 @@ public class Catalyst : ICatalyst
     {
         Promise<string> promise = new Promise<string>();
 
-        WebRequestController.i.Get(url, null , request =>
+        DCL.Environment.i.platform.webRequest.Get(url, null, request =>
         {
             promise.Resolve(request.downloadHandler.text);
         }, request =>

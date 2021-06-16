@@ -7,7 +7,7 @@
         "MainScripts",
         "Protocol",
         "QueuedSceneMessage",
-        "MessagingContext"
+        "MessagingInterfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
