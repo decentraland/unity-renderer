@@ -117,6 +117,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.avatar.CopyFrom(newModel);
         this.faceSnapshot = newFaceSnapshot;
         OnUpdate?.Invoke(this);
+        OnFaceSnapshotReadyEvent?.Invoke(faceSnapshot);
     }
 
     public void SetAvatarExpression(string id)

@@ -6,6 +6,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
+using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -92,6 +93,7 @@ public class HUDController : MonoBehaviour
 
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
+    public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -165,7 +167,8 @@ public class HUDController : MonoBehaviour
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
         BUILDER_PROJECTS_PANEL = 28,
-        COUNT = 29
+        SIGNUP = 29,
+        COUNT = 30
     }
 
     [System.Serializable]
@@ -208,6 +211,7 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ProfileHUDController>(configuration, hudElementId);
                 if (profileHud != null)
                 {
+                    //TODO This coupling might introduce a race condition if kernel configures this HUD before AvatarEditorHUD
                     profileHud?.AddBackpackWindow(avatarEditorHud);
                 }
 
@@ -402,6 +406,17 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<QuestsTrackerHUDController>(configuration, hudElementId);
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
+                break;
+            case HUDElementID.SIGNUP:
+                CreateHudElement<SignupHUDController>(configuration, hudElementId);
+                if (configuration.active)
+                {
+                    //Same race condition risks as with the ProfileHUD
+                    //TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
+                    //Then this reference can be removed so we just work with a BaseVariable<bool>.
+                    //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
+                    signupHUD.Initialize(avatarEditorHud);
+                }
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 CreateHudElement<BuilderProjectsPanelController>(configuration, hudElementId);
