@@ -63,7 +63,7 @@ namespace SignupHUD
             userProfile.OnFaceSnapshotReadyEvent += OnFaceSnapshotReady;
 
             nameAndEmailNextButton.interactable = false;
-            nameCurrentCharacters.text = $"{0} / {MAX_NAME_LENGTH}";
+            nameCurrentCharacters.text = $"{0}/{MAX_NAME_LENGTH}";
             nameInputField.characterLimit = MAX_NAME_LENGTH;
             nameInputInvalidLabel.SetActive(false);
             nameInputFieldFullOrInvalid.SetActive(false);
