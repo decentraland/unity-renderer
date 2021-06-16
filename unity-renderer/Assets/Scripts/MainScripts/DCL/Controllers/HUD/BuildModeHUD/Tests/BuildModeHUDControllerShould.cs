@@ -419,9 +419,11 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             buildModeHUDController.controllers.entityInformationController.Received(1).Enable();
             buildModeHUDController.controllers.entityInformationController.Received(1).SetTransparencyMode(activateTransparencyMode);
-            buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(false);
             buildModeHUDController.controllers.sceneCatalogController.Received(1).CloseCatalog();
             buildModeHUDController.controllers.tooltipController.Received(1).HideTooltip();
+
+            if (activateTransparencyMode)
+                buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(false);
         }
 
         [Test]
