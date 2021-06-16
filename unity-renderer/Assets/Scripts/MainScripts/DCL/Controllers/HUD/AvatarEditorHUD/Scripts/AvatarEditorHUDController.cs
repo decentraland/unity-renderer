@@ -95,36 +95,36 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                ownedWearablesAlreadyLoaded = true;
-                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                LoadUserProfile(userProfile, true);
-                view.ShowCollectiblesLoadingSpinner(false);
-            })
-            .Catch((error) =>
-            {
-                ownedWearablesRemainingRequests--;
-                if (ownedWearablesRemainingRequests > 0)
-                {
-                    Debug.LogWarning("Retrying owned wereables loading...");
-                    LoadOwnedWereables(userProfile);
-                }
-                else
-                {
-                    NotificationsController.i.ShowNotification(new Notification.Model
-                    {
-                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = NotificationFactory.Type.GENERIC,
-                        timer = 10f,
-                        destroyOnFinish = true
-                    });
+                         .Then((ownedWearables) =>
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             view.ShowCollectiblesLoadingSpinner(false);
+                         })
+                         .Catch((error) =>
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new Notification.Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = NotificationFactory.Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
 
-                    view.ShowCollectiblesLoadingSpinner(false);
-                    view.ShowCollectiblesLoadingRetry(true);
-                    Debug.LogError(error);
-                }
-            });
+                                 view.ShowCollectiblesLoadingSpinner(false);
+                                 view.ShowCollectiblesLoadingRetry(true);
+                                 Debug.LogError(error);
+                             }
+                         });
     }
 
     public void RetryLoadOwnedWearables()
@@ -584,11 +584,13 @@ public class AvatarEditorHUDController : IHUD
     public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
+
         WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
+        if (DataStore.i.isSignUpFlow.Get())
+            DataStore.i.HUDs.signupVisible.Set(true);
 
         SetVisibility(false);
-        DataStore.i.isSignUpFlow.Set(false);
     }
 
     public void DiscardAndClose()

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Ray = UnityEngine.Ray;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -960,12 +959,20 @@ namespace DCL.Interface
             GUEST = 0,
             WALLET_CONNECT = 1
         }
+
         [System.Serializable]
         public class SendAuthenticationPayload
         {
-            [FormerlySerializedAs("rendererProviderType")] [FormerlySerializedAs("providerType")] public RendererAuthenticationType rendererAuthenticationType;
+            public RendererAuthenticationType rendererAuthenticationType;
         }
         
+        [System.Serializable]
+        public class SendPassportPayload
+        {
+            public string name;
+            public string email;
+        }
+
         [System.Serializable]
         public class SendSaveUserUnverifiedNamePayload
         {
@@ -992,6 +999,8 @@ namespace DCL.Interface
         {
             SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType });
         }
+
+        public static void SendPassport(string name, string email) { SendMessage("SendPassport", new SendPassportPayload { name = name, email = email }); }
 
         public static void SendSaveUserUnverifiedName(string newName)
         {

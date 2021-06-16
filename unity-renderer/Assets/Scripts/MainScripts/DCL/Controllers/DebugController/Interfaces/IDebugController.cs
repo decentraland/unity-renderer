@@ -13,7 +13,10 @@ namespace DCL
         void SetSceneDebugPanel();
         void SetEngineDebugPanel();
         void RunPerformanceMeterTool(float durationInSeconds);
-
+        void InstantiateBotsAtWorldPos(string config);
+        void InstantiateBotsAtCoords(string config);
+        public void RemoveBot(string targetEntityId);
+        public void ClearBots();
         List<Vector3> GetTrackedTeleportPositions();
         List<Vector3> GetTrackedMovements();
     }

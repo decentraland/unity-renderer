@@ -51,7 +51,11 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
 
     private void MouseUp(int buttonId, Vector3 mousePosition)
     {
-        currentClickIsOnUi = false;
+        if (currentClickIsOnUi)
+        {
+            currentClickIsOnUi = false;
+            return;
+        }
 
         if (!canInputBeMade)
             return;

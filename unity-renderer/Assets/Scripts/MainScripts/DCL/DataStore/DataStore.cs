@@ -45,6 +45,7 @@ namespace DCL
         {
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
         }
 
         public class DataStore_Player
