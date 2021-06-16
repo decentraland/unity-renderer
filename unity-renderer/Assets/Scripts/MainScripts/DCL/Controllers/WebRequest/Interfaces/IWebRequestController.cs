@@ -33,6 +33,7 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
+        /// <param name="headers">This will set the headers for the request</param>
         WebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
@@ -40,28 +41,8 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true);
-
-        /// <summary>
-        /// Download data from a url with specific headers.
-        /// </summary>
-        /// <param name="url">Url where to make the request.</param>
-        /// <param name="headers">Headers for the request</param>
-        /// <param name="downloadHandler">Downloader handler to be used by the GET request.</param>
-        /// <param name="OnSuccess">This action will be executed if the request successfully finishes and it includes the request with the data downloaded.</param>
-        /// <param name="OnFail">This action will be executed if the request fails.</param>
-        /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
-        /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
-        /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
-        WebRequestAsyncOperation Get(
-            string url,
-            Dictionary<string, string> headers,
-            DownloadHandler downloadHandler = null,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true);
+            bool disposeOnCompleted = true,
+            Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Download an Asset Bundle from a url.

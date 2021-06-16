@@ -45,20 +45,8 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
-        {
-            return SendWebRequest(genericWebRequest, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
-        }
-
-        public WebRequestAsyncOperation Get(
-            string url,
-            Dictionary<string, string> headers,
-            DownloadHandler downloadHandler = null,
-            Action<UnityWebRequest> OnSuccess = null,
-            Action<UnityWebRequest> OnFail = null,
-            int requestAttemps = 3,
-            int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            Dictionary<string, string> headers = null)
         {
             return SendWebRequest(genericWebRequest, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }

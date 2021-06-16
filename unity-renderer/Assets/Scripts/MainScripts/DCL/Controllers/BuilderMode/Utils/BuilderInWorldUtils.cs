@@ -334,7 +334,6 @@ public static partial class BuilderInWorldUtils
     {
         return Environment.i.platform.webRequest.Get(
             url: url,
-            headers: headers,
             OnSuccess: (webRequestResult) =>
             {
                 if (functionToCall != null)
@@ -347,7 +346,8 @@ public static partial class BuilderInWorldUtils
             OnFail: (webRequestResult) =>
             {
                 Debug.Log(webRequestResult.error);
-            });
+            },
+            headers: headers);
     }
 
     public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)
