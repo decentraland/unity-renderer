@@ -100,7 +100,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
         HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
-        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakePublishSceneScreenshot;
+        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakeSceneScreenshotForPublish;
     }
 
     private void Update()
@@ -249,7 +249,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
             HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
-            HUDController.i.builderInWorldMainHud.OnPublishAction += TakePublishSceneScreenshot;
+            HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshotForPublish;
         }
     }
 
@@ -800,11 +800,21 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 
-    private void TakePublishSceneScreenshot()
+    private void TakeSceneScreenshotForPublish()
     {
         builderInWorldEntityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
+        {
+            HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+        });
+    }
+
+    public void TakeSceneScreenshotForExit()
+    {
+        builderInWorldEntityHandler.DeselectEntities();
+
+        freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
         {
             HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
         });

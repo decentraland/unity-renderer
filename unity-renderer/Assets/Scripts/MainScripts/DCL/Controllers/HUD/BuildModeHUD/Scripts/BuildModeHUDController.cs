@@ -23,8 +23,9 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
-    public event Action<string, string, string> OnConfirmNewProjectAction;
+    public event Action<string, string, string> OnSaveSceneInfoAction;
     public event Action<string, string, string> OnConfirmPublishAction;
+    public event Action OnStartExitAction;
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
@@ -194,7 +195,7 @@ public class BuildModeHUDController : IHUD
     private void ConfigureNewProjectDetailsController()
     {
         controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails;
-        controllers.newProjectDetailsController.OnConfirm += ConfirmNewProjectDetails;
+        controllers.newProjectDetailsController.OnConfirm += SaveSceneInfo;
     }
 
     private void ConfigurePublicationDetailsController()
@@ -225,10 +226,10 @@ public class BuildModeHUDController : IHUD
 
         // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
         //controllers.newProjectDetailsController.SetActive(true); 
-        ConfirmNewProjectDetails();
+        SaveSceneInfo();
     }
 
-    internal void ConfirmNewProjectDetails()
+    public void SaveSceneInfo()
     {
         Texture2D newSceneScreenshotTexture = controllers.newProjectDetailsController.GetSceneScreenshotTexture();
         string newSceneName = controllers.newProjectDetailsController.GetSceneName();
@@ -237,7 +238,7 @@ public class BuildModeHUDController : IHUD
         controllers.publicationDetailsController.SetCustomPublicationInfo(newSceneName, newSceneDescription);
         controllers.newProjectDetailsController.SetActive(false);
 
-        OnConfirmNewProjectAction?.Invoke(
+        OnSaveSceneInfoAction?.Invoke(
             newSceneName,
             newSceneDescription,
             newSceneScreenshotTexture != null ? Convert.ToBase64String(newSceneScreenshotTexture.EncodeToJPG(90)) : "");
@@ -245,7 +246,11 @@ public class BuildModeHUDController : IHUD
 
     internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
 
-    public void SetBuilderProjectScreenshot(Texture2D screenshot) { controllers.publicationDetailsController.SetPublicationScreenshot(screenshot); }
+    public void SetBuilderProjectScreenshot(Texture2D screenshot)
+    {
+        controllers.publicationDetailsController.SetPublicationScreenshot(screenshot);
+        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
+    }
 
     public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
@@ -287,11 +292,15 @@ public class BuildModeHUDController : IHUD
         controllers.publishPopupController.PublishStart();
 
         Texture2D sceneScreenshotTexture = controllers.publicationDetailsController.GetSceneScreenshotTexture();
+        string sceneName = controllers.publicationDetailsController.GetSceneName();
+        string sceneDescription = controllers.publicationDetailsController.GetSceneDescription();
 
         OnConfirmPublishAction?.Invoke(
-            controllers.publicationDetailsController.GetSceneName(),
-            controllers.publicationDetailsController.GetSceneDescription(),
+            sceneName,
+            sceneDescription,
             sceneScreenshotTexture != null ? Convert.ToBase64String(sceneScreenshotTexture.EncodeToJPG(90)) : "");
+
+        controllers.newProjectDetailsController.SetCustomPublicationInfo(sceneName, sceneDescription);
 
         // NOTE (Santi): This is temporal until we implement the way of return the publish progress from the kernel side.
         //               Meanwhile we will display a fake progress.
@@ -329,6 +338,8 @@ public class BuildModeHUDController : IHUD
             BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
             BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.EXIT);
+
+        OnStartExitAction?.Invoke();
     }
 
     internal void CancelExitModal(BuildModeModalType modalType)

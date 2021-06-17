@@ -118,6 +118,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
+            HUDController.i.builderInWorldMainHud.OnStartExitAction -= StartExitMode;
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
         }
 
@@ -209,6 +210,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
+        HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -566,8 +568,20 @@ public class BuilderInWorldController : MonoBehaviour
         ExitEditMode();
     }
 
+    public void StartExitMode()
+    {
+        if (biwSaveController.numberOfSaves > 0)
+            editorMode.TakeSceneScreenshotForExit();
+    }
+
     public void ExitEditMode()
     {
+        if (biwSaveController.numberOfSaves > 0)
+        {
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            biwSaveController.ResetNumberOfSaves();
+        }
+
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;

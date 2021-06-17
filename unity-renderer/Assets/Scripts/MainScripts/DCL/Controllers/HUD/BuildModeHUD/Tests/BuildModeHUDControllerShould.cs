@@ -145,13 +145,13 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             bool newProjectDetailsConfirmed = false;
-            buildModeHUDController.OnConfirmNewProjectAction += (name, desc, image) =>
+            buildModeHUDController.OnSaveSceneInfoAction += (name, desc, image) =>
             {
                 newProjectDetailsConfirmed = true;
             };
 
             // Act
-            buildModeHUDController.ConfirmNewProjectDetails();
+            buildModeHUDController.SaveSceneInfo();
 
             // Assert
             buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneScreenshotTexture();
