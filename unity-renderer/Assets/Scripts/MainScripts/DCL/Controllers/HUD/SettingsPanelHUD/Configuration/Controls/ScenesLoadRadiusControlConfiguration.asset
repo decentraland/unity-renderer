@@ -19,7 +19,7 @@ MonoBehaviour:
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
   isBeta: 0
-  sliderMinValue: 0
+  sliderMinValue: 1
   sliderMaxValue: 4
   storeValueAsNormalized: 0
   wholeNumbers: 1

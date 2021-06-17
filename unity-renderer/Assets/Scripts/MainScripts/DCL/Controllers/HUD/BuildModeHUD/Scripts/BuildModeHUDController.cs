@@ -135,6 +135,7 @@ public class BuildModeHUDController : IHUD
         controllers.entityInformationController.OnScaleChange += (x) => OnSelectedObjectScaleChange?.Invoke(x);
         controllers.entityInformationController.OnNameChange += (entity, newName) => OnEntityRename?.Invoke(entity, newName);
         controllers.entityInformationController.OnSmartItemComponentUpdate += (entity) => OnEntitySmartItemComponentUpdate?.Invoke(entity);
+        controllers.entityInformationController.OnDisable += OnEntityInformationDisable;
     }
 
     private void ConfigureFirstPersonModeController() { controllers.firstPersonModeController.OnClick += () => OnChangeModeAction?.Invoke(); }
@@ -434,9 +435,11 @@ public class BuildModeHUDController : IHUD
     {
         controllers.entityInformationController.Enable();
         controllers.entityInformationController.SetTransparencyMode(activateTransparencyMode);
-        controllers.catalogBtnController.SetActive(false);
         controllers.sceneCatalogController.CloseCatalog();
         controllers.tooltipController.HideTooltip();
+
+        if (activateTransparencyMode)
+            controllers.catalogBtnController.SetActive(false);
     }
 
     public void HideEntityInformation()
@@ -444,6 +447,12 @@ public class BuildModeHUDController : IHUD
         controllers.entityInformationController.Disable();
         controllers.catalogBtnController.SetActive(true);
 
+        if (isCatalogOpen)
+            controllers.sceneCatalogController.SetActive(true);
+    }
+
+    private void OnEntityInformationDisable()
+    {
         if (isCatalogOpen)
             controllers.sceneCatalogController.SetActive(true);
     }
