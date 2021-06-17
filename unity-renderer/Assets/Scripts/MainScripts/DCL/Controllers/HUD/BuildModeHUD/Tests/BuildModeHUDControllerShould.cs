@@ -159,7 +159,6 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneDescription();
             buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(Arg.Any<string>(), Arg.Any<string>());
             buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(false);
-            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
             Assert.IsTrue(newProjectDetailsConfirmed);
         }
 
