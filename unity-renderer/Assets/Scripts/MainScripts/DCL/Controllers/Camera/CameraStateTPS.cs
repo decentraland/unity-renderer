@@ -30,6 +30,7 @@ public class CameraStateTPS : CameraStateBase
     public FollowWithDamping cameraTargetProbe;
     public float dampingOnAir;
     public float dampingOnGround;
+    public float dampingOnMovingPlatform;
 
     public override void Init(Camera camera)
     {
@@ -158,13 +159,13 @@ public class CameraStateTPS : CameraStateBase
         RaycastHit hitInfo;
 
         bool didHit = DCLCharacterController.i.CastGroundCheckingRays(20, 0.1f, out hitInfo);
-
+        bool isOnMovingPlatform = DCLCharacterController.i.isOnMovingPlatform;
         bool useFallingCamera = false;
 
         if ( didHit )
         {
             if ( hitInfo.distance < groundCheckThreshold )
-                cameraTargetProbe.damping.y = dampingOnGround;
+                cameraTargetProbe.damping.y = isOnMovingPlatform ? dampingOnMovingPlatform : dampingOnGround;
             else
                 cameraTargetProbe.damping.y = dampingOnAir;
 
