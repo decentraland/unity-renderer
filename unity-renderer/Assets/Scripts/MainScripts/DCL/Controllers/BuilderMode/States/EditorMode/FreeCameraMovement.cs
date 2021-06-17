@@ -9,6 +9,8 @@ public class FreeCameraMovement : CameraStateBase
     private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
     private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
     public float smoothLookAtSpeed = 5f;
+    public float smoothCameraLookSpeed = 5f;
+    public float smoothCameraMovementSpeed = 5f;
     public float focusDistance = 5f;
 
     [Header("Manual Camera Movement")]
@@ -52,6 +54,9 @@ public class FreeCameraMovement : CameraStateBase
     private bool isPanCameraActive = false;
     private bool isMouseRightClickDown = false;
 
+    private bool isCameraRotating = false;
+
+    private Coroutine smoothCameraLookCor;
     private Coroutine smoothLookAtCor;
     private Coroutine smoothFocusOnTargetCor;
     private Coroutine smoothScrollCor;
@@ -81,6 +86,7 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
     private Vector3 originalCameraPosition;
+    private Vector3 cameraDestinationPosition;
     private Transform originalCameraLookAt;
 
     private float lastMouseWheelTime = 0;
@@ -232,7 +238,9 @@ public class FreeCameraMovement : CameraStateBase
         if (isAdvancingDown)
             velocity += GetTotalVelocity(velocity, -Vector3.up);
 
-        transform.position += velocity * (keyboardMovementSpeed * Time.deltaTime);
+        cameraDestinationPosition = transform.position + velocity * (keyboardMovementSpeed * Time.deltaTime);
+        if (Vector3.Distance(transform.position, cameraDestinationPosition) >= 0.05f)
+            transform.position = Vector3.Lerp(transform.position, cameraDestinationPosition, smoothCameraMovementSpeed * Time.deltaTime);
     }
 
     public Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
@@ -289,6 +297,9 @@ public class FreeCameraMovement : CameraStateBase
             pitch -= lookSpeedV * axisY;
 
             transform.eulerAngles = new Vector3(pitch, yaw, 0f);
+            // if (smoothCameraLookCor != null)
+            //     CoroutineStarter.Stop(smoothCameraLookCor);
+            // smoothCameraLookCor = CoroutineStarter.Start(SmoothCameraLook(axisX, axisY));
         }
     }
 
@@ -346,6 +357,24 @@ public class FreeCameraMovement : CameraStateBase
 
         finalPosition /= totalPoints;
         return finalPosition;
+    }
+
+    IEnumerator SmoothCameraLook(float axisX, float axisY)
+    {
+        yaw += lookSpeedH * axisX;
+        pitch -= lookSpeedV * axisY;
+
+        Vector3 destination = new Vector3(pitch, yaw, 0f);
+
+        float advance = 0;
+        while (advance <= 1)
+        {
+            advance += smoothCameraLookSpeed * Time.deltaTime;
+
+            Vector3 result = Vector3.Lerp(transform.eulerAngles, destination, advance);
+            transform.eulerAngles  = result;
+            yield return null;
+        }
     }
 
     IEnumerator SmoothScroll(float axis)
