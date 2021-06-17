@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -32,6 +33,7 @@ namespace DCL
         /// <param name="requestAttemps">Number of attemps for re-trying failed requests.</param>
         /// <param name="timeout">Sets the request to attempt to abort after the configured number of seconds have passed (0 = no timeout).</param>
         /// <param name="disposeOnCompleted">Set to true for disposing the request just after it has been completed.</param>
+        /// <param name="headers">This will set the headers for the request</param>
         WebRequestAsyncOperation Get(
             string url,
             DownloadHandler downloadHandler = null,
@@ -39,7 +41,8 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true);
+            bool disposeOnCompleted = true,
+            Dictionary<string, string> headers = null);
 
         /// <summary>
         /// Download an Asset Bundle from a url.
