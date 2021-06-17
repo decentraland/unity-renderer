@@ -68,11 +68,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     #region MessagesToKernel
 
-    public void AskKernelForCatalogHeaders()
-    {
-        WebInterface.BuilderInWorldMessage(BuilderInWorldSettings.BIW_HEADER_REQUEST_EVENT_NAME, "");
-        WebInterface.SendMessage(BuilderInWorldSettings.BIW_HEADER_REQUEST_EVENT_NAME);
-    }
+    public void AskKernelForCatalogHeaders() { WebInterface.SendMessage(BuilderInWorldSettings.BIW_HEADER_REQUEST_EVENT_NAME); }
 
     public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
     {
