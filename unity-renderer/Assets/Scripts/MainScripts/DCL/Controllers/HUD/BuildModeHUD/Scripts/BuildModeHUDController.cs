@@ -309,6 +309,8 @@ public class BuildModeHUDController : IHUD
 
         controllers.buildModeConfirmationModalController.OnCancelExit -= CancelExitModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit -= ConfirmExitModal;
+
+        controllers.publicationDetailsController.SetDefaultPublicationInfo();
     }
 
     private void UnsubscribeConfirmationModal()

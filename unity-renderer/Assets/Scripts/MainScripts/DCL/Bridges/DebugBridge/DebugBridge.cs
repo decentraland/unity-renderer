@@ -107,8 +107,8 @@ namespace DCL
         public void ClearBots() { Environment.i.platform.debugController.ClearBots(); }
 
 #if UNITY_EDITOR
-        [ContextMenu("Run Performance Meter Tool for 10 seconds")]
-        public void DebugPerformanceMeter() { RunPerformanceMeterTool(10); }
+        [ContextMenu("Run Performance Meter Tool for 30 seconds")]
+        public void DebugPerformanceMeter() { RunPerformanceMeterTool(30); }
 
         [ContextMenu("Instantiate 3 bots at player coordinates")]
         public void DebugBotsInstantiation()

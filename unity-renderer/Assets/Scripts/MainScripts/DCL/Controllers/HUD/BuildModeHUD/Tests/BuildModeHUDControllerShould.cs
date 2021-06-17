@@ -219,6 +219,7 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(exitConfirmed, "exitConfirmed is false!");
+            buildModeHUDController.controllers.publicationDetailsController.Received().SetDefaultPublicationInfo();
         }
 
         [Test]

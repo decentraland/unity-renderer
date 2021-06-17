@@ -53,7 +53,6 @@ namespace DCL.Configuration
         public const string ROTATE_GIZMO_NAME = "ROTATE";
         public const string SCALE_GIZMO_NAME = "SCALE";
         public const string EMPTY_GIZMO_NAME = "NONE";
-
         public const float GIZMOS_RELATIVE_SCALE_RATIO = 0.06f;
 
         //Publish
@@ -61,11 +60,18 @@ namespace DCL.Configuration
         public const string PUBLISH_MODAL_SUBTITLE = "Are you sure you want to publish your scene to this Land?";
         public const string PUBLISH_MODAL_CONFIRM_BUTTON = "PUBLISH";
         public const string PUBLISH_MODAL_CANCEL_BUTTON = "CANCEL";
-
         public const string EXIT_MODAL_TITLE = "Exiting Builder mode";
         public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
         public const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
+
+        //Others
+        public const float RAYCAST_MAX_DISTANCE = 10000f;
+        public const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
+        public const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
+        public const float CACHE_TIME_LAND = 5 * 60;
+        public const float CACHE_TIME_SCENES = 1 * 60;
+        public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
     }
 
     public static class ApplicationSettings

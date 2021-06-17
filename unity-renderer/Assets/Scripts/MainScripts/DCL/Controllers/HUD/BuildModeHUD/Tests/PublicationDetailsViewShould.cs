@@ -167,5 +167,33 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.AreEqual(testTexture, returnedTexture, "The returned texture does not match!");
         }
+
+        [Test]
+        public void UpdateSceneNameCharCounterCorrectly()
+        {
+            // Arrange
+            publicationDetailsView.sceneNameInput.text = "123456";
+            publicationDetailsView.sceneNameCharCounterText.text = "";
+
+            // Act
+            publicationDetailsView.UpdateSceneNameCharCounter();
+
+            // Assert
+            Assert.AreEqual($"6/{publicationDetailsView.sceneNameCharLimit}", publicationDetailsView.sceneNameCharCounterText.text, "The scene name char counter have not been updated correctly!");
+        }
+
+        [Test]
+        public void UpdateSceneDescriptionCharCounterCorrectly()
+        {
+            // Arrange
+            publicationDetailsView.sceneDescriptionInput.text = "123456";
+            publicationDetailsView.sceneDescriptionCharCounterText.text = "";
+
+            // Act
+            publicationDetailsView.UpdateSceneDescriptionCharCounter();
+
+            // Assert
+            Assert.AreEqual($"6/{publicationDetailsView.sceneDescriptionCharLimit}", publicationDetailsView.sceneDescriptionCharCounterText.text, "The scene description char counter have not been updated correctly!");
+        }
     }
 }
