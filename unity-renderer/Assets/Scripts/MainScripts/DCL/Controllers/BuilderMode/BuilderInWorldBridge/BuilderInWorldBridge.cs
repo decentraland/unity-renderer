@@ -56,7 +56,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
-    public void CatalogHeaderReceived(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }
+    public void BuilderInWorldCatalogHeaders(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }
 
     public void BuilderProjectInfo(string payload)
     {
