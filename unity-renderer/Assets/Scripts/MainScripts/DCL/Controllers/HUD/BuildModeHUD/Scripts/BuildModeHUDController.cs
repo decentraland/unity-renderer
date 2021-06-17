@@ -23,6 +23,7 @@ public class BuildModeHUDController : IHUD
     public event Action OnResumeInput;
     public event Action OnTutorialAction;
     public event Action OnPublishAction;
+    public event Action<string, string, string> OnConfirmNewProjectAction;
     public event Action<string, string, string> OnConfirmPublishAction;
     public event Action OnLogoutAction;
     public event Action OnChangeSnapModeAction;
@@ -70,6 +71,7 @@ public class BuildModeHUDController : IHUD
         ConfigureTopActionsButtonsController();
         ConfigureCatalogItemDropController();
         ConfigureSaveHUDController();
+        ConfigureNewProjectDetailsController();
         ConfigurePublicationDetailsController();
     }
 
@@ -101,6 +103,7 @@ public class BuildModeHUDController : IHUD
             buildModeConfirmationModalController = new BuildModeConfirmationModalController(),
             topActionsButtonsController = new TopActionsButtonsController(),
             saveHUDController = new SaveHUDController(),
+            newProjectDetailsController = new PublicationDetailsController(),
             publicationDetailsController = new PublicationDetailsController()
         };
 
@@ -188,10 +191,16 @@ public class BuildModeHUDController : IHUD
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
 
+    private void ConfigureNewProjectDetailsController()
+    {
+        controllers.newProjectDetailsController.OnCancel += CancelNewProjectDetails;
+        controllers.newProjectDetailsController.OnConfirm += ConfirmNewProjectDetails;
+    }
+
     private void ConfigurePublicationDetailsController()
     {
         controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
-        controllers.publicationDetailsController.OnPublish += ConfirmPublicationDetails;
+        controllers.publicationDetailsController.OnConfirm += ConfirmPublicationDetails;
     }
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
@@ -199,16 +208,48 @@ public class BuildModeHUDController : IHUD
     public void SetBuilderProjectInfo(string projectName, string projectDescription)
     {
         if (!string.IsNullOrEmpty(projectName))
+        {
+            controllers.newProjectDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
             controllers.publicationDetailsController.SetCustomPublicationInfo(projectName, projectDescription);
+        }
         else
+        {
+            controllers.newProjectDetailsController.SetDefaultPublicationInfo();
             controllers.publicationDetailsController.SetDefaultPublicationInfo();
+        }
     }
+
+    public void NewProjectStart(Texture2D screenshot)
+    {
+        controllers.newProjectDetailsController.SetPublicationScreenshot(screenshot);
+
+        // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
+        //controllers.newProjectDetailsController.SetActive(true); 
+        ConfirmNewProjectDetails();
+    }
+
+    internal void ConfirmNewProjectDetails()
+    {
+        Texture2D newSceneScreenshotTexture = controllers.newProjectDetailsController.GetSceneScreenshotTexture();
+        string newSceneName = controllers.newProjectDetailsController.GetSceneName();
+        string newSceneDescription = controllers.newProjectDetailsController.GetSceneDescription();
+
+        controllers.publicationDetailsController.SetCustomPublicationInfo(newSceneName, newSceneDescription);
+        controllers.newProjectDetailsController.SetActive(false);
+
+        OnConfirmNewProjectAction?.Invoke(
+            newSceneName,
+            newSceneDescription,
+            newSceneScreenshotTexture != null ? Convert.ToBase64String(newSceneScreenshotTexture.EncodeToJPG(90)) : "");
+    }
+
+    internal void CancelNewProjectDetails() { controllers.newProjectDetailsController.SetActive(false); }
 
     public void SetBuilderProjectScreenshot(Texture2D screenshot) { controllers.publicationDetailsController.SetPublicationScreenshot(screenshot); }
 
     public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
-    internal void ConfirmPublicationDetails(string sceneName, string sceneDescription)
+    internal void ConfirmPublicationDetails()
     {
         UnsubscribeConfirmationModal();
 

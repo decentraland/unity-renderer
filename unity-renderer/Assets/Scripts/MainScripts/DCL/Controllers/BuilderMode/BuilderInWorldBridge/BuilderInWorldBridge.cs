@@ -16,6 +16,8 @@ using Environment = DCL.Environment;
 /// </summary>
 public class BuilderInWorldBridge : MonoBehaviour
 {
+    public BuilderProjectPayload builderProject { get => builderProjectPayload; }
+
     //Note Adrian: OnKernelUpdated in not called in the update of the transform, since it will give a lot of 
     //events and probably dont need to get called with that frecuency
     public event Action OnKernelUpdated;
@@ -27,6 +29,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
     SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
+    SaveSceneInfoEvent saveSceneInfo = new SaveSceneInfoEvent();
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
@@ -51,6 +54,15 @@ public class BuilderInWorldBridge : MonoBehaviour
     {
         saveSceneState.payload = JsonUtility.ToJson(builderProjectPayload);
         WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneState);
+    }
+
+    public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
+    {
+        saveSceneInfo.payload.title = sceneName;
+        saveSceneInfo.payload.description = sceneDescription;
+        saveSceneInfo.payload.screenshot = sceneScreenshot;
+
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneInfo);
     }
 
     public void PublishSceneResult(string payload)

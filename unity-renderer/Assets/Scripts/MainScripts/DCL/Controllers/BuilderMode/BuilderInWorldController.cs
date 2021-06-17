@@ -91,7 +91,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void OnDestroy()
     {
-        userProfile.OnUpdate -= OnUserProfileUpdate;
+        if (userProfile != null)
+            userProfile.OnUpdate -= OnUserProfileUpdate;
+
         CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
 
         if (sceneToEdit != null)
@@ -503,6 +505,7 @@ public class BuilderInWorldController : MonoBehaviour
                 inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
                 HUDController.i.builderInWorldMainHud?.SetVisibility(true);
                 CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+                OpenNewProjectDetailsIfNeeded();
             });
         }
 
@@ -530,7 +533,14 @@ public class BuilderInWorldController : MonoBehaviour
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
             HUDController.i.builderInWorldMainHud.SetVisibility(true);
             CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+            OpenNewProjectDetailsIfNeeded();
         });
+    }
+
+    private void OpenNewProjectDetailsIfNeeded()
+    {
+        if (builderInWorldBridge.builderProject.isNewEmptyProject)
+            editorMode.OpenNewProjectDetails();
     }
 
     public void CancelLoading()

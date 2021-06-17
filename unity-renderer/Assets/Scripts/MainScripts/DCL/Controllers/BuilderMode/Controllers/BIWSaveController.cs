@@ -18,8 +18,21 @@ public class BIWSaveController : BIWController
     public override void Init()
     {
         base.Init();
+
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnKernelUpdated += TryToSave;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.OnConfirmNewProjectAction += SaveSceneInfo;
+    }
+
+    private void OnDestroy()
+    {
+        if (builderInWorldBridge != null)
+            builderInWorldBridge.OnKernelUpdated -= TryToSave;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.OnConfirmNewProjectAction -= SaveSceneInfo;
     }
 
     public void ResetSaveTime() { nextTimeToSave = 0; }
@@ -54,4 +67,6 @@ public class BIWSaveController : BIWController
         nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
         HUDController.i.builderInWorldMainHud?.SceneSaved();
     }
+
+    public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 }

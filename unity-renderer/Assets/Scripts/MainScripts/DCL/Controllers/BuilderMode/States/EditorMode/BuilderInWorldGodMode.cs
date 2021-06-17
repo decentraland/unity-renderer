@@ -4,6 +4,7 @@ using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Environment = DCL.Environment;
@@ -99,7 +100,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         HUDController.i.builderInWorldMainHud.OnRotateSelectedAction -= RotateMode;
         HUDController.i.builderInWorldMainHud.OnScaleSelectedAction -= ScaleMode;
         HUDController.i.builderInWorldMainHud.OnResetCameraAction -= ResetCamera;
-        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakeSceneScreenshot;
+        HUDController.i.builderInWorldMainHud.OnPublishAction -= TakePublishSceneScreenshot;
     }
 
     private void Update()
@@ -248,7 +249,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnSelectedObjectRotationChange += UpdateSelectionRotation;
             HUDController.i.builderInWorldMainHud.OnSelectedObjectScaleChange += UpdateSelectionScale;
             HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
-            HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshot;
+            HUDController.i.builderInWorldMainHud.OnPublishAction += TakePublishSceneScreenshot;
         }
     }
 
@@ -799,13 +800,23 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 
-    private void TakeSceneScreenshot()
+    private void TakePublishSceneScreenshot()
     {
         builderInWorldEntityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
             HUDController.i.builderInWorldMainHud?.SetBuilderProjectScreenshot(sceneSnapshot);
+        });
+    }
+
+    public void OpenNewProjectDetails()
+    {
+        builderInWorldEntityHandler.DeselectEntities();
+
+        freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
+        {
+            HUDController.i.builderInWorldMainHud?.NewProjectStart(sceneSnapshot);
         });
     }
 }

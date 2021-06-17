@@ -162,11 +162,19 @@ public class ProtocolV2
     }
 
     [System.Serializable]
+    public class SaveSceneInfoEvent
+    {
+        public string type = "SaveSceneInfo";
+        public BuilderProjectPayload payload = new BuilderProjectPayload();
+    }
+
+    [System.Serializable]
     public class BuilderProjectPayload
     {
-        public string title;
-        public string description;
-        public string screenshot;
+        public string title = "";
+        public string description = "";
+        public string screenshot = "";
+        public bool isNewEmptyProject = false;
     }
 
     #endregion
