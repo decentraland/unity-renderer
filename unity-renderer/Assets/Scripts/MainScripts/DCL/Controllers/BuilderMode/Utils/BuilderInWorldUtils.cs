@@ -330,7 +330,7 @@ public static partial class BuilderInWorldUtils
         original.pivot = rectTransformToCopy.pivot;
     }
 
-    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall)
+    public static WebRequestAsyncOperation MakeGetCall(string url, Action<string> functionToCall, Dictionary<string, string> headers)
     {
         return Environment.i.platform.webRequest.Get(
             url: url,
@@ -346,7 +346,8 @@ public static partial class BuilderInWorldUtils
             OnFail: (webRequestResult) =>
             {
                 Debug.Log(webRequestResult.error);
-            });
+            },
+            headers: headers);
     }
 
     public static void ConfigureEventTrigger(EventTrigger eventTrigger, EventTriggerType eventType, UnityAction<BaseEventData> call)
