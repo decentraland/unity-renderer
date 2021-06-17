@@ -12,6 +12,7 @@ public interface IEntityInformationController
     event Action<Vector3> OnScaleChange;
     event Action<DCLBuilderInWorldEntity, string> OnNameChange;
     event Action<DCLBuilderInWorldEntity> OnSmartItemComponentUpdate;
+    event Action OnDisable;
 
     void Initialize(IEntityInformationView view);
     void Dispose();
@@ -43,6 +44,7 @@ public class EntityInformationController : IEntityInformationController
     public event Action<Vector3> OnScaleChange;
     public event Action<DCLBuilderInWorldEntity, string> OnNameChange;
     public event Action<DCLBuilderInWorldEntity> OnSmartItemComponentUpdate;
+    public event Action OnDisable;
 
     internal IEntityInformationView entityInformationView;
     internal ParcelScene parcelScene;
@@ -197,6 +199,7 @@ public class EntityInformationController : IEntityInformationController
         entityInformationView.SetActive(false);
         EntityDeselected();
         entityInformationView.SetCurrentEntity(null);
+        OnDisable?.Invoke();
     }
 
     internal void EntityDeselected()
