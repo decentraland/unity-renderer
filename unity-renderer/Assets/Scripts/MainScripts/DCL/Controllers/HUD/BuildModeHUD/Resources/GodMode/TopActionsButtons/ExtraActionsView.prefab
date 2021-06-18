@@ -1062,6 +1062,7 @@ MonoBehaviour:
   controlsBtn: {fileID: 1949570747602755671}
   tutorialBtn: {fileID: 1949570748160068138}
   resetBtn: {fileID: 7362914434681410737}
+  resetBtnText: {fileID: 7403272590316335474}
   resetCameraBtn: {fileID: 6668914640440548395}
   toggleUIVisibilityInputAction: {fileID: 11400000, guid: 406d4343cf8bb7a4c9abde62ea95895c,
     type: 2}
@@ -1071,6 +1072,8 @@ MonoBehaviour:
     type: 2}
   toggleResetCameraInputAction: {fileID: 11400000, guid: 9a68859202fcf34468394512b661a138,
     type: 2}
+  enabledButtonTextColor: {r: 1, g: 1, b: 1, a: 1}
+  disabledButtonTextColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
 --- !u!1 &1949570749038049156
 GameObject:
   m_ObjectHideFlags: 0

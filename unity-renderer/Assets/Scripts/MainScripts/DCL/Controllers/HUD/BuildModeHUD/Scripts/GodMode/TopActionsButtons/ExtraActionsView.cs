@@ -1,14 +1,15 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public interface IExtraActionsView
 {
     event Action OnControlsClicked,
-        OnHideUIClicked,
-        OnTutorialClicked,
-        OnResetClicked,
-        OnResetCameraClicked;
+                 OnHideUIClicked,
+                 OnTutorialClicked,
+                 OnResetClicked,
+                 OnResetCameraClicked;
 
     void OnControlsClick(DCLAction_Trigger action);
     void OnHideUIClick(DCLAction_Trigger action);
@@ -16,30 +17,34 @@ public interface IExtraActionsView
     void SetActive(bool isActive);
     void OnResetClick(DCLAction_Trigger action);
     void OnResetCameraClick(DCLAction_Trigger action);
+    void SetResetButtonInteractable(bool isInteractable);
 }
 
 public class ExtraActionsView : MonoBehaviour, IExtraActionsView
 {
     public event Action OnControlsClicked,
-        OnHideUIClicked,
-        OnTutorialClicked,
-        OnResetClicked,
-        OnResetCameraClicked;
+                        OnHideUIClicked,
+                        OnTutorialClicked,
+                        OnResetClicked,
+                        OnResetCameraClicked;
 
     [Header("Buttons")]
     [SerializeField] internal Button hideUIBtn;
-
     [SerializeField] internal Button controlsBtn;
     [SerializeField] internal Button tutorialBtn;
     [SerializeField] internal Button resetBtn;
+    [SerializeField] internal TMP_Text resetBtnText;
     [SerializeField] internal Button resetCameraBtn;
 
     [Header("Input Actions")]
     [SerializeField] internal InputAction_Trigger toggleUIVisibilityInputAction;
-
     [SerializeField] internal InputAction_Trigger toggleControlsVisibilityInputAction;
     [SerializeField] internal InputAction_Trigger toggleResetInputAction;
     [SerializeField] internal InputAction_Trigger toggleResetCameraInputAction;
+
+    [Header("Other Configurations")]
+    [SerializeField] internal Color enabledButtonTextColor;
+    [SerializeField] internal Color disabledButtonTextColor;
 
     private DCLAction_Trigger dummyActionTrigger = new DCLAction_Trigger();
 
@@ -65,6 +70,8 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
         toggleControlsVisibilityInputAction.OnTriggered += OnControlsClick;
         toggleResetInputAction.OnTriggered += OnResetClick;
         toggleResetCameraInputAction.OnTriggered += OnResetCameraClick;
+
+        SetResetButtonInteractable(true);
     }
 
     private void OnDestroy()
@@ -96,4 +103,10 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     public void OnResetClick(DCLAction_Trigger action) { OnResetClicked?.Invoke(); }
 
     public void OnResetCameraClick(DCLAction_Trigger action) { OnResetCameraClicked?.Invoke(); }
+
+    public void SetResetButtonInteractable(bool isInteractable)
+    {
+        resetBtn.interactable = isInteractable;
+        resetBtnText.color = isInteractable ? enabledButtonTextColor : disabledButtonTextColor;
+    }
 }

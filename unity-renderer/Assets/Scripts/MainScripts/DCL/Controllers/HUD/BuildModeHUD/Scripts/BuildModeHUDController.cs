@@ -178,6 +178,8 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnResetCameraClick += () => OnResetCameraAction?.Invoke();
+
+        controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(false);
     }
 
     private void ConfigureCatalogItemDropController()
@@ -555,5 +557,9 @@ public class BuildModeHUDController : IHUD
 
     internal virtual IBuildModeHUDView CreateView() => BuildModeHUDView.Create();
 
-    public void UpdateEntitiesSelection(int numberOfSelectedEntities) { controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities); }
+    public void UpdateEntitiesSelection(int numberOfSelectedEntities)
+    {
+        controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities);
+        controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(numberOfSelectedEntities > 0);
+    }
 }
