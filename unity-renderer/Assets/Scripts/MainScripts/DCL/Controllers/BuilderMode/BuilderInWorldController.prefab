@@ -2387,6 +2387,7 @@ MonoBehaviour:
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   builderInWorldBridge: {fileID: 0}
   biwSaveController: {fileID: 6802675824613373767}
+  biwCreatorController: {fileID: 2072020105617305708}
 --- !u!1 &7515311309793266013
 GameObject:
   m_ObjectHideFlags: 0

@@ -78,6 +78,8 @@ public class BIWCreatorController : BIWController
         }
     }
 
+    public bool IsAnyErrorOnEntities() { return errorGameObjects.Count > 0; }
+
     private bool IsInsideTheLimits(CatalogItem sceneObject)
     {
         if (HUDController.i.builderInWorldMainHud == null)
