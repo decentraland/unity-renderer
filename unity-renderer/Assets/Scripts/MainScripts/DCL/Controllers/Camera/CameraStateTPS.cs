@@ -2,6 +2,7 @@ using System;
 using Cinemachine;
 using UnityEngine;
 
+
 public class CameraStateTPS : CameraStateBase
 {
     private CinemachineFreeLook defaultVirtualCameraAsFreeLook => defaultVirtualCamera as CinemachineFreeLook;
@@ -27,10 +28,18 @@ public class CameraStateTPS : CameraStateBase
     public float rotationLerpSpeed = 10;
 
 
+    [Header("Conditional Height Damping")]
     public FollowWithDamping cameraTargetProbe;
+
     public float dampingOnAir;
     public float dampingOnGround;
     public float dampingOnMovingPlatform;
+
+    [Header("Distance Damping When Sprinting")]
+    [SerializeField]
+    private CameraSprintDamping.Settings cameraSprintDampingSettings = new CameraSprintDamping.Settings();
+
+    private CameraSprintDamping cameraSprintDamping;
 
     public override void Init(Camera camera)
     {
@@ -44,6 +53,7 @@ public class CameraStateTPS : CameraStateBase
         originalXAxisMaxSpeed = defaultVirtualCameraAsFreeLook.m_XAxis.m_MaxSpeed;
         originalYAxisMaxSpeed = defaultVirtualCameraAsFreeLook.m_YAxis.m_MaxSpeed;
 
+        cameraSprintDamping = new CameraSprintDamping(cameraSprintDampingSettings, defaultVirtualCameraAsFreeLook, characterYAxis);
         base.Init(camera);
     }
 
@@ -113,6 +123,17 @@ public class CameraStateTPS : CameraStateBase
         charLastPosition = characterPosition;
         defaultVirtualCameraAsFreeLook.m_BindingMode = CinemachineTransposer.BindingMode.WorldSpace;
 
+        cameraSprintDamping.Update();
+        UpdateAvatarRotationDamping();
+        UpdateGroundCamera();
+    }
+
+    /// <summary>
+    /// This methods ensures the Avatar rotates smoothly when changing direction.
+    /// Note that this will NOT affect the player movement, is only cosmetic.
+    /// </summary>
+    private void UpdateAvatarRotationDamping()
+    {
         var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));
         var xzPlaneRight = Vector3.Scale(cameraTransform.right, new Vector3(1, 0, 1));
 
@@ -144,8 +165,6 @@ public class CameraStateTPS : CameraStateBase
                 characterForward.Set(lerpedForward);
             }
         }
-
-        UpdateGroundCamera();
     }
 
 

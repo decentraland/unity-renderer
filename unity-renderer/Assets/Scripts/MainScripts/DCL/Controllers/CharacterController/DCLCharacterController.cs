@@ -24,13 +24,6 @@ public class DCLCharacterController : MonoBehaviour
 
     public DCLCharacterPosition characterPosition;
 
-    // [Header("Target Probe")]
-    // public FollowWithDamping cameraTargetProbe;
-
-    // public float dampingOnAir;
-    // public float dampingOnGround;
-    // public float dampingOnMovingPlatform;
-
     [Header("Collisions")]
     public LayerMask groundLayers;
 
@@ -56,8 +49,8 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 lastLocalGroundPosition;
     Vector3 velocity = Vector3.zero;
 
-    bool isSprinting = false;
-    bool isJumping = false;
+    public bool isWalking { get; private set; } = false;
+    public bool isJumping { get; private set; } = false;
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
 
@@ -77,8 +70,8 @@ public class DCLCharacterController : MonoBehaviour
 
     private InputAction_Hold.Started jumpStartedDelegate;
     private InputAction_Hold.Finished jumpFinishedDelegate;
-    private InputAction_Hold.Started sprintStartedDelegate;
-    private InputAction_Hold.Finished sprintFinishedDelegate;
+    private InputAction_Hold.Started walkStartedDelegate;
+    private InputAction_Hold.Finished walkFinishedDelegate;
 
     private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
 
@@ -163,10 +156,10 @@ public class DCLCharacterController : MonoBehaviour
         jumpAction.OnStarted += jumpStartedDelegate;
         jumpAction.OnFinished += jumpFinishedDelegate;
 
-        sprintStartedDelegate = (action) => isSprinting = true;
-        sprintFinishedDelegate = (action) => isSprinting = false;
-        sprintAction.OnStarted += sprintStartedDelegate;
-        sprintAction.OnFinished += sprintFinishedDelegate;
+        walkStartedDelegate = (action) => isWalking = true;
+        walkFinishedDelegate = (action) => isWalking = false;
+        sprintAction.OnStarted += walkStartedDelegate;
+        sprintAction.OnFinished += walkFinishedDelegate;
     }
 
     void OnDestroy()
@@ -174,8 +167,8 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         jumpAction.OnStarted -= jumpStartedDelegate;
         jumpAction.OnFinished -= jumpFinishedDelegate;
-        sprintAction.OnStarted -= sprintStartedDelegate;
-        sprintAction.OnFinished -= sprintFinishedDelegate;
+        sprintAction.OnStarted -= walkStartedDelegate;
+        sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
     }
 
@@ -296,7 +289,7 @@ public class DCLCharacterController : MonoBehaviour
             if (Utils.isCursorLocked && characterForward.HasValue())
             {
                 // Horizontal movement
-                var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
+                var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
 
                 transform.forward = characterForward.Get().Value;
 
@@ -447,22 +440,6 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         isGrounded = groundTransform != null && groundTransform.gameObject.activeInHierarchy;
-
-        // if ( isGrounded )
-        // {
-        //     if ( isOnMovingPlatform )
-        //     {
-        //         cameraTargetProbe.damping.y = dampingOnMovingPlatform;
-        //     }
-        //     else
-        //     {
-        //         cameraTargetProbe.damping.y = dampingOnGround;
-        //     }
-        // }
-        // else
-        // {
-        //     cameraTargetProbe.damping.y = dampingOnAir;
-        // }
     }
 
     public Transform CastGroundCheckingRays()

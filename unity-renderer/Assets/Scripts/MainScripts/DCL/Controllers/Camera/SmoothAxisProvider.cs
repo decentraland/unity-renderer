@@ -6,17 +6,18 @@ using UnityEngine;
 
 public class SmoothAxisProvider : MonoBehaviour, AxisState.IInputAxisProvider
 {
-    public string axisX;
-    public string axisY;
     public Vector3 dampTime;
 
     private Vector3 axis = new Vector3();
     private Vector3 axisTarget = new Vector3();
 
+    public InputAction_Measurable axisX;
+    public InputAction_Measurable axisY;
+
     void Update()
     {
-        axisTarget[0] = Input.GetAxis(axisX);
-        axisTarget[1] = Input.GetAxis(axisY);
+        axisTarget[0] = axisX.GetValue();
+        axisTarget[1] = axisY.GetValue();
         axis += Damper.Damp(axisTarget - axis, dampTime, Time.deltaTime);
     }
 
