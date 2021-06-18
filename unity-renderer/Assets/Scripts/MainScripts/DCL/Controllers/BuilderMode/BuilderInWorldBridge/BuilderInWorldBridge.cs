@@ -38,15 +38,6 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     #region MessagesFromKernel
 
-    public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
-    {
-        saveSceneInfo.payload.title = sceneName;
-        saveSceneInfo.payload.description = sceneDescription;
-        saveSceneInfo.payload.screenshot = sceneScreenshot;
-
-        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneInfo);
-    }
-
     public void PublishSceneResult(string payload)
     {
         PublishSceneResultPayload publishSceneResultPayload = JsonUtility.FromJson<PublishSceneResultPayload>(payload);
@@ -94,6 +85,15 @@ public class BuilderInWorldBridge : MonoBehaviour
         entitySingleComponentPayload.data = smartItemComponent.GetValues();
 
         ChangeEntityComponent(entitySingleComponentPayload, scene);
+    }
+
+    public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
+    {
+        saveSceneInfo.payload.title = sceneName;
+        saveSceneInfo.payload.description = sceneDescription;
+        saveSceneInfo.payload.screenshot = sceneScreenshot;
+
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneInfo);
     }
 
     public void SaveSceneState(ParcelScene scene)
