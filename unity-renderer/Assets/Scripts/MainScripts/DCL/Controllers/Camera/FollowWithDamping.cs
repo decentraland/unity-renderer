@@ -36,6 +36,8 @@ public class FollowWithDamping : MonoBehaviour
 
     public void LateUpdate()
     {
+        if ( target == null ) return;
+
         Vector3 myPosition = transform.position;
         Vector3 targetPosition = target.position;
         Vector3 finalPosition = myPosition;

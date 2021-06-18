@@ -1366,12 +1366,21 @@ MonoBehaviour:
   fallingVirtualCamera: {fileID: 1548268436}
   characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
-  rotationLerpSpeed: 10
   cameraTargetProbe: {fileID: 9058585267122995640}
-  dampingOnAir: 0
-  dampingOnGround: 1
-  dampingOnMovingPlatform: 0
+  avatarRotationLerpSpeed: 10
+  cameraFreefallSettings:
+    enabled: 1
+    freefallVirtualCamera: {fileID: 1548268436}
+    fallDetectionDelay: 0.5
+    fallGroundDistanceThreshold: 10
+  cameraDampOnGroundTypeSettings:
+    enabled: 1
+    dampingOnAir: 0
+    dampingOnGround: 1
+    dampingOnMovingPlatform: 0
+    groundCheckThreshold: 1.5
   cameraSprintDampingSettings:
+    enabled: 1
     distanceMin: 3.2
     distanceMax: 4.5
     fovMax: 70
@@ -1379,9 +1388,6 @@ MonoBehaviour:
     inDampingDelay: 2
     inDampingTime: 20
     outDampingTime: 5
-  groundCheckThreshold: 1.5
-  fallGroundDistanceThreshold: 10
-  fallDetectionDelay: 0.5
 --- !u!1 &5902165421965975136
 GameObject:
   m_ObjectHideFlags: 0

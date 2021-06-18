@@ -1453,16 +1453,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 326638022526883033, guid: b0965b55b892d438da492708ea09799c,
-        type: 3}
-      propertyPath: dampTime.x
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 326638022526883033, guid: b0965b55b892d438da492708ea09799c,
-        type: 3}
-      propertyPath: dampTime.y
-      value: 0.4
-      objectReference: {fileID: 0}
     - target: {fileID: 326638023455565216, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_Name
