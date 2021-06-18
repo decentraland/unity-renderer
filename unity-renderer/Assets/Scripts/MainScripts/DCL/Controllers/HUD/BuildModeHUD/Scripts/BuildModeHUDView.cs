@@ -24,6 +24,7 @@ public interface IBuildModeHUDView
     void SetVisibilityOfControls(bool isVisible);
     void SetVisibilityOfExtraBtns(bool isVisible);
     void SetVisibilityOfSceneInfo(bool isVisible);
+    void SetVisibilityOfInspector(bool isVisible);
 }
 
 public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
@@ -174,4 +175,11 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
             showHideAnimator.Hide();
     }
 
+    public void SetVisibilityOfInspector(bool isVisible)
+    {
+        if (isVisible)
+            controllers.inspectorController.OpenEntityList();
+        else
+            controllers.inspectorController.CloseList();
+    }
 }

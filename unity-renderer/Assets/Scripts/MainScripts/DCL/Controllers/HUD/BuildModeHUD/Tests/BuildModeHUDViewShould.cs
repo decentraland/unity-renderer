@@ -204,5 +204,20 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.AreEqual(isActive, buildModeHUDView.gameObject.activeSelf, "The game object actove property does not match!");
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetVisibilityOfInspectorCorrectly(bool isActive)
+        {
+            // Act
+            buildModeHUDView.SetVisibilityOfInspector(isActive);
+
+            // Assert
+            if (isActive)
+                buildModeHUDView.controllers.inspectorController.Received(1).OpenEntityList();
+            else
+                buildModeHUDView.controllers.inspectorController.Received(1).CloseList();
+        }
     }
 }

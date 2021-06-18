@@ -562,4 +562,11 @@ public class BuildModeHUDController : IHUD
         controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities);
         controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(numberOfSelectedEntities > 0);
     }
+
+    #region Inspector
+
+    public void SetVisibilityOfInspector(bool isVisible) { view.SetVisibilityOfInspector(isVisible); }
+
+    #endregion
+
 }
