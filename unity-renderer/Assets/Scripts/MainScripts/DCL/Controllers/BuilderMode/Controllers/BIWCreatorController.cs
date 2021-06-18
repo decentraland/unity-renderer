@@ -4,6 +4,7 @@ using DCL.Configuration;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -59,7 +60,7 @@ public class BIWCreatorController : BIWController
             placeHolder.Dispose();
         }
 
-        foreach (DCLBuilderInWorldEntity entity in errorGameObjects.Keys)
+        foreach (DCLBuilderInWorldEntity entity in errorGameObjects.Keys.ToArray())
         {
             DeleteErrorOnEntity(entity);
         }
