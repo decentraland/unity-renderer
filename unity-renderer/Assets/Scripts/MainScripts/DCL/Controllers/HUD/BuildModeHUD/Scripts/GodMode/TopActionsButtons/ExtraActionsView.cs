@@ -43,10 +43,10 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     [SerializeField] internal InputAction_Trigger toggleResetCameraInputAction;
 
     [Header("Other Configurations")]
-    [SerializeField] internal Color enabledButtonTextColor;
     [SerializeField] internal Color disabledButtonTextColor;
 
     private DCLAction_Trigger dummyActionTrigger = new DCLAction_Trigger();
+    private Color originalResetBtnColor;
 
     private const string VIEW_PATH = "GodMode/TopActionsButtons/ExtraActionsView";
 
@@ -71,6 +71,7 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
         toggleResetInputAction.OnTriggered += OnResetClick;
         toggleResetCameraInputAction.OnTriggered += OnResetCameraClick;
 
+        originalResetBtnColor = resetBtnText.color;
         SetResetButtonInteractable(true);
     }
 
@@ -107,6 +108,6 @@ public class ExtraActionsView : MonoBehaviour, IExtraActionsView
     public void SetResetButtonInteractable(bool isInteractable)
     {
         resetBtn.interactable = isInteractable;
-        resetBtnText.color = isInteractable ? enabledButtonTextColor : disabledButtonTextColor;
+        resetBtnText.color = isInteractable ? originalResetBtnColor : disabledButtonTextColor;
     }
 }

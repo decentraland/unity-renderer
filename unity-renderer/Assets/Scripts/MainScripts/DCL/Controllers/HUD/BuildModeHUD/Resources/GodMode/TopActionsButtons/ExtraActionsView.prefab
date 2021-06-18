@@ -1072,7 +1072,7 @@ MonoBehaviour:
     type: 2}
   toggleResetCameraInputAction: {fileID: 11400000, guid: 9a68859202fcf34468394512b661a138,
     type: 2}
-  enabledButtonTextColor: {r: 1, g: 1, b: 1, a: 1}
+  enabledButtonTextColor: {r: 0.8352941, g: 0.83137256, b: 0.83137256, a: 1}
   disabledButtonTextColor: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
 --- !u!1 &1949570749038049156
 GameObject:
