@@ -30,7 +30,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
     SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
-    SaveSceneInfoEvent saveSceneInfo = new SaveSceneInfoEvent();
+    SaveProjectInfoEvent saveProjectInfo = new SaveProjectInfoEvent();
     ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
     EntityPayload entityPayload = new EntityPayload();
     EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
@@ -89,11 +89,11 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void SaveSceneInfo(ParcelScene scene, string sceneName, string sceneDescription, string sceneScreenshot)
     {
-        saveSceneInfo.payload.title = sceneName;
-        saveSceneInfo.payload.description = sceneDescription;
-        saveSceneInfo.payload.screenshot = sceneScreenshot;
+        saveProjectInfo.payload.title = sceneName;
+        saveProjectInfo.payload.description = sceneDescription;
+        saveProjectInfo.payload.screenshot = sceneScreenshot;
 
-        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveSceneInfo);
+        WebInterface.SendSceneEvent(scene.sceneData.id, BuilderInWorldSettings.STATE_EVENT_NAME, saveProjectInfo);
     }
 
     public void SaveSceneState(ParcelScene scene)

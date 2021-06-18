@@ -162,9 +162,9 @@ public class ProtocolV2
     }
 
     [System.Serializable]
-    public class SaveSceneInfoEvent
+    public class SaveProjectInfoEvent
     {
-        public string type = "SaveSceneInfo";
+        public string type = "SaveProjectInfo";
         public BuilderProjectPayload payload = new BuilderProjectPayload();
     }
 
