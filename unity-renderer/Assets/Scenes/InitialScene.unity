@@ -1635,6 +1635,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
+      propertyPath: AccelerationMod
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: DecelerationMod
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: XAxisSensitivity
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: YAxisSensitivity
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
       propertyPath: builderInputWrapper
       value: 
       objectReference: {fileID: 222570193}
