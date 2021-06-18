@@ -104,6 +104,41 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    public void ErrorGameObjectCreation()
+    {
+        //Arrange
+        BIWCatalogManager.Init();
+        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        biwCreatorController.CreateCatalogItem(item);
+        DCLBuilderInWorldEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
+
+        //Act
+        biwCreatorController.CreateErrorOnEntity(entity);
+
+        //Assert
+        Assert.IsTrue(biwCreatorController.IsAnyErrorOnEntities());
+    }
+
+    [Test]
+    public void ErrorGameObjectDestruction()
+    {
+        //Arrange
+        BIWCatalogManager.Init();
+        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        biwCreatorController.CreateCatalogItem(item);
+        DCLBuilderInWorldEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
+        biwCreatorController.CreateErrorOnEntity(entity);
+
+        //Act
+        biwCreatorController.DeleteErrorOnEntity(entity);
+
+        //Assert
+        Assert.IsFalse(biwCreatorController.IsAnyErrorOnEntities());
+    }
+
+    [Test]
     public void CatalogItemAddMapings()
     {
         //Arrange
@@ -143,6 +178,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         {
             placeHolder.Dispose();
         }
+        biwCreatorController.Clean();
 
         yield return base.TearDown();
     }
