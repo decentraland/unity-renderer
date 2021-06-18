@@ -4,6 +4,7 @@ using DCL.Configuration;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -18,6 +19,7 @@ public class BIWCreatorController : BIWController
     [FormerlySerializedAs("loadingGO")]
     [Header("Project references")]
     public GameObject loadingObjectPrefab;
+    public GameObject errorPrefab;
 
     [SerializeField]
     internal InputAction_Trigger toggleCreateLastSceneObjectInputAction;
@@ -31,6 +33,7 @@ public class BIWCreatorController : BIWController
     private InputAction_Trigger.Triggered createLastSceneObjectDelegate;
 
     private readonly Dictionary<string, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<string, BIWLoadingPlaceHolder>();
+    private readonly Dictionary<DCLBuilderInWorldEntity, GameObject> errorGameObjects = new Dictionary<DCLBuilderInWorldEntity, GameObject>();
 
     private void Start()
     {
@@ -57,7 +60,13 @@ public class BIWCreatorController : BIWController
             placeHolder.Dispose();
         }
 
+        foreach (DCLBuilderInWorldEntity entity in errorGameObjects.Keys.ToArray())
+        {
+            DeleteErrorOnEntity(entity);
+        }
+
         loadingGameObjects.Clear();
+        errorGameObjects.Clear();
     }
 
     public override void Init()
@@ -69,6 +78,8 @@ public class BIWCreatorController : BIWController
             HUDController.i.builderInWorldMainHud.OnCatalogItemDropped += OnCatalogItemDropped;
         }
     }
+
+    public bool IsAnyErrorOnEntities() { return errorGameObjects.Count > 0; }
 
     private bool IsInsideTheLimits(CatalogItem sceneObject)
     {
@@ -115,6 +126,26 @@ public class BIWCreatorController : BIWController
         }
 
         return true;
+    }
+
+    public void CreateErrorOnEntity(DCLBuilderInWorldEntity entity)
+    {
+        if (errorGameObjects.ContainsKey(entity))
+            return;
+
+        GameObject instantiatedError = Instantiate(errorPrefab, entity.transform);
+        errorGameObjects.Add(entity, instantiatedError);
+        entity.OnDelete += DeleteErrorOnEntity;
+    }
+
+    public void DeleteErrorOnEntity(DCLBuilderInWorldEntity entity)
+    {
+        if (!errorGameObjects.ContainsKey(entity))
+            return;
+
+        entity.OnDelete -= DeleteErrorOnEntity;
+        Destroy(errorGameObjects[entity]);
+        errorGameObjects.Remove(entity);
     }
 
     public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
