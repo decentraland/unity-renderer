@@ -8,12 +8,25 @@ public class FreeCameraMovement : CameraStateBase
 {
     private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
     private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
+
+    public float focusDistance = 5f;
+
+    [Header("Constants")]
+    public float AccelerationMod;
+    public float XAxisSensitivity;
+    public float YAxisSensitivity;
+    public float DecelerationMod;
+
+    [Space]
+    public float MaximumMovementSpeed = 1f;
+
+    private Vector3 _moveSpeed = Vector3.zero;
+
+    [Header("Manual Camera Movement")]
     public float smoothLookAtSpeed = 5f;
     public float smoothCameraLookSpeed = 5f;
     public float smoothCameraMovementSpeed = 5f;
-    public float focusDistance = 5f;
-
-    [Header("Manual Camera Movement")]
+    public float smoothCameraDeceleration = 5f;
     public float keyboardMovementSpeed = 5f;
 
     public float lookSpeedH = 2f;
@@ -90,7 +103,6 @@ public class FreeCameraMovement : CameraStateBase
     private Transform originalCameraLookAt;
 
     private float lastMouseWheelTime = 0;
-
     public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
 
     private void Awake()
@@ -178,6 +190,7 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         isMouseRightClickDown = true;
+        _moveSpeed = Vector3.zero;
     }
 
     private void OnDestroy()
@@ -216,38 +229,115 @@ public class FreeCameraMovement : CameraStateBase
 
     private void Update()
     {
-        if (!isMouseRightClickDown)
-            return;
 
-        Vector3 velocity = Vector3.zero;
-        if (isAdvancingForward)
-            velocity += GetTotalVelocity(velocity, transform.forward);
 
-        if (isAdvancingBackward)
-            velocity += GetTotalVelocity(velocity, -transform.forward);
+        var acceleration = HandleKeyInput();
+        _moveSpeed += acceleration;
+        HandleDeceleration(acceleration);
 
-        if (isAdvancingRight)
-            velocity += GetTotalVelocity(velocity, transform.right);
+        // clamp the move speed
+        if (_moveSpeed.magnitude > MaximumMovementSpeed)
+        {
+            _moveSpeed = _moveSpeed.normalized * MaximumMovementSpeed;
+        }
 
-        if (isAdvancingLeft)
-            velocity += GetTotalVelocity(velocity, -transform.right);
+        transform.Translate(_moveSpeed);
 
-        if (isAdvancingUp)
-            velocity += GetTotalVelocity(velocity, Vector3.up);
+        // Vector3 cameraVelocity = Vector3.zero; 
+        //
+        // if (isAdvancingForward)
+        //     cameraVelocity += GetTotalVelocity( transform.forward);
+        //
+        // if (isAdvancingBackward)
+        //     cameraVelocity += GetTotalVelocity( -transform.forward);
+        //
+        // if (isAdvancingRight)
+        //     cameraVelocity += GetTotalVelocity( transform.right);
+        //
+        // if (isAdvancingLeft)
+        //     cameraVelocity += GetTotalVelocity( -transform.right);
+        //
+        // if (isAdvancingUp)
+        //     cameraVelocity += GetTotalVelocity( Vector3.up);
+        //
+        // if (isAdvancingDown)
+        //     cameraVelocity += GetTotalVelocity( -Vector3.up);
+        //
+        // cameraDestinationPosition = transform.position + cameraVelocity ;
+    }
+    private void HandleDeceleration(Vector3 acceleration)
+    {
+        //deceleration functionality
+        if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.x) < DecelerationMod)
+            {
+                _moveSpeed.x = 0;
+            }
+            else
+            {
+                _moveSpeed.x -= DecelerationMod * Mathf.Sign(_moveSpeed.x);
+            }
+        }
 
-        if (isAdvancingDown)
-            velocity += GetTotalVelocity(velocity, -Vector3.up);
+        if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.y) < DecelerationMod)
+            {
+                _moveSpeed.y = 0;
+            }
+            else
+            {
+                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y);
+            }
+        }
 
-        cameraDestinationPosition = transform.position + velocity * (keyboardMovementSpeed * Time.deltaTime);
-        if (Vector3.Distance(transform.position, cameraDestinationPosition) >= 0.05f)
-            transform.position = Vector3.Lerp(transform.position, cameraDestinationPosition, smoothCameraMovementSpeed * Time.deltaTime);
+        if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.z) < DecelerationMod)
+            {
+                _moveSpeed.z = 0;
+            }
+            else
+            {
+                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z);
+            }
+        }
+    }
+    private Vector3 HandleKeyInput()
+    {
+        var acceleration = Vector3.zero;
+
+        if (isMouseRightClickDown)
+        {
+            if (isAdvancingForward)
+                acceleration.z += 1;
+
+            if (isAdvancingBackward)
+                acceleration.z -= 1;
+
+            if (isAdvancingLeft)
+                acceleration.x -= 1;
+
+            if (isAdvancingRight)
+                acceleration.x += 1;
+
+            if (isAdvancingUp)
+                acceleration.y += 1;
+
+            if (isAdvancingDown)
+                acceleration.y -= 1;
+
+        }
+
+        return acceleration.normalized * AccelerationMod;
     }
 
-    public Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
+    public Vector3 GetTotalVelocity(Vector3 direction)
     {
         if (isDetectingMovement)
             hasBeenMovement = true;
-        return currentVelocity + velocityToAdd;
+        return direction * (keyboardMovementSpeed * Time.deltaTime);
     }
 
     public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
@@ -431,6 +521,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         SetPosition(originalCameraPosition);
         LookAt(originalCameraLookAt);
+        _moveSpeed = Vector3.zero;
     }
 
     public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
