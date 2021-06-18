@@ -56,14 +56,14 @@ MonoBehaviour:
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 1036879088249284490}
   m_Follow: {fileID: 1036879088249284490}
-  m_CommonLens: 1
+  m_CommonLens: 0
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 60.13885
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 75
     Dutch: 0
-    ModeOverride: 0
+    ModeOverride: 2
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1.7777778, y: 1}
@@ -132,7 +132,7 @@ MonoBehaviour:
   - m_Height: 4
     m_Radius: 1.6
   - m_Height: 0.5
-    m_Radius: 3.2
+    m_Radius: 3.218051
   - m_Height: -0.75
     m_Radius: 1.6
   m_LegacyHeadingBias: 3.4028235e+38
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9146e01c6b0edc244a80edb85ceaf7c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dampTime: {x: 0.2, y: 0.2, z: 0}
+  dampTime: {x: 0.4, y: 0.4, z: 0}
   axisX: {fileID: 11400000, guid: c5302665e8f998e4ea2673bba5e22914, type: 2}
   axisY: {fileID: 11400000, guid: 03d744388580e334391bfa394a66e6d7, type: 2}
 --- !u!1 &573743092
@@ -237,7 +237,6 @@ MonoBehaviour:
   - m_Transitions
   - m_Follow
   - m_StandbyUpdate
-  - m_Lens
   m_LockStageInInspector: 00000000
   m_StreamingVersion: 20170927
   m_Priority: 10
@@ -249,8 +248,8 @@ MonoBehaviour:
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 75
-    Dutch: 0
-    ModeOverride: 0
+    Dutch: -10
+    ModeOverride: 2
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1.7777778, y: 1}
@@ -320,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: -0.75, z: -1.6}
+  m_FollowOffset: {x: 0, y: 0.5355861, z: -3.217779}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -379,8 +378,8 @@ MonoBehaviour:
   m_LookaheadIgnoreY: 0
   m_HorizontalDamping: 0
   m_VerticalDamping: 0
-  m_ScreenX: 0.35
-  m_ScreenY: 0.34
+  m_ScreenX: 0.38
+  m_ScreenY: 0.37
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0.002777778
   m_SoftZoneWidth: 0.2
@@ -446,7 +445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: -0.75, z: -1.6}
+  m_FollowOffset: {x: 0, y: 0.5355861, z: -3.217779}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -660,7 +659,6 @@ MonoBehaviour:
   - m_Transitions
   - m_Follow
   - m_StandbyUpdate
-  - m_Lens
   m_LockStageInInspector: 00000000
   m_StreamingVersion: 20170927
   m_Priority: 10
@@ -673,7 +671,7 @@ MonoBehaviour:
     NearClipPlane: 0.1
     FarClipPlane: 75
     Dutch: 0
-    ModeOverride: 0
+    ModeOverride: 2
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1.7777778, y: 1}
@@ -814,7 +812,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: -0.75, z: -1.6}
+  m_FollowOffset: {x: 0, y: 0.5355861, z: -3.217779}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -934,7 +932,6 @@ MonoBehaviour:
   - m_Transitions
   - m_Follow
   - m_StandbyUpdate
-  - m_Lens
   m_LockStageInInspector: 00000000
   m_StreamingVersion: 20170927
   m_Priority: 10
@@ -947,7 +944,7 @@ MonoBehaviour:
     NearClipPlane: 0.1
     FarClipPlane: 75
     Dutch: 0
-    ModeOverride: 0
+    ModeOverride: 2
     LensShift: {x: 0, y: 0}
     GateFit: 2
     m_SensorSize: {x: 1.7777778, y: 1}
