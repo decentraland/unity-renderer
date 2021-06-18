@@ -1116,13 +1116,13 @@ MonoBehaviour:
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 2
-  startInCoords: {x: 100, y: 100}
+  startInCoords: {x: 140, y: 140}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  builderInWorld: 0
-  soloScene: 0
+  builderInWorld: 1
+  soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -1636,7 +1636,7 @@ PrefabInstance:
     - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: AccelerationMod
-      value: 0.06
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
@@ -1658,6 +1658,11 @@ PrefabInstance:
       propertyPath: builderInputWrapper
       value: 
       objectReference: {fileID: 222570193}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: MaximumMovementSpeed
+      value: 0.65
+      objectReference: {fileID: 0}
     - target: {fileID: 6384478764905876486, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_Name
