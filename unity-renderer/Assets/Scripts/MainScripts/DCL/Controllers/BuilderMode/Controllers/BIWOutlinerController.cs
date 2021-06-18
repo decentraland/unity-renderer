@@ -70,6 +70,9 @@ public class BIWOutlinerController : BIWController
 
     public void OutlineEntity(DCLBuilderInWorldEntity entity)
     {
+        if (entity.rootEntity.meshRootGameObject == null)
+            return;
+
         if (!entity.rootEntity.meshRootGameObject && entity.rootEntity.renderers.Length <= 0)
             return;
 

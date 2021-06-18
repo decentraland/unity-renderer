@@ -2245,6 +2245,8 @@ MonoBehaviour:
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   loadingObjectPrefab: {fileID: 9065723555097372216, guid: d21a9c099a778423a908066cf9f458a0,
     type: 3}
+  errorPrefab: {fileID: 4033134647701233386, guid: 3fab1b532c173cb42b63910043234fe1,
+    type: 3}
   toggleCreateLastSceneObjectInputAction: {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e,
     type: 2}
 --- !u!1 &4590602730705578794
