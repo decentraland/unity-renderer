@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -754,7 +754,7 @@ PrefabInstance:
     - target: {fileID: 4562892339457273614, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000015258789
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4642514929329062486, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
@@ -1116,13 +1116,13 @@ MonoBehaviour:
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 2
-  startInCoords: {x: 140, y: 140}
+  startInCoords: {x: 100, y: 100}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  builderInWorld: 1
-  soloScene: 1
+  builderInWorld: 0
+  soloScene: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
