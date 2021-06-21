@@ -52,8 +52,6 @@ public class BuildModeHUDController : IHUD
     internal BuildModeHUDInitializationModel controllers;
     internal CatalogItemDropController catalogItemDropController;
 
-    internal static readonly Vector3 catalogItemTooltipOffset = new Vector3 (0, 25, 0);
-
     private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
 
@@ -398,7 +396,7 @@ public class BuildModeHUDController : IHUD
     private void ShowTooltipForCatalogItemAdapter(PointerEventData data, CatalogItemAdapter adapter)
     {
         controllers.tooltipController.SetTooltipText(adapter.GetContent().name);
-        controllers.tooltipController.ShowTooltip(data, catalogItemTooltipOffset);
+        controllers.tooltipController.ShowTooltip(data);
     }
 
     public void RefreshCatalogAssetPack() { view.RefreshCatalogAssetPack(); }
