@@ -15,6 +15,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
     public event Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
     public event Action<DCLBuilderInWorldEntity> OnStatusUpdate;
     public event Action<DCLBuilderInWorldEntity> OnDelete;
+    public event Action<DCLBuilderInWorldEntity> OnErrorStatusChange;
 
     public bool IsLocked
     {
@@ -86,6 +87,15 @@ public class DCLBuilderInWorldEntity : EditableEntity
     private Vector3 lastScaleReported;
     private Quaternion lastRotationReported;
 
+    #region Error Handler definition
+
+    public bool hasError  { get; private set; } = false;
+
+    public bool hasMissingCatalogItemError { get; private set; } = false;
+    public bool isInsideBoundariesError { get; private set; } = false;
+
+    #endregion
+
     public void Init(IDCLEntity entity, Material editMaterial)
     {
         rootEntity = entity;
@@ -141,6 +151,38 @@ public class DCLBuilderInWorldEntity : EditableEntity
     public void ScaleReported() { lastScaleReported = transform.lossyScale; }
 
     public void RotationReported() { lastRotationReported = transform.rotation; }
+
+    #region Error Handling
+
+    public void CheckErrors()
+    {
+        bool isCurrentlyWithError = false;
+
+        //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
+        if (GetCatalogItemAssociated() == null)
+        {
+            hasMissingCatalogItemError = true;
+            isCurrentlyWithError = true;
+        }
+
+        //If entity is not inside boundaries it has an error
+        if (isInsideBoundariesError)
+            isCurrentlyWithError = true;
+
+        bool hasErrorPreviously = hasError;
+        hasError = isCurrentlyWithError;
+
+        if (isCurrentlyWithError != hasErrorPreviously)
+            OnErrorStatusChange?.Invoke(this);
+    }
+
+    public void SetEntityBoundariesError(bool isInsideBoundaries)
+    {
+        isInsideBoundariesError = isInsideBoundaries;
+        CheckErrors();
+    }
+
+    #endregion
 
     public void Select()
     {
@@ -372,6 +414,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         SaveOriginalMaterial();
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
+        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
     }
 
     private void HandleAnimation()

@@ -185,7 +185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -12.657, y: 0}
+  m_AnchoredPosition: {x: -12.656982, y: 0}
   m_SizeDelta: {x: -124.684, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9053390297322497683
@@ -530,7 +530,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 24.7, y: 0}
+  m_AnchoredPosition: {x: 24.699951, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7541719907382048152
@@ -922,8 +922,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entitySelectedColor: {r: 1, g: 1, b: 1, a: 0.02745098}
   entityUnselectedColor: {r: 1, g: 1, b: 1, a: 0}
-  entityInsideOfBoundsColor: {r: 1, g: 1, b: 1, a: 1}
-  entityOutOfBoundsColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  entityWithouthErrorsColor: {r: 1, g: 1, b: 1, a: 1}
+  entityErrorColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   iconsSelectedColor: {r: 1, g: 1, b: 1, a: 1}
   iconsUnselectedColor: {r: 0.28627452, g: 0.27450982, b: 0.27450982, a: 1}
   nameInputField: {fileID: 3144001738933584821}

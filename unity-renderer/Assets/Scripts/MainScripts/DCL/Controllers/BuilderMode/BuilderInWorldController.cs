@@ -99,7 +99,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void OnDestroy()
     {
-        userProfile.OnUpdate -= OnUserProfileUpdate;
+        if (userProfile != null)
+            userProfile.OnUpdate -= OnUserProfileUpdate;
+
         CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
 
         if (sceneToEdit != null)

@@ -91,6 +91,8 @@ public class BuilderInWorldEntityHandler : BIWController
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
     }
 
     private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
@@ -126,6 +128,8 @@ public class BuilderInWorldEntityHandler : BIWController
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityRename -= SetEntityName;
+
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
 
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -186,8 +190,8 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
-            //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
-            if (entity.GetCatalogItemAssociated() == null)
+            entity.CheckErrors();
+            if (entity.hasMissingCatalogItemError)
                 biwCreatorController.CreateErrorOnEntity(entity);
         }
     }
@@ -460,12 +464,12 @@ public class BuilderInWorldEntityHandler : BIWController
         return entities;
     }
 
-    public DCLBuilderInWorldEntity GetEntity(string entityId)
+    public DCLBuilderInWorldEntity GetConvertedEntity(string entityId)
     {
         if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entityId)))
             return convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
-        else
-            return null;
+
+        return null;
     }
 
     public DCLBuilderInWorldEntity GetConvertedEntity(IDCLEntity entity)
@@ -672,6 +676,15 @@ public class BuilderInWorldEntityHandler : BIWController
         }
     }
 
+    private void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
+    {
+        var convertedEntity = GetConvertedEntity(entity);
+        if (convertedEntity == null)
+            return;
+
+        convertedEntity.SetEntityBoundariesError(isInsideBoundaries);
+    }
+
     public string GetNewNameForEntity(CatalogItem sceneObject) { return GetNewNameForEntity(sceneObject.name); }
 
     public string GetNewNameForEntity(string name)
@@ -729,6 +742,7 @@ public class BuilderInWorldEntityHandler : BIWController
 
         if (entityNameList.Contains(entityName))
             entityNameList.Remove(entityName);
+
 
         RemoveConvertedEntity(entityToDelete.rootEntity);
         entityToDelete.rootEntity.OnRemoved -= RemoveConvertedEntity;
