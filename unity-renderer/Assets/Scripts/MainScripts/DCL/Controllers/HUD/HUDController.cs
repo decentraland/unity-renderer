@@ -79,8 +79,6 @@ public class HUDController : MonoBehaviour
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public EmailPromptHUDController emailPromptHud => GetHUDElement(HUDElementID.EMAIL_PROMPT) as EmailPromptHUDController;
-
     public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
@@ -159,16 +157,15 @@ public class HUDController : MonoBehaviour
         CONTROLS_HUD = 18,
         EXPLORE_HUD = 19,
         HELP_AND_SUPPORT_HUD = 20,
-        EMAIL_PROMPT = 21,
-        USERS_AROUND_LIST_HUD = 22,
-        GRAPHIC_CARD_WARNING = 23,
-        BUILDER_IN_WORLD_MAIN = 24,
-        BUILDER_IN_WORLD_INITIAL = 25,
-        QUESTS_PANEL = 26,
-        QUESTS_TRACKER = 27,
-        BUILDER_PROJECTS_PANEL = 28,
-        SIGNUP = 29,
-        COUNT = 30
+        USERS_AROUND_LIST_HUD = 21,
+        GRAPHIC_CARD_WARNING = 22,
+        BUILDER_IN_WORLD_MAIN = 23,
+        BUILDER_IN_WORLD_INITIAL = 24,
+        QUESTS_PANEL = 25,
+        QUESTS_TRACKER = 26,
+        BUILDER_PROJECTS_PANEL = 27,
+        SIGNUP = 28,
+        COUNT = 29
     }
 
     [System.Serializable]
@@ -356,14 +353,6 @@ public class HUDController : MonoBehaviour
             case HUDElementID.CONTROLS_HUD:
                 CreateHudElement<ControlsHUDController>(configuration, hudElementId);
                 taskbarHud?.AddControlsMoreOption();
-                break;
-            case HUDElementID.EMAIL_PROMPT:
-                if (emailPromptHud == null)
-                {
-                    CreateHudElement<EmailPromptHUDController>(configuration, hudElementId);
-                }
-
-                emailPromptHud?.SetEnable(configuration.active);
                 break;
             case HUDElementID.EXPLORE_HUD:
                 CreateHudElement<ExploreHUDController>(configuration, hudElementId);
