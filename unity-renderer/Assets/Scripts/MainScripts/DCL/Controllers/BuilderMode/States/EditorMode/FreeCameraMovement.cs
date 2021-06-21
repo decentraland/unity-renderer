@@ -500,11 +500,32 @@ public class FreeCameraMovement : CameraStateBase
         yield return null;
 
         Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+        camera.targetTexture = current;
+        callback?.Invoke(sceneScreenshot);
+    }
+
+    public void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
+
+    private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(OnSnapshotsReady callback)
+    {
+        // Store current camera position/direction
+        Vector3 currentPos = transform.position;
+        Vector3 currentLookAt = transform.forward;
+        SetPosition(originalCameraPosition);
+        transform.LookAt(originalCameraLookAt);
+
+        var current = camera.targetTexture;
+        camera.targetTexture = null;
 
         yield return null;
 
+        Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
         camera.targetTexture = current;
         callback?.Invoke(sceneScreenshot);
+
+        // Restore camera position/direction after the screenshot
+        SetPosition(currentPos);
+        transform.forward = currentLookAt;
     }
 
     private Texture2D ScreenshotFromCamera(int width, int height)

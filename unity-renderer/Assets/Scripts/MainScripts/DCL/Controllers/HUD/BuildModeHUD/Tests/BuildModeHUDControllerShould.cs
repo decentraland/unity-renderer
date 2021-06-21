@@ -31,6 +31,7 @@ namespace Tests.BuildModeHUDControllers
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController = Substitute.For<ISaveHUDController>(),
+                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
                 publicationDetailsController = Substitute.For<IPublicationDetailsController>()
             };
 
@@ -60,6 +61,7 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.controllers.inspectorController = null;
             buildModeHUDController.controllers.topActionsButtonsController = null;
             buildModeHUDController.controllers.saveHUDController = null;
+            buildModeHUDController.controllers.newProjectDetailsController = null;
             buildModeHUDController.controllers.publicationDetailsController = null;
 
             // Act
@@ -80,6 +82,7 @@ namespace Tests.BuildModeHUDControllers
             Assert.NotNull(buildModeHUDController.controllers.inspectorController, "The inspectorController is null!");
             Assert.NotNull(buildModeHUDController.controllers.topActionsButtonsController, "The topActionsButtonsController is null!");
             Assert.NotNull(buildModeHUDController.controllers.saveHUDController, "The saveHUDController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.newProjectDetailsController, "The newProjectDetailsController is null!");
             Assert.NotNull(buildModeHUDController.controllers.publicationDetailsController, "The publicationDetailsController is null!");
         }
 
@@ -110,9 +113,63 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             if (!string.IsNullOrEmpty(projectName))
+            {
+                buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
                 buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
+            }
             else
+            {
+                buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetDefaultPublicationInfo();
                 buildModeHUDController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
+            }
+        }
+
+        [Test]
+        public void StartNewProjectFlowCorrectly()
+        {
+            // Arrange
+            Texture2D testScreenshot = new Texture2D(10, 10);
+
+            // Act
+            buildModeHUDController.NewProjectStart(testScreenshot);
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
+
+            // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
+            //buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void ConfirmNewProjectDetailsCorrectly()
+        {
+            // Arrange
+            bool newProjectDetailsConfirmed = false;
+            buildModeHUDController.OnSaveSceneInfoAction += (name, desc, image) =>
+            {
+                newProjectDetailsConfirmed = true;
+            };
+
+            // Act
+            buildModeHUDController.SaveSceneInfo();
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneScreenshotTexture();
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneName();
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneDescription();
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(Arg.Any<string>(), Arg.Any<string>());
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(false);
+            Assert.IsTrue(newProjectDetailsConfirmed);
+        }
+
+        [Test]
+        public void CancelNewProjectDetailsCorrectly()
+        {
+            // Act
+            buildModeHUDController.CancelNewProjectDetails();
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(false);
         }
 
         [Test]
@@ -128,12 +185,8 @@ namespace Tests.BuildModeHUDControllers
         [Test]
         public void ConfirmPublicationDetailsCorrectly()
         {
-            // Arrange
-            string testName = "Test name";
-            string testDesc = "Test description";
-
             // Act
-            buildModeHUDController.ConfirmPublicationDetails(testName, testDesc);
+            buildModeHUDController.ConfirmPublicationDetails();
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
