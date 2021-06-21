@@ -1,5 +1,4 @@
 using Builder.Gizmos;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,31 +10,24 @@ public class FreeCameraMovement : CameraStateBase
 
     public float focusDistance = 5f;
 
-    [Header("Constants")]
+    [Header("Camera Movement")]
     public float AccelerationMod;
-    public float XAxisSensitivity;
-    public float YAxisSensitivity;
     public float DecelerationMod;
-
-    [Space]
     public float MaximumMovementSpeed = 1f;
 
-    private Vector3 _moveSpeed = Vector3.zero;
-
-    [Header("Manual Camera Movement")]
+    [Header("Camera Look")]
     public float smoothLookAtSpeed = 5f;
     public float smoothCameraLookSpeed = 5f;
-    public float smoothCameraMovementSpeed = 5f;
-    public float smoothCameraDeceleration = 5f;
-    public float keyboardMovementSpeed = 5f;
-
     public float lookSpeedH = 2f;
-
     public float lookSpeedV = 2f;
 
-    public float zoomSpeed = 2f;
-
+    [Header("Camera Pan")]
+    public float smoothCameraPanAceleration = 5f;
+    public float keyboardMovementSpeed = 5f;
     public float dragSpeed = 3f;
+
+    [Header("Camera Zoom")]
+    public float zoomSpeed = 2f;
 
     [Header("InputActions")]
     [SerializeField] internal InputAction_Hold advanceFowardInputAction;
@@ -49,8 +41,13 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
     [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
+    private Vector3 _moveSpeed = Vector3.zero;
+
     private float yaw = 0f;
     private float pitch = 0f;
+
+    private float panAxisX = 0f;
+    private float panAxisY = 0f;
 
     private bool isCameraAbleToMove = true;
 
@@ -67,9 +64,6 @@ public class FreeCameraMovement : CameraStateBase
     private bool isPanCameraActive = false;
     private bool isMouseRightClickDown = false;
 
-    private bool isCameraRotating = false;
-
-    private Coroutine smoothCameraLookCor;
     private Coroutine smoothLookAtCor;
     private Coroutine smoothFocusOnTargetCor;
     private Coroutine smoothScrollCor;
@@ -99,10 +93,12 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
     private Vector3 originalCameraPosition;
-    private Vector3 cameraDestinationPosition;
     private Transform originalCameraLookAt;
 
-    private float lastMouseWheelTime = 0;
+    private float lastMouseWheelTime;
+    private float cameraPanAdvance;
+    private float cameraLookAdvance;
+
     public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
 
     private void Awake()
@@ -229,81 +225,71 @@ public class FreeCameraMovement : CameraStateBase
 
     private void Update()
     {
+        HandleCameraLook();
+        HandleCameraPan();
+        HandleCameraMovement();
+    }
 
+    private void HandleCameraMovementDeceleration(Vector3 acceleration)
+    {
+        if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.x) < DecelerationMod)
+                _moveSpeed.x = 0;
+            else
+                _moveSpeed.x -= DecelerationMod * Mathf.Sign(_moveSpeed.x);
+        }
 
+        if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.y) < DecelerationMod)
+                _moveSpeed.y = 0;
+            else
+                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y);
+        }
+
+        if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
+        {
+            if (Mathf.Abs(_moveSpeed.z) < DecelerationMod)
+                _moveSpeed.z = 0;
+            else
+                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z);
+        }
+    }
+
+    #region CameraTransformChanges
+
+    private void HandleCameraMovement()
+    {
         var acceleration = HandleKeyInput();
         _moveSpeed += acceleration;
-        HandleDeceleration(acceleration);
+        HandleCameraMovementDeceleration(acceleration);
 
-        // clamp the move speed
+        // Clamp the move speed
         if (_moveSpeed.magnitude > MaximumMovementSpeed)
         {
             _moveSpeed = _moveSpeed.normalized * MaximumMovementSpeed;
         }
 
         transform.Translate(_moveSpeed);
-
-        // Vector3 cameraVelocity = Vector3.zero; 
-        //
-        // if (isAdvancingForward)
-        //     cameraVelocity += GetTotalVelocity( transform.forward);
-        //
-        // if (isAdvancingBackward)
-        //     cameraVelocity += GetTotalVelocity( -transform.forward);
-        //
-        // if (isAdvancingRight)
-        //     cameraVelocity += GetTotalVelocity( transform.right);
-        //
-        // if (isAdvancingLeft)
-        //     cameraVelocity += GetTotalVelocity( -transform.right);
-        //
-        // if (isAdvancingUp)
-        //     cameraVelocity += GetTotalVelocity( Vector3.up);
-        //
-        // if (isAdvancingDown)
-        //     cameraVelocity += GetTotalVelocity( -Vector3.up);
-        //
-        // cameraDestinationPosition = transform.position + cameraVelocity ;
     }
-    private void HandleDeceleration(Vector3 acceleration)
+
+    private void HandleCameraLook()
     {
-        //deceleration functionality
-        if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
-        {
-            if (Mathf.Abs(_moveSpeed.x) < DecelerationMod)
-            {
-                _moveSpeed.x = 0;
-            }
-            else
-            {
-                _moveSpeed.x -= DecelerationMod * Mathf.Sign(_moveSpeed.x);
-            }
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
-        {
-            if (Mathf.Abs(_moveSpeed.y) < DecelerationMod)
-            {
-                _moveSpeed.y = 0;
-            }
-            else
-            {
-                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y);
-            }
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
-        {
-            if (Mathf.Abs(_moveSpeed.z) < DecelerationMod)
-            {
-                _moveSpeed.z = 0;
-            }
-            else
-            {
-                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z);
-            }
-        }
+        Quaternion nextIteration =  Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(pitch, yaw, 0f)), cameraLookAdvance);
+        transform.rotation = nextIteration;
     }
+
+    private void HandleCameraPan()
+    {
+        panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance);
+        panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance);
+
+        transform.Translate(panAxisX, panAxisY, 0);
+    }
+
+    #endregion
+
     private Vector3 HandleKeyInput()
     {
         var acceleration = Vector3.zero;
@@ -373,38 +359,38 @@ public class FreeCameraMovement : CameraStateBase
             CameraDrag(axisX, axisY);
     }
 
-    public void CameraDrag(float axisX, float axisY)
+    private void CameraDrag(float axisX, float axisY)
     {
-        if (isCameraAbleToMove)
-            transform.Translate(-axisX * Time.deltaTime * dragSpeed, -axisY * Time.deltaTime * dragSpeed, 0);
+        if (!isCameraAbleToMove)
+            return;
+
+        panAxisX += -axisX * Time.deltaTime * dragSpeed;
+        panAxisY += -axisY * Time.deltaTime * dragSpeed;
+        cameraPanAdvance = smoothCameraPanAceleration * Time.deltaTime;
     }
 
-    public void CameraLook(float axisX, float axisY)
+    private void CameraLook(float axisX, float axisY)
     {
-        if (isCameraAbleToMove)
-        {
-            yaw += lookSpeedH * axisX;
-            pitch -= lookSpeedV * axisY;
+        if (!isCameraAbleToMove || !isMouseRightClickDown)
+            return;
 
-            transform.eulerAngles = new Vector3(pitch, yaw, 0f);
-            // if (smoothCameraLookCor != null)
-            //     CoroutineStarter.Stop(smoothCameraLookCor);
-            // smoothCameraLookCor = CoroutineStarter.Start(SmoothCameraLook(axisX, axisY));
-        }
+        yaw += lookSpeedH * axisX;
+        pitch -= lookSpeedV * axisY;
+        cameraLookAdvance = smoothCameraLookSpeed * Time.deltaTime;
     }
 
     public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
     public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
     {
-        if (entitiesToFocus.Count > 0)
-        {
-            Vector3 middlePoint = FindMidPoint(entitiesToFocus);
-            if (smoothFocusOnTargetCor != null)
-                CoroutineStarter.Stop(smoothFocusOnTargetCor);
-            smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
-            SmoothLookAt(middlePoint);
-        }
+        if (entitiesToFocus.Count <= 0)
+            return;
+
+        Vector3 middlePoint = FindMidPoint(entitiesToFocus);
+        if (smoothFocusOnTargetCor != null)
+            CoroutineStarter.Stop(smoothFocusOnTargetCor);
+        smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
+        SmoothLookAt(middlePoint);
     }
 
     public void SetPosition(Vector3 position) { transform.position = position; }
@@ -416,7 +402,7 @@ public class FreeCameraMovement : CameraStateBase
         pitch = transform.eulerAngles.x;
     }
 
-    public void SmoothLookAt(Transform transform) { SmoothLookAt(transform.position); }
+    public void SmoothLookAt(Transform transformToLookAt) { SmoothLookAt(transformToLookAt.position); }
 
     public void SmoothLookAt(Vector3 position)
     {
@@ -447,24 +433,6 @@ public class FreeCameraMovement : CameraStateBase
 
         finalPosition /= totalPoints;
         return finalPosition;
-    }
-
-    IEnumerator SmoothCameraLook(float axisX, float axisY)
-    {
-        yaw += lookSpeedH * axisX;
-        pitch -= lookSpeedV * axisY;
-
-        Vector3 destination = new Vector3(pitch, yaw, 0f);
-
-        float advance = 0;
-        while (advance <= 1)
-        {
-            advance += smoothCameraLookSpeed * Time.deltaTime;
-
-            Vector3 result = Vector3.Lerp(transform.eulerAngles, destination, advance);
-            transform.eulerAngles  = result;
-            yield return null;
-        }
     }
 
     IEnumerator SmoothScroll(float axis)
