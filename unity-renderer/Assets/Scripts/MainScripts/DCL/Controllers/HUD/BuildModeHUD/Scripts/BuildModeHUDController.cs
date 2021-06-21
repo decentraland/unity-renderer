@@ -620,7 +620,11 @@ public class BuildModeHUDController : IHUD
 
     #region Inspector
 
-    public void SetVisibilityOfInspector(bool isVisible) { view.SetVisibilityOfInspector(isVisible); }
+    public void SetVisibilityOfInspector(bool isVisible)
+    {
+        isEntityListVisible = isVisible;
+        view.SetVisibilityOfInspector(isVisible);
+    }
 
     #endregion
 

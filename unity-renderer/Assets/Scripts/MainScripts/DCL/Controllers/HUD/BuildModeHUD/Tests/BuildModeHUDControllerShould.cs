@@ -581,6 +581,7 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.SetVisibilityOfInspector(isVisible);
 
             // Assert
+            Assert.AreEqual(isVisible, buildModeHUDController.isEntityListVisible);
             buildModeHUDController.view.Received(1).SetVisibilityOfInspector(isVisible);
         }
     }
