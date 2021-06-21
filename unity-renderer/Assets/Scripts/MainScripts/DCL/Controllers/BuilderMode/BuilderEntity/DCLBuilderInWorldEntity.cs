@@ -178,7 +178,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public void SetEntityBoundariesError(bool isInsideBoundaries)
     {
-        isInsideBoundariesError = isInsideBoundaries;
+        isInsideBoundariesError = !isInsideBoundaries;
         CheckErrors();
     }
 
