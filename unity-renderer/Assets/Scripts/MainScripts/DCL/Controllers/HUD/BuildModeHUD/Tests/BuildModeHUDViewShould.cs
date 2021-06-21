@@ -30,6 +30,7 @@ namespace Tests.BuildModeHUDViews
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
                 topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
                 saveHUDController =  Substitute.For<ISaveHUDController>(),
+                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
                 publicationDetailsController = Substitute.For<IPublicationDetailsController>()
             };
 
@@ -75,6 +76,8 @@ namespace Tests.BuildModeHUDViews
             testControllers.topActionsButtonsController.Received(1).Initialize(buildModeHUDView.topActionsButtonsView, testControllers.tooltipController);
             Assert.AreEqual(testControllers.saveHUDController, buildModeHUDView.controllers.saveHUDController, "The SaveHUDController does not match!");
             testControllers.saveHUDController.Received(1).Initialize(buildModeHUDView.saveView);
+            Assert.AreEqual(testControllers.newProjectDetailsController, buildModeHUDView.controllers.newProjectDetailsController, "The newProjectDetailsController does not match!");
+            testControllers.newProjectDetailsController.Received(1).Initialize(buildModeHUDView.newProjectDetailsView);
             Assert.AreEqual(testControllers.publicationDetailsController, buildModeHUDView.controllers.publicationDetailsController, "The publicationDetailsController does not match!");
             testControllers.publicationDetailsController.Received(1).Initialize(buildModeHUDView.publicationDetailsView);
         }
