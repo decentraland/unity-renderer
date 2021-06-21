@@ -743,7 +743,6 @@ public class BuilderInWorldEntityHandler : BIWController
         if (entityNameList.Contains(entityName))
             entityNameList.Remove(entityName);
 
-
         RemoveConvertedEntity(entityToDelete.rootEntity);
         entityToDelete.rootEntity.OnRemoved -= RemoveConvertedEntity;
         entityToDelete.Delete();

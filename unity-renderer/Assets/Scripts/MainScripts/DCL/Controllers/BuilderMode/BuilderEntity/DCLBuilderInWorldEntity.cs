@@ -414,7 +414,6 @@ public class DCLBuilderInWorldEntity : EditableEntity
         SaveOriginalMaterial();
 
         DCL.Environment.i.world.sceneBoundsChecker.AddPersistent(rootEntity);
-        SetEntityBoundariesError(DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(rootEntity));
     }
 
     private void HandleAnimation()
