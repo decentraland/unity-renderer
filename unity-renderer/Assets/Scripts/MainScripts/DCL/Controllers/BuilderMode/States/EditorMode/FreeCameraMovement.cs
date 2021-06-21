@@ -23,7 +23,6 @@ public class FreeCameraMovement : CameraStateBase
 
     [Header("Camera Pan")]
     public float smoothCameraPanAceleration = 5f;
-    public float keyboardMovementSpeed = 5f;
     public float dragSpeed = 3f;
 
     [Header("Camera Zoom")]
@@ -297,33 +296,32 @@ public class FreeCameraMovement : CameraStateBase
         if (isMouseRightClickDown)
         {
             if (isAdvancingForward)
-                acceleration.z += 1;
+                acceleration.z += AddAcceleration(1);
 
             if (isAdvancingBackward)
-                acceleration.z -= 1;
+                acceleration.z -= AddAcceleration(1);
 
             if (isAdvancingLeft)
-                acceleration.x -= 1;
+                acceleration.x -= AddAcceleration(1);
 
             if (isAdvancingRight)
-                acceleration.x += 1;
+                acceleration.x += AddAcceleration(1);
 
             if (isAdvancingUp)
-                acceleration.y += 1;
+                acceleration.y += AddAcceleration(1);
 
             if (isAdvancingDown)
-                acceleration.y -= 1;
-
+                acceleration.y -= AddAcceleration(1);
         }
 
         return acceleration.normalized * AccelerationMod;
     }
 
-    public Vector3 GetTotalVelocity(Vector3 direction)
+    private float AddAcceleration(float accelerationToAdd)
     {
         if (isDetectingMovement)
             hasBeenMovement = true;
-        return direction * (keyboardMovementSpeed * Time.deltaTime);
+        return accelerationToAdd;
     }
 
     public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
