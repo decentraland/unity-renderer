@@ -4,7 +4,7 @@ using UnityEngine;
 public interface IPublicationDetailsController
 {
     event Action OnCancel;
-    event Action<string, string> OnPublish;
+    event Action OnConfirm;
 
     void Initialize(IPublicationDetailsView publicationDetailsView);
     void Dispose();
@@ -23,7 +23,7 @@ public interface IPublicationDetailsController
 public class PublicationDetailsController : IPublicationDetailsController
 {
     public event Action OnCancel;
-    public event Action<string, string> OnPublish;
+    public event Action OnConfirm;
 
     internal const string DEFAULT_SCENE_NAME = "My new place";
     internal const string DEFAULT_SCENE_DESC = "";
@@ -64,7 +64,7 @@ public class PublicationDetailsController : IPublicationDetailsController
             return;
 
         SetActive(false);
-        OnPublish?.Invoke(sceneName, sceneDescription);
+        OnConfirm?.Invoke();
     }
 
     public void ValidatePublicationInfo(string sceneName)

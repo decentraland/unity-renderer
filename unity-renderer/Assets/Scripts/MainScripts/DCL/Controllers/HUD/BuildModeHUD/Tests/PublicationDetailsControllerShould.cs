@@ -53,16 +53,9 @@ namespace Tests.BuildModeHUDControllers
             string testName = "Test name";
             string testDesc = "Test desc";
             publicationDetailsController.isValidated = isValidated;
-            string sceneNameReceived = "";
-            string sceneDescReceived = "";
 
             bool isPublishClicked = false;
-            publicationDetailsController.OnPublish += (sceneName, sceneDesc) =>
-            {
-                isPublishClicked = true;
-                sceneNameReceived = sceneName;
-                sceneDescReceived = sceneDesc;
-            };
+            publicationDetailsController.OnConfirm += () => isPublishClicked = true;
 
             // Act
             publicationDetailsController.Publish(testName, testDesc);
@@ -72,8 +65,6 @@ namespace Tests.BuildModeHUDControllers
             {
                 publicationDetailsController.publicationDetailsView.Received(1).SetActive(false);
                 Assert.IsTrue(isPublishClicked, "isPublishClicked is false!");
-                Assert.AreEqual(testName, sceneNameReceived, "The scene name does not match!");
-                Assert.AreEqual(testDesc, sceneDescReceived, "The scene description does not match!");
             }
         }
 
