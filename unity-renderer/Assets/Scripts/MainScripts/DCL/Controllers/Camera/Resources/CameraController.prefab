@@ -834,8 +834,8 @@ MonoBehaviour:
   MaximumMovementSpeed: 0.65
   smoothLookAtSpeed: 5
   smoothCameraLookSpeed: 5
-  lookSpeedH: 1
-  lookSpeedV: 1
+  lookSpeedH: 2
+  lookSpeedV: 2
   smoothCameraPanAceleration: 5
   dragSpeed: 3
   zoomSpeed: 30
@@ -1174,7 +1174,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5902165421965975136}
   m_LocalRotation: {x: 0.23911741, y: -0.36964384, z: 0.09904569, w: 0.89239913}
-  m_LocalPosition: {x: -0.80036104, y: 1.369813, z: 1.8401191}
+  m_LocalPosition: {x: -553.2, y: -329.36002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1379362891393605244}
@@ -1335,7 +1335,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6406064072910471882}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.80036104, y: 1.369813, z: 1.8401191}
+  m_LocalPosition: {x: -553.2, y: -329.36002, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6695749068451744534}
