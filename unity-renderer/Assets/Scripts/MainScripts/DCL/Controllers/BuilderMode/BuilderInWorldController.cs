@@ -455,7 +455,8 @@ public class BuilderInWorldController : MonoBehaviour
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
-        Environment.i.platform.cullingController.Stop();
+        Environment.i.platform.cullingController.SetObjectCulling(false);
+        Environment.i.platform.cullingController.SetShadowCulling(false);
 
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
@@ -613,7 +614,8 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         Environment.i.world.blockersController.SetEnabled(true);
-        Environment.i.platform.cullingController.Start();
+        Environment.i.platform.cullingController.SetObjectCulling(true);
+        Environment.i.platform.cullingController.SetShadowCulling(true);
 
         ExitBiwControllers();
 
