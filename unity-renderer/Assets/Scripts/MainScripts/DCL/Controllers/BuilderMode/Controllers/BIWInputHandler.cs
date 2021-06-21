@@ -55,6 +55,7 @@ public class BIWInputHandler : BIWController
         multiSelectionFinishedDelegate = (action) => EndMultiSelection();
 
         BuilderInWorldInputWrapper.OnMouseClick += MouseClick;
+        BuilderInWorldInputWrapper.OnMouseClickOnUI += MouseClickOnUI;
         biwModeController.OnInputDone += InputDone;
 
         multiSelectionInputAction.OnStarted += multiSelectionStartDelegate;
@@ -72,6 +73,7 @@ public class BIWInputHandler : BIWController
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
         BuilderInWorldInputWrapper.OnMouseClick -= MouseClick;
+        BuilderInWorldInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
         biwModeController.OnInputDone -= InputDone;
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -162,6 +164,8 @@ public class BIWInputHandler : BIWController
             outlinerController.CheckOutline();
         }
     }
+
+    private void MouseClickOnUI(int buttonID, Vector3 position) { HUDController.i.builderInWorldMainHud.HideExtraBtns(); }
 
     public bool IsMultiSelectionActive() => isMultiSelectionActive;
 

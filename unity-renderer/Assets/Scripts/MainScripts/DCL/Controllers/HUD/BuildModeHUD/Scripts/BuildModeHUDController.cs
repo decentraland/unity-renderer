@@ -55,6 +55,7 @@ public class BuildModeHUDController : IHUD
     internal static readonly Vector3 catalogItemTooltipOffset = new Vector3 (0, 25, 0);
 
     private Coroutine publishProgressCoroutine = null;
+    private float timeFromLastClickOnExtraButtons = 0f;
 
     public void Initialize()
     {
@@ -552,10 +553,14 @@ public class BuildModeHUDController : IHUD
     {
         areExtraButtonsVisible = !areExtraButtonsVisible;
         view.SetVisibilityOfExtraBtns(areExtraButtonsVisible);
+        timeFromLastClickOnExtraButtons = Time.realtimeSinceStartup;
     }
 
     public void HideExtraBtns()
     {
+        if ((Time.realtimeSinceStartup - timeFromLastClickOnExtraButtons) <= 0.1f)
+            return;
+
         areExtraButtonsVisible = false;
         controllers.topActionsButtonsController.extraActionsController.SetActive(areExtraButtonsVisible);
     }
