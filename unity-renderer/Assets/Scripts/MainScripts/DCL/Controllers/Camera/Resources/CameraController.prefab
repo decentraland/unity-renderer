@@ -830,19 +830,16 @@ MonoBehaviour:
   cameraModeId: 2
   focusDistance: 15
   AccelerationMod: 0.02
-  XAxisSensitivity: 0
-  YAxisSensitivity: 0
   DecelerationMod: 0.03
   MaximumMovementSpeed: 0.65
   smoothLookAtSpeed: 5
   smoothCameraLookSpeed: 5
-  smoothCameraMovementSpeed: 5
-  smoothCameraDeceleration: 5
+  smoothCameraPanAceleration: 5
   keyboardMovementSpeed: 15
-  lookSpeedH: 2.5
-  lookSpeedV: 2.5
+  lookSpeedH: 5
+  lookSpeedV: 5
   zoomSpeed: 30
-  dragSpeed: 15
+  dragSpeed: 5
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
   advanceBackInputAction: {fileID: 11400000, guid: c7d2789965fbcb643ae73d7f5e49851c,
@@ -1178,7 +1175,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5902165421965975136}
   m_LocalRotation: {x: 0.23911741, y: -0.36964384, z: 0.09904569, w: 0.89239913}
-  m_LocalPosition: {x: -553.2, y: -329.36002, z: 0}
+  m_LocalPosition: {x: -0.80036104, y: 1.369813, z: 1.8401191}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1379362891393605244}
@@ -1339,7 +1336,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6406064072910471882}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -553.2, y: -329.36002, z: 0}
+  m_LocalPosition: {x: -0.80036104, y: 1.369813, z: 1.8401191}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6695749068451744534}

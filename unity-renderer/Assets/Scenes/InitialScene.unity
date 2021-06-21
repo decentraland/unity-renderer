@@ -1635,6 +1635,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
+      propertyPath: dragSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: lookSpeedH
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: lookSpeedV
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
       propertyPath: AccelerationMod
       value: 0.02
       objectReference: {fileID: 0}
