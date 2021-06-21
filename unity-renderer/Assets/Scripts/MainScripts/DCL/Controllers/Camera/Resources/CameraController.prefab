@@ -829,17 +829,16 @@ MonoBehaviour:
   defaultVirtualCamera: {fileID: 3669105073199621760}
   cameraModeId: 2
   focusDistance: 15
-  AccelerationMod: 0.02
-  DecelerationMod: 0.03
+  AccelerationMod: 0.025
+  DecelerationMod: 0.05
   MaximumMovementSpeed: 0.65
   smoothLookAtSpeed: 5
   smoothCameraLookSpeed: 5
+  lookSpeedH: 1
+  lookSpeedV: 1
   smoothCameraPanAceleration: 5
-  keyboardMovementSpeed: 15
-  lookSpeedH: 5
-  lookSpeedV: 5
+  dragSpeed: 3
   zoomSpeed: 30
-  dragSpeed: 5
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
   advanceBackInputAction: {fileID: 11400000, guid: c7d2789965fbcb643ae73d7f5e49851c,
