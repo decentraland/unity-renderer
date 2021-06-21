@@ -14,6 +14,8 @@ public class FreeCameraMovement : CameraStateBase
     public float AccelerationMod;
     public float DecelerationMod;
     public float MaximumMovementSpeed = 1f;
+    public float yPlaneSpeedPercentCompensantion = 0.85f;
+    public float zPlaneSpeedPercentCompensantion = 0.85f;
 
     [Header("Camera Look")]
     public float smoothLookAtSpeed = 5f;
@@ -292,14 +294,20 @@ public class FreeCameraMovement : CameraStateBase
     private Vector3 HandleKeyInput()
     {
         var acceleration = Vector3.zero;
-
+        float currentAcceleratioMod = AccelerationMod;
         if (isMouseRightClickDown)
         {
             if (isAdvancingForward)
+            {
                 acceleration.z += AddAcceleration(1);
+                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
+            }
 
             if (isAdvancingBackward)
+            {
                 acceleration.z -= AddAcceleration(1);
+                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
+            }
 
             if (isAdvancingLeft)
                 acceleration.x -= AddAcceleration(1);
@@ -308,13 +316,19 @@ public class FreeCameraMovement : CameraStateBase
                 acceleration.x += AddAcceleration(1);
 
             if (isAdvancingUp)
+            {
                 acceleration.y += AddAcceleration(1);
+                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
+            }
 
             if (isAdvancingDown)
+            {
                 acceleration.y -= AddAcceleration(1);
+                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
+            }
         }
 
-        return acceleration.normalized * AccelerationMod;
+        return acceleration.normalized * currentAcceleratioMod;
     }
 
     private float AddAcceleration(float accelerationToAdd)
