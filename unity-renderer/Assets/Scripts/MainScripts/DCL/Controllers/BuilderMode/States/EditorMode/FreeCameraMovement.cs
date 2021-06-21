@@ -246,7 +246,7 @@ public class FreeCameraMovement : CameraStateBase
             if (Mathf.Abs(_moveSpeed.y) < DecelerationMod)
                 _moveSpeed.y = 0;
             else
-                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y);
+                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y) * yPlaneSpeedPercentCompensantion;
         }
 
         if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
@@ -254,7 +254,7 @@ public class FreeCameraMovement : CameraStateBase
             if (Mathf.Abs(_moveSpeed.z) < DecelerationMod)
                 _moveSpeed.z = 0;
             else
-                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z);
+                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z) * zPlaneSpeedPercentCompensantion;
         }
     }
 

@@ -832,8 +832,8 @@ MonoBehaviour:
   AccelerationMod: 0.025
   DecelerationMod: 0.05
   MaximumMovementSpeed: 0.65
-  yPlaneSpeedPercentCompensantion: 0.35
-  zPlaneSpeedPercentCompensantion: 0.35
+  yPlaneSpeedPercentCompensantion: 0.65
+  zPlaneSpeedPercentCompensantion: 0.65
   smoothLookAtSpeed: 5
   smoothCameraLookSpeed: 5
   lookSpeedH: 2
