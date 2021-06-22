@@ -58,6 +58,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
     [SerializeField] internal TopActionsButtonsView topActionsButtonsView;
     [SerializeField] internal BuildModeConfirmationModalView buildModeConfirmationModalView;
     [SerializeField] internal SaveHUDView saveView;
+    [SerializeField] internal PublicationDetailsView newProjectDetailsView;
     [SerializeField] internal PublicationDetailsView publicationDetailsView;
 
     private bool isDestroyed = false;
@@ -92,6 +93,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         this.controllers.buildModeConfirmationModalController.Initialize(buildModeConfirmationModalView);
         this.controllers.topActionsButtonsController.Initialize(topActionsButtonsView, this.controllers.tooltipController);
         this.controllers.saveHUDController.Initialize(saveView);
+        this.controllers.newProjectDetailsController.Initialize(newProjectDetailsView);
         this.controllers.publicationDetailsController.Initialize(publicationDetailsView);
     }
 
@@ -113,6 +115,7 @@ public class BuildModeHUDView : MonoBehaviour, IBuildModeHUDView
         controllers.buildModeConfirmationModalController.Dispose();
         controllers.topActionsButtonsController.Dispose();
         controllers.saveHUDController.Dispose();
+        controllers.newProjectDetailsController.Dispose();
         controllers.publicationDetailsController.Dispose();
     }
 
