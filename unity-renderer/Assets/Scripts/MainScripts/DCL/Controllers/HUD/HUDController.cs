@@ -157,15 +157,19 @@ public class HUDController : MonoBehaviour
         CONTROLS_HUD = 18,
         EXPLORE_HUD = 19,
         HELP_AND_SUPPORT_HUD = 20,
-        USERS_AROUND_LIST_HUD = 21,
-        GRAPHIC_CARD_WARNING = 22,
-        BUILDER_IN_WORLD_MAIN = 23,
-        BUILDER_IN_WORLD_INITIAL = 24,
-        QUESTS_PANEL = 25,
-        QUESTS_TRACKER = 26,
-        BUILDER_PROJECTS_PANEL = 27,
-        SIGNUP = 28,
-        COUNT = 29
+
+        [Obsolete("Deprecated HUD Element")]
+        EMAIL_PROMPT = 21,
+
+        USERS_AROUND_LIST_HUD = 22,
+        GRAPHIC_CARD_WARNING = 23,
+        BUILDER_IN_WORLD_MAIN = 24,
+        BUILDER_IN_WORLD_INITIAL = 25,
+        QUESTS_PANEL = 26,
+        QUESTS_TRACKER = 27,
+        BUILDER_PROJECTS_PANEL = 28,
+        SIGNUP = 29,
+        COUNT = 30
     }
 
     [System.Serializable]
@@ -543,6 +547,14 @@ public class HUDController : MonoBehaviour
             return null;
 
         return hudElements[id];
+    }
+
+    public static bool IsHUDElementDeprecated(HUDElementID element)
+    {
+        Type enumType = typeof(HUDElementID);
+        var enumName = enumType.GetEnumName(element);
+        var fieldInfo = enumType.GetField(enumName);
+        return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
     }
 
 #if UNITY_EDITOR
