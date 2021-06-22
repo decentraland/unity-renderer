@@ -434,8 +434,6 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
-        CommonScriptableObjects.builderInWorldEditorActive.Set(true);
-        SetObjectCullingActive(false);
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -486,6 +484,9 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (!initialLoadingController.isActive)
             return;
+
+        CommonScriptableObjects.builderInWorldEditorActive.Set(true);
+        SetObjectCullingActive(false);
 
         BuilderInWorldNFTController.i.ClearNFTs();
 
