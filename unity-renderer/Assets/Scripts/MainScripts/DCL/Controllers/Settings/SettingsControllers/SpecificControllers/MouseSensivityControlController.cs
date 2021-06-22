@@ -10,9 +10,9 @@ namespace DCL.SettingsControls
         internal const float FIRST_PERSON_MIN_SPEED = 25f / 100f;
         internal const float FIRST_PERSON_MAX_SPEED = 350f / 100f;
         internal const float THIRD_PERSON_X_MIN_SPEED = 4.5f / 10f;
-        internal const float THIRD_PERSON_X_MAX_SPEED = 4.5f * 1.25f;
+        internal const float THIRD_PERSON_X_MAX_SPEED = 4.5f;
         internal const float THIRD_PERSON_Y_MIN_SPEED = 0.05f / 10f;
-        internal const float THIRD_PERSON_Y_MAX_SPEED = 0.05f * 1.25f;
+        internal const float THIRD_PERSON_Y_MAX_SPEED = 0.05f;
         private CinemachinePOV povCamera;
 
         public override void Initialize()
