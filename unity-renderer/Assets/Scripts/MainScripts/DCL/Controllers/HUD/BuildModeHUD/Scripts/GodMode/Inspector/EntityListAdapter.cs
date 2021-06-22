@@ -9,7 +9,7 @@ public class EntityListAdapter : MonoBehaviour
 {
     public Color entitySelectedColor;
     public Color entityUnselectedColor;
-    public Color entityWithouthErrorsColor;
+    public Color entityWithoutErrorsColor;
     public Color entityErrorColor;
     public Color iconsSelectedColor;
     public Color iconsUnselectedColor;
@@ -111,9 +111,9 @@ public class EntityListAdapter : MonoBehaviour
         //NOTE (Adrian): this is done to force the text component to update, otherwise it won't show the text, seems like a bug on textmeshpro to me
         nameInputField.textComponent.enabled = true;
 
-        
-            showImg.color = entityToEdit.IsVisible ? iconsSelectedColor : iconsUnselectedColor;
-            nameInputField_Text.color = (!entityToEdit.IsVisible || entityToEdit.IsLocked) ? iconsUnselectedColor : iconsSelectedColor;
+
+        showImg.color = entityToEdit.IsVisible ? iconsSelectedColor : iconsUnselectedColor;
+        nameInputField_Text.color = (!entityToEdit.IsVisible || entityToEdit.IsLocked) ? iconsUnselectedColor : iconsSelectedColor;
 
         unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
         lockButton.gameObject.SetActive(entityToEdit.IsLocked);
@@ -178,7 +178,7 @@ public class EntityListAdapter : MonoBehaviour
     private void SetEntityError(DCLBuilderInWorldEntity entity)
     {
         if (entity == currentEntity)
-            nameInputField_Text.color = entity.hasError ? entityErrorColor : entityWithouthErrorsColor ;
+            nameInputField_Text.color = entity.hasError ? entityErrorColor : entityWithoutErrorsColor ;
     }
 
     private void SetTextboxActive(bool isActive)
