@@ -438,6 +438,14 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
+        if (cullingSettingControlController != null)
+        {
+            previousCullingStatus = (bool)cullingSettingControlController.GetStoredValue();
+
+            if (previousCullingStatus)
+                SetObjectCullingActive(false);
+        }
+
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -490,13 +498,6 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         CommonScriptableObjects.builderInWorldEditorActive.Set(true);
-        if (cullingSettingControlController != null)
-        {
-            previousCullingStatus = (bool)cullingSettingControlController.GetStoredValue();
-
-            if (previousCullingStatus)
-                SetObjectCullingActive(false);
-        }
 
         BuilderInWorldNFTController.i.ClearNFTs();
 
