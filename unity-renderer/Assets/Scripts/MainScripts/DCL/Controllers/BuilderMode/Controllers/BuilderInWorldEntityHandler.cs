@@ -147,10 +147,15 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         foreach (DCLBuilderInWorldEntity entity in selectedEntities)
         {
-            if (!entity.HasMovedSinceLastReport() && !forceReport)
+            if (!entity.HasMovedSinceLastReport() &&
+                !entity.HasScaledSinceLastReport() &&
+                !entity.HasRotatedSinceLastReport() &&
+                !forceReport)
                 return;
             builderInWorldBridge.EntityTransformReport(entity.rootEntity, sceneToEdit);
             entity.PositionReported();
+            entity.ScaleReported();
+            entity.RotationReported();
         }
 
         lastTransformReportTime = DCLTime.realtimeSinceStartup;
@@ -171,8 +176,20 @@ public class BuilderInWorldEntityHandler : BIWController
     public override void EnterEditMode(ParcelScene scene)
     {
         base.EnterEditMode(scene);
+
         SetupAllEntities();
         EntityListChanged();
+        CheckErrorOnEntities();
+    }
+
+    private void CheckErrorOnEntities()
+    {
+        foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
+        {
+            //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
+            if (entity.GetCatalogItemAssociated() == null)
+                biwCreatorController.CreateErrorOnEntity(entity);
+        }
     }
 
     public bool IsPointerInSelectedEntity()

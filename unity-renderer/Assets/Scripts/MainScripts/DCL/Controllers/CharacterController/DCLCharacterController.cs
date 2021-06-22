@@ -19,9 +19,6 @@ public class DCLCharacterController : MonoBehaviour
     public float movementSpeed = 8f;
     public float runningSpeedMultiplier = 2f;
 
-    [Tooltip("The maximum movement distance allowed on moving platforms before releasing the character")]
-    public float movingPlatformAllowedPosDelta = 1f;
-
     public DCLCharacterPosition characterPosition;
 
     [Header("Collisions")]
@@ -54,8 +51,8 @@ public class DCLCharacterController : MonoBehaviour
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
 
-    bool supportsMovingPlatforms = true;
     internal Transform groundTransform;
+
     Vector3 lastPosition;
     Vector3 groundLastPosition;
     Quaternion groundLastRotation;
@@ -128,7 +125,6 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-        Environment.i.platform.debugController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
         transform.parent = null;
@@ -333,15 +329,6 @@ public class DCLCharacterController : MonoBehaviour
             }
         }
 
-        bool movingPlatformMovedTooMuch = Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta;
-
-        if (isOnMovingPlatform && !characterPosition.RepositionedWorldLastFrame() && movingPlatformMovedTooMuch)
-        {
-            ResetGround();
-            // As the character has already been moved faster-than-we-want, we reposition it
-            characterController.transform.position = lastPosition;
-        }
-
         if (characterController.enabled)
         {
             //NOTE(Brian): Transform has to be in sync before the Move call, otherwise this call
@@ -413,8 +400,7 @@ public class DCLCharacterController : MonoBehaviour
             {
                 bool groundHasMoved = (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation);
 
-                if (supportsMovingPlatforms
-                    && !characterPosition.RepositionedWorldLastFrame()
+                if (!characterPosition.RepositionedWorldLastFrame()
                     && groundHasMoved)
                 {
                     isOnMovingPlatform = true;

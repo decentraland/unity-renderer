@@ -114,6 +114,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         toggleAction.OnTriggered += ToggleAction_OnTriggered;
         closeAction.OnTriggered += CloseAction_OnTriggered;
         loadingSpinnerGameObject.SetActive(false);
+        doneButton.interactable = false; //the default state of the button should be disable until a profile has been loaded.
         if (characterPreviewController == null)
         {
             characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();

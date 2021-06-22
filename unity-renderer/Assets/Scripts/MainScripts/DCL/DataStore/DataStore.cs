@@ -32,6 +32,7 @@ namespace DCL
         {
             public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();
+            public readonly BaseVariable<PublishSceneResultPayload> unpublishSceneResult = new BaseVariable<PublishSceneResultPayload>();
         }
 
         public class DataStore_Quests
@@ -44,6 +45,7 @@ namespace DCL
         {
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
+            public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
         }
 
         public class DataStore_Player

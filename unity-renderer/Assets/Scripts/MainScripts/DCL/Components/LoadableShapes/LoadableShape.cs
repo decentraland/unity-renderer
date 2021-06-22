@@ -156,6 +156,15 @@ namespace DCL.Components
                 if (string.IsNullOrEmpty(model.src))
                 {
                     SceneObject sceneObject = AssetCatalogBridge.i.GetSceneObjectById(model.assetId);
+                    if (sceneObject == null)
+                    {
+#if UNITY_EDITOR
+                        Debug.LogWarning($"LoadableShape '{model.assetId}' not found in catalog, probably asset pack deleted");
+#endif
+                        failed = true;
+                        OnLoadFailed(null);
+                        return;
+                    }
                     model.src = sceneObject.model;
                 }
             }
@@ -203,7 +212,8 @@ namespace DCL.Components
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
         {
-            CleanFailedWrapper(loadWrapper);
+            if (loadWrapper != null)
+                CleanFailedWrapper(loadWrapper);
 
             failed = true;
             OnFinishCallbacks?.Invoke(this);

@@ -470,6 +470,7 @@ namespace DCL
                             case "InitializeQuests":
                             case "UpdateQuestProgress":
                             case "SetENSOwnerQueryResult":
+                            case "UnpublishSceneResult":
                                 bridgesGameObject.SendMessage(msg.type, msg.payload);
                                 break;
                             case "CrashPayloadRequest":
@@ -484,12 +485,27 @@ namespace DCL
                             case "BuilderProjectInfo":
                                 GetBuilderInWorldBridge()?.BuilderProjectInfo(msg.payload);
                                 break;
+                            case "BuilderInWorldCatalogHeaders":
+                                GetBuilderInWorldBridge()?.BuilderInWorldCatalogHeaders(msg.payload);
+                                break;
                             case "RunPerformanceMeterTool":
-                                if (float.TryParse(msg.payload, out float durationInMilliseconds))
+                                if (float.TryParse(msg.payload, out float durationInSeconds))
                                 {
-                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(durationInMilliseconds);
+                                    DCL.Environment.i.platform.debugController.RunPerformanceMeterTool(durationInSeconds);
                                 }
 
+                                break;
+                            case "InstantiateBotsAtWorldPos":
+                                DCL.Environment.i.platform.debugController.InstantiateBotsAtWorldPos(msg.payload);
+                                break;
+                            case "InstantiateBotsAtCoords":
+                                DCL.Environment.i.platform.debugController.InstantiateBotsAtCoords(msg.payload);
+                                break;
+                            case "RemoveBot":
+                                DCL.Environment.i.platform.debugController.RemoveBot(msg.payload);
+                                break;
+                            case "ClearBots":
+                                DCL.Environment.i.platform.debugController.ClearBots();
                                 break;
                             default:
                                 Debug.Log(
