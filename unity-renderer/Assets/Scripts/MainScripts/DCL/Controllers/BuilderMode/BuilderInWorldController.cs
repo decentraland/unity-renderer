@@ -431,13 +431,14 @@ public class BuilderInWorldController : MonoBehaviour
             EnterEditMode();
     }
 
-    public void TryStartEnterEditMode() { TryStartEnterEditMode(true); }
+    public void TryStartEnterEditMode() { TryStartEnterEditMode(true, null); }
+    public void TryStartEnterEditMode(IParcelScene targetScene) { TryStartEnterEditMode(true, targetScene); }
 
-    public void TryStartEnterEditMode(bool activateCamera)
+    public void TryStartEnterEditMode(bool activateCamera, IParcelScene targetScene = null)
     {
         if (sceneToEditId != null)
             return;
-
+        
         if (cullingSettingControlController != null)
         {
             previousCullingStatus = (bool)cullingSettingControlController.GetStoredValue();
@@ -446,7 +447,18 @@ public class BuilderInWorldController : MonoBehaviour
                 SetObjectCullingActive(false);
         }
 
-        FindSceneToEdit();
+        if (targetScene != null)
+        {
+            var parcelSceneTarget = (ParcelScene)targetScene;
+            if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
+                actionController.Clear();
+
+            sceneToEdit = parcelSceneTarget;
+        }
+        else
+        {
+            FindSceneToEdit();
+        }
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
@@ -492,7 +504,7 @@ public class BuilderInWorldController : MonoBehaviour
         builderInWorldBridge.StartKernelEditMode(sceneToEdit);
     }
 
-    public void EnterEditMode()
+    private void EnterEditMode()
     {
         if (!initialLoadingController.isActive)
             return;
@@ -502,8 +514,6 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.ClearNFTs();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
-
-        FindSceneToEdit();
 
         sceneToEdit.SetEditMode(true);
         cursorGO.SetActive(false);
@@ -701,7 +711,9 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (activeFeature)
         {
-            TryStartEnterEditMode();
+            var targetScene = Environment.i.world.state.scenesSortedByDistance
+                                         .FirstOrDefault(scene => scene.sceneData.parcels.Contains(coords));
+            TryStartEnterEditMode(targetScene);
         }
     }
 
