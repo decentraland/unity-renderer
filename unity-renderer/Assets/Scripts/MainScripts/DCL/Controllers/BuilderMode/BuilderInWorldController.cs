@@ -332,21 +332,16 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
     }
 
-    public void ChangeFeatureActivationState()
+    public void ActivateBuilderInWorldByShortcut()
     {
         if (!activeFeature)
             return;
 
         if (isBuilderInWorldActivated)
-        {
-            if (!initialLoadingController.isActive)
-                HUDController.i.builderInWorldMainHud.ExitStart();
-        }
-        else
-        {
-            GetCatalog();
-            TryStartEnterEditMode();
-        }
+            return;
+
+        GetCatalog();
+        TryStartEnterEditMode();
     }
 
     public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
@@ -609,7 +604,6 @@ public class BuilderInWorldController : MonoBehaviour
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-        CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
 
         snapGO.transform.SetParent(transform);
 
@@ -623,7 +617,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
-        builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
+        InmediateExit();
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -645,6 +639,12 @@ public class BuilderInWorldController : MonoBehaviour
 
         OnExitEditMode?.Invoke();
         DataStore.i.appMode.Set(AppMode.DEFAULT);
+    }
+
+    public void InmediateExit()
+    {
+        CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+        builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
     }
 
     public void EnterBiwControllers()
