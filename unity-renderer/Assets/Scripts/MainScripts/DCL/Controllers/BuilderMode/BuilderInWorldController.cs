@@ -76,6 +76,7 @@ public class BuilderInWorldController : MonoBehaviour
     private bool isCatalogLoading = false;
     private bool areCatalogHeadersReady = false;
     private bool isCatalogRequested = false;
+    private bool isEnteringEditMode = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
@@ -215,7 +216,7 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
 
         if (HUDController.i.builderProjectsPanelController != null)
-            HUDController.i.builderProjectsPanelController.OnJumpInOrEditor += GetCatalog;
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
@@ -234,7 +235,7 @@ public class BuilderInWorldController : MonoBehaviour
     private void InitBuilderProjectPanel()
     {
         if (HUDController.i.builderProjectsPanelController != null)
-            HUDController.i.builderProjectsPanelController.OnJumpInOrEditor += GetCatalog;
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
     }
 
     private void CatalogHeadersReceived(string rawHeaders)
@@ -332,12 +333,12 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
     }
 
-    public void ActivateBuilderInWorldByShortcut()
+    public void ActivateEditModeByShortcut()
     {
         if (!activeFeature)
             return;
 
-        if (isBuilderInWorldActivated)
+        if (isBuilderInWorldActivated || isEnteringEditMode)
             return;
 
         GetCatalog();
@@ -464,6 +465,7 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        isEnteringEditMode = true;
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;
         CommonScriptableObjects.allUIHidden.Set(true);
@@ -486,6 +488,8 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEdit == null)
             return;
 
+        isEnteringEditMode = true;
+
         sceneToEditId = sceneToEdit.sceneData.id;
 
         // In this point we're sure that the catalog loading (the first half of our progress bar) has already finished
@@ -502,6 +506,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (!initialLoadingController.isActive)
             return;
 
+        isEnteringEditMode = false;
         BuilderInWorldNFTController.i.ClearNFTs();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
