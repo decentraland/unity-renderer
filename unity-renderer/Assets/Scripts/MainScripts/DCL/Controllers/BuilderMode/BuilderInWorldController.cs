@@ -75,6 +75,7 @@ public class BuilderInWorldController : MonoBehaviour
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
     private bool areCatalogHeadersReady = false;
+    private bool isCatalogRequested = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
@@ -84,6 +85,7 @@ public class BuilderInWorldController : MonoBehaviour
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
+    private Dictionary<string, string> catalogCallHeaders;
 
     private void Awake()
     {
@@ -112,9 +114,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
-        if (HUDController.i.builderInWorldInititalHud != null)
-            HUDController.i.builderInWorldInititalHud.OnEnterEditMode -= TryStartEnterEditMode;
-
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
@@ -133,6 +132,8 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         CleanItems();
+
+        HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
     }
 
     private void Update()
@@ -205,13 +206,16 @@ public class BuilderInWorldController : MonoBehaviour
         hudConfig.active = true;
         hudConfig.visible = false;
         HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
-        HUDController.i.CreateHudElement<BuilderInWorldInititalHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_INITIAL);
+        HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
+
         HUDController.i.builderInWorldMainHud.Initialize();
 
-        HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
         HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
+
+        if (HUDController.i.builderProjectsPanelController != null)
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEditor += GetCatalog;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
@@ -227,11 +231,31 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
     }
 
+    private void InitBuilderProjectPanel()
+    {
+        if (HUDController.i.builderProjectsPanelController != null)
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEditor += GetCatalog;
+    }
+
     private void CatalogHeadersReceived(string rawHeaders)
     {
-        Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
+        catalogCallHeaders = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
         areCatalogHeadersReady = true;
-        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, headers);
+        if (isCatalogRequested)
+            GetCatalog();
+    }
+
+    private void GetCatalog()
+    {
+        if (catalogAdded)
+            return;
+
+        if (areCatalogHeadersReady)
+            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, catalogCallHeaders);
+        else
+            builderInWorldBridge.AskKernelForCatalogHeaders();
+
+        isCatalogRequested = true;
     }
 
     private void ConfigureLoadingController()
@@ -291,9 +315,6 @@ public class BuilderInWorldController : MonoBehaviour
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.Dispose();
 
-        if (HUDController.i.builderInWorldInititalHud != null)
-            HUDController.i.builderInWorldInititalHud.Dispose();
-
         if (Camera.main != null)
         {
             DCLBuilderOutline outliner = Camera.main.GetComponent<DCLBuilderOutline>();
@@ -323,6 +344,7 @@ public class BuilderInWorldController : MonoBehaviour
         }
         else
         {
+            GetCatalog();
             TryStartEnterEditMode();
         }
     }
