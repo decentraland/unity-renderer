@@ -125,10 +125,8 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         if (initialLoadingController != null)
-        {
-            initialLoadingController.OnCancelLoading -= CancelLoading;
             initialLoadingController.Dispose();
-        }
+
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
@@ -263,7 +261,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         initialLoadingController = new BuilderInWorldLoadingController();
         initialLoadingController.Initialize(initialLoadingView);
-        initialLoadingController.OnCancelLoading += CancelLoading;
     }
 
     public void InitGameObjects()
@@ -582,12 +579,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (builderInWorldBridge.builderProject.isNewEmptyProject)
             editorMode.OpenNewProjectDetails();
-    }
-
-    public void CancelLoading()
-    {
-        editorMode.Deactivate();
-        ExitEditMode();
     }
 
     public void StartExitMode()
