@@ -510,6 +510,8 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetParcelScene(sceneToEdit);
             HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(true);
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfInspector(true);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
