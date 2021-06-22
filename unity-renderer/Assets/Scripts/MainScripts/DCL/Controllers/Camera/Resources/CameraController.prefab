@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1036879088249284490}
   m_CommonLens: 0
   m_Lens:
-    FieldOfView: 60.67695
+    FieldOfView: 60.06607
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 75
@@ -76,10 +76,10 @@ MonoBehaviour:
   m_LegacyBlendHint: 0
   m_YAxis:
     Value: 0
-    m_SpeedMode: 0
-    m_MaxSpeed: 1.989899
-    m_AccelTime: 0.4
-    m_DecelTime: 0
+    m_SpeedMode: 1
+    m_MaxSpeed: 0.0334596
+    m_AccelTime: 0
+    m_DecelTime: 0.066
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
     m_InvertInput: 1
@@ -100,10 +100,10 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_SpeedMode: 0
-    m_MaxSpeed: 308.5859
-    m_AccelTime: 0.4
-    m_DecelTime: 0
+    m_SpeedMode: 1
+    m_MaxSpeed: 3.011364
+    m_AccelTime: 0
+    m_DecelTime: 0.066
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
     m_InvertInput: 0
@@ -127,12 +127,12 @@ MonoBehaviour:
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_BindingMode: 4
-  m_SplineCurvature: 1
+  m_SplineCurvature: 0
   m_Orbits:
   - m_Height: 4
     m_Radius: 1.6
   - m_Height: 0.5
-    m_Radius: 3.288002
+    m_Radius: 3.208588
   - m_Height: -0.75
     m_Radius: 1.6
   m_LegacyHeadingBias: 3.4028235e+38
@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 2.231524, z: -2.893813}
+  m_FollowOffset: {x: 0, y: 0.1132371, z: -3.139844}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -445,7 +445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 2.231524, z: -2.893813}
+  m_FollowOffset: {x: 0, y: 0.1132371, z: -3.139844}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -812,7 +812,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 2.231524, z: -2.893813}
+  m_FollowOffset: {x: 0, y: 0.1132371, z: -3.139844}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1157,8 +1157,8 @@ MonoBehaviour:
   m_RecenterTarget: 0
   m_VerticalAxis:
     Value: -28.81077
-    m_SpeedMode: 0
-    m_MaxSpeed: 218.6869
+    m_SpeedMode: 1
+    m_MaxSpeed: 1.858586
     m_AccelTime: 0.1
     m_DecelTime: 0.03
     m_InputAxisName: Mouse Y
@@ -1181,8 +1181,8 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_HorizontalAxis:
     Value: 17.114649
-    m_SpeedMode: 0
-    m_MaxSpeed: 218.6869
+    m_SpeedMode: 1
+    m_MaxSpeed: 1.858586
     m_AccelTime: 0.1
     m_DecelTime: 0.03
     m_InputAxisName: Mouse X
