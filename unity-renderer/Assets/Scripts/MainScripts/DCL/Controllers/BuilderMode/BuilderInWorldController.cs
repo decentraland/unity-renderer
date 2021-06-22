@@ -2,6 +2,7 @@ using Builder;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
+using DCL.SettingsControls;
 using DCL.Tutorial;
 using Newtonsoft.Json;
 using System;
@@ -433,7 +434,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
-        //CommonScriptableObjects.builderInWorldEditorActive.Set(true);
+        CommonScriptableObjects.builderInWorldEditorActive.Set(true);
         SetObjectCullingActive(false);
         FindSceneToEdit();
 
@@ -579,7 +580,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
-        //CommonScriptableObjects.builderInWorldEditorActive.Set(false);
+        CommonScriptableObjects.builderInWorldEditorActive.Set(false);
         SetObjectCullingActive(true);
 
         if (biwSaveController.numberOfSaves > 0)
@@ -735,8 +736,8 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void SetObjectCullingActive(bool isActive)
     {
-        Environment.i.platform.cullingController.SetObjectCulling(isActive);
-        Environment.i.platform.cullingController.SetShadowCulling(isActive);
-        Environment.i.platform.cullingController.MarkDirty();
+        DetailObjectCullingControlController cullingController = GameObject.FindObjectOfType<DetailObjectCullingControlController>();
+        cullingController.UpdateSetting(isActive);
+        cullingController.ApplySettings();
     }
 }
