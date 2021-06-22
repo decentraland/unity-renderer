@@ -84,6 +84,8 @@ public class BuilderInWorldController : MonoBehaviour
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
+    private DetailObjectCullingControlController cullingSettingControlController;
+    private bool previousCullingStatus;
 
     private void Awake()
     {
@@ -190,6 +192,8 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (isInit)
             return;
+
+        SettingsPanelDataStore.i.controls.TryGetController(out cullingSettingControlController);
 
         isInit = true;
 
@@ -486,7 +490,13 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         CommonScriptableObjects.builderInWorldEditorActive.Set(true);
-        SetObjectCullingActive(false);
+        if (cullingSettingControlController != null)
+        {
+            previousCullingStatus = (bool)cullingSettingControlController.GetStoredValue();
+
+            if (previousCullingStatus)
+                SetObjectCullingActive(false);
+        }
 
         BuilderInWorldNFTController.i.ClearNFTs();
 
@@ -582,7 +592,8 @@ public class BuilderInWorldController : MonoBehaviour
     public void ExitEditMode()
     {
         CommonScriptableObjects.builderInWorldEditorActive.Set(false);
-        SetObjectCullingActive(true);
+        if (previousCullingStatus)
+            SetObjectCullingActive(true);
 
         if (biwSaveController.numberOfSaves > 0)
         {
@@ -737,8 +748,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void SetObjectCullingActive(bool isActive)
     {
-        DetailObjectCullingControlController cullingController = GameObject.FindObjectOfType<DetailObjectCullingControlController>();
-        cullingController.UpdateSetting(isActive);
-        cullingController.ApplySettings();
+        cullingSettingControlController?.UpdateSetting(isActive);
+        cullingSettingControlController?.ApplySettings();
     }
 }
