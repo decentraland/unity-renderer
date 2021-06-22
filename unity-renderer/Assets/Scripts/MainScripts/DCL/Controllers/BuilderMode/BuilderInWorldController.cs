@@ -7,6 +7,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -72,16 +74,22 @@ public class BuilderInWorldController : MonoBehaviour
     private bool previousAllUIHidden;
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
+    private bool areCatalogHeadersReady = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
+
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
 
-    private void Awake() { BIWCatalogManager.Init(); }
+    private void Awake()
+    {
+        BIWCatalogManager.Init();
+        builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
+    }
 
     void Start()
     {
@@ -91,7 +99,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void OnDestroy()
     {
-        userProfile.OnUpdate -= OnUserProfileUpdate;
+        if (userProfile != null)
+            userProfile.OnUpdate -= OnUserProfileUpdate;
+
         CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
 
         if (sceneToEdit != null)
@@ -108,6 +118,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
+            HUDController.i.builderInWorldMainHud.OnStartExitAction -= StartExitMode;
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
         }
 
@@ -120,12 +131,13 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+        builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         CleanItems();
     }
 
     private void Update()
     {
-        if (isCatalogLoading && catalogAsyncOp.webRequest != null)
+        if (isCatalogLoading && catalogAsyncOp?.webRequest != null)
             UpdateCatalogLoadingProgress(catalogAsyncOp.webRequest.downloadProgress * 100);
 
         if (!isBuilderInWorldActivated)
@@ -198,6 +210,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
+        HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -207,10 +220,18 @@ public class BuilderInWorldController : MonoBehaviour
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
 
-        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived);
+        builderInWorldBridge.AskKernelForCatalogHeaders();
+
         isCatalogLoading = true;
         BuilderInWorldNFTController.i.Initialize();
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+    }
+
+    private void CatalogHeadersReceived(string rawHeaders)
+    {
+        Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
+        areCatalogHeadersReady = true;
+        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, headers);
     }
 
     private void ConfigureLoadingController()
@@ -479,6 +500,8 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetParcelScene(sceneToEdit);
             HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(true);
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfInspector(true);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
@@ -503,6 +526,7 @@ public class BuilderInWorldController : MonoBehaviour
                 inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
                 HUDController.i.builderInWorldMainHud?.SetVisibility(true);
                 CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+                OpenNewProjectDetailsIfNeeded();
             });
         }
 
@@ -530,7 +554,14 @@ public class BuilderInWorldController : MonoBehaviour
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
             HUDController.i.builderInWorldMainHud.SetVisibility(true);
             CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+            OpenNewProjectDetailsIfNeeded();
         });
+    }
+
+    private void OpenNewProjectDetailsIfNeeded()
+    {
+        if (builderInWorldBridge.builderProject.isNewEmptyProject)
+            editorMode.OpenNewProjectDetails();
     }
 
     public void CancelLoading()
@@ -539,8 +570,20 @@ public class BuilderInWorldController : MonoBehaviour
         ExitEditMode();
     }
 
+    public void StartExitMode()
+    {
+        if (biwSaveController.numberOfSaves > 0)
+            editorMode.TakeSceneScreenshotForExit();
+    }
+
     public void ExitEditMode()
     {
+        if (biwSaveController.numberOfSaves > 0)
+        {
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            biwSaveController.ResetNumberOfSaves();
+        }
+
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
