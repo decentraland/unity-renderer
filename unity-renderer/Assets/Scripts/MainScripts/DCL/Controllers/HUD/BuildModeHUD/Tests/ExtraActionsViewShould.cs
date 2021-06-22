@@ -97,5 +97,20 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.IsTrue(isClicked, "isClicked is false!");
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetResetButtonInteractableCorrectly(bool isInteractable)
+        {
+            // Arrange
+            extraActionsView.resetBtn.interactable = !isInteractable;
+
+            // Act
+            extraActionsView.SetResetButtonInteractable(isInteractable);
+
+            // Assert
+            Assert.AreEqual(isInteractable, extraActionsView.resetBtn.interactable, "The interactable property does not match!");
+        }
     }
 }

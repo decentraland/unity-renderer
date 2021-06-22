@@ -84,5 +84,17 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             Assert.IsTrue(clicked, "clicked is false!");
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetResetButtonInteractableCorrectly(bool isInteractable)
+        {
+            // Act
+            extraActionsController.SetResetButtonInteractable(isInteractable);
+
+            // Assert
+            extraActionsController.extraActionsView.Received(1).SetResetButtonInteractable(isInteractable);
+        }
     }
 }

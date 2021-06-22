@@ -118,6 +118,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
+            HUDController.i.builderInWorldMainHud.OnStartExitAction -= StartExitMode;
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
         }
 
@@ -209,6 +210,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
+        HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -498,6 +500,8 @@ public class BuilderInWorldController : MonoBehaviour
             HUDController.i.builderInWorldMainHud.SetParcelScene(sceneToEdit);
             HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
             HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfCatalog(true);
+            HUDController.i.builderInWorldMainHud.SetVisibilityOfInspector(true);
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
@@ -522,6 +526,7 @@ public class BuilderInWorldController : MonoBehaviour
                 inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
                 HUDController.i.builderInWorldMainHud?.SetVisibility(true);
                 CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+                OpenNewProjectDetailsIfNeeded();
             });
         }
 
@@ -549,7 +554,14 @@ public class BuilderInWorldController : MonoBehaviour
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
             HUDController.i.builderInWorldMainHud.SetVisibility(true);
             CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+            OpenNewProjectDetailsIfNeeded();
         });
+    }
+
+    private void OpenNewProjectDetailsIfNeeded()
+    {
+        if (builderInWorldBridge.builderProject.isNewEmptyProject)
+            editorMode.OpenNewProjectDetails();
     }
 
     public void CancelLoading()
@@ -558,8 +570,20 @@ public class BuilderInWorldController : MonoBehaviour
         ExitEditMode();
     }
 
+    public void StartExitMode()
+    {
+        if (biwSaveController.numberOfSaves > 0)
+            editorMode.TakeSceneScreenshotForExit();
+    }
+
     public void ExitEditMode()
     {
+        if (biwSaveController.numberOfSaves > 0)
+        {
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            biwSaveController.ResetNumberOfSaves();
+        }
+
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
