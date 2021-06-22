@@ -433,6 +433,8 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
+        //CommonScriptableObjects.builderInWorldEditorActive.Set(true);
+        SetObjectCullingActive(false);
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -446,7 +448,6 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
-        CommonScriptableObjects.builderInWorldEditorActive.Set(true);
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;
         CommonScriptableObjects.allUIHidden.Set(true);
@@ -455,8 +456,6 @@ public class BuilderInWorldController : MonoBehaviour
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
-        Environment.i.platform.cullingController.SetObjectCulling(false);
-        Environment.i.platform.cullingController.SetShadowCulling(false);
 
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
@@ -578,6 +577,9 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
+        //CommonScriptableObjects.builderInWorldEditorActive.Set(false);
+        SetObjectCullingActive(true);
+
         if (biwSaveController.numberOfSaves > 0)
         {
             HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
@@ -590,7 +592,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
         CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
-        CommonScriptableObjects.builderInWorldEditorActive.Set(false);
 
         snapGO.transform.SetParent(transform);
 
@@ -614,8 +615,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         Environment.i.world.blockersController.SetEnabled(true);
-        Environment.i.platform.cullingController.SetObjectCulling(true);
-        Environment.i.platform.cullingController.SetShadowCulling(true);
 
         ExitBiwControllers();
 
@@ -730,5 +729,12 @@ public class BuilderInWorldController : MonoBehaviour
         notificationModel.message = message;
         notificationModel.type = NotificationFactory.Type.GENERIC;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
+    }
+
+    private void SetObjectCullingActive(bool isActive)
+    {
+        Environment.i.platform.cullingController.SetObjectCulling(isActive);
+        Environment.i.platform.cullingController.SetShadowCulling(isActive);
+        Environment.i.platform.cullingController.MarkDirty();
     }
 }
