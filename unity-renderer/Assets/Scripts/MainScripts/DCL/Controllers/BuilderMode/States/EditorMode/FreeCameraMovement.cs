@@ -11,9 +11,9 @@ public class FreeCameraMovement : CameraStateBase
     public float focusDistance = 5f;
 
     [Header("Camera Movement")]
-    public float AccelerationMod;
-    public float DecelerationMod;
-    public float MaximumMovementSpeed = 1f;
+    public float accelerationMod = 0.025f;
+    public float decelerationMod = 0.05f;
+    public float maximumMovementSpeed = 0.65f;
     public float yPlaneSpeedPercentCompensantion = 0.85f;
     public float zPlaneSpeedPercentCompensantion = 0.85f;
 
@@ -42,7 +42,7 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
     [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
-    private Vector3 _moveSpeed = Vector3.zero;
+    private Vector3 moveSpeed = Vector3.zero;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -187,7 +187,7 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         isMouseRightClickDown = true;
-        _moveSpeed = Vector3.zero;
+        moveSpeed = Vector3.zero;
     }
 
     private void OnDestroy()
@@ -235,26 +235,26 @@ public class FreeCameraMovement : CameraStateBase
     {
         if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
         {
-            if (Mathf.Abs(_moveSpeed.x) < DecelerationMod)
-                _moveSpeed.x = 0;
+            if (Mathf.Abs(moveSpeed.x) < decelerationMod)
+                moveSpeed.x = 0;
             else
-                _moveSpeed.x -= DecelerationMod * Mathf.Sign(_moveSpeed.x);
+                moveSpeed.x -= decelerationMod * Mathf.Sign(moveSpeed.x);
         }
 
         if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
         {
-            if (Mathf.Abs(_moveSpeed.y) < DecelerationMod)
-                _moveSpeed.y = 0;
+            if (Mathf.Abs(moveSpeed.y) < decelerationMod)
+                moveSpeed.y = 0;
             else
-                _moveSpeed.y -= DecelerationMod * Mathf.Sign(_moveSpeed.y) * yPlaneSpeedPercentCompensantion;
+                moveSpeed.y -= decelerationMod * Mathf.Sign(moveSpeed.y) * yPlaneSpeedPercentCompensantion;
         }
 
         if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
         {
-            if (Mathf.Abs(_moveSpeed.z) < DecelerationMod)
-                _moveSpeed.z = 0;
+            if (Mathf.Abs(moveSpeed.z) < decelerationMod)
+                moveSpeed.z = 0;
             else
-                _moveSpeed.z -= DecelerationMod * Mathf.Sign(_moveSpeed.z) * zPlaneSpeedPercentCompensantion;
+                moveSpeed.z -= decelerationMod * Mathf.Sign(moveSpeed.z) * zPlaneSpeedPercentCompensantion;
         }
     }
 
@@ -263,16 +263,16 @@ public class FreeCameraMovement : CameraStateBase
     private void HandleCameraMovement()
     {
         var acceleration = HandleKeyInput();
-        _moveSpeed += acceleration;
+        moveSpeed += acceleration;
         HandleCameraMovementDeceleration(acceleration);
 
         // Clamp the move speed
-        if (_moveSpeed.magnitude > MaximumMovementSpeed)
+        if (moveSpeed.magnitude > maximumMovementSpeed)
         {
-            _moveSpeed = _moveSpeed.normalized * MaximumMovementSpeed;
+            moveSpeed = moveSpeed.normalized * maximumMovementSpeed;
         }
 
-        transform.Translate(_moveSpeed);
+        transform.Translate(moveSpeed);
     }
 
     private void HandleCameraLook()
@@ -294,7 +294,7 @@ public class FreeCameraMovement : CameraStateBase
     private Vector3 HandleKeyInput()
     {
         var acceleration = Vector3.zero;
-        float currentAcceleratioMod = AccelerationMod;
+        float currentAcceleratioMod = accelerationMod;
         if (isMouseRightClickDown)
         {
             if (isAdvancingForward)
@@ -501,7 +501,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         SetPosition(originalCameraPosition);
         LookAt(originalCameraLookAt);
-        _moveSpeed = Vector3.zero;
+        moveSpeed = Vector3.zero;
     }
 
     public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
