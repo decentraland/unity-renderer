@@ -571,5 +571,18 @@ namespace Tests.BuildModeHUDControllers
             Assert.IsTrue(buildModeHUDController.areExtraButtonsVisible, "The areExtraButtonsVisible is false!");
             buildModeHUDController.view.Received(1).SetVisibilityOfExtraBtns(buildModeHUDController.areExtraButtonsVisible);
         }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetVisibilityOfInspectorCorrectly(bool isVisible)
+        {
+            // Act
+            buildModeHUDController.SetVisibilityOfInspector(isVisible);
+
+            // Assert
+            Assert.AreEqual(isVisible, buildModeHUDController.isEntityListVisible);
+            buildModeHUDController.view.Received(1).SetVisibilityOfInspector(isVisible);
+        }
     }
 }
