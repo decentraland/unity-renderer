@@ -52,7 +52,7 @@ public class AttributeXYZ : MonoBehaviour
                 InputDeselected(newText);
 
                 if (EventSystem.current != null && !EventSystem.current.alreadySelecting)
-                    EventSystem.current?.SetSelectedGameObject(null);
+                    EventSystem.current.SetSelectedGameObject(null);
             });
 
             field.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));

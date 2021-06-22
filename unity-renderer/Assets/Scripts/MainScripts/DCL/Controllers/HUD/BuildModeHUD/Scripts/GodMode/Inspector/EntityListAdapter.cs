@@ -38,7 +38,7 @@ public class EntityListAdapter : MonoBehaviour
                 SetTextboxActive(false);
 
                 if (EventSystem.current != null && !EventSystem.current.alreadySelecting)
-                    EventSystem.current?.SetSelectedGameObject(null);
+                    EventSystem.current.SetSelectedGameObject(null);
             });
 
             nameInputField.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
