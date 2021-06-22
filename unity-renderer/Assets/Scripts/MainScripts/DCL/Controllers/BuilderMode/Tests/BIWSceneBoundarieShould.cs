@@ -49,8 +49,10 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite_Legacy
 
         //Act
         scene.entities[entityId].gameObject.transform.position = new Vector3(100, 100, 100);
-        yield return null;
+        //TODO: This will be added again with the refactor of the feedback style
+        //yield return new DCL.WaitUntil(() => !scene.entities[entityId].meshesInfo.renderers[0].enabled);
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(biwStyle);
+
         yield return null;
 
         //Assert
@@ -58,7 +60,6 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite_Legacy
         {
             Assert.IsTrue(renderer.enabled);
         }
-
     }
 
     protected override IEnumerator TearDown() { yield return base.TearDown(); }

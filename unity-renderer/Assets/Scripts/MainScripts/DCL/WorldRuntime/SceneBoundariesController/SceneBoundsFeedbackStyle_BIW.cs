@@ -124,6 +124,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
             wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
 
             invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+            entityRenderers[i].enabled = true;
         }
 
         currentMeshesInvalidated.Add(meshesInfo);
