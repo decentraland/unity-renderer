@@ -79,8 +79,6 @@ public class HUDController : MonoBehaviour
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public EmailPromptHUDController emailPromptHud => GetHUDElement(HUDElementID.EMAIL_PROMPT) as EmailPromptHUDController;
-
     public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
@@ -159,7 +157,10 @@ public class HUDController : MonoBehaviour
         CONTROLS_HUD = 18,
         EXPLORE_HUD = 19,
         HELP_AND_SUPPORT_HUD = 20,
+
+        [Obsolete("Deprecated HUD Element")]
         EMAIL_PROMPT = 21,
+
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
         BUILDER_IN_WORLD_MAIN = 24,
@@ -357,14 +358,6 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ControlsHUDController>(configuration, hudElementId);
                 taskbarHud?.AddControlsMoreOption();
                 break;
-            case HUDElementID.EMAIL_PROMPT:
-                if (emailPromptHud == null)
-                {
-                    CreateHudElement<EmailPromptHUDController>(configuration, hudElementId);
-                }
-
-                emailPromptHud?.SetEnable(configuration.active);
-                break;
             case HUDElementID.EXPLORE_HUD:
                 CreateHudElement<ExploreHUDController>(configuration, hudElementId);
                 if (exploreHud != null)
@@ -554,6 +547,14 @@ public class HUDController : MonoBehaviour
             return null;
 
         return hudElements[id];
+    }
+
+    public static bool IsHUDElementDeprecated(HUDElementID element)
+    {
+        Type enumType = typeof(HUDElementID);
+        var enumName = enumType.GetEnumName(element);
+        var fieldInfo = enumType.GetField(enumName);
+        return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
     }
 
 #if UNITY_EDITOR
