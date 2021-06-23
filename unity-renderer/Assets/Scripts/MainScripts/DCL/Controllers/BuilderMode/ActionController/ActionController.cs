@@ -43,6 +43,8 @@ public class ActionController : BIWController
     {
         base.EnterEditMode(scene);
         actionsMade.Clear();
+
+        CheckButtonsInteractability();
     }
 
     public void Clear()
@@ -238,7 +240,11 @@ public class ActionController : BIWController
     {
         if (HUDController.i.builderInWorldMainHud == null)
             return;
-        HUDController.i.builderInWorldMainHud.SetRedoButtonInteractable(!(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].isDone));
-        HUDController.i.builderInWorldMainHud.SetUndoButtonInteractable(!(currentUndoStepIndex == 0 && !actionsMade[0].isDone));
+
+        bool canRedoAction = actionsMade.Count > 0 && !(currentRedoStepIndex == actionsMade.Count - 1 && actionsMade[actionsMade.Count - 1].isDone);
+        bool canUndoAction = actionsMade.Count > 0 && !(currentUndoStepIndex == 0 && !actionsMade[0].isDone);
+
+        HUDController.i.builderInWorldMainHud.SetRedoButtonInteractable(canRedoAction);
+        HUDController.i.builderInWorldMainHud.SetUndoButtonInteractable(canUndoAction);
     }
 }
