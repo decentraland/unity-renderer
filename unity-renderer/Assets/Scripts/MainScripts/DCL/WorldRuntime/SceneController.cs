@@ -54,12 +54,13 @@ namespace DCL
             {
                 //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
                 //             case. Calling Initialize multiple times in a row is safe.
-                Environment.SetupWithBuilders
+                /*Environment.SetupWithBuilders
                 (
                     MessagingContextFactory.CreateDefault,
                     PlatformContextFactory.CreateDefault,
-                    WorldRuntimeContextFactory.CreateDefault
-                );
+                    WorldRuntimeContextFactory.CreateDefault,
+                    HUDContextFactory.CreateDefault
+                );*/
             }
 
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());

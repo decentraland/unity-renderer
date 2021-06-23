@@ -41,10 +41,7 @@ namespace DCL
             {
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
-                Environment.SetupWithBuilders(
-                    messagingBuilder: MessagingContextFactory.CreateDefault,
-                    platformBuilder: PlatformContextFactory.CreateDefault,
-                    worldRuntimeBuilder: RuntimeContextBuilder);
+                SetupEnvironment();
             }
 
             DCL.Interface.WebInterface.SendSystemInfoReport();
@@ -62,17 +59,30 @@ namespace DCL
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
-        WorldRuntimeContext RuntimeContextBuilder()
+        protected void SetupEnvironment()
         {
-            return new WorldRuntimeContext(
-                state: new WorldState(),
-                sceneController: new SceneController(),
-                pointerEventsController: new PointerEventsController(),
-                sceneBoundsChecker: new SceneBoundsChecker(),
-                blockersController: new WorldBlockersController(),
-                componentFactory: new RuntimeComponentFactory(componentFactory));
+            Environment.SetupWithBuilders(
+                messagingBuilder: MessagingContextBuilder,
+                platformBuilder: PlatformContextBuilder,
+                worldRuntimeBuilder: WorldRuntimeContextBuilder,
+                hudBuilder: HUDContextBuilder);    
         }
-
+        protected MessagingContext MessagingContextBuilder()
+        {
+            return MessagingContextFactory.CreateDefault();
+        }
+        protected PlatformContext PlatformContextBuilder()
+        {
+            return PlatformContextFactory.CreateDefault();
+        }
+        protected WorldRuntimeContext WorldRuntimeContextBuilder()
+        {
+            return WorldRuntimeContextFactory.CreateDefault(componentFactory);
+        }
+        protected HUDContext HUDContextBuilder()
+        {
+            return HUDContextFactory.CreateDefault();
+        }
         private void Start() { Environment.i.world.sceneController.Start(); }
 
         private void Update()
