@@ -85,7 +85,7 @@ public class BuilderInWorldController : MonoBehaviour
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
-    private Coroutine setObjectCullingActiveCoroutine;
+    private Coroutine setObjectCullingStartingCoroutine;
 
     private void Awake()
     {
@@ -483,7 +483,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEdit == null)
             return;
 
-        SetObjectCullingActive(false);
+        SetObjectCullingStarting(false);
 
         sceneToEditId = sceneToEdit.sceneData.id;
 
@@ -592,7 +592,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
-        SetObjectCullingActive(true);
+        SetObjectCullingStarting(true);
 
         if (biwSaveController.numberOfSaves > 0)
         {
@@ -747,18 +747,18 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 
-    private void SetObjectCullingActive(bool isActive)
+    private void SetObjectCullingStarting(bool isStart)
     {
-        if (setObjectCullingActiveCoroutine != null)
-            CoroutineStarter.Stop(setObjectCullingActiveCoroutine);
+        if (setObjectCullingStartingCoroutine != null)
+            CoroutineStarter.Stop(setObjectCullingStartingCoroutine);
 
-        if (isActive)
-            CoroutineStarter.Start(ActiveObjectCullingWithDelay(CULLING_ACTIVATION_DELAY));
+        if (isStart)
+            CoroutineStarter.Start(StartObjectCullingWithDelay(CULLING_ACTIVATION_DELAY));
         else
             Environment.i.platform.cullingController.Stop();
     }
 
-    private IEnumerator ActiveObjectCullingWithDelay(float delay)
+    private IEnumerator StartObjectCullingWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         Environment.i.platform.cullingController.Start();
