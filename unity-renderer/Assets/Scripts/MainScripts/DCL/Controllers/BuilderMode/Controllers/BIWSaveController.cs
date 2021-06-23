@@ -22,7 +22,10 @@ public class BIWSaveController : BIWController
             builderInWorldBridge.OnKernelUpdated += TryToSave;
 
         if (HUDController.i.builderInWorldMainHud != null)
+        {
             HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction += SaveSceneInfo;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += ConfirmPublishScene;
+        }
     }
 
     private void OnDestroy()
@@ -31,7 +34,10 @@ public class BIWSaveController : BIWController
             builderInWorldBridge.OnKernelUpdated -= TryToSave;
 
         if (HUDController.i.builderInWorldMainHud != null)
+        {
             HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction -= SaveSceneInfo;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= ConfirmPublishScene;
+        }
     }
 
     public void ResetSaveTime() { nextTimeToSave = 0; }
@@ -72,4 +78,6 @@ public class BIWSaveController : BIWController
     }
 
     public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
+
+    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
 }

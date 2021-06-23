@@ -45,7 +45,7 @@ namespace Tests.BuildModeHUDControllers
             tooltipController.ShowTooltip(testEventData);
 
             // Assert
-            tooltipController.view.Received(1).SetTooltipPosition(testRT.position - Vector3.up * testRT.rect.height);
+            tooltipController.view.Received(1).SetTooltipPosition(testRT.position);
             Assert.IsNotNull(tooltipController.changeAlphaCoroutine, "The changeAlphaCoroutine is null!");
         }
 
@@ -63,7 +63,7 @@ namespace Tests.BuildModeHUDControllers
             tooltipController.ShowTooltip(testEventData, offset);
 
             // Assert
-            tooltipController.view.Received(1).SetTooltipPosition(offset + testRT.position - Vector3.up * testRT.rect.height);
+            tooltipController.view.Received(1).SetTooltipPosition(offset + testRT.position);
             Assert.IsNotNull(tooltipController.changeAlphaCoroutine, "The changeAlphaCoroutine is null!");
         }
     }

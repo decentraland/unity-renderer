@@ -36,6 +36,9 @@ public class EntityListAdapter : MonoBehaviour
             {
                 Rename(newText);
                 SetTextboxActive(false);
+
+                if (EventSystem.current != null && !EventSystem.current.alreadySelecting)
+                    EventSystem.current.SetSelectedGameObject(null);
             });
 
             nameInputField.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
@@ -107,10 +110,8 @@ public class EntityListAdapter : MonoBehaviour
             //NOTE (Adrian): this is done to force the text component to update, otherwise it won't show the text, seems like a bug on textmeshpro to me
             nameInputField.textComponent.enabled = true;
 
-            if (entityToEdit.IsVisible)
-                showImg.color = iconsSelectedColor;
-            else
-                showImg.color = iconsUnselectedColor;
+            showImg.color = entityToEdit.IsVisible ? iconsSelectedColor : iconsUnselectedColor;
+            nameInputField_Text.color = (!entityToEdit.IsVisible || entityToEdit.IsLocked) ? iconsUnselectedColor : iconsSelectedColor;
 
             unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
             lockButton.gameObject.SetActive(entityToEdit.IsLocked);
@@ -173,7 +174,7 @@ public class EntityListAdapter : MonoBehaviour
 
     private void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
     {
-        if (currentEntity.rootEntity.entityId != entity.entityId)
+        if (currentEntity.rootEntity.entityId != entity.entityId || !currentEntity.IsVisible || currentEntity.IsLocked)
             return;
 
         nameInputField_Text.color = isInsideBoundaries ? entityInsideOfBoundsColor : entityOutOfBoundsColor;

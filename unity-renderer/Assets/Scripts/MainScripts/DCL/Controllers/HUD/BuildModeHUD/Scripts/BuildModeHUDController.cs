@@ -52,9 +52,8 @@ public class BuildModeHUDController : IHUD
     internal BuildModeHUDInitializationModel controllers;
     internal CatalogItemDropController catalogItemDropController;
 
-    internal static readonly Vector3 catalogItemTooltipOffset = new Vector3 (0, 25, 0);
-
     private Coroutine publishProgressCoroutine = null;
+    private float timeFromLastClickOnExtraButtons = 0f;
 
     public void Initialize()
     {
@@ -182,6 +181,8 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.extraActionsController.OnResetClick += () => OnResetAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnTutorialClick += () => OnTutorialAction?.Invoke();
         controllers.topActionsButtonsController.extraActionsController.OnResetCameraClick += () => OnResetCameraAction?.Invoke();
+
+        controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(false);
     }
 
     private void ConfigureCatalogItemDropController()
@@ -395,7 +396,7 @@ public class BuildModeHUDController : IHUD
     private void ShowTooltipForCatalogItemAdapter(PointerEventData data, CatalogItemAdapter adapter)
     {
         controllers.tooltipController.SetTooltipText(adapter.GetContent().name);
-        controllers.tooltipController.ShowTooltip(data, catalogItemTooltipOffset);
+        controllers.tooltipController.ShowTooltip(data);
     }
 
     public void RefreshCatalogAssetPack() { view.RefreshCatalogAssetPack(); }
@@ -550,10 +551,14 @@ public class BuildModeHUDController : IHUD
     {
         areExtraButtonsVisible = !areExtraButtonsVisible;
         view.SetVisibilityOfExtraBtns(areExtraButtonsVisible);
+        timeFromLastClickOnExtraButtons = Time.realtimeSinceStartup;
     }
 
     public void HideExtraBtns()
     {
+        if ((Time.realtimeSinceStartup - timeFromLastClickOnExtraButtons) <= 0.1f)
+            return;
+
         areExtraButtonsVisible = false;
         controllers.topActionsButtonsController.extraActionsController.SetActive(areExtraButtonsVisible);
     }
@@ -607,5 +612,20 @@ public class BuildModeHUDController : IHUD
 
     internal virtual IBuildModeHUDView CreateView() => BuildModeHUDView.Create();
 
-    public void UpdateEntitiesSelection(int numberOfSelectedEntities) { controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities); }
+    public void UpdateEntitiesSelection(int numberOfSelectedEntities)
+    {
+        controllers.entityInformationController.UpdateEntitiesSelection(numberOfSelectedEntities);
+        controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(numberOfSelectedEntities > 0);
+    }
+
+    #region Inspector
+
+    public void SetVisibilityOfInspector(bool isVisible)
+    {
+        isEntityListVisible = isVisible;
+        view.SetVisibilityOfInspector(isVisible);
+    }
+
+    #endregion
+
 }
