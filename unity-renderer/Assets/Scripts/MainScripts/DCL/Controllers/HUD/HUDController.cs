@@ -38,6 +38,8 @@ public class HUDController : MonoBehaviour
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
 
+    public event Action OnBuilderProjectPanelCreation;
+
     public ProfileHUDController profileHud => GetHUDElement(HUDElementID.PROFILE_HUD) as ProfileHUDController;
 
     public NotificationHUDController notificationHud =>
@@ -86,8 +88,6 @@ public class HUDController : MonoBehaviour
     public UsersAroundListHUDController usersAroundListHud => GetHUDElement(HUDElementID.USERS_AROUND_LIST_HUD) as UsersAroundListHUDController;
 
     public BuildModeHUDController builderInWorldMainHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_MAIN) as BuildModeHUDController;
-
-    public BuilderInWorldInititalHUDController builderInWorldInititalHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_INITIAL) as BuilderInWorldInititalHUDController;
 
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
@@ -164,7 +164,10 @@ public class HUDController : MonoBehaviour
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
         BUILDER_IN_WORLD_MAIN = 24,
-        BUILDER_IN_WORLD_INITIAL = 25,
+
+        [Obsolete("Deprecated HUD Element")]
+        BUILDER_IN_WOLRD_INITIAL_PANEL = 25,
+
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
         BUILDER_PROJECTS_PANEL = 28,
@@ -387,9 +390,6 @@ public class HUDController : MonoBehaviour
                 if (configuration.active)
                     builderInWorldMainHud.Initialize();
                 break;
-            case HUDElementID.BUILDER_IN_WORLD_INITIAL:
-                CreateHudElement<BuilderInWorldInititalHUDController>(configuration, hudElementId);
-                break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement<QuestsPanelHUDController>(configuration, hudElementId);
                 if (configuration.active)
@@ -418,7 +418,7 @@ public class HUDController : MonoBehaviour
                     builderProjectsPanelController.Initialize();
                     taskbarHud.SetBuilderInWorldStatus(true);
                 }
-
+                OnBuilderProjectPanelCreation?.Invoke();
                 break;
         }
 

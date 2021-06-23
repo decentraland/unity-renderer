@@ -6,15 +6,12 @@ using UnityEngine.UI;
 
 public interface IBuilderInWorldLoadingView
 {
-    event Action OnCancelLoading;
-
     bool isActive { get; }
 
     void Show();
     void Hide(bool forzeHidding = false, Action onHideAction = null);
     void StartTipsCarousel();
     void StopTipsCarousel();
-    void CancelLoading(DCLAction_Trigger action);
     void SetPercentage(float newValue);
 }
 
@@ -32,11 +29,8 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
     [SerializeField] internal float animationTipsTransitionTime = 1f;
 
     [Header("Other Config")]
-    [SerializeField] internal InputAction_Trigger cancelLoadingInputAction;
     [SerializeField] internal float minVisibilityTime = 1.5f;
     [SerializeField] internal LoadingBar loadingBar;
-
-    public event Action OnCancelLoading;
 
     public bool isActive => gameObject.activeSelf;
 
@@ -55,10 +49,6 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
     }
 
     private void Awake() { CreateLoadingTips(); }
-
-    private void OnEnable() { cancelLoadingInputAction.OnTriggered += CancelLoading; }
-
-    private void OnDisable() { cancelLoadingInputAction.OnTriggered -= CancelLoading; }
 
     private void CreateLoadingTips()
     {
@@ -178,12 +168,6 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
     {
         loadingTipsScroll.horizontalNormalizedPosition = currentFinalNormalizedPos;
         IncrementTipIndex();
-    }
-
-    public void CancelLoading(DCLAction_Trigger action)
-    {
-        Hide();
-        OnCancelLoading?.Invoke();
     }
 
     public void SetPercentage(float newValue) { loadingBar.SetPercentage(newValue); }
