@@ -51,6 +51,7 @@ namespace DCL.Controllers
         Material invalidSubMeshMaterial;
         Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
         HashSet<Renderer> invalidSubmeshes = new HashSet<Renderer>();
+        private readonly List<MeshesInfo> currentMeshesInvalidated = new List<MeshesInfo>();
 
         public SceneBoundsFeedbackStyle_RedFlicker()
         {
@@ -70,6 +71,16 @@ namespace DCL.Controllers
             }
 
             AddInvalidMeshEffect(meshesInfo);
+        }
+
+        public void CleanFeedback()
+        {
+            foreach (var meshInfo in currentMeshesInvalidated)
+            {
+                RemoveInvalidMeshEffect(meshInfo);
+            }
+
+            currentMeshesInvalidated.Clear();
         }
 
         void RemoveInvalidMeshEffect(MeshesInfo meshesInfo)
@@ -94,11 +105,15 @@ namespace DCL.Controllers
             }
 
             invalidMeshesInfo[meshesInfo.innerGameObject].ResetMaterials();
+            currentMeshesInvalidated.Remove(meshesInfo);
         }
 
         void AddInvalidMeshEffect(MeshesInfo meshesInfo)
         {
             if (!WasGameObjectInAValidPosition(meshesInfo.innerGameObject))
+                return;
+
+            if (currentMeshesInvalidated.Contains(meshesInfo))
                 return;
 
             InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(meshesInfo);
@@ -138,6 +153,7 @@ namespace DCL.Controllers
                 }
             }
 
+            currentMeshesInvalidated.Add(meshesInfo);
             invalidMeshesInfo.Add(meshesInfo.innerGameObject, invalidMeshInfo);
         }
 
