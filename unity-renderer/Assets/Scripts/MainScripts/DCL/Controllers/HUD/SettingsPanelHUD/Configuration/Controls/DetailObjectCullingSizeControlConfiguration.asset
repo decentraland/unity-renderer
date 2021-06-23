@@ -19,7 +19,6 @@ MonoBehaviour:
   flagsThatDisableMe:
   - {fileID: 11400000, guid: 3b9bf6ed63d2fed4daf45c97572647d4, type: 2}
   - {fileID: 11400000, guid: 1e39f6d2504a10449895477e0118ad88, type: 2}
-  - {fileID: 11400000, guid: 34a1649031806b246a9400b277cf0ef5, type: 2}
   flagsThatDeactivateMe: []
   isBeta: 0
   sliderMinValue: 0
