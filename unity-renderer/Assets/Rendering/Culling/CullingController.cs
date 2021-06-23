@@ -388,6 +388,7 @@ namespace DCL.Rendering
             objectsTracker?.SetIgnoredLayersMask(settings.ignoredLayersMask);
             objectsTracker?.MarkDirty();
             MarkDirty();
+            resetObjectsNextFrame = true;
         }
 
         /// <summary>
