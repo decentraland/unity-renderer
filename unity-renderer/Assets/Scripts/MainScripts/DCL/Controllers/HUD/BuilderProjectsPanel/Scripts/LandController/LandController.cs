@@ -6,6 +6,7 @@ internal interface ILandController
     void SetLands(LandWithAccess[] lands);
     void AddListener(ILandsListener listener);
     void RemoveListener(ILandsListener listener);
+    LandWithAccess[] GetLands();
 }
 
 internal class LandController : ILandController
@@ -27,4 +28,5 @@ internal class LandController : ILandController
     }
 
     void ILandController.RemoveListener(ILandsListener listener) { OnLandsSet -= listener.OnSetLands; }
+    public LandWithAccess[] GetLands() { return userLands; }
 }

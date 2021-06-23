@@ -22,8 +22,6 @@ public class BuilderInWorldInititalHUDController : IHUD
         view.OnEnterInEditMode += () => CloseBuilderInWorldInitialView();
     }
 
-    public void OpenBuilderInWorldInitialView() { SetVisibility(true); }
-
     public void CloseBuilderInWorldInitialView()
     {
         SetVisibility(false);

@@ -41,6 +41,8 @@ internal class UnpublishPopupController : IDisposable
 
     void OnConfirmUnpublish()
     {
+        //TODO: Implement PlayerUnpublishScene event
+        //  BIWAnalytics.PlayerUnpublishScene(coordinates);
         DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
         WebInterface.UnpublishScene(coordinates);
         fakeProgressRoutine = CoroutineStarter.Start(ProgressRoutine());

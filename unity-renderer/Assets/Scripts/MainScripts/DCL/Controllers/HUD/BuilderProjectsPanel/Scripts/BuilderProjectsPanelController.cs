@@ -36,6 +36,7 @@ public class BuilderProjectsPanelController : IHUD
 
     private bool isInitialized = false;
     private bool isFetching = false;
+    private bool sendPlayerOpenPanelEvent = false;
     private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
@@ -130,6 +131,8 @@ public class BuilderProjectsPanelController : IHUD
 
         if (isVisible)
         {
+            sendPlayerOpenPanelEvent = true;
+
             FetchLandsAndScenes();
             StartFetchInterval();
             sectionsController.OpenSection(SectionId.SCENES_DEPLOYED);
@@ -140,7 +143,42 @@ public class BuilderProjectsPanelController : IHUD
         }
     }
 
-    private void OnClose() { SetVisibility(false); }
+    private void OnClose()
+    {
+        SetVisibility(false);
+
+        LandWithAccess[] lands = landsController.GetLands();
+        if (lands != null)
+        {
+            Vector2Int totalLands = GetAmountOfLandsOwnedAndOperator(lands);
+            BIWAnalytics.PlayerClosesPanel(totalLands.x, totalLands.y);
+        }
+    }
+
+    private void PanelOpenEvent(LandWithAccess[] lands)
+    {
+        Vector2Int totalLands = GetAmountOfLandsOwnedAndOperator(lands);
+        BIWAnalytics.PlayerOpenPanel(totalLands.x, totalLands.y);
+    }
+
+    /// <summary>
+    /// This counts the amount of lands that the user own and the amount of lands that the user operate
+    /// </summary>
+    /// <param name="lands"></param>
+    /// <returns>Vector2: X = amount of owned lands, Y = amount of operator lands</returns>
+    private Vector2Int GetAmountOfLandsOwnedAndOperator(LandWithAccess[] lands)
+    {
+        int ownedLandsCount = 0;
+        int operatorLandsCount = 0;
+        foreach (var land in lands)
+        {
+            if (land.role == LandRole.OWNER)
+                ownedLandsCount++;
+            else
+                operatorLandsCount++;
+        }
+        return new Vector2Int(ownedLandsCount, operatorLandsCount);
+    }
 
     private void SetView()
     {
@@ -188,6 +226,7 @@ public class BuilderProjectsPanelController : IHUD
                                       .Aggregate((i, j) => i.Concat(j))
                                       .ToArray();
 
+                    PanelOpenEvent(lands);
                     landsController.SetLands(lands);
                     scenesViewController.SetScenes(scenes);
                 }
