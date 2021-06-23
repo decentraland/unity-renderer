@@ -13,6 +13,8 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
+    private const float CULLING_ACTIVATION_DELAY = 0.5f;
+
     [Header("Activation of Feature")]
     public bool activeFeature = false;
 
@@ -750,15 +752,15 @@ public class BuilderInWorldController : MonoBehaviour
         if (setObjectCullingActiveCoroutine != null)
             CoroutineStarter.Stop(setObjectCullingActiveCoroutine);
 
-        if (!isActive)
-            Environment.i.platform.cullingController.Stop();
+        if (isActive)
+            CoroutineStarter.Start(ActiveObjectCullingWithDelay(CULLING_ACTIVATION_DELAY));
         else
-            CoroutineStarter.Start(ActiveObjectCullingWithDelay());
+            Environment.i.platform.cullingController.Stop();
     }
 
-    private IEnumerator ActiveObjectCullingWithDelay()
+    private IEnumerator ActiveObjectCullingWithDelay(float delay)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(delay);
         Environment.i.platform.cullingController.Start();
     }
 }
