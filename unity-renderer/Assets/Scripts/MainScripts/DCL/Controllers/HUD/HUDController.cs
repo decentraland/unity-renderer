@@ -164,6 +164,10 @@ public class HUDController : MonoBehaviour
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
         BUILDER_IN_WORLD_MAIN = 24,
+
+        [Obsolete("Deprecated HUD Element")]
+        BUILDER_IN_WOLRD_INITIAL_PANEL = 25,
+
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
         BUILDER_PROJECTS_PANEL = 28,
