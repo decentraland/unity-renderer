@@ -39,6 +39,8 @@ public class BuilderProjectsPanelController : IHUD
     private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
 
+    public event Action OnJumpInOrEdit;
+
     public BuilderProjectsPanelController() : this(
         Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
 
@@ -211,6 +213,7 @@ public class BuilderProjectsPanelController : IHUD
     {
         WebInterface.GoTo(coords.x, coords.y);
         SetVisibility(false);
+        OnJumpInOrEdit?.Invoke();
     }
 
     private void OpenUrl(string url) { WebInterface.OpenURL(url); }
@@ -222,6 +225,7 @@ public class BuilderProjectsPanelController : IHUD
         {
             SetVisibility(false);
         }
+        OnJumpInOrEdit?.Invoke();
     }
 
     private void StartFetchInterval()
