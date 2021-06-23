@@ -21,6 +21,7 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
+        public GameObject lodQuad;
 
         private AvatarModel model;
 
@@ -349,11 +350,11 @@ namespace DCL
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
-            bodyShapeController.UpdateVisibility(hiddenList);
+            /*bodyShapeController.UpdateVisibility(hiddenList);
             foreach (WearableController wearableController in wearableControllers.Values)
             {
                 wearableController.UpdateVisibility(hiddenList);
-            }
+            }*/
 
             CleanUpUnusedItems();
 
@@ -375,6 +376,8 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
             }
+
+            lodQuad?.SetActive(true);
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
