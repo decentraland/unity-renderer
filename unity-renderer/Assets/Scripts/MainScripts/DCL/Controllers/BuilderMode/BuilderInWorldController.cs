@@ -330,16 +330,23 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
     }
 
-    public void ActivateEditModeByShortcut()
+    public void ChangeEditModeStatusByShortcut()
     {
         if (!activeFeature)
             return;
 
-        if (isBuilderInWorldActivated || isEnteringEditMode)
+        if (isEnteringEditMode)
             return;
 
-        GetCatalog();
-        TryStartEnterEditMode();
+        if (!isBuilderInWorldActivated)
+        {
+            GetCatalog();
+            TryStartEnterEditMode();
+        }
+        else
+        {
+            HUDController.i.builderInWorldMainHud.ExitStart();
+        }
     }
 
     public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
