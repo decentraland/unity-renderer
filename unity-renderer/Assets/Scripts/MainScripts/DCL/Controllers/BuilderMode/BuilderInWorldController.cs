@@ -2,7 +2,6 @@ using Builder;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
-using DCL.SettingsControls;
 using DCL.Tutorial;
 using Newtonsoft.Json;
 using System;
@@ -84,8 +83,7 @@ public class BuilderInWorldController : MonoBehaviour
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
-    private DetailObjectCullingControlController cullingSettingControlController;
-    private bool previousCullingStatus;
+    private Coroutine setObjectCullingActiveCoroutine;
 
     private void Awake()
     {
@@ -192,8 +190,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (isInit)
             return;
-
-        SettingsPanelDataStore.i.controls.TryGetController(out cullingSettingControlController);
 
         isInit = true;
 
@@ -485,6 +481,8 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEdit == null)
             return;
 
+        SetObjectCullingActive(false);
+
         sceneToEditId = sceneToEdit.sceneData.id;
 
         // In this point we're sure that the catalog loading (the first half of our progress bar) has already finished
@@ -500,15 +498,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         if (!initialLoadingController.isActive)
             return;
-
-        CommonScriptableObjects.builderInWorldEditorActive.Set(true);
-        if (cullingSettingControlController != null)
-        {
-            previousCullingStatus = (bool)cullingSettingControlController.GetStoredValue();
-
-            if (previousCullingStatus)
-                SetObjectCullingActive(false);
-        }
 
         BuilderInWorldNFTController.i.ClearNFTs();
 
@@ -601,9 +590,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
-        CommonScriptableObjects.builderInWorldEditorActive.Set(false);
-        if (previousCullingStatus)
-            SetObjectCullingActive(true);
+        SetObjectCullingActive(true);
 
         if (biwSaveController.numberOfSaves > 0)
         {
@@ -760,7 +747,18 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void SetObjectCullingActive(bool isActive)
     {
-        cullingSettingControlController?.UpdateSetting(isActive);
-        cullingSettingControlController?.ApplySettings();
+        if (setObjectCullingActiveCoroutine != null)
+            CoroutineStarter.Stop(setObjectCullingActiveCoroutine);
+
+        if (!isActive)
+            Environment.i.platform.cullingController.Stop();
+        else
+            CoroutineStarter.Start(ActiveObjectCullingWithDelay());
+    }
+
+    private IEnumerator ActiveObjectCullingWithDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Environment.i.platform.cullingController.Start();
     }
 }
