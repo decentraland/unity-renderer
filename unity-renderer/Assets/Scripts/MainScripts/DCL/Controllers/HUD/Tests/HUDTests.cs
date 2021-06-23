@@ -57,10 +57,11 @@ namespace Tests
             // HUD controllers are created
             for (int i = 1; i < (int) HUDController.HUDElementID.COUNT; i++)
             {
-                //Note: This one has been deleted as is not needed anymore
-                if (i == 25)
+                HUDController.HUDElementID elementID = (HUDController.HUDElementID) i;
+                if (HUDController.IsHUDElementDeprecated(elementID))
                     continue;
-                Assert.IsNotNull(hudController.GetHUDElement((HUDController.HUDElementID) i), $"Failed to create {(HUDController.HUDElementID) i}");
+                
+                Assert.IsNotNull(hudController.GetHUDElement(elementID), $"Failed to create {elementID}");
             }
         }
     }
