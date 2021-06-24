@@ -953,17 +953,17 @@ namespace DCL.Interface
             public bool isSignUpFlow;
             public AvatarModel avatar;
         }
-
-        public enum RendererAuthenticationType
+        
+        public static class RendererAuthenticationType
         {
-            GUEST = 0,
-            WALLET_CONNECT = 1
+            public static string Guest => "guest";
+            public static string WalletConnect => "WalletConnect";
         }
-
+        
         [System.Serializable]
         public class SendAuthenticationPayload
         {
-            public RendererAuthenticationType rendererAuthenticationType;
+            public string rendererAuthenticationType;
         }
         
         [System.Serializable]
@@ -995,7 +995,7 @@ namespace DCL.Interface
             SendMessage("SaveUserAvatar", payload);
         }
 
-        public static void SendAuthentication(RendererAuthenticationType rendererAuthenticationType)
+        public static void SendAuthentication(string rendererAuthenticationType)
         {
             SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType });
         }

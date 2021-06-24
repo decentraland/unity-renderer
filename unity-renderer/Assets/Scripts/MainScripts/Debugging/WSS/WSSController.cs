@@ -61,7 +61,7 @@ namespace DCL
             WebInterface.OnMessageFromEngine += SendMessageToWeb;
             Send("{\"welcome\": true}");
             if (enterAsAGuest)
-                WebInterface.SendAuthentication(WebInterface.RendererAuthenticationType.GUEST);
+                WebInterface.SendAuthentication(WebInterface.RendererAuthenticationType.Guest);
         }
     }
 
