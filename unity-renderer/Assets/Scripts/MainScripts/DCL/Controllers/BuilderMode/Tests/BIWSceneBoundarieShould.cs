@@ -6,12 +6,25 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using DCL.Controllers;
+using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
 
-public class BIWSceneBoundarieShould : IntegrationTestSuite_Legacy
+public class BIWSceneBoundarieShould : IntegrationTestSuite
 {
+
+    protected override WorldRuntimeContext CreateRuntimeContext()
+    {
+        return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
+        (
+            sceneController: new SceneController(),
+            state: new WorldState(),
+            componentFactory: new RuntimeComponentFactory(),
+            sceneBoundsChecker: new SceneBoundsChecker()
+        );
+    }
+
     [Test]
     public void BuilderInWorldChangeFeedbackStyleChange()
     {
@@ -29,6 +42,8 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite_Legacy
     public IEnumerator BuilderInWorldRendererEnableOutsideParcel()
     {
         //Arrange
+        ParcelScene scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
+
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
         var biwStyle = new SceneBoundsFeedbackStyle_BIW();
         string entityId = "1";

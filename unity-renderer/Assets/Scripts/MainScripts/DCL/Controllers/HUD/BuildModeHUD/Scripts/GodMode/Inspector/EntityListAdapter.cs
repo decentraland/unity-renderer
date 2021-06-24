@@ -112,8 +112,15 @@ public class EntityListAdapter : MonoBehaviour
         nameInputField.textComponent.enabled = true;
 
 
-        showImg.color = entityToEdit.IsVisible ? iconsSelectedColor : iconsUnselectedColor;
-        nameInputField_Text.color = (!entityToEdit.IsVisible || entityToEdit.IsLocked) ? iconsUnselectedColor : iconsSelectedColor;
+        if (entityToEdit.IsVisible)
+            showImg.color = iconsSelectedColor;
+        else
+            showImg.color = iconsUnselectedColor;
+
+        if (!entityToEdit.IsVisible || entityToEdit.IsLocked)
+            nameInputField_Text.color = iconsUnselectedColor;
+        else
+            nameInputField_Text.color =  iconsSelectedColor;
 
         unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
         lockButton.gameObject.SetActive(entityToEdit.IsLocked);
@@ -170,9 +177,8 @@ public class EntityListAdapter : MonoBehaviour
 
     void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)
     {
-        if (this != null)
-            if (entityToEdit.entityUniqueId == currentEntity.entityUniqueId)
-                Destroy(gameObject);
+        if (this != null && entityToEdit.entityUniqueId == currentEntity.entityUniqueId)
+            Destroy(gameObject);
     }
 
     private void SetEntityError(DCLBuilderInWorldEntity entity)

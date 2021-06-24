@@ -117,6 +117,11 @@ public class BuilderInWorldEntityHandler : BIWController
         hideSelectedEntitiesAction.OnTriggered -= hideSelectedEntitiesDelegate;
         showAllEntitiesAction.OnTriggered -= showAllEntitiesDelegate;
 
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
+
+        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+
         if (hudController == null)
             return;
 
@@ -128,11 +133,6 @@ public class BuilderInWorldEntityHandler : BIWController
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityRename -= SetEntityName;
-
-        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
-
-        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
     }
 
     protected override void FrameUpdate()

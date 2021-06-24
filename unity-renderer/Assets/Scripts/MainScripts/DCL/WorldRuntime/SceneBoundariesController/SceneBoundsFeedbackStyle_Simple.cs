@@ -6,7 +6,6 @@ namespace DCL.Controllers
 {
     public class SceneBoundsFeedbackStyle_Simple : ISceneBoundsFeedbackStyle
     {
-        //TODO: This is not working correctly because it only disable the first renderer instead of all renderers
         public void OnRendererExitBounds(Renderer renderer) { renderer.enabled = false; }
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
