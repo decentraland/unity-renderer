@@ -23,7 +23,8 @@ public class BIWPublishController : BIWController
             HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
         }
-        builderInWorldBridge.OnPublishEnd += PublishEnd;
+        if (builderInWorldBridge != null)
+            builderInWorldBridge.OnPublishEnd += PublishEnd;
     }
 
     protected override void FrameUpdate()
@@ -47,7 +48,8 @@ public class BIWPublishController : BIWController
             HUDController.i.builderInWorldMainHud.OnPublishAction -= StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= StartPublishScene;
         }
-        builderInWorldBridge.OnPublishEnd -= PublishEnd;
+        if (builderInWorldBridge != null)
+            builderInWorldBridge.OnPublishEnd -= PublishEnd;
     }
 
     public bool CanPublish()
