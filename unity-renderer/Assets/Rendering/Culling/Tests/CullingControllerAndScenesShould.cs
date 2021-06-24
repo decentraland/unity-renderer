@@ -52,5 +52,33 @@ namespace CullingControllerTests
 
             Assert.IsFalse(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't brought back!");
         }
+
+        [UnityTest]
+        public IEnumerator TogglingOnAndOffSetRenderersCorrectly()
+        {
+            var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one * 1000, true);
+            var entity = boxShape.attachedEntities.First();
+
+            Assert.IsTrue(Environment.i.platform.cullingController.IsDirty(), "culling controller not dirty");
+            Assert.IsTrue(Environment.i.platform.cullingController.objectsTracker.IsDirty(), "object tracker not dirty");
+
+            yield return boxShape.routine;
+
+            yield return
+                new DCL.WaitUntil(() => entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
+
+            Assert.IsTrue(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't hidden!");
+
+            TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+
+            var settings = Environment.i.platform.cullingController.GetSettingsCopy();
+            settings.enableObjectCulling = false;
+            Environment.i.platform.cullingController.SetSettings(settings);
+
+            yield return
+                new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
+
+            Assert.IsFalse(entity.meshesInfo.renderers[0].forceRenderingOff, "renderer wasn't brought back!");
+        }
     }
 }

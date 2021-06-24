@@ -46,19 +46,5 @@ namespace Tests.BuildModeHUDViews
             // Assert
             Assert.IsFalse(builderInWorldLoadingView.gameObject.activeSelf, "The view activeSelf property is true!");
         }
-
-        [Test]
-        public void CancelLoadingCorrectly()
-        {
-            // Arrange
-            bool loadingCanceled = false;
-            builderInWorldLoadingView.OnCancelLoading += () => { loadingCanceled = true; };
-
-            // Act
-            builderInWorldLoadingView.CancelLoading(new DCLAction_Trigger());
-
-            // Assert
-            Assert.IsTrue(loadingCanceled, "loadingCanceled is false!");
-        }
     }
 }
