@@ -41,6 +41,13 @@ namespace DCL
 
         internal bool isLoading = false;
 
+        //-----------
+        private const int MAX_NON_LOD_AVATARS = 20; // this could be in the settings panel
+        private static int nonLODAvatars = 0;
+        private HashSet<string> loadedHiddenWearables;
+        private Renderer[] renderers;
+        //-----------
+
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
 
@@ -263,7 +270,7 @@ namespace DCL
 
             if (bodyShapeController == null)
             {
-                HideAll();
+                SetRenderersEnabled(false);
                 bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
@@ -317,8 +324,7 @@ namespace DCL
                 }
             }
 
-
-            HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
+            loadedHiddenWearables = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
             {
                 bodyShapeController.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
@@ -350,11 +356,14 @@ namespace DCL
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
-            /*bodyShapeController.UpdateVisibility(hiddenList);
-            foreach (WearableController wearableController in wearableControllers.Values)
-            {
-                wearableController.UpdateVisibility(hiddenList);
-            }*/
+            UpdateWearableControllersVisibility();
+
+            // TODO: Move these cached renderers to a lower level ?? (BodyShapecontroller? WearableController?)
+            renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+            CommonScriptableObjects.playerUnityPosition.OnChange -= OnMainPlayerReposition;
+            CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
+            UpdateLOD(CommonScriptableObjects.playerUnityPosition);
 
             CleanUpUnusedItems();
 
@@ -376,8 +385,32 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
             }
+        }
 
-            lodQuad?.SetActive(true);
+        void UpdateWearableControllersVisibility()
+        {
+            bodyShapeController.UpdateVisibility(loadedHiddenWearables);
+            foreach (WearableController wearableController in wearableControllers.Values)
+            {
+                wearableController.UpdateVisibility(loadedHiddenWearables);
+            }
+        }
+
+        void OnMainPlayerReposition(Vector3 newPos, Vector3 previousPos) { UpdateLOD(newPos); }
+
+        void UpdateLOD(Vector3 characterPosition)
+        {
+            if (lodQuad == null)
+                return;
+
+            int lodDistance = 16; // this could be in the settings panel 
+            bool isInLODDistance = Vector3.Distance(characterPosition, transform.position) >= lodDistance;
+
+            lodQuad.SetActive(isInLODDistance);
+            SetRenderersEnabled(!isInLODDistance);
+
+            if (!isInLODDistance)
+                UpdateWearableControllersVisibility();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
@@ -480,11 +513,11 @@ namespace DCL
         //TODO: Remove/replace once the class is easily mockable.
         protected void CopyFrom(AvatarRenderer original)
         {
-            this.wearableControllers = original.wearableControllers;
-            this.mouthController = original.mouthController;
-            this.bodyShapeController = original.bodyShapeController;
-            this.eyebrowsController = original.eyebrowsController;
-            this.eyesController = original.eyesController;
+            wearableControllers = original.wearableControllers;
+            mouthController = original.mouthController;
+            bodyShapeController = original.bodyShapeController;
+            eyebrowsController = original.eyebrowsController;
+            eyesController = original.eyesController;
         }
 
         public void SetVisibility(bool newVisibility)
@@ -495,13 +528,14 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
-        private void HideAll()
+        private void SetRenderersEnabled(bool newState)
         {
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            if (renderers == null || renderers.Length == 0)
+                return;
 
             for (int i = 0; i < renderers.Length; i++)
             {
-                renderers[i].enabled = false;
+                renderers[i].enabled = newState;
             }
         }
 
