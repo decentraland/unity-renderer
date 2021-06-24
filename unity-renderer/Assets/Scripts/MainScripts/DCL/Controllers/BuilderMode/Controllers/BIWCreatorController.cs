@@ -354,7 +354,10 @@ public class BIWCreatorController : BIWController
         {
             CreateCatalogItem(catalogItem);
         }
-        BIWAnalytics.NewObjectPlaced(catalogItem, HUDController.i.builderInWorldMainHud.GetCatalogSectionSelected().ToString());
+        string catalogSection = "";
+        if (HUDController.i.builderInWorldMainHud != null)
+            catalogSection =   HUDController.i.builderInWorldMainHud.GetCatalogSectionSelected().ToString();
+        BIWAnalytics.NewObjectPlaced(catalogItem, catalogSection);
     }
 
     private void OnCatalogItemDropped(CatalogItem catalogItem)

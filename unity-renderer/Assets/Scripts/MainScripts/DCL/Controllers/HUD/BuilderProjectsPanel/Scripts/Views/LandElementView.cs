@@ -58,15 +58,21 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
     private void JumpInButtonPressed()
     {
-        string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
-        BIWAnalytics.PlayerJumpOrEdit("Lands", "JumpIn", coords, ownership);
+        if (currentLand != null)
+        {
+            string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
+            BIWAnalytics.PlayerJumpOrEdit("Lands", "JumpIn", coords, ownership);
+        }
         OnJumpInPressed?.Invoke(coords);
     }
 
     private void EditorButtonPressed()
     {
-        string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
-        BIWAnalytics.PlayerJumpOrEdit("Lands", "Editor", coords, ownership);
+        if (currentLand != null)
+        {
+            string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
+            BIWAnalytics.PlayerJumpOrEdit("Lands", "Editor", coords, ownership);
+        }
         OnJumpInPressed?.Invoke(coords);
     }
 
