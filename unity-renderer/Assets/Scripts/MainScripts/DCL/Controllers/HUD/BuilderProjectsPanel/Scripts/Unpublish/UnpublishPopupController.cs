@@ -34,7 +34,7 @@ internal class UnpublishPopupController : IDisposable
         view.Dispose();
     }
 
-    public void Show(Vector2Int coordinates, DeployedScene.Source source)
+    public void Show(Vector2Int coordinates, DeployedScene.Source source = DeployedScene.Source.BUILDER_IN_WORLD)
     {
         this.coordinates = coordinates;
         this.source = source;

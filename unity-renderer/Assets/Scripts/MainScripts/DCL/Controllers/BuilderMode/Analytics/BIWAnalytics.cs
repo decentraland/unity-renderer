@@ -14,18 +14,18 @@ public static class BIWAnalytics
 
     public static void PlayerOpenPanel(int landsOwned, int landsOperator)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Lands Owned", landsOwned);
-        events.Add("Lands Operator", landsOperator);
-        SendEvent("PlayerOpenPanel", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("Lands Owned", landsOwned.ToString());
+        events.Add("Lands Operator", landsOperator.ToString());
+        SendEvent("player_open_panel", events);
     }
 
     public static void PlayerClosesPanel(int landsOwned, int landsOperator)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Lands Owned", landsOwned);
-        events.Add("Lands Operator", landsOperator);
-        SendEvent("PlayerClosesPanel", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("Lands Owned", landsOwned.ToString());
+        events.Add("Lands Operator", landsOperator.ToString());
+        SendEvent("player_closes_panel", events);
     }
 
     /// <summary>
@@ -37,12 +37,12 @@ public static class BIWAnalytics
     /// <param name="ownership">It is owner or operator</param>
     public static void PlayerJumpOrEdit(string source, string mode, Vector2 coords, string ownership)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Source", source);
-        events.Add("Mode", mode);
-        events.Add("Coords", coords);
-        events.Add("Ownership", ownership);
-        SendEvent("PlayerJumpOrEdit", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("source", source);
+        events.Add("mode", mode);
+        events.Add("coords", coords.ToString());
+        events.Add("ownership", ownership);
+        SendEvent("player_jump_or_edit", events);
     }
 
     /// <summary>
@@ -52,10 +52,10 @@ public static class BIWAnalytics
     /// <param name="coords">Coords of the land where the scene is deployed </param>
     public static void PlayerUnpublishScene(string type, Vector2Int coords)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Type", type);
-        events.Add("Coords", coords);
-        SendEvent("PlayerUnpublishScene", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("type", type);
+        events.Add("coords", coords.ToString());
+        SendEvent("player_unpublish_scene", events);
     }
 
     #endregion
@@ -68,46 +68,46 @@ public static class BIWAnalytics
     /// <param name="source">It comes from the shortcut or from BuilderPanel</param>
     public static void StartEditorFlow(string source)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Source", source);
-        AddLandInfoSendEvent("StartEditorFlow", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("source", source);
+        AddLandInfoSendEvent("start_editor_flow", events);
     }
 
     public static void EnterEditor(float loadingTime)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Loading time", loadingTime);
-        AddLandInfoSendEvent("EnterEditor", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("loading_time", loadingTime.ToString());
+        AddLandInfoSendEvent("enter_editor", events);
     }
 
     public static void ExitEditor(float timeInvestedInTheEditor)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Time in the editor", timeInvestedInTheEditor);
-        AddLandInfoSendEvent("ExitEditor", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("time_in_the_editor", timeInvestedInTheEditor.ToString());
+        AddLandInfoSendEvent("exit_editor", events);
     }
 
     public static void StartScenePublish(SceneMetricsModel sceneLimits)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Scene Limits", ConvertSceneMetricsModelToDictionary(sceneLimits));
-        AddLandInfoSendEvent("StartPublishOfTheScene", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        AddLandInfoSendEvent("start_publish_of_the_scene", events);
     }
 
     public static void EndScenePublish(SceneMetricsModel sceneLimits, string successOrError, float publicationTime)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Success", successOrError);
-        events.Add("Publication Time", publicationTime);
-        events.Add("Scene Limits", ConvertSceneMetricsModelToDictionary(sceneLimits));
-        AddLandInfoSendEvent("EndScenePublish", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("success", successOrError);
+        events.Add("publication_time", publicationTime.ToString());
+        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        AddLandInfoSendEvent("end_scene_publish", events);
     }
 
     public static void SceneLimitsOverPassed(SceneMetricsModel sceneLimits)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Scene Limits", ConvertSceneMetricsModelToDictionary(sceneLimits));
-        AddLandInfoSendEvent("SceneLimitsOverPassed", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        AddLandInfoSendEvent("scene_limits_over_passed", events);
     }
 
     /// <summary>
@@ -117,57 +117,57 @@ public static class BIWAnalytics
     /// <param name="source">It has been added from Categories, Asset pack, Favorites or Quick Access</param>
     public static void NewObjectPlaced(CatalogItem catalogItem, string source)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Name", catalogItem.name);
-        events.Add("AssetPack", catalogItem.assetPackName);
-        events.Add("Category", catalogItem.category);
-        events.Add("Category Name", catalogItem.categoryName);
-        events.Add("Source", source);
-        events.Add("Type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("NewObjectPlaced", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("name", catalogItem.name);
+        events.Add("assetPack", catalogItem.assetPackName);
+        events.Add("category", catalogItem.category);
+        events.Add("category Name", catalogItem.categoryName);
+        events.Add("source", source);
+        events.Add("type", catalogItem.itemType.ToString());
+        AddLandInfoSendEvent("new_object_placed", events);
     }
 
     public static void QuickAccessAssigned(CatalogItem catalogItem, string source)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Name", catalogItem.name);
-        events.Add("AssetPack", catalogItem.assetPackName);
-        events.Add("Category", catalogItem.category);
-        events.Add("Category Name", catalogItem.categoryName);
-        events.Add("Source", source);
-        events.Add("Type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("QuickAccessAssigned", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("name", catalogItem.name);
+        events.Add("assetPack", catalogItem.assetPackName);
+        events.Add("category", catalogItem.category);
+        events.Add("category Name", catalogItem.categoryName);
+        events.Add("source", source);
+        events.Add("type", catalogItem.itemType.ToString());
+        AddLandInfoSendEvent("quick_access_assigned", events);
     }
 
     public static void FavoriteAdded(CatalogItem catalogItem)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Name", catalogItem.name);
-        events.Add("AssetPack", catalogItem.assetPackName);
-        events.Add("Category", catalogItem.category);
-        events.Add("Category Name", catalogItem.categoryName);
-        events.Add("Type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("FavoriteAdded", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("name", catalogItem.name);
+        events.Add("assetPack", catalogItem.assetPackName);
+        events.Add("category", catalogItem.category);
+        events.Add("category Name", catalogItem.categoryName);
+        events.Add("type", catalogItem.itemType.ToString());
+        AddLandInfoSendEvent("favorite_added", events);
     }
 
     public static void CatalogItemSearched(string searchQuery, int resultAmount)
     {
-        Dictionary<object, object> events = new Dictionary<object, object>();
-        events.Add("Search Query", searchQuery);
-        events.Add("Result Amount", resultAmount);
-        AddLandInfoSendEvent("CatalogItemSearched", events);
+        Dictionary<string, string> events = new Dictionary<string, string>();
+        events.Add("search_query", searchQuery);
+        events.Add("result_amount", resultAmount.ToString());
+        AddLandInfoSendEvent("catalog_item_searched", events);
     }
 
-    private static Dictionary<object, object> ConvertSceneMetricsModelToDictionary(SceneMetricsModel sceneLimits)
+    private static Dictionary<string, string> ConvertSceneMetricsModelToDictionary(SceneMetricsModel sceneLimits)
     {
-        Dictionary<object, object> sceneLimitsDictionary = new Dictionary<object, object>();
-        sceneLimitsDictionary.Add("Meshes", sceneLimits.meshes);
-        sceneLimitsDictionary.Add("Bodies", sceneLimits.bodies);
-        sceneLimitsDictionary.Add("Materials", sceneLimits.materials);
-        sceneLimitsDictionary.Add("Textures", sceneLimits.textures);
-        sceneLimitsDictionary.Add("Triangles", sceneLimits.triangles);
-        sceneLimitsDictionary.Add("Entities", sceneLimits.entities);
-        sceneLimitsDictionary.Add("Scene Height", sceneLimits.sceneHeight);
+        Dictionary<string, string> sceneLimitsDictionary = new Dictionary<string, string>();
+        sceneLimitsDictionary.Add("meshes", sceneLimits.meshes.ToString());
+        sceneLimitsDictionary.Add("bodies", sceneLimits.bodies.ToString());
+        sceneLimitsDictionary.Add("materials", sceneLimits.materials.ToString());
+        sceneLimitsDictionary.Add("textures", sceneLimits.textures.ToString());
+        sceneLimitsDictionary.Add("triangles", sceneLimits.triangles.ToString());
+        sceneLimitsDictionary.Add("entities", sceneLimits.entities.ToString());
+        sceneLimitsDictionary.Add("scene_height", sceneLimits.sceneHeight.ToString());
 
         return sceneLimitsDictionary;
     }
@@ -189,16 +189,13 @@ public static class BIWAnalytics
 
     #endregion
 
-    private static void AddLandInfoSendEvent(string eventName, Dictionary<object, object> events)
+    private static void AddLandInfoSendEvent(string eventName, Dictionary<string, string> events)
     {
-        events.Add("Ownership", ownership);
-        events.Add("Coords", coords);
-        events.Add("Scene size", size);
+        events.Add("ownership", ownership);
+        events.Add("coords", coords.ToString());
+        events.Add("scene_size", size.ToString());
         SendEvent(eventName, events);
     }
 
-    private static void SendEvent(string eventName, Dictionary<object, object> events)
-    {
-        //Analytics.i.SendAnalytic(eventName,events);
-    }
+    private static void SendEvent(string eventName, Dictionary<string, string> events) { Analytics.i.SendAnalytic(eventName, events); }
 }
