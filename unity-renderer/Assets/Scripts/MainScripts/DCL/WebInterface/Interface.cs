@@ -957,7 +957,7 @@ namespace DCL.Interface
         public static class RendererAuthenticationType
         {
             public static string Guest => "guest";
-            public static string WalletConnect => "WalletConnect";
+            public static string WalletConnect => "wallet_connect";
         }
         
         [System.Serializable]
