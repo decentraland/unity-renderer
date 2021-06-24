@@ -11,7 +11,6 @@ namespace DCL
             Vector3 lookAtDir = (transform.position - CommonScriptableObjects.cameraPosition).normalized;
 
             lookAtDir.y = previousForward.y;
-            // lookAtDir.z = previousForward.z;
 
             transform.forward = lookAtDir;
         }

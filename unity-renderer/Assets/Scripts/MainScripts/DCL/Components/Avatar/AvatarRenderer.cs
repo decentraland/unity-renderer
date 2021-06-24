@@ -43,7 +43,6 @@ namespace DCL
 
         //-----------
         private const int MAX_NON_LOD_AVATARS = 20; // this could be in the settings panel
-        private static int nonLODAvatars = 0;
         private HashSet<string> loadedHiddenWearables;
         private Renderer[] renderers;
         //-----------
