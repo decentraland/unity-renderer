@@ -121,6 +121,15 @@ public static class BIWCatalogManager
             DataStore.i.builderInWorld.catalogItemPackDict.Add(catalogItemPack.id, catalogItemPack);
     }
 
+    public static string GetAssetPackNameById(string assetPackId)
+    {
+        DataStore.i.builderInWorld.catalogItemPackDict.TryGetValue(assetPackId, out CatalogItemPack catalogItemPack);
+        if (catalogItemPack != null)
+            return catalogItemPack.title;
+
+        return "";
+    }
+
     public static void ConvertCollectiblesPack(List<NFTInfo> nftList)
     {
         if (nftList == null)
@@ -196,6 +205,7 @@ public static class BIWCatalogManager
             catalogItem.isVoxel = true;
         catalogItem.name = sceneObject.name;
         catalogItem.model = sceneObject.model;
+        catalogItem.assetPackName = GetAssetPackNameById(sceneObject.asset_pack_id);
         catalogItem.thumbnailURL = sceneObject.GetComposedThumbnailUrl();
         catalogItem.tags = sceneObject.tags;
 
@@ -228,6 +238,7 @@ public static class BIWCatalogManager
         catalogItem.id = nFTInfo.assetContract.address;
         catalogItem.thumbnailURL = nFTInfo.thumbnailUrl;
         catalogItem.name = nFTInfo.name;
+        catalogItem.assetPackName = BuilderInWorldSettings.ASSETS_COLLECTIBLES;
         catalogItem.category = nFTInfo.assetContract.name;
         catalogItem.model = $"{BuilderInWorldSettings.COLLECTIBLE_MODEL_PROTOCOL}{nFTInfo.assetContract.address}/{nFTInfo.tokenId}";
         catalogItem.tags = new List<string>();

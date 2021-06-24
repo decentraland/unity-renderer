@@ -1,8 +1,9 @@
+using UnityEngine;
+
 public class BIWPublishController : BIWController
 {
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public BuilderInWorldBridge builderInWorldBridge;
-    public BIWSaveController biwSaveController;
     public BIWCreatorController biwCreatorController;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
@@ -12,13 +13,17 @@ public class BIWPublishController : BIWController
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
+    private bool reportSceneLimitsOverpassedAnalytic = true;
+    private float startPublishingTimestamp = 0;
+
     public override void Init()
     {
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += ConfirmPublishScene;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
         }
+        builderInWorldBridge.OnPublishEnd += PublishEnd;
     }
 
     protected override void FrameUpdate()
@@ -40,8 +45,9 @@ public class BIWPublishController : BIWController
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction -= StartPublishFlow;
-            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= ConfirmPublishScene;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= StartPublishScene;
         }
+        builderInWorldBridge.OnPublishEnd -= PublishEnd;
     }
 
     public bool CanPublish()
@@ -55,6 +61,7 @@ public class BIWPublishController : BIWController
         if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
             return false;
 
+        reportSceneLimitsOverpassedAnalytic = true;
         return true;
     }
 
@@ -75,12 +82,17 @@ public class BIWPublishController : BIWController
         else if (!sceneToEdit.metricsController.IsInsideTheLimits())
         {
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
+            if (reportSceneLimitsOverpassedAnalytic)
+            {
+                BIWAnalytics.SceneLimitsOverPassed(sceneToEdit.metricsController.GetModel());
+                reportSceneLimitsOverpassedAnalytic = false;
+            }
         }
 
         HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
     }
 
-    void StartPublishFlow()
+    private void StartPublishFlow()
     {
         if (!CanPublish())
             return;
@@ -88,5 +100,18 @@ public class BIWPublishController : BIWController
         HUDController.i.builderInWorldMainHud.PublishStart();
     }
 
-    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
+    private void StartPublishScene(string sceneName, string sceneDescription, string sceneScreenshot)
+    {
+        startPublishingTimestamp = Time.realtimeSinceStartup;
+        BIWAnalytics.StartScenePublish(sceneToEdit.metricsController.GetModel());
+        builderInWorldBridge.PublishScene(sceneToEdit, sceneName, sceneDescription, sceneScreenshot);
+    }
+
+    private void PublishEnd(bool isOk, string message)
+    {
+        if (HUDController.i.builderInWorldMainHud != null)
+            HUDController.i.builderInWorldMainHud.PublishEnd(isOk, message);
+        string successString = isOk ? "Success" : message;
+        BIWAnalytics.EndScenePublish(sceneToEdit.metricsController.GetModel(), successString, Time.realtimeSinceStartup - startPublishingTimestamp);
+    }
 }

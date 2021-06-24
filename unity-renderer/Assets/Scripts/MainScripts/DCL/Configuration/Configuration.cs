@@ -37,6 +37,7 @@ namespace DCL.Configuration
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
+        public const string FLOOR_ASSET_PACK_NAME = "Genesis City";
 
         public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";

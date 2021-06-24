@@ -2,7 +2,10 @@
     "name": "BIWAnalytics",
     "rootNamespace": "",
     "references": [
-        "GUID:97d8897529779cb49bebd400c7f402a6"
+        "GUID:97d8897529779cb49bebd400c7f402a6",
+        "GUID:4623a7b5e6ee6e24c833abc6c810140f",
+        "GUID:2ac9dcbe2d83f4e4e8718930a56a2791",
+        "GUID:0663fad624d836944b40ae27c3414652"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

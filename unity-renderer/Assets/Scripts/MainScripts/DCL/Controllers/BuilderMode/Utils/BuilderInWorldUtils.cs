@@ -12,6 +12,7 @@ using DCL.Configuration;
 using static ProtocolV2;
 using Environment = DCL.Environment;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Controllers;
 using UnityEngine.Networking;
@@ -19,6 +20,21 @@ using UnityEngine.Events;
 
 public static partial class BuilderInWorldUtils
 {
+    public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
+    {
+        LandWithAccess filteredLand = lands.Where( land => scene.sceneData.basePosition == land.baseCoords)
+                                           .Select(land => land)
+                                           .FirstOrDefault();
+        return GetLandOwnershipType(filteredLand, scene);
+    }
+
+    public static LandRole GetLandOwnershipType(LandWithAccess land, ParcelScene scene)
+    {
+        if (land != null)
+            return land.role;
+        return LandRole.OWNER;
+    }
+
     public static Vector3 SnapFilterEulerAngles(Vector3 vectorToFilter, float degrees)
     {
         vectorToFilter.x = ClosestNumber(vectorToFilter.x, degrees);
@@ -45,6 +61,26 @@ public static partial class BuilderInWorldUtils
 
         // else n2 is the required closest number 
         return n2;
+    }
+
+    public static Vector2Int GetSceneSize(ParcelScene parcelScene)
+    {
+        Vector2Int size = new Vector2Int(0, 0);
+        int lastXCoordinate = 0;
+        int lastYCoordinate = 0;
+
+        foreach (var parcel in parcelScene.sceneData.parcels)
+        {
+            if (parcel.x == lastXCoordinate)
+                size.y++;
+            else
+                size.x++;
+
+            lastXCoordinate = parcel.x;
+            lastYCoordinate = parcel.y;
+        }
+
+        return size;
     }
 
     public static Vector3 CalculateUnityMiddlePoint(ParcelScene parcelScene)
@@ -96,6 +132,7 @@ public static partial class BuilderInWorldUtils
 
         floorSceneObject.model = BuilderInWorldSettings.FLOOR_MODEL;
         floorSceneObject.name = BuilderInWorldSettings.FLOOR_NAME;
+        floorSceneObject.assetPackName = BuilderInWorldSettings.FLOOR_ASSET_PACK_NAME;
 
         floorSceneObject.contents = new Dictionary<string, string>();
 
