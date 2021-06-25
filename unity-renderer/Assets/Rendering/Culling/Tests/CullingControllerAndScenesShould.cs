@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
@@ -102,9 +102,6 @@ namespace CullingControllerTests
 
             Environment.i.platform.cullingController.Stop();
             TestHelpers.SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
-            yield return null;
-
-            Environment.i.platform.cullingController.Start();
 
             yield return
                 new DCL.WaitUntil(() => !entity.meshesInfo.renderers[0].forceRenderingOff, 0.3f);
