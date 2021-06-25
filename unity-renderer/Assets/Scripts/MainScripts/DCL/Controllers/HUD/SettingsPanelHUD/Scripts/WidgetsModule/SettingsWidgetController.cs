@@ -39,6 +39,7 @@ namespace DCL.SettingsPanelHUD.Widgets
         {
             newControl.Initialize(controlConfig, newControlController);
             controls.Add(newControl);
+            SettingsPanelDataStore.i.controls.controlControllers.Add(newControlController);
         }
     }
 }

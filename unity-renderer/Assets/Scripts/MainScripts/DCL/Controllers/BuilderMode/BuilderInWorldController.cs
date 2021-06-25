@@ -3,17 +3,18 @@ using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using UnityEngine;
 using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
+    private const float CULLING_ACTIVATION_DELAY = 0.5f;
+
     [Header("Activation of Feature")]
     public bool activeFeature = false;
 
@@ -506,6 +507,8 @@ public class BuilderInWorldController : MonoBehaviour
 
         isEnteringEditMode = true;
 
+        Environment.i.platform.cullingController.Stop();
+
         sceneToEditId = sceneToEdit.sceneData.id;
 
         // In this point we're sure that the catalog loading (the first half of our progress bar) has already finished
@@ -608,6 +611,8 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
+        Environment.i.platform.cullingController.Start();
+
         if (biwSaveController.numberOfSaves > 0)
         {
             HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
@@ -642,6 +647,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         Environment.i.world.blockersController.SetEnabled(true);
+
         ExitBiwControllers();
 
         foreach (var groundVisual in groundVisualsGO)
