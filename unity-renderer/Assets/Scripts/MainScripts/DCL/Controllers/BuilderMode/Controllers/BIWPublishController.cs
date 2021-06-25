@@ -3,16 +3,18 @@ public class BIWPublishController : BIWController
     public BuilderInWorldEntityHandler builderInWorldEntityHandler;
     public BuilderInWorldBridge builderInWorldBridge;
     public BIWSaveController biwSaveController;
+    public BIWCreatorController biwCreatorController;
 
     private int checkerSceneLimitsOptimizationCounter = 0;
 
     private const int FRAMES_BEETWEN_UPDATES = 10;
+    private const string FEEDBACK_MESSAGE_ENTITY_ERROR = "Some entities have errors (marked as pink cubes).";
     private const string FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES = "Some entities are outside of the Scene boundaries.";
     private const string FEEDBACK_MESSAGE_TOO_MANY_ENTITIES = "Too many entities in the scene. Check scene limits.";
 
     public override void Init()
     {
-        if (HUDController.i.builderInWorldMainHud != null)
+        if (HUDController.i?.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += ConfirmPublishScene;
@@ -44,6 +46,9 @@ public class BIWPublishController : BIWController
 
     public bool CanPublish()
     {
+        if (biwCreatorController.IsAnyErrorOnEntities())
+            return false;
+
         if (!sceneToEdit.metricsController.IsInsideTheLimits())
             return false;
 
@@ -59,7 +64,11 @@ public class BIWPublishController : BIWController
             return;
 
         string feedbackMessage = "";
-        if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
+        if (biwCreatorController.IsAnyErrorOnEntities())
+        {
+            feedbackMessage = FEEDBACK_MESSAGE_ENTITY_ERROR;
+        }
+        else if (!builderInWorldEntityHandler.AreAllEntitiesInsideBoundaries())
         {
             feedbackMessage = FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES;
         }

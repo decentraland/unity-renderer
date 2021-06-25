@@ -1,12 +1,14 @@
 {
     "name": "SettingsPanelTests_EditMode",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "TestHelpers",
         "SettingsPanelHUD",
         "ScriptableObjects",
-        "SettingsControllers"
+        "SettingsControllers",
+        "DataStore"
     ],
     "includePlatforms": [
         "Editor"

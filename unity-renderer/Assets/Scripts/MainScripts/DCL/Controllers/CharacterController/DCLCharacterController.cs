@@ -19,9 +19,6 @@ public class DCLCharacterController : MonoBehaviour
     public float movementSpeed = 8f;
     public float runningSpeedMultiplier = 2f;
 
-    [Tooltip("The maximum movement distance allowed on moving platforms before releasing the character")]
-    public float movingPlatformAllowedPosDelta = 1f;
-
     public DCLCharacterPosition characterPosition;
 
     [Header("Collisions")]
@@ -330,15 +327,6 @@ public class DCLCharacterController : MonoBehaviour
             {
                 OnHitGround?.Invoke();
             }
-        }
-
-        bool movingPlatformMovedTooMuch = Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta;
-
-        if (isOnMovingPlatform && !characterPosition.RepositionedWorldLastFrame() && movingPlatformMovedTooMuch)
-        {
-            ResetGround();
-            // As the character has already been moved faster-than-we-want, we reposition it
-            characterController.transform.position = lastPosition;
         }
 
         if (characterController.enabled)

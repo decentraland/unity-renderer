@@ -2245,6 +2245,8 @@ MonoBehaviour:
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   loadingObjectPrefab: {fileID: 9065723555097372216, guid: d21a9c099a778423a908066cf9f458a0,
     type: 3}
+  errorPrefab: {fileID: 4033134647701233386, guid: 3fab1b532c173cb42b63910043234fe1,
+    type: 3}
   toggleCreateLastSceneObjectInputAction: {fileID: 11400000, guid: 888a1a2d0ea847a40a6b201ed64f680e,
     type: 2}
 --- !u!1 &4590602730705578794
@@ -2385,6 +2387,7 @@ MonoBehaviour:
   builderInWorldEntityHandler: {fileID: 1676156629805984034}
   builderInWorldBridge: {fileID: 0}
   biwSaveController: {fileID: 6802675824613373767}
+  biwCreatorController: {fileID: 2072020105617305708}
 --- !u!1 &7515311309793266013
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,7 +2878,7 @@ PrefabInstance:
     - target: {fileID: 5263035319998155755, guid: 0d9a89d47f96fbe47930f8c6b1e14fd0,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d9a89d47f96fbe47930f8c6b1e14fd0, type: 3}

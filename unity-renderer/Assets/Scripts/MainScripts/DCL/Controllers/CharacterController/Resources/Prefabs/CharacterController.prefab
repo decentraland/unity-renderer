@@ -233,7 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4710899382381041556}
   - component: {fileID: 7115442889188564318}
-  m_Layer: 16
+  m_Layer: 21
   m_Name: AvatarCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

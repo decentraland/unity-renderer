@@ -6,6 +6,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
+using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -36,6 +37,8 @@ public class HUDController : MonoBehaviour
         CommonScriptableObjects.allUIHidden.OnChange += AllUIHiddenOnOnChange;
         UserContextMenu.OnOpenPrivateChatRequest += OpenPrivateChatWindow;
     }
+
+    public event Action OnBuilderProjectPanelCreation;
 
     public ProfileHUDController profileHud => GetHUDElement(HUDElementID.PROFILE_HUD) as ProfileHUDController;
 
@@ -78,8 +81,6 @@ public class HUDController : MonoBehaviour
 
     public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
 
-    public EmailPromptHUDController emailPromptHud => GetHUDElement(HUDElementID.EMAIL_PROMPT) as EmailPromptHUDController;
-
     public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
 
     public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
@@ -88,10 +89,9 @@ public class HUDController : MonoBehaviour
 
     public BuildModeHUDController builderInWorldMainHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_MAIN) as BuildModeHUDController;
 
-    public BuilderInWorldInititalHUDController builderInWorldInititalHud => GetHUDElement(HUDElementID.BUILDER_IN_WORLD_INITIAL) as BuilderInWorldInititalHUDController;
-
     public QuestsPanelHUDController questsPanelHUD => GetHUDElement(HUDElementID.QUESTS_PANEL) as QuestsPanelHUDController;
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
+    public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -157,15 +157,22 @@ public class HUDController : MonoBehaviour
         CONTROLS_HUD = 18,
         EXPLORE_HUD = 19,
         HELP_AND_SUPPORT_HUD = 20,
+
+        [Obsolete("Deprecated HUD Element")]
         EMAIL_PROMPT = 21,
+
         USERS_AROUND_LIST_HUD = 22,
         GRAPHIC_CARD_WARNING = 23,
         BUILDER_IN_WORLD_MAIN = 24,
-        BUILDER_IN_WORLD_INITIAL = 25,
+
+        [Obsolete("Deprecated HUD Element")]
+        BUILDER_IN_WOLRD_INITIAL_PANEL = 25,
+
         QUESTS_PANEL = 26,
         QUESTS_TRACKER = 27,
         BUILDER_PROJECTS_PANEL = 28,
-        COUNT = 29
+        SIGNUP = 29,
+        COUNT = 30
     }
 
     [System.Serializable]
@@ -208,6 +215,7 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ProfileHUDController>(configuration, hudElementId);
                 if (profileHud != null)
                 {
+                    //TODO This coupling might introduce a race condition if kernel configures this HUD before AvatarEditorHUD
                     profileHud?.AddBackpackWindow(avatarEditorHud);
                 }
 
@@ -353,14 +361,6 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ControlsHUDController>(configuration, hudElementId);
                 taskbarHud?.AddControlsMoreOption();
                 break;
-            case HUDElementID.EMAIL_PROMPT:
-                if (emailPromptHud == null)
-                {
-                    CreateHudElement<EmailPromptHUDController>(configuration, hudElementId);
-                }
-
-                emailPromptHud?.SetEnable(configuration.active);
-                break;
             case HUDElementID.EXPLORE_HUD:
                 CreateHudElement<ExploreHUDController>(configuration, hudElementId);
                 if (exploreHud != null)
@@ -390,9 +390,6 @@ public class HUDController : MonoBehaviour
                 if (configuration.active)
                     builderInWorldMainHud.Initialize();
                 break;
-            case HUDElementID.BUILDER_IN_WORLD_INITIAL:
-                CreateHudElement<BuilderInWorldInititalHUDController>(configuration, hudElementId);
-                break;
             case HUDElementID.QUESTS_PANEL:
                 CreateHudElement<QuestsPanelHUDController>(configuration, hudElementId);
                 if (configuration.active)
@@ -403,6 +400,17 @@ public class HUDController : MonoBehaviour
                 if (configuration.active)
                     questsTrackerHUD.Initialize(QuestsController.i);
                 break;
+            case HUDElementID.SIGNUP:
+                CreateHudElement<SignupHUDController>(configuration, hudElementId);
+                if (configuration.active)
+                {
+                    //Same race condition risks as with the ProfileHUD
+                    //TODO Refactor the way AvatarEditor sets its visibility to match our data driven pattern
+                    //Then this reference can be removed so we just work with a BaseVariable<bool>.
+                    //This refactor applies to the ProfileHUD and the way kernel asks the HUDController during signup
+                    signupHUD.Initialize(avatarEditorHud);
+                }
+                break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 CreateHudElement<BuilderProjectsPanelController>(configuration, hudElementId);
                 if (configuration.active)
@@ -410,7 +418,7 @@ public class HUDController : MonoBehaviour
                     builderProjectsPanelController.Initialize();
                     taskbarHud.SetBuilderInWorldStatus(true);
                 }
-
+                OnBuilderProjectPanelCreation?.Invoke();
                 break;
         }
 
@@ -539,6 +547,14 @@ public class HUDController : MonoBehaviour
             return null;
 
         return hudElements[id];
+    }
+
+    public static bool IsHUDElementDeprecated(HUDElementID element)
+    {
+        Type enumType = typeof(HUDElementID);
+        var enumName = enumType.GetEnumName(element);
+        var fieldInfo = enumType.GetField(enumName);
+        return Attribute.IsDefined(fieldInfo, typeof(ObsoleteAttribute));
     }
 
 #if UNITY_EDITOR

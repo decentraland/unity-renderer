@@ -39,7 +39,12 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
     public SceneBoundsFeedbackStyle_BIW() { invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>(); }
 
-    public void OnRendererExitBounds(Renderer renderer) { invalidSubmeshes.Add(renderer); }
+    public void OnRendererExitBounds(Renderer renderer)
+    {
+        //TODO: This is a hack to overcome the part of Simple FeedbackStyle OnRendererExitBounds
+        renderer.enabled = true;
+        invalidSubmeshes.Add(renderer);
+    }
 
     public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
     {
@@ -119,6 +124,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
             wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
 
             invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+            entityRenderers[i].enabled = true;
         }
 
         currentMeshesInvalidated.Add(meshesInfo);

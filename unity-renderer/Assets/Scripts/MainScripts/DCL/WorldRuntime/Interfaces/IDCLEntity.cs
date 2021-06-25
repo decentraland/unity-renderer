@@ -35,6 +35,7 @@ namespace DCL.Models
         ISharedComponent GetSharedComponent(System.Type targetType);
         IParcelScene scene { get; set; }
         bool markedForCleanup { get; set; }
+        bool isInsideBoundaries { get; set; }
         Dictionary<string, IDCLEntity> children { get; }
         IDCLEntity parent { get; }
         Dictionary<CLASS_ID_COMPONENT, IEntityComponent> components { get; }
