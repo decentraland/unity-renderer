@@ -68,7 +68,13 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
+            avatarRenderer.ApplyModel(model, () =>
+            {
+                if (avatarRenderer.lodQuad != null)
+                    AvatarsLODController.i.RegisterAvatar(this);
+
+                avatarDone = true;
+            }, () => avatarFailed = true);
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
@@ -169,6 +175,8 @@ namespace DCL
         public override void Cleanup()
         {
             base.Cleanup();
+
+            AvatarsLODController.i.RemoveAvatar(this);
 
             avatarRenderer.CleanupAvatar();
 

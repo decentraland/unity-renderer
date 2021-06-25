@@ -43,6 +43,8 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+
+        // TODO: are these 2 new properties necessary ???
         private HashSet<string> loadedHiddenWearables;
         private Renderer[] renderers;
 
@@ -103,9 +105,6 @@ namespace DCL
 
         public void CleanupAvatar()
         {
-            if (lodQuad != null) // TODO: These checks could be more performant if we just save an 'isMainPlayer' bool
-                AvatarsLODController.i.RemoveAvatar(this);
-
             StopLoadingCoroutines();
 
             eyebrowsController?.CleanUp();
@@ -161,9 +160,6 @@ namespace DCL
 
         private IEnumerator LoadAvatar()
         {
-            if (lodQuad != null)
-                AvatarsLODController.i.RemoveAvatar(this);
-
             yield return new WaitUntil(() => gameObject.activeSelf);
 
             bool loadSoftFailed = false;
@@ -361,17 +357,6 @@ namespace DCL
 
             // TODO: Move these cached renderers to a lower level ?? (BodyShapecontroller? WearableController?)
             renderers = gameObject.GetComponentsInChildren<Renderer>();
-
-            if (lodQuad != null)
-            {
-                /*CommonScriptableObjects.playerUnityPosition.OnChange -= OnMainPlayerReposition;
-                CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
-                // TODO: Also bind to own avatar/entity reposition
-                
-                UpdateLOD(CommonScriptableObjects.playerUnityPosition);*/
-
-                AvatarsLODController.i.RegisterAvatar(this);
-            }
 
             CleanUpUnusedItems();
 

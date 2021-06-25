@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DCL.Components;
 using UnityEngine;
 
 namespace DCL
@@ -8,10 +9,11 @@ namespace DCL
         public static AvatarsLODController i { get; private set; }
 
         private const int MAX_NON_LOD_AVATARS = 20; // this could be in the settings panel
+        private const int lodDistance = 16; // this could be in the settings panel
         // TODO: have a little SortedList with as many items as the max non-lod avatars
-        private List<AvatarRenderer> nonLODAvatars = new List<AvatarRenderer>();
+        private List<AvatarShape> nonLODAvatars = new List<AvatarShape>();
 
-        private List<AvatarRenderer> avatarRenderersList = new List<AvatarRenderer>();
+        private List<AvatarShape> avatarsList = new List<AvatarShape>();
 
         void Awake()
         {
@@ -24,21 +26,24 @@ namespace DCL
             i = this;
 
             CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
-            // TODO: Also bind to own avatar/entity reposition
         }
 
         // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
         public void LateUpdate()
         {
-            int listCount = avatarRenderersList.Count;
+            int listCount = avatarsList.Count;
+
+            Transform quadLODTransform;
             for (int i = 0; i < listCount; i++)
             {
-                Vector3 previousForward = avatarRenderersList[i].lodQuad.transform.forward;
-                Vector3 lookAtDir = (avatarRenderersList[i].lodQuad.transform.position - CommonScriptableObjects.cameraPosition).normalized;
+                quadLODTransform = avatarsList[i].avatarRenderer.lodQuad.transform;
+
+                Vector3 previousForward = quadLODTransform.forward;
+                Vector3 lookAtDir = (quadLODTransform.position - CommonScriptableObjects.cameraPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
 
-                avatarRenderersList[i].lodQuad.transform.forward = lookAtDir;
+                quadLODTransform.forward = lookAtDir;
             }
         }
 
@@ -46,60 +51,68 @@ namespace DCL
 
         void UpdateAllLODs()
         {
-            foreach (AvatarRenderer avatarRenderer in avatarRenderersList)
+            foreach (AvatarShape avatar in avatarsList)
             {
-                UpdateLOD(avatarRenderer);
+                UpdateLOD(avatar);
             }
         }
 
-        void UpdateLOD(AvatarRenderer avatarRenderer)
+        void UpdateLOD(AvatarShape avatar)
         {
-            int lodDistance = 16; // this could be in the settings panel
-            bool isInLODDistance = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatarRenderer.transform.position) >= lodDistance;
+            bool isInLODDistance = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position) >= lodDistance;
 
             // If we reached the max non-lod avatars we force this avatar to be a LOD -> TODO: Change this to be based on distance as well
-            if (!isInLODDistance && nonLODAvatars.Count == MAX_NON_LOD_AVATARS && !nonLODAvatars.Contains(avatarRenderer))
+            if (!isInLODDistance && nonLODAvatars.Count == MAX_NON_LOD_AVATARS && !nonLODAvatars.Contains(avatar))
                 isInLODDistance = true;
 
             if (isInLODDistance)
             {
-                avatarRenderer.lodQuad.SetActive(true);
-                avatarRenderer.SetVisibility(false); // TODO: Can this have any issue with the AvatarModifierArea ???
+                avatar.avatarRenderer.lodQuad.SetActive(true);
+                avatar.avatarRenderer.SetVisibility(false); // TODO: Can this have any issue with the AvatarModifierArea ???
 
-                if (nonLODAvatars.Contains(avatarRenderer))
-                    nonLODAvatars.Remove(avatarRenderer);
+                if (nonLODAvatars.Contains(avatar))
+                    nonLODAvatars.Remove(avatar);
             }
             else
             {
-                avatarRenderer.lodQuad.SetActive(false);
-                avatarRenderer.SetVisibility(true);
+                avatar.avatarRenderer.lodQuad.SetActive(false);
+                avatar.avatarRenderer.SetVisibility(true);
 
-                if (!nonLODAvatars.Contains(avatarRenderer))
-                    nonLODAvatars.Add(avatarRenderer);
+                if (!nonLODAvatars.Contains(avatar))
+                    nonLODAvatars.Add(avatar);
             }
         }
 
-        public void RegisterAvatar(AvatarRenderer newAvatarRenderer)
+        public void RegisterAvatar(AvatarShape newAvatar)
         {
-            if (avatarRenderersList.Contains(newAvatarRenderer))
+            if (avatarsList.Contains(newAvatar))
                 return;
 
-            avatarRenderersList.Add(newAvatarRenderer);
+            avatarsList.Add(newAvatar);
 
-            UpdateLOD(newAvatarRenderer);
+            // TODO: Find a way to get this behaviour but unsubscribing on RemoveAvatar()
+            // DecentralandEntity already nullifies this event on cleanup, maybe that's good enough?
+            // Worst case scenario we'll have to refactor the DCLEntity.OnTransformChange event to report which entity was
+            newAvatar.entity.OnTransformChange += (object newTransformModel) =>
+            {
+                UpdateLOD(newAvatar);
+            };
+
+            UpdateLOD(newAvatar);
         }
 
-        public void RemoveAvatar(AvatarRenderer targetAvatarRenderer)
+        public void RemoveAvatar(AvatarShape targetAvatar)
         {
-            if (!avatarRenderersList.Contains(targetAvatarRenderer))
+            if (!avatarsList.Contains(targetAvatar))
                 return;
 
-            int listCount = avatarRenderersList.Count;
+            int listCount = avatarsList.Count;
             for (int i = 0; i < listCount; i++)
             {
-                if (avatarRenderersList[i] == targetAvatarRenderer)
+                if (avatarsList[i] == targetAvatar)
                 {
-                    avatarRenderersList.RemoveAt(i);
+                    avatarsList.RemoveAt(i);
+                    // targetAvatar.entity.OnTransformChange -= OnAvatarTransformChange;
 
                     // UpdateLODs();
 
