@@ -60,7 +60,7 @@ namespace DCL.Controllers
             invalidSubMeshMaterial = Resources.Load(INVALID_SUBMESH_MATERIAL_NAME) as Material;
         }
 
-        public void OnRendererExitBounds(Renderer renderer) { invalidSubmeshes.Add(renderer); }
+        public int GetInvalidMeshesCount() { return invalidMeshesInfo.Count; }
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
