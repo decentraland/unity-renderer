@@ -922,8 +922,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entitySelectedColor: {r: 1, g: 1, b: 1, a: 0.02745098}
   entityUnselectedColor: {r: 1, g: 1, b: 1, a: 0}
-  entityInsideOfBoundsColor: {r: 1, g: 1, b: 1, a: 1}
-  entityOutOfBoundsColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  entityWithoutErrorsColor: {r: 1, g: 1, b: 1, a: 1}
+  entityErrorColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   iconsSelectedColor: {r: 1, g: 1, b: 1, a: 1}
   iconsUnselectedColor: {r: 0.58431375, g: 0.5882353, b: 0.5882353, a: 1}
   nameInputField: {fileID: 3144001738933584821}
