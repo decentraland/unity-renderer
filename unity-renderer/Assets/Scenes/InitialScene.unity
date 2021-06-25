@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: b4f78c510a8526547ab9c9946449480e, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.10252202, g: 0.24458984, b: 0.36489132, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1109,7 +1109,7 @@ MonoBehaviour:
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  builderInWorld: 1
+  builderInWorld: 0
   soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
@@ -1242,7 +1242,7 @@ PrefabInstance:
     - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: bypassLandOwnershipCheck
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1208871511274338203, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}

@@ -263,13 +263,13 @@ public class FreeCameraMovement : CameraStateBase
     private void HandleCameraMovement()
     {
         var acceleration = HandleKeyInput();
-        moveSpeed += acceleration;
+        moveSpeed += acceleration * Time.deltaTime;
         HandleCameraMovementDeceleration(acceleration);
 
         // Clamp the move speed
         if (moveSpeed.magnitude > maximumMovementSpeed)
         {
-            moveSpeed = moveSpeed.normalized * maximumMovementSpeed;
+            moveSpeed = moveSpeed.normalized * maximumMovementSpeed ;
         }
 
         transform.Translate(moveSpeed);
@@ -283,8 +283,8 @@ public class FreeCameraMovement : CameraStateBase
 
     private void HandleCameraPan()
     {
-        panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance);
-        panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance);
+        panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance * Time.deltaTime);
+        panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance * Time.deltaTime);
 
         transform.Translate(panAxisX, panAxisY, 0);
     }
@@ -378,7 +378,7 @@ public class FreeCameraMovement : CameraStateBase
 
         panAxisX += -axisX * Time.deltaTime * dragSpeed;
         panAxisY += -axisY * Time.deltaTime * dragSpeed;
-        cameraPanAdvance = smoothCameraPanAceleration * Time.deltaTime;
+        cameraPanAdvance = smoothCameraPanAceleration;
     }
 
     private void CameraLook(float axisX, float axisY)
@@ -399,6 +399,13 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         Vector3 middlePoint = FindMidPoint(entitiesToFocus);
+        if (Vector3.positiveInfinity == middlePoint ||
+            Vector3.negativeInfinity == middlePoint ||
+            float.IsNaN(middlePoint.x) ||
+            float.IsNaN(middlePoint.y) ||
+            float.IsNaN(middlePoint.z))
+            return;
+
         if (smoothFocusOnTargetCor != null)
             CoroutineStarter.Stop(smoothFocusOnTargetCor);
         smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
@@ -434,6 +441,8 @@ public class FreeCameraMovement : CameraStateBase
                 Vector3 midPointFromEntity = Vector3.zero;
                 foreach (Renderer render in entity.rootEntity.renderers)
                 {
+                    if (render == null)
+                        continue;
                     midPointFromEntity += render.bounds.center;
                 }
 

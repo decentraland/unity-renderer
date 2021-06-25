@@ -14,6 +14,11 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
+    public int frameRate = 30;
+
+    [ContextMenu("SetFrameRate")]
+    public void SetFrameRate() { Application.targetFrameRate = frameRate; }
+
     [Header("Activation of Feature")]
     public bool activeFeature = false;
 
