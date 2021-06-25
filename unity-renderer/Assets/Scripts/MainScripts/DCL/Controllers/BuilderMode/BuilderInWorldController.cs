@@ -87,7 +87,6 @@ public class BuilderInWorldController : MonoBehaviour
     private UserProfile userProfile;
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
-    private Coroutine setObjectCullingStartingCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
 
     private void Awake()
@@ -508,7 +507,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         isEnteringEditMode = true;
 
-        SetObjectCullingStarting(false);
+        Environment.i.platform.cullingController.Stop();
 
         sceneToEditId = sceneToEdit.sceneData.id;
 
@@ -612,7 +611,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     public void ExitEditMode()
     {
-        SetObjectCullingStarting(true);
+        Environment.i.platform.cullingController.Start();
 
         if (biwSaveController.numberOfSaves > 0)
         {
@@ -770,22 +769,5 @@ public class BuilderInWorldController : MonoBehaviour
         notificationModel.message = message;
         notificationModel.type = NotificationFactory.Type.GENERIC;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
-    }
-
-    private void SetObjectCullingStarting(bool isStart)
-    {
-        if (setObjectCullingStartingCoroutine != null)
-            CoroutineStarter.Stop(setObjectCullingStartingCoroutine);
-
-        if (isStart)
-            CoroutineStarter.Start(StartObjectCullingWithDelay(CULLING_ACTIVATION_DELAY));
-        else
-            Environment.i.platform.cullingController.Stop();
-    }
-
-    private IEnumerator StartObjectCullingWithDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        Environment.i.platform.cullingController.Start();
     }
 }
