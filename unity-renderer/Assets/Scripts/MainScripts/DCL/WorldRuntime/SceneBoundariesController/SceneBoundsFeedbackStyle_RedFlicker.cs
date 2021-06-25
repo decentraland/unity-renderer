@@ -75,9 +75,9 @@ namespace DCL.Controllers
 
         public void CleanFeedback()
         {
-            foreach (var meshInfo in currentMeshesInvalidated)
+            for ( int x = 0; x < currentMeshesInvalidated.Count; x++)
             {
-                RemoveInvalidMeshEffect(meshInfo);
+                RemoveInvalidMeshEffect(currentMeshesInvalidated[x]);
             }
 
             currentMeshesInvalidated.Clear();
@@ -134,7 +134,7 @@ namespace DCL.Controllers
                 // Save original materials
                 invalidMeshInfo.originalMaterials.Add(entityRenderers[i], entityRenderers[i].sharedMaterial);
 
-                if (invalidSubmeshes.Contains(entityRenderers[i]))
+                if (!invalidSubmeshes.Contains(entityRenderers[i]))
                 {
                     // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
                     // overload because we need to set the position and scale before parenting, to deal with scaled objects)
@@ -146,6 +146,7 @@ namespace DCL.Controllers
                     entityRenderers[i].sharedMaterial = invalidSubMeshMaterial;
 
                     invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+                    invalidSubmeshes.Add(entityRenderers[i]);
                 }
                 else
                 {
