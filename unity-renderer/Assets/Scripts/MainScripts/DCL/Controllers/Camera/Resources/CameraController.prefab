@@ -829,9 +829,9 @@ MonoBehaviour:
   defaultVirtualCamera: {fileID: 3669105073199621760}
   cameraModeId: 2
   focusDistance: 15
-  AccelerationMod: 0.025
-  DecelerationMod: 0.05
-  MaximumMovementSpeed: 0.65
+  accelerationMod: 0.025
+  decelerationMod: 0.05
+  maximumMovementSpeed: 0.65
   yPlaneSpeedPercentCompensantion: 0.65
   zPlaneSpeedPercentCompensantion: 0.65
   smoothLookAtSpeed: 5
@@ -1213,7 +1213,7 @@ Camera:
   m_Depth: 10
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 73527
+    m_Bits: 8462135
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

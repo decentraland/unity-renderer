@@ -297,7 +297,7 @@ GameObject:
   - component: {fileID: 1553297373313799886}
   - component: {fileID: 4641928589876789443}
   - component: {fileID: 460331166937761317}
-  m_Layer: 0
+  m_Layer: 23
   m_Name: LODQuad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
