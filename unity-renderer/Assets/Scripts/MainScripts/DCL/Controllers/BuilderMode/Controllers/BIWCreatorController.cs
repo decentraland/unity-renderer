@@ -133,7 +133,10 @@ public class BIWCreatorController : BIWController
         if (errorGameObjects.ContainsKey(entity))
             return;
 
-        GameObject instantiatedError = Instantiate(errorPrefab, entity.transform);
+        GameObject instantiatedError = Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
+        instantiatedError.transform.SetParent(entity.transform, true);
+        instantiatedError.transform.localPosition = Vector3.zero;
+
         errorGameObjects.Add(entity, instantiatedError);
         entity.OnDelete += DeleteErrorOnEntity;
     }

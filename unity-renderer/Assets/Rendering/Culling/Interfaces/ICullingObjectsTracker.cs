@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -13,5 +13,6 @@ namespace DCL.Rendering
         SkinnedMeshRenderer[] GetSkinnedRenderers();
         Animation[] GetAnimations();
         IEnumerator PopulateRenderersList();
+        void ForcePopulateRenderersList(bool includeInactives);
     }
 }
