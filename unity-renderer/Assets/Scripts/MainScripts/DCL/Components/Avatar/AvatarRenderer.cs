@@ -44,10 +44,6 @@ namespace DCL
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
 
-        // TODO: are these 2 new properties necessary ???
-        private HashSet<string> loadedHiddenWearables;
-        private Renderer[] renderers;
-
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
@@ -267,7 +263,7 @@ namespace DCL
 
             if (bodyShapeController == null)
             {
-                SetRenderersEnabled(false);
+                HideAll();
                 bodyShapeController = new BodyShapeController(resolvedBody);
                 eyesController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYES, eyeMaterial);
                 eyebrowsController = FacialFeatureController.CreateDefaultFacialFeature(bodyShapeController.bodyShapeId, Categories.EYEBROWS, eyebrowMaterial);
@@ -321,7 +317,8 @@ namespace DCL
                 }
             }
 
-            loadedHiddenWearables = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
+
+            HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
             {
                 bodyShapeController.Load(bodyShapeController.bodyShapeId, transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
@@ -353,10 +350,11 @@ namespace DCL
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
-            UpdateWearableControllersVisibility();
-
-            // TODO: Move these cached renderers to a lower level ?? (BodyShapecontroller? WearableController?)
-            renderers = gameObject.GetComponentsInChildren<Renderer>();
+            bodyShapeController.UpdateVisibility(hiddenList);
+            foreach (WearableController wearableController in wearableControllers.Values)
+            {
+                wearableController.UpdateVisibility(hiddenList);
+            }
 
             CleanUpUnusedItems();
 
@@ -377,15 +375,6 @@ namespace DCL
             else
             {
                 OnSuccessEvent?.Invoke();
-            }
-        }
-
-        void UpdateWearableControllersVisibility()
-        {
-            bodyShapeController.UpdateVisibility(loadedHiddenWearables);
-            foreach (WearableController wearableController in wearableControllers.Values)
-            {
-                wearableController.UpdateVisibility(loadedHiddenWearables);
             }
         }
 
@@ -489,11 +478,11 @@ namespace DCL
         //TODO: Remove/replace once the class is easily mockable.
         protected void CopyFrom(AvatarRenderer original)
         {
-            wearableControllers = original.wearableControllers;
-            mouthController = original.mouthController;
-            bodyShapeController = original.bodyShapeController;
-            eyebrowsController = original.eyebrowsController;
-            eyesController = original.eyesController;
+            this.wearableControllers = original.wearableControllers;
+            this.mouthController = original.mouthController;
+            this.bodyShapeController = original.bodyShapeController;
+            this.eyebrowsController = original.eyebrowsController;
+            this.eyesController = original.eyesController;
         }
 
         public void SetVisibility(bool newVisibility)
@@ -504,14 +493,14 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
-        private void SetRenderersEnabled(bool newState)
+        private void HideAll()
         {
-            if (renderers == null || renderers.Length == 0)
-                return;
+            // TODO: Cache this somewhere (maybe when the LoadAvatar finishes) instead of fetching this on every call
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
             for (int i = 0; i < renderers.Length; i++)
             {
-                renderers[i].enabled = newState;
+                renderers[i].enabled = false;
             }
         }
 
