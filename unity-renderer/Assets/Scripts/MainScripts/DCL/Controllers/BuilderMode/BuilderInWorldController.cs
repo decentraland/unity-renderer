@@ -76,6 +76,8 @@ public class BuilderInWorldController : MonoBehaviour
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
     private bool areCatalogHeadersReady = false;
+    private bool isCatalogRequested = false;
+    private bool isEnteringEditMode = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
@@ -86,6 +88,7 @@ public class BuilderInWorldController : MonoBehaviour
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
     private Coroutine setObjectCullingStartingCoroutine;
+    private Dictionary<string, string> catalogCallHeaders;
 
     private void Awake()
     {
@@ -114,9 +117,6 @@ public class BuilderInWorldController : MonoBehaviour
 
         KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
-        if (HUDController.i.builderInWorldInititalHud != null)
-            HUDController.i.builderInWorldInititalHud.OnEnterEditMode -= TryStartEnterEditMode;
-
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnTutorialAction -= StartTutorial;
@@ -127,14 +127,14 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         if (initialLoadingController != null)
-        {
-            initialLoadingController.OnCancelLoading -= CancelLoading;
             initialLoadingController.Dispose();
-        }
+
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         CleanItems();
+
+        HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
     }
 
     private void Update()
@@ -207,13 +207,16 @@ public class BuilderInWorldController : MonoBehaviour
         hudConfig.active = true;
         hudConfig.visible = false;
         HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
-        HUDController.i.CreateHudElement<BuilderInWorldInititalHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_INITIAL);
+        HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
+
         HUDController.i.builderInWorldMainHud.Initialize();
 
-        HUDController.i.builderInWorldInititalHud.OnEnterEditMode += TryStartEnterEditMode;
         HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
         HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
         HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
+
+        if (HUDController.i.builderProjectsPanelController != null)
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
@@ -229,18 +232,37 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
     }
 
+    private void InitBuilderProjectPanel()
+    {
+        if (HUDController.i.builderProjectsPanelController != null)
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
+    }
+
     private void CatalogHeadersReceived(string rawHeaders)
     {
-        Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
+        catalogCallHeaders = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
         areCatalogHeadersReady = true;
-        catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, headers);
+        if (isCatalogRequested)
+            GetCatalog();
+    }
+
+    private void GetCatalog()
+    {
+        if (catalogAdded)
+            return;
+
+        if (areCatalogHeadersReady)
+            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, catalogCallHeaders);
+        else
+            builderInWorldBridge.AskKernelForCatalogHeaders();
+
+        isCatalogRequested = true;
     }
 
     private void ConfigureLoadingController()
     {
         initialLoadingController = new BuilderInWorldLoadingController();
         initialLoadingController.Initialize(initialLoadingView);
-        initialLoadingController.OnCancelLoading += CancelLoading;
     }
 
     public void InitGameObjects()
@@ -293,9 +315,6 @@ public class BuilderInWorldController : MonoBehaviour
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.Dispose();
 
-        if (HUDController.i.builderInWorldInititalHud != null)
-            HUDController.i.builderInWorldInititalHud.Dispose();
-
         if (Camera.main != null)
         {
             DCLBuilderOutline outliner = Camera.main.GetComponent<DCLBuilderOutline>();
@@ -313,19 +332,22 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
     }
 
-    public void ChangeFeatureActivationState()
+    public void ChangeEditModeStatusByShortcut()
     {
         if (!activeFeature)
             return;
 
-        if (isBuilderInWorldActivated)
+        if (isEnteringEditMode)
+            return;
+
+        if (!isBuilderInWorldActivated)
         {
-            if (!initialLoadingController.isActive)
-                HUDController.i.builderInWorldMainHud.ExitStart();
+            GetCatalog();
+            TryStartEnterEditMode();
         }
         else
         {
-            TryStartEnterEditMode();
+            HUDController.i.builderInWorldMainHud.ExitStart();
         }
     }
 
@@ -461,6 +483,7 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        isEnteringEditMode = true;
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;
         CommonScriptableObjects.allUIHidden.Set(true);
@@ -483,6 +506,8 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEdit == null)
             return;
 
+        isEnteringEditMode = true;
+
         SetObjectCullingStarting(false);
 
         sceneToEditId = sceneToEdit.sceneData.id;
@@ -501,6 +526,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (!initialLoadingController.isActive)
             return;
 
+        isEnteringEditMode = false;
         BuilderInWorldNFTController.i.ClearNFTs();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
@@ -578,12 +604,6 @@ public class BuilderInWorldController : MonoBehaviour
             editorMode.OpenNewProjectDetails();
     }
 
-    public void CancelLoading()
-    {
-        editorMode.Deactivate();
-        ExitEditMode();
-    }
-
     public void StartExitMode()
     {
         if (biwSaveController.numberOfSaves > 0)
@@ -605,7 +625,6 @@ public class BuilderInWorldController : MonoBehaviour
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-        CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
 
         snapGO.transform.SetParent(transform);
 
@@ -619,7 +638,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
-        builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
+        InmediateExit();
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -642,6 +661,12 @@ public class BuilderInWorldController : MonoBehaviour
 
         OnExitEditMode?.Invoke();
         DataStore.i.appMode.Set(AppMode.DEFAULT);
+    }
+
+    public void InmediateExit()
+    {
+        CommonScriptableObjects.allUIHidden.Set(previousAllUIHidden);
+        builderInWorldBridge.ExitKernelEditMode(sceneToEdit);
     }
 
     public void EnterBiwControllers()

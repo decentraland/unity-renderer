@@ -168,8 +168,8 @@ namespace DCL.Rendering
 
                 float shadowTexelSize = ComputeShadowMapTexelSize(boundsSize, urpAsset.shadowDistance, urpAsset.mainLightShadowmapResolution);
 
-                bool shouldBeVisible = TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
-                bool shouldHaveShadow = TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
+                bool shouldBeVisible = !settings.enableObjectCulling || TestRendererVisibleRule(profile, viewportSize, distance, boundsContainsPlayer, isOpaque, isEmissive);
+                bool shouldHaveShadow = !settings.enableShadowCulling || TestRendererShadowRule(profile, viewportSize, distance, shadowTexelSize);
 
                 if (r is SkinnedMeshRenderer skr)
                 {
@@ -262,17 +262,11 @@ namespace DCL.Rendering
         {
             var targetMode = shouldHaveShadow ? ShadowCastingMode.On : ShadowCastingMode.Off;
 
-            if (settings.enableObjectCulling)
-            {
-                if (r.forceRenderingOff != !shouldBeVisible)
-                    r.forceRenderingOff = !shouldBeVisible;
-            }
+            if (r.forceRenderingOff != !shouldBeVisible)
+                r.forceRenderingOff = !shouldBeVisible;
 
-            if (settings.enableShadowCulling)
-            {
-                if (r.shadowCastingMode != targetMode)
-                    r.shadowCastingMode = targetMode;
-            }
+            if (r.shadowCastingMode != targetMode)
+                r.shadowCastingMode = targetMode;
         }
 
         /// <summary>
@@ -332,13 +326,13 @@ namespace DCL.Rendering
 
             for (var i = 0; i < animations?.Length; i++)
             {
-                if ( animations[i] != null )
+                if (animations[i] != null)
                     animations[i].cullingType = AnimationCullingType.AlwaysAnimate;
             }
 
             for (var i = 0; i < renderers?.Length; i++)
             {
-                if ( renderers[i] != null )
+                if (renderers[i] != null)
                     renderers[i].forceRenderingOff = false;
             }
         }
@@ -394,6 +388,7 @@ namespace DCL.Rendering
             objectsTracker?.SetIgnoredLayersMask(settings.ignoredLayersMask);
             objectsTracker?.MarkDirty();
             MarkDirty();
+            resetObjectsNextFrame = true;
         }
 
         /// <summary>

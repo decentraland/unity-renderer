@@ -60,7 +60,7 @@ namespace Tests
                 HUDController.HUDElementID elementID = (HUDController.HUDElementID) i;
                 if (HUDController.IsHUDElementDeprecated(elementID))
                     continue;
-
+                
                 Assert.IsNotNull(hudController.GetHUDElement(elementID), $"Failed to create {elementID}");
             }
         }

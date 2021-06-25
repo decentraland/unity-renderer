@@ -198,7 +198,11 @@ namespace DCL.Controllers
         void EvaluateMeshBounds(IDCLEntity entity)
         {
             bool isInsideBoundaries = IsEntityInsideSceneBoundaries(entity);
-            OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
+            if (entity.isInsideBoundaries != isInsideBoundaries)
+            {
+                entity.isInsideBoundaries = isInsideBoundaries;
+                OnEntityBoundsCheckerStatusChanged?.Invoke(entity, isInsideBoundaries);
+            }
 
             UpdateEntityMeshesValidState(entity.meshesInfo, isInsideBoundaries);
             UpdateEntityCollidersValidState(entity.meshesInfo, isInsideBoundaries);
