@@ -41,14 +41,10 @@ namespace DCL
 
         internal bool isLoading = false;
 
-        //-----------
-        private const int MAX_NON_LOD_AVATARS = 20; // this could be in the settings panel
-        private HashSet<string> loadedHiddenWearables;
-        private Renderer[] renderers;
-        //-----------
-
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private HashSet<string> loadedHiddenWearables;
+        private Renderer[] renderers;
 
         private void Awake()
         {
@@ -107,6 +103,9 @@ namespace DCL
 
         public void CleanupAvatar()
         {
+            if (lodQuad != null) // TODO: These checks could be more performant if we just save an 'isMainPlayer' bool
+                AvatarsLODController.i.RemoveAvatar(this);
+
             StopLoadingCoroutines();
 
             eyebrowsController?.CleanUp();
@@ -162,6 +161,9 @@ namespace DCL
 
         private IEnumerator LoadAvatar()
         {
+            if (lodQuad != null)
+                AvatarsLODController.i.RemoveAvatar(this);
+
             yield return new WaitUntil(() => gameObject.activeSelf);
 
             bool loadSoftFailed = false;
@@ -360,9 +362,16 @@ namespace DCL
             // TODO: Move these cached renderers to a lower level ?? (BodyShapecontroller? WearableController?)
             renderers = gameObject.GetComponentsInChildren<Renderer>();
 
-            CommonScriptableObjects.playerUnityPosition.OnChange -= OnMainPlayerReposition;
-            CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
-            UpdateLOD(CommonScriptableObjects.playerUnityPosition);
+            if (lodQuad != null)
+            {
+                /*CommonScriptableObjects.playerUnityPosition.OnChange -= OnMainPlayerReposition;
+                CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
+                // TODO: Also bind to own avatar/entity reposition
+                
+                UpdateLOD(CommonScriptableObjects.playerUnityPosition);*/
+
+                AvatarsLODController.i.RegisterAvatar(this);
+            }
 
             CleanUpUnusedItems();
 
@@ -393,23 +402,6 @@ namespace DCL
             {
                 wearableController.UpdateVisibility(loadedHiddenWearables);
             }
-        }
-
-        void OnMainPlayerReposition(Vector3 newPos, Vector3 previousPos) { UpdateLOD(newPos); }
-
-        void UpdateLOD(Vector3 characterPosition)
-        {
-            if (lodQuad == null)
-                return;
-
-            int lodDistance = 16; // this could be in the settings panel 
-            bool isInLODDistance = Vector3.Distance(characterPosition, transform.position) >= lodDistance;
-
-            lodQuad.SetActive(isInLODDistance);
-            SetRenderersEnabled(!isInLODDistance);
-
-            if (!isInLODDistance)
-                UpdateWearableControllersVisibility();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
