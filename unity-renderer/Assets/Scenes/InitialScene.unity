@@ -205,18 +205,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 565584806d4534293a4045912564288e, type: 3}
---- !u!114 &222570193 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1208871511405416592, guid: ceb04930a6bb25b44a6ad241f62abdf5,
-    type: 3}
-  m_PrefabInstance: {fileID: 1515935914}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1057dc9d5eb891048bccaceaa1e70597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &287244850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1116,13 +1104,13 @@ MonoBehaviour:
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 2
-  startInCoords: {x: 100, y: 100}
+  startInCoords: {x: 140, y: 140}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  builderInWorld: 0
-  soloScene: 0
+  builderInWorld: 1
+  soloScene: 1
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -1633,11 +1621,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1.8401191
       objectReference: {fileID: 0}
-    - target: {fileID: 5671575169730573920, guid: b0965b55b892d438da492708ea09799c,
-        type: 3}
-      propertyPath: builderInputWrapper
-      value: 
-      objectReference: {fileID: 222570193}
     - target: {fileID: 6384478764905876486, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_Name
