@@ -170,17 +170,17 @@ public class ActionController : BIWController
         {
             case ActionType.MOVE:
                 Vector3 convertedPosition = (Vector3) value;
-                builderInWorldEntityHandler.GetEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
+                builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
                 break;
 
             case ActionType.ROTATE:
                 Vector3 convertedAngles = (Vector3) value;
-                builderInWorldEntityHandler.GetEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
+                builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
                 break;
 
             case ActionType.SCALE:
                 Vector3 convertedScale = (Vector3) value;
-                IDCLEntity entityToApply = builderInWorldEntityHandler.GetEntity(entityIdToApply).rootEntity;
+                IDCLEntity entityToApply = builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
                 Transform parent = entityToApply.gameObject.transform.parent;
 
                 entityToApply.gameObject.transform.localScale = new Vector3(convertedScale.x / parent.localScale.x, convertedScale.y / parent.localScale.y, convertedScale.z / parent.localScale.z);
