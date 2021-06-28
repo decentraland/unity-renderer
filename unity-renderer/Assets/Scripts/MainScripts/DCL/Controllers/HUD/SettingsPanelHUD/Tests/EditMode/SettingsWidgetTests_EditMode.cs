@@ -37,6 +37,7 @@ namespace SettingsWidgetTests
                               newControlController);
 
             Assert.Contains(newControlView, widgetController.controls, "The new control should be contained in the control list.");
+            Assert.IsTrue(SettingsPanelDataStore.i.controls.controlControllers.Contains(newControlController));
         }
     }
 }

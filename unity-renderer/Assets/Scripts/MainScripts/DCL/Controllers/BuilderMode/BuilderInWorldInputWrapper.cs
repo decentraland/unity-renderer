@@ -11,6 +11,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     public float movementClickThreshold = 50;
 
     public static event Action<int, Vector3> OnMouseClick;
+    public static event Action<int, Vector3> OnMouseClickOnUI;
     public static event Action<int, Vector3> OnMouseDown;
     public static event Action<int, Vector3> OnMouseUp;
 
@@ -53,6 +54,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     {
         if (currentClickIsOnUi)
         {
+            OnMouseClickOnUI?.Invoke(buttonId, mousePosition);
             currentClickIsOnUi = false;
             return;
         }

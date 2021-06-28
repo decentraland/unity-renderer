@@ -9,7 +9,6 @@ public interface ITooltipView
     float currentAlpha { get; }
 
     event Action OnHideTooltip;
-    event Action<BaseEventData> OnShowTooltip;
     void SetText(string text);
     void SetTooltipPosition(Vector3 pos);
     void SetTooltipAlpha(float alphaValue);
@@ -19,8 +18,6 @@ public class TooltipView : MonoBehaviour, ITooltipView
 {
     public float alphaTranstionSpeed => alphaSpeed;
     public float currentAlpha => tooltipCG.alpha;
-
-    public event Action<BaseEventData> OnShowTooltip;
 
     public event Action OnHideTooltip;
 

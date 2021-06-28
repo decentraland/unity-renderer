@@ -1566,12 +1566,12 @@ MonoBehaviour:
   hairColorSelector: {fileID: 3615833362681407012}
   characterPreviewPrefab: {fileID: 3569267310167974304, guid: 164e126ce7f309a47b78e9f75cbca418,
     type: 3}
-  loadingSpinnerGameObject: {fileID: 6597205539681012680}
   characterPreviewRotation: {fileID: 6749458557699296124}
   randomizeButton: {fileID: 1450360507441575512}
   randomizeAnimator: {fileID: 4292949885884074233}
   doneButton: {fileID: 8118935322395685570}
   exitButton: {fileID: 178893782665926146}
+  loadingSpinnerGameObject: {fileID: 6597205539681012680}
   web3Container: {fileID: 233924306434789069}
   web3GoToMarketplaceButton: {fileID: 6975390227394394232}
   noWeb3Container: {fileID: 8183306655260157890}
@@ -4775,12 +4775,12 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.9372549, g: 0.9372549, b: 0.9372549, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
