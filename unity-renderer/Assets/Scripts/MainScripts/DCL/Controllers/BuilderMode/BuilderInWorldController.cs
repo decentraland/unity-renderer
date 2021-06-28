@@ -463,8 +463,6 @@ public class BuilderInWorldController : MonoBehaviour
             EnterEditMode();
     }
 
-    private void CheckLandPermissions() { }
-
     public void TryStartEnterEditMode() { TryStartEnterEditMode(true, null); }
     public void TryStartEnterEditMode(IParcelScene targetScene) { TryStartEnterEditMode(true, targetScene); }
 
