@@ -51,35 +51,31 @@ namespace DCL
 
         void UpdateAllLODs()
         {
+            SortedList<float, AvatarShape> closeDistanceAvatars = new SortedList<float, AvatarShape>();
             foreach (AvatarShape avatar in avatarsList)
             {
-                UpdateLOD(avatar);
-            }
-        }
+                // UpdateLOD(avatar);
 
-        void UpdateLOD(AvatarShape avatar)
-        {
-            bool isInLODDistance = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position) >= lodDistance;
-
-            // If we reached the max non-lod avatars we force this avatar to be a LOD -> TODO: Change this to be based on distance as well
-            if (!isInLODDistance && nonLODAvatars.Count == MAX_NON_LOD_AVATARS && !nonLODAvatars.Contains(avatar))
-                isInLODDistance = true;
-
-            if (isInLODDistance)
-            {
+                // Set avatar as lodded
                 avatar.avatarRenderer.lodQuad.SetActive(true);
                 avatar.avatarRenderer.SetVisibility(false); // TODO: Can this have any issue with the AvatarModifierArea ???
 
-                if (nonLODAvatars.Contains(avatar))
-                    nonLODAvatars.Remove(avatar);
-            }
-            else
-            {
-                avatar.avatarRenderer.lodQuad.SetActive(false);
-                avatar.avatarRenderer.SetVisibility(true);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
+                bool isInLODDistance = distanceToPlayer >= lodDistance;
 
-                if (!nonLODAvatars.Contains(avatar))
-                    nonLODAvatars.Add(avatar);
+                if (!isInLODDistance)
+                    closeDistanceAvatars.Add(distanceToPlayer, avatar);
+            }
+
+            int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
+            for (var i = 0; i < closeDistanceAvatarsCount; i++)
+            {
+                if (i == MAX_NON_LOD_AVATARS)
+                    break;
+
+                // Disable LOD
+                closeDistanceAvatars.Values[i].avatarRenderer.lodQuad.SetActive(false);
+                closeDistanceAvatars.Values[i].avatarRenderer.SetVisibility(true);
             }
         }
 
@@ -95,10 +91,10 @@ namespace DCL
             // Worst case scenario we'll have to refactor the DCLEntity.OnTransformChange event to report which entity was
             newAvatar.entity.OnTransformChange += (object newTransformModel) =>
             {
-                UpdateLOD(newAvatar);
+                UpdateAllLODs();
             };
 
-            UpdateLOD(newAvatar);
+            UpdateAllLODs();
         }
 
         public void RemoveAvatar(AvatarShape targetAvatar)
