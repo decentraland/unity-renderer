@@ -272,25 +272,45 @@ public class FreeCameraMovement : CameraStateBase
     private void HandleCameraMovementInput()
     {
         Vector3 velocity = Vector3.zero;
+        int velocityChangedCount = 0;
         if (isAdvancingForward)
+        {
             velocity += GetTotalVelocity(velocity, Vector3.forward);
+            velocityChangedCount++;
+        }
 
         if (isAdvancingBackward)
+        {
             velocity += GetTotalVelocity(velocity, Vector3.back);
+            velocityChangedCount++;
+        }
 
         if (isAdvancingRight)
+        {
             velocity += GetTotalVelocity(velocity, Vector3.right) * xPlaneSpeedPercentCompensantion;
+            velocityChangedCount++;
+        }
 
         if (isAdvancingLeft)
+        {
             velocity += GetTotalVelocity(velocity, Vector3.left) * xPlaneSpeedPercentCompensantion;
+            velocityChangedCount++;
+        }
 
         if (isAdvancingUp)
+        {
             velocity += GetTotalVelocity(velocity, Vector3.up);
+            velocityChangedCount++;
+        }
 
         if (isAdvancingDown)
+        {
             velocity += GetTotalVelocity(velocity, -Vector3.up);
+            velocityChangedCount++;
+        }
 
-        direction = velocity;
+        //We divide the velocity between the amount of changes so we maintain the advance of the camera stable 
+        direction = velocity / velocityChangedCount;
     }
 
     private Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
