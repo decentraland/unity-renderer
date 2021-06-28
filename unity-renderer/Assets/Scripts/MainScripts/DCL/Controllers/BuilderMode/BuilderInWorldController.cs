@@ -15,11 +15,6 @@ public class BuilderInWorldController : MonoBehaviour
 {
     private const float CULLING_ACTIVATION_DELAY = 0.5f;
 
-    public int frameRate = 30;
-
-    [ContextMenu("SetFrameRate")]
-    public void SetFrameRate() { Application.targetFrameRate = frameRate; }
-
     [Header("Activation of Feature")]
     public bool activeFeature = false;
 
