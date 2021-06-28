@@ -830,9 +830,8 @@ MonoBehaviour:
   cameraModeId: 2
   focusDistance: 15
   xPlaneSpeedPercentCompensantion: 1
-  movementSpeed: 2
-  smoothTime: 1
-  lerpTime: 3
+  movementSpeed: 5
+  lerpTime: 7
   smoothLookAtSpeed: 5
   smoothCameraLookSpeed: 5
   lookSpeedH: 2
