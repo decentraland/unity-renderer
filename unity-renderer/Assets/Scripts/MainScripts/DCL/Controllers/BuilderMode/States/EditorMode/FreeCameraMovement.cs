@@ -5,17 +5,23 @@ using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
+    private const float CAMERA_ANGLE_THRESHOLD = 0.01f;
+    private const float CAMERA_PAN_THRESHOLD = 0.001f;
+    private const float CAMERA_MOVEMENT_THRESHOLD = 0.001f;
+
+    private const float CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD = 0.001f;
+
     private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
     private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
     public float focusDistance = 5f;
 
     [Header("Camera Movement")]
-    public float accelerationMod = 0.025f;
-    public float decelerationMod = 0.05f;
-    public float maximumMovementSpeed = 0.65f;
-    public float yPlaneSpeedPercentCompensantion = 0.85f;
-    public float zPlaneSpeedPercentCompensantion = 0.85f;
+    public float xPlaneSpeedPercentCompensantion = 0.85f;
+
+    public float movementSpeed = 5f;
+    public float smoothTime = 0.3F;
+    public float lerpTime = 0.3F;
 
     [Header("Camera Look")]
     public float smoothLookAtSpeed = 5f;
@@ -42,7 +48,7 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
     [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
-    private Vector3 moveSpeed = Vector3.zero;
+    private Vector3 direction = Vector3.zero;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -93,6 +99,7 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
     private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
+    private Vector3 moveCameraVelocity = Vector3.zero;
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
 
@@ -187,7 +194,7 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         isMouseRightClickDown = true;
-        moveSpeed = Vector3.zero;
+        direction = Vector3.zero;
     }
 
     private void OnDestroy()
@@ -231,54 +238,27 @@ public class FreeCameraMovement : CameraStateBase
         HandleCameraMovement();
     }
 
-    private void HandleCameraMovementDeceleration(Vector3 acceleration)
-    {
-        if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
-        {
-            if (Mathf.Abs(moveSpeed.x) < decelerationMod)
-                moveSpeed.x = 0;
-            else
-                moveSpeed.x -= decelerationMod * Mathf.Sign(moveSpeed.x);
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
-        {
-            if (Mathf.Abs(moveSpeed.y) < decelerationMod)
-                moveSpeed.y = 0;
-            else
-                moveSpeed.y -= decelerationMod * Mathf.Sign(moveSpeed.y) * yPlaneSpeedPercentCompensantion;
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
-        {
-            if (Mathf.Abs(moveSpeed.z) < decelerationMod)
-                moveSpeed.z = 0;
-            else
-                moveSpeed.z -= decelerationMod * Mathf.Sign(moveSpeed.z) * zPlaneSpeedPercentCompensantion;
-        }
-    }
-
     #region CameraTransformChanges
+
+    private Vector3 directionResult;
 
     private void HandleCameraMovement()
     {
-        var acceleration = HandleKeyInput();
-        moveSpeed += acceleration * Time.deltaTime;
-        HandleCameraMovementDeceleration(acceleration);
+        HandleCameraMovementInput();
+        if (direction.magnitude >= CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD)
+            directionResult = direction;
+        directionResult = Vector3.Lerp(directionResult, Vector3.zero, lerpTime * Time.deltaTime);
 
-        // Clamp the move speed
-        if (moveSpeed.magnitude > maximumMovementSpeed)
-        {
-            moveSpeed = moveSpeed.normalized * maximumMovementSpeed ;
-        }
-
-        transform.Translate(moveSpeed);
+        if (directionResult.magnitude >= CAMERA_MOVEMENT_THRESHOLD)
+            transform.Translate(directionResult * (movementSpeed * Time.deltaTime), Space.Self); //Vector3.SmoothDamp(transform.position, nextPosition, ref moveCameraVelocity, smoothTime);
     }
 
     private void HandleCameraLook()
     {
         Quaternion nextIteration =  Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(pitch, yaw, 0f)), cameraLookAdvance);
-        transform.rotation = nextIteration;
+
+        if (Mathf.Abs(nextIteration.eulerAngles.magnitude - transform.rotation.eulerAngles.magnitude) >= CAMERA_ANGLE_THRESHOLD)
+            transform.rotation = nextIteration;
     }
 
     private void HandleCameraPan()
@@ -286,56 +266,44 @@ public class FreeCameraMovement : CameraStateBase
         panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance * Time.deltaTime);
         panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance * Time.deltaTime);
 
-        transform.Translate(panAxisX, panAxisY, 0);
+        if (Mathf.Abs(panAxisX) >= CAMERA_PAN_THRESHOLD || Mathf.Abs(panAxisY) >= CAMERA_PAN_THRESHOLD)
+            transform.Translate(panAxisX, panAxisY, 0);
     }
 
     #endregion
 
-    private Vector3 HandleKeyInput()
+    private void HandleCameraMovementInput()
     {
-        var acceleration = Vector3.zero;
-        float currentAcceleratioMod = accelerationMod;
-        if (isMouseRightClickDown)
-        {
-            if (isAdvancingForward)
-            {
-                acceleration.z += AddAcceleration(1);
-                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
-            }
+        Vector3 velocity = Vector3.zero;
+        if (isAdvancingForward)
+            velocity += GetTotalVelocity(velocity, Vector3.forward);
 
-            if (isAdvancingBackward)
-            {
-                acceleration.z -= AddAcceleration(1);
-                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
-            }
+        if (isAdvancingBackward)
+            velocity += GetTotalVelocity(velocity, Vector3.back);
 
-            if (isAdvancingLeft)
-                acceleration.x -= AddAcceleration(1);
+        if (isAdvancingRight)
+            velocity += GetTotalVelocity(velocity, Vector3.right) * xPlaneSpeedPercentCompensantion;
 
-            if (isAdvancingRight)
-                acceleration.x += AddAcceleration(1);
+        if (isAdvancingLeft)
+            velocity += GetTotalVelocity(velocity, Vector3.left) * xPlaneSpeedPercentCompensantion;
 
-            if (isAdvancingUp)
-            {
-                acceleration.y += AddAcceleration(1);
-                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
-            }
+        if (isAdvancingUp)
+            velocity += GetTotalVelocity(velocity, Vector3.up);
 
-            if (isAdvancingDown)
-            {
-                acceleration.y -= AddAcceleration(1);
-                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
-            }
-        }
+        if (isAdvancingDown)
+            velocity += GetTotalVelocity(velocity, -Vector3.up);
 
-        return acceleration.normalized * currentAcceleratioMod;
+        direction = velocity;
     }
 
-    private float AddAcceleration(float accelerationToAdd)
+    private Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
     {
+        if (!isMouseRightClickDown)
+            return  Vector3.zero;
+
         if (isDetectingMovement)
             hasBeenMovement = true;
-        return accelerationToAdd;
+        return currentVelocity + velocityToAdd;
     }
 
     public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
@@ -510,7 +478,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         SetPosition(originalCameraPosition);
         LookAt(originalCameraLookAt);
-        moveSpeed = Vector3.zero;
+        direction = Vector3.zero;
     }
 
     public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
