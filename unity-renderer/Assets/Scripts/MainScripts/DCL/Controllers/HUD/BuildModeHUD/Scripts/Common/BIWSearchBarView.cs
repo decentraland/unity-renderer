@@ -21,7 +21,7 @@ public class BIWSearchBarView : MonoBehaviour , IBIWSearchBarView
     [Header("Prefab References")]
     [SerializeField] internal TMP_InputField searchInputField;
     [SerializeField] internal Button smartItemButton;
-    public Button clearSearchButton;
+    [SerializeField] internal Button clearSearchButton;
 
     private void Awake()
     {
