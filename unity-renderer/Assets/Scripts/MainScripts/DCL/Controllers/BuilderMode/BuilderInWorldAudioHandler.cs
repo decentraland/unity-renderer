@@ -55,6 +55,7 @@ public class BuilderInWorldAudioHandler : BIWController
     private List<string> entitiesOutOfBounds = new List<string>();
     private int entityCount;
     bool playPlacementSoundOnDeselect;
+    private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
 
     private void Start()
     {
@@ -176,6 +177,7 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnChangedEditModeState(BIWModeController.EditModeState previous, BIWModeController.EditModeState current)
     {
+        state = current;
         if (previous != BIWModeController.EditModeState.Inactive)
         {
             switch (current)
@@ -194,6 +196,9 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnEntityBoundsCheckerStatusChanged(DCL.Models.IDCLEntity entity, bool isInsideBoundaries)
     {
+        if (state == BIWModeController.EditModeState.Inactive)
+            return;
+
         if (!isInsideBoundaries)
         {
             if (!entitiesOutOfBounds.Contains(entity.entityId))

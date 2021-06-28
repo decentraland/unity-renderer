@@ -255,6 +255,15 @@ public class BuildModeHUDController : IHUD
 
     public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
+    public void ConfigureConfirmationModal(string title, string subTitle, string cancelButtonText, string confirmButtonText)
+    {
+        controllers.buildModeConfirmationModalController.Configure(
+            title,
+            subTitle,
+            cancelButtonText,
+            confirmButtonText);
+    }
+
     internal void ConfirmPublicationDetails()
     {
         UnsubscribeConfirmationModal();
@@ -262,11 +271,12 @@ public class BuildModeHUDController : IHUD
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
 
-        controllers.buildModeConfirmationModalController.Configure(
+        ConfigureConfirmationModal(
             BuilderInWorldSettings.PUBLISH_MODAL_TITLE,
             BuilderInWorldSettings.PUBLISH_MODAL_SUBTITLE,
             BuilderInWorldSettings.PUBLISH_MODAL_CANCEL_BUTTON,
             BuilderInWorldSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
+
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
         controllers.publicationDetailsController.SetActive(false);
     }
@@ -333,11 +343,6 @@ public class BuildModeHUDController : IHUD
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelExitModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmExitModal;
 
-        controllers.buildModeConfirmationModalController.Configure(
-            BuilderInWorldSettings.EXIT_MODAL_TITLE,
-            BuilderInWorldSettings.EXIT_MODAL_SUBTITLE,
-            BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
-            BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.EXIT);
 
         OnStartExitAction?.Invoke();

@@ -72,6 +72,7 @@ namespace DCL.Rendering
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChange;
             CommonScriptableObjects.playerUnityPosition.OnChange += OnPlayerUnityPositionChange;
             MeshesInfo.OnAnyUpdated += MarkDirty;
+            objectsTracker?.MarkDirty();
             StartInternal();
         }
 
@@ -98,6 +99,7 @@ namespace DCL.Rendering
             CommonScriptableObjects.playerUnityPosition.OnChange -= OnPlayerUnityPositionChange;
             MeshesInfo.OnAnyUpdated -= MarkDirty;
             StopInternal();
+            objectsTracker?.ForcePopulateRenderersList(true);
             ResetObjects();
         }
 
