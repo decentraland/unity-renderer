@@ -20,7 +20,6 @@ public class FreeCameraMovement : CameraStateBase
     public float xPlaneSpeedPercentCompensantion = 0.85f;
 
     public float movementSpeed = 5f;
-    public float smoothTime = 0.3F;
     public float lerpTime = 0.3F;
 
     [Header("Camera Look")]
@@ -99,7 +98,7 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
     private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
-    private Vector3 moveCameraVelocity = Vector3.zero;
+    private Vector3 nextTranslation;
     private Vector3 originalCameraPosition;
     private Transform originalCameraLookAt;
 
@@ -240,17 +239,15 @@ public class FreeCameraMovement : CameraStateBase
 
     #region CameraTransformChanges
 
-    private Vector3 directionResult;
-
     private void HandleCameraMovement()
     {
         HandleCameraMovementInput();
         if (direction.magnitude >= CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD)
-            directionResult = direction;
-        directionResult = Vector3.Lerp(directionResult, Vector3.zero, lerpTime * Time.deltaTime);
+            nextTranslation = direction;
+        nextTranslation = Vector3.Lerp(nextTranslation, Vector3.zero, lerpTime * Time.deltaTime);
 
-        if (directionResult.magnitude >= CAMERA_MOVEMENT_THRESHOLD)
-            transform.Translate(directionResult * (movementSpeed * Time.deltaTime), Space.Self); //Vector3.SmoothDamp(transform.position, nextPosition, ref moveCameraVelocity, smoothTime);
+        if (nextTranslation.magnitude >= CAMERA_MOVEMENT_THRESHOLD)
+            transform.Translate(nextTranslation * (movementSpeed * Time.deltaTime), Space.Self); //Vector3.SmoothDamp(transform.position, nextPosition, ref moveCameraVelocity, smoothTime);
     }
 
     private void HandleCameraLook()
