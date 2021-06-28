@@ -606,7 +606,23 @@ public class BuilderInWorldController : MonoBehaviour
     public void StartExitMode()
     {
         if (biwSaveController.numberOfSaves > 0)
+        {
             editorMode.TakeSceneScreenshotForExit();
+
+            HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
+                BuilderInWorldSettings.EXIT_MODAL_TITLE,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+        }
+        else
+        {
+            HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
+                BuilderInWorldSettings.EXIT_MODAL_TITLE,
+                BuilderInWorldSettings.EXIT_MODAL_SUBTITLE,
+                BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
+                BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
+        }
     }
 
     public void ExitEditMode()
