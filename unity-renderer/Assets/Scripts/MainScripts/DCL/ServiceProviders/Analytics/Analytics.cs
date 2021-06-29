@@ -3,6 +3,9 @@ using System.Linq;
 using DCL.Interface;
 using Newtonsoft.Json;
 
+/// <summary>
+/// For the events we use the convention of all lower cases and "_" instead of space
+/// </summary>
 public class Analytics : IAnalytics
 {
     private static bool VERBOSE = false;
