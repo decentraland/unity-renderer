@@ -3243,6 +3243,7 @@ MonoBehaviour:
   showHideAnimator: {fileID: 4375793330587386988}
   closeButton: {fileID: 7609492662271127952}
   voiceChatButton: {fileID: 5136095157326740966}
+  builderInWorldButton: {fileID: 4976634183516284562}
 --- !u!223 &7899065392233343085
 Canvas:
   m_ObjectHideFlags: 0
