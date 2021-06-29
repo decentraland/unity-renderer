@@ -13,6 +13,8 @@ namespace Builder
 
         public void Initialize(DCLBuilderEntity builderEntity, Renderer renderer)
         {
+            if (renderer == null)
+                return;
             ownerEntity = builderEntity;
 
             gameObject.layer = LayerMask.NameToLayer(LAYER_BUILDER_POINTER_CLICK);
