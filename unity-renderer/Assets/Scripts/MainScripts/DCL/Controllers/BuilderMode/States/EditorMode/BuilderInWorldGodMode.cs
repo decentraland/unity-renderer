@@ -124,25 +124,22 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             {
                 if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected)
                     continue;
-                if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
-                {
-                    if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
-                    {
-                        if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
-                        {
-                            if (entity.isVoxel)
-                                isVoxelBoundMultiSelection = true;
-                            else
-                                isVoxelBoundMultiSelection = false;
-                            isTypeOfBoundSelectionSelected = true;
-                        }
+                if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
+                    continue;
 
-                        outlinerController.OutlineEntity(entity);
-                    }
-                    else
+                if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                {
+                    if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
                     {
-                        outlinerController.CancelEntityOutline(entity);
+                        isVoxelBoundMultiSelection = entity.isVoxel;
+                        isTypeOfBoundSelectionSelected = true;
                     }
+
+                    outlinerController.OutlineEntity(entity);
+                }
+                else
+                {
+                    outlinerController.CancelEntityOutline(entity);
                 }
             }
         }
@@ -682,6 +679,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             Vector3 midPointFromEntityMesh = Vector3.zero;
             foreach (Renderer render in entity.renderers)
             {
+                if (render == null)
+                    continue;
                 midPointFromEntityMesh += render.bounds.center;
             }
 
