@@ -117,10 +117,7 @@ public class EntityListAdapter : MonoBehaviour
         else
             showImg.color = iconsUnselectedColor;
 
-        if (!entityToEdit.IsVisible || entityToEdit.IsLocked)
-            nameInputField_Text.color = iconsUnselectedColor;
-        else
-            nameInputField_Text.color =  iconsSelectedColor;
+        CheckEntityNameColor(entityToEdit);
 
         unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
         lockButton.gameObject.SetActive(entityToEdit.IsLocked);
@@ -183,8 +180,10 @@ public class EntityListAdapter : MonoBehaviour
 
     private void SetEntityError(DCLBuilderInWorldEntity entity)
     {
-        if (entity == currentEntity)
-            nameInputField_Text.color = entity.hasError ? entityErrorColor : entityWithoutErrorsColor ;
+        if (entity != currentEntity)
+            return;
+
+        CheckEntityNameColor(entity);
     }
 
     private void SetTextboxActive(bool isActive)
@@ -193,5 +192,15 @@ public class EntityListAdapter : MonoBehaviour
             return;
 
         textBoxImage.enabled = isActive;
+    }
+
+    private void CheckEntityNameColor(DCLBuilderInWorldEntity entity)
+    {
+        if (entity.hasError)
+            nameInputField_Text.color = entityErrorColor;
+        else if (!entity.IsVisible || entity.IsLocked)
+            nameInputField_Text.color = iconsUnselectedColor;
+        else
+            nameInputField_Text.color = entityWithoutErrorsColor;
     }
 }
