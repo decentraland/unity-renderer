@@ -326,9 +326,7 @@ public class FreeCameraMovement : CameraStateBase
         if (velocityChangedCount != 0)
             cameraVelocity = Vector3.ClampMagnitude(cameraVelocity, speedClamp);
 
-        Debug.Log("Velocity " + cameraVelocity);
-        //We divide the cameraVelocity between the amount of changes so we maintain the advance of the camera stable 
-        direction = cameraVelocity; // / velocityChangedCount;
+        direction = cameraVelocity;
     }
 
     private Vector3 GetTotalVelocity(Vector3 velocityToAdd)
