@@ -22,6 +22,10 @@ public class FreeCameraMovement : CameraStateBase
     public float movementSpeed = 5f;
     public float lerpTime = 0.3F;
 
+    public float lerpDeccelerationTime = 0.3F;
+    public float initalAcceleration = 2f;
+    public float speedClamp = 1f;
+
     [Header("Camera Look")]
     public float smoothLookAtSpeed = 5f;
     public float smoothCameraLookSpeed = 5f;
@@ -100,6 +104,7 @@ public class FreeCameraMovement : CameraStateBase
 
     private Vector3 nextTranslation;
     private Vector3 originalCameraPosition;
+    private Vector3 cameraVelocity = Vector3.zero;
     private Transform originalCameraLookAt;
 
     private float lastMouseWheelTime;
@@ -271,56 +276,69 @@ public class FreeCameraMovement : CameraStateBase
 
     private void HandleCameraMovementInput()
     {
-        Vector3 velocity = Vector3.zero;
+
         int velocityChangedCount = 0;
         if (isAdvancingForward)
         {
-            velocity += GetTotalVelocity(velocity, Vector3.forward);
+            cameraVelocity += GetTotalVelocity(Vector3.forward);
             velocityChangedCount++;
         }
 
         if (isAdvancingBackward)
         {
-            velocity += GetTotalVelocity(velocity, Vector3.back);
+            cameraVelocity += GetTotalVelocity(Vector3.back);
             velocityChangedCount++;
         }
 
+        if (!isAdvancingBackward && !isAdvancingForward)
+            cameraVelocity.z = Mathf.Lerp(cameraVelocity.z, 0, lerpDeccelerationTime);
+
         if (isAdvancingRight)
         {
-            velocity += GetTotalVelocity(velocity, Vector3.right) * xPlaneSpeedPercentCompensantion;
+            cameraVelocity += GetTotalVelocity(Vector3.right) * xPlaneSpeedPercentCompensantion;
             velocityChangedCount++;
         }
 
         if (isAdvancingLeft)
         {
-            velocity += GetTotalVelocity(velocity, Vector3.left) * xPlaneSpeedPercentCompensantion;
+            cameraVelocity += GetTotalVelocity(Vector3.left) * xPlaneSpeedPercentCompensantion;
             velocityChangedCount++;
         }
 
+        if (!isAdvancingRight && !isAdvancingLeft)
+            cameraVelocity.x = Mathf.Lerp(cameraVelocity.x, 0, lerpDeccelerationTime);
+
         if (isAdvancingUp)
         {
-            velocity += GetTotalVelocity(velocity, Vector3.up);
+            cameraVelocity += GetTotalVelocity(Vector3.up);
             velocityChangedCount++;
         }
 
         if (isAdvancingDown)
         {
-            velocity += GetTotalVelocity(velocity, -Vector3.up);
+            cameraVelocity += GetTotalVelocity(Vector3.down);
             velocityChangedCount++;
         }
 
-        //We divide the velocity between the amount of changes so we maintain the advance of the camera stable 
-        direction = velocity / velocityChangedCount;
+        if (!isAdvancingUp && !isAdvancingDown)
+            cameraVelocity.y = Mathf.Lerp(cameraVelocity.y, 0, lerpDeccelerationTime);
+
+        if (velocityChangedCount != 0)
+            cameraVelocity = Vector3.ClampMagnitude(cameraVelocity, speedClamp);
+
+        Debug.Log("Velocity " + cameraVelocity);
+        //We divide the cameraVelocity between the amount of changes so we maintain the advance of the camera stable 
+        direction = cameraVelocity; // / velocityChangedCount;
     }
 
-    private Vector3 GetTotalVelocity(Vector3 currentVelocity, Vector3 velocityToAdd)
+    private Vector3 GetTotalVelocity(Vector3 velocityToAdd)
     {
         if (!isMouseRightClickDown)
             return  Vector3.zero;
 
         if (isDetectingMovement)
             hasBeenMovement = true;
-        return currentVelocity + velocityToAdd;
+        return velocityToAdd * (initalAcceleration * Time.deltaTime);
     }
 
     public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
