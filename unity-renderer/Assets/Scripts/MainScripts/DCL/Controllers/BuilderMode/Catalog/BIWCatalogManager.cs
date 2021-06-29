@@ -191,13 +191,13 @@ public static class BIWCatalogManager
             if (sceneObject.IsSmartItem())
                 continue;
 
-            catalogItemPack.assets.Add(CreateCatalogItem(sceneObject));
+            catalogItemPack.assets.Add(CreateCatalogItem(sceneObject, sceneAssetPack.title));
         }
 
         return catalogItemPack;
     }
 
-    public static CatalogItem CreateCatalogItem(SceneObject sceneObject)
+    public static CatalogItem CreateCatalogItem(SceneObject sceneObject, string assetPackName = null)
     {
         CatalogItem catalogItem = new CatalogItem();
         catalogItem.id = sceneObject.id;
@@ -205,7 +205,7 @@ public static class BIWCatalogManager
             catalogItem.isVoxel = true;
         catalogItem.name = sceneObject.name;
         catalogItem.model = sceneObject.model;
-        catalogItem.assetPackName = GetAssetPackNameById(sceneObject.asset_pack_id);
+        catalogItem.assetPackName = assetPackName == null ? GetAssetPackNameById(sceneObject.asset_pack_id) : assetPackName;
         catalogItem.thumbnailURL = sceneObject.GetComposedThumbnailUrl();
         catalogItem.tags = sceneObject.tags;
 
