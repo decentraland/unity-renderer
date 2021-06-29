@@ -116,7 +116,7 @@ public class SceneLimitsController : ISceneLimitsController
     {
         string currentString = $"{name}:   {usage} / <color=#959696>{limit}</color>";
 
-        if (usage >= limit)
+        if (usage > limit)
             currentString = "<color=red>" + currentString + "</color>";
 
         return currentString;
