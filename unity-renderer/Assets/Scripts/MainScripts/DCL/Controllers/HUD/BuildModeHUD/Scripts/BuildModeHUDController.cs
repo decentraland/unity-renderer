@@ -73,6 +73,7 @@ public class BuildModeHUDController : IHUD
         ConfigureSaveHUDController();
         ConfigureNewProjectDetailsController();
         ConfigurePublicationDetailsController();
+        ConfigureQuickBarController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -204,6 +205,10 @@ public class BuildModeHUDController : IHUD
         controllers.publicationDetailsController.OnCancel += CancelPublicationDetails;
         controllers.publicationDetailsController.OnConfirm += ConfirmPublicationDetails;
     }
+
+    private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
+
+    private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
 
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
@@ -397,6 +402,8 @@ public class BuildModeHUDController : IHUD
     public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "") { view.SetPublishBtnAvailability(isAvailable, feedbackMessage); }
 
     #region Catalog
+
+    public BuildModeCatalogSection GetCatalogSectionSelected() { return controllers.sceneCatalogController.GetCurrentSection(); }
 
     private void ShowTooltipForCatalogItemAdapter(PointerEventData data, CatalogItemAdapter adapter)
     {

@@ -95,13 +95,25 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData.coords));
-        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData.coords));
+        jumpInButton.onClick.AddListener( JumpInButtonPressed );
+        editorButton.onClick.AddListener( EditorButtonPressed );
         contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
         settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
 
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
+    }
+
+    private void JumpInButtonPressed()
+    {
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
+        OnJumpInPressed?.Invoke(sceneData.coords);
+    }
+
+    private void EditorButtonPressed()
+    {
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
+        OnJumpInPressed?.Invoke(sceneData.coords);
     }
 
     private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
