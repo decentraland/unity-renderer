@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DCL.Components;
 using UnityEngine;
 
 namespace DCL
@@ -10,9 +9,6 @@ namespace DCL
 
         private const int MAX_NON_LOD_AVATARS = 20; // this could be in the settings panel
         private const int lodDistance = 16; // this could be in the settings panel
-        // TODO: have a little SortedList with as many items as the max non-lod avatars
-        private List<AvatarShape> nonLODAvatars = new List<AvatarShape>();
-
         private List<AvatarShape> avatarsList = new List<AvatarShape>();
 
         void Awake()
@@ -28,7 +24,6 @@ namespace DCL
             CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
         }
 
-        // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
         public void LateUpdate()
         {
             int listCount = avatarsList.Count;
@@ -54,28 +49,31 @@ namespace DCL
             SortedList<float, AvatarShape> closeDistanceAvatars = new SortedList<float, AvatarShape>();
             foreach (AvatarShape avatar in avatarsList)
             {
-                // UpdateLOD(avatar);
-
-                // Set avatar as lodded
-                avatar.avatarRenderer.lodQuad.SetActive(true);
-                avatar.avatarRenderer.SetVisibility(false); // TODO: Can this have any issue with the AvatarModifierArea ???
-
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
                 bool isInLODDistance = distanceToPlayer >= lodDistance;
 
-                if (!isInLODDistance)
+                if (isInLODDistance)
+                {
+                    // LOD Avatar
+                    avatar.avatarRenderer.lodQuad.SetActive(true);
+                    avatar.avatarRenderer.SetVisibility(false); // TODO: Can this have any issue with the AvatarModifierArea ???                    
+                }
+                else
+                {
                     closeDistanceAvatars.Add(distanceToPlayer, avatar);
+                }
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
+            AvatarShape currentAvatar;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
-                if (i == MAX_NON_LOD_AVATARS)
-                    break;
+                currentAvatar = closeDistanceAvatars.Values[i];
+                bool isLOD = i >= MAX_NON_LOD_AVATARS;
 
-                // Disable LOD
-                closeDistanceAvatars.Values[i].avatarRenderer.lodQuad.SetActive(false);
-                closeDistanceAvatars.Values[i].avatarRenderer.SetVisibility(true);
+                // Update avatar LOD
+                currentAvatar.avatarRenderer.lodQuad.SetActive(isLOD);
+                currentAvatar.avatarRenderer.SetVisibility(!isLOD);
             }
         }
 
@@ -109,7 +107,6 @@ namespace DCL
                 {
                     avatarsList.RemoveAt(i);
                     // targetAvatar.entity.OnTransformChange -= OnAvatarTransformChange;
-
                     // UpdateLODs();
 
                     return;
