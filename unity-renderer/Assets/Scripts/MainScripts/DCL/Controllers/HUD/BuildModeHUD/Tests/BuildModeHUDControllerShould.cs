@@ -241,12 +241,6 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.ExitStart();
 
             // Assert
-            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                                  .Configure(
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>(),
-                                      Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.EXIT);
         }
 
@@ -583,6 +577,22 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             Assert.AreEqual(isVisible, buildModeHUDController.isEntityListVisible);
             buildModeHUDController.view.Received(1).SetVisibilityOfInspector(isVisible);
+        }
+
+        [Test]
+        public void ConfigureConfirmationModalCorrectly()
+        {
+            // Arrange
+            string testTitle = "test title";
+            string testSubTitle = "test subTitle";
+            string testCancelText = "test cancel";
+            string testConfirmText = "test confirm";
+
+            // Act
+            buildModeHUDController.ConfigureConfirmationModal(testTitle, testSubTitle, testCancelText, testConfirmText);
+
+            // Assert
+            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).Configure(testTitle, testSubTitle, testCancelText, testConfirmText);
         }
     }
 }

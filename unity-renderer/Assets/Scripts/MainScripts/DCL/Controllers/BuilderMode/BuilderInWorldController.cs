@@ -3,17 +3,18 @@ using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Tutorial;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using UnityEngine;
 using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
+    private const float CULLING_ACTIVATION_DELAY = 0.5f;
+
     [Header("Activation of Feature")]
     public bool activeFeature = false;
 
@@ -340,6 +341,19 @@ public class BuilderInWorldController : MonoBehaviour
         if (isEnteringEditMode)
             return;
 
+        FindSceneToEdit();
+
+        if (!UserHasPermissionOnParcelScene(sceneToEdit))
+        {
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+            return;
+        }
+        else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
+        {
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+            return;
+        }
+
         if (!isBuilderInWorldActivated)
         {
             GetCatalog();
@@ -459,18 +473,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
-        if (targetScene != null)
-        {
-            var parcelSceneTarget = (ParcelScene)targetScene;
-            if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
-                actionController.Clear();
-
-            sceneToEdit = parcelSceneTarget;
-        }
-        else
-        {
-            FindSceneToEdit();
-        }
+        FindSceneToEdit(targetScene);
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
@@ -508,6 +511,8 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         isEnteringEditMode = true;
+
+        Environment.i.platform.cullingController.Stop();
 
         sceneToEditId = sceneToEdit.sceneData.id;
 
@@ -609,11 +614,29 @@ public class BuilderInWorldController : MonoBehaviour
     public void StartExitMode()
     {
         if (biwSaveController.numberOfSaves > 0)
+        {
             editorMode.TakeSceneScreenshotForExit();
+
+            HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
+                BuilderInWorldSettings.EXIT_MODAL_TITLE,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
+                BuilderInWorldSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+        }
+        else
+        {
+            HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
+                BuilderInWorldSettings.EXIT_MODAL_TITLE,
+                BuilderInWorldSettings.EXIT_MODAL_SUBTITLE,
+                BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
+                BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
+        }
     }
 
     public void ExitEditMode()
     {
+        Environment.i.platform.cullingController.Start();
+
         if (biwSaveController.numberOfSaves > 0)
         {
             HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
@@ -648,6 +671,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         Environment.i.world.sceneController.DeactivateBuilderInWorldEditScene();
         Environment.i.world.blockersController.SetEnabled(true);
+
         ExitBiwControllers();
 
         foreach (var groundVisual in groundVisualsGO)
@@ -702,6 +726,22 @@ public class BuilderInWorldController : MonoBehaviour
     public void SetupNewScene() { biwFloorHandler.CreateDefaultFloor(); }
 
     void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
+
+    public void FindSceneToEdit(IParcelScene targetScene)
+    {
+        if (targetScene != null)
+        {
+            var parcelSceneTarget = (ParcelScene)targetScene;
+            if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
+                actionController.Clear();
+
+            sceneToEdit = parcelSceneTarget;
+        }
+        else
+        {
+            FindSceneToEdit();
+        }
+    }
 
     public void FindSceneToEdit()
     {

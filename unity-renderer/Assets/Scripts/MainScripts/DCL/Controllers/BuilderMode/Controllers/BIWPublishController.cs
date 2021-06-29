@@ -18,7 +18,7 @@ public class BIWPublishController : BIWController
 
     public override void Init()
     {
-        if (HUDController.i.builderInWorldMainHud != null)
+        if (HUDController.i?.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnPublishAction += StartPublishFlow;
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
