@@ -11,11 +11,11 @@ namespace DCL
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
 
-        private int maxNonLODAvatars = 20; // TODO: Take this to the settings panel
-        private int lodDistance = 16; // TODO: Take this to the settings panel
+        public float lodDistance = 16f;
+        public int maxNonLODAvatars = 20;
 
         private List<AvatarShape> avatarsList = new List<AvatarShape>();
-        private float lastLODsVerticalMovement = -1;
+        private float lastLODsVerticalMovementTime = -1;
 
         void Awake()
         {
@@ -34,7 +34,7 @@ namespace DCL
         {
             int listCount = avatarsList.Count;
 
-            bool appliedVerticalMovement = false;
+            bool applyVerticalMovement = Time.timeSinceLevelLoad - lastLODsVerticalMovementTime > LODS_VERTICAL_MOVEMENT_DELAY;
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
@@ -42,11 +42,8 @@ namespace DCL
                 if (!lodGO.activeSelf)
                     continue;
 
-                if (Time.timeSinceLevelLoad - lastLODsVerticalMovement > LODS_VERTICAL_MOVEMENT_DELAY)
-                {
-                    appliedVerticalMovement = true;
+                if (applyVerticalMovement)
                     lodGO.transform.localPosition = new Vector3(lodGO.transform.localPosition.x, (lodGO.transform.localPosition.y > LODS_LOCAL_Y_POS ? LODS_LOCAL_Y_POS : LODS_LOCAL_Y_POS + LODS_VERTICAL_MOVEMENT), lodGO.transform.localPosition.z);
-                }
 
                 Vector3 previousForward = lodGO.transform.forward;
                 Vector3 lookAtDir = (lodGO.transform.position - CommonScriptableObjects.cameraPosition).normalized;
@@ -56,13 +53,13 @@ namespace DCL
                 lodGO.transform.forward = lookAtDir;
             }
 
-            if (appliedVerticalMovement)
-                lastLODsVerticalMovement = Time.timeSinceLevelLoad;
+            if (applyVerticalMovement)
+                lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
         void OnMainPlayerReposition(Vector3 newPos, Vector3 previousPos) { UpdateAllLODs(); }
 
-        void UpdateAllLODs()
+        public void UpdateAllLODs()
         {
             SortedList<float, AvatarShape> closeDistanceAvatars = new SortedList<float, AvatarShape>();
             foreach (AvatarShape avatar in avatarsList)
