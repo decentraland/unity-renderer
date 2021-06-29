@@ -339,6 +339,19 @@ public class BuilderInWorldController : MonoBehaviour
         if (isEnteringEditMode)
             return;
 
+        FindSceneToEdit();
+
+        if (!UserHasPermissionOnParcelScene(sceneToEdit))
+        {
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
+            return;
+        }
+        else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
+        {
+            ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
+            return;
+        }
+
         if (!isBuilderInWorldActivated)
         {
             GetCatalog();
@@ -458,18 +471,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (sceneToEditId != null)
             return;
 
-        if (targetScene != null)
-        {
-            var parcelSceneTarget = (ParcelScene)targetScene;
-            if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
-                actionController.Clear();
-
-            sceneToEdit = parcelSceneTarget;
-        }
-        else
-        {
-            FindSceneToEdit();
-        }
+        FindSceneToEdit(targetScene);
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
         {
@@ -717,6 +719,22 @@ public class BuilderInWorldController : MonoBehaviour
     public void SetupNewScene() { biwFloorHandler.CreateDefaultFloor(); }
 
     void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
+
+    public void FindSceneToEdit(IParcelScene targetScene)
+    {
+        if (targetScene != null)
+        {
+            var parcelSceneTarget = (ParcelScene)targetScene;
+            if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
+                actionController.Clear();
+
+            sceneToEdit = parcelSceneTarget;
+        }
+        else
+        {
+            FindSceneToEdit();
+        }
+    }
 
     public void FindSceneToEdit()
     {
