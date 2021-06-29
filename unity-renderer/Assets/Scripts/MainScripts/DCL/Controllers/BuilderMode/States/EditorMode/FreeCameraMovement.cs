@@ -252,7 +252,7 @@ public class FreeCameraMovement : CameraStateBase
         nextTranslation = Vector3.Lerp(nextTranslation, Vector3.zero, lerpTime * Time.deltaTime);
 
         if (nextTranslation.magnitude >= CAMERA_MOVEMENT_THRESHOLD)
-            transform.Translate(nextTranslation * (movementSpeed * Time.deltaTime), Space.Self); //Vector3.SmoothDamp(transform.position, nextPosition, ref moveCameraVelocity, smoothTime);
+            transform.Translate(nextTranslation * (movementSpeed * Time.deltaTime), Space.Self);
     }
 
     private void HandleCameraLook()

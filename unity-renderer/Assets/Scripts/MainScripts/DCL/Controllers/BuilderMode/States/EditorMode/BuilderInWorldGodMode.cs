@@ -131,10 +131,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 {
                     if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
                     {
-                        if (entity.isVoxel)
-                            isVoxelBoundMultiSelection = true;
-                        else
-                            isVoxelBoundMultiSelection = false;
+                        isVoxelBoundMultiSelection = entity.isVoxel;
                         isTypeOfBoundSelectionSelected = true;
                     }
 
