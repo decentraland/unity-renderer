@@ -76,6 +76,8 @@ public class BuilderInWorldController : MonoBehaviour
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
     private bool areCatalogHeadersReady = false;
+    private float beginStartFlowTimeStamp = 0;
+    private float startEditorTimeStamp = 0;
     private bool isCatalogRequested = false;
     private bool isEnteringEditMode = false;
 
@@ -355,7 +357,7 @@ public class BuilderInWorldController : MonoBehaviour
         if (!isBuilderInWorldActivated)
         {
             GetCatalog();
-            TryStartEnterEditMode();
+            TryStartEnterEditMode(true, null, "Shortcut");
         }
         else
         {
@@ -466,7 +468,7 @@ public class BuilderInWorldController : MonoBehaviour
     public void TryStartEnterEditMode() { TryStartEnterEditMode(true, null); }
     public void TryStartEnterEditMode(IParcelScene targetScene) { TryStartEnterEditMode(true, targetScene); }
 
-    public void TryStartEnterEditMode(bool activateCamera, IParcelScene targetScene = null)
+    public void TryStartEnterEditMode(bool activateCamera, IParcelScene targetScene = null , string source = "BuilderPanel")
     {
         if (sceneToEditId != null)
             return;
@@ -493,7 +495,8 @@ public class BuilderInWorldController : MonoBehaviour
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
-
+        BIWAnalytics.StartEditorFlow(source);
+        beginStartFlowTimeStamp = Time.realtimeSinceStartup;
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
             editorMode.ActivateCamera(sceneToEdit);
@@ -580,8 +583,11 @@ public class BuilderInWorldController : MonoBehaviour
         {
             groundVisual.SetActive(false);
         }
-
+        startEditorTimeStamp = Time.realtimeSinceStartup;
         OnEnterEditMode?.Invoke();
+
+        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BuilderInWorldUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BuilderInWorldUtils.GetSceneSize(sceneToEdit));
+        BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
     }
 
     private void OnAllParcelsFloorLoaded()
@@ -678,6 +684,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         OnExitEditMode?.Invoke();
         DataStore.i.appMode.Set(AppMode.DEFAULT);
+        BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
     public void InmediateExit()
