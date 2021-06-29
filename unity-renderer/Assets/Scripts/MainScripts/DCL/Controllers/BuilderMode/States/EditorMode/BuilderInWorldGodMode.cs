@@ -764,8 +764,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         return BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene)
                + Vector3.up * initialEagleCameraHeight
                - Vector3.forward * initialEagleCameraDistance;
-
-        return Vector3.zero;
     }
 
     void SetLookAtObject(ParcelScene parcelScene)
