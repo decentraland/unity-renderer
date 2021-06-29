@@ -116,9 +116,7 @@ namespace Builder
             {
                 renderer = rootEntity.meshesInfo.renderers[i];
                 if (renderer)
-                {
                     renderer.gameObject.layer = selectionLayer;
-                }
             }
         }
 
@@ -135,9 +133,7 @@ namespace Builder
             {
                 renderer = rootEntity.meshesInfo.renderers[i];
                 if (renderer)
-                {
                     renderer.gameObject.layer = selectionLayer;
-                }
             }
         }
 
@@ -272,6 +268,8 @@ namespace Builder
             meshColliders = new DCLBuilderSelectionCollider[meshInfo.renderers.Length];
             for (int i = 0; i < meshInfo.renderers.Length; i++)
             {
+                if (meshInfo.renderers[i] == null)
+                    continue;
                 meshColliders[i] = new GameObject("BuilderSelectionCollider").AddComponent<DCLBuilderSelectionCollider>();
                 meshColliders[i].Initialize(this, meshInfo.renderers[i]);
                 meshColliders[i].gameObject.SetActive(false);
