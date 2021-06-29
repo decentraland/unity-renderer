@@ -1314,6 +1314,16 @@ PrefabInstance:
       propertyPath: freeCameraController
       value: 
       objectReference: {fileID: 326638024064006573}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: initialEagleCameraHeight
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: initialEagleCameraLookAtHeight
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1676156629805984034, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderInWorldBridge

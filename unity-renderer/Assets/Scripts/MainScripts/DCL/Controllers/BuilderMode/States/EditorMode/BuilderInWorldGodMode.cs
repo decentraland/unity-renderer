@@ -12,7 +12,9 @@ using Environment = DCL.Environment;
 public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
-    public float distanceEagleCamera = 20f;
+    public float initialEagleCameraHeight = 15f;
+    public float initialEagleCameraDistance = 20f;
+    public float initialEagleCameraLookAtHeight = 2f;
 
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
@@ -501,7 +503,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         SetLookAtObject(parcelScene);
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition + Vector3.up * distanceEagleCamera;
+        Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
         freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
@@ -757,9 +759,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
+    Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
+    {
+        return BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene)
+               + Vector3.up * initialEagleCameraHeight
+               - Vector3.forward * initialEagleCameraDistance;
+
+        return Vector3.zero;
+    }
+
     void SetLookAtObject(ParcelScene parcelScene)
     {
-        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene) + Vector3.up * initialEagleCameraLookAtHeight;
 
         lookAtT.position = middlePoint;
     }
