@@ -22,13 +22,11 @@ public static partial class BuilderInWorldUtils
 {
     public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
     {
-        LandWithAccess filteredLand = lands.Where( land => scene.sceneData.basePosition == land.baseCoords)
-                                           .Select(land => land)
-                                           .FirstOrDefault();
-        return GetLandOwnershipType(filteredLand, scene);
+        LandWithAccess filteredLand = lands.FirstOrDefault(land => scene.sceneData.basePosition == land.baseCoords);
+        return GetLandOwnershipType(filteredLand);
     }
 
-    public static LandRole GetLandOwnershipType(LandWithAccess land, ParcelScene scene)
+    public static LandRole GetLandOwnershipType(LandWithAccess land)
     {
         if (land != null)
             return land.role;

@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using Newtonsoft.Json;
 using UnityEngine;
 
 /// <summary>
 /// This class include all the analytics that we are tracking for builder-in-world, if you want to add a new one
-/// Please do it inside this class and call the AddLandInfoSendEvent method to include all the default info
+/// Please do it inside this class and call the SendEditorEvent method to include all the default info
 /// </summary>
 public static class BIWAnalytics
 {
@@ -70,28 +71,28 @@ public static class BIWAnalytics
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("source", source);
-        AddLandInfoSendEvent("start_editor_flow", events);
+        SendEditorEvent("start_editor_flow", events);
     }
 
     public static void EnterEditor(float loadingTime)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("loading_time", loadingTime.ToString());
-        AddLandInfoSendEvent("enter_editor", events);
+        SendEditorEvent("enter_editor", events);
     }
 
     public static void ExitEditor(float timeInvestedInTheEditor)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("time_in_the_editor", timeInvestedInTheEditor.ToString());
-        AddLandInfoSendEvent("exit_editor", events);
+        SendEditorEvent("exit_editor", events);
     }
 
     public static void StartScenePublish(SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
-        AddLandInfoSendEvent("start_publish_of_the_scene", events);
+        SendEditorEvent("start_publish_of_the_scene", events);
     }
 
     public static void EndScenePublish(SceneMetricsModel sceneLimits, string successOrError, float publicationTime)
@@ -100,14 +101,14 @@ public static class BIWAnalytics
         events.Add("success", successOrError);
         events.Add("publication_time", publicationTime.ToString());
         events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
-        AddLandInfoSendEvent("end_scene_publish", events);
+        SendEditorEvent("end_scene_publish", events);
     }
 
     public static void SceneLimitsOverPassed(SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
-        AddLandInfoSendEvent("scene_limits_over_passed", events);
+        SendEditorEvent("scene_limits_over_passed", events);
     }
 
     /// <summary>
@@ -121,10 +122,46 @@ public static class BIWAnalytics
         events.Add("name", catalogItem.name);
         events.Add("assetPack", catalogItem.assetPackName);
         events.Add("category", catalogItem.category);
-        events.Add("category Name", catalogItem.categoryName);
+        events.Add("category_name", catalogItem.categoryName);
         events.Add("source", source);
         events.Add("type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("new_object_placed", events);
+        SendEditorEvent("new_object_placed", events);
+    }
+
+    /// <summary>
+    /// This will send all the items placed in a period of time in a single message
+    /// </summary>
+    /// <param name="catalogItem">The item that has been added</param>
+    /// <param name="source">It has been added from Categories, Asset pack, Favorites or Quick Access</param>
+    public static void NewObjectPlacedChunk(List<KeyValuePair<CatalogItem, string>> itemsToSendAnalytics)
+    {
+        Dictionary<string, string> events = new Dictionary<string, string>();
+
+        foreach (var catalogItem in itemsToSendAnalytics)
+        {
+            if (events.ContainsKey(catalogItem.Key.name))
+                continue;
+
+            Dictionary<string, string> item = new Dictionary<string, string>();
+            int amountOfItems = 0;
+            foreach (var itemsToCompare in itemsToSendAnalytics)
+            {
+                if (catalogItem.Key == itemsToCompare.Key)
+                    amountOfItems++;
+            }
+
+            item.Add("name", catalogItem.Key.name);
+            item.Add("amount", amountOfItems.ToString());
+            item.Add("assetPack", catalogItem.Key.assetPackName);
+            item.Add("category", catalogItem.Key.category);
+            item.Add("category_name", catalogItem.Key.categoryName);
+            item.Add("source", catalogItem.Value);
+            item.Add("type", catalogItem.Key.ToString());
+
+            events.Add(catalogItem.Key.name,  JsonConvert.SerializeObject(item));
+        }
+
+        SendEditorEvent("new_object_placed", events);
     }
 
     public static void QuickAccessAssigned(CatalogItem catalogItem, string source)
@@ -136,7 +173,7 @@ public static class BIWAnalytics
         events.Add("category Name", catalogItem.categoryName);
         events.Add("source", source);
         events.Add("type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("quick_access_assigned", events);
+        SendEditorEvent("quick_access_assigned", events);
     }
 
     public static void FavoriteAdded(CatalogItem catalogItem)
@@ -147,7 +184,7 @@ public static class BIWAnalytics
         events.Add("category", catalogItem.category);
         events.Add("category Name", catalogItem.categoryName);
         events.Add("type", catalogItem.itemType.ToString());
-        AddLandInfoSendEvent("favorite_added", events);
+        SendEditorEvent("favorite_added", events);
     }
 
     public static void CatalogItemSearched(string searchQuery, int resultAmount)
@@ -155,7 +192,7 @@ public static class BIWAnalytics
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("search_query", searchQuery);
         events.Add("result_amount", resultAmount.ToString());
-        AddLandInfoSendEvent("catalog_item_searched", events);
+        SendEditorEvent("catalog_item_searched", events);
     }
 
     private static Dictionary<string, string> ConvertSceneMetricsModelToDictionary(SceneMetricsModel sceneLimits)
@@ -189,7 +226,7 @@ public static class BIWAnalytics
 
     #endregion
 
-    private static void AddLandInfoSendEvent(string eventName, Dictionary<string, string> events)
+    private static void SendEditorEvent(string eventName, Dictionary<string, string> events)
     {
         events.Add("ownership", ownership);
         events.Add("coords", coords.ToString());
@@ -197,5 +234,9 @@ public static class BIWAnalytics
         SendEvent(eventName, events);
     }
 
-    private static void SendEvent(string eventName, Dictionary<string, string> events) { Analytics.i.SendAnalytic(eventName, events); }
+    private static void SendEvent(string eventName, Dictionary<string, string> events)
+    {
+        Debug.Log("Event " + eventName + " message: " + events.ToString());
+        Analytics.i.SendAnalytic(eventName, events);
+    }
 }
