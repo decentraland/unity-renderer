@@ -831,7 +831,7 @@ MonoBehaviour:
   focusDistance: 15
   xPlaneSpeedPercentCompensantion: 1
   movementSpeed: 19
-  lerpTime: 0
+  lerpTime: 0.3
   lerpDeccelerationTime: 0.21
   initalAcceleration: 1
   speedClamp: 1
