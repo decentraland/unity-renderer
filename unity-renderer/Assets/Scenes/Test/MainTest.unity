@@ -1788,6 +1788,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1960132919}
   - component: {fileID: 1960132920}
+  - component: {fileID: 1960132918}
   m_Layer: 0
   m_Name: HUDController
   m_TagString: Untagged
@@ -1795,6 +1796,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1960132918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960132917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecca15c8dd507148e86679bffd978312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1960132919
 Transform:
   m_ObjectHideFlags: 0

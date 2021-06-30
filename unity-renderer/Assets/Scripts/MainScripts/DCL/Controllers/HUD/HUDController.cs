@@ -15,7 +15,6 @@ public class HUDController : IHUDController
     private const string TOGGLE_UI_VISIBILITY_ASSET_NAME = "ToggleUIVisibility";
 
     static bool VERBOSE = false;
-
     public static HUDController i { get; private set; }
     
     public IHUDFactory hudFactory = null;
@@ -102,8 +101,6 @@ public class HUDController : IHUDController
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private BaseDictionary<string, WearableItem> wearableCatalog => CatalogController.wearableCatalog;
 
-    private void ShowAvatarEditor() { avatarEditorHud?.SetVisibility(true); }
-
     private void ShowSettings() { settingsPanelHud?.SetVisibility(true); }
 
     private void ShowControls() { controlsHud?.SetVisibility(true); }
@@ -135,25 +132,6 @@ public class HUDController : IHUDController
         {
             NotificationsController.i?.DismissAllNotifications(hiddenUINotification.groupID);
         }
-    }
-
-    [System.Serializable]
-    class ConfigureHUDElementMessage
-    {
-        public HUDElementID hudElementId;
-        public HUDConfiguration configuration;
-        public string extraPayload;
-    }
-
-    public void ConfigureHUDElement(string payload)
-    {
-        ConfigureHUDElementMessage message = JsonUtility.FromJson<ConfigureHUDElementMessage>(payload);
-
-        HUDElementID id = message.hudElementId;
-        HUDConfiguration configuration = message.configuration;
-        string extraPayload = message.extraPayload;
-
-        ConfigureHUDElement(id, configuration, extraPayload);
     }
 
     public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, string extraPayload = null)
@@ -421,54 +399,6 @@ public class HUDController : IHUDController
 
         hudElements[id].SetVisibility(config.visible);
     }
-
-    public void TriggerSelfUserExpression(string id) { UserProfile.GetOwnUserProfile().SetAvatarExpression(id); }
-
-    public void AirdroppingRequest(string payload)
-    {
-        var model = JsonUtility.FromJson<AirdroppingHUDController.Model>(payload);
-        airdroppingHud.AirdroppingRequested(model);
-    }
-
-    public void ShowTermsOfServices(string payload)
-    {
-        var model = JsonUtility.FromJson<TermsOfServiceHUDController.Model>(payload);
-        termsOfServiceHud?.ShowTermsOfService(model);
-    }
-
-    public void SetPlayerTalking(string talking) { taskbarHud?.SetVoiceChatRecording("true".Equals(talking)); }
-
-    public void SetVoiceChatEnabledByScene(int enabledPayload)
-    {
-        bool isEnabled = enabledPayload != 0;
-        taskbarHud?.SetVoiceChatEnabledByScene(isEnabled);
-    }
-
-    public void SetUserTalking(string payload)
-    {
-        var model = JsonUtility.FromJson<UserTalkingModel>(payload);
-        usersAroundListHud?.SetUserRecording(model.userId, model.talking);
-    }
-
-    public void SetUsersMuted(string payload)
-    {
-        var model = JsonUtility.FromJson<UserMutedModel>(payload);
-        usersAroundListHud?.SetUsersMuted(model.usersId, model.muted);
-    }
-
-    public void RequestTeleport(string teleportDataJson) { teleportHud?.RequestTeleport(teleportDataJson); }
-
-    public void UpdateBalanceOfMANA(string balance) { profileHud?.SetManaBalance(balance); }
-
-    public void ShowAvatarEditorInSignUp()
-    {
-        if (avatarEditorHud != null)
-        {
-            DataStore.i.isSignUpFlow.Set(true);
-            ShowAvatarEditor();
-        }
-    }
-
     public void Cleanup()
     {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;

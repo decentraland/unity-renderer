@@ -1,4 +1,6 @@
-﻿namespace DCL
+﻿using UnityEngine;
+
+namespace DCL
 {
     public static class HUDContextFactory
     {
