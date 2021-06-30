@@ -26,13 +26,13 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
 
     private TaskbarHUDView view;
-    internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
+    protected List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
     internal Coroutine moreMenuAnimationsCoroutine;
 
     public event System.Action<bool> OnMoreMenuOpened;
     public event System.Action OnRestartTutorial;
 
-    public void Initialize(TaskbarHUDView view)
+    public virtual void Initialize(TaskbarHUDView view)
     {
         this.view = view;
 
@@ -70,7 +70,7 @@ public class TaskbarMoreMenu : MonoBehaviour
         tutorialButton.mainButton.onClick.AddListener(() => { OnRestartTutorial?.Invoke(); });
     }
 
-    private void SortButtonsAnimations()
+    protected void SortButtonsAnimations()
     {
         sortedButtonsAnimations.Add(helpAndSupportButton);
         sortedButtonsAnimations.Add(controlsButton);

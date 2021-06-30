@@ -8,7 +8,7 @@ using SignupHUD;
 
 public class HUDFactory : IHUDFactory
 {
-    public IHUD CreateHUD(HUDElementID hudElementId)
+    public virtual IHUD CreateHUD(HUDElementID hudElementId)
     {
         IHUD hudElement = null;
         switch (hudElementId)
