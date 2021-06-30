@@ -3115,7 +3115,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Builder In World
+  m_text: Builder
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 131598e906f4d4a048cfa339caa74472, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 085e7053ee9e245cc981e24fdb5b0fc3, type: 2}
@@ -3137,7 +3137,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3149,9 +3149,9 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 514
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -7405,7 +7405,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 36, y: -28}
+  m_AnchoredPosition: {x: 422.93658, y: -28}
   m_SizeDelta: {x: 40, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8156609118328423350
@@ -9037,6 +9037,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4199d1bf2ba584fd99764b0c63d3ac33, type: 3}
+--- !u!224 &789058369351840629 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7603169181453700376, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
+    type: 3}
+  m_PrefabInstance: {fileID: 7165418864811785837}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7962135255627428372 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 941113415273041017, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
@@ -9049,12 +9055,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59cf3b25a6a94191bd535222239d479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &789058369351840629 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7603169181453700376, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
-    type: 3}
-  m_PrefabInstance: {fileID: 7165418864811785837}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8954342143867413549
 PrefabInstance:
   m_ObjectHideFlags: 0
