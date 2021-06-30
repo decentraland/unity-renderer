@@ -12,9 +12,9 @@ using Environment = DCL.Environment;
 public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
-    public float initialEagleCameraHeight = 15f;
-    public float initialEagleCameraDistance = 20f;
-    public float initialEagleCameraLookAtHeight = 2f;
+    public float initialEagleCameraHeight = 10f;
+    public float initialEagleCameraDistance = 10f;
+    public float initialEagleCameraLookAtHeight = 0f;
 
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
@@ -760,9 +760,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
     {
-        return BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene)
-               + Vector3.up * initialEagleCameraHeight
-               - Vector3.forward * initialEagleCameraDistance;
+        Vector3 sceneMiddlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 direction = (parcelScene.transform.position - sceneMiddlePoint).normalized;
+
+        return parcelScene.transform.position
+               + direction * initialEagleCameraDistance
+               + Vector3.up * initialEagleCameraHeight;
     }
 
     void SetLookAtObject(ParcelScene parcelScene)
