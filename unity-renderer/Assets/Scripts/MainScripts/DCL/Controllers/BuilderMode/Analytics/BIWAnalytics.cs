@@ -234,9 +234,5 @@ public static class BIWAnalytics
         SendEvent(eventName, events);
     }
 
-    private static void SendEvent(string eventName, Dictionary<string, string> events)
-    {
-        Debug.Log("Event " + eventName + " message: " + events.ToString());
-        Analytics.i.SendAnalytic(eventName, events);
-    }
+    private static void SendEvent(string eventName, Dictionary<string, string> events) { Analytics.i.SendAnalytic(eventName, events); }
 }
