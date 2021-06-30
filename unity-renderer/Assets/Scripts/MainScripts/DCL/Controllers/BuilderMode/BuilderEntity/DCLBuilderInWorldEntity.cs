@@ -464,6 +464,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
         int matCont = 0;
         foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
         {
+            if (renderer == null)
+                continue;
             Material[] materials = new Material[renderer.sharedMaterials.Length];
 
             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
@@ -501,7 +503,11 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         int totalMaterials = 0;
         foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
+        {
+            if (renderer == null)
+                continue;
             totalMaterials += renderer.sharedMaterials.Length;
+        }
 
         if (!isNFT || (isNFT && originalMaterials == null))
             originalMaterials = new Material[totalMaterials];
@@ -509,6 +515,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
         int matCont = 0;
         foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
         {
+            if (renderer == null)
+                continue;
+
             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
             {
                 if (isNFT && matCont == 0)
@@ -536,6 +545,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
         int matCont = 0;
         foreach (Renderer renderer in rootEntity.meshesInfo.renderers)
         {
+            if (renderer == null)
+                continue;
+
             Material[] materials = new Material[renderer.sharedMaterials.Length];
 
             for (int i = 0; i < renderer.sharedMaterials.Length; i++)
@@ -602,6 +614,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         for (int i = 0; i < meshInfo.renderers.Length; i++)
         {
+            if (meshInfo.renderers[i] == null)
+                continue;
             GameObject entityColliderChildren = new GameObject(entity.entityId);
             entityColliderChildren.layer = BuilderInWorldSettings.COLLIDER_SELECTION_LAYER;
 
