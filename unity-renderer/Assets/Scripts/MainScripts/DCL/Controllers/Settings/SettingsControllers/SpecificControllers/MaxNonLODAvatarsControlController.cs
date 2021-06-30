@@ -9,6 +9,12 @@ namespace DCL.SettingsControls
         {
             base.Initialize();
 
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            Resources.Load<BooleanVariable>("ScriptableObjects/AvatarLODsDisabled").Set(!config.features.enableAvatarLODs);
+                        });
+
             UpdateSetting(currentGeneralSettings.maxNonLODAvatars);
         }
 

@@ -24,10 +24,22 @@ namespace DCL
                 Destroy(gameObject);
                 return;
             }
-
             i = this;
 
-            CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
+            enabled = false;
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            if (config.features.enableAvatarLODs)
+                            {
+                                enabled = true;
+                                CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
+                            }
+                            else
+                            {
+                                enabled = false;
+                            }
+                        });
         }
 
         public void LateUpdate()
@@ -61,6 +73,9 @@ namespace DCL
 
         public void UpdateAllLODs()
         {
+            if (!enabled)
+                return;
+
             SortedList<float, AvatarShape> closeDistanceAvatars = new SortedList<float, AvatarShape>();
             foreach (AvatarShape avatar in avatarsList)
             {
@@ -92,7 +107,7 @@ namespace DCL
 
         public void RegisterAvatar(AvatarShape newAvatar)
         {
-            if (avatarsList.Contains(newAvatar))
+            if (!enabled || avatarsList.Contains(newAvatar))
                 return;
 
             avatarsList.Add(newAvatar);
@@ -110,7 +125,7 @@ namespace DCL
 
         public void RemoveAvatar(AvatarShape targetAvatar)
         {
-            if (!avatarsList.Contains(targetAvatar))
+            if (!enabled || !avatarsList.Contains(targetAvatar))
                 return;
 
             int listCount = avatarsList.Count;
