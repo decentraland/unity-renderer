@@ -15,6 +15,7 @@ public interface IBIWSearchBarController
 
 public class BIWSearchBarController : IBIWSearchBarController
 {
+    private const float SEARCH_DELAY_OFFSET = 1f;
     public event Action<List<Dictionary<string, List<CatalogItem>>>> OnFilterChange;
     public event Action OnFilterRemove;
 
@@ -24,6 +25,9 @@ public class BIWSearchBarController : IBIWSearchBarController
 
     private bool isSmartItemFilterActive = false;
     private bool isFilterActive = false;
+
+    private string currentSearchFilter;
+    private Coroutine searchApplyCoroutine;
 
     public void Initialize(ISceneCatalogView sceneCatalogView)
     {
@@ -56,9 +60,15 @@ public class BIWSearchBarController : IBIWSearchBarController
 
         if (currentSearchInput.Length <= 1)
             return;
+        currentSearchFilter = currentSearchInput;
+
         isFilterActive = true;
+
         FilterAssets(currentSearchInput);
         OnFilterChange?.Invoke(filterObjects);
+        if (searchApplyCoroutine != null)
+            CoroutineStarter.Stop(searchApplyCoroutine);
+        searchApplyCoroutine = CoroutineStarter.Start(ReportSearchAnalytic());
     }
 
     public void ReleaseFilters()
@@ -168,5 +178,11 @@ public class BIWSearchBarController : IBIWSearchBarController
         Dictionary<string, List<CatalogItem>> groupedCatalogItems = new Dictionary<string, List<CatalogItem>>();
         groupedCatalogItems.Add(catalogItem.category, new List<CatalogItem>() { catalogItem });
         filterObjects.Add(groupedCatalogItems);
+    }
+
+    IEnumerator ReportSearchAnalytic()
+    {
+        yield return new WaitForSecondsRealtime(SEARCH_DELAY_OFFSET);
+        BIWAnalytics.CatalogItemSearched(currentSearchFilter, filterObjects.Count);
     }
 }

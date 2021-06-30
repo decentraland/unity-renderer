@@ -41,6 +41,7 @@ public interface ISceneCatalogController
     void RefreshCatalog();
     CatalogItemAdapter GetLastCatalogItemDragged();
     void SetActive(bool isActive);
+    BuildModeCatalogSection GetCurrentSection();
 }
 
 public class SceneCatalogController : ISceneCatalogController
@@ -137,6 +138,8 @@ public class SceneCatalogController : ISceneCatalogController
         favoritesController.Dispose();
         biwSearchBarController.Dispose();
     }
+
+    public BuildModeCatalogSection GetCurrentSection() { return currentSection; }
 
     public void AssetsFiltered(List<Dictionary<string, List<CatalogItem>>> filterObjects)
     {
