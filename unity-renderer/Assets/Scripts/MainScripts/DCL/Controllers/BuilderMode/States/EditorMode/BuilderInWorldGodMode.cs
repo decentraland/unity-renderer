@@ -760,8 +760,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
     {
-        Vector3 sceneMiddlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
-        Vector3 direction = (parcelScene.transform.position - sceneMiddlePoint).normalized;
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
 
         return parcelScene.transform.position
                + direction * initialEagleCameraDistance
@@ -770,9 +770,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void SetLookAtObject(ParcelScene parcelScene)
     {
-        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene) + Vector3.up * initialEagleCameraLookAtHeight;
-
-        lookAtT.position = middlePoint;
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
     void SetEditObjectAtMouse()
