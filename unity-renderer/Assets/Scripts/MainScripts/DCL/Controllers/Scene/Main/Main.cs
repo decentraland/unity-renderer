@@ -59,7 +59,7 @@ namespace DCL
                 Environment.i.platform.cullingController.SetAnimationCulling(false);
         }
 
-        protected void SetupEnvironment()
+        protected virtual void SetupEnvironment()
         {
             Environment.SetupWithBuilders(
                 messagingBuilder: MessagingContextBuilder,
@@ -67,19 +67,19 @@ namespace DCL
                 worldRuntimeBuilder: WorldRuntimeContextBuilder,
                 hudBuilder: HUDContextBuilder);    
         }
-        protected MessagingContext MessagingContextBuilder()
+        protected virtual MessagingContext MessagingContextBuilder()
         {
             return MessagingContextFactory.CreateDefault();
         }
-        protected PlatformContext PlatformContextBuilder()
+        protected virtual PlatformContext PlatformContextBuilder()
         {
             return PlatformContextFactory.CreateDefault();
         }
-        protected WorldRuntimeContext WorldRuntimeContextBuilder()
+        protected virtual WorldRuntimeContext WorldRuntimeContextBuilder()
         {
             return WorldRuntimeContextFactory.CreateDefault(componentFactory);
         }
-        protected HUDContext HUDContextBuilder()
+        protected virtual HUDContext HUDContextBuilder()
         {
             return HUDContextFactory.CreateDefault();
         }
