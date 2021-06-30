@@ -5,17 +5,26 @@ using UnityEngine;
 
 public class FreeCameraMovement : CameraStateBase
 {
+    private const float CAMERA_ANGLE_THRESHOLD = 0.01f;
+    private const float CAMERA_PAN_THRESHOLD = 0.001f;
+    private const float CAMERA_MOVEMENT_THRESHOLD = 0.001f;
+
+    private const float CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD = 0.001f;
+
     private const int SCENE_SNAPSHOT_WIDTH_RES = 854;
     private const int SCENE_SNAPSHOT_HEIGHT_RES = 480;
 
     public float focusDistance = 5f;
 
     [Header("Camera Movement")]
-    public float accelerationMod = 0.025f;
-    public float decelerationMod = 0.05f;
-    public float maximumMovementSpeed = 0.65f;
-    public float yPlaneSpeedPercentCompensantion = 0.85f;
-    public float zPlaneSpeedPercentCompensantion = 0.85f;
+    public float xPlaneSpeedPercentCompensantion = 0.85f;
+
+    public float movementSpeed = 5f;
+    public float lerpTime = 0.3F;
+
+    public float lerpDeccelerationTime = 0.3F;
+    public float initalAcceleration = 2f;
+    public float speedClamp = 1f;
 
     [Header("Camera Look")]
     public float smoothLookAtSpeed = 5f;
@@ -42,7 +51,7 @@ public class FreeCameraMovement : CameraStateBase
     [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
     [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
-    private Vector3 moveSpeed = Vector3.zero;
+    private Vector3 direction = Vector3.zero;
 
     private float yaw = 0f;
     private float pitch = 0f;
@@ -93,7 +102,9 @@ public class FreeCameraMovement : CameraStateBase
     private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
     private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
+    private Vector3 nextTranslation;
     private Vector3 originalCameraPosition;
+    private Vector3 cameraVelocity = Vector3.zero;
     private Transform originalCameraLookAt;
 
     private float lastMouseWheelTime;
@@ -187,7 +198,7 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         isMouseRightClickDown = true;
-        moveSpeed = Vector3.zero;
+        direction = Vector3.zero;
     }
 
     private void OnDestroy()
@@ -231,111 +242,101 @@ public class FreeCameraMovement : CameraStateBase
         HandleCameraMovement();
     }
 
-    private void HandleCameraMovementDeceleration(Vector3 acceleration)
-    {
-        if (Mathf.Approximately(Mathf.Abs(acceleration.x), 0))
-        {
-            if (Mathf.Abs(moveSpeed.x) < decelerationMod)
-                moveSpeed.x = 0;
-            else
-                moveSpeed.x -= decelerationMod * Mathf.Sign(moveSpeed.x);
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.y), 0))
-        {
-            if (Mathf.Abs(moveSpeed.y) < decelerationMod)
-                moveSpeed.y = 0;
-            else
-                moveSpeed.y -= decelerationMod * Mathf.Sign(moveSpeed.y) * yPlaneSpeedPercentCompensantion;
-        }
-
-        if (Mathf.Approximately(Mathf.Abs(acceleration.z), 0))
-        {
-            if (Mathf.Abs(moveSpeed.z) < decelerationMod)
-                moveSpeed.z = 0;
-            else
-                moveSpeed.z -= decelerationMod * Mathf.Sign(moveSpeed.z) * zPlaneSpeedPercentCompensantion;
-        }
-    }
-
     #region CameraTransformChanges
 
     private void HandleCameraMovement()
     {
-        var acceleration = HandleKeyInput();
-        moveSpeed += acceleration;
-        HandleCameraMovementDeceleration(acceleration);
+        HandleCameraMovementInput();
+        if (direction.magnitude >= CAMERA_MOVEMENT_DEACTIVATE_INPUT_MAGNITUD)
+            nextTranslation = direction;
+        nextTranslation = Vector3.Lerp(nextTranslation, Vector3.zero, lerpTime * Time.deltaTime);
 
-        // Clamp the move speed
-        if (moveSpeed.magnitude > maximumMovementSpeed)
-        {
-            moveSpeed = moveSpeed.normalized * maximumMovementSpeed;
-        }
-
-        transform.Translate(moveSpeed);
+        if (nextTranslation.magnitude >= CAMERA_MOVEMENT_THRESHOLD)
+            transform.Translate(nextTranslation * (movementSpeed * Time.deltaTime), Space.Self);
     }
 
     private void HandleCameraLook()
     {
         Quaternion nextIteration =  Quaternion.Lerp(transform.rotation, Quaternion.Euler(new Vector3(pitch, yaw, 0f)), cameraLookAdvance);
-        transform.rotation = nextIteration;
+
+        if (Mathf.Abs(nextIteration.eulerAngles.magnitude - transform.rotation.eulerAngles.magnitude) >= CAMERA_ANGLE_THRESHOLD)
+            transform.rotation = nextIteration;
     }
 
     private void HandleCameraPan()
     {
-        panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance);
-        panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance);
+        panAxisX = Mathf.Lerp(panAxisX, 0, cameraPanAdvance * Time.deltaTime);
+        panAxisY = Mathf.Lerp(panAxisY, 0, cameraPanAdvance * Time.deltaTime);
 
-        transform.Translate(panAxisX, panAxisY, 0);
+        if (Mathf.Abs(panAxisX) >= CAMERA_PAN_THRESHOLD || Mathf.Abs(panAxisY) >= CAMERA_PAN_THRESHOLD)
+            transform.Translate(panAxisX, panAxisY, 0);
     }
 
     #endregion
 
-    private Vector3 HandleKeyInput()
+    private void HandleCameraMovementInput()
     {
-        var acceleration = Vector3.zero;
-        float currentAcceleratioMod = accelerationMod;
-        if (isMouseRightClickDown)
+
+        int velocityChangedCount = 0;
+        if (isAdvancingForward)
         {
-            if (isAdvancingForward)
-            {
-                acceleration.z += AddAcceleration(1);
-                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
-            }
-
-            if (isAdvancingBackward)
-            {
-                acceleration.z -= AddAcceleration(1);
-                currentAcceleratioMod *= zPlaneSpeedPercentCompensantion;
-            }
-
-            if (isAdvancingLeft)
-                acceleration.x -= AddAcceleration(1);
-
-            if (isAdvancingRight)
-                acceleration.x += AddAcceleration(1);
-
-            if (isAdvancingUp)
-            {
-                acceleration.y += AddAcceleration(1);
-                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
-            }
-
-            if (isAdvancingDown)
-            {
-                acceleration.y -= AddAcceleration(1);
-                currentAcceleratioMod *= yPlaneSpeedPercentCompensantion;
-            }
+            cameraVelocity += GetTotalVelocity(Vector3.forward);
+            velocityChangedCount++;
         }
 
-        return acceleration.normalized * currentAcceleratioMod;
+        if (isAdvancingBackward)
+        {
+            cameraVelocity += GetTotalVelocity(Vector3.back);
+            velocityChangedCount++;
+        }
+
+        if (!isAdvancingBackward && !isAdvancingForward)
+            cameraVelocity.z = Mathf.Lerp(cameraVelocity.z, 0, lerpDeccelerationTime);
+
+        if (isAdvancingRight)
+        {
+            cameraVelocity += GetTotalVelocity(Vector3.right) * xPlaneSpeedPercentCompensantion;
+            velocityChangedCount++;
+        }
+
+        if (isAdvancingLeft)
+        {
+            cameraVelocity += GetTotalVelocity(Vector3.left) * xPlaneSpeedPercentCompensantion;
+            velocityChangedCount++;
+        }
+
+        if (!isAdvancingRight && !isAdvancingLeft)
+            cameraVelocity.x = Mathf.Lerp(cameraVelocity.x, 0, lerpDeccelerationTime);
+
+        if (isAdvancingUp)
+        {
+            cameraVelocity += GetTotalVelocity(Vector3.up);
+            velocityChangedCount++;
+        }
+
+        if (isAdvancingDown)
+        {
+            cameraVelocity += GetTotalVelocity(Vector3.down);
+            velocityChangedCount++;
+        }
+
+        if (!isAdvancingUp && !isAdvancingDown)
+            cameraVelocity.y = Mathf.Lerp(cameraVelocity.y, 0, lerpDeccelerationTime);
+
+        if (velocityChangedCount != 0)
+            cameraVelocity = Vector3.ClampMagnitude(cameraVelocity, speedClamp);
+
+        direction = cameraVelocity;
     }
 
-    private float AddAcceleration(float accelerationToAdd)
+    private Vector3 GetTotalVelocity(Vector3 velocityToAdd)
     {
+        if (!isMouseRightClickDown)
+            return  Vector3.zero;
+
         if (isDetectingMovement)
             hasBeenMovement = true;
-        return accelerationToAdd;
+        return velocityToAdd * (initalAcceleration * Time.deltaTime);
     }
 
     public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
@@ -378,7 +379,7 @@ public class FreeCameraMovement : CameraStateBase
 
         panAxisX += -axisX * Time.deltaTime * dragSpeed;
         panAxisY += -axisY * Time.deltaTime * dragSpeed;
-        cameraPanAdvance = smoothCameraPanAceleration * Time.deltaTime;
+        cameraPanAdvance = smoothCameraPanAceleration;
     }
 
     private void CameraLook(float axisX, float axisY)
@@ -399,6 +400,13 @@ public class FreeCameraMovement : CameraStateBase
             return;
 
         Vector3 middlePoint = FindMidPoint(entitiesToFocus);
+        if (Vector3.positiveInfinity == middlePoint ||
+            Vector3.negativeInfinity == middlePoint ||
+            float.IsNaN(middlePoint.x) ||
+            float.IsNaN(middlePoint.y) ||
+            float.IsNaN(middlePoint.z))
+            return;
+
         if (smoothFocusOnTargetCor != null)
             CoroutineStarter.Stop(smoothFocusOnTargetCor);
         smoothFocusOnTargetCor = CoroutineStarter.Start(SmoothFocusOnTarget(middlePoint));
@@ -434,6 +442,8 @@ public class FreeCameraMovement : CameraStateBase
                 Vector3 midPointFromEntity = Vector3.zero;
                 foreach (Renderer render in entity.rootEntity.renderers)
                 {
+                    if (render == null)
+                        continue;
                     midPointFromEntity += render.bounds.center;
                 }
 
@@ -501,7 +511,7 @@ public class FreeCameraMovement : CameraStateBase
     {
         SetPosition(originalCameraPosition);
         LookAt(originalCameraLookAt);
-        moveSpeed = Vector3.zero;
+        direction = Vector3.zero;
     }
 
     public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
