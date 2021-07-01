@@ -343,6 +343,8 @@ public class BuildModeHUDController : IHUD
 
     public void ExitStart()
     {
+        if (view.viewGO.activeSelf)
+            return;
         UnsubscribeConfirmationModal();
 
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelExitModal;
