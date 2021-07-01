@@ -106,14 +106,14 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     private void JumpInButtonPressed()
     {
-        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
         OnJumpInPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
     }
 
     private void EditorButtonPressed()
     {
+        OnEditorPressed?.Invoke(sceneData.coords);
         BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
-        OnJumpInPressed?.Invoke(sceneData.coords);
     }
 
     private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
