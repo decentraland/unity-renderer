@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 8371733
+    totalSpriteSurfaceArea: 7229178
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -83,6 +83,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e8a30441514b5499ea02a9e5a4617028, type: 3}
   - {fileID: 21300000, guid: 4b1c9751d9ed642a190d2431fa02b5f8, type: 3}
   - {fileID: 21300000, guid: 35d9dd519b2dd8a47a6f251b25fded0f, type: 3}
+  - {fileID: 21300000, guid: 24bad1613b3e14b969cf6086aa095ffc, type: 3}
   - {fileID: 21300000, guid: 511aa971d8654400498da53ce8f013b7, type: 3}
   - {fileID: 21300000, guid: 0d4bfb71b11af4dc0967886c03434d5b, type: 3}
   - {fileID: 21300000, guid: a26c049177d1b423cbf29f2f44dd73c2, type: 3}
@@ -134,7 +135,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 40f78cd4a097349a68457a6b56dc3bf1, type: 3}
   - {fileID: 21300000, guid: ffe80fd49c01b408d81e154b74ea74bd, type: 3}
   - {fileID: 21300000, guid: f7cb20f4d2c0d4811b36bbc75a766342, type: 3}
-  - {fileID: 21300000, guid: 024cedf465dd24a4992506cd116fe900, type: 3}
   - {fileID: 21300000, guid: deb764059d1d1411bbe77fc7a862d919, type: 3}
   - {fileID: 21300000, guid: adbc79156868741f8ac478d0be653eb4, type: 3}
   - {fileID: 21300000, guid: baeafb15684bb4604bd26954c2fc9240, type: 3}
@@ -283,7 +283,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a746d1fe363ff4d8cbd468660965f720, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
   - {fileID: 21300000, guid: b529921fedbcd44e4ba4d0ad88690b3e, type: 3}
-  - {fileID: 21300000, guid: 9cd4312f23f74b04e9ca0aac7a34d46c, type: 3}
   - {fileID: 21300000, guid: 7566cf5f3986d4c32a672de8279ced32, type: 3}
   - {fileID: 21300000, guid: d40ff76fa8b254a8c9ed7c57ce1c9e21, type: 3}
   - {fileID: 21300000, guid: 60e92aaf3c91f4bc18ec574bed72f832, type: 3}
@@ -316,6 +315,7 @@ SpriteAtlas:
   - NFTStarContainer
   - ContainerRadius6
   - VoiceChatCross
+  - Isologotipo
   - SceneInfoContainer
   - Button16
   - BlockUser
@@ -367,7 +367,6 @@ SpriteAtlas:
   - TopGradientPopUp
   - ClaimIcon
   - JumpInIcon
-  - SignUpBackground
   - VoiceChatMute
   - OwnerIcon
   - DiscordIconHD
@@ -516,7 +515,6 @@ SpriteAtlas:
   - LandEmpty
   - PatternPC
   - DialogCornerLeft
-  - SignUpAvatars
   - LogOutIcon
   - RoundedContainerWhite
   - ControlsIconNew
