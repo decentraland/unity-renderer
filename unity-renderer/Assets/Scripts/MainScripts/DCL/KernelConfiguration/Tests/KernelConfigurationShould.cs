@@ -10,7 +10,6 @@ public class KernelConfigurationShould
         const float commRadiusTestValue = 1234;
         const bool voiceChatEnabledTestValue = false;
         const bool builderInWorldEnabledTestValue = false;
-        const bool avatarLODsEnabledTestValue = false;
         const string regexTestValue = "1234";
         KernelConfig.i.initialized = false;
 
@@ -31,8 +30,7 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue,
-                enableAvatarLODs = avatarLODsEnabledTestValue
+                enableBuilderInWorld = builderInWorldEnabledTestValue
             },
         });
 
@@ -65,8 +63,6 @@ public class KernelConfigurationShould
         const bool voiceChatEnabledTestValue2 = true;
         const bool builderInWorldEnabledTestValue = false;
         const bool builderInWorldEnabledTestValue2 = false;
-        const bool avatarLODsEnabledTestValue = false;
-        const bool avatarLODsEnabledTestValue2 = false;
         const string regexTestValue = "1234";
         const string regexTestValue2 = "5678";
 
@@ -89,9 +85,8 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue,
-                enableAvatarLODs = avatarLODsEnabledTestValue
-            }
+                enableBuilderInWorld = builderInWorldEnabledTestValue
+            },
         };
 
         KernelConfig.OnKernelConfigChanged onConfigChange = (current, prev) =>
@@ -144,8 +139,7 @@ public class KernelConfigurationShould
             },
             features = new Features()
             {
-                enableBuilderInWorld = builderInWorldEnabledTestValue2,
-                enableAvatarLODs = avatarLODsEnabledTestValue2
+                enableBuilderInWorld = builderInWorldEnabledTestValue2
             },
         });
         Assert.IsTrue(onChangePass);
