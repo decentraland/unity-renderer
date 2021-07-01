@@ -54,7 +54,7 @@ namespace DCL
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
-                lodGO = avatarsList[i].avatarRenderer.lodQuad.gameObject;
+                lodGO = avatarsList[i].avatarRenderer.lodRenderer.gameObject;
                 if (!lodGO.activeSelf)
                     continue;
 
@@ -105,7 +105,7 @@ namespace DCL
 
         private void ToggleLOD(AvatarRenderer avatarRenderer, bool enabled)
         {
-            avatarRenderer.lodQuad.gameObject.SetActive(enabled);
+            avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling
         }
 

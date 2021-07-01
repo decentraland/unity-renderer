@@ -70,7 +70,7 @@ namespace DCL
 
             avatarRenderer.ApplyModel(model, () =>
             {
-                if (avatarRenderer.lodQuad != null)
+                if (avatarRenderer.lodRenderer != null)
                     AvatarsLODController.i.RegisterAvatar(this);
 
                 avatarDone = true;

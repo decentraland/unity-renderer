@@ -21,7 +21,7 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
-        public MeshRenderer lodQuad;
+        public MeshRenderer lodRenderer;
 
         private AvatarModel model;
 
