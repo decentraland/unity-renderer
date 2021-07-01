@@ -207,7 +207,7 @@ public class BuilderInWorldController : MonoBehaviour
         HUDConfiguration hudConfig = new HUDConfiguration();
         hudConfig.active = true;
         hudConfig.visible = false;
-        HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
+        HUDController.i.CreateHudElement(hudConfig, HUDElementID.BUILDER_IN_WORLD_MAIN);
         HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
 
         HUDController.i.builderInWorldMainHud.Initialize();
