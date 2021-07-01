@@ -30,7 +30,7 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
-                            if (i == null)
+                            if (i == null || this == null)
                                 return;
 
                             if (config.features.enableAvatarLODs)
