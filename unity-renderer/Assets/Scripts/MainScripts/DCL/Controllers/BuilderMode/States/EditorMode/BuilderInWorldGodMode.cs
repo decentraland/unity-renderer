@@ -12,7 +12,9 @@ using Environment = DCL.Environment;
 public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
-    public float distanceEagleCamera = 20f;
+    public float initialEagleCameraHeight = 10f;
+    public float initialEagleCameraDistance = 10f;
+    public float initialEagleCameraLookAtHeight = 0f;
 
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
@@ -500,7 +502,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         SetLookAtObject(parcelScene);
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition + Vector3.up * distanceEagleCamera;
+        Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
         freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
@@ -759,11 +761,20 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
+    Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
+    {
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
+
+        return parcelScene.transform.position
+               + direction * initialEagleCameraDistance
+               + Vector3.up * initialEagleCameraHeight;
+    }
+
     void SetLookAtObject(ParcelScene parcelScene)
     {
         Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
-
-        lookAtT.position = middlePoint;
+        lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
     void SetEditObjectAtMouse()
