@@ -1,6 +1,6 @@
 namespace DCL
 {
-    public class MessagingTypes
+    public static class MessagingTypes
     {
         public const string ENTITY_COMPONENT_CREATE_OR_UPDATE = "UpdateEntityComponent";
         public const string ENTITY_CREATE = "CreateEntity";
