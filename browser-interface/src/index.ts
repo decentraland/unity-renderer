@@ -2,6 +2,7 @@
 // assume everything from the loader will be available here
 
 import future from "fp-future"
+import {generatedFiles} from "../package.json"
 
 // the following function is defined by unity, accessible via unity.loader.js
 // https://docs.unity3d.com/Manual/webgl-templates.html
@@ -53,9 +54,9 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
 
   const config = {
-    dataUrl: resolveWithBaseUrl("unity.data"),
-    frameworkUrl: resolveWithBaseUrl("unity.framework.js"),
-    codeUrl: resolveWithBaseUrl("unity.wasm"),
+    dataUrl: resolveWithBaseUrl(generatedFiles.dataUrl),
+    frameworkUrl: resolveWithBaseUrl(generatedFiles.frameworkUrl),
+    codeUrl: resolveWithBaseUrl(generatedFiles.codeUrl),
     streamingAssetsUrl: resolveWithBaseUrl("StreamingAssets"),
     companyName: "Decentraland",
     productName: "Decentraland World Client",
