@@ -30,6 +30,7 @@ namespace DCL
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
+                            // We need this check because in the CI the KernelConfig tests may have this object destroyed somehow
                             if (i == null || this == null)
                                 return;
 
