@@ -49,8 +49,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool mouseSecondaryBtnPressed = false;
     private bool isSquareMultiSelectionInputActive = false;
     private bool isMouseDragging = false;
-    private bool isTypeOfBoundSelectionSelected = false;
-    private bool isVoxelBoundMultiSelection = false;
     private bool changeSnapTemporaryButtonPressed = false;
 
     private bool wasGizmosActive = false;
@@ -71,6 +69,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+        BuilderInWorldInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BuilderInWorldInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
@@ -88,6 +87,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+        BuilderInWorldInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
         BuilderInWorldInputWrapper.OnMouseDrag -= OnInputMouseDrag;
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
@@ -117,26 +117,16 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
         {
             List<DCLBuilderInWorldEntity> allEntities = null;
-            if (!isTypeOfBoundSelectionSelected || !isVoxelBoundMultiSelection)
-                allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
-            else if (isVoxelBoundMultiSelection)
-                allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
+
+            allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
 
             foreach (DCLBuilderInWorldEntity entity in allEntities)
             {
-                if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected)
-                    continue;
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
 
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
-                    if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
-                    {
-                        isVoxelBoundMultiSelection = entity.isVoxel;
-                        isTypeOfBoundSelectionSelected = true;
-                    }
-
                     outlinerController.OutlineEntity(entity);
                 }
                 else
@@ -309,6 +299,21 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         return position;
     }
 
+    private void OnInputMouseUpOnUi(int buttonID, Vector3 position)
+    {
+        if (buttonID == 1)
+        {
+            mouseSecondaryBtnPressed = false;
+            freeCameraController.StopDetectingMovement();
+        }
+
+        if (buttonID != 0)
+            return;
+
+        CheckEndBoundMultiselection(position);
+        isMouseDragging = false;
+    }
+
     private void OnInputMouseUp(int buttonID, Vector3 position)
     {
         if (buttonID == 1)
@@ -325,14 +330,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         EndDraggingSelectedEntities();
 
-        if (isSquareMultiSelectionInputActive && mouseMainBtnPressed )
-        {
-            if (Vector3.Distance(lastMousePosition, position) >= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG)
-                EndBoundMultiSelection();
-
-            isSquareMultiSelectionInputActive = false;
-            mouseMainBtnPressed = false;
-        }
+        CheckEndBoundMultiselection(position);
 
         outlinerController.SetOutlineCheckActive(true);
 
@@ -369,8 +367,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
         {
             isSquareMultiSelectionInputActive = true;
-            isTypeOfBoundSelectionSelected = false;
-            isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
 
@@ -379,6 +375,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     }
 
     #endregion
+
+    private void CheckEndBoundMultiselection(Vector3 position)
+    {
+        if (isSquareMultiSelectionInputActive && mouseMainBtnPressed )
+        {
+            if (Vector3.Distance(lastMousePosition, position) >= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG)
+                EndBoundMultiSelection();
+
+            isSquareMultiSelectionInputActive = false;
+            mouseMainBtnPressed = false;
+        }
+    }
 
     private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement; }
 
@@ -421,10 +429,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         freeCameraController.SetCameraCanMove(true);
         List<DCLBuilderInWorldEntity> allEntities = null;
-        if (!isVoxelBoundMultiSelection)
-            allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
-        else
-            allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
+
+        allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
 
         List<DCLBuilderInWorldEntity> selectedInsideBoundsEntities = new List<DCLBuilderInWorldEntity>();
         int alreadySelectedEntities = 0;
@@ -434,10 +440,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
-            if ((entity.isVoxel && !isVoxelBoundMultiSelection) ||
-                !entity.IsVisible)
-                continue;
-
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
@@ -619,7 +621,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void EntityDoubleClick(DCLBuilderInWorldEntity entity)
     {
         base.EntityDoubleClick(entity);
-        LookAtEntity(entity.rootEntity);
+        if (!entity.IsLocked)
+            LookAtEntity(entity.rootEntity);
     }
 
     private void UpdateActionsInteractable()

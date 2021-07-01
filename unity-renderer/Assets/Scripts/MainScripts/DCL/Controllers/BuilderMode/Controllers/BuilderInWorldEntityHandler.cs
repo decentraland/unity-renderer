@@ -509,8 +509,9 @@ public class BuilderInWorldEntityHandler : BIWController
     public DCLBuilderInWorldEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
-        //Note: If the entity contains the name component, we don't want to copy the name
+        //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
         entity.RemoveSharedComponent(typeof(DCLName), false);
+        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(entity);
