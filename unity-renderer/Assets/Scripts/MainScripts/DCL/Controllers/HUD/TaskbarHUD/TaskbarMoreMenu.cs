@@ -26,7 +26,7 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal TaskbarMoreMenuButton nightModeButton;
 
     private TaskbarHUDView view;
-    protected List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
+    protected internal List<TaskbarMoreMenuButton> sortedButtonsAnimations = new List<TaskbarMoreMenuButton>();
     internal Coroutine moreMenuAnimationsCoroutine;
 
     public event System.Action<bool> OnMoreMenuOpened;
