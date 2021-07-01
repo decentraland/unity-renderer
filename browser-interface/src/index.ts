@@ -53,9 +53,9 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
 
   const config = {
-    dataUrl: resolveWithBaseUrl("unity.data.unityweb"),
-    frameworkUrl: resolveWithBaseUrl("unity.framework.js.unityweb"),
-    codeUrl: resolveWithBaseUrl("unity.wasm.unityweb"),
+    dataUrl: resolveWithBaseUrl("unity.data"),
+    frameworkUrl: resolveWithBaseUrl("unity.framework.js"),
+    codeUrl: resolveWithBaseUrl("unity.wasm"),
     streamingAssetsUrl: resolveWithBaseUrl("StreamingAssets"),
     companyName: "Decentraland",
     productName: "Decentraland World Client",
