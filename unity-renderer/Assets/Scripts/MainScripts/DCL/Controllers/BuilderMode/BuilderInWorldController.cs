@@ -809,6 +809,7 @@ public class BuilderInWorldController : MonoBehaviour
         Notification.Model notificationModel = new Notification.Model();
         notificationModel.message = message;
         notificationModel.type = NotificationFactory.Type.GENERIC;
+        notificationModel.timer = 10f;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }
