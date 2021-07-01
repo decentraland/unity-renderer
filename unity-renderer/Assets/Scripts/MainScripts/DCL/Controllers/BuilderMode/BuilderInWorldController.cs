@@ -253,7 +253,7 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         if (areCatalogHeadersReady)
-            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
         else
             builderInWorldBridge.AskKernelForCatalogHeaders();
 
