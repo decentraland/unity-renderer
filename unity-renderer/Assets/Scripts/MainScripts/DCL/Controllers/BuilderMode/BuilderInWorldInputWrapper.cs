@@ -14,6 +14,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     public static event Action<int, Vector3> OnMouseClickOnUI;
     public static event Action<int, Vector3> OnMouseDown;
     public static event Action<int, Vector3> OnMouseUp;
+    public static event Action<int, Vector3> OnMouseUpOnUI;
 
     public static event Action<float> OnMouseWheel;
 
@@ -71,6 +72,8 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
                 return;
             OnMouseClick?.Invoke(buttonId, mousePosition);
         }
+        else
+            OnMouseUpOnUI?.Invoke(buttonId, mousePosition);
     }
 
     private void MouseDown(int buttonId, Vector3 mousePosition)
