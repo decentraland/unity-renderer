@@ -2596,7 +2596,7 @@ MonoBehaviour:
   lineOnIndicator: {fileID: 8732571876791626547}
   iconImage: {fileID: 494223209092887929}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
-  compatibleModes: 0000000001000000
+  compatibleModes: 00000000
 --- !u!114 &5137945526149666104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3299,7 +3299,7 @@ MonoBehaviour:
   lineOnIndicator: {fileID: 124698351805280561}
   iconImage: {fileID: 1318800973797180785}
   notInteractableColor: {r: 0.36862746, g: 0.36862746, b: 0.36862746, a: 1}
-  compatibleModes: 0000000001000000
+  compatibleModes: 00000000
 --- !u!114 &5292177451088930375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9037,12 +9037,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4199d1bf2ba584fd99764b0c63d3ac33, type: 3}
---- !u!224 &789058369351840629 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7603169181453700376, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
-    type: 3}
-  m_PrefabInstance: {fileID: 7165418864811785837}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7962135255627428372 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 941113415273041017, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
@@ -9055,6 +9049,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59cf3b25a6a94191bd535222239d479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &789058369351840629 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7603169181453700376, guid: 4199d1bf2ba584fd99764b0c63d3ac33,
+    type: 3}
+  m_PrefabInstance: {fileID: 7165418864811785837}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8954342143867413549
 PrefabInstance:
   m_ObjectHideFlags: 0
