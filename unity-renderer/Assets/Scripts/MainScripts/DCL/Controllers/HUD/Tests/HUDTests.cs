@@ -10,16 +10,17 @@ namespace Tests
     {
         protected override bool justSceneSetUp => true;
 
+        private IHUDController hudController = null;
+
         protected override IEnumerator SetUp()
         {
-            IHUDController hudController = DCL.Environment.i.hud.controller;
+            hudController = DCL.Environment.i.hud.controller;
             yield return base.SetUp();
             hudController.Cleanup();
         }
 
         protected override IEnumerator TearDown()
         {
-            IHUDController hudController = DCL.Environment.i.hud.controller;
             hudController.Cleanup();
             yield return base.TearDown();
         }
@@ -28,7 +29,6 @@ namespace Tests
         public IEnumerator NotCreateHUDsInitially()
         {
             // There must be a hud controller
-            IHUDController hudController = DCL.Environment.i.hud.controller;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
             hudController.Cleanup();
@@ -45,7 +45,6 @@ namespace Tests
         public IEnumerator CreateHudIfConfigurationIsActive()
         {
             // There must be a hud controller
-            IHUDController hudController = DCL.Environment.i.hud.controller;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
             HUDConfiguration config = new HUDConfiguration() { active = true, visible = true };
