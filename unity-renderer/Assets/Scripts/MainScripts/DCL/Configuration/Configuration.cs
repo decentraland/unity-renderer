@@ -37,6 +37,7 @@ namespace DCL.Configuration
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
+        public const string FLOOR_ASSET_PACK_NAME = "Genesis City";
 
         public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";
@@ -64,6 +65,9 @@ namespace DCL.Configuration
         public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
         public const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this project. But don't worry, next time you enter the editor you will be able to continue where you left off!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON = "GOT IT!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON = "BACK";
 
         //Others
         public const float RAYCAST_MAX_DISTANCE = 10000f;

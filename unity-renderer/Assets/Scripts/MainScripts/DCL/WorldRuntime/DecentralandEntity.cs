@@ -13,6 +13,7 @@ namespace DCL.Models
     {
         public IParcelScene scene { get; set; }
         public bool markedForCleanup { get; set; } = false;
+        public bool isInsideBoundaries { get; set; } = false;
 
         public Dictionary<string, IDCLEntity> children { get; private set; } = new Dictionary<string, IDCLEntity>();
         public IDCLEntity parent { get; private set; }

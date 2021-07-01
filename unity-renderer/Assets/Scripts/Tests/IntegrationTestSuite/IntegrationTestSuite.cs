@@ -21,7 +21,8 @@ namespace Tests
             Environment.SetupWithBuilders(
                 messagingBuilder: CreateMessagingContext,
                 platformBuilder: CreatePlatformContext,
-                worldRuntimeBuilder: CreateRuntimeContext
+                worldRuntimeBuilder: CreateRuntimeContext,
+                hudBuilder: HUDContextFactory.CreateDefault
             );
             yield break;
         }

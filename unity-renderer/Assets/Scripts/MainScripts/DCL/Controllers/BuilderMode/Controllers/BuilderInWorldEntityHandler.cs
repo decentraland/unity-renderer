@@ -91,6 +91,8 @@ public class BuilderInWorldEntityHandler : BIWController
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
     }
 
     private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
@@ -115,6 +117,11 @@ public class BuilderInWorldEntityHandler : BIWController
         hideSelectedEntitiesAction.OnTriggered -= hideSelectedEntitiesDelegate;
         showAllEntitiesAction.OnTriggered -= showAllEntitiesDelegate;
 
+        DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
+
+        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
+        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+
         if (hudController == null)
             return;
 
@@ -126,9 +133,6 @@ public class BuilderInWorldEntityHandler : BIWController
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
         hudController.OnEntityRename -= SetEntityName;
-
-        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
     }
 
     protected override void FrameUpdate()
@@ -186,8 +190,8 @@ public class BuilderInWorldEntityHandler : BIWController
     {
         foreach (DCLBuilderInWorldEntity entity in convertedEntities.Values)
         {
-            //If the entity doesn't have a catalog item associated, we can be sure that the item is deleted
-            if (entity.GetCatalogItemAssociated() == null)
+            entity.CheckErrors();
+            if (entity.hasMissingCatalogItemError)
                 biwCreatorController.CreateErrorOnEntity(entity);
         }
     }
@@ -460,12 +464,12 @@ public class BuilderInWorldEntityHandler : BIWController
         return entities;
     }
 
-    public DCLBuilderInWorldEntity GetEntity(string entityId)
+    public DCLBuilderInWorldEntity GetConvertedEntity(string entityId)
     {
         if (convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entityId)))
             return convertedEntities[GetConvertedUniqueKeyForEntity(entityId)];
-        else
-            return null;
+
+        return null;
     }
 
     public DCLBuilderInWorldEntity GetConvertedEntity(IDCLEntity entity)
@@ -505,8 +509,9 @@ public class BuilderInWorldEntityHandler : BIWController
     public DCLBuilderInWorldEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
-        //Note: If the entity contains the name component, we don't want to copy the name
+        //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
         entity.RemoveSharedComponent(typeof(DCLName), false);
+        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(entity);
@@ -670,6 +675,15 @@ public class BuilderInWorldEntityHandler : BIWController
         {
             return convertedEntities[GetConvertedUniqueKeyForEntity(entity)];
         }
+    }
+
+    private void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
+    {
+        var convertedEntity = GetConvertedEntity(entity);
+        if (convertedEntity == null)
+            return;
+
+        convertedEntity.SetEntityBoundariesError(isInsideBoundaries);
     }
 
     public string GetNewNameForEntity(CatalogItem sceneObject) { return GetNewNameForEntity(sceneObject.name); }

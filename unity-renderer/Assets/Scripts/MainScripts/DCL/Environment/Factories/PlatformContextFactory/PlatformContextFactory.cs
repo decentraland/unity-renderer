@@ -1,5 +1,5 @@
-using DCL.Rendering;
 using DCL.Bots;
+using DCL.Rendering;
 
 namespace DCL
 {
