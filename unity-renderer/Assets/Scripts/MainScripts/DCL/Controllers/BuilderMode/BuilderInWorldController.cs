@@ -548,6 +548,7 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
@@ -647,7 +648,7 @@ public class BuilderInWorldController : MonoBehaviour
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
         snapGO.transform.SetParent(transform);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;

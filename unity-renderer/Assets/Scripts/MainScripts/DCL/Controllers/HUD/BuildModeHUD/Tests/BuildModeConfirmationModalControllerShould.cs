@@ -39,6 +39,19 @@ namespace Tests.BuildModeHUDControllers
         [Test]
         [TestCase(true)]
         [TestCase(false)]
+        public void IsActiveCorrectly(bool isActive)
+        {
+            // Act
+            exitFromBiWModalController.SetActive(isActive, BuildModeModalType.EXIT);
+
+            // Assert
+            // Assert
+            Assert.AreEqual(isActive, exitFromBiWModalController.IsViewActive(), "View activate property does not match!");
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
         public void SetActiveCorrectly(bool isActive)
         {
             // Act
