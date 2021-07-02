@@ -30,12 +30,14 @@ namespace DCL.Camera
 
         [Header("Camera Look")]
         public float smoothLookAtSpeed = 5f;
+
         public float smoothCameraLookSpeed = 5f;
         public float lookSpeedH = 2f;
         public float lookSpeedV = 2f;
 
         [Header("Camera Pan")]
         public float smoothCameraPanAceleration = 5f;
+
         public float dragSpeed = 3f;
 
         [Header("Camera Zoom")]
@@ -44,14 +46,14 @@ namespace DCL.Camera
         [Header("InputActions")]
         [SerializeField] internal InputAction_Hold advanceFowardInputAction;
 
-            [SerializeField] internal InputAction_Hold advanceBackInputAction;
-            [SerializeField] internal InputAction_Hold advanceLeftInputAction;
-            [SerializeField] internal InputAction_Hold advanceRightInputAction;
-            [SerializeField] internal InputAction_Hold advanceUpInputAction;
-            [SerializeField] internal InputAction_Hold advanceDownInputAction;
-            [SerializeField] internal InputAction_Hold cameraPanInputAction;
-            [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
-            [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
+        [SerializeField] internal InputAction_Hold advanceBackInputAction;
+        [SerializeField] internal InputAction_Hold advanceLeftInputAction;
+        [SerializeField] internal InputAction_Hold advanceRightInputAction;
+        [SerializeField] internal InputAction_Hold advanceUpInputAction;
+        [SerializeField] internal InputAction_Hold advanceDownInputAction;
+        [SerializeField] internal InputAction_Hold cameraPanInputAction;
+        [SerializeField] internal InputAction_Trigger zoomInFromKeyboardInputAction;
+        [SerializeField] internal InputAction_Trigger zoomOutFromKeyboardInputAction;
 
         private Vector3 direction = Vector3.zero;
 
@@ -63,46 +65,46 @@ namespace DCL.Camera
 
         private bool isCameraAbleToMove = true;
 
-            private bool isAdvancingForward = false;
-            private bool isAdvancingBackward = false;
-            private bool isAdvancingLeft = false;
-            private bool isAdvancingRight = false;
-            private bool isAdvancingUp = false;
-            private bool isAdvancingDown = false;
+        private bool isAdvancingForward = false;
+        private bool isAdvancingBackward = false;
+        private bool isAdvancingLeft = false;
+        private bool isAdvancingRight = false;
+        private bool isAdvancingUp = false;
+        private bool isAdvancingDown = false;
 
-            private bool isDetectingMovement = false;
-            private bool hasBeenMovement = false;
+        private bool isDetectingMovement = false;
+        private bool hasBeenMovement = false;
 
-            private bool isPanCameraActive = false;
-            private bool isMouseRightClickDown = false;
+        private bool isPanCameraActive = false;
+        private bool isMouseRightClickDown = false;
 
-            private Coroutine smoothLookAtCor;
-            private Coroutine smoothFocusOnTargetCor;
-            private Coroutine smoothScrollCor;
+        private Coroutine smoothLookAtCor;
+        private Coroutine smoothFocusOnTargetCor;
+        private Coroutine smoothScrollCor;
 
-            private InputAction_Hold.Started advanceForwardStartDelegate;
-            private InputAction_Hold.Finished advanceForwardFinishedDelegate;
+        private InputAction_Hold.Started advanceForwardStartDelegate;
+        private InputAction_Hold.Finished advanceForwardFinishedDelegate;
 
-            private InputAction_Hold.Started advanceBackStartDelegate;
-            private InputAction_Hold.Finished advanceBackFinishedDelegate;
+        private InputAction_Hold.Started advanceBackStartDelegate;
+        private InputAction_Hold.Finished advanceBackFinishedDelegate;
 
-            private InputAction_Hold.Started advanceLeftStartDelegate;
-            private InputAction_Hold.Finished advanceLeftFinishedDelegate;
+        private InputAction_Hold.Started advanceLeftStartDelegate;
+        private InputAction_Hold.Finished advanceLeftFinishedDelegate;
 
-            private InputAction_Hold.Started advanceRightStartDelegate;
-            private InputAction_Hold.Finished advanceRightFinishedDelegate;
+        private InputAction_Hold.Started advanceRightStartDelegate;
+        private InputAction_Hold.Finished advanceRightFinishedDelegate;
 
-            private InputAction_Hold.Started advanceDownStartDelegate;
-            private InputAction_Hold.Finished advanceDownFinishedDelegate;
+        private InputAction_Hold.Started advanceDownStartDelegate;
+        private InputAction_Hold.Finished advanceDownFinishedDelegate;
 
-            private InputAction_Hold.Started advanceUpStartDelegate;
-            private InputAction_Hold.Finished advanceUpFinishedDelegate;
+        private InputAction_Hold.Started advanceUpStartDelegate;
+        private InputAction_Hold.Finished advanceUpFinishedDelegate;
 
-            private InputAction_Hold.Started cameraPanStartDelegate;
-            private InputAction_Hold.Finished cameraPanFinishedDelegate;
+        private InputAction_Hold.Started cameraPanStartDelegate;
+        private InputAction_Hold.Finished cameraPanFinishedDelegate;
 
-            private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
-            private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
+        private InputAction_Trigger.Triggered zoomInFromKeyboardDelegate;
+        private InputAction_Trigger.Triggered zoomOutFromKeyboardDelegate;
 
         private Vector3 nextTranslation;
         private Vector3 originalCameraPosition;
@@ -113,129 +115,129 @@ namespace DCL.Camera
         private float cameraPanAdvance;
         private float cameraLookAdvance;
 
-            public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
+        public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
 
-            private void Awake()
-            {
-                BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
-                BuilderInWorldInputWrapper.OnMouseDragRaw += MouseDragRaw;
-                BuilderInWorldInputWrapper.OnMouseWheel += MouseWheel;
+        private void Awake()
+        {
+            BuilderInWorldInputWrapper.OnMouseDrag += MouseDrag;
+            BuilderInWorldInputWrapper.OnMouseDragRaw += MouseDragRaw;
+            BuilderInWorldInputWrapper.OnMouseWheel += MouseWheel;
 
-                BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
-                BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+            BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
+            BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
 
-                DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
-                DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
 
-                advanceForwardStartDelegate = (action) => isAdvancingForward = true;
-                advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
+            advanceForwardStartDelegate = (action) => isAdvancingForward = true;
+            advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
 
-                advanceFowardInputAction.OnStarted += advanceForwardStartDelegate;
-                advanceFowardInputAction.OnFinished += advanceForwardFinishedDelegate;
+            advanceFowardInputAction.OnStarted += advanceForwardStartDelegate;
+            advanceFowardInputAction.OnFinished += advanceForwardFinishedDelegate;
 
-                advanceBackStartDelegate = (action) => isAdvancingBackward = true;
-                advanceBackFinishedDelegate = (action) => isAdvancingBackward = false;
+            advanceBackStartDelegate = (action) => isAdvancingBackward = true;
+            advanceBackFinishedDelegate = (action) => isAdvancingBackward = false;
 
-                advanceBackInputAction.OnStarted += advanceBackStartDelegate;
-                advanceBackInputAction.OnFinished += advanceBackFinishedDelegate;
+            advanceBackInputAction.OnStarted += advanceBackStartDelegate;
+            advanceBackInputAction.OnFinished += advanceBackFinishedDelegate;
 
-                advanceLeftStartDelegate = (action) => isAdvancingLeft = true;
-                advanceLeftFinishedDelegate = (action) => isAdvancingLeft = false;
+            advanceLeftStartDelegate = (action) => isAdvancingLeft = true;
+            advanceLeftFinishedDelegate = (action) => isAdvancingLeft = false;
 
-                advanceLeftInputAction.OnStarted += advanceLeftStartDelegate;
-                advanceLeftInputAction.OnFinished += advanceLeftFinishedDelegate;
+            advanceLeftInputAction.OnStarted += advanceLeftStartDelegate;
+            advanceLeftInputAction.OnFinished += advanceLeftFinishedDelegate;
 
-                advanceRightStartDelegate = (action) => isAdvancingRight = true;
-                advanceRightFinishedDelegate = (action) => isAdvancingRight = false;
+            advanceRightStartDelegate = (action) => isAdvancingRight = true;
+            advanceRightFinishedDelegate = (action) => isAdvancingRight = false;
 
-                advanceRightInputAction.OnStarted += advanceRightStartDelegate;
-                advanceRightInputAction.OnFinished += advanceRightFinishedDelegate;
+            advanceRightInputAction.OnStarted += advanceRightStartDelegate;
+            advanceRightInputAction.OnFinished += advanceRightFinishedDelegate;
 
-                advanceUpStartDelegate = (action) => isAdvancingUp = true;
-                advanceUpFinishedDelegate = (action) => isAdvancingUp = false;
+            advanceUpStartDelegate = (action) => isAdvancingUp = true;
+            advanceUpFinishedDelegate = (action) => isAdvancingUp = false;
 
-                advanceUpInputAction.OnStarted += advanceUpStartDelegate;
-                advanceUpInputAction.OnFinished += advanceUpFinishedDelegate;
+            advanceUpInputAction.OnStarted += advanceUpStartDelegate;
+            advanceUpInputAction.OnFinished += advanceUpFinishedDelegate;
 
-                advanceDownStartDelegate = (action) => isAdvancingDown = true;
-                advanceDownFinishedDelegate = (action) => isAdvancingDown = false;
+            advanceDownStartDelegate = (action) => isAdvancingDown = true;
+            advanceDownFinishedDelegate = (action) => isAdvancingDown = false;
 
-                advanceDownInputAction.OnStarted += advanceDownStartDelegate;
-                advanceDownInputAction.OnFinished += advanceDownFinishedDelegate;
+            advanceDownInputAction.OnStarted += advanceDownStartDelegate;
+            advanceDownInputAction.OnFinished += advanceDownFinishedDelegate;
 
-                cameraPanStartDelegate = (action) => isPanCameraActive = true;
-                cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
+            cameraPanStartDelegate = (action) => isPanCameraActive = true;
+            cameraPanFinishedDelegate = (action) => isPanCameraActive = false;
 
-                cameraPanInputAction.OnStarted += cameraPanStartDelegate;
-                cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
+            cameraPanInputAction.OnStarted += cameraPanStartDelegate;
+            cameraPanInputAction.OnFinished += cameraPanFinishedDelegate;
 
-                zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
-                zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
+            zoomInFromKeyboardDelegate = (action) => MouseWheel(1f);
+            zoomInFromKeyboardInputAction.OnTriggered += zoomInFromKeyboardDelegate;
 
-                zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
-                zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
-            }
+            zoomOutFromKeyboardDelegate = (action) => MouseWheel(-1f);
+            zoomOutFromKeyboardInputAction.OnTriggered += zoomOutFromKeyboardDelegate;
+        }
 
-            public void StartDectectingMovement()
-            {
-                isDetectingMovement = true;
-                hasBeenMovement = false;
-            }
+        public void StartDectectingMovement()
+        {
+            isDetectingMovement = true;
+            hasBeenMovement = false;
+        }
 
-            public bool HasBeenMovement => hasBeenMovement;
+        public bool HasBeenMovement => hasBeenMovement;
 
-            public void StopDetectingMovement() { isDetectingMovement = false; }
+        public void StopDetectingMovement() { isDetectingMovement = false; }
 
-            private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
-            {
-                if (buttonId != 1)
-                    return;
+        private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
+        {
+            if (buttonId != 1)
+                return;
 
-                isMouseRightClickDown = false;
-            }
+            isMouseRightClickDown = false;
+        }
 
-            private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
-            {
-                if (buttonId != 1)
-                    return;
+        private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
+        {
+            if (buttonId != 1)
+                return;
 
             isMouseRightClickDown = true;
             direction = Vector3.zero;
         }
 
-            private void OnDestroy()
-            {
-                BuilderInWorldInputWrapper.OnMouseDrag -= MouseDrag;
-                BuilderInWorldInputWrapper.OnMouseDragRaw -= MouseDragRaw;
-                BuilderInWorldInputWrapper.OnMouseWheel -= MouseWheel;
+        private void OnDestroy()
+        {
+            BuilderInWorldInputWrapper.OnMouseDrag -= MouseDrag;
+            BuilderInWorldInputWrapper.OnMouseDragRaw -= MouseDragRaw;
+            BuilderInWorldInputWrapper.OnMouseWheel -= MouseWheel;
 
-                BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
-                BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+            BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
+            BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
 
-                advanceFowardInputAction.OnStarted -= advanceForwardStartDelegate;
-                advanceFowardInputAction.OnFinished -= advanceForwardFinishedDelegate;
+            advanceFowardInputAction.OnStarted -= advanceForwardStartDelegate;
+            advanceFowardInputAction.OnFinished -= advanceForwardFinishedDelegate;
 
-                advanceBackInputAction.OnStarted -= advanceBackStartDelegate;
-                advanceBackInputAction.OnFinished -= advanceBackFinishedDelegate;
+            advanceBackInputAction.OnStarted -= advanceBackStartDelegate;
+            advanceBackInputAction.OnFinished -= advanceBackFinishedDelegate;
 
-                advanceLeftInputAction.OnStarted -= advanceLeftStartDelegate;
-                advanceLeftInputAction.OnFinished -= advanceLeftFinishedDelegate;
+            advanceLeftInputAction.OnStarted -= advanceLeftStartDelegate;
+            advanceLeftInputAction.OnFinished -= advanceLeftFinishedDelegate;
 
-                advanceRightInputAction.OnStarted -= advanceRightStartDelegate;
-                advanceRightInputAction.OnFinished -= advanceRightFinishedDelegate;
+            advanceRightInputAction.OnStarted -= advanceRightStartDelegate;
+            advanceRightInputAction.OnFinished -= advanceRightFinishedDelegate;
 
-                advanceDownInputAction.OnStarted -= advanceDownStartDelegate;
-                advanceDownInputAction.OnFinished -= advanceDownFinishedDelegate;
+            advanceDownInputAction.OnStarted -= advanceDownStartDelegate;
+            advanceDownInputAction.OnFinished -= advanceDownFinishedDelegate;
 
-                advanceUpInputAction.OnStarted -= advanceUpStartDelegate;
-                advanceUpInputAction.OnFinished -= advanceUpFinishedDelegate;
+            advanceUpInputAction.OnStarted -= advanceUpStartDelegate;
+            advanceUpInputAction.OnFinished -= advanceUpFinishedDelegate;
 
-                cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
-                cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
+            cameraPanInputAction.OnStarted -= cameraPanStartDelegate;
+            cameraPanInputAction.OnFinished -= cameraPanFinishedDelegate;
 
-                zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
-                zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
-            }
+            zoomInFromKeyboardInputAction.OnTriggered -= zoomInFromKeyboardDelegate;
+            zoomOutFromKeyboardInputAction.OnTriggered -= zoomOutFromKeyboardDelegate;
+        }
 
         private void Update()
         {
@@ -278,7 +280,6 @@ namespace DCL.Camera
 
         private void HandleCameraMovementInput()
         {
-
             int velocityChangedCount = 0;
             if (isAdvancingForward)
             {
@@ -341,38 +342,38 @@ namespace DCL.Camera
             return velocityToAdd * (initalAcceleration * Time.deltaTime);
         }
 
-            public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
+        public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
 
-            private void OnGizmoTransformObjectEnd(string gizmoType) { isCameraAbleToMove = true; }
+        private void OnGizmoTransformObjectEnd(string gizmoType) { isCameraAbleToMove = true; }
 
-            private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
+        private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
 
-            private void MouseWheel(float axis)
-            {
-                if (!isCameraAbleToMove)
-                    return;
+        private void MouseWheel(float axis)
+        {
+            if (!isCameraAbleToMove)
+                return;
 
-                if (smoothScrollCor != null)
-                    CoroutineStarter.Stop(smoothScrollCor);
+            if (smoothScrollCor != null)
+                CoroutineStarter.Stop(smoothScrollCor);
 
-                float delta = Time.time - lastMouseWheelTime;
-                float scrollValue = axis * Mathf.Clamp01(delta);
-                lastMouseWheelTime = Time.time;
+            float delta = Time.time - lastMouseWheelTime;
+            float scrollValue = axis * Mathf.Clamp01(delta);
+            lastMouseWheelTime = Time.time;
 
-                smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
-            }
+            smoothScrollCor = CoroutineStarter.Start(SmoothScroll(scrollValue));
+        }
 
-            private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
-            {
-                if (buttonId == 1 && !isPanCameraActive)
-                    CameraLook(axisX, axisY);
-            }
+        private void MouseDragRaw(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+        {
+            if (buttonId == 1 && !isPanCameraActive)
+                CameraLook(axisX, axisY);
+        }
 
-            private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
-            {
-                if (buttonId == 2 || buttonId == 1 && isPanCameraActive)
-                    CameraDrag(axisX, axisY);
-            }
+        private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+        {
+            if (buttonId == 2 || buttonId == 1 && isPanCameraActive)
+                CameraDrag(axisX, axisY);
+        }
 
         private void CameraDrag(float axisX, float axisY)
         {
@@ -394,7 +395,7 @@ namespace DCL.Camera
             cameraLookAdvance = smoothCameraLookSpeed * Time.deltaTime;
         }
 
-            public override Vector3 OnGetRotation() { return transform.eulerAngles; }
+        public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
         public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
         {
@@ -415,23 +416,23 @@ namespace DCL.Camera
             SmoothLookAt(middlePoint);
         }
 
-            public void SetPosition(Vector3 position) { transform.position = position; }
+        public void SetPosition(Vector3 position) { transform.position = position; }
 
-            public void LookAt(Transform transformToLookAt)
-            {
-                transform.LookAt(transformToLookAt);
-                yaw = transform.eulerAngles.y;
-                pitch = transform.eulerAngles.x;
-            }
+        public void LookAt(Transform transformToLookAt)
+        {
+            transform.LookAt(transformToLookAt);
+            yaw = transform.eulerAngles.y;
+            pitch = transform.eulerAngles.x;
+        }
 
         public void SmoothLookAt(Transform transformToLookAt) { SmoothLookAt(transformToLookAt.position); }
 
-            public void SmoothLookAt(Vector3 position)
-            {
-                if (smoothLookAtCor != null)
-                    CoroutineStarter.Stop(smoothLookAtCor);
-                smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
-            }
+        public void SmoothLookAt(Vector3 position)
+        {
+            if (smoothLookAtCor != null)
+                CoroutineStarter.Stop(smoothLookAtCor);
+            smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
+        }
 
         Vector3 FindMidPoint(List<DCLBuilderInWorldEntity> entitiesToLook)
         {
@@ -449,65 +450,65 @@ namespace DCL.Camera
                         midPointFromEntity += render.bounds.center;
                     }
 
-                        midPointFromEntity /= entity.rootEntity.renderers.Length;
-                        finalPosition += midPointFromEntity;
-                        totalPoints++;
-                    }
-                }
-
-                finalPosition /= totalPoints;
-                return finalPosition;
-            }
-
-            IEnumerator SmoothScroll(float axis)
-            {
-                float scrollMovementDestination = axis * zoomSpeed;
-
-                Vector3 targetPosition = transform.position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
-
-                float advance = 0;
-                while (advance <= 1)
-                {
-                    advance += smoothLookAtSpeed * Time.deltaTime;
-                    Vector3 result = Vector3.Lerp(transform.position, targetPosition, advance);
-                    transform.position = result;
-                    yield return null;
+                    midPointFromEntity /= entity.rootEntity.renderers.Length;
+                    finalPosition += midPointFromEntity;
+                    totalPoints++;
                 }
             }
 
-            IEnumerator SmoothFocusOnTarget(Vector3 targetPosition)
+            finalPosition /= totalPoints;
+            return finalPosition;
+        }
+
+        IEnumerator SmoothScroll(float axis)
+        {
+            float scrollMovementDestination = axis * zoomSpeed;
+
+            Vector3 targetPosition = transform.position + transform.TransformDirection(Vector3.forward * scrollMovementDestination);
+
+            float advance = 0;
+            while (advance <= 1)
             {
-                float advance = 0;
-                while (advance <= 1)
-                {
-                    advance += smoothLookAtSpeed * Time.deltaTime;
-                    transform.position = Vector3.Lerp(transform.position, targetPosition, advance);
-                    if (Vector3.Distance(transform.position, targetPosition) <= focusDistance)
-                        yield break;
-                    yield return null;
-                }
+                advance += smoothLookAtSpeed * Time.deltaTime;
+                Vector3 result = Vector3.Lerp(transform.position, targetPosition, advance);
+                transform.position = result;
+                yield return null;
+            }
+        }
+
+        IEnumerator SmoothFocusOnTarget(Vector3 targetPosition)
+        {
+            float advance = 0;
+            while (advance <= 1)
+            {
+                advance += smoothLookAtSpeed * Time.deltaTime;
+                transform.position = Vector3.Lerp(transform.position, targetPosition, advance);
+                if (Vector3.Distance(transform.position, targetPosition) <= focusDistance)
+                    yield break;
+                yield return null;
+            }
+        }
+
+        IEnumerator SmoothLookAtCorutine(Vector3 targetPosition)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
+            float advance = 0;
+            while (advance <= 1)
+            {
+                advance += smoothLookAtSpeed * Time.deltaTime;
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, advance);
+                yield return null;
             }
 
-            IEnumerator SmoothLookAtCorutine(Vector3 targetPosition)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
-                float advance = 0;
-                while (advance <= 1)
-                {
-                    advance += smoothLookAtSpeed * Time.deltaTime;
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, advance);
-                    yield return null;
-                }
+            yaw = transform.eulerAngles.y;
+            pitch = transform.eulerAngles.x;
+        }
 
-                yaw = transform.eulerAngles.y;
-                pitch = transform.eulerAngles.x;
-            }
-
-            public void SetResetConfiguration(Vector3 position, Transform lookAt)
-            {
-                originalCameraPosition = position;
-                originalCameraLookAt = lookAt;
-            }
+        public void SetResetConfiguration(Vector3 position, Transform lookAt)
+        {
+            originalCameraPosition = position;
+            originalCameraLookAt = lookAt;
+        }
 
         public void ResetCameraPosition()
         {
@@ -516,56 +517,55 @@ namespace DCL.Camera
             direction = Vector3.zero;
         }
 
-            public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
 
-            private IEnumerator TakeSceneScreenshotCoroutine(OnSnapshotsReady callback)
-            {
-                var current = camera.targetTexture;
-                camera.targetTexture = null;
+        private IEnumerator TakeSceneScreenshotCoroutine(OnSnapshotsReady callback)
+        {
+            var current = camera.targetTexture;
+            camera.targetTexture = null;
 
-                yield return null;
+            yield return null;
 
-                Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
-                camera.targetTexture = current;
-                callback?.Invoke(sceneScreenshot);
-            }
+            Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            camera.targetTexture = current;
+            callback?.Invoke(sceneScreenshot);
+        }
 
-            public void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
+        public void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
 
-            private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(OnSnapshotsReady callback)
-            {
-                // Store current camera position/direction
-                Vector3 currentPos = transform.position;
-                Vector3 currentLookAt = transform.forward;
-                SetPosition(originalCameraPosition);
-                transform.LookAt(originalCameraLookAt);
+        private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(OnSnapshotsReady callback)
+        {
+            // Store current camera position/direction
+            Vector3 currentPos = transform.position;
+            Vector3 currentLookAt = transform.forward;
+            SetPosition(originalCameraPosition);
+            transform.LookAt(originalCameraLookAt);
 
-                var current = camera.targetTexture;
-                camera.targetTexture = null;
+            var current = camera.targetTexture;
+            camera.targetTexture = null;
 
-                    yield return null;
+            yield return null;
 
-                Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
-                camera.targetTexture = current;
-                callback?.Invoke(sceneScreenshot);
+            Texture2D sceneScreenshot = ScreenshotFromCamera(SCENE_SNAPSHOT_WIDTH_RES, SCENE_SNAPSHOT_HEIGHT_RES);
+            camera.targetTexture = current;
+            callback?.Invoke(sceneScreenshot);
 
-                // Restore camera position/direction after the screenshot
-                SetPosition(currentPos);
-                transform.forward = currentLookAt;
-            }
+            // Restore camera position/direction after the screenshot
+            SetPosition(currentPos);
+            transform.forward = currentLookAt;
+        }
 
-            private Texture2D ScreenshotFromCamera(int width, int height)
-            {
-                RenderTexture rt = new RenderTexture(width, height, 32);
-                camera.targetTexture = rt;
-                Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
-                camera.Render();
-                RenderTexture.active = rt;
-                screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-                screenShot.Apply();
+        private Texture2D ScreenshotFromCamera(int width, int height)
+        {
+            RenderTexture rt = new RenderTexture(width, height, 32);
+            camera.targetTexture = rt;
+            Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
+            camera.Render();
+            RenderTexture.active = rt;
+            screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+            screenShot.Apply();
 
-                return screenShot;
-            }
+            return screenShot;
         }
     }
 }
