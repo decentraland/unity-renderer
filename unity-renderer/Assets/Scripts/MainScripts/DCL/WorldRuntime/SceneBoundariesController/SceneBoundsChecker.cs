@@ -56,8 +56,8 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            if (messagingManager.timeBudgetCounter <= 0f)
-                                break;
+                            // if (messagingManager.timeBudgetCounter <= 0f)
+                            //     break;
 
                             float startTime = Time.realtimeSinceStartup;
 
