@@ -3,6 +3,7 @@ using DCL.Controllers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -343,6 +344,8 @@ public class BuildModeHUDController : IHUD
 
     public void ExitStart()
     {
+        if (controllers.buildModeConfirmationModalController.IsViewActive())
+            return;
         UnsubscribeConfirmationModal();
 
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelExitModal;
@@ -555,7 +558,11 @@ public class BuildModeHUDController : IHUD
         view.SetVisibilityOfControls(isControlsVisible);
     }
 
-    public void ChangeVisibilityOfUI() { SetVisibility(!IsVisible()); }
+    public void ChangeVisibilityOfUI()
+    {
+        DataStore.i.builderInWorld.showTaskBar.Set(!IsVisible());
+        SetVisibility(!IsVisible());
+    }
 
     #region TopButtons
 

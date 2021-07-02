@@ -38,13 +38,9 @@ public class SceneObject
     public string script;
     public bool isFavorite = false;
 
-    private string baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+    public string GetComposedThumbnailUrl() { return BIWUrlUtils.GetUrlSceneObjectContent() + thumbnail; }
 
-    public string GetComposedThumbnailUrl() { return baseUrl + thumbnail; }
-
-    public void SetBaseURL(string newUrl) { baseUrl = newUrl; }
-
-    public string GetBaseURL() { return baseUrl; }
+    public string GetBaseURL() { return BIWUrlUtils.GetUrlSceneObjectContent(); }
 
     public bool IsSmartItem() { return !string.IsNullOrEmpty(script); }
 }

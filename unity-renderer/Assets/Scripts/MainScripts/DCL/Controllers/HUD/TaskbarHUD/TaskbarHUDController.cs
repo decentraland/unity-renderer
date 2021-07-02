@@ -130,6 +130,7 @@ public class TaskbarHUDController : IHUD
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
     }
 
     private void View_OnQuestPanelToggled(bool value)
@@ -484,7 +485,10 @@ public class TaskbarHUDController : IHUD
 
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
+        DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
     }
+
+    public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
 
     public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 
