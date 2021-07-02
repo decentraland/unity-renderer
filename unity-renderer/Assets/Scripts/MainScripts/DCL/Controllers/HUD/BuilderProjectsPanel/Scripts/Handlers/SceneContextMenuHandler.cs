@@ -10,6 +10,7 @@ internal class SceneContextMenuHandler : IDisposable
     private readonly UnpublishPopupController unpublishPopupController;
 
     private Vector2Int sceneCoords;
+    private DeployedScene.Source sceneSource;
 
     public SceneContextMenuHandler(SceneCardViewContextMenu contextMenu, ISectionsController sectionsController,
         IScenesViewController scenesViewController, UnpublishPopupController unpublishPopupController)
@@ -53,6 +54,7 @@ internal class SceneContextMenuHandler : IDisposable
         contextMenu.Show(sceneData.id, sceneData.isDeployed,
             sceneData.isOwner || sceneData.isOperator, sceneData.isContributor);
         sceneCoords = sceneData.coords;
+        sceneSource = sceneData.source;
     }
 
     void OnRequestContextMenuHide() { contextMenu.Hide(); }
@@ -65,7 +67,7 @@ internal class SceneContextMenuHandler : IDisposable
 
     void OnContextMenuSharePressed(string id) { }
 
-    void OnContextMenuUnpublishPressed(string id) { unpublishPopupController.Show(sceneCoords); }
+    void OnContextMenuUnpublishPressed(string id) { unpublishPopupController.Show(sceneCoords, sceneSource); }
 
     void OnContextMenuDeletePressed(string id) { }
 

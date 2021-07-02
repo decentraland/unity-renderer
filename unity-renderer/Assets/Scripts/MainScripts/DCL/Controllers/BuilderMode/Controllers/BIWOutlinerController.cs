@@ -86,6 +86,8 @@ public class BIWOutlinerController : BIWController
 
         for (int i = 0; i < entity.rootEntity.meshesInfo.renderers.Length; i++)
         {
+            if ( entity.rootEntity.meshesInfo.renderers[i] == null)
+                continue;
             entity.rootEntity.meshesInfo.renderers[i].gameObject.layer = BuilderInWorldSettings.SELECTION_LAYER;
         }
     }
@@ -128,6 +130,8 @@ public class BIWOutlinerController : BIWController
         {
             for (int x = 0; x < entityToQuitOutline.rootEntity.meshesInfo.renderers.Length; x++)
             {
+                if ( entityToQuitOutline.rootEntity.meshesInfo.renderers[x] == null)
+                    continue;
                 entityToQuitOutline.rootEntity.meshesInfo.renderers[x].gameObject.layer = BuilderInWorldSettings.DEFAULT_LAYER;
             }
         }

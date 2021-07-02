@@ -169,7 +169,7 @@ public class BIWInputHandler : BIWController
 
     public bool IsMultiSelectionActive() => isMultiSelectionActive;
 
-    private void OnEditModeChangeAction(DCLAction_Trigger action) { builderInWorldController.ChangeFeatureActivationState(); }
+    private void OnEditModeChangeAction(DCLAction_Trigger action) { builderInWorldController.ChangeEditModeStatusByShortcut(); }
 
     private void RedoAction()
     {

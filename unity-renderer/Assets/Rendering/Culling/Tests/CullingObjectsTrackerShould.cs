@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Linq;
 using DCL.Rendering;
+using NUnit.Framework;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace CullingControllerTests
@@ -64,6 +64,35 @@ namespace CullingControllerTests
             Object.Destroy(testGameObjectD);
 
             yield return null;
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ForcePopulateRenderersListCorrectly(bool includeInactives)
+        {
+            // Arrange
+            var tracker = new CullingObjectsTracker();
+            var testGameObject = new GameObject();
+            var originalRenderer = testGameObject.AddComponent<MeshRenderer>();
+            testGameObject.SetActive(false);
+
+            // Act
+            tracker.ForcePopulateRenderersList(includeInactives);
+
+            Renderer[] renderers = tracker.GetRenderers();
+            Renderer obtainedRenderer = tracker.GetRenderers().FirstOrDefault(x => x == originalRenderer);
+
+            // Assert
+            Assert.IsTrue(originalRenderer != null);
+
+            if (includeInactives)
+                Assert.IsTrue(obtainedRenderer != null, "Renderer should not be null because it is taking on account the inactives objects");
+            else
+                Assert.IsTrue(obtainedRenderer == null, "Renderer should be null because it is not taking on account the inactives objects");
+
+            // Cleanup
+            Object.Destroy(testGameObject);
         }
     }
 }

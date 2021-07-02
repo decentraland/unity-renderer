@@ -7,6 +7,7 @@ public interface IBuildModeConfirmationModalView
     event Action OnCancelExit;
     event Action OnConfirmExit;
 
+    bool IsActive();
     void SetActive(bool isActive);
     void SetTitle(string text);
     void SetSubTitle(string text);
@@ -52,6 +53,8 @@ public class BuildModeConfirmationModalView : MonoBehaviour, IBuildModeConfirmat
         cancelButton.onClick.RemoveListener(CancelExit);
         confirmButton.onClick.RemoveListener(ConfirmExit);
     }
+
+    public bool IsActive() { return gameObject.activeSelf; }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 

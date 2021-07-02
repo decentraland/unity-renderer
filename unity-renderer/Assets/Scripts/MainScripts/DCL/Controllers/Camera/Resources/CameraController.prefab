@@ -1002,13 +1002,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultVirtualCamera: {fileID: 3669105073199621760}
   cameraModeId: 2
-  smoothLookAtSpeed: 5
   focusDistance: 15
-  keyboardMovementSpeed: 15
-  lookSpeedH: 2.5
-  lookSpeedV: 2.5
+  xPlaneSpeedPercentCompensantion: 1
+  movementSpeed: 40
+  lerpTime: 0.3
+  lerpDeccelerationTime: 0.21
+  initalAcceleration: 1.5
+  speedClamp: 0.35
+  smoothLookAtSpeed: 5
+  smoothCameraLookSpeed: 5
+  lookSpeedH: 2
+  lookSpeedV: 2
+  smoothCameraPanAceleration: 5
+  dragSpeed: 3
   zoomSpeed: 30
-  dragSpeed: 15
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
   advanceBackInputAction: {fileID: 11400000, guid: c7d2789965fbcb643ae73d7f5e49851c,

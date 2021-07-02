@@ -21,8 +21,7 @@ public class BuilderInWorldBridge : MonoBehaviour
     //Note Adrian: OnKernelUpdated in not called in the update of the transform, since it will give a lot of 
     //events and probably dont need to get called with that frecuency
     public event Action OnKernelUpdated;
-    public event Action OnPublishSuccess;
-    public event Action<string> OnPublishError;
+    public event Action<bool, string> OnPublishEnd;
     public event Action<string> OnCatalogHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
@@ -41,22 +40,19 @@ public class BuilderInWorldBridge : MonoBehaviour
     public void PublishSceneResult(string payload)
     {
         PublishSceneResultPayload publishSceneResultPayload = JsonUtility.FromJson<PublishSceneResultPayload>(payload);
-        string errorMessage = "";
+
         if (publishSceneResultPayload.ok)
         {
-            OnPublishSuccess?.Invoke();
+            OnPublishEnd?.Invoke(true, "");
 
             AudioScriptableObjects.confirm.Play();
         }
         else
         {
-            errorMessage = publishSceneResultPayload.error;
-            OnPublishError?.Invoke(publishSceneResultPayload.error);
+            OnPublishEnd?.Invoke(false, publishSceneResultPayload.error);
 
             AudioScriptableObjects.error.Play();
         }
-
-        HUDController.i.builderInWorldMainHud.PublishEnd(publishSceneResultPayload.ok, errorMessage);
     }
 
     public void BuilderInWorldCatalogHeaders(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }

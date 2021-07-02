@@ -67,7 +67,8 @@ public class IntegrationTestSuite_Legacy
             (
                 MessagingContextFactory.CreateDefault,
                 PlatformContextFactory.CreateDefault,
-                WorldRuntimeContextFactory.CreateDefault
+                WorldRuntimeContextFactory.CreateDefault,
+                HUDContextFactory.CreateDefault
             );
 
             SetUp_SceneController();
@@ -87,7 +88,8 @@ public class IntegrationTestSuite_Legacy
         (
             MessagingContextFactory.CreateDefault,
             PlatformContextFactory.CreateDefault,
-            WorldRuntimeContextFactory.CreateDefault
+            WorldRuntimeContextFactory.CreateDefault,
+            HUDContextFactory.CreateDefault
         );
 
         SetUp_SceneController();

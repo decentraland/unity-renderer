@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using System.Collections;
 using DCL;
@@ -9,15 +10,18 @@ namespace Tests
     {
         protected override bool justSceneSetUp => true;
 
+        private IHUDController hudController = null;
+
         protected override IEnumerator SetUp()
         {
+            hudController = DCL.Environment.i.hud.controller;
             yield return base.SetUp();
-            HUDController.i.Cleanup();
+            hudController.Cleanup();
         }
 
         protected override IEnumerator TearDown()
         {
-            HUDController.i.Cleanup();
+            hudController.Cleanup();
             yield return base.TearDown();
         }
 
@@ -25,14 +29,13 @@ namespace Tests
         public IEnumerator NotCreateHUDsInitially()
         {
             // There must be a hud controller
-            HUDController hudController = HUDController.i;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
-            HUDController.i.Cleanup();
+            hudController.Cleanup();
             // HUD controllers are created
-            for (int i = 1; i < (int) HUDController.HUDElementID.COUNT; i++)
+            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
             {
-                Assert.IsNull(hudController.GetHUDElement((HUDController.HUDElementID) i));
+                Assert.IsNull(hudController.GetHUDElement((HUDElementID) i));
             }
 
             yield break;
@@ -42,25 +45,24 @@ namespace Tests
         public IEnumerator CreateHudIfConfigurationIsActive()
         {
             // There must be a hud controller
-            HUDController hudController = HUDController.i;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
 
             HUDConfiguration config = new HUDConfiguration() { active = true, visible = true };
 
-            for (int i = 1; i < (int) HUDController.HUDElementID.COUNT; i++)
+            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
             {
-                hudController.ConfigureHUDElement((HUDController.HUDElementID) i, config, null);
+                hudController.ConfigureHUDElement((HUDElementID) i, config, null);
             }
 
             yield return null;
 
             // HUD controllers are created
-            for (int i = 1; i < (int) HUDController.HUDElementID.COUNT; i++)
+            for (int i = 1; i < (int) HUDElementID.COUNT; i++)
             {
-                HUDController.HUDElementID elementID = (HUDController.HUDElementID) i;
+                HUDElementID elementID = (HUDElementID) i;
                 if (HUDController.IsHUDElementDeprecated(elementID))
                     continue;
-
+                
                 Assert.IsNotNull(hudController.GetHUDElement(elementID), $"Failed to create {elementID}");
             }
         }
