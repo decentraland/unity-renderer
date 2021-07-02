@@ -14,9 +14,10 @@ namespace DCL.Controllers
 
         public bool enabled => entitiesCheckRoutine != null;
 
-        public float timeBetweenChecks { get; set; } = 1f;
+        public float timeBetweenChecks { get; set; } = 0.5f;
 
         // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
+        HashSet<IDCLEntity> highPrioEntitiesToCheck = new HashSet<IDCLEntity>();
         HashSet<IDCLEntity> entitiesToCheck = new HashSet<IDCLEntity>();
         HashSet<IDCLEntity> checkedEntities = new HashSet<IDCLEntity>();
         Coroutine entitiesCheckRoutine = null;
@@ -41,7 +42,7 @@ namespace DCL.Controllers
             while (true)
             {
                 float elapsedTime = Time.realtimeSinceStartup - lastCheckTime;
-                if (entitiesToCheck.Count > 0 && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
+                if ((entitiesToCheck.Count > 0 || highPrioEntitiesToCheck.Count > 0) && (timeBetweenChecks <= 0f || elapsedTime >= timeBetweenChecks))
                 {
                     //TODO(Brian): Remove later when we implement a centralized way of handling time budgets
                     var messagingManager = Environment.i.messaging.manager as MessagingControllersManager;
@@ -52,12 +53,29 @@ namespace DCL.Controllers
                         continue;
                     }
 
+                    using (var iterator = highPrioEntitiesToCheck.GetEnumerator())
+                    {
+                        while (iterator.MoveNext())
+                        {
+                            if (messagingManager.timeBudgetCounter <= 0f)
+                                break;
+
+                            float startTime = Time.realtimeSinceStartup;
+
+                            EvaluateEntityPosition(iterator.Current);
+                            checkedEntities.Add(iterator.Current);
+
+                            float finishTime = Time.realtimeSinceStartup;
+                            messagingManager.timeBudgetCounter -= (finishTime - startTime);
+                        }
+                    }
+
                     using (var iterator = entitiesToCheck.GetEnumerator())
                     {
                         while (iterator.MoveNext())
                         {
-                            // if (messagingManager.timeBudgetCounter <= 0f)
-                            //     break;
+                            if (messagingManager.timeBudgetCounter <= 0f)
+                                break;
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -77,10 +95,10 @@ namespace DCL.Controllers
                             if (!persistentEntities.Contains(iterator.Current))
                             {
                                 entitiesToCheck.Remove(iterator.Current);
+                                highPrioEntitiesToCheck.Remove(iterator.Current);
                             }
                         }
                     }
-
                     checkedEntities.Clear();
 
                     lastCheckTime = Time.realtimeSinceStartup;
@@ -124,7 +142,12 @@ namespace DCL.Controllers
             if (!enabled)
                 return;
 
-            entitiesToCheck.Add(entity);
+            Vector3 scale = entity.gameObject.transform.lossyScale;
+            if (scale.x > 1000 || scale.y > 1000 || scale.z > 1000)
+                highPrioEntitiesToCheck.Add(entity);
+            else
+                entitiesToCheck.Add(entity);
+
             persistentEntities.Add(entity);
         }
 
@@ -261,10 +284,18 @@ namespace DCL.Controllers
             }
         }
 
-        protected void OnAddEntity(IDCLEntity entity) { entitiesToCheck.Add(entity); }
+        protected void OnAddEntity(IDCLEntity entity)
+        {
+            Vector3 scale = entity.gameObject.transform.lossyScale;
+            if (scale.x > 1000 || scale.y > 1000 || scale.z > 1000)
+                highPrioEntitiesToCheck.Add(entity);
+            else
+                entitiesToCheck.Add(entity);
+        }
 
         protected void OnRemoveEntity(IDCLEntity entity)
         {
+            highPrioEntitiesToCheck.Remove(entity);
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
             feedbackStyle.ApplyFeedback(entity.meshesInfo, true);
