@@ -337,7 +337,7 @@ public class BIWCreatorController : BIWController
     private void AddSceneMappings(CatalogItem catalogItem)
     {
         LoadParcelScenesMessage.UnityParcelScene data = sceneToEdit.sceneData;
-        data.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+        data.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
         if (data.contents == null)
             data.contents = new List<ContentServerUtils.MappingPair>();
         foreach (KeyValuePair<string, string> content in catalogItem.contents)

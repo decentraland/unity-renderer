@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public enum BuildModeModalType
 {
@@ -11,6 +12,7 @@ public interface IBuildModeConfirmationModalController
     event Action<BuildModeModalType> OnCancelExit;
     event Action<BuildModeModalType> OnConfirmExit;
 
+    bool IsViewActive();
     void Initialize(IBuildModeConfirmationModalView exitFromBiWModalView);
     void Dispose();
     void Configure(string titleText, string subTitleText, string cancelBtnText, string confirmBtnText);
@@ -48,6 +50,8 @@ public class BuildModeConfirmationModalController : IBuildModeConfirmationModalC
         exitFromBiWModalView.SetCancelButtonText(cancelBtnText);
         exitFromBiWModalView.SetConfirmButtonText(confirmBtnText);
     }
+
+    public bool IsViewActive() { return exitFromBiWModalView.IsActive(); }
 
     public void SetActive(bool isActive, BuildModeModalType modalType)
     {
