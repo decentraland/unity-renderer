@@ -2,28 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraControllerAudioHandler : MonoBehaviour
+namespace DCL.Camera
 {
-    [SerializeField]
-    CameraController cameraController;
-
-    [SerializeField]
-    AudioEvent eventCameraFadeIn, eventCameraFadeOut;
-
-    private void Awake() { cameraController.onSetCameraMode += OnSetCameraMode; }
-
-    void OnSetCameraMode(CameraMode.ModeId mode)
+    public class CameraControllerAudioHandler : MonoBehaviour
     {
-        switch (mode)
+        [SerializeField]
+        CameraController cameraController;
+
+        [SerializeField]
+        AudioEvent eventCameraFadeIn, eventCameraFadeOut;
+
+        private void Awake() { cameraController.onSetCameraMode += OnSetCameraMode; }
+
+        void OnSetCameraMode(CameraMode.ModeId mode)
         {
-            case CameraMode.ModeId.FirstPerson:
-                eventCameraFadeIn.Play(true);
-                break;
-            case CameraMode.ModeId.ThirdPerson:
-                eventCameraFadeOut.Play(true);
-                break;
-            default:
-                break;
+            switch (mode)
+            {
+                case CameraMode.ModeId.FirstPerson:
+                    eventCameraFadeIn.Play(true);
+                    break;
+                case CameraMode.ModeId.ThirdPerson:
+                    eventCameraFadeOut.Play(true);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
