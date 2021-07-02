@@ -77,6 +77,7 @@ namespace DCL.Configuration
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
+        public const float LAND_NOTIFICATIONS_TIMER = 10f;
     }
 
     public static class ApplicationSettings
