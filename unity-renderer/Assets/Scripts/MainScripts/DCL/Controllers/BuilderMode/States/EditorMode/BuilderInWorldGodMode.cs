@@ -56,6 +56,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool canDragSelectedEntities = false;
 
     private bool activateCamera = true;
+    private CameraMode.ModeId avatarCameraModeBeforeEditing;
 
     private Vector3 lastMousePosition;
     private Vector3 dragStartedPoint;
@@ -507,6 +508,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         freeCameraController.LookAt(lookAtT);
         freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
 
+        if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
+            avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
+
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
         gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
@@ -533,7 +537,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.Deactivate();
         mouseCatcher.enabled = true;
         Utils.LockCursor();
-        cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
+        cameraController.SetCameraMode(avatarCameraModeBeforeEditing);
 
         Environment.i.world.sceneController.ReIntegrateIsolatedScene();
 
