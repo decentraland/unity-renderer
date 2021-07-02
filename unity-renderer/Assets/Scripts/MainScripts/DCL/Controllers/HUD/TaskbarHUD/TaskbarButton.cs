@@ -36,7 +36,15 @@ public class TaskbarButton : MonoBehaviour
 
     private void OnDestroy() { DataStore.i.appMode.OnChange -= AppMode_OnChange; }
 
-    private void AppMode_OnChange(AppMode currentMode, AppMode previousMode) { SetInteractable(compatibleModes.Contains(currentMode)); }
+    private void AppMode_OnChange(AppMode currentMode, AppMode previousMode)
+    {
+        bool isCompatible = compatibleModes.Contains(currentMode);
+
+        SetInteractable(isCompatible);
+
+        if (!isCompatible)
+            SetToggleState(false);
+    }
 
     private void OnToggleButtonClick() { SetToggleState(!toggledOn); }
 
