@@ -20,7 +20,8 @@ namespace AssetPromiseKeeper_Tests
             (
                 MessagingContextFactory.CreateDefault,
                 PlatformContextFactory.CreateDefault,
-                WorldRuntimeContextFactory.CreateDefault
+                WorldRuntimeContextFactory.CreateDefault,
+                HUDContextFactory.CreateDefault
             );
             keeper = new APKType();
             yield break;
