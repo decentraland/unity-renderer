@@ -20,6 +20,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
         Environment.i.world.sceneBoundsChecker.Stop();
+        Environment.i.world.blockersController.SetEnabled(false);
 
         base.SetUp_Renderer();
 
