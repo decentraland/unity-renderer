@@ -102,10 +102,6 @@ public static class BIWCatalogManager
         if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
             return;
 
-        //TODO: SmartItems disabled until kernel has them implemented
-        if (sceneObject.IsSmartItem())
-            return;
-
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);
         DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
     }
