@@ -17,6 +17,7 @@ public class DCLName : BaseDisposable
     public class Model : BaseModel
     {
         public string value;
+        public string builderValue;
 
         public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
     }
