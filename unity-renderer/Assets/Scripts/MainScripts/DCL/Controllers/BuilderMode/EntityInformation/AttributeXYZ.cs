@@ -89,6 +89,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.x))
             OnChanged?.Invoke(currentValue);
     }
@@ -98,6 +99,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.y))
             OnChanged?.Invoke(currentValue);
     }
@@ -107,6 +109,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.z))
             OnChanged?.Invoke(currentValue);
     }

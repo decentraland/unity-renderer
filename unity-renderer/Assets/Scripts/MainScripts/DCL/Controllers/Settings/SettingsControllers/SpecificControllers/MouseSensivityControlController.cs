@@ -4,16 +4,15 @@ using UnityEngine;
 
 namespace DCL.SettingsControls
 {
-    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Mouse Sensivity", fileName = "MouseSensivityControlController")]
+    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Mouse Sensitivity", fileName = "MouseSensitivityControlController")]
     public class MouseSensivityControlController : SliderSettingsControlController
     {
-        internal const float FIRST_PERSON_MIN_SPEED = 25f;
-        internal const float FIRST_PERSON_MAX_SPEED = 350f;
-        internal const float THIRD_PERSON_X_MIN_SPEED = 100f;
-        internal const float THIRD_PERSON_X_MAX_SPEED = 450f;
-        internal const float THIRD_PERSON_Y_MIN_SPEED = 0.5f;
-        internal const float THIRD_PERSON_Y_MAX_SPEED = 3f;
-
+        internal const float FIRST_PERSON_MIN_SPEED = 25f / 100f;
+        internal const float FIRST_PERSON_MAX_SPEED = 350f / 100f;
+        internal const float THIRD_PERSON_X_MIN_SPEED = 4.5f / 10f;
+        internal const float THIRD_PERSON_X_MAX_SPEED = 4.5f;
+        internal const float THIRD_PERSON_Y_MIN_SPEED = 0.05f / 10f;
+        internal const float THIRD_PERSON_Y_MAX_SPEED = 0.05f;
         private CinemachinePOV povCamera;
 
         public override void Initialize()

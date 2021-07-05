@@ -18,7 +18,8 @@ namespace Tests
             (
                 MessagingContextFactory.CreateDefault,
                 PlatformContextFactory.CreateDefault,
-                WorldRuntimeContextFactory.CreateDefault
+                WorldRuntimeContextFactory.CreateDefault,
+                HUDContextFactory.CreateDefault
             );
             yield break;
         }
