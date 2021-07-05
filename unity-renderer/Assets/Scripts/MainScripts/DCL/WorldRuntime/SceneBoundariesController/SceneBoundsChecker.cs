@@ -10,7 +10,7 @@ namespace DCL.Controllers
 {
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
-        private const int TRIGGER_HIGHPRIO_VALUE = 1000;
+        public const int TRIGGER_HIGHPRIO_VALUE = 1000;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
 
         public bool enabled => entitiesCheckRoutine != null;
@@ -26,6 +26,7 @@ namespace DCL.Controllers
         private HashSet<IDCLEntity> persistentEntities = new HashSet<IDCLEntity>();
 
         public int entitiesToCheckCount => entitiesToCheck.Count;
+        public int highPrioEntitiesToCheckCount => highPrioEntitiesToCheck.Count;
 
         private ISceneBoundsFeedbackStyle feedbackStyle;
 
