@@ -10,6 +10,7 @@ namespace DCL.Controllers
 {
     public class SceneBoundsChecker : ISceneBoundsChecker
     {
+        private const int TRIGGER_HIGHPRIO_VALUE = 1000;
         public event Action<IDCLEntity, bool> OnEntityBoundsCheckerStatusChanged;
 
         public bool enabled => entitiesCheckRoutine != null;
@@ -53,8 +54,12 @@ namespace DCL.Controllers
                         continue;
                     }
 
-                    using (var iterator = highPrioEntitiesToCheck.GetEnumerator())
+                    void processEntitiesList(HashSet<IDCLEntity> entities)
                     {
+                        if (messagingManager.timeBudgetCounter <= 0f)
+                            return;
+
+                        using HashSet<IDCLEntity>.Enumerator iterator = entities.GetEnumerator();
                         while (iterator.MoveNext())
                         {
                             if (messagingManager.timeBudgetCounter <= 0f)
@@ -70,22 +75,8 @@ namespace DCL.Controllers
                         }
                     }
 
-                    using (var iterator = entitiesToCheck.GetEnumerator())
-                    {
-                        while (iterator.MoveNext())
-                        {
-                            if (messagingManager.timeBudgetCounter <= 0f)
-                                break;
-
-                            float startTime = Time.realtimeSinceStartup;
-
-                            EvaluateEntityPosition(iterator.Current);
-                            checkedEntities.Add(iterator.Current);
-
-                            float finishTime = Time.realtimeSinceStartup;
-                            messagingManager.timeBudgetCounter -= (finishTime - startTime);
-                        }
-                    }
+                    processEntitiesList(highPrioEntitiesToCheck);
+                    processEntitiesList(entitiesToCheck);
 
                     // As we can't modify the hashset while traversing it, we keep track of the entities that should be removed afterwards
                     using (var iterator = checkedEntities.GetEnumerator())
@@ -142,8 +133,7 @@ namespace DCL.Controllers
             if (!enabled)
                 return;
 
-            Vector3 scale = entity.gameObject.transform.lossyScale;
-            if (scale.x > 1000 || scale.y > 1000 || scale.z > 1000)
+            if (IsHighPrioEntity(entity))
                 highPrioEntitiesToCheck.Add(entity);
             else
                 entitiesToCheck.Add(entity);
@@ -286,8 +276,7 @@ namespace DCL.Controllers
 
         protected void OnAddEntity(IDCLEntity entity)
         {
-            Vector3 scale = entity.gameObject.transform.lossyScale;
-            if (scale.x > 1000 || scale.y > 1000 || scale.z > 1000)
+            if (IsHighPrioEntity(entity))
                 highPrioEntitiesToCheck.Add(entity);
             else
                 entitiesToCheck.Add(entity);
@@ -299,6 +288,13 @@ namespace DCL.Controllers
             entitiesToCheck.Remove(entity);
             persistentEntities.Remove(entity);
             feedbackStyle.ApplyFeedback(entity.meshesInfo, true);
+        }
+
+        protected bool IsHighPrioEntity(IDCLEntity entity)
+        {
+            Vector3 scale = entity.gameObject.transform.lossyScale;
+            Vector3 position = entity.gameObject.transform.localPosition;
+            return scale.x > TRIGGER_HIGHPRIO_VALUE || scale.y > TRIGGER_HIGHPRIO_VALUE || scale.z > TRIGGER_HIGHPRIO_VALUE || position.x > TRIGGER_HIGHPRIO_VALUE || position.y > TRIGGER_HIGHPRIO_VALUE || position.z > TRIGGER_HIGHPRIO_VALUE;
         }
     }
 }
