@@ -150,7 +150,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var forgottenPromises = new Dictionary<int, bool>();
             bool waitMasterPromise = true;
 
-            string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
+            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
 
             AssetPromise_GLTF masterPromise = new AssetPromise_GLTF(scene.contentProvider, url);
             masterPromise.OnPreFinishEvent += promise => waitMasterPromise = false;
