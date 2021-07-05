@@ -37,6 +37,16 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        public void IsActiveCorrectly()
+        {
+            // Act
+            exitFromBiWModalController.IsViewActive();
+
+            // Assert
+            exitFromBiWModalController.exitFromBiWModalView.Received(1).IsActive();
+        }
+
+        [Test]
         [TestCase(true)]
         [TestCase(false)]
         public void SetActiveCorrectly(bool isActive)
