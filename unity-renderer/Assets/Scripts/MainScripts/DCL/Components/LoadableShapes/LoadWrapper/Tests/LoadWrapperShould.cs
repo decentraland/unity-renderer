@@ -5,6 +5,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -20,12 +21,12 @@ public class LoadWrapperShould : IntegrationTestSuite
     {
         GameObject meshRootGameObject = new GameObject();
 
-        string url = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
+        string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
 
         IDCLEntity entity = Substitute.For<IDCLEntity>();
         entity.meshRootGameObject.Returns(meshRootGameObject);
 
-        LoadWrapper_GLFT_Overload wrapper = new LoadWrapper_GLFT_Overload();
+        LoadWrapper_GLTF wrapper = Substitute.ForPartsOf<LoadWrapper_GLTF>();
         wrapper.entity = entity;
         wrapper.customContentProvider = new ContentProvider();
 
@@ -33,7 +34,7 @@ public class LoadWrapperShould : IntegrationTestSuite
         bool failed = false;
         bool unloaded = false;
 
-        wrapper.OnUnload += () => unloaded = true;
+        wrapper.WhenForAnyArgs(x => x.Unload()).Do((info) => unloaded = true);
 
         wrapper.Load(url, loadWrapper => loaded = true, loadWrapper => failed = true );
 
@@ -44,16 +45,5 @@ public class LoadWrapperShould : IntegrationTestSuite
         Object.Destroy(meshRootGameObject);
 
         Assert.IsTrue(unloaded, "Unload should be called if entity is cleaned up while loading mesh");
-    }
-
-    class LoadWrapper_GLFT_Overload : LoadWrapper_GLTF
-    {
-        public event Action OnUnload;
-
-        public override void Unload()
-        {
-            base.Unload();
-            OnUnload?.Invoke();
-        }
     }
 }
