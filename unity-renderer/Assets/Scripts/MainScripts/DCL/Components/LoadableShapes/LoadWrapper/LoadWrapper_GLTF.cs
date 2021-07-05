@@ -45,6 +45,9 @@ namespace DCL.Components
                     loadHelper.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
             }
 
+            this.entity.OnCleanupEvent -= OnEntityCleanup;
+            this.entity.OnCleanupEvent += OnEntityCleanup;
+
             loadHelper.OnSuccessEvent += (x) => OnSuccessWrapper(OnSuccess);
             loadHelper.OnFailEvent += () => OnFailWrapper(OnFail);
             loadHelper.Load(targetUrl);
@@ -53,14 +56,13 @@ namespace DCL.Components
         private void OnFailWrapper(Action<LoadWrapper> OnFail)
         {
             alreadyLoaded = true;
+            this.entity.OnCleanupEvent -= OnEntityCleanup;
             OnFail?.Invoke(this);
         }
 
         private void OnSuccessWrapper(Action<LoadWrapper> OnSuccess)
         {
             alreadyLoaded = true;
-            this.entity.OnCleanupEvent -= OnEntityCleanup;
-            this.entity.OnCleanupEvent += OnEntityCleanup;
             OnSuccess?.Invoke(this);
         }
 
