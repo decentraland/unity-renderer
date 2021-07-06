@@ -22,8 +22,6 @@ MonoBehaviour:
         array:
         - {fileID: 11400000, guid: 8e433d09f0948e1428d7fecc8ac6f00a, type: 2}
         - {fileID: 11400000, guid: 1e349d18d99e3d242bdc6d864b8463a3, type: 2}
-        - {fileID: 11400000, guid: 13b4548a50ce548dea4117f1bc67f848, type: 2}
-        - {fileID: 11400000, guid: d11af08d45b874130b0f17a8c938b96a, type: 2}
     - controls:
         array:
         - {fileID: 11400000, guid: 83f29ed692998ff44b96f9a42111fc9f, type: 2}
