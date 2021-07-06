@@ -38,7 +38,7 @@ namespace DCL
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             UpdateAllLODs();
 
