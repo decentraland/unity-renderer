@@ -252,6 +252,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnResetCameraAction += ResetCamera;
             HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshotForPublish;
         }
+
+        freeCameraController = InitialSceneReferences.i.freeCameraMovement.GetComponent<FreeCameraMovement>();
+        cameraController = InitialSceneReferences.i.cameraController;
+        mouseCatcher = InitialSceneReferences.i.mouseCatcher;
+        avatarRenderer = InitialSceneReferences.i.playerAvatarController;
     }
 
     public override void MouseClickDetected()

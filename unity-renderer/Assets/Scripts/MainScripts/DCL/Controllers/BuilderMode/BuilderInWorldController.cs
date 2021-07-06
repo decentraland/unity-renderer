@@ -91,17 +91,27 @@ public class BuilderInWorldController : MonoBehaviour
     private Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
 
+    private void InitReferences()
+    {
+        cameraParentGO = InitialSceneReferences.i.cameraParent;
+        cursorGO = InitialSceneReferences.i.cursorCanvas;
+        inputController = InitialSceneReferences.i.inputController;
+
+        List<GameObject> grounds = new List<GameObject>();
+        for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
+        {
+            grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
+        }
+        groundVisualsGO = grounds.ToArray();
+    }
+
     private void Awake()
     {
         BIWCatalogManager.Init();
         builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
+        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
     }
-
-    void Start()
-    {
-        KernelConfig.i.EnsureConfigInitialized().Then(config =>  EnableFeature(config.features.enableBuilderInWorld));
-        KernelConfig.i.OnChange += OnKernelConfigChanged;
-    }
+    private void Start() { EnableFeature(true); }
 
     private void OnDestroy()
     {
@@ -116,7 +126,6 @@ public class BuilderInWorldController : MonoBehaviour
         Environment.i.world.sceneController.OnNewSceneAdded -= NewSceneAdded;
         Environment.i.world.sceneController.OnReadyScene -= NewSceneReady;
 
-        KernelConfig.i.OnChange -= OnKernelConfigChanged;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -133,6 +142,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
+        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
         CleanItems();
 
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
@@ -164,7 +174,7 @@ public class BuilderInWorldController : MonoBehaviour
         HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
     }
 
-    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { EnableFeature(current.features.enableBuilderInWorld); }
+    private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
 
     private void EnableFeature(bool enable)
     {
@@ -195,6 +205,7 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         isInit = true;
+        InitReferences();
 
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))

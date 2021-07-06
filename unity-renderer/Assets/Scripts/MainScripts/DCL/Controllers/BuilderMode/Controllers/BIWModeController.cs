@@ -2,6 +2,7 @@ using DCL.Controllers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class BIWModeController : BIWController
@@ -40,6 +41,13 @@ public class BIWModeController : BIWController
     private InputAction_Trigger.Triggered snapModeDelegate;
     private GameObject editionGO;
     private GameObject undoGO;
+
+    public override void Init()
+    {
+        base.Init();
+        cursorGO = InitialSceneReferences.i.cursorCanvas;
+        avatarRenderer = InitialSceneReferences.i.playerAvatarController;
+    }
 
     private void Start()
     {
@@ -140,8 +148,8 @@ public class BIWModeController : BIWController
 
     public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
 
-    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity);}
-    
+    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity); }
+
     public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 
     public Vector3 GetModeCreationEntryPoint()
