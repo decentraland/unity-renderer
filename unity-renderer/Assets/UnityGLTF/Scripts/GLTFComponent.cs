@@ -119,7 +119,7 @@ namespace UnityGLTF
             alreadyDecrementedRefCount = false;
             state = State.NONE;
             mainCamera = Camera.main;
-            this.baseUrl = baseUrl;
+            this.baseUrl = baseUrl ?? "";
 
             if (settings != null)
             {

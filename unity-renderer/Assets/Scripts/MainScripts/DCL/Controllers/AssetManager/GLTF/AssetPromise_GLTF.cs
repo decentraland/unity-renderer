@@ -49,7 +49,7 @@ namespace DCL
                 addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0,
             };
 
-            gltfComponent.LoadAsset(provider.baseUrl, fileName, GetId() as string, false, tmpSettings, FileToHash);
+            gltfComponent.LoadAsset(provider.baseUrl ?? assetDirectoryPath, fileName, GetId() as string, false, tmpSettings, FileToHash);
             gltfComponent.OnSuccess += OnSuccess;
             gltfComponent.OnFail += OnFail;
 
