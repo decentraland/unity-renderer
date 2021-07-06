@@ -20,10 +20,6 @@ namespace DCL.SettingsControls
 
         public override object GetStoredValue() { return currentGeneralSettings.avatarsLODDistance; }
 
-        public override void UpdateSetting(object newValue)
-        {
-            AvatarsLODController.i.lodDistance = (float)newValue;
-            AvatarsLODController.i.UpdateAllLODs();
-        }
+        public override void UpdateSetting(object newValue) { DataStore.i.avatarsLOD.LODDistance.Set((float)newValue); }
     }
 }

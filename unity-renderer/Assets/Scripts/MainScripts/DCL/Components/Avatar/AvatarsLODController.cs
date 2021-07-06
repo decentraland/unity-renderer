@@ -11,9 +11,6 @@ namespace DCL
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
 
-        public float lodDistance = 16f;
-        public int maxNonLODAvatars = 20;
-
         private List<AvatarShape> avatarsList = new List<AvatarShape>();
         private float lastLODsVerticalMovementTime = -1;
 
@@ -36,6 +33,9 @@ namespace DCL
 
                             enabled = config.features.enableAvatarLODs;
                         });
+
+            DataStore.i.avatarsLOD.LODDistance.OnChange += LODDistanceOnChange;
+            DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;
         }
 
         private void LateUpdate()
@@ -67,7 +67,13 @@ namespace DCL
                 lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
-        public void UpdateAllLODs()
+        private void OnDestroy()
+        {
+            DataStore.i.avatarsLOD.LODDistance.OnChange -= LODDistanceOnChange;
+            DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange -= MaxNonLODAvatarsOnChange;
+        }
+
+        private void UpdateAllLODs()
         {
             if (!enabled)
                 return;
@@ -76,7 +82,7 @@ namespace DCL
             foreach (AvatarShape avatar in avatarsList)
             {
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
-                bool isInLODDistance = distanceToPlayer >= lodDistance;
+                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
                     ToggleLOD(avatar.avatarRenderer, true);
@@ -89,7 +95,7 @@ namespace DCL
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
                 currentAvatar = closeDistanceAvatars.Values[i];
-                bool isLOD = i >= maxNonLODAvatars;
+                bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
 
                 ToggleLOD(currentAvatar.avatarRenderer, isLOD);
             }
@@ -125,5 +131,9 @@ namespace DCL
             avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
+
+        private void LODDistanceOnChange(float current, float previous) { UpdateAllLODs(); }
+
+        private void MaxNonLODAvatarsOnChange(int current, int previous) { UpdateAllLODs(); }
     }
 }
