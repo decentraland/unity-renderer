@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using DCL.Helpers;
 
@@ -91,6 +92,9 @@ public class KernelConfig
             initializationPromises.Clear();
             initializationPromises = null;
         }
+
+        DataStore.i.avatarsLOD.LODEnabled.Set(newValue.features.enableAvatarLODs);
+
         initialized = true;
     }
 

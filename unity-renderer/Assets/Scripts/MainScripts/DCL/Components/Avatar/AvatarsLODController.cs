@@ -23,27 +23,23 @@ namespace DCL
             }
             i = this;
 
-            enabled = false;
-            KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            // We need this check because in the CI the KernelConfig tests may have this object destroyed somehow
-                            if (i == null || this == null)
-                                return;
-
-                            enabled = config.features.enableAvatarLODs;
-                        });
-
+            DataStore.i.avatarsLOD.LODEnabled.OnChange += LODEnabledOnChange;
             DataStore.i.avatarsLOD.LODDistance.OnChange += LODDistanceOnChange;
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;
+
+            enabled = DataStore.i.avatarsLOD.LODEnabled.Get();
         }
 
         private void Update()
         {
             UpdateAllLODs();
 
-            int listCount = avatarsList.Count;
+            UpdateLODsVerticalMovementAndBillboard();
+        }
 
+        private void UpdateLODsVerticalMovementAndBillboard()
+        {
+            int listCount = avatarsList.Count;
             bool applyVerticalMovement = Time.timeSinceLevelLoad - lastLODsVerticalMovementTime > LODS_VERTICAL_MOVEMENT_DELAY;
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
@@ -69,6 +65,7 @@ namespace DCL
 
         private void OnDestroy()
         {
+            DataStore.i.avatarsLOD.LODEnabled.OnChange -= LODEnabledOnChange;
             DataStore.i.avatarsLOD.LODDistance.OnChange -= LODDistanceOnChange;
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange -= MaxNonLODAvatarsOnChange;
         }
@@ -111,7 +108,7 @@ namespace DCL
 
         public void RemoveAvatar(AvatarShape targetAvatar)
         {
-            if (!enabled || !avatarsList.Contains(targetAvatar))
+            if (this == null || !enabled || !avatarsList.Contains(targetAvatar))
                 return;
 
             int listCount = avatarsList.Count;
@@ -131,6 +128,8 @@ namespace DCL
             avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
+
+        private void LODEnabledOnChange(bool current, bool previous) { enabled = current; }
 
         private void LODDistanceOnChange(float current, float previous) { UpdateAllLODs(); }
 
