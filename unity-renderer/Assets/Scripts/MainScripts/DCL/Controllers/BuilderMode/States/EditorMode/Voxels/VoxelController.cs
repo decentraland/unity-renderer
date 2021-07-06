@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Camera;
 using UnityEngine;
 
 public class VoxelController : MonoBehaviour
