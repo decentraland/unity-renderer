@@ -134,6 +134,7 @@ namespace DCL
             if (promise.state == AssetPromiseState.IDLE_AND_EMPTY || promise.state == AssetPromiseState.WAITING)
             {
                 CleanPromise(promise);
+                promise.OnForget();
                 return promise;
             }
 
@@ -148,14 +149,15 @@ namespace DCL
                 {
                     //NOTE(Brian): Pending promises are waiting for this one.
                     //             We clear the events because we shouldn't call them, as this promise is forgotten.
-                    promise.ClearEvents();
                     OnSilentForget(promise);
+                    promise.OnForget();
                     return promise;
                 }
             }
 
             promise.Unload();
             CleanPromise(promise);
+            promise.OnForget();
 
             return promise;
         }
@@ -264,8 +266,12 @@ namespace DCL
                 {
                     var blockedPromise = iterator.Current;
 
-                    blockedPromisesToLoadAux.Add(blockedPromise);
                     blockedPromises.Remove(blockedPromise);
+
+                    if (blockedPromise != null && !blockedPromise.isForgotten)
+                    {
+                        blockedPromisesToLoadAux.Add(blockedPromise);
+                    }
                 }
             }
 
@@ -279,6 +285,9 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 var promise = promises[i];
+                if (promise.isForgotten)
+                    continue;
+
                 promise.ForceFail();
                 Forget(promise);
                 CleanPromise(promise);
@@ -297,6 +306,9 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 AssetPromiseType promise = promises[i];
+                if (promise.isForgotten)
+                    continue;
+
                 promise.library = library;
                 CleanPromise(promise);
                 promise.Load();
