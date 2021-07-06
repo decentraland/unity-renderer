@@ -17,7 +17,7 @@ namespace DCL
         private List<AvatarShape> avatarsList = new List<AvatarShape>();
         private float lastLODsVerticalMovementTime = -1;
 
-        void Awake()
+        private void Awake()
         {
             if (i != null)
             {
@@ -34,20 +34,14 @@ namespace DCL
                             if (i == null || this == null)
                                 return;
 
-                            if (config.features.enableAvatarLODs)
-                            {
-                                enabled = true;
-                                CommonScriptableObjects.playerUnityPosition.OnChange += OnMainPlayerReposition;
-                            }
-                            else
-                            {
-                                enabled = false;
-                            }
+                            enabled = config.features.enableAvatarLODs;
                         });
         }
 
-        public void LateUpdate()
+        private void LateUpdate()
         {
+            UpdateAllLODs();
+
             int listCount = avatarsList.Count;
 
             bool applyVerticalMovement = Time.timeSinceLevelLoad - lastLODsVerticalMovementTime > LODS_VERTICAL_MOVEMENT_DELAY;
@@ -72,8 +66,6 @@ namespace DCL
             if (applyVerticalMovement)
                 lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
-
-        void OnMainPlayerReposition(Vector3 newPos, Vector3 previousPos) { UpdateAllLODs(); }
 
         public void UpdateAllLODs()
         {
@@ -103,28 +95,12 @@ namespace DCL
             }
         }
 
-        private void ToggleLOD(AvatarRenderer avatarRenderer, bool enabled)
-        {
-            avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
-            avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling
-        }
-
         public void RegisterAvatar(AvatarShape newAvatar)
         {
             if (!enabled || avatarsList.Contains(newAvatar))
                 return;
 
             avatarsList.Add(newAvatar);
-
-            // TODO: Find a way to get this behaviour but unsubscribing on RemoveAvatar()
-            // DecentralandEntity already nullifies this event on cleanup, maybe that's good enough?
-            // Worst case scenario we'll have to refactor the DCLEntity.OnTransformChange event to report which entity triggered the event
-            newAvatar.entity.OnTransformChange += (object newTransformModel) =>
-            {
-                UpdateAllLODs();
-            };
-
-            UpdateAllLODs();
         }
 
         public void RemoveAvatar(AvatarShape targetAvatar)
@@ -142,6 +118,12 @@ namespace DCL
                     return;
                 }
             }
+        }
+
+        private void ToggleLOD(AvatarRenderer avatarRenderer, bool enabled)
+        {
+            avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
+            avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
     }
 }
