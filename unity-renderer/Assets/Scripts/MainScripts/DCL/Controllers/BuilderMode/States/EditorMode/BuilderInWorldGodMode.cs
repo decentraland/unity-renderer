@@ -236,10 +236,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
     }
 
-    public override void Init(GameObject goToEdit, GameObject undoGo, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
+    public override void Init()
     {
-        base.Init(goToEdit, undoGo, snapGO, freeMovementGO, selectedEntities);
-        voxelController.SetEditionGO(goToEdit);
+        base.Init();
+
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -257,6 +257,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             freeCameraController = (FreeCameraMovement) cameraState;
         mouseCatcher = InitialSceneReferences.i.mouseCatcher;
         avatarRenderer = InitialSceneReferences.i.playerAvatarController;
+        cameraController = InitialSceneReferences.i.cameraController;
+    }
+
+    public override void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
+    {
+        base.SetEditorReferences(goToEdit, undoGO, snapGO, freeMovementGO, selectedEntities);
+        voxelController.SetEditionGO(goToEdit);
     }
 
     public override void MouseClickDetected()

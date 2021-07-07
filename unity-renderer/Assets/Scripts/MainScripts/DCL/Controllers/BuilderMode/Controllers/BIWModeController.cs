@@ -16,7 +16,6 @@ public class BIWModeController : BIWController
 
     [Header("Scene References")]
     public GameObject cursorGO;
-    public PlayerAvatarController avatarRenderer;
 
     [Header("References")]
     public ActionController actionController;
@@ -42,13 +41,6 @@ public class BIWModeController : BIWController
     private GameObject editionGO;
     private GameObject undoGO;
 
-    public override void Init()
-    {
-        base.Init();
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        avatarRenderer = InitialSceneReferences.i.playerAvatarController;
-    }
-
     private void Start()
     {
         snapModeDelegate = (action) => ChangeSnapMode();
@@ -72,14 +64,13 @@ public class BIWModeController : BIWController
         }
     }
 
-    public void Init(GameObject editionGO, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO)
+    public override void Init()
     {
         base.Init();
-        this.editionGO = editionGO;
-        this.undoGO = undoGO;
+        cursorGO = InitialSceneReferences.i.cursorCanvas;
 
-        firstPersonMode.Init(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
-        editorMode.Init(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
+        firstPersonMode.Init();
+        editorMode.Init();
 
         firstPersonMode.OnInputDone += InputDone;
         editorMode.OnInputDone += InputDone;
@@ -93,6 +84,15 @@ public class BIWModeController : BIWController
             HUDController.i.builderInWorldMainHud.OnResetAction += ResetScaleAndRotation;
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
+    }
+
+    public void SetEditorGameObjects(GameObject editionGO, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO)
+    {
+        this.editionGO = editionGO;
+        this.undoGO = undoGO;
+
+        editorMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
+        firstPersonMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
     }
 
     public bool IsGodModeActive() { return currentEditModeState == EditModeState.GodMode; }

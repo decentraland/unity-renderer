@@ -304,7 +304,7 @@ public class BuilderInWorldController : MonoBehaviour
     public void InitControllers()
     {
         builderInWorldEntityHandler.Init();
-        biwModeController.Init(editionGO, undoGO, snapGO, freeMovementGO);
+        biwModeController.Init();
         biwPublishController.Init();
         biwCreatorController.Init();
         outlinerController.Init();
@@ -313,6 +313,8 @@ public class BuilderInWorldController : MonoBehaviour
         biwSaveController.Init();
         actionController.Init();
         biwAudioHandler.Init();
+
+        biwModeController.SetEditorGameObjects(editionGO, undoGO, snapGO, freeMovementGO);
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
