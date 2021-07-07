@@ -4,24 +4,24 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public class FeatureController : MonoBehaviour
+public class FeatureController
 {
-    public InitialSceneReferences sceneReferences;
-
-    public GameObject builderInWorldFeaturePrefab;
+    private GameObject builderInWorldFeaturePrefab;
 
     private List<Feature> activeFeatures = new List<Feature>();
 
     private GameObject builderInWorld;
 
-    void Start()
+    public void SetBuilderInWorldPrefab(GameObject biwPrefab) { builderInWorldFeaturePrefab = biwPrefab; }
+
+    public void Start()
     {
         KernelConfig.i.EnsureConfigInitialized().Then(HandleFeatures);
         KernelConfig.i.OnChange += OnKernelConfigChanged;
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         foreach (Feature feature in activeFeatures)
         {
@@ -39,12 +39,12 @@ public class FeatureController : MonoBehaviour
         {
             if (builderInWorld != null)
                 return;
-            builderInWorld = Instantiate(builderInWorldFeaturePrefab);
+            builderInWorld = GameObject.Instantiate(builderInWorldFeaturePrefab);
         }
         else
         {
             if (builderInWorld != null)
-                Destroy(builderInWorld);
+                GameObject.Destroy(builderInWorld);
         }
     }
 

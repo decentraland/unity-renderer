@@ -253,8 +253,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
-        freeCameraController = InitialSceneReferences.i.freeCameraMovement.GetComponent<FreeCameraMovement>();
-        cameraController = InitialSceneReferences.i.cameraController;
+        if (InitialSceneReferences.i.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+            freeCameraController = (FreeCameraMovement) cameraState;
         mouseCatcher = InitialSceneReferences.i.mouseCatcher;
         avatarRenderer = InitialSceneReferences.i.playerAvatarController;
     }

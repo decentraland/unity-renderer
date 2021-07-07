@@ -13,18 +13,18 @@ namespace DCL
         [SerializeField] private GameObject cursorCanvasReference;
         [SerializeField] private BuilderInWorldBridge builderInWorldBridgeReference;
         [SerializeField] private PlayerAvatarController playerAvatarControllerReference;
-        [SerializeField] private GameObject freeCameraMovementGOReference;
         [SerializeField] private CameraController cameraControllerReference;
+        [SerializeField] private UnityEngine.Camera mainCameraReference;
 
         public GameObject groundVisual { get { return groundVisualReference; } }
         public GameObject cameraParent { get { return cameraParentReference; } }
         public GameObject cursorCanvas { get { return cursorCanvasReference; } }
-        public GameObject freeCameraMovement { get { return freeCameraMovementGOReference; } }
         public MouseCatcher mouseCatcher { get { return mouseCatcherReference; } }
         public InputController inputController { get { return inputControllerReference; } }
         public BuilderInWorldBridge builderInWorldBridge { get { return builderInWorldBridgeReference; } }
         public PlayerAvatarController playerAvatarController { get { return playerAvatarControllerReference; } }
         public CameraController cameraController { get { return cameraControllerReference; } }
+        public UnityEngine.Camera mainCamera { get { return mainCameraReference; } }
 
         public static InitialSceneReferences i { get; private set; }
 

@@ -93,6 +93,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private void InitReferences()
     {
+        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
         cameraParentGO = InitialSceneReferences.i.cameraParent;
         cursorGO = InitialSceneReferences.i.cursorCanvas;
         inputController = InitialSceneReferences.i.inputController;
@@ -105,12 +106,8 @@ public class BuilderInWorldController : MonoBehaviour
         groundVisualsGO = grounds.ToArray();
     }
 
-    private void Awake()
-    {
-        BIWCatalogManager.Init();
-        builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
-        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
-    }
+    private void Awake() { BIWCatalogManager.Init(); }
+
     private void Start() { EnableFeature(true); }
 
     private void OnDestroy()
@@ -206,6 +203,9 @@ public class BuilderInWorldController : MonoBehaviour
 
         isInit = true;
         InitReferences();
+
+        builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
+        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
