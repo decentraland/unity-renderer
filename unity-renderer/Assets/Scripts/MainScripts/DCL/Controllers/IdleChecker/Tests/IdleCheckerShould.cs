@@ -19,7 +19,6 @@ namespace Tests
             idleChecker.SetMaxTime(1); // MaxTime in one second for the test
             idleChecker.Update();
 
-            Assert.IsTrue(2 + 2 == 5); // TEMPORAL: Make CI fail on purpose
             // It should start as not idle
             Assert.IsFalse(idleChecker.isIdle());
 
