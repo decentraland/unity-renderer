@@ -9,6 +9,7 @@ using DCL.Interface;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Camera;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Environment = DCL.Environment;
@@ -596,9 +597,9 @@ namespace Builder
         private void HideHUDs()
         {
             IHUD hud;
-            for (int i = 0; i < (int) HUDController.HUDElementID.COUNT; i++)
+            for (int i = 0; i < (int)HUDElementID.COUNT; i++)
             {
-                hud = HUDController.i.GetHUDElement((HUDController.HUDElementID) i);
+                hud = Environment.i.hud.controller.GetHUDElement((HUDElementID) i);
                 if (hud != null)
                 {
                     hud.SetVisibility(false);

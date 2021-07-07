@@ -1,10 +1,13 @@
+using System;
 using DCL;
 using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
@@ -134,6 +137,56 @@ namespace AssetPromiseKeeper_GLTF_Tests
             }
 
             Assert.IsTrue(poolableComponents.TrueForAll(x => x == null));
+
+            keeper.Cleanup();
+        }
+
+        [UnityTest]
+        public IEnumerator NotTryToLoadAfterForget()
+        {
+            var keeper = new AssetPromiseKeeper_GLTF();
+
+            var promises = new List<AssetPromise_GLTF>();
+            var forgottenPromises = new Dictionary<int, bool>();
+            bool waitMasterPromise = true;
+
+            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
+
+            AssetPromise_GLTF masterPromise = new AssetPromise_GLTF(scene.contentProvider, url);
+            masterPromise.OnPreFinishEvent += promise => waitMasterPromise = false;
+            keeper.Keep(masterPromise);
+
+            for (int i = 0; i < 10; i++)
+            {
+                AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
+
+                promises.Add(prom);
+
+                int promiseHash = prom.GetHashCode();
+                forgottenPromises.Add(promiseHash, false);
+
+                prom.OnSuccessEvent += (asset) =>
+                {
+                    Assert.IsFalse(forgottenPromises[promiseHash], "Success on forgotten promise shouldn't be called");
+                };
+                prom.OnFailEvent += (asset) =>
+                {
+                    Assert.IsFalse(forgottenPromises[promiseHash], "Fail on forgotten promise shouldn't be called");
+                };
+                keeper.Keep(prom);
+            }
+
+            keeper.Forget(masterPromise);
+
+            yield return new WaitWhile(() => waitMasterPromise);
+            yield return null;
+
+            for (int i = 0; i < promises.Count; i++)
+            {
+                var prom = promises[i];
+                forgottenPromises[prom.GetHashCode()] = true;
+                keeper.Forget(prom);
+            }
 
             keeper.Cleanup();
         }

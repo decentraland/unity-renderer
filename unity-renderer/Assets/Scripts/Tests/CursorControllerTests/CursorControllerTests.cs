@@ -5,6 +5,7 @@ using DCL;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using DCL.Camera;
 using UnityEngine;
 using UnityEngine.TestTools;
 
