@@ -6,6 +6,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -40,7 +41,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     [SerializeField]
     internal InputAction_Hold multiSelectionInputAction;
 
-    ParcelScene sceneToEdit;
+    private ParcelScene sceneToEdit;
 
     public LayerMask groundLayer;
 
@@ -56,6 +57,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool canDragSelectedEntities = false;
 
     private bool activateCamera = true;
+    private CameraMode.ModeId avatarCameraModeBeforeEditing;
 
     private Vector3 lastMousePosition;
     private Vector3 dragStartedPoint;
@@ -181,8 +183,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
+        TransformActionStarted(selectedEntities[0].rootEntity, BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
+        TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -192,7 +197,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
+        TransformActionStarted(selectedEntities[0].rootEntity, BuilderInWorldSettings.ROTATE_GIZMO_NAME);
         selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
+        TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.ROTATE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -204,11 +212,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         var entityToUpdate = selectedEntities[0];
 
+        TransformActionStarted(entityToUpdate.rootEntity, BuilderInWorldSettings.SCALE_GIZMO_NAME);
         // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
         entityToUpdate.transform.SetParent(null);
         entityToUpdate.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
         entityToUpdate.transform.SetParent(editionGO.transform);
+
+        TransformActionEnd(entityToUpdate.rootEntity, BuilderInWorldSettings.SCALE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -507,6 +519,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         freeCameraController.LookAt(lookAtT);
         freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
 
+        if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
+            avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
+
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
         gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
@@ -533,7 +548,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.Deactivate();
         mouseCatcher.enabled = true;
         Utils.LockCursor();
-        cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
+        cameraController.SetCameraMode(avatarCameraModeBeforeEditing);
 
         Environment.i.world.sceneController.ReIntegrateIsolatedScene();
 

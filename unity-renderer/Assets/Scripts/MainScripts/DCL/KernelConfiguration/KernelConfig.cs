@@ -93,8 +93,6 @@ public class KernelConfig
             initializationPromises = null;
         }
 
-        DataStore.i.avatarsLOD.LODEnabled.Set(newValue.features.enableAvatarLODs);
-
         initialized = true;
     }
 

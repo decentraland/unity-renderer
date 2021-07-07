@@ -22,7 +22,13 @@ namespace DCL
                 return;
             }
             i = this;
-
+            
+            KernelConfig.i.EnsureConfigInitialized()
+                        .Then(config =>
+                        {
+                            DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
+                        });
+            
             DataStore.i.avatarsLOD.LODEnabled.OnChange += LODEnabledOnChange;
             DataStore.i.avatarsLOD.LODDistance.OnChange += LODDistanceOnChange;
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;

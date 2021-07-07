@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
+using DCL.Camera;
 using UnityEditor;
 using UnityEngine;
 using WebSocketSharp;
@@ -98,6 +99,7 @@ namespace DCL
         public DCLCharacterController characterController;
         private Builder.DCLBuilderBridge builderBridge = null;
         private BuilderInWorldBridge builderInWorldBridge = null;
+        private HUDBridge hudBridge = null;
         public CameraController cameraController;
         public GameObject bridgesGameObject;
 
@@ -398,7 +400,7 @@ namespace DCL
                                 CatalogController.i?.ClearWearableCatalog();
                                 break;
                             case "ConfigureHUDElement":
-                                HUDController.i?.ConfigureHUDElement(msg.payload);
+                                GetHUDBridge()?.ConfigureHUDElement(msg.payload);
                                 break;
                             case "InitializeFriends":
                                 FriendsController.i?.InitializeFriends(msg.payload);
@@ -425,33 +427,33 @@ namespace DCL
                                 DCL.Tutorial.TutorialController.i?.SetTutorialEnabledForUsersThatAlreadyDidTheTutorial(msg.payload);
                                 break;
                             case "TriggerSelfUserExpression":
-                                HUDController.i.TriggerSelfUserExpression(msg.payload);
+                                GetHUDBridge().TriggerSelfUserExpression(msg.payload);
                                 break;
                             case "AirdroppingRequest":
-                                HUDController.i.AirdroppingRequest(msg.payload);
+                                GetHUDBridge().AirdroppingRequest(msg.payload);
                                 break;
                             case "ShowWelcomeNotification":
                                 NotificationsController.i.ShowWelcomeNotification();
                                 break;
                             case "ShowTermsOfServices":
-                                HUDController.i.ShowTermsOfServices(msg.payload);
+                                GetHUDBridge().ShowTermsOfServices(msg.payload);
                                 break;
                             case "RequestTeleport":
-                                HUDController.i.RequestTeleport(msg.payload);
+                                GetHUDBridge().RequestTeleport(msg.payload);
                                 break;
                             case "UpdateHotScenesList":
                                 HotScenesController.i.UpdateHotScenesList(msg.payload);
                                 break;
                             case "UpdateBalanceOfMANA":
-                                HUDController.i.UpdateBalanceOfMANA(msg.payload);
+                                GetHUDBridge().UpdateBalanceOfMANA(msg.payload);
                                 break;
                             case "SetPlayerTalking":
-                                HUDController.i.SetPlayerTalking(msg.payload);
+                                GetHUDBridge().SetPlayerTalking(msg.payload);
                                 break;
                             case "SetVoiceChatEnabledByScene":
                                 if (int.TryParse(msg.payload, out int value))
                                 {
-                                    HUDController.i.SetVoiceChatEnabledByScene(value);
+                                    GetHUDBridge().SetVoiceChatEnabledByScene(value);
                                 }
 
                                 break;
@@ -459,13 +461,13 @@ namespace DCL
                                 RenderProfileBridge.i.SetRenderProfile(msg.payload);
                                 break;
                             case "ShowAvatarEditorInSignUp":
-                                HUDController.i.ShowAvatarEditorInSignUp();
+                                GetHUDBridge().ShowAvatarEditorInSignUp();
                                 break;
                             case "SetUserTalking":
-                                HUDController.i.SetUserTalking(msg.payload);
+                                GetHUDBridge().SetUserTalking(msg.payload);
                                 break;
                             case "SetUsersMuted":
-                                HUDController.i.SetUsersMuted(msg.payload);
+                                GetHUDBridge().SetUsersMuted(msg.payload);
                                 break;
                             case "SetKernelConfiguration":
                             case "UpdateRealmsInfo":
@@ -541,6 +543,16 @@ namespace DCL
             }
 
             return builderInWorldBridge;
+        }
+
+        private HUDBridge GetHUDBridge()
+        {
+            if (hudBridge == null)
+            {
+                hudBridge = FindObjectOfType<HUDBridge>();
+            }
+
+            return hudBridge;
         }
     }
 }

@@ -16,6 +16,18 @@ namespace Tests.BuildModeHUDViews
         [Test]
         [TestCase(true)]
         [TestCase(false)]
+        public void IsActiveCorrectly(bool isActive)
+        {
+            // Arrange
+            exitFromBiWModalView.gameObject.SetActive(isActive);
+
+            // Assert
+            Assert.AreEqual(isActive, exitFromBiWModalView.IsActive(), "Game object activate property does not match!");
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
         public void SetActiveCorrectly(bool isActive)
         {
             // Arrange
