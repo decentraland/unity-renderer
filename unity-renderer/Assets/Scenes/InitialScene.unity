@@ -418,8 +418,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 491237587}
-  - component: {fileID: 491237586}
   - component: {fileID: 491237588}
+  - component: {fileID: 491237586}
   m_Layer: 0
   m_Name: HUDController
   m_TagString: Untagged
@@ -436,7 +436,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 491237585}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b05be2c36c3a60344a986b17f52cbe18, type: 3}
+  m_Script: {fileID: 11500000, guid: ecca15c8dd507148e86679bffd978312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &491237587
@@ -1104,13 +1104,13 @@ MonoBehaviour:
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 2
-  startInCoords: {x: 140, y: 140}
+  startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
   builderInWorld: 0
-  soloScene: 1
+  soloScene: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -1314,6 +1314,21 @@ PrefabInstance:
       propertyPath: freeCameraController
       value: 
       objectReference: {fileID: 326638024064006573}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: initialEagleCameraHeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: initialEagleCameraDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1208871512657624393, guid: ceb04930a6bb25b44a6ad241f62abdf5,
+        type: 3}
+      propertyPath: initialEagleCameraLookAtHeight
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1676156629805984034, guid: ceb04930a6bb25b44a6ad241f62abdf5,
         type: 3}
       propertyPath: builderInWorldBridge

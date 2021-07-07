@@ -46,8 +46,8 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 lastLocalGroundPosition;
     Vector3 velocity = Vector3.zero;
 
-    bool isSprinting = false;
-    bool isJumping = false;
+    public bool isWalking { get; private set; } = false;
+    public bool isJumping { get; private set; } = false;
     public bool isGrounded { get; private set; }
     public bool isOnMovingPlatform { get; private set; }
 
@@ -67,8 +67,8 @@ public class DCLCharacterController : MonoBehaviour
 
     private InputAction_Hold.Started jumpStartedDelegate;
     private InputAction_Hold.Finished jumpFinishedDelegate;
-    private InputAction_Hold.Started sprintStartedDelegate;
-    private InputAction_Hold.Finished sprintFinishedDelegate;
+    private InputAction_Hold.Started walkStartedDelegate;
+    private InputAction_Hold.Finished walkFinishedDelegate;
 
     private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
 
@@ -152,10 +152,10 @@ public class DCLCharacterController : MonoBehaviour
         jumpAction.OnStarted += jumpStartedDelegate;
         jumpAction.OnFinished += jumpFinishedDelegate;
 
-        sprintStartedDelegate = (action) => isSprinting = true;
-        sprintFinishedDelegate = (action) => isSprinting = false;
-        sprintAction.OnStarted += sprintStartedDelegate;
-        sprintAction.OnFinished += sprintFinishedDelegate;
+        walkStartedDelegate = (action) => isWalking = true;
+        walkFinishedDelegate = (action) => isWalking = false;
+        sprintAction.OnStarted += walkStartedDelegate;
+        sprintAction.OnFinished += walkFinishedDelegate;
     }
 
     void OnDestroy()
@@ -163,8 +163,8 @@ public class DCLCharacterController : MonoBehaviour
         CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
         jumpAction.OnStarted -= jumpStartedDelegate;
         jumpAction.OnFinished -= jumpFinishedDelegate;
-        sprintAction.OnStarted -= sprintStartedDelegate;
-        sprintAction.OnFinished -= sprintFinishedDelegate;
+        sprintAction.OnStarted -= walkStartedDelegate;
+        sprintAction.OnFinished -= walkFinishedDelegate;
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
     }
 
@@ -285,7 +285,7 @@ public class DCLCharacterController : MonoBehaviour
             if (Utils.isCursorLocked && characterForward.HasValue())
             {
                 // Horizontal movement
-                var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
+                var speed = movementSpeed * (isWalking ? runningSpeedMultiplier : 1f);
 
                 transform.forward = characterForward.Get().Value;
 
@@ -363,6 +363,7 @@ public class DCLCharacterController : MonoBehaviour
         ResetGround();
 
         velocity.y = jumpForce;
+        //cameraTargetProbe.damping.y = dampingOnAir;
 
         OnJump?.Invoke();
     }
@@ -427,33 +428,70 @@ public class DCLCharacterController : MonoBehaviour
         isGrounded = groundTransform != null && groundTransform.gameObject.activeInHierarchy;
     }
 
-    // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
-    Transform CastGroundCheckingRays()
+    public Transform CastGroundCheckingRays()
     {
         RaycastHit hitInfo;
-        float rayMagnitude = (collider.bounds.extents.y + groundCheckExtraDistance);
 
-        Ray ray = new Ray(transform.position, Vector3.down * rayMagnitude);
-        if (!CastGroundCheckingRay(ray, Vector3.zero, out hitInfo, rayMagnitude) // center
-            && !CastGroundCheckingRay(ray, transform.forward, out hitInfo, rayMagnitude) // forward
-            && !CastGroundCheckingRay(ray, transform.right, out hitInfo, rayMagnitude) // right
-            && !CastGroundCheckingRay(ray, -transform.forward, out hitInfo, rayMagnitude) // back
-            && !CastGroundCheckingRay(ray, -transform.right, out hitInfo, rayMagnitude)) // left
+        var result = CastGroundCheckingRays(transform, collider, groundCheckExtraDistance, 0.9f, groundLayers, out hitInfo);
+
+        if ( result )
         {
-            return null;
+            return hitInfo.transform;
+        }
+
+        return null;
+    }
+
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
+    {
+        return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
+    }
+
+    public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
+    {
+        Bounds bounds = collider.bounds;
+        float rayMagnitude = (bounds.extents.y + extraDistance);
+        bool test = CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers);
+        return test;
+    }
+
+    // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
+    public static bool CastGroundCheckingRays(Transform transform, Collider collider, float extraDistance, float scale, int groundLayers, out RaycastHit hitInfo)
+    {
+        Bounds bounds = collider.bounds;
+
+        float rayMagnitude = (bounds.extents.y + extraDistance);
+        float originScale = scale * bounds.extents.x;
+
+        if (!CastGroundCheckingRay(Vector3.zero, out hitInfo, rayMagnitude, groundLayers) // center
+            && !CastGroundCheckingRay( transform.position + transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // forward
+            && !CastGroundCheckingRay( transform.position + transform.right * originScale, out hitInfo, rayMagnitude, groundLayers) // right
+            && !CastGroundCheckingRay( transform.position + -transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // back
+            && !CastGroundCheckingRay( transform.position + -transform.right * originScale, out hitInfo, rayMagnitude, groundLayers)) // left
+        {
+            return false;
         }
 
         // At this point there is a guaranteed hit, so this is not null
-        return hitInfo.transform;
+        return true;
     }
 
-    bool CastGroundCheckingRay(Ray ray, Vector3 originOffset, out RaycastHit hitInfo, float rayMagnitude)
+    public static bool CastGroundCheckingRay(Vector3 origin, out RaycastHit hitInfo, float rayMagnitude, int groundLayers)
     {
-        ray.origin = transform.position + 0.9f * collider.bounds.extents.x * originOffset;
+        var ray = new Ray();
+        ray.origin = origin;
+        ray.direction = Vector3.down * rayMagnitude;
+
+        var result = Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
+
 #if UNITY_EDITOR
-        Debug.DrawRay(ray.origin, ray.direction, Color.red);
+        if ( result )
+            Debug.DrawLine(ray.origin, hitInfo.point, Color.green);
+        else
+            Debug.DrawRay(ray.origin, ray.direction, Color.red);
 #endif
-        return Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
+
+        return result;
     }
 
     void ReportMovement()

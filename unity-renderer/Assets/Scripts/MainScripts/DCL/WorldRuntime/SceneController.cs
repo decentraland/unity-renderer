@@ -50,18 +50,6 @@ namespace DCL
 
         private void OnDebugModeSet()
         {
-            if (Environment.i.world == null)
-            {
-                //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
-                //             case. Calling Initialize multiple times in a row is safe.
-                Environment.SetupWithBuilders
-                (
-                    MessagingContextFactory.CreateDefault,
-                    PlatformContextFactory.CreateDefault,
-                    WorldRuntimeContextFactory.CreateDefault
-                );
-            }
-
             Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
         }
 

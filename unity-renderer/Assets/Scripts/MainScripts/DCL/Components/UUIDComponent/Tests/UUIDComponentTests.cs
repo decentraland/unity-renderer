@@ -1098,7 +1098,7 @@ namespace Tests
 
             DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
 
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
+            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
 
             // Rotate camera towards the interactive object
             cameraController.SetRotation(45, 0, 0);
@@ -1151,7 +1151,7 @@ namespace Tests
 
             DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7));
 
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
+            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
 
             // Rotate camera towards the interactive object
             cameraController.SetRotation(45, 0, 0);

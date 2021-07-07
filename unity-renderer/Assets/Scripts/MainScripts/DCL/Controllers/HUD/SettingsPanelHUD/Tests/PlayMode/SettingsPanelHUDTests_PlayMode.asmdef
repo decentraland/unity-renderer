@@ -1,5 +1,6 @@
 {
     "name": "SettingsPanelHUDTests_PlayMode",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
@@ -13,7 +14,8 @@
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
         "SettingsControllers",
-        "UIHelpers"
+        "UIHelpers",
+        "HUDInterfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

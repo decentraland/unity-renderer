@@ -91,7 +91,7 @@ public static class BIWAnalytics
     public static void StartScenePublish(SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
-        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        events.Add("scene_limits", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneLimits)));
         SendEditorEvent("start_publish_of_the_scene", events);
     }
 
@@ -100,14 +100,14 @@ public static class BIWAnalytics
         Dictionary<string, string> events = new Dictionary<string, string>();
         events.Add("success", successOrError);
         events.Add("publication_time", publicationTime.ToString());
-        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        events.Add("scene_limits", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneLimits)));
         SendEditorEvent("end_scene_publish", events);
     }
 
     public static void SceneLimitsOverPassed(SceneMetricsModel sceneLimits)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
-        events.Add("scene_limits", ConvertSceneMetricsModelToDictionary(sceneLimits).ToString());
+        events.Add("scene_limits", JsonConvert.SerializeObject(ConvertSceneMetricsModelToDictionary(sceneLimits)));
         SendEditorEvent("scene_limits_over_passed", events);
     }
 
@@ -136,7 +136,7 @@ public static class BIWAnalytics
     public static void NewObjectPlacedChunk(List<KeyValuePair<CatalogItem, string>> itemsToSendAnalytics)
     {
         Dictionary<string, string> events = new Dictionary<string, string>();
-
+        List<string> items = new List<string>();
         foreach (var catalogItem in itemsToSendAnalytics)
         {
             if (events.ContainsKey(catalogItem.Key.name))
@@ -158,9 +158,9 @@ public static class BIWAnalytics
             item.Add("source", catalogItem.Value);
             item.Add("type", catalogItem.Key.ToString());
 
-            events.Add(catalogItem.Key.name,  JsonConvert.SerializeObject(item));
+            items.Add( JsonConvert.SerializeObject(item));
         }
-
+        events.Add("items", JsonConvert.SerializeObject(items));
         SendEditorEvent("new_object_placed", events);
     }
 
@@ -234,9 +234,5 @@ public static class BIWAnalytics
         SendEvent(eventName, events);
     }
 
-    private static void SendEvent(string eventName, Dictionary<string, string> events)
-    {
-        Debug.Log("Event " + eventName + " message: " + events.ToString());
-        Analytics.i.SendAnalytic(eventName, events);
-    }
+    private static void SendEvent(string eventName, Dictionary<string, string> events) { Analytics.i.SendAnalytic(eventName, events); }
 }

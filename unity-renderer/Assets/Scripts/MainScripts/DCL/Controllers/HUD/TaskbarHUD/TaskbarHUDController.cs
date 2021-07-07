@@ -28,7 +28,8 @@ public class TaskbarHUDController : IHUD
     public HelpAndSupportHUDController helpAndSupportHud;
 
     IMouseCatcher mouseCatcher;
-    IChatController chatController;
+    protected IChatController chatController;
+    protected IFriendsController friendsController;
 
     private InputAction_Trigger toggleFriendsTrigger;
     private InputAction_Trigger closeWindowTrigger;
@@ -46,6 +47,11 @@ public class TaskbarHUDController : IHUD
 
     public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
+    protected internal virtual TaskbarHUDView CreateView()
+    {
+        return TaskbarHUDView.Create(this, chatController, friendsController);
+    }
+
     public void Initialize(
         IMouseCatcher mouseCatcher,
         IChatController chatController,
@@ -53,10 +59,11 @@ public class TaskbarHUDController : IHUD
         ISceneController sceneController,
         IWorldState worldState)
     {
+        this.friendsController = friendsController;
         this.mouseCatcher = mouseCatcher;
         this.chatController = chatController;
 
-        view = TaskbarHUDView.Create(this, chatController, friendsController);
+        view = CreateView();
 
         this.sceneController = sceneController;
         this.worldState = worldState;
@@ -123,6 +130,7 @@ public class TaskbarHUDController : IHUD
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
     }
 
     private void View_OnQuestPanelToggled(bool value)
@@ -477,7 +485,10 @@ public class TaskbarHUDController : IHUD
 
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
+        DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
     }
+
+    public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
 
     public void SetVisibility(bool visible) { view.SetVisibility(visible); }
 

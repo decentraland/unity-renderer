@@ -6,13 +6,16 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;
 
 public class BuilderInWorldGodMode : BuilderInWorldMode
 {
     [Header("Editor Design")]
-    public float distanceEagleCamera = 20f;
+    public float initialEagleCameraHeight = 10f;
+    public float initialEagleCameraDistance = 10f;
+    public float initialEagleCameraLookAtHeight = 0f;
 
     public LayerMask layerToStopClick;
     public float snapDragFactor = 5f;
@@ -38,7 +41,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     [SerializeField]
     internal InputAction_Hold multiSelectionInputAction;
 
-    ParcelScene sceneToEdit;
+    private ParcelScene sceneToEdit;
 
     public LayerMask groundLayer;
 
@@ -47,8 +50,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool mouseSecondaryBtnPressed = false;
     private bool isSquareMultiSelectionInputActive = false;
     private bool isMouseDragging = false;
-    private bool isTypeOfBoundSelectionSelected = false;
-    private bool isVoxelBoundMultiSelection = false;
     private bool changeSnapTemporaryButtonPressed = false;
 
     private bool wasGizmosActive = false;
@@ -56,6 +57,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private bool canDragSelectedEntities = false;
 
     private bool activateCamera = true;
+    private CameraMode.ModeId avatarCameraModeBeforeEditing;
 
     private Vector3 lastMousePosition;
     private Vector3 dragStartedPoint;
@@ -69,6 +71,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+        BuilderInWorldInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BuilderInWorldInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
@@ -86,6 +89,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+        BuilderInWorldInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
         BuilderInWorldInputWrapper.OnMouseDrag -= OnInputMouseDrag;
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
@@ -115,26 +119,16 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
         {
             List<DCLBuilderInWorldEntity> allEntities = null;
-            if (!isTypeOfBoundSelectionSelected || !isVoxelBoundMultiSelection)
-                allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
-            else if (isVoxelBoundMultiSelection)
-                allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
+
+            allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
 
             foreach (DCLBuilderInWorldEntity entity in allEntities)
             {
-                if (entity.isVoxel && !isVoxelBoundMultiSelection && isTypeOfBoundSelectionSelected)
-                    continue;
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
 
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
-                    if (!isTypeOfBoundSelectionSelected && !entity.IsLocked)
-                    {
-                        isVoxelBoundMultiSelection = entity.isVoxel;
-                        isTypeOfBoundSelectionSelected = true;
-                    }
-
                     outlinerController.OutlineEntity(entity);
                 }
                 else
@@ -189,8 +183,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
+        TransformActionStarted(selectedEntities[0].rootEntity, BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
+        TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -200,7 +197,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (selectedEntities.Count != 1)
             return;
 
+        TransformActionStarted(selectedEntities[0].rootEntity, BuilderInWorldSettings.ROTATE_GIZMO_NAME);
         selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
+        TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.ROTATE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -212,11 +212,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         var entityToUpdate = selectedEntities[0];
 
+        TransformActionStarted(entityToUpdate.rootEntity, BuilderInWorldSettings.SCALE_GIZMO_NAME);
         // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
         entityToUpdate.transform.SetParent(null);
         entityToUpdate.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
         entityToUpdate.transform.SetParent(editionGO.transform);
+
+        TransformActionEnd(entityToUpdate.rootEntity, BuilderInWorldSettings.SCALE_GIZMO_NAME);
+        ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
         builderInWorldEntityHandler.ReportTransform(true);
         biwSaveController.ForceSave();
     }
@@ -307,6 +311,21 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         return position;
     }
 
+    private void OnInputMouseUpOnUi(int buttonID, Vector3 position)
+    {
+        if (buttonID == 1)
+        {
+            mouseSecondaryBtnPressed = false;
+            freeCameraController.StopDetectingMovement();
+        }
+
+        if (buttonID != 0)
+            return;
+
+        CheckEndBoundMultiselection(position);
+        isMouseDragging = false;
+    }
+
     private void OnInputMouseUp(int buttonID, Vector3 position)
     {
         if (buttonID == 1)
@@ -323,14 +342,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         EndDraggingSelectedEntities();
 
-        if (isSquareMultiSelectionInputActive && mouseMainBtnPressed )
-        {
-            if (Vector3.Distance(lastMousePosition, position) >= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG)
-                EndBoundMultiSelection();
-
-            isSquareMultiSelectionInputActive = false;
-            mouseMainBtnPressed = false;
-        }
+        CheckEndBoundMultiselection(position);
 
         outlinerController.SetOutlineCheckActive(true);
 
@@ -367,8 +379,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             && !BuilderInWorldUtils.IsPointerOverMaskElement(layerToStopClick))
         {
             isSquareMultiSelectionInputActive = true;
-            isTypeOfBoundSelectionSelected = false;
-            isVoxelBoundMultiSelection = false;
             outlinerController.SetOutlineCheckActive(false);
         }
 
@@ -377,6 +387,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     }
 
     #endregion
+
+    private void CheckEndBoundMultiselection(Vector3 position)
+    {
+        if (isSquareMultiSelectionInputActive && mouseMainBtnPressed )
+        {
+            if (Vector3.Distance(lastMousePosition, position) >= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG)
+                EndBoundMultiSelection();
+
+            isSquareMultiSelectionInputActive = false;
+            mouseMainBtnPressed = false;
+        }
+    }
 
     private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BuilderInWorldSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement; }
 
@@ -419,10 +441,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         freeCameraController.SetCameraCanMove(true);
         List<DCLBuilderInWorldEntity> allEntities = null;
-        if (!isVoxelBoundMultiSelection)
-            allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
-        else
-            allEntities = builderInWorldEntityHandler.GetAllVoxelsEntities();
+
+        allEntities = builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene();
 
         List<DCLBuilderInWorldEntity> selectedInsideBoundsEntities = new List<DCLBuilderInWorldEntity>();
         int alreadySelectedEntities = 0;
@@ -432,10 +452,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
-            if ((entity.isVoxel && !isVoxelBoundMultiSelection) ||
-                !entity.IsVisible)
-                continue;
-
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
                 if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
@@ -498,10 +514,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         SetLookAtObject(parcelScene);
 
         // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        Vector3 cameraPosition = DCLCharacterController.i.characterPosition.unityPosition + Vector3.up * distanceEagleCamera;
+        Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
         freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
+
+        if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
+            avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
 
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
@@ -529,7 +548,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.Deactivate();
         mouseCatcher.enabled = true;
         Utils.LockCursor();
-        cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
+        cameraController.SetCameraMode(avatarCameraModeBeforeEditing);
 
         Environment.i.world.sceneController.ReIntegrateIsolatedScene();
 
@@ -617,7 +636,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void EntityDoubleClick(DCLBuilderInWorldEntity entity)
     {
         base.EntityDoubleClick(entity);
-        LookAtEntity(entity.rootEntity);
+        if (!entity.IsLocked)
+            LookAtEntity(entity.rootEntity);
     }
 
     private void UpdateActionsInteractable()
@@ -756,11 +776,20 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
+    Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
+    {
+        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
+
+        return parcelScene.transform.position
+               + direction * initialEagleCameraDistance
+               + Vector3.up * initialEagleCameraHeight;
+    }
+
     void SetLookAtObject(ParcelScene parcelScene)
     {
         Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
-
-        lookAtT.position = middlePoint;
+        lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
     void SetEditObjectAtMouse()
