@@ -11,12 +11,15 @@ public class FeatureController
     private List<Feature> activeFeatures = new List<Feature>();
 
     private GameObject builderInWorld;
+    private KernelConfigModel currentConfig;
 
     public void SetBuilderInWorldPrefab(GameObject biwPrefab) { builderInWorldFeaturePrefab = biwPrefab; }
 
+    public KernelConfigModel GetCurrentConfig() { return currentConfig; }
+
     public void Start()
     {
-        KernelConfig.i.EnsureConfigInitialized().Then(HandleFeatures);
+        KernelConfig.i.EnsureConfigInitialized().Then(ApplyFeaturesConfig);
         KernelConfig.i.OnChange += OnKernelConfigChanged;
     }
 
@@ -29,9 +32,13 @@ public class FeatureController
         }
     }
 
-    private void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { HandleFeatures(current); }
+    public void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { ApplyFeaturesConfig(current); }
 
-    private void HandleFeatures(KernelConfigModel config) { HandleBuilderInWorld(config.features.enableBuilderInWorld); }
+    public void ApplyFeaturesConfig(KernelConfigModel config)
+    {
+        HandleBuilderInWorld(config.features.enableBuilderInWorld);
+        currentConfig = config;
+    }
 
     private void HandleBuilderInWorld(bool isActive)
     {
@@ -40,6 +47,7 @@ public class FeatureController
             if (builderInWorld != null)
                 return;
             builderInWorld = GameObject.Instantiate(builderInWorldFeaturePrefab);
+
         }
         else
         {
