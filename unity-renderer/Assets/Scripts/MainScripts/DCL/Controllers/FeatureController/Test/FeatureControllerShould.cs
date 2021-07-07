@@ -8,15 +8,12 @@ using UnityEngine.TestTools;
 
 public class FeatureControllerShould : IntegrationTestSuite
 {
-    private FeatureController featureController;
-
-    [UnitySetUp]
-    public void SetUpTest() { featureController = new FeatureController(); }
 
     [Test]
     public void TestFeatureControllerApplyConfig()
     {
         //Arrange
+        FeatureController featureController = new FeatureController();
         KernelConfigModel currentConfig = new KernelConfigModel();
 
         //Act
@@ -30,6 +27,7 @@ public class FeatureControllerShould : IntegrationTestSuite
     public void TestFeatureControllerConfigChange()
     {
         //Arrange
+        FeatureController featureController = new FeatureController();
         KernelConfigModel currentConfig = new KernelConfigModel();
         KernelConfigModel oldConfig = new KernelConfigModel();
         featureController.ApplyFeaturesConfig(oldConfig);
