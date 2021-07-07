@@ -12,6 +12,23 @@ using UnityEngine.TestTools;
 
 public class SceneBoundarieCheckerFeedbackStyleShould : IntegrationTestSuite
 {
+    protected override PlatformContext CreatePlatformContext()
+    {
+        WebRequestController webRequestController = new WebRequestController();
+        webRequestController.Initialize(
+            genericWebRequest: new WebRequest(),
+            assetBundleWebRequest: new WebRequestAssetBundle(),
+            textureWebRequest: new WebRequestTexture(),
+            null);
+
+        var context = DCL.Tests.PlatformContextFactory.CreateWithCustomMocks
+        (
+            webRequestController: webRequestController
+        );
+
+        return context;
+    }
+
     protected override WorldRuntimeContext CreateRuntimeContext()
     {
         return DCL.Tests.WorldRuntimeContextFactory.CreateWithCustomMocks
