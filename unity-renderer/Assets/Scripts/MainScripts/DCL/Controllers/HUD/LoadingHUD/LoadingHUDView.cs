@@ -18,7 +18,8 @@ namespace LoadingHUD
         [SerializeField] private TextMeshProUGUI text;
         [SerializeField] private Image loadingBar;
         [SerializeField] private GameObject walletPrompt;
-        [SerializeField] private GameObject tips;
+        [SerializeField] private GameObject tipsContainer;
+        [SerializeField] private GameObject noTipsContainer;
 
         public static ILoadingHUDView CreateView()
         {
@@ -38,6 +39,10 @@ namespace LoadingHUD
         public void SetMessage(string message) { text.text = message; }
         public void SetPercentage(float percentage) { loadingBar.fillAmount = percentage; }
         public void SetWalletPrompt(bool showWalletPrompt) { walletPrompt.gameObject.SetActive(showWalletPrompt); }
-        public void SetTips(bool showTips) { tips.gameObject.SetActive(showTips); }
+        public void SetTips(bool showTips)
+        {
+            tipsContainer.gameObject.SetActive(showTips);
+            noTipsContainer.gameObject.SetActive(!showTips);
+        }
     }
 }
