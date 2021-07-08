@@ -17,7 +17,5 @@ public class SceneAssetPack
     public string eth_address;
     public List<SceneObject> assets;
 
-    string baseUrl = BuilderInWorldSettings.BASE_URL_ASSETS_PACK_CONTENT;
-
-    public string ComposeThumbnailUrl() { return baseUrl + thumbnail; }
+    public string ComposeThumbnailUrl() { return BIWUrlUtils.GetUrlAssetPackContent() + thumbnail; }
 }

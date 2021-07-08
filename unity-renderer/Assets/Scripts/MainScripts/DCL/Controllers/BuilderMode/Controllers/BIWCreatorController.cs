@@ -10,6 +10,9 @@ using UnityEngine.Serialization;
 
 public class BIWCreatorController : BIWController
 {
+    [Header("Design variables")]
+    public float secondsToSendAnalytics = 5f;
+
     [Header("Prefab references")]
     public BIWModeController biwModeController;
 
@@ -35,6 +38,10 @@ public class BIWCreatorController : BIWController
     private readonly Dictionary<string, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<string, BIWLoadingPlaceHolder>();
     private readonly Dictionary<DCLBuilderInWorldEntity, GameObject> errorGameObjects = new Dictionary<DCLBuilderInWorldEntity, GameObject>();
 
+    private readonly List<KeyValuePair<CatalogItem, string>> itemsToSendAnalytics = new List<KeyValuePair<CatalogItem, string>>();
+
+    private float lastAnalyticsSentTimestamp = 0;
+
     private void Start()
     {
         createLastSceneObjectDelegate = (action) => CreateLastCatalogItem();
@@ -51,6 +58,25 @@ public class BIWCreatorController : BIWController
         }
 
         Clean();
+    }
+
+    protected override void FrameUpdate()
+    {
+        base.FrameUpdate();
+        if (Time.realtimeSinceStartup >= lastAnalyticsSentTimestamp)
+        {
+            SendAnalytics();
+            lastAnalyticsSentTimestamp = Time.realtimeSinceStartup + secondsToSendAnalytics;
+        }
+    }
+
+    private void SendAnalytics()
+    {
+        if (itemsToSendAnalytics.Count == 0)
+            return;
+
+        BIWAnalytics.NewObjectPlacedChunk(itemsToSendAnalytics);
+        itemsToSendAnalytics.Clear();
     }
 
     public void Clean()
@@ -311,7 +337,7 @@ public class BIWCreatorController : BIWController
     private void AddSceneMappings(CatalogItem catalogItem)
     {
         LoadParcelScenesMessage.UnityParcelScene data = sceneToEdit.sceneData;
-        data.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+        data.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
         if (data.contents == null)
             data.contents = new List<ContentServerUtils.MappingPair>();
         foreach (KeyValuePair<string, string> content in catalogItem.contents)
@@ -357,6 +383,11 @@ public class BIWCreatorController : BIWController
         {
             CreateCatalogItem(catalogItem);
         }
+        string catalogSection = "";
+        if (HUDController.i.builderInWorldMainHud != null)
+            catalogSection =   HUDController.i.builderInWorldMainHud.GetCatalogSectionSelected().ToString();
+
+        itemsToSendAnalytics.Add(new KeyValuePair<CatalogItem, string>(catalogItem, catalogSection));
     }
 
     private void OnCatalogItemDropped(CatalogItem catalogItem)

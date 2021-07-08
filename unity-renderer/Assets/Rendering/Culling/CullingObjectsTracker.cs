@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -29,16 +29,16 @@ namespace DCL.Rendering
                 yield break;
 
             renderers = Object.FindObjectsOfType<Renderer>()
-                .Where(x => !(x is SkinnedMeshRenderer)
-                            && !(x is ParticleSystemRenderer)
-                            && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+                              .Where(x => !(x is SkinnedMeshRenderer)
+                                          && !(x is ParticleSystemRenderer)
+                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                              .ToArray();
 
             yield return null;
 
             skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>()
-                .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
-                .ToArray();
+                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                                     .ToArray();
 
             yield return null;
 
@@ -47,10 +47,24 @@ namespace DCL.Rendering
             dirty = false;
         }
 
-        public void SetIgnoredLayersMask(int ignoredLayersMask)
+        /// <summary>
+        ///  This will re-populate all the tracked objects in a sync way.
+        /// </summary>
+        /// <param name="includeInactives">True for add inactive objects to the tracked list.</param>
+        public void ForcePopulateRenderersList(bool includeInactives)
         {
-            this.ignoredLayersMask = ignoredLayersMask;
+            renderers = Object.FindObjectsOfType<Renderer>(includeInactives)
+                              .Where(x => !(x is SkinnedMeshRenderer)
+                                          && !(x is ParticleSystemRenderer)
+                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                              .ToArray();
+
+            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>(includeInactives)
+                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                                     .ToArray();
         }
+
+        public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
 
         /// <summary>
         /// Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call.

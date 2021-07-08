@@ -4,9 +4,10 @@ namespace DCL.Configuration
 {
     public static class BuilderInWorldSettings
     {
-        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.io/v1/storage/contents/";
-        public const string BASE_URL_ASSETS_PACK = "https://builder-api.decentraland.io/v1/assetPacks";
-        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.io/v1/storage/assetPacks/";
+        //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
+        public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
+        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks";
+        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
         public static readonly int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
         public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
@@ -37,6 +38,7 @@ namespace DCL.Configuration
         public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
+        public const string FLOOR_ASSET_PACK_NAME = "Genesis City";
 
         public const string FLOOR_GLTF_KEY = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_GLTF_VALUE = "QmSyvWnb5nKCaGHw9oHLSkwywvS5NYpj6vgb8L121kWveS";
@@ -64,6 +66,9 @@ namespace DCL.Configuration
         public const string EXIT_MODAL_SUBTITLE = "Are you sure you want to exit Builder mode?";
         public const string EXIT_MODAL_CONFIRM_BUTTON = "EXIT";
         public const string EXIT_MODAL_CANCEL_BUTTON = "CANCEL";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE = "There are unpublished changes in this project. But don't worry, next time you enter the editor you will be able to continue where you left off!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON = "GOT IT!";
+        public const string EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON = "BACK";
 
         //Others
         public const float RAYCAST_MAX_DISTANCE = 10000f;
@@ -72,6 +77,7 @@ namespace DCL.Configuration
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
+        public const float LAND_NOTIFICATIONS_TIMER = 10f;
     }
 
     public static class ApplicationSettings

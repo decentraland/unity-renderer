@@ -11,6 +11,7 @@ namespace DCL
         private static System.Func<MessagingContext> messagingBuilder;
         private static System.Func<PlatformContext> platformBuilder;
         private static System.Func<WorldRuntimeContext> worldRuntimeBuilder;
+        private static System.Func<HUDContext> hudBuilder;
 
         /// <summary>
         /// Configure and setup the environment with custom implementations given by each func passed as parameter.
@@ -23,11 +24,13 @@ namespace DCL
         public static void SetupWithBuilders(
             System.Func<MessagingContext> messagingBuilder,
             System.Func<PlatformContext> platformBuilder,
-            System.Func<WorldRuntimeContext> worldRuntimeBuilder)
+            System.Func<WorldRuntimeContext> worldRuntimeBuilder,
+            System.Func<HUDContext> hudBuilder)
         {
             Environment.messagingBuilder = messagingBuilder;
             Environment.platformBuilder = platformBuilder;
             Environment.worldRuntimeBuilder = worldRuntimeBuilder;
+            Environment.hudBuilder = hudBuilder;
             Setup();
         }
 
@@ -36,7 +39,7 @@ namespace DCL
         /// </summary>
         public static void Setup()
         {
-            i = new Model(messagingBuilder, platformBuilder, worldRuntimeBuilder);
+            i = new Model(messagingBuilder, platformBuilder, worldRuntimeBuilder, hudBuilder);
             Initialize();
         }
 
@@ -66,6 +69,9 @@ namespace DCL
                 model.world.state, model.platform.cullingController);
             model.world.sceneBoundsChecker.Start();
             model.world.componentFactory.Initialize();
+            
+            // HUD context system
+            model.hud.controller.Initialize(model.hud.factory);
         }
 
         /// <summary>
@@ -87,16 +93,19 @@ namespace DCL
             public readonly MessagingContext messaging;
             public readonly PlatformContext platform;
             public readonly WorldRuntimeContext world;
+            public readonly HUDContext hud;
 
             public Model () { }
 
             public Model(System.Func<MessagingContext> messagingBuilder,
                 System.Func<PlatformContext> platformBuilder,
-                System.Func<WorldRuntimeContext> worldBuilder)
+                System.Func<WorldRuntimeContext> worldBuilder,
+                System.Func<HUDContext> hudBuilder)
             {
                 this.messaging = messagingBuilder();
                 this.platform = platformBuilder();
                 this.world = worldBuilder();
+                this.hud = hudBuilder();
             }
 
             public void Dispose()
@@ -104,6 +113,7 @@ namespace DCL
                 messaging?.Dispose();
                 world?.Dispose();
                 platform?.Dispose();
+                hud?.Dispose();
             }
         }
     }

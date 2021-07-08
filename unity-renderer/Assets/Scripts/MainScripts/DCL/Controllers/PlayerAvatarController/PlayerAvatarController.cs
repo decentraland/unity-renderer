@@ -28,8 +28,13 @@ public class PlayerAvatarController : MonoBehaviour
         avatarRenderer.OnFailEvent -= OnAvatarRendererFail;
         avatarRenderer.OnSuccessEvent += OnAvatarRendererReady;
         avatarRenderer.OnFailEvent += OnAvatarRendererFail;
-        UserProfileController.i.OnBaseWereablesFail -= OnBaseWereablesFail;
-        UserProfileController.i.OnBaseWereablesFail += OnBaseWereablesFail;
+
+        if ( UserProfileController.i != null )
+        {
+            UserProfileController.i.OnBaseWereablesFail -= OnBaseWereablesFail;
+            UserProfileController.i.OnBaseWereablesFail += OnBaseWereablesFail;
+        }
+
         CommonScriptableObjects.rendererState.AddLock(this);
 
         mainCamera = Camera.main;

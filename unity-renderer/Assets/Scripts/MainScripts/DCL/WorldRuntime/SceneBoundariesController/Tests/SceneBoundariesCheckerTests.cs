@@ -1,8 +1,10 @@
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using System.Linq;
 using DCL;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -88,6 +90,57 @@ namespace SceneBoundariesCheckerTests
 
             AudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<AudioSource>();
             Assert.AreEqual(0, dclAudioSource.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator HighPrioEntitiesAreRegistered_Position()
+        {
+            var boxShape1 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0, 0));
+            var boxShape2 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0));
+            var boxShape3 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(0, 0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f));
+
+            var entity1 = boxShape1.attachedEntities.First();
+            var entity2 = boxShape2.attachedEntities.First();
+            var entity3 = boxShape3.attachedEntities.First();
+
+            Assert.AreEqual(3, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check can't be zero!");
+
+            yield return null;
+
+            TestHelpers.RemoveSceneEntity(scene, entity1.entityId);
+            TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
+            TestHelpers.RemoveSceneEntity(scene, entity3.entityId);
+
+            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+
+            Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
+        }
+
+        [UnityTest]
+        public IEnumerator HighPrioEntitiesAreRegistered_Scale()
+        {
+            var boxShape1 = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one);
+            var boxShape2 = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one);
+            var boxShape3 = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.one);
+
+            var entity1 = boxShape1.attachedEntities.First();
+            TestHelpers.SetEntityTransform(scene, entity1, Vector3.one, Quaternion.identity, new Vector3(SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0, 0));
+            var entity2 = boxShape2.attachedEntities.First();
+            TestHelpers.SetEntityTransform(scene, entity2, Vector3.one, Quaternion.identity, new Vector3(0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f, 0));
+            var entity3 = boxShape3.attachedEntities.First();
+            TestHelpers.SetEntityTransform(scene, entity3, Vector3.one, Quaternion.identity, new Vector3(0, 0, SceneBoundsChecker.TRIGGER_HIGHPRIO_VALUE * 1.5f));
+
+            Assert.AreEqual(3, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check can't be zero!");
+
+            yield return null;
+
+            TestHelpers.RemoveSceneEntity(scene, entity1.entityId);
+            TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
+            TestHelpers.RemoveSceneEntity(scene, entity3.entityId);
+
+            Environment.i.platform.parcelScenesCleaner.ForceCleanup();
+
+            Assert.AreEqual(0, Environment.i.world.sceneBoundsChecker.highPrioEntitiesToCheckCount, "entities to check should be zero!");
         }
 
         [UnityTest]

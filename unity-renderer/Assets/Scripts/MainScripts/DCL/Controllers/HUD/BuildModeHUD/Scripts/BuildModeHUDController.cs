@@ -3,6 +3,7 @@ using DCL.Controllers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -73,6 +74,7 @@ public class BuildModeHUDController : IHUD
         ConfigureSaveHUDController();
         ConfigureNewProjectDetailsController();
         ConfigurePublicationDetailsController();
+        ConfigureQuickBarController();
     }
 
     public void Initialize(BuildModeHUDInitializationModel controllers)
@@ -205,6 +207,10 @@ public class BuildModeHUDController : IHUD
         controllers.publicationDetailsController.OnConfirm += ConfirmPublicationDetails;
     }
 
+    private void ConfigureQuickBarController() { controllers.quickBarController.OnCatalogItemAssigned += QuickBarCatalogItemAssigned; }
+
+    private void QuickBarCatalogItemAssigned(CatalogItem item) { BIWAnalytics.QuickAccessAssigned(item, GetCatalogSectionSelected().ToString()); }
+
     public void SceneSaved() { controllers.saveHUDController.SceneStateSave(); }
 
     public void SetBuilderProjectInfo(string projectName, string projectDescription)
@@ -255,6 +261,15 @@ public class BuildModeHUDController : IHUD
 
     public void PublishStart() { controllers.publicationDetailsController.SetActive(true); }
 
+    public void ConfigureConfirmationModal(string title, string subTitle, string cancelButtonText, string confirmButtonText)
+    {
+        controllers.buildModeConfirmationModalController.Configure(
+            title,
+            subTitle,
+            cancelButtonText,
+            confirmButtonText);
+    }
+
     internal void ConfirmPublicationDetails()
     {
         UnsubscribeConfirmationModal();
@@ -262,11 +277,12 @@ public class BuildModeHUDController : IHUD
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelPublishModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmPublishModal;
 
-        controllers.buildModeConfirmationModalController.Configure(
+        ConfigureConfirmationModal(
             BuilderInWorldSettings.PUBLISH_MODAL_TITLE,
             BuilderInWorldSettings.PUBLISH_MODAL_SUBTITLE,
             BuilderInWorldSettings.PUBLISH_MODAL_CANCEL_BUTTON,
             BuilderInWorldSettings.PUBLISH_MODAL_CONFIRM_BUTTON);
+
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.PUBLISH);
         controllers.publicationDetailsController.SetActive(false);
     }
@@ -328,16 +344,13 @@ public class BuildModeHUDController : IHUD
 
     public void ExitStart()
     {
+        if (controllers.buildModeConfirmationModalController.IsViewActive())
+            return;
         UnsubscribeConfirmationModal();
 
         controllers.buildModeConfirmationModalController.OnCancelExit += CancelExitModal;
         controllers.buildModeConfirmationModalController.OnConfirmExit += ConfirmExitModal;
 
-        controllers.buildModeConfirmationModalController.Configure(
-            BuilderInWorldSettings.EXIT_MODAL_TITLE,
-            BuilderInWorldSettings.EXIT_MODAL_SUBTITLE,
-            BuilderInWorldSettings.EXIT_MODAL_CANCEL_BUTTON,
-            BuilderInWorldSettings.EXIT_MODAL_CONFIRM_BUTTON);
         controllers.buildModeConfirmationModalController.SetActive(true, BuildModeModalType.EXIT);
 
         OnStartExitAction?.Invoke();
@@ -392,6 +405,8 @@ public class BuildModeHUDController : IHUD
     public void SetPublishBtnAvailability(bool isAvailable, string feedbackMessage = "") { view.SetPublishBtnAvailability(isAvailable, feedbackMessage); }
 
     #region Catalog
+
+    public BuildModeCatalogSection GetCatalogSectionSelected() { return controllers.sceneCatalogController.GetCurrentSection(); }
 
     private void ShowTooltipForCatalogItemAdapter(PointerEventData data, CatalogItemAdapter adapter)
     {
@@ -543,7 +558,11 @@ public class BuildModeHUDController : IHUD
         view.SetVisibilityOfControls(isControlsVisible);
     }
 
-    public void ChangeVisibilityOfUI() { SetVisibility(!IsVisible()); }
+    public void ChangeVisibilityOfUI()
+    {
+        DataStore.i.builderInWorld.showTaskBar.Set(!IsVisible());
+        SetVisibility(!IsVisible());
+    }
 
     #region TopButtons
 

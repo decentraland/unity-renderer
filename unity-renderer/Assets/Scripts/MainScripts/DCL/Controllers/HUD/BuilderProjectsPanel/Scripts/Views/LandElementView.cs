@@ -44,15 +44,36 @@ internal class LandElementView : MonoBehaviour, IDisposable
     private Vector2Int coords;
     private bool isLoadingThumbnail = false;
 
+    private LandWithAccess currentLand;
     private void Awake()
     {
         buttonSettings.onClick.AddListener(() => OnSettingsPressed?.Invoke(landId));
-        buttonJumpIn.onClick.AddListener(() => OnJumpInPressed?.Invoke(coords));
-        buttonEditor.onClick.AddListener(() => OnEditorPressed?.Invoke(coords));
+        buttonJumpIn.onClick.AddListener(JumpInButtonPressed);
+        buttonEditor.onClick.AddListener(EditorButtonPressed);
         buttonOpenInBuilderDapp.onClick.AddListener(() => OnOpenInDappPressed?.Invoke(landId));
 
         editorLockedTooltipEstate.gameObject.SetActive(false);
         editorLockedTooltipSdkScene.gameObject.SetActive(false);
+    }
+
+    private void JumpInButtonPressed()
+    {
+        if (currentLand != null)
+        {
+            string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
+            BIWAnalytics.PlayerJumpOrEdit("Lands", "JumpIn", coords, ownership);
+        }
+        OnJumpInPressed?.Invoke(coords);
+    }
+
+    private void EditorButtonPressed()
+    {
+        if (currentLand != null)
+        {
+            string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
+            BIWAnalytics.PlayerJumpOrEdit("Lands", "Editor", coords, ownership);
+        }
+        OnJumpInPressed?.Invoke(coords);
     }
 
     private void OnDestroy()
@@ -72,6 +93,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
 
     public void Setup(LandWithAccess land)
     {
+        currentLand = land;
         bool estate = land.type == LandType.ESTATE;
 
         SetId(land.id);

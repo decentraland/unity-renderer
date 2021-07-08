@@ -14,7 +14,7 @@ public class TaskbarMoreMenuButton : MonoBehaviour
         Out = 3,
     }
 
-    [SerializeField] internal Button mainButton;
+    [SerializeField] public Button mainButton;
     [SerializeField] internal TMP_Text buttonText;
     [SerializeField] internal Animator buttonAnimator;
     [SerializeField] internal Color notInteractableColor;

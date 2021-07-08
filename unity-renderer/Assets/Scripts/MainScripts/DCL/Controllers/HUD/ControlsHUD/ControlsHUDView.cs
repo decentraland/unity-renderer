@@ -8,6 +8,7 @@ public class ControlsHUDView : MonoBehaviour
     [SerializeField] internal ShowHideAnimator showHideAnimator;
     [SerializeField] internal Button_OnPointerDown closeButton;
     [SerializeField] internal GameObject voiceChatButton;
+    [SerializeField] internal GameObject builderInWorldButton;
 
     public event Action onToggleActionTriggered;
     public event Action<bool> onCloseActionTriggered;
