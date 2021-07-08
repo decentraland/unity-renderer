@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
+using UnityEditor;
 using UnityEngine;
 using static WearableLiterals;
 
@@ -367,14 +369,185 @@ namespace DCL
                 stickersController?.PlayEmote(model.stickerTriggerId);
             }
 
+
             if (loadSoftFailed)
             {
                 OnFailEvent?.Invoke(false);
             }
             else
             {
+                CoroutineStarter.Start( AvatarMergeTest() );
                 OnSuccessEvent?.Invoke();
             }
+        }
+
+        private Mesh combinedAvatarMesh;
+        private GameObject combinedAvatar;
+
+        [ContextMenu("Show Bones")]
+        public void ShowBones()
+        {
+            Transform[] bones = combinedAvatar.GetComponent<SkinnedMeshRenderer>().bones;
+
+            for ( int i = 0; i < bones.Length; i++ )
+            {
+                Debug.DrawLine(bones[i].transform.position, bones[i].transform.position + Vector3.up * 0.1f, Color.red, 10.0f);
+            }
+        }
+
+        [ContextMenu("Update Skinning")]
+        public void UpdateSkinning()
+        {
+            Matrix4x4[] bindPoses = combinedAvatarMesh.bindposes;
+            Transform[] bones = combinedAvatar.GetComponent<SkinnedMeshRenderer>().bones;
+
+            for ( int i = 0; i < bindPoses.Length; i++ )
+            {
+                Debug.DrawLine(bones[i].transform.position, bones[i].transform.position + Vector3.up * 0.01f, Color.red, 1.0f);
+                bindPoses[i] = bones[i].worldToLocalMatrix * combinedAvatar.transform.localToWorldMatrix;
+            }
+
+            BoneWeight[] boneWeights = combinedAvatarMesh.boneWeights;
+            int boneCount = bones.Length;
+
+            for ( int i = 0 ; i < boneWeights.Length; i++)
+            {
+                boneWeights[i].boneIndex0 %= boneCount;
+                boneWeights[i].boneIndex1 %= boneCount;
+                boneWeights[i].boneIndex2 %= boneCount;
+                boneWeights[i].boneIndex3 %= boneCount;
+            }
+
+            combinedAvatarMesh.bindposes = bindPoses;
+            combinedAvatarMesh.boneWeights = boneWeights;
+        }
+
+        IEnumerator AvatarMergeTest()
+        {
+            yield return new WaitUntil( () => gameObject.activeInHierarchy );
+
+            var rs = GetComponentsInChildren<SkinnedMeshRenderer>(false);
+
+            if ( rs.Length == 0 )
+                yield break;
+
+            List<CombineInstance> combineInstances = new List<CombineInstance>();
+            Mesh meshCombined = new Mesh();
+
+            Vector3 lastPos = transform.position;
+            transform.position = Vector3.zero;
+
+            if ( combinedAvatar != null )
+                Destroy(combinedAvatar);
+
+            if ( combinedAvatarMesh != null )
+                Destroy(combinedAvatarMesh);
+
+            List<Material> mats = new List<Material>();
+
+            combinedAvatar = new GameObject("Combined Avatar");
+            combinedAvatar.transform.parent = transform;
+            combinedAvatar.transform.localPosition = Vector3.zero;
+
+            List<Matrix4x4> bindposes = new List<Matrix4x4>();
+
+            SkinnedMeshRenderer referenceSkr = null;
+
+            foreach ( var r in rs )
+            {
+                var mesh = r.sharedMesh;
+
+                if ( mesh == null || !r.enabled )
+                    continue;
+
+                mats.Add(r.sharedMaterial);
+
+                Transform meshTransform = r.transform;
+
+                if ( referenceSkr == null )
+                {
+                    var tmp_bindposes = r.sharedMesh.bindposes;
+                    if ( tmp_bindposes.Length == bodyShapeController.skinnedMeshRenderer.bones.Length )
+                    {
+                        referenceSkr = r;
+                        bindposes = tmp_bindposes.ToList();
+                    }
+                }
+
+                string parentName = meshTransform.parent.gameObject.name;
+
+                Transform prevParent = meshTransform.parent;
+                meshTransform.parent = null;
+
+                // Debug.Log("Primitive: " + parentName);
+                //
+                // foreach ( var t in r.bones )
+                // {
+                //     Debug.Log("BoneId = " + t.name);
+                // }
+
+                bool isHead = parentName.Contains("Head_") || parentName.Contains("Mask_");
+
+                // NOTE(Brian): Avatar wearables default positions are messed up.
+                //              This is hidden by rig default pose that's forced on SkinnedMeshRenderers.
+                //              The only way to see the transform misalignments is to attach MeshRenderers.
+                //              If we want to use the rig default pose to make this mesh, we have to call SkinnedMeshRenderer.BakeMesh.
+                //              That's too expensive.
+                //
+                //              This is a hacky attempt to fix the default positions without relying on that.
+                if ( !isHead )
+                {
+                    meshTransform.position = Vector3.zero;
+                    meshTransform.rotation = Quaternion.identity;
+                    meshTransform.localScale = Vector3.one;
+                }
+                else
+                {
+                    meshTransform.position = Vector3.zero;
+                    meshTransform.rotation = Quaternion.Euler(90, 0, 0);
+                    meshTransform.localScale = Vector3.one * 0.01f;
+                }
+
+                combineInstances.Add( new CombineInstance()
+                {
+                    mesh = mesh,
+                    transform = meshTransform.localToWorldMatrix
+                });
+
+                meshTransform.parent = prevParent;
+
+                if ( r != bodyShapeController.skinnedMeshRenderer )
+                    r.enabled = false;
+            }
+
+            transform.position = lastPos;
+
+            meshCombined.CombineMeshes(combineInstances.ToArray(), false, true);
+
+            combinedAvatarMesh = meshCombined;
+
+            Transform[] bones = referenceSkr.bones;
+
+            BoneWeight[] boneWeights = meshCombined.boneWeights;
+            int boneCount = bones.Length;
+
+            for ( int i = 0 ; i < boneWeights.Length; i++)
+            {
+                boneWeights[i].boneIndex0 %= boneCount;
+                boneWeights[i].boneIndex1 %= boneCount;
+                boneWeights[i].boneIndex2 %= boneCount;
+                boneWeights[i].boneIndex3 %= boneCount;
+            }
+
+            meshCombined.bindposes = bindposes.ToArray();
+            meshCombined.boneWeights = boneWeights;
+
+            var newSk = combinedAvatar.AddComponent<SkinnedMeshRenderer>();
+            newSk.sharedMesh = meshCombined;
+            newSk.bones = bones;
+            newSk.rootBone = referenceSkr.rootBone;
+            newSk.localBounds = referenceSkr.localBounds;
+            newSk.sharedMaterials = mats.ToArray();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
