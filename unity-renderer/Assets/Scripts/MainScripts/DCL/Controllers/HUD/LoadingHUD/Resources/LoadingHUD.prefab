@@ -439,7 +439,7 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5a86186edbf4b414d89c6aa653550530, type: 3}
   image: {fileID: 3804272290582730524}
   label: {fileID: 6114554693447143876}
-  secondsBetweenTips: 10
+  secondsBetweenTips: 5
 --- !u!1 &5243769655597236792
 GameObject:
   m_ObjectHideFlags: 0
