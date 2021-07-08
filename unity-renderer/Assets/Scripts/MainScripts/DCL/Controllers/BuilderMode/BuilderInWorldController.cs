@@ -13,16 +13,8 @@ using Environment = DCL.Environment;
 
 public class BuilderInWorldController : MonoBehaviour
 {
-    private const float CULLING_ACTIVATION_DELAY = 0.5f;
-
-    [Header("Activation of Feature")]
-    public bool activeFeature = false;
-
-    public bool bypassLandOwnershipCheck = false;
-
-    [Header("DesignVariables")]
-    [SerializeField]
-    private float distanceToDisableBuilderInWorld = 45f;
+    private const bool BYPASS_LAND_OWNERSHIP_CHECK = false;
+    private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
 
     [Header("Scene References")]
     public GameObject cameraParentGO;
@@ -44,11 +36,10 @@ public class BuilderInWorldController : MonoBehaviour
     public BuilderInWorldBridge builderInWorldBridge;
     public BIWSaveController biwSaveController;
     public BuilderInWorldAudioHandler biwAudioHandler;
+    private BIWReferencesController biwReferencesController;
 
     [Header("Build Modes")]
     public BuilderInWorldGodMode editorMode;
-
-    public LayerMask layerToRaycast;
 
     private ParcelScene sceneToEdit;
 
@@ -80,6 +71,7 @@ public class BuilderInWorldController : MonoBehaviour
     private float startEditorTimeStamp = 0;
     private bool isCatalogRequested = false;
     private bool isEnteringEditMode = false;
+    private bool activeFeature = false;
 
     public event Action OnEnterEditMode;
     public event Action OnExitEditMode;
@@ -90,21 +82,6 @@ public class BuilderInWorldController : MonoBehaviour
     private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
-
-    private void InitReferences()
-    {
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
-        cameraParentGO = InitialSceneReferences.i.cameraParent;
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        inputController = InitialSceneReferences.i.inputController;
-
-        List<GameObject> grounds = new List<GameObject>();
-        for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
-        {
-            grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
-        }
-        groundVisualsGO = grounds.ToArray();
-    }
 
     private void Awake() { BIWCatalogManager.Init(); }
 
@@ -155,7 +132,7 @@ public class BuilderInWorldController : MonoBehaviour
 
         if (checkerInsideSceneOptimizationCounter >= 60)
         {
-            if (Vector3.Distance(DCLCharacterController.i.characterPosition.unityPosition, parcelUnityMiddlePoint) >= distanceToDisableBuilderInWorld)
+            if (Vector3.Distance(DCLCharacterController.i.characterPosition.unityPosition, parcelUnityMiddlePoint) >= DISTANCE_TO_DISABLE_BUILDER_IN_WORLD)
                 ExitEditMode();
             checkerInsideSceneOptimizationCounter = 0;
         }
@@ -204,8 +181,11 @@ public class BuilderInWorldController : MonoBehaviour
         isInit = true;
         InitReferences();
 
-        builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
-        builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
+        if (builderInWorldBridge != null)
+        {
+            builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
+            builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
+        }
 
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
@@ -214,21 +194,7 @@ public class BuilderInWorldController : MonoBehaviour
             userProfile.OnUpdate += OnUserProfileUpdate;
 
         InitGameObjects();
-
-        HUDConfiguration hudConfig = new HUDConfiguration();
-        hudConfig.active = true;
-        hudConfig.visible = false;
-        HUDController.i.CreateHudElement(hudConfig, HUDElementID.BUILDER_IN_WORLD_MAIN);
-        HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
-
-        HUDController.i.builderInWorldMainHud.Initialize();
-
-        HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
-        HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
-        HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
-
-        if (HUDController.i.builderProjectsPanelController != null)
-            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
+        InitHUD();
 
         BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
@@ -244,8 +210,46 @@ public class BuilderInWorldController : MonoBehaviour
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
     }
 
+    private void InitReferences()
+    {
+        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
+        cameraParentGO = InitialSceneReferences.i.cameraParent;
+        cursorGO = InitialSceneReferences.i.cursorCanvas;
+        inputController = InitialSceneReferences.i.inputController;
+
+        List<GameObject> grounds = new List<GameObject>();
+        for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
+        {
+            grounds.Add(InitialSceneReferences.i.groundVisual.transform.transform.GetChild(i).gameObject);
+        }
+        groundVisualsGO = grounds.ToArray();
+
+        biwReferencesController = new BIWReferencesController();
+        biwReferencesController.Init();
+
+        skyBoxMaterial = biwReferencesController.projectReferences.skyBoxMaterial;
+    }
+
     private void InitBuilderProjectPanel()
     {
+        if (HUDController.i.builderProjectsPanelController != null)
+            HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
+    }
+
+    private void InitHUD()
+    {
+        HUDConfiguration hudConfig = new HUDConfiguration();
+        hudConfig.active = true;
+        hudConfig.visible = false;
+        HUDController.i.CreateHudElement(hudConfig, HUDElementID.BUILDER_IN_WORLD_MAIN);
+        HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
+
+        HUDController.i.builderInWorldMainHud.Initialize();
+
+        HUDController.i.builderInWorldMainHud.OnTutorialAction += StartTutorial;
+        HUDController.i.builderInWorldMainHud.OnStartExitAction += StartExitMode;
+        HUDController.i.builderInWorldMainHud.OnLogoutAction += ExitEditMode;
+
         if (HUDController.i.builderProjectsPanelController != null)
             HUDController.i.builderProjectsPanelController.OnJumpInOrEdit += GetCatalog;
     }
@@ -385,7 +389,7 @@ public class BuilderInWorldController : MonoBehaviour
         float currentDistance = 9999;
         VoxelEntityHit voxelEntityHit = null;
 
-        hits = Physics.RaycastAll(ray, BuilderInWorldSettings.RAYCAST_MAX_DISTANCE, layerToRaycast);
+        hits = Physics.RaycastAll(ray, BuilderInWorldSettings.RAYCAST_MAX_DISTANCE, BuilderInWorldSettings.COLLIDER_SELECTION_LAYER);
 
         foreach (RaycastHit hit in hits)
         {
@@ -439,7 +443,7 @@ public class BuilderInWorldController : MonoBehaviour
 
     private bool UserHasPermissionOnParcelScene(ParcelScene sceneToCheck)
     {
-        if (bypassLandOwnershipCheck)
+        if (BYPASS_LAND_OWNERSHIP_CHECK)
             return true;
 
         List<Vector2Int> allParcelsWithAccess = landsWithAccess.SelectMany(land => land.parcels).ToList();
