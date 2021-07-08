@@ -18,9 +18,6 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
 # Catch exit code
 UNITY_EXIT_CODE=$?
 
-mkdir -p "$PROJECT_PATH/test-results/playmode"
-cp "$PROJECT_PATH/playmode-results.xml" "$PROJECT_PATH/test-results/playmode/results.xml" || true
-
 cat "$PROJECT_PATH/playmode-results.xml"
 
 # Display results

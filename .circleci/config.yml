@@ -165,8 +165,15 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
       - store_test_results:
-          path: test-results
+          path: ./unity-renderer/test-results
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/playmode-logs.txt
