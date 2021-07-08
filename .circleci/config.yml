@@ -129,9 +129,6 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/editmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: ./unity-renderer/test-results
       - save_cache: &SAVE_CHECKSUM_CACHE_EDITMODE
@@ -180,9 +177,10 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
+      - persist_to_workspace:
+          root: *working_directory
+          paths:
+            - ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
           key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -320,7 +318,11 @@ jobs:
           working_directory: *node_workspace
           name: npm run test
           command: npm run test
-
+      - run:
+          working_directory: *node_workspace
+          name: prepare code coverage
+          command: |
+            cp -r /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report/ /tmp/workspace/unity-renderer/browser-interface/dist/code-coverage/
       - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
@@ -384,6 +386,7 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - build-unity
+            - playmode-tests
 
       - publish-renderer:
           filters:
