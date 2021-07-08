@@ -570,8 +570,8 @@ MonoBehaviour:
   text: {fileID: 6412606480235805711}
   loadingBar: {fileID: 7498085587953386697}
   walletPrompt: {fileID: 3688548958210604613}
-  tipsContainer: {fileID: 0}
-  noTipsContainer: {fileID: 0}
+  tipsContainer: {fileID: 4568201519902229243}
+  noTipsContainer: {fileID: 8568958695297546250}
 --- !u!1 &5243769657061537792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1405,8 +1405,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 9.999997}
+  m_SizeDelta: {x: 2400, y: -20.000006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7281139979276395524
 CanvasRenderer:
