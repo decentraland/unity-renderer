@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -162,5 +162,5 @@ internal class SceneInfoView : MonoBehaviour
 
     void OnPointerExit() { Hide(); }
 
-    void OnJumpIn(Vector2Int coords, string serverName, string layerName) { gameObject.SetActive(false); }
+    void OnJumpIn(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] candidateRealms) { gameObject.SetActive(false); }
 }

@@ -507,6 +507,7 @@ namespace DCL.Interface
         {
             public FriendsController.UserStatus.Realm realm = new FriendsController.UserStatus.Realm();
             public Vector2 gridPosition;
+            public HotScenesController.HotSceneInfo.Realm[] candidateRealms;
         }
 
         [System.Serializable]
@@ -953,19 +954,19 @@ namespace DCL.Interface
             public bool isSignUpFlow;
             public AvatarModel avatar;
         }
-        
+
         public static class RendererAuthenticationType
         {
             public static string Guest => "guest";
             public static string WalletConnect => "wallet_connect";
         }
-        
+
         [System.Serializable]
         public class SendAuthenticationPayload
         {
             public string rendererAuthenticationType;
         }
-        
+
         [System.Serializable]
         public class SendPassportPayload
         {
@@ -995,10 +996,7 @@ namespace DCL.Interface
             SendMessage("SaveUserAvatar", payload);
         }
 
-        public static void SendAuthentication(string rendererAuthenticationType)
-        {
-            SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType });
-        }
+        public static void SendAuthentication(string rendererAuthenticationType) { SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType }); }
 
         public static void SendPassport(string name, string email) { SendMessage("SendPassport", new SendPassportPayload { name = name, email = email }); }
 
@@ -1140,13 +1138,15 @@ namespace DCL.Interface
 
         public static void GoToMagic() { SendMessage("GoToMagic"); }
 
-        public static void JumpIn(int x, int y, string serverName, string layerName)
+        public static void JumpIn(int x, int y, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] candidateRealms = null)
         {
             jumpInPayload.realm.serverName = serverName;
             jumpInPayload.realm.layer = layerName;
 
             jumpInPayload.gridPosition.x = x;
             jumpInPayload.gridPosition.y = y;
+
+            jumpInPayload.candidateRealms = candidateRealms;
 
             SendMessage("JumpIn", jumpInPayload);
         }

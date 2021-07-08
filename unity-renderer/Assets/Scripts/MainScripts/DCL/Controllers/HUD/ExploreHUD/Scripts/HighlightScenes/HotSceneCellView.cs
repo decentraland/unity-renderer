@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 using TMPro;
+using System.Linq;
 
 internal class HotSceneCellView : MonoBehaviour
 {
@@ -35,7 +36,7 @@ internal class HotSceneCellView : MonoBehaviour
     [SerializeField] Button_OnPointerDown jumpIn;
     [SerializeField] Sprite errorThumbnail;
 
-    public delegate void JumpInDelegate(Vector2Int coords, string serverName, string layerName);
+    public delegate void JumpInDelegate(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] candidateRealms);
     public static event JumpInDelegate OnJumpIn;
 
     public static event Action<HotSceneCellView> OnInfoButtonPointerDown;
@@ -117,6 +118,7 @@ internal class HotSceneCellView : MonoBehaviour
     public void JumpInPressed()
     {
         HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
+        hotSceneInfo.realms = hotSceneInfo.realms.ToList().OrderByDescending(x => x.usersCount).ToArray();
         for (int i = 0; i < hotSceneInfo.realms.Length; i++)
         {
             if (hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].usersMax)
@@ -126,7 +128,7 @@ internal class HotSceneCellView : MonoBehaviour
             }
         }
 
-        OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
+        OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer, hotSceneInfo.realms);
     }
 
     private void OnDestroy()
