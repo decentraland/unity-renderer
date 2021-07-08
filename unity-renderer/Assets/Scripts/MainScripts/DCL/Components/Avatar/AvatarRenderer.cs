@@ -7,7 +7,7 @@ using static WearableLiterals;
 
 namespace DCL
 {
-    public class AvatarRenderer : MonoBehaviour
+    public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         public enum VisualCue
         {
@@ -492,6 +492,10 @@ namespace DCL
             if (gameObject.activeSelf != newVisibility)
                 gameObject.SetActive(newVisibility);
         }
+
+        public MeshRenderer GetLODRenderer() { return lodRenderer; }
+
+        public Transform GetTransform() { return transform; }
 
         private void HideAll()
         {

@@ -3,44 +3,57 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AvatarsLODController : MonoBehaviour
+    public class AvatarsLODController : IAvatarsLODController
     {
-        public static AvatarsLODController i { get; private set; }
-
         private const float LODS_LOCAL_Y_POS = 1.8f;
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
 
-        private List<AvatarShape> avatarsList = new List<AvatarShape>();
+        private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
         private float lastLODsVerticalMovementTime = -1;
 
-        private void Awake()
+        public AvatarsLODController()
         {
-            if (i != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            i = this;
-            
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
                             DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
                         });
-            
-            DataStore.i.avatarsLOD.LODEnabled.OnChange += LODEnabledOnChange;
+
             DataStore.i.avatarsLOD.LODDistance.OnChange += LODDistanceOnChange;
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;
-
-            enabled = DataStore.i.avatarsLOD.LODEnabled.Get();
         }
 
-        private void Update()
+        public void Update()
         {
             UpdateAllLODs();
 
             UpdateLODsVerticalMovementAndBillboard();
+        }
+
+        public void RegisterAvatar(IAvatarRenderer newAvatar)
+        {
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar))
+                return;
+
+            avatarsList.Add(newAvatar);
+        }
+
+        public void RemoveAvatar(IAvatarRenderer targetAvatar)
+        {
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar))
+                return;
+
+            int listCount = avatarsList.Count;
+            for (int i = 0; i < listCount; i++)
+            {
+                if (avatarsList[i] == targetAvatar)
+                {
+                    avatarsList.RemoveAt(i);
+
+                    return;
+                }
+            }
         }
 
         private void UpdateLODsVerticalMovementAndBillboard()
@@ -50,7 +63,7 @@ namespace DCL
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
-                lodGO = avatarsList[i].avatarRenderer.lodRenderer.gameObject;
+                lodGO = avatarsList[i].GetLODRenderer().gameObject;
                 if (!lodGO.activeSelf)
                     continue;
 
@@ -69,73 +82,45 @@ namespace DCL
                 lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
-            DataStore.i.avatarsLOD.LODEnabled.OnChange -= LODEnabledOnChange;
             DataStore.i.avatarsLOD.LODDistance.OnChange -= LODDistanceOnChange;
             DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange -= MaxNonLODAvatarsOnChange;
         }
 
         private void UpdateAllLODs()
         {
-            if (!enabled)
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get())
                 return;
 
-            SortedList<float, AvatarShape> closeDistanceAvatars = new SortedList<float, AvatarShape>();
-            foreach (AvatarShape avatar in avatarsList)
+            SortedList<float, IAvatarRenderer> closeDistanceAvatars = new SortedList<float, IAvatarRenderer>();
+            foreach (IAvatarRenderer avatar in avatarsList)
             {
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.GetTransform().position);
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
-                    ToggleLOD(avatar.avatarRenderer, true);
+                    ToggleLOD(avatar, true);
                 else
                     closeDistanceAvatars.Add(distanceToPlayer, avatar);
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            AvatarShape currentAvatar;
+            IAvatarRenderer currentAvatar;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
                 currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
 
-                ToggleLOD(currentAvatar.avatarRenderer, isLOD);
+                ToggleLOD(currentAvatar, isLOD);
             }
         }
 
-        public void RegisterAvatar(AvatarShape newAvatar)
+        private void ToggleLOD(IAvatarRenderer avatarRenderer, bool enabled)
         {
-            if (!enabled || avatarsList.Contains(newAvatar))
-                return;
-
-            avatarsList.Add(newAvatar);
-        }
-
-        public void RemoveAvatar(AvatarShape targetAvatar)
-        {
-            if (this == null || !enabled || !avatarsList.Contains(targetAvatar))
-                return;
-
-            int listCount = avatarsList.Count;
-            for (int i = 0; i < listCount; i++)
-            {
-                if (avatarsList[i] == targetAvatar)
-                {
-                    avatarsList.RemoveAt(i);
-
-                    return;
-                }
-            }
-        }
-
-        private void ToggleLOD(AvatarRenderer avatarRenderer, bool enabled)
-        {
-            avatarRenderer.lodRenderer.gameObject.SetActive(enabled);
+            avatarRenderer.GetLODRenderer().gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
-
-        private void LODEnabledOnChange(bool current, bool previous) { enabled = current; }
 
         private void LODDistanceOnChange(float current, float previous) { UpdateAllLODs(); }
 

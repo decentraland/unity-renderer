@@ -71,7 +71,7 @@ namespace DCL
             avatarRenderer.ApplyModel(model, () =>
             {
                 if (avatarRenderer.lodRenderer != null)
-                    AvatarsLODController.i.RegisterAvatar(this);
+                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer);
 
                 avatarDone = true;
             }, () => avatarFailed = true);
@@ -176,7 +176,7 @@ namespace DCL
         {
             base.Cleanup();
 
-            AvatarsLODController.i.RemoveAvatar(this);
+            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
 
             avatarRenderer.CleanupAvatar();
 
