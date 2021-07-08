@@ -1165,7 +1165,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6072740843905441179}
-  - component: {fileID: 4849393708990420393}
   m_Layer: 5
   m_Name: NoTips
   m_TagString: Untagged
@@ -1196,46 +1195,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4849393708990420393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8568958695297546250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e4322a378ddeb54db2e88ae95a67bd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tips:
-  - text: "MANA is Decentraland\u2019s virtual currency. Use it to buy LAND and other
-      premium items, vote on key policies and pay platform fees."
-    sprite: {fileID: 21300000, guid: 10edd12032727f8408f919d26170ddc6, type: 3}
-  - text: 'Buy and sell LAND, Estates, Avatar wearables and names in the Decentraland
-      Marketplace: stocking the very best digital goods and paraphernalia backed
-      by the ethereum blockchain.'
-    sprite: {fileID: 21300000, guid: 04c82e1294ca3d44f849d9b084b0b86a, type: 3}
-  - text: 'Create scenes, artworks, challenges and more, using the simple Builder:
-      an easy drag and drop tool. For more experienced creators, the SDK provides
-      the tools to fill the world with social games and applications.'
-    sprite: {fileID: 21300000, guid: 36507bb6c4e633243a2fd0db6240080b, type: 3}
-  - text: Except for the default set of wearables you get when you start out, each
-      wearable model has a limited supply. The rarest ones can get to be super valuable.
-      You can buy and sell them in the Marketplace.
-    sprite: {fileID: 21300000, guid: c36ee26ac49d5e147be90f97234f4076, type: 3}
-  - text: Decentraland is the first fully decentralized virtual world. By voting
-      through the DAO  ('Decentralized Autonomous Organization'), you are in control
-      of the policies created to determine how the world behaves.
-    sprite: {fileID: 21300000, guid: 4a8237c1d376dc34f85b885e6aa5cd24, type: 3}
-  - text: Genesis Plaza is built and maintained by the Decentraland Foundation but
-      is still in many ways a community project. Around here you'll find several
-      teleports that can take you directly to special scenes marked as points of
-      interest.
-    sprite: {fileID: 21300000, guid: 5a86186edbf4b414d89c6aa653550530, type: 3}
-  image: {fileID: 5738601915218840263}
-  label: {fileID: 0}
-  secondsBetweenTips: 10
 --- !u!1 &8656815464210381605
 GameObject:
   m_ObjectHideFlags: 0
