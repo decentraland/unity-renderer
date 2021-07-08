@@ -129,9 +129,6 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/editmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: ./unity-renderer/test-results
       - save_cache: &SAVE_CHECKSUM_CACHE_EDITMODE
@@ -173,9 +170,6 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
       - persist_to_workspace:
           root: *working_directory
           paths:
