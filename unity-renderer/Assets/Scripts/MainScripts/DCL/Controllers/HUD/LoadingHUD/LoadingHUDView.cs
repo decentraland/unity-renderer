@@ -15,11 +15,11 @@ namespace LoadingHUD
 
     public class LoadingHUDView : MonoBehaviour, ILoadingHUDView
     {
-        [SerializeField] private TextMeshProUGUI text;
-        [SerializeField] private Image loadingBar;
-        [SerializeField] private GameObject walletPrompt;
-        [SerializeField] private GameObject tipsContainer;
-        [SerializeField] private GameObject noTipsContainer;
+        [SerializeField] internal TextMeshProUGUI text;
+        [SerializeField] internal Image loadingBar;
+        [SerializeField] internal GameObject walletPrompt;
+        [SerializeField] internal GameObject tipsContainer;
+        [SerializeField] internal GameObject noTipsContainer;
 
         public static ILoadingHUDView CreateView()
         {
