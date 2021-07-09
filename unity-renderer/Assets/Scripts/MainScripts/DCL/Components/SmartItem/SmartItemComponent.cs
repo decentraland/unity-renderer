@@ -11,6 +11,8 @@ namespace DCL.Components
     {
         public class Model : BaseModel
         {
+            public string assetId;
+            public string src;
             public Dictionary<object, object> values = new Dictionary<object, object>();
 
             public override BaseModel GetDataFromJSON(string json) { return JsonConvert.DeserializeObject<Model>(json); }
