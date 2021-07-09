@@ -284,11 +284,15 @@ MonoBehaviour:
   - text: 'Buy and sell LAND, Estates, Avatar wearables and names in the Decentraland
       Marketplace: stocking the very best digital goods and paraphernalia backed
       by the ethereum blockchain.'
-    sprite: {fileID: 21300000, guid: 7d674afaaca5844098399b4413b743fa, type: 3}
+    sprite: {fileID: 21300000, guid: dfb614ec29ae64410a9cb17a66431d03, type: 3}
   - text: 'Create scenes, artworks, challenges and more, using the simple Builder:
       an easy drag and drop tool. For more experienced creators, the SDK provides
       the tools to fill the world with social games and applications.'
     sprite: {fileID: 21300000, guid: 8955cba7efb204195bf48ea239760527, type: 3}
+  - text: 'Decentraland is made up of over 90,000 LANDs: virtual spaces backed by
+      cryptographic tokens. Only LAND owners can determine the content that sits
+      on their LAND.'
+    sprite: {fileID: 21300000, guid: 7d674afaaca5844098399b4413b743fa, type: 3}
   - text: Except for the default set of wearables you get when you start out, each
       wearable model has a limited supply. The rarest ones can get to be super valuable.
       You can buy and sell them in the Marketplace.

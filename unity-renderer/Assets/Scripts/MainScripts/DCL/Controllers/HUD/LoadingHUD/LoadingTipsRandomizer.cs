@@ -39,7 +39,6 @@ namespace LoadingHUD
         {
             label.text = tip.text;
             image.sprite = tip.sprite;
-            image.SetNativeSize();
         }
     }
 
