@@ -122,17 +122,18 @@ public class BuilderInWorldEntityHandler : BIWController
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
 
-        if (hudController == null)
-            return;
-
-        hudController.OnEntityDelete -= DeleteSingleEntity;
-        hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
-        hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
-        hudController.OnEntityClick -= ChangeEntitySelectionFromList;
-        hudController.OnEntityLock -= ChangeEntityLockStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityRename -= SetEntityName;
+        if (hudController != null)
+        {
+            hudController.OnEntityDelete -= DeleteSingleEntity;
+            hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
+            hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
+            hudController.OnEntityClick -= ChangeEntitySelectionFromList;
+            hudController.OnEntityLock -= ChangeEntityLockStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityRename -= SetEntityName;
+            hudController.OnEntitySmartItemComponentUpdate -= UpdateSmartItemComponentInKernel;
+        }
     }
 
     protected override void FrameUpdate()

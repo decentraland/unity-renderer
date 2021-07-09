@@ -24,6 +24,9 @@ public class CatalogAssetGroupAdapter : MonoBehaviour
         RemoveAdapters();
         foreach (CatalogItem catalogItem in catalogItemList)
         {
+            if (catalogItem.IsSmartItem())
+                continue;
+
             CatalogItemAdapter adapter = Instantiate(catalogItemAdapterPrefab, categoryContentGO.transform).GetComponent<CatalogItemAdapter>();
             adapter.SetContent(catalogItem);
             SubscribeToEvents(adapter);
