@@ -32,11 +32,11 @@ RectTransform:
   m_Father: {fileID: 7105152057132356116}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: 0.00012207031, y: 13.000061}
   m_SizeDelta: {x: 0, y: 20}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8672191627741027562
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -280,28 +280,28 @@ MonoBehaviour:
   tips:
   - text: "MANA is Decentraland\u2019s virtual currency. Use it to buy LAND and other
       premium items, vote on key policies and pay platform fees."
-    sprite: {fileID: 21300000, guid: 10edd12032727f8408f919d26170ddc6, type: 3}
+    sprite: {fileID: 21300000, guid: c6536212dc1f24674904faa55732f64c, type: 3}
   - text: 'Buy and sell LAND, Estates, Avatar wearables and names in the Decentraland
       Marketplace: stocking the very best digital goods and paraphernalia backed
       by the ethereum blockchain.'
-    sprite: {fileID: 21300000, guid: 04c82e1294ca3d44f849d9b084b0b86a, type: 3}
+    sprite: {fileID: 21300000, guid: 7d674afaaca5844098399b4413b743fa, type: 3}
   - text: 'Create scenes, artworks, challenges and more, using the simple Builder:
       an easy drag and drop tool. For more experienced creators, the SDK provides
       the tools to fill the world with social games and applications.'
-    sprite: {fileID: 21300000, guid: 36507bb6c4e633243a2fd0db6240080b, type: 3}
+    sprite: {fileID: 21300000, guid: 8955cba7efb204195bf48ea239760527, type: 3}
   - text: Except for the default set of wearables you get when you start out, each
       wearable model has a limited supply. The rarest ones can get to be super valuable.
       You can buy and sell them in the Marketplace.
-    sprite: {fileID: 21300000, guid: c36ee26ac49d5e147be90f97234f4076, type: 3}
+    sprite: {fileID: 21300000, guid: c1e81be26094f46b4b00b853ca617eca, type: 3}
   - text: Decentraland is the first fully decentralized virtual world. By voting
       through the DAO  ('Decentralized Autonomous Organization'), you are in control
       of the policies created to determine how the world behaves.
-    sprite: {fileID: 21300000, guid: 4a8237c1d376dc34f85b885e6aa5cd24, type: 3}
+    sprite: {fileID: 21300000, guid: 7a23dbd753bf44e2fa14e2860cd16083, type: 3}
   - text: Genesis Plaza is built and maintained by the Decentraland Foundation but
       is still in many ways a community project. Around here you'll find several
       teleports that can take you directly to special scenes marked as points of
       interest.
-    sprite: {fileID: 21300000, guid: 5a86186edbf4b414d89c6aa653550530, type: 3}
+    sprite: {fileID: 21300000, guid: 9932402d6a77c484999857fc085618a0, type: 3}
   image: {fileID: 3804272290582730524}
   label: {fileID: 6114554693447143876}
   secondsBetweenTips: 5
@@ -887,9 +887,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1310,42 +1310,42 @@ PrefabInstance:
     - target: {fileID: 1589542079670726707, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0
+      value: 0.9660107
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205438, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1938718776407171916, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
