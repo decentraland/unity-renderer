@@ -13,6 +13,22 @@ using UnityGLTF;
 
 public class BIWSceneBoundarieShould : IntegrationTestSuite
 {
+    protected override PlatformContext CreatePlatformContext()
+    {
+        WebRequestController webRequestController = new WebRequestController();
+        webRequestController.Initialize(
+            genericWebRequest: new WebRequest(),
+            assetBundleWebRequest: new WebRequestAssetBundle(),
+            textureWebRequest: new WebRequestTexture(),
+            null);
+
+        var context = DCL.Tests.PlatformContextFactory.CreateWithCustomMocks
+        (
+            webRequestController: webRequestController
+        );
+
+        return context;
+    }
 
     protected override WorldRuntimeContext CreateRuntimeContext()
     {
@@ -42,6 +58,7 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite
     public IEnumerator BuilderInWorldRendererEnableOutsideParcel()
     {
         //Arrange
+        WebRequestController.Create();
         ParcelScene scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
 
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_Simple());
@@ -64,8 +81,6 @@ public class BIWSceneBoundarieShould : IntegrationTestSuite
 
         //Act
         scene.entities[entityId].gameObject.transform.position = new Vector3(100, 100, 100);
-        //TODO: This will be added again with the refactor of the feedback style
-        //yield return new DCL.WaitUntil(() => !scene.entities[entityId].meshesInfo.renderers[0].enabled);
         Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(biwStyle);
 
         yield return null;

@@ -32,7 +32,12 @@ namespace DCL.Controllers
 
         public SceneBoundsChecker(ISceneBoundsFeedbackStyle feedbackStyle = null) { this.feedbackStyle = feedbackStyle ?? new SceneBoundsFeedbackStyle_Simple(); }
 
-        public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle) { this.feedbackStyle = feedbackStyle; }
+        public void SetFeedbackStyle(ISceneBoundsFeedbackStyle feedbackStyle)
+        {
+            this.feedbackStyle.CleanFeedback();
+            this.feedbackStyle = feedbackStyle;
+            Restart();
+        }
 
         public ISceneBoundsFeedbackStyle GetFeedbackStyle() { return feedbackStyle; }
 
@@ -98,6 +103,12 @@ namespace DCL.Controllers
 
                 yield return null;
             }
+        }
+
+        public void Restart()
+        {
+            Stop();
+            Start();
         }
 
         public void Start()
@@ -231,10 +242,7 @@ namespace DCL.Controllers
                     continue;
 
                 if (!entity.scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].GetSafeBounds()))
-                {
-                    feedbackStyle.OnRendererExitBounds(entity.meshesInfo.renderers[i]);
                     return false;
-                }
             }
 
             return true;
