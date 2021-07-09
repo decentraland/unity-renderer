@@ -29,7 +29,6 @@ namespace Tests.LoadingHUD
         public void InitializeProperly()
         {
             Assert.AreEqual(hudView, hudController.view);
-            Assert.IsFalse(visible.Get());
         }
 
         [Test]
