@@ -1314,42 +1314,67 @@ PrefabInstance:
     - target: {fileID: 1589542079670726707, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.9660107
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.9660107
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542079670726710, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.9660107
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589542080061902745, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -65
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589542080091205426, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.9660107
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.9660107
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205437, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.9660107
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1589542080091205438, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589542080154100004, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 11.100003
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589542081096638332, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -80.2447
+      objectReference: {fileID: 0}
+    - target: {fileID: 1589542081588561596, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -118.9
       objectReference: {fileID: 0}
     - target: {fileID: 1938718776407171916, guid: 2da37fa1269fc1f48a3470d0ca3e9450,
         type: 3}
