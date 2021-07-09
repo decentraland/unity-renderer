@@ -49,8 +49,8 @@ MonoBehaviour:
     id: handsair
   - clip: {fileID: 7400000, guid: 35376f228f19d0a41b260d754ef21ae0, type: 2}
     id: shrug
-  - clip: {fileID: 7400000, guid: 22bdf3dc0d8e46b4ea3a24a5b1be5c5b, type: 2}
-    id: twerk
+  - clip: {fileID: 7400000, guid: 3e0e78f668397014a9fe1da22b9d34b7, type: 2}
+    id: disco
   - clip: {fileID: 7400000, guid: d46b1af13bd8fd94eabb1ee09e49475e, type: 2}
     id: dab
   - clip: {fileID: 7400000, guid: e9118272c0ad59d418b397e5951b80aa, type: 2}
