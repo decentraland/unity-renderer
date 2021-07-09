@@ -37,7 +37,7 @@ namespace LoadingHUD
 
         public void SetVisible(bool isVisible) { gameObject.SetActive(isVisible); }
         public void SetMessage(string message) { text.text = message; }
-        public void SetPercentage(float percentage) { loadingBar.fillAmount = percentage; }
+        public void SetPercentage(float percentage) { loadingBar.transform.localScale = new Vector3(percentage, 1, 1); }
         public void SetWalletPrompt(bool showWalletPrompt) { walletPrompt.gameObject.SetActive(showWalletPrompt); }
         public void SetTips(bool showTips)
         {
