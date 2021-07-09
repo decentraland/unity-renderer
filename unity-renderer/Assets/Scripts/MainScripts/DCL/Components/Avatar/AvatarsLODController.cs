@@ -19,13 +19,13 @@ namespace DCL
                         {
                             DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
                         });
-
-            DataStore.i.avatarsLOD.LODDistance.OnChange += LODDistanceOnChange;
-            DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange += MaxNonLODAvatarsOnChange;
         }
 
         public void Update()
         {
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get())
+                return;
+
             UpdateAllLODs();
 
             UpdateLODsVerticalMovementAndBillboard();
@@ -82,11 +82,7 @@ namespace DCL
                 lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
-        public void Dispose()
-        {
-            DataStore.i.avatarsLOD.LODDistance.OnChange -= LODDistanceOnChange;
-            DataStore.i.avatarsLOD.maxNonLODAvatars.OnChange -= MaxNonLODAvatarsOnChange;
-        }
+        public void Dispose() { }
 
         private void UpdateAllLODs()
         {
@@ -121,9 +117,5 @@ namespace DCL
             avatarRenderer.GetLODRenderer().gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
-
-        private void LODDistanceOnChange(float current, float previous) { UpdateAllLODs(); }
-
-        private void MaxNonLODAvatarsOnChange(int current, int previous) { UpdateAllLODs(); }
     }
 }
