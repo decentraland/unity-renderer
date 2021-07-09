@@ -98,7 +98,7 @@ public class ExploreHUDController : IHUD
         }
     }
 
-    void OnJumpIn(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] candidateRealms)
+    void OnJumpIn(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] nextMostPopulatedRealms)
     {
         if (view.IsVisible())
         {
@@ -111,7 +111,7 @@ public class ExploreHUDController : IHUD
         }
         else
         {
-            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName, candidateRealms);
+            WebInterface.JumpIn(coords.x, coords.y, serverName, layerName, true, nextMostPopulatedRealms);
         }
     }
 

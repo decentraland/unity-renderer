@@ -36,7 +36,7 @@ internal class HotSceneCellView : MonoBehaviour
     [SerializeField] Button_OnPointerDown jumpIn;
     [SerializeField] Sprite errorThumbnail;
 
-    public delegate void JumpInDelegate(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] candidateRealms);
+    public delegate void JumpInDelegate(Vector2Int coords, string serverName, string layerName, HotScenesController.HotSceneInfo.Realm[] nextMostPopulatedRealms);
     public static event JumpInDelegate OnJumpIn;
 
     public static event Action<HotSceneCellView> OnInfoButtonPointerDown;
@@ -119,16 +119,21 @@ internal class HotSceneCellView : MonoBehaviour
     {
         HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
         hotSceneInfo.realms = hotSceneInfo.realms.ToList().OrderByDescending(x => x.usersCount).ToArray();
+        List<HotScenesController.HotSceneInfo.Realm> nextMostPopulatedRealms = new List<HotScenesController.HotSceneInfo.Realm>();
         for (int i = 0; i < hotSceneInfo.realms.Length; i++)
         {
             if (hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].usersMax)
             {
                 realm = hotSceneInfo.realms[i];
+                if (i < hotSceneInfo.realms.Length - 1)
+                {
+                    nextMostPopulatedRealms = hotSceneInfo.realms.ToList().GetRange(i + 1, hotSceneInfo.realms.Length - i - 1);
+                }
                 break;
             }
         }
 
-        OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer, hotSceneInfo.realms);
+        OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer, nextMostPopulatedRealms.ToArray());
     }
 
     private void OnDestroy()
