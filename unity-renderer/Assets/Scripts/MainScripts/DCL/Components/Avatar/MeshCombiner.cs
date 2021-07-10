@@ -64,6 +64,7 @@ namespace DCL
 
                     var bindPoses = bindPosesContainer.sharedMesh.bindposes;
                     // Reset bones
+                    Debug.Log("Reset Bones... bindPoses name: " + bindPosesContainer.transform.parent.name);
                     for ( int i = 0 ; i < tmpBones.Length; i++ )
                     {
                         Matrix4x4 bindPose = bindPoses[i].inverse;
@@ -71,7 +72,8 @@ namespace DCL
                         Quaternion rot = bindPose.rotation;
                         tmpBones[i].position = pos;
                         tmpBones[i].rotation = rot;
-                        tmpBones[i].localScale = Vector3.one;
+                        //Debug.Log("Lossy Scale = " + bindPose.lossyScale.x);
+                        //tmpBones[i].localScale = new Vector3(1 / bindPose.lossyScale.x, 1 / bindPose.lossyScale.y, 1 / bindPose.lossyScale.z);
                     }
                 }
 
@@ -149,8 +151,8 @@ namespace DCL
             newSkinnedMeshRenderer.localBounds = bounds;
             newSkinnedMeshRenderer.sharedMaterials = mats.ToArray();
 
-            result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
-            result.AddComponent<MeshRenderer>().sharedMaterial = mats[0];
+            // result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
+            // result.AddComponent<MeshRenderer>().sharedMaterial = mats[0];
 
             result.transform.parent = root;
 
