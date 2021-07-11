@@ -177,9 +177,10 @@ namespace DCL
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
             newSkinnedMeshRenderer.localBounds = bounds;
             newSkinnedMeshRenderer.sharedMaterials = mats.Take(4).ToArray();
+            newSkinnedMeshRenderer.enabled = false;
 
-            // result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
-            // result.AddComponent<MeshRenderer>().sharedMaterial = mats[0];
+            result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
+            result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;
 
             result.transform.parent = root;
 
