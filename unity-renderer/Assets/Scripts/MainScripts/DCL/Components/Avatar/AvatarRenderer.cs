@@ -376,7 +376,7 @@ namespace DCL
             }
             else
             {
-                CoroutineStarter.Start( AvatarMergeTest() );
+                AvatarMergeTest();
                 OnSuccessEvent?.Invoke();
             }
         }
@@ -395,45 +395,32 @@ namespace DCL
             }
         }
 
-        [ContextMenu("Update Skinning")]
-        public void UpdateSkinning()
+        public int bindPosesIndex = 0;
+
+        [ContextMenu("Combine Avatar Again")]
+        void AvatarMergeTest()
         {
-            Matrix4x4[] bindPoses = combinedAvatarMesh.bindposes;
-            Transform[] bones = combinedAvatar.GetComponent<SkinnedMeshRenderer>().bones;
+            GameObject newCombinedAvatar = MeshCombiner.Combine(bodyShapeController.skinnedMeshRenderer, transform, true, bindPosesIndex);
 
-            for ( int i = 0; i < bindPoses.Length; i++ )
-            {
-                Debug.DrawLine(bones[i].transform.position, bones[i].transform.position + Vector3.up * 0.01f, Color.red, 1.0f);
-                bindPoses[i] = bones[i].worldToLocalMatrix * combinedAvatar.transform.localToWorldMatrix;
-            }
+            if ( newCombinedAvatar == null )
+                return;
 
-            BoneWeight[] boneWeights = combinedAvatarMesh.boneWeights;
-            int boneCount = bones.Length;
+            Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
-            for ( int i = 0 ; i < boneWeights.Length; i++)
-            {
-                boneWeights[i].boneIndex0 %= boneCount;
-                boneWeights[i].boneIndex1 %= boneCount;
-                boneWeights[i].boneIndex2 %= boneCount;
-                boneWeights[i].boneIndex3 %= boneCount;
-            }
-
-            combinedAvatarMesh.bindposes = bindPoses;
-            combinedAvatarMesh.boneWeights = boneWeights;
-        }
-
-        IEnumerator AvatarMergeTest()
-        {
             if ( combinedAvatar != null )
+            {
+                combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
                 Destroy(combinedAvatar);
+            }
 
             if ( combinedAvatarMesh != null )
+            {
                 Destroy(combinedAvatarMesh);
+            }
 
-            combinedAvatar = MeshCombiner.Combine(bodyShapeController.skinnedMeshRenderer, transform);
-            combinedAvatarMesh = combinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+            combinedAvatar = newCombinedAvatar;
+            combinedAvatarMesh = newCombinedAvatarMesh;
 
-            yield break;
 
             // yield return new WaitUntil( () => gameObject.activeInHierarchy );
             //
