@@ -5,7 +5,6 @@ import { copyFile, ensureFileExists } from "./utils"
 
 import { OutputOptions, rollup } from "rollup"
 import typescript from "rollup-plugin-typescript2"
-import rimraf from "rimraf"
 import resolve from "rollup-plugin-node-resolve"
 import commonjs from "rollup-plugin-commonjs"
 import rollupJson from "@rollup/plugin-json"
@@ -40,7 +39,6 @@ const DIST_PATH = path.resolve(__dirname, "../dist")
 
 async function main() {
   await copyBuiltFiles()
-  rimraf.sync(path.resolve(DIST_PATH, "code-coverage"))
   await buildRollup()
   await createTypings()
   await createPackageJson()
