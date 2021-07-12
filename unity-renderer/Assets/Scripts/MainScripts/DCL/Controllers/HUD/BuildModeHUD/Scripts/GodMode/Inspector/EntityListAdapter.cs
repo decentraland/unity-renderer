@@ -115,7 +115,7 @@ public class EntityListAdapter : MonoBehaviour
         if (entityToEdit.IsVisible)
             showImg.color = iconsSelectedColor;
         else
-            showImg.color = iconsUnselectedColor;
+        showImg.color = iconsUnselectedColor;
 
         CheckEntityNameColor(entityToEdit);
 

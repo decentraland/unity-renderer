@@ -3,6 +3,7 @@ using DCL.Configuration;
 using DCL.Helpers.NFT;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public static class BIWCatalogManager
 {
@@ -100,10 +101,6 @@ public static class BIWCatalogManager
     public static void AddSceneObject(SceneObject sceneObject)
     {
         if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
-            return;
-
-        //TODO: SmartItems disabled until kernel has them implemented
-        if (sceneObject.IsSmartItem())
             return;
 
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);

@@ -15,8 +15,8 @@ namespace DCL.Configuration
         public static readonly int GIZMOS_LAYER = LayerMask.NameToLayer("Gizmo");
         public static readonly int GROUND_LAYER = LayerMask.NameToLayer("Ground");
 
-        // TODO: This ID should be changed by 'b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169' when we point to .org in the future
-        public const string VOXEL_ASSETS_PACK_ID = "e3b7f596-3389-451d-bc7c-a095a7ba08da";
+        public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
+        public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";
 
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";

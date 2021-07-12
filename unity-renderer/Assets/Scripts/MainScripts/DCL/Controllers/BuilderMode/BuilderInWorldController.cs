@@ -535,6 +535,10 @@ public class BuilderInWorldController : Feature
             return;
         }
 
+        //If the scene is still not loaded, we return as we still can't enter in builder in world 
+        if (sceneToEditId != null)
+            return;
+
         isEnteringEditMode = true;
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;

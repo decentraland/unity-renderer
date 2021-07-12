@@ -162,17 +162,18 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
         BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
 
-        if (hudController == null)
-            return;
-
-        hudController.OnEntityDelete -= DeleteSingleEntity;
-        hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
-        hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
-        hudController.OnEntityClick -= ChangeEntitySelectionFromList;
-        hudController.OnEntityLock -= ChangeEntityLockStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityRename -= SetEntityName;
+        if (hudController != null)
+        {
+            hudController.OnEntityDelete -= DeleteSingleEntity;
+            hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
+            hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
+            hudController.OnEntityClick -= ChangeEntitySelectionFromList;
+            hudController.OnEntityLock -= ChangeEntityLockStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityRename -= SetEntityName;
+            hudController.OnEntitySmartItemComponentUpdate -= UpdateSmartItemComponentInKernel;
+        }
     }
 
     public override void Update()
