@@ -641,12 +641,6 @@ public class BuilderInWorldController : MonoBehaviour
     {
         Environment.i.platform.cullingController.Start();
 
-        if (biwSaveController.numberOfSaves > 0)
-        {
-            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
-            biwSaveController.ResetNumberOfSaves();
-        }
-
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
@@ -677,6 +671,12 @@ public class BuilderInWorldController : MonoBehaviour
         Environment.i.world.blockersController.SetEnabled(true);
 
         ExitBiwControllers();
+
+        if (biwSaveController.numberOfSaves > 0)
+        {
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            biwSaveController.ResetNumberOfSaves();
+        }
 
         foreach (var groundVisual in groundVisualsGO)
         {
