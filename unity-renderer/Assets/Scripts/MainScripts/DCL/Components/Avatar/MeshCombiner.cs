@@ -82,16 +82,13 @@ namespace DCL
                 for ( int i = 0 ; i < tmpBones.Length; i++ )
                 {
                     Matrix4x4 bindPose = bindPoses[i].inverse;
-                    Vector3 pos = bindPose.MultiplyPoint3x4(Vector3.zero);
-                    Quaternion rot = bindPose.rotation;
-                    tmpBones[i].position = pos;
-                    tmpBones[i].rotation = rot;
-                    //Debug.Log("Lossy Scale = " + bindPose.lossyScale.x);
-                    //tmpBones[i].localScale = new Vector3(1 / bindPose.lossyScale.x, 1 / bindPose.lossyScale.y, 1 / bindPose.lossyScale.z);
+                    tmpBones[i].position = bindPose.MultiplyPoint3x4(Vector3.zero);
+                    tmpBones[i].rotation = bindPose.rotation;
+                    tmpBones[i].localScale = new Vector3(bindPose.lossyScale.x / tmpBones[i].lossyScale.x,
+                        bindPose.lossyScale.y / tmpBones[i].lossyScale.y,
+                        bindPose.lossyScale.z / tmpBones[i].lossyScale.z);
                 }
             }
-
-            int subMeshCounter = 0;
 
             for (int i = 0; i < rs.Length; i++)
             {
@@ -123,9 +120,9 @@ namespace DCL
                 string parentName = prevParent.name;
                 r.transform.SetParent(null, true);
 
-                if ( subMeshCounter < 4 && !parentName.Contains("Mask") )
+                //if ( subMeshCounter < 4 && !parentName.Contains("Mask") )
                 {
-                    subMeshCounter++;
+//                    subMeshCounter++;
                     mats.Add(r.sharedMaterial);
                     boneWeights.AddRange(r.sharedMesh.boneWeights);
 
@@ -176,11 +173,11 @@ namespace DCL
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
             newSkinnedMeshRenderer.localBounds = bounds;
-            newSkinnedMeshRenderer.sharedMaterials = mats.Take(4).ToArray();
-            newSkinnedMeshRenderer.enabled = false;
+            newSkinnedMeshRenderer.sharedMaterials = mats.ToArray();
+            //newSkinnedMeshRenderer.enabled = false;
 
-            result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
-            result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;
+            //result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
+            //result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;
 
             result.transform.parent = root;
 
