@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Experimental.Rendering;
 
 namespace DCL.Helpers
 {
