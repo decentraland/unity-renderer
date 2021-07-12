@@ -56,7 +56,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
   const resolveWithBaseUrl = (file: string) => new URL(file + "?v=" + rendererVersion, baseUrl).toString()
 
   const enableBrotli =
-    typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https"
+    typeof options.enableBrotli != "undefined" ? !!options.enableBrotli : document.location.protocol == "https:"
 
   const postfix = enableBrotli ? ".br" : ""
 
