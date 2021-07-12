@@ -16,31 +16,6 @@ using UnityEngine.TestTools;
 public class BuilderInWorldShould : IntegrationTestSuite_Legacy
 {
     [Test]
-    public void GroundRaycast()
-    {
-        //Arrange
-        RaycastHit hit;
-
-        Vector3 fromPosition = new Vector3(0, 10, 0);
-        Vector3 toPosition = Vector3.zero;
-        Vector3 direction = toPosition - fromPosition;
-
-        bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
-
-        Camera.main.transform.LookAt(Vector3.zero);
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-
-        //Act
-        if (Physics.Raycast(ray, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
-        {
-            groundLayerFound = true;
-        }
-
-        //Assert
-        Assert.IsTrue(groundLayerFound, "The ground layer is not set to Ground");
-    }
-
-    [Test]
     public void BuilderInWorldEntityComponents()
     {
         string entityId = "1";

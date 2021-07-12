@@ -20,11 +20,9 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 {
     private const int BUILDER_RENDERER_INDEX = 1;
 
-    private Material outlineMaterial;
     private Material cameraOutlinerMaterial;
 
     private IBIWEntityHandler biwEntityHandler;
-    private IBIWInputHandler biwInputHandler;
 
     private List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
     private int outlinerOptimizationCounter = 0;
@@ -33,11 +31,9 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     public override void Init(BIWReferencesController referencesController)
     {
         base.Init(referencesController);
-        outlineMaterial = referencesController.projectReferences.editMaterial;
         cameraOutlinerMaterial = referencesController.projectReferences.cameraOutlinerMaterial;
 
         biwEntityHandler = referencesController.biwEntityHandler;
-        biwInputHandler = referencesController.biwInputHandler;
     }
 
     public override void EnterEditMode(ParcelScene scene)
@@ -50,6 +46,12 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     {
         base.ExitEditMode();
         DeactivateBuilderInWorldCamera();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        RemoveBuilderInWorldCamera();
     }
 
     public void SetOutlineCheckActive(bool isActive) { isOutlineCheckActive = isActive; }
@@ -195,5 +197,17 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
         UniversalAdditionalCameraData additionalCameraData = camera.transform.GetComponent<UniversalAdditionalCameraData>();
         additionalCameraData.SetRenderer(0);
+    }
+
+    private void RemoveBuilderInWorldCamera()
+    {
+        Camera camera = Camera.main;
+
+        if (camera == null)
+            return;
+
+        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
+        outliner.Dispose();
+        GameObject.Destroy(outliner);
     }
 }
