@@ -40,7 +40,7 @@ const DIST_PATH = path.resolve(__dirname, "../dist")
 
 async function main() {
   await copyBuiltFiles()
-  rimraf.sync(DIST_PATH + "/code-coverage")
+  rimraf.sync(path.resolve(DIST_PATH, "code-coverage"))
   await buildRollup()
   await createTypings()
   await createPackageJson()
