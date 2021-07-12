@@ -87,4 +87,11 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
         Assert.IsNotNull(convertedEntity);
     }
+
+    protected override IEnumerator TearDown()
+    {
+        entityHandler.Dispose();
+
+        yield return base.TearDown();
+    }
 }

@@ -12,9 +12,18 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         biwModeController = new BIWModeController();
-        biwModeController.Init(BIWTestHelper.CreateMockUpReferenceController());
-        biwModeController.EnterEditMode(scene);
 
+        BIWActionController actionController = new BIWActionController();
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            actionController,
+            biwModeController
+        );
+
+        biwModeController.Init(referencesController);
+        actionController.Init(referencesController);
+
+        biwModeController.EnterEditMode(scene);
+        actionController.EnterEditMode(scene);
     }
 
     [Test]
@@ -57,5 +66,11 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.Inactive);
         Assert.IsTrue(biwModeController.GetCurrentMode() == null);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        biwModeController.Dispose();
+        yield return base.TearDown();
     }
 }

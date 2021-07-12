@@ -27,9 +27,9 @@ public class BuilderInWorldController : Feature
     private BIWModeController biwModeController;
     private BIWFloorHandler biwFloorHandler;
     private BIWEntityHandler biwEntityHandler;
-    private BIActionController biwActionController;
+    private BIWActionController biwActionController;
     private BIWSaveController biwSaveController;
-    private BuilderInWorldInputWrapper biwInputWrapper;
+    private BIWInputWrapper biwInputWrapper;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
@@ -162,9 +162,9 @@ public class BuilderInWorldController : Feature
         biwModeController = new BIWModeController();
         biwFloorHandler = new BIWFloorHandler();
         biwEntityHandler = new BIWEntityHandler();
-        biwActionController = new BIActionController();
+        biwActionController = new BIWActionController();
         biwSaveController = new BIWSaveController();
-        biwInputWrapper = new BuilderInWorldInputWrapper();
+        biwInputWrapper = new BIWInputWrapper();
     }
 
     private void InitBuilderProjectPanel()
@@ -686,12 +686,6 @@ public class BuilderInWorldController : Feature
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
-        if (biwSaveController.numberOfSaves > 0)
-        {
-            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
-            biwSaveController.ResetNumberOfSaves();
-        }
 
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);

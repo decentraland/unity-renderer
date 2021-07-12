@@ -24,5 +24,7 @@ MonoBehaviour:
     type: 3}
   loadingPrefab: {fileID: 9065723555097372216, guid: d21a9c099a778423a908066cf9f458a0,
     type: 3}
-  gizmosControllerPrefab: {fileID: 4685460382834116841, guid: f4ac074c7daa15a41944a941614cb443,
+  godModeBuilderPrefab: {fileID: 8249807546955247409, guid: b27d38856c5f37c498d7ad7c2f767f0b,
+    type: 3}
+  audioPrefab: {fileID: 5263035319998155755, guid: 0d9a89d47f96fbe47930f8c6b1e14fd0,
     type: 3}

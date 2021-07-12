@@ -92,10 +92,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
         DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmosTransformStart;
 
-        BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
-        BuilderInWorldInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
-        BuilderInWorldInputWrapper.OnMouseDrag += OnInputMouseDrag;
+        BIWInputWrapper.OnMouseDown += OnInputMouseDown;
+        BIWInputWrapper.OnMouseUp += OnInputMouseUp;
+        BIWInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
+        BIWInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
         focusOnSelectedEntitiesInputAction = biwReferencesController.inputsReferences.focusOnSelectedEntitiesInputAction;
         multiSelectionInputAction = biwReferencesController.inputsReferences.multiSelectionInputAction;
@@ -117,10 +117,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         DCLBuilderGizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
 
-        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
-        BuilderInWorldInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
-        BuilderInWorldInputWrapper.OnMouseDrag -= OnInputMouseDrag;
+        BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
+        BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
+        BIWInputWrapper.OnMouseUpOnUI -= OnInputMouseUpOnUi;
+        BIWInputWrapper.OnMouseDrag -= OnInputMouseDrag;
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
 

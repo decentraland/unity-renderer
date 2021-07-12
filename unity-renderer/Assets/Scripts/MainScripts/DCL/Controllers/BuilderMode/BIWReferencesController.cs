@@ -5,8 +5,8 @@ using UnityEngine;
 public class BIWReferencesController
 {
     private const string PROJECT_REFERENCES_PATH = "ScriptableObjects/ProjectReferences";
-    private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/DynamicVariables";
-    private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/DynamicVariables";
+    private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
+    private const string FIRST_PERSON_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/FirstPersonVariables";
     private const string INPUTS_PATH = "ScriptableObjects/InputReferences";
 
     //Scriptable Objects
@@ -23,7 +23,7 @@ public class BIWReferencesController
     // BIW Controllers
     public IBIWOutlinerController biwOutlinerController => biwOutlinerControllerValue;
     public IBIWInputHandler biwInputHandler => biwInputHandlerValue;
-    public IBuilderInWorldInputWrapper biwInputWrapper => biwInputWrapperValue;
+    public IBIWInputWrapper biwInputWrapper => biwInputWrapperValue;
     public IBIWPublishController biwPublishController => biwPublishControllerValue;
     public IBIWCreatorController biwCreatorController => biwCreatorControllerValue;
     public IBIWModeController biwModeController => biwModeControllerValue;
@@ -34,7 +34,7 @@ public class BIWReferencesController
 
     private IBIWOutlinerController biwOutlinerControllerValue;
     private IBIWInputHandler biwInputHandlerValue;
-    private IBuilderInWorldInputWrapper biwInputWrapperValue;
+    private IBIWInputWrapper biwInputWrapperValue;
     private IBIWPublishController biwPublishControllerValue;
     private IBIWCreatorController biwCreatorControllerValue;
     private IBIWModeController biwModeControllerValue;
@@ -45,7 +45,7 @@ public class BIWReferencesController
 
     public void Init(IBIWOutlinerController outlinerController,
         IBIWInputHandler bIWInputHandler,
-        IBuilderInWorldInputWrapper biwInputWrapper,
+        IBIWInputWrapper biwInputWrapper,
         IBIWPublishController biwPublishController,
         IBIWCreatorController biwCreatorController,
         IBIWModeController biwModeController,

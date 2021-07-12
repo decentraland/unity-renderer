@@ -45,7 +45,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         rotationHold.OnStarted += rotationHoldStartDelegate;
         rotationHold.OnFinished += rotationHoldFinishedDelegate;
 
-        BuilderInWorldInputWrapper.OnMouseClick += OnMouseClick;
+        BIWInputWrapper.OnMouseClick += OnMouseClick;
     }
 
     public override void Dispose()
@@ -54,7 +54,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         rotationHold.OnStarted -= rotationHoldStartDelegate;
         rotationHold.OnFinished -= rotationHoldFinishedDelegate;
 
-        BuilderInWorldInputWrapper.OnMouseClick -= OnMouseClick;
+        BIWInputWrapper.OnMouseClick -= OnMouseClick;
     }
 
     public override void LateUpdate()

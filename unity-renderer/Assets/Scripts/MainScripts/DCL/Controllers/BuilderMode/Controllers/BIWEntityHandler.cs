@@ -106,11 +106,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             hudController.OnEntitySmartItemComponentUpdate += UpdateSmartItemComponentInKernel;
         }
 
-        biActionController.OnRedo += ReSelectEntities;
-        biActionController.OnUndo += ReSelectEntities;
 
-        BuilderInWorldInputWrapper.OnMouseDown += OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp += OnInputMouseUp;
+        BIWInputWrapper.OnMouseDown += OnInputMouseDown;
+        BIWInputWrapper.OnMouseUp += OnInputMouseUp;
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
@@ -132,6 +130,9 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         hideSelectedEntitiesAction.OnTriggered += hideSelectedEntitiesDelegate;
         showAllEntitiesAction.OnTriggered += showAllEntitiesDelegate;
+
+        biActionController.OnRedo += ReSelectEntities;
+        biActionController.OnUndo += ReSelectEntities;
     }
 
     private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
@@ -158,8 +159,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= ChangeEntityBoundsCheckerStatus;
 
-        BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
+        BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
+        BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
 
         if (hudController == null)
             return;

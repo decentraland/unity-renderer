@@ -21,13 +21,17 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         biwPublishController = new BIWPublishController();
-        biwPublishController.Init(BIWTestHelper.CreateMockUpReferenceController());
-        biwPublishController.EnterEditMode(scene);
-
         biwEntityHandler = new BIWEntityHandler();
-        biwEntityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
-        biwEntityHandler.EnterEditMode(scene);
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            biwPublishController,
+            biwEntityHandler
+        );
 
+        biwPublishController.Init(referencesController);
+        biwEntityHandler.Init(referencesController);
+
+        biwPublishController.EnterEditMode(scene);
+        biwEntityHandler.EnterEditMode(scene);
     }
 
     [Test]

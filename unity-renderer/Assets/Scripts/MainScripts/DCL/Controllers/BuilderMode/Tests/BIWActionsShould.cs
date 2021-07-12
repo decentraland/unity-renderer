@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 public class BIWActionsShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    private BIActionController biwActionController;
+    private BIWActionController biwActionController;
     private BIWEntityHandler entityHandler;
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
@@ -19,16 +19,28 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        biwActionController = new BIActionController();
-        biwActionController.Init(BIWTestHelper.CreateMockUpReferenceController());
-        biwActionController.EnterEditMode(scene);
-
-        entityHandler = new BIWEntityHandler();
-        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
-        entityHandler.EnterEditMode(scene);
-
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
+        biwActionController = new BIWActionController();
+        entityHandler = new BIWEntityHandler();
+        biwFloorHandler = new BIWFloorHandler();
+        biwCreatorController = new BIWCreatorController();
+
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            biwActionController,
+            entityHandler,
+            biwFloorHandler,
+            biwCreatorController
+        );
+
+        biwActionController.Init(referencesController);
+        entityHandler.Init(referencesController);
+        biwFloorHandler.Init(referencesController);
+        biwCreatorController.Init(referencesController);
+
+        biwActionController.EnterEditMode(scene);
         entityHandler.EnterEditMode(scene);
+        biwFloorHandler.EnterEditMode(scene);
+        biwCreatorController.EnterEditMode(scene);
     }
 
     [Test]
@@ -182,7 +194,9 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         BIWCatalogManager.ClearCatalog();
         BuilderInWorldNFTController.i.ClearNFTs();
         entityHandler.Dispose();
-        biwActionController.Clear();
+        biwActionController.Dispose();
+        biwFloorHandler.Dispose();
+        biwCreatorController.Dispose();
         yield return base.TearDown();
     }
 }

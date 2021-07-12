@@ -28,3 +28,5 @@ MonoBehaviour:
     type: 2}
   firstPersonRotationHold: {fileID: 11400000, guid: 3aea5eddf3f7c8a4988b3e4d951ca84a,
     type: 2}
+  focusOnSelectedEntitiesInputAction: {fileID: 11400000, guid: 746094ad79f2853439fc98abd3963fb8,
+    type: 2}

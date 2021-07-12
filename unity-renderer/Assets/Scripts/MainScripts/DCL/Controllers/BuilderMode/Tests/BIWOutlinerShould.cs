@@ -14,6 +14,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
     private DCLBuilderInWorldEntity entity;
+    private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
 
     protected override IEnumerator SetUp()
@@ -32,12 +33,19 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
 
         outlinerController = new BIWOutlinerController();
-        outlinerController.Init(BIWTestHelper.CreateMockUpReferenceController());
+        entityHandler = new BIWEntityHandler();
+
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            outlinerController,
+            entityHandler
+        );
+
+        outlinerController.Init(referencesController);
+        entityHandler.Init(referencesController);
+
+        entityHandler.EnterEditMode(scene);
         outlinerController.EnterEditMode(scene);
 
-        BIWEntityHandler entityHandler = new BIWEntityHandler();
-        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
-        entityHandler.EnterEditMode(scene);
         entity = entityHandler.GetConvertedEntity(scene.entities[ENTITY_ID]);
     }
 
@@ -67,5 +75,12 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         entity.SetIsLockedValue(true);
         outlinerController.OutlineEntity(entity);
         Assert.IsFalse(outlinerController.IsEntityOutlined(entity));
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        outlinerController.Dispose();
+        entityHandler.Dispose();
+        yield return base.TearDown();
     }
 }

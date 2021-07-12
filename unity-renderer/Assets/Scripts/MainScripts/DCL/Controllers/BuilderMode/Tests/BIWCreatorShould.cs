@@ -12,7 +12,6 @@ using UnityEngine.TestTools;
 public class BIWCreatorShould : IntegrationTestSuite_Legacy
 {
     private BIWEntityHandler entityHandler;
-    private BuilderInWorldController controller;
     private BIWCreatorController biwCreatorController;
 
     protected override IEnumerator SetUp()
@@ -20,9 +19,14 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         biwCreatorController = new BIWCreatorController();
-        biwCreatorController.Init(BIWTestHelper.CreateMockUpReferenceController());
         entityHandler = new BIWEntityHandler();
-        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            entityHandler,
+            biwCreatorController
+        );
+
+        biwCreatorController.Init(referencesController);
+        entityHandler.Init(referencesController);
 
         entityHandler.EnterEditMode(scene);
         biwCreatorController.EnterEditMode(scene);
@@ -172,7 +176,6 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     {
         BIWCatalogManager.ClearCatalog();
         BuilderInWorldNFTController.i.ClearNFTs();
-        controller.CleanItems();
         foreach (var placeHolder in GameObject.FindObjectsOfType<BIWLoadingPlaceHolder>())
         {
             placeHolder.Dispose();

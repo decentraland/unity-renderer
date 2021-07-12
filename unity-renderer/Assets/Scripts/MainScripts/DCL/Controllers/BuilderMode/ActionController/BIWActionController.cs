@@ -19,7 +19,7 @@ public interface IBIActionController
     public void CreateActionEntityCreated(IDCLEntity entity);
 }
 
-public class BIActionController : BIWController, IBIActionController
+public class BIWActionController : BIWController, IBIActionController
 {
     private static bool VERBOSE = false;
 

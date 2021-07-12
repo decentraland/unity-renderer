@@ -62,7 +62,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         biwEntityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
         Clean();
 
-        GameObject.Destroy(dclBuilderMeshLoadIndicatorController);
+        GameObject.Destroy(dclBuilderMeshLoadIndicatorController.gameObject);
     }
 
     private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)

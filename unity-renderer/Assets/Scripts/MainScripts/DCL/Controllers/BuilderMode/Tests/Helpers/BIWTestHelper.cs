@@ -19,7 +19,7 @@ public static class BIWTestHelper
         referencesController.Init(
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
-            Substitute.For<IBuilderInWorldInputWrapper>(),
+            Substitute.For<IBIWInputWrapper>(),
             Substitute.For<IBIWPublishController>(),
             Substitute.For<IBIWCreatorController>(),
             Substitute.For<IBIWModeController>(),
@@ -27,6 +27,71 @@ public static class BIWTestHelper
             Substitute.For<IBIWEntityHandler>(),
             Substitute.For<IBIActionController>(),
             Substitute.For<IBIWSaveController>()
+        );
+        return referencesController;
+    }
+    public static BIWReferencesController CreateReferencesControllerWithGenericMocks(params object[] mocks)
+    {
+        IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
+        IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
+        IBIWInputWrapper inputWrapper = Substitute.For<IBIWInputWrapper>();
+        IBIWPublishController publishController = Substitute.For<IBIWPublishController>();
+        IBIWCreatorController creatorController = Substitute.For<IBIWCreatorController>();
+        IBIWModeController modeController = Substitute.For<IBIWModeController>();
+        IBIWFloorHandler floorHandler = Substitute.For<IBIWFloorHandler>();
+        IBIWEntityHandler entityHandler = Substitute.For<IBIWEntityHandler>();
+        IBIActionController actionController = Substitute.For<IBIActionController>();
+        IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
+
+        foreach ( var mock in mocks)
+        {
+            switch ( mock )
+            {
+                case IBIWOutlinerController oc:
+                    outliner = oc;
+                    break;
+                case IBIWInputHandler ih:
+                    inputHandler = ih;
+                    break;
+                case IBIWInputWrapper iw:
+                    inputWrapper = iw;
+                    break;
+                case IBIWPublishController pc:
+                    publishController = pc;
+                    break;
+                case IBIWCreatorController cc:
+                    creatorController = cc;
+                    break;
+                case IBIWModeController mc:
+                    modeController = mc;
+                    break;
+                case IBIWFloorHandler fh:
+                    floorHandler = fh;
+                    break;
+                case IBIWEntityHandler eh:
+                    entityHandler = eh;
+                    break;
+                case IBIActionController ac:
+                    actionController = ac;
+                    break;
+                case IBIWSaveController sc:
+                    saveController = sc;
+                    break;
+            }
+        }
+
+        BIWReferencesController referencesController = new BIWReferencesController();
+        referencesController.Init(
+            outliner,
+            inputHandler,
+            inputWrapper,
+            publishController,
+            creatorController,
+            modeController,
+            floorHandler,
+            entityHandler,
+            actionController,
+            saveController
         );
         return referencesController;
     }

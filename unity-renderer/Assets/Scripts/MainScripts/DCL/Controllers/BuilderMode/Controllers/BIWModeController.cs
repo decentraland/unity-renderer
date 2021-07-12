@@ -43,7 +43,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject cursorGO;
     private GameObject cameraParentGO;
 
-    private IBIActionController biActionController;
+    private IBIActionController biwActionController;
     private IBIWEntityHandler biwEntityHandler;
 
     private BuilderInWorldFirstPersonMode firstPersonMode;
@@ -84,9 +84,6 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.OnInputDone += InputDone;
         godMode.OnInputDone += InputDone;
 
-        firstPersonMode.OnActionGenerated += biActionController.AddAction;
-        godMode.OnActionGenerated += biActionController.AddAction;
-
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnChangeModeAction += ChangeAdvanceMode;
@@ -94,12 +91,15 @@ public class BIWModeController : BIWController, IBIWModeController
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
 
-        biActionController = biwReferencesController.BiwBiActionController;
+        biwActionController = biwReferencesController.BiwBiActionController;
         biwEntityHandler = biwReferencesController.biwEntityHandler;
         toggleSnapModeInputAction = biwReferencesController.inputsReferences.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
         toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
+
+        firstPersonMode.OnActionGenerated += biwActionController.AddAction;
+        godMode.OnActionGenerated += biwActionController.AddAction;
 
         SetEditorGameObjects();
     }
@@ -113,8 +113,8 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.OnInputDone -= InputDone;
         godMode.OnInputDone -= InputDone;
 
-        firstPersonMode.OnActionGenerated -= biActionController.AddAction;
-        godMode.OnActionGenerated -= biActionController.AddAction;
+        firstPersonMode.OnActionGenerated -= biwActionController.AddAction;
+        godMode.OnActionGenerated -= biwActionController.AddAction;
 
         firstPersonMode.Dispose();
         godMode.Dispose();

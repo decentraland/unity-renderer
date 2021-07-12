@@ -13,7 +13,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
 
     private IBIActionController biActionController;
     private IBIWModeController biwModeController;
-    private IBuilderInWorldInputWrapper builderInputWrapper;
+    private IBIWInputWrapper builderInputWrapper;
     private IBIWOutlinerController outlinerController;
     private IBIWEntityHandler biwEntityHandler;
 
@@ -60,8 +60,8 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         multiSelectionStartDelegate = (action) => StartMultiSelection();
         multiSelectionFinishedDelegate = (action) => EndMultiSelection();
 
-        BuilderInWorldInputWrapper.OnMouseClick += MouseClick;
-        BuilderInWorldInputWrapper.OnMouseClickOnUI += MouseClickOnUI;
+        BIWInputWrapper.OnMouseClick += MouseClick;
+        BIWInputWrapper.OnMouseClickOnUI += MouseClickOnUI;
         biwModeController.OnInputDone += InputDone;
 
         multiSelectionInputAction.OnStarted += multiSelectionStartDelegate;
@@ -78,8 +78,8 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
-        BuilderInWorldInputWrapper.OnMouseClick -= MouseClick;
-        BuilderInWorldInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
+        BIWInputWrapper.OnMouseClick -= MouseClick;
+        BIWInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
         biwModeController.OnInputDone -= InputDone;
         if (HUDController.i.builderInWorldMainHud != null)
         {

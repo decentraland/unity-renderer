@@ -6,14 +6,14 @@ using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public interface IBuilderInWorldInputWrapper
+public interface IBIWInputWrapper
 {
     public void StopInput();
 
     public void ResumeInput();
 }
 
-public class BuilderInWorldInputWrapper : BIWController, IBuilderInWorldInputWrapper
+public class BIWInputWrapper : BIWController, IBIWInputWrapper
 {
     private const float MS_CLICK_THRESHOLD = 500;
     private const float MOVEMENT_CLICK_THRESHOLD = 50;

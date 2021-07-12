@@ -20,15 +20,21 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         yield return base.SetUp();
 
         biwCreatorController = new BIWCreatorController();
-        biwCreatorController.Init(BIWTestHelper.CreateMockUpReferenceController());
-        entityHandler.EnterEditMode(scene);
-
         biwFloorHandler = new BIWFloorHandler();
-        biwFloorHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
-        biwFloorHandler.EnterEditMode(scene);
-
         entityHandler = new BIWEntityHandler();
-        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
+
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            entityHandler,
+            biwFloorHandler,
+            biwCreatorController
+        );
+
+        biwCreatorController.Init(referencesController);
+        biwFloorHandler.Init(referencesController);
+        entityHandler.Init(referencesController);
+
+        entityHandler.EnterEditMode(scene);
+        biwFloorHandler.EnterEditMode(scene);
         entityHandler.EnterEditMode(scene);
     }
 

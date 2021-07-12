@@ -16,7 +16,7 @@ public class VoxelController
     public BIWOutlinerController outlinerController;
     public BIWEntityHandler biwEntityHandler;
     public FreeCameraMovement freeCameraMovement;
-    public BIActionController biActionController;
+    public BIWActionController biwActionController;
 
     public LayerMask groundLayer;
 
@@ -34,14 +34,14 @@ public class VoxelController
 
     private void Start()
     {
-        BuilderInWorldInputWrapper.OnMouseDown += MouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp += MouseUp;
+        BIWInputWrapper.OnMouseDown += MouseDown;
+        BIWInputWrapper.OnMouseUp += MouseUp;
     }
 
     private void OnDestroy()
     {
-        BuilderInWorldInputWrapper.OnMouseDown -= MouseDown;
-        BuilderInWorldInputWrapper.OnMouseUp -= MouseUp;
+        BIWInputWrapper.OnMouseDown -= MouseDown;
+        BIWInputWrapper.OnMouseUp -= MouseUp;
     }
 
     private void Update()
@@ -257,7 +257,7 @@ public class VoxelController
             else
             {
                 buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATE);
-                biActionController.AddAction(buildAction);
+                biwActionController.AddAction(buildAction);
             }
 
             createdVoxels.Clear();
