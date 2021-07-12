@@ -79,7 +79,6 @@ public class BIWSaveController : BIWController
 
         builderInWorldBridge.SaveSceneState(sceneToEdit);
         nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
-        Debug.Log("Scene Saved");
         HUDController.i.builderInWorldMainHud?.SceneSaved();
         numberOfSaves++;
     }
