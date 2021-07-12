@@ -28,6 +28,12 @@ public class BIWSaveController : BIWController
         }
     }
 
+    public override void ExitEditMode()
+    {
+        ForceSave();
+        base.ExitEditMode();
+    }
+
     private void OnDestroy()
     {
         if (builderInWorldBridge != null)
@@ -73,6 +79,7 @@ public class BIWSaveController : BIWController
 
         builderInWorldBridge.SaveSceneState(sceneToEdit);
         nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
+        Debug.Log("Scene Saved");
         HUDController.i.builderInWorldMainHud?.SceneSaved();
         numberOfSaves++;
     }
