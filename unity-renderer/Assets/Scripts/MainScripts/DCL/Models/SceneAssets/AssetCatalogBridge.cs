@@ -56,7 +56,7 @@ public class AssetCatalogBridge : MonoBehaviour
     ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
     {
         ContentProvider contentProvider = new ContentProvider();
-        contentProvider.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+        contentProvider.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
         foreach (KeyValuePair<string, string> content in sceneObject.contents)
         {
             ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
@@ -100,10 +100,6 @@ public class AssetCatalogBridge : MonoBehaviour
     public void AddSceneObjectToCatalog(SceneObject sceneObject)
     {
         if (sceneObjectCatalog.ContainsKey(sceneObject.id))
-            return;
-
-        //TODO: SmartItems This quit all the smart items from the catalog
-        if (sceneObject.IsSmartItem())
             return;
 
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);

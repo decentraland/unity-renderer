@@ -4,16 +4,17 @@ namespace DCL.Configuration
 {
     public static class BuilderInWorldSettings
     {
-        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.io/v1/storage/contents/";
-        public const string BASE_URL_ASSETS_PACK = "https://builder-api.decentraland.io/v1/assetPacks";
-        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.io/v1/storage/assetPacks/";
+        //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
+        public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
+        public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks";
+        public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
         public static readonly int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
         public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
         public static readonly int COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
 
-        // TODO: This ID should be changed by 'b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169' when we point to .org in the future
-        public const string VOXEL_ASSETS_PACK_ID = "e3b7f596-3389-451d-bc7c-a095a7ba08da";
+        public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
+        public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";
         public const string FLOOR_CATEGORY = "ground";
 
         public const string CATALOG_ASSET_PACK_TITLE = "Asset Packs";
@@ -76,6 +77,7 @@ namespace DCL.Configuration
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
+        public const float LAND_NOTIFICATIONS_TIMER = 10f;
     }
 
     public static class ApplicationSettings

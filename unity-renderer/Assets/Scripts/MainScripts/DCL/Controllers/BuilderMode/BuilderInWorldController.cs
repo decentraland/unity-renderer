@@ -207,7 +207,7 @@ public class BuilderInWorldController : MonoBehaviour
         HUDConfiguration hudConfig = new HUDConfiguration();
         hudConfig.active = true;
         hudConfig.visible = false;
-        HUDController.i.CreateHudElement<BuildModeHUDController>(hudConfig, HUDController.HUDElementID.BUILDER_IN_WORLD_MAIN);
+        HUDController.i.CreateHudElement(hudConfig, HUDElementID.BUILDER_IN_WORLD_MAIN);
         HUDController.i.OnBuilderProjectPanelCreation += InitBuilderProjectPanel;
 
         HUDController.i.builderInWorldMainHud.Initialize();
@@ -253,7 +253,7 @@ public class BuilderInWorldController : MonoBehaviour
             return;
 
         if (areCatalogHeadersReady)
-            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BuilderInWorldSettings.BASE_URL_ASSETS_PACK, CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
         else
             builderInWorldBridge.AskKernelForCatalogHeaders();
 
@@ -341,6 +341,12 @@ public class BuilderInWorldController : MonoBehaviour
         if (isEnteringEditMode)
             return;
 
+        if (isBuilderInWorldActivated)
+        {
+            HUDController.i.builderInWorldMainHud.ExitStart();
+            return;
+        }
+
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -348,21 +354,14 @@ public class BuilderInWorldController : MonoBehaviour
             ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE);
             return;
         }
-        else if (IsParcelSceneDeployedFromSDK(sceneToEdit))
+        if (IsParcelSceneDeployedFromSDK(sceneToEdit))
         {
             ShowGenericNotification(BuilderInWorldSettings.LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE);
             return;
         }
 
-        if (!isBuilderInWorldActivated)
-        {
-            GetCatalog();
-            TryStartEnterEditMode(true, null, "Shortcut");
-        }
-        else
-        {
-            HUDController.i.builderInWorldMainHud.ExitStart();
-        }
+        GetCatalog();
+        TryStartEnterEditMode(true, null, "Shortcut");
     }
 
     public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
@@ -486,6 +485,10 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        //If the scene is still not loaded, we return as we still can't enter in builder in world 
+        if (sceneToEditId != null)
+            return;
+
         isEnteringEditMode = true;
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;
@@ -549,6 +552,7 @@ public class BuilderInWorldController : MonoBehaviour
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
@@ -648,7 +652,7 @@ public class BuilderInWorldController : MonoBehaviour
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
         snapGO.transform.SetParent(transform);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
@@ -809,6 +813,7 @@ public class BuilderInWorldController : MonoBehaviour
         Notification.Model notificationModel = new Notification.Model();
         notificationModel.message = message;
         notificationModel.type = NotificationFactory.Type.GENERIC;
+        notificationModel.timer = BuilderInWorldSettings.LAND_NOTIFICATIONS_TIMER;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }

@@ -122,17 +122,18 @@ public class BuilderInWorldEntityHandler : BIWController
         BuilderInWorldInputWrapper.OnMouseDown -= OnInputMouseDown;
         BuilderInWorldInputWrapper.OnMouseUp -= OnInputMouseUp;
 
-        if (hudController == null)
-            return;
-
-        hudController.OnEntityDelete -= DeleteSingleEntity;
-        hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
-        hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
-        hudController.OnEntityClick -= ChangeEntitySelectionFromList;
-        hudController.OnEntityLock -= ChangeEntityLockStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
-        hudController.OnEntityRename -= SetEntityName;
+        if (hudController != null)
+        {
+            hudController.OnEntityDelete -= DeleteSingleEntity;
+            hudController.OnDuplicateSelectedAction -= DuplicateSelectedEntitiesInput;
+            hudController.OnDeleteSelectedAction -= DeleteSelectedEntitiesInput;
+            hudController.OnEntityClick -= ChangeEntitySelectionFromList;
+            hudController.OnEntityLock -= ChangeEntityLockStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityChangeVisibility -= ChangeEntityVisibilityStatus;
+            hudController.OnEntityRename -= SetEntityName;
+            hudController.OnEntitySmartItemComponentUpdate -= UpdateSmartItemComponentInKernel;
+        }
     }
 
     protected override void FrameUpdate()
@@ -509,8 +510,9 @@ public class BuilderInWorldEntityHandler : BIWController
     public DCLBuilderInWorldEntity DuplicateEntity(DCLBuilderInWorldEntity entityToDuplicate)
     {
         IDCLEntity entity = SceneUtils.DuplicateEntity(sceneToEdit, entityToDuplicate.rootEntity);
-        //Note: If the entity contains the name component, we don't want to copy the name
+        //Note: If the entity contains the name component or DCLLockedOnEdit, we don't want to copy them 
         entity.RemoveSharedComponent(typeof(DCLName), false);
+        entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
 
         BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
         DCLBuilderInWorldEntity convertedEntity = SetupEntityToEdit(entity);

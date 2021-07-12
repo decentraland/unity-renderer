@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
+using DCL.Configuration;
 using UnityEngine;
 
 public class BuilderInWorldMode : MonoBehaviour
@@ -30,7 +31,7 @@ public class BuilderInWorldMode : MonoBehaviour
     protected bool isSnapActive = false, isMultiSelectionActive = false, isModeActive = false;
     protected List<DCLBuilderInWorldEntity> selectedEntities;
 
-    bool isNewObjectPlaced = false;
+    protected bool isNewObjectPlaced = false;
 
     protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
 
@@ -192,13 +193,13 @@ public class BuilderInWorldMode : MonoBehaviour
         BuilderInWorldEntityAction buildModeEntityAction = new BuilderInWorldEntityAction(entity);
         switch (type)
         {
-            case "MOVE":
+            case BuilderInWorldSettings.TRANSLATE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.position;
                 break;
-            case "ROTATE":
+            case BuilderInWorldSettings.ROTATE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.rotation.eulerAngles;
                 break;
-            case "SCALE":
+            case BuilderInWorldSettings.SCALE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.lossyScale;
                 break;
         }
