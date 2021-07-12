@@ -17,10 +17,8 @@ public class BIWSaveControllerShould : IntegrationTestSuite_Legacy
         gameObject = new GameObject();
 
         builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
-        biwSaveController = gameObject.AddComponent<BIWSaveController>();
-
-        biwSaveController.builderInWorldBridge = builderInWorldBridge;
-        biwSaveController.Init();
+        biwSaveController = new BIWSaveController();
+        biwSaveController.Init(BIWTestHelper.CreateMockUpReferenceController());
         biwSaveController.EnterEditMode(scene);
     }
 

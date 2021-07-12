@@ -5,19 +5,14 @@ using UnityEngine;
 
 public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 {
-    private BuilderInWorldController controller;
     private BIWModeController biwModeController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
 
-        controller.InitGameObjects();
-        controller.FindSceneToEdit();
-        controller.InitControllers();
-
-        biwModeController = controller.biwModeController;
+        biwModeController = new BIWModeController();
+        biwModeController.Init(BIWTestHelper.CreateMockUpReferenceController());
         biwModeController.EnterEditMode(scene);
 
     }
@@ -33,7 +28,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.FirstPerson);
-        Assert.IsTrue(biwModeController.GetCurrentMode() == biwModeController.firstPersonMode);
+        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BuilderInWorldFirstPersonMode));
     }
 
     [Test]
@@ -47,7 +42,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.GodMode);
-        Assert.IsTrue(biwModeController.GetCurrentMode() == biwModeController.editorMode);
+        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BuilderInWorldGodMode));
     }
 
     [Test]
@@ -62,11 +57,5 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.Inactive);
         Assert.IsTrue(biwModeController.GetCurrentMode() == null);
-    }
-
-    protected override IEnumerator TearDown()
-    {
-        controller.CleanItems();
-        yield return base.TearDown();
     }
 }

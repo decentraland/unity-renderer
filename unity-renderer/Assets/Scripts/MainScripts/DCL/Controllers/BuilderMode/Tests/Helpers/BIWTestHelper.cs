@@ -7,12 +7,31 @@ using System.Runtime.Serialization.Formatters.Binary;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using NSubstitute;
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class BuilderInWorldTestHelper
+public static class BIWTestHelper
 {
-    public static DCLBuilderInWorldEntity CreateSmartItemEntity(BuilderInWorldEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
+    public static BIWReferencesController CreateMockUpReferenceController()
+    {
+        BIWReferencesController referencesController = new BIWReferencesController();
+        referencesController.Init(
+            Substitute.For<IBIWOutlinerController>(),
+            Substitute.For<IBIWInputHandler>(),
+            Substitute.For<IBuilderInWorldInputWrapper>(),
+            Substitute.For<IBIWPublishController>(),
+            Substitute.For<IBIWCreatorController>(),
+            Substitute.For<IBIWModeController>(),
+            Substitute.For<IBIWFloorHandler>(),
+            Substitute.For<IBIWEntityHandler>(),
+            Substitute.For<IBIActionController>(),
+            Substitute.For<IBIWSaveController>()
+        );
+        return referencesController;
+    }
+
+    public static DCLBuilderInWorldEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
     {
         if (model == null)
             model = new SmartItemComponent.Model();

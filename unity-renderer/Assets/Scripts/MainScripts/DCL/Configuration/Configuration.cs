@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DCL.Configuration
 {
-    public static class BuilderInWorldSettings
+    public static class BIWSettings
     {
         //Note: Don't use these URL directly, you need to get them in the BuilderInWorldUtils to take into account the ENV
         public const string BASE_URL_SCENE_OBJECT_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/contents/";
@@ -12,6 +12,8 @@ namespace DCL.Configuration
         public static readonly int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
         public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
         public static readonly int COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
+        public static readonly int GIZMOS_LAYER = LayerMask.NameToLayer("Gizmo");
+        public static readonly int GROUND_LAYER = LayerMask.NameToLayer("Ground");
 
         // TODO: This ID should be changed by 'b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169' when we point to .org in the future
         public const string VOXEL_ASSETS_PACK_ID = "e3b7f596-3389-451d-bc7c-a095a7ba08da";

@@ -11,26 +11,23 @@ using UnityEngine.TestTools;
 
 public class BIWPublishShould : IntegrationTestSuite_Legacy
 {
-    private BuilderInWorldController controller;
     private BIWPublishController biwPublishController;
-    private BuilderInWorldEntityHandler biwEntityHandler;
+    private BIWEntityHandler biwEntityHandler;
 
     private const string entityId = "E1";
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
 
-        controller.InitGameObjects();
-        controller.FindSceneToEdit();
-        controller.InitControllers();
-
-        biwPublishController = controller.biwPublishController;
+        biwPublishController = new BIWPublishController();
+        biwPublishController.Init(BIWTestHelper.CreateMockUpReferenceController());
         biwPublishController.EnterEditMode(scene);
 
-        biwEntityHandler = controller.builderInWorldEntityHandler;
+        biwEntityHandler = new BIWEntityHandler();
+        biwEntityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
         biwEntityHandler.EnterEditMode(scene);
+
     }
 
     [Test]
@@ -82,7 +79,8 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        controller.CleanItems();
+        biwPublishController.Dispose();
+        biwEntityHandler.Dispose();
         yield return base.TearDown();
     }
 }

@@ -2,22 +2,27 @@ using DCL;
 using DCL.Controllers;
 using UnityEngine;
 
-public class BIWSaveController : BIWController
+public interface IBIWSaveController
 {
-    [SerializeField]
-    private float msBetweenSaves = 5000f;
+    public void SetSaveActivation(bool isActive, bool tryToSave = false);
+    public void TryToSave();
+    public void ForceSave();
+}
 
-    [Header("Prefab reference")]
-    public BuilderInWorldBridge builderInWorldBridge;
+public class BIWSaveController : BIWController, IBIWSaveController
+{
+    private const float MS_BETWEEN_SAVES = 5000f;
 
     public int numberOfSaves { get; private set; } = 0;
+
+    private BuilderInWorldBridge builderInWorldBridge;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
 
-    public override void Init()
+    public override void Init(BIWReferencesController biwReferencesController)
     {
-        base.Init();
+        base.Init(biwReferencesController);
 
         builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
         if (builderInWorldBridge != null)
@@ -30,8 +35,10 @@ public class BIWSaveController : BIWController
         }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
+        base.Dispose();
+
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnKernelUpdated -= TryToSave;
 
@@ -49,7 +56,7 @@ public class BIWSaveController : BIWController
     public override void EnterEditMode(ParcelScene scene)
     {
         base.EnterEditMode(scene);
-        nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
+        nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         ResetNumberOfSaves();
     }
 
@@ -74,7 +81,7 @@ public class BIWSaveController : BIWController
             return;
 
         builderInWorldBridge.SaveSceneState(sceneToEdit);
-        nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
+        nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         HUDController.i.builderInWorldMainHud?.SceneSaved();
         numberOfSaves++;
     }

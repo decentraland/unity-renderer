@@ -96,6 +96,7 @@ namespace DCL
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
+            featureController?.OnDestroy();
         }
 
         #region RuntimeMessagingBridge

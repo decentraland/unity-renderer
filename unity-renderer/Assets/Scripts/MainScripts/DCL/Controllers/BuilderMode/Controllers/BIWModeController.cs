@@ -5,7 +5,33 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
-public class BIWModeController : BIWController
+public interface IBIWModeController
+{
+    public event Action OnInputDone;
+    public Vector3 GetCurrentEditionPosition();
+    public void CreatedEntity(DCLBuilderInWorldEntity entity);
+
+    public float GetMaxDistanceToSelectEntities() ;
+
+    public void EntityDoubleClick(DCLBuilderInWorldEntity entity);
+
+    public Vector3 GetMousePosition();
+
+    public Vector3 GetModeCreationEntryPoint();
+    public bool IsGodModeActive();
+    public void UndoEditionGOLastStep();
+    public void StartMultiSelection();
+
+    public void EndMultiSelection();
+    public void CheckInput();
+
+    public void CheckInputSelectedEntities();
+
+    public bool ShouldCancelUndoAction();
+    public void MouseClickDetected();
+}
+
+public class BIWModeController : BIWController, IBIWModeController
 {
     public enum EditModeState
     {
@@ -14,21 +40,18 @@ public class BIWModeController : BIWController
         GodMode = 2
     }
 
-    [Header("Scene References")]
-    public GameObject cursorGO;
+    private GameObject cursorGO;
+    private GameObject cameraParentGO;
 
-    [Header("References")]
-    public ActionController actionController;
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    private IBIActionController biActionController;
+    private IBIWEntityHandler biwEntityHandler;
 
-    [Header("Build Modes")]
-    public BuilderInWorldFirstPersonMode firstPersonMode;
-    public BuilderInWorldGodMode editorMode;
+    private BuilderInWorldFirstPersonMode firstPersonMode;
+    private BuilderInWorldGodMode godMode;
 
-    [SerializeField]
-    internal InputAction_Trigger toggleSnapModeInputAction;
+    private InputAction_Trigger toggleSnapModeInputAction;
 
-    public Action OnInputDone;
+    public event Action OnInputDone;
     public event Action<EditModeState, EditModeState> OnChangedEditModeState;
 
     private EditModeState currentEditModeState = EditModeState.Inactive;
@@ -38,45 +61,31 @@ public class BIWModeController : BIWController
     private bool isSnapActive = true;
 
     private InputAction_Trigger.Triggered snapModeDelegate;
+
     private GameObject editionGO;
     private GameObject undoGO;
+    private GameObject snapGO;
+    private GameObject freeMovementGO;
 
-    private void Start()
+    public override void Init(BIWReferencesController biwReferencesController)
     {
-        snapModeDelegate = (action) => ChangeSnapMode();
-        toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
-    }
+        base.Init(biwReferencesController);
 
-    private void OnDestroy()
-    {
-        toggleSnapModeInputAction.OnTriggered -= snapModeDelegate;
-
-        firstPersonMode.OnInputDone -= InputDone;
-        editorMode.OnInputDone -= InputDone;
-
-        firstPersonMode.OnActionGenerated -= actionController.AddAction;
-        editorMode.OnActionGenerated -= actionController.AddAction;
-
-        if (HUDController.i.builderInWorldMainHud != null)
-        {
-            HUDController.i.builderInWorldMainHud.OnChangeModeAction -= ChangeAdvanceMode;
-            HUDController.i.builderInWorldMainHud.OnResetAction -= ResetScaleAndRotation;
-        }
-    }
-
-    public override void Init()
-    {
-        base.Init();
         cursorGO = InitialSceneReferences.i.cursorCanvas;
+        cameraParentGO = InitialSceneReferences.i.cameraParent;
+        InitGameObjects();
 
-        firstPersonMode.Init();
-        editorMode.Init();
+        firstPersonMode = new BuilderInWorldFirstPersonMode();
+        godMode = new BuilderInWorldGodMode();
+
+        firstPersonMode.Init(biwReferencesController);
+        godMode.Init(biwReferencesController);
 
         firstPersonMode.OnInputDone += InputDone;
-        editorMode.OnInputDone += InputDone;
+        godMode.OnInputDone += InputDone;
 
-        firstPersonMode.OnActionGenerated += actionController.AddAction;
-        editorMode.OnActionGenerated += actionController.AddAction;
+        firstPersonMode.OnActionGenerated += biActionController.AddAction;
+        godMode.OnActionGenerated += biActionController.AddAction;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -84,15 +93,73 @@ public class BIWModeController : BIWController
             HUDController.i.builderInWorldMainHud.OnResetAction += ResetScaleAndRotation;
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
+
+        biActionController = biwReferencesController.BiwBiActionController;
+        biwEntityHandler = biwReferencesController.biwEntityHandler;
+        toggleSnapModeInputAction = biwReferencesController.inputsReferences.toggleSnapModeInputAction;
+
+        snapModeDelegate = (action) => ChangeSnapMode();
+        toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
+
+        SetEditorGameObjects();
     }
 
-    public void SetEditorGameObjects(GameObject editionGO, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO)
+    public override void Dispose()
     {
-        this.editionGO = editionGO;
-        this.undoGO = undoGO;
+        base.Dispose();
 
-        editorMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
-        firstPersonMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, builderInWorldEntityHandler.GetSelectedEntityList());
+        toggleSnapModeInputAction.OnTriggered -= snapModeDelegate;
+
+        firstPersonMode.OnInputDone -= InputDone;
+        godMode.OnInputDone -= InputDone;
+
+        firstPersonMode.OnActionGenerated -= biActionController.AddAction;
+        godMode.OnActionGenerated -= biActionController.AddAction;
+
+        firstPersonMode.Dispose();
+        godMode.Dispose();
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnChangeModeAction -= ChangeAdvanceMode;
+            HUDController.i.builderInWorldMainHud.OnResetAction -= ResetScaleAndRotation;
+        }
+
+        GameObject.Destroy(undoGO);
+        GameObject.Destroy(snapGO);
+        GameObject.Destroy(editionGO);
+        GameObject.Destroy(freeMovementGO);
+    }
+
+    public void ActivateCamera(ParcelScene sceneToLook) { godMode.ActivateCamera(sceneToLook); }
+
+    public void TakeSceneScreenshotForExit() { godMode.TakeSceneScreenshotForExit(); }
+
+    public void OpenNewProjectDetails() { godMode.OpenNewProjectDetails(); }
+
+    private void SetEditorGameObjects()
+    {
+        godMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, biwEntityHandler.GetSelectedEntityList());
+        firstPersonMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, biwEntityHandler.GetSelectedEntityList());
+    }
+
+    private void InitGameObjects()
+    {
+        if (snapGO == null)
+            snapGO = new GameObject("SnapGameObject");
+
+        if (freeMovementGO == null)
+            freeMovementGO = new GameObject("FreeMovementGO");
+
+        freeMovementGO.transform.SetParent(cameraParentGO.transform);
+
+        if (editionGO == null)
+            editionGO = new GameObject("EditionGO");
+
+        editionGO.transform.SetParent(cameraParentGO.transform);
+
+        if (undoGO == null)
+            undoGO = new GameObject("UndoGameObject");
     }
 
     public bool IsGodModeActive() { return currentEditModeState == EditModeState.GodMode; }
@@ -113,6 +180,25 @@ public class BIWModeController : BIWController
         BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
     }
 
+    public override void OnGUI()
+    {
+        base.OnGUI();
+        godMode.OnGUI();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        godMode.Update();
+        firstPersonMode.Update();
+    }
+
+    public override void LateUpdate()
+    {
+        base.LateUpdate();
+        firstPersonMode.LateUpdate();
+    }
+
     public override void EnterEditMode(ParcelScene scene)
     {
         base.EnterEditMode(scene);
@@ -124,6 +210,7 @@ public class BIWModeController : BIWController
     {
         base.ExitEditMode();
         SetBuildMode(EditModeState.Inactive);
+        snapGO.transform.SetParent(null);
     }
 
     public BuilderInWorldMode GetCurrentMode() => currentActiveMode;
@@ -159,7 +246,7 @@ public class BIWModeController : BIWController
         return Vector3.zero;
     }
 
-    public virtual void MouseClickDetected() { currentActiveMode?.MouseClickDetected(); }
+    public void MouseClickDetected() { currentActiveMode?.MouseClickDetected(); }
 
     private void ChangeSnapMode()
     {
@@ -212,7 +299,7 @@ public class BIWModeController : BIWController
             case EditModeState.GodMode:
                 if (cursorGO != null)
                     cursorGO.SetActive(false);
-                currentActiveMode = editorMode;
+                currentActiveMode = godMode;
                 break;
         }
 
@@ -222,7 +309,7 @@ public class BIWModeController : BIWController
         {
             currentActiveMode.Activate(sceneToEdit);
             currentActiveMode.SetSnapActive(isSnapActive);
-            builderInWorldEntityHandler.SetActiveMode(currentActiveMode);
+            biwEntityHandler.SetActiveMode(currentActiveMode);
         }
 
         OnChangedEditModeState?.Invoke(previousState, state);
