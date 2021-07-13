@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using UnityEngine;
 
 public class CatalogAssetPackListView : ListView<CatalogItemPack>
@@ -38,6 +39,10 @@ public class CatalogAssetPackListView : ListView<CatalogItemPack>
 
         foreach (CatalogItemPack catalogItemPack in contentList)
         {
+            //TODO: SmartItems This quit all the smart items from the catalog
+            if (catalogItemPack.id == BuilderInWorldSettings.SMART_ITEM_ASSETS_PACK_ID)
+                continue;
+
             CatalogAssetPackAdapter adapter = Instantiate(prefabToUse, transformToUse).GetComponent<CatalogAssetPackAdapter>();
             adapter.SetContent(catalogItemPack);
             adapter.OnCatalogItemPackClick += SceneAssetPackClick;

@@ -40,7 +40,7 @@ namespace SceneBoundariesCheckerTests
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
 
             yield return null;
 
@@ -69,7 +69,7 @@ namespace SceneBoundariesCheckerTests
 
             LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity2);
 
-            yield return new WaitUntil(() => gltfShape2.alreadyLoaded);
+            yield return new UnityEngine.WaitUntil(() => gltfShape2.alreadyLoaded);
             yield return null;
 
             SBC_Asserts.AssertMeshIsValid(entity2.meshesInfo);
