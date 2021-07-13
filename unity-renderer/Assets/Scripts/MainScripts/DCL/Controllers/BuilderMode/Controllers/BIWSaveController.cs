@@ -15,18 +15,18 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public int numberOfSaves { get; private set; } = 0;
 
-    private BuilderInWorldBridge builderInWorldBridge;
+    private BuilderInWorldBridge bridge;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
 
-    public override void Init(BIWReferencesController biwReferencesController)
+    public override void Init(BIWContext biwContext)
     {
-        base.Init(biwReferencesController);
+        base.Init(biwContext);
 
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnKernelUpdated += TryToSave;
+        bridge = InitialSceneReferences.i.builderInWorldBridge;
+        if (bridge != null)
+            bridge.OnKernelUpdated += TryToSave;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -39,8 +39,8 @@ public class BIWSaveController : BIWController, IBIWSaveController
     {
         base.Dispose();
 
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnKernelUpdated -= TryToSave;
+        if (bridge != null)
+            bridge.OnKernelUpdated -= TryToSave;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -90,13 +90,13 @@ public class BIWSaveController : BIWController, IBIWSaveController
         if (!isEditModeActive || !canActivateSave)
             return;
 
-        builderInWorldBridge.SaveSceneState(sceneToEdit);
+        bridge.SaveSceneState(sceneToEdit);
         nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         HUDController.i.builderInWorldMainHud?.SceneSaved();
         numberOfSaves++;
     }
 
-    public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { builderInWorldBridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
+    public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { bridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
 
     void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
 }

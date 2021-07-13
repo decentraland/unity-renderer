@@ -22,7 +22,7 @@ public class BuilderInWorldMode
 
     protected IBIWEntityHandler biwEntityHandler;
     protected IBIWSaveController biwSaveController;
-    protected IBIActionController biActionController;
+    protected IBIWActionController ibiwActionController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
@@ -33,11 +33,11 @@ public class BuilderInWorldMode
 
     protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
 
-    public virtual void Init(BIWReferencesController biwReferencesController)
+    public virtual void Init(BIWContext biwContext)
     {
-        biwEntityHandler = biwReferencesController.biwEntityHandler;
-        biwSaveController = biwReferencesController.biwSaveController;
-        biActionController = biwReferencesController.BiwBiActionController;
+        biwEntityHandler = biwContext.entityHandler;
+        biwSaveController = biwContext.saveController;
+        ibiwActionController = biwContext.actionController;
         biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
@@ -131,7 +131,7 @@ public class BuilderInWorldMode
 
         if (isNewObjectPlaced)
         {
-            biActionController.CreateActionEntityCreated(entityDeselected.rootEntity);
+            ibiwActionController.CreateActionEntityCreated(entityDeselected.rootEntity);
         }
 
         isNewObjectPlaced = false;

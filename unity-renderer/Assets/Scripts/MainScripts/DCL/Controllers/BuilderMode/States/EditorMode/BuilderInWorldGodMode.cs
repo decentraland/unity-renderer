@@ -51,25 +51,25 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    public override void Init(BIWReferencesController biwReferencesController)
+    public override void Init(BIWContext biwContext)
     {
-        base.Init(biwReferencesController);
+        base.Init(biwContext);
 
         lookAtT = new GameObject("BIWGodModeTransform").transform;
-        maxDistanceToSelectEntitiesValue = biwReferencesController.godModeDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = biwContext.godModeDynamicVariables.maxDistanceToSelectEntities;
 
-        snapFactor = biwReferencesController.godModeDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwReferencesController.godModeDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwReferencesController.godModeDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwReferencesController.godModeDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = biwContext.godModeDynamicVariables.snapFactor;
+        snapRotationDegresFactor = biwContext.godModeDynamicVariables.snapRotationDegresFactor;
+        snapScaleFactor =  biwContext.godModeDynamicVariables.snapScaleFactor;
+        snapDistanceToActivateMovement =  biwContext.godModeDynamicVariables.snapDistanceToActivateMovement;
 
-        initialEagleCameraHeight = biwReferencesController.godModeDynamicVariables.initialEagleCameraHeight;
-        initialEagleCameraDistance = biwReferencesController.godModeDynamicVariables.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = biwReferencesController.godModeDynamicVariables.initialEagleCameraHeight;
+        initialEagleCameraHeight = biwContext.godModeDynamicVariables.initialEagleCameraHeight;
+        initialEagleCameraDistance = biwContext.godModeDynamicVariables.initialEagleCameraDistance;
+        initialEagleCameraLookAtHeight = biwContext.godModeDynamicVariables.initialEagleCameraLookAtHeight;
 
-        snapDragFactor = biwReferencesController.godModeDynamicVariables.snapDragFactor;
+        snapDragFactor = biwContext.godModeDynamicVariables.snapDragFactor;
 
-        outlinerController = biwReferencesController.biwOutlinerController;
+        outlinerController = biwContext.outlinerController;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -97,15 +97,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         BIWInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
-        focusOnSelectedEntitiesInputAction = biwReferencesController.inputsReferences.focusOnSelectedEntitiesInputAction;
-        multiSelectionInputAction = biwReferencesController.inputsReferences.multiSelectionInputAction;
+        focusOnSelectedEntitiesInputAction = biwContext.inputsReferences.focusOnSelectedEntitiesInputAction;
+        multiSelectionInputAction = biwContext.inputsReferences.multiSelectionInputAction;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
 
-        builderGO = GameObject.Instantiate(biwReferencesController.projectReferences.godModeBuilderPrefab, biwReferencesController.projectReferences.godModeBuilderPrefab.transform.position, biwReferencesController.projectReferences.godModeBuilderPrefab.transform.rotation);
+        builderGO = GameObject.Instantiate(biwContext.projectReferences.godModeBuilderPrefab, biwContext.projectReferences.godModeBuilderPrefab.transform.position, biwContext.projectReferences.godModeBuilderPrefab.transform.rotation);
         gizmoManager = builderGO.GetComponentInChildren<DCLBuilderGizmoManager>();
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
@@ -516,7 +516,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         freeCameraController.gameObject.SetActive(true);
         SetLookAtObject(parcelScene);
 
-        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
         Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
         freeCameraController.LookAt(lookAtT);
@@ -527,6 +526,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
 
+        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
         gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
         gizmoManager.ForceRelativeScaleRatio();
     }
@@ -787,6 +787,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     void SetEditObjectAtMouse()
     {
         RaycastHit hit;
+
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))

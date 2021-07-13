@@ -6,13 +6,9 @@ using UnityEngine;
 
 public class FeatureController
 {
-    private GameObject builderInWorldFeaturePrefab;
-
     private List<Feature> activeFeatures = new List<Feature>();
 
     private KernelConfigModel currentConfig;
-
-    public void SetBuilderInWorldPrefab(GameObject biwPrefab) { builderInWorldFeaturePrefab = biwPrefab; }
 
     public KernelConfigModel GetCurrentConfig() { return currentConfig; }
 
@@ -58,7 +54,7 @@ public class FeatureController
 
     public void ApplyFeaturesConfig(KernelConfigModel config)
     {
-        HandleFeature<BuilderInWorldController>(config.features.enableBuilderInWorld);
+        HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
         currentConfig = config;
     }
 
@@ -72,7 +68,7 @@ public class FeatureController
 
     private void InitializeFeature<T>() where T : Feature
     {
-        for (int i = 0; i <= activeFeatures.Count; i++)
+        for (int i = 0; i < activeFeatures.Count; i++)
         {
             if (activeFeatures[i].GetType() == typeof(T))
                 return;
@@ -85,7 +81,7 @@ public class FeatureController
 
     private void RemoveFeature<T>() where T : Feature
     {
-        for (int i = 0; i <= activeFeatures.Count; i++)
+        for (int i = 0; i < activeFeatures.Count; i++)
         {
             if (activeFeatures[i].GetType() == typeof(T))
             {

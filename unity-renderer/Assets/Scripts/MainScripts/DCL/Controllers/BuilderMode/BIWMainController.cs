@@ -11,7 +11,7 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BuilderInWorldController : Feature
+public class BIWMainController : Feature
 {
     private const bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
@@ -20,20 +20,20 @@ public class BuilderInWorldController : Feature
     private InputController inputController;
     private GameObject[] groundVisualsGO;
 
-    private BIWOutlinerController biwOutlinerController;
-    private BIWInputHandler bIWInputHandler;
-    private BIWPublishController biwPublishController;
-    private BIWCreatorController biwCreatorController;
-    private BIWModeController biwModeController;
-    private BIWFloorHandler biwFloorHandler;
-    private BIWEntityHandler biwEntityHandler;
-    private BIWActionController biwActionController;
-    private BIWSaveController biwSaveController;
-    private BIWInputWrapper biwInputWrapper;
+    private BIWOutlinerController outlinerController;
+    private BIWInputHandler inputHandler;
+    private BIWPublishController publishController;
+    private BIWCreatorController creatorController;
+    private BIWModeController modeController;
+    private BIWFloorHandler floorHandler;
+    private BIWEntityHandler entityHandler;
+    private BIWActionController actionController;
+    private BIWSaveController saveController;
+    private BIWInputWrapper inputWrapper;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
-    private BIWReferencesController biwReferencesController;
+    private BIWContext context;
 
     private readonly List<BIWController> controllers = new List<BIWController>();
 
@@ -41,11 +41,7 @@ public class BuilderInWorldController : Feature
 
     private Material skyBoxMaterial;
 
-    [Header("Loading")]
-    public BuilderInWorldLoadingView initialLoadingView;
-
-    [HideInInspector]
-    public bool isBuilderInWorldActivated = false;
+    private bool isBuilderInWorldActivated = false;
 
     private InputAction_Trigger editModeChangeInputAction;
 
@@ -66,9 +62,6 @@ public class BuilderInWorldController : Feature
     private bool isEnteringEditMode = false;
     private bool activeFeature = false;
 
-    public event Action OnEnterEditMode;
-    public event Action OnExitEditMode;
-
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private UserProfile userProfile;
@@ -83,12 +76,15 @@ public class BuilderInWorldController : Feature
         if (isInit)
             return;
 
+        activeFeature = true;
+
         isInit = true;
 
         BIWCatalogManager.Init();
 
-        InitReferences();
         CreateControllers();
+        InitReferences();
+
 
         if (builderInWorldBridge != null)
         {
@@ -117,10 +113,12 @@ public class BuilderInWorldController : Feature
         BuilderInWorldNFTController.i.Initialize();
         BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
-        editModeChangeInputAction = biwReferencesController.inputsReferences.editModeChangeInputAction;
+        editModeChangeInputAction = context.inputsReferences.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = GameObject.Instantiate(biwReferencesController.projectReferences.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler = GameObject.Instantiate(context.projectReferences.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler.SetReferences(context);
+        biwAudioHandler.gameObject.SetActive(false);
     }
 
     private void InitReferences()
@@ -136,35 +134,35 @@ public class BuilderInWorldController : Feature
         }
         groundVisualsGO = grounds.ToArray();
 
-        biwReferencesController = new BIWReferencesController();
-        biwReferencesController.Init(
-            biwOutlinerController,
-            bIWInputHandler,
-            biwInputWrapper,
-            biwPublishController,
-            biwCreatorController,
-            biwModeController,
-            biwFloorHandler,
-            biwEntityHandler,
-            biwActionController,
-            biwSaveController
+        context = new BIWContext();
+        context.Init(
+            outlinerController,
+            inputHandler,
+            inputWrapper,
+            publishController,
+            creatorController,
+            modeController,
+            floorHandler,
+            entityHandler,
+            actionController,
+            saveController
         );
 
-        skyBoxMaterial = biwReferencesController.projectReferences.skyBoxMaterial;
+        skyBoxMaterial = context.projectReferences.skyBoxMaterial;
     }
 
     private void CreateControllers()
     {
-        biwOutlinerController = new BIWOutlinerController();
-        bIWInputHandler = new BIWInputHandler();
-        biwPublishController = new BIWPublishController();
-        biwCreatorController = new BIWCreatorController();
-        biwModeController = new BIWModeController();
-        biwFloorHandler = new BIWFloorHandler();
-        biwEntityHandler = new BIWEntityHandler();
-        biwActionController = new BIWActionController();
-        biwSaveController = new BIWSaveController();
-        biwInputWrapper = new BIWInputWrapper();
+        outlinerController = new BIWOutlinerController();
+        inputHandler = new BIWInputHandler();
+        publishController = new BIWPublishController();
+        creatorController = new BIWCreatorController();
+        modeController = new BIWModeController();
+        floorHandler = new BIWFloorHandler();
+        entityHandler = new BIWEntityHandler();
+        actionController = new BIWActionController();
+        saveController = new BIWSaveController();
+        inputWrapper = new BIWInputWrapper();
     }
 
     private void InitBuilderProjectPanel()
@@ -235,7 +233,7 @@ public class BuilderInWorldController : Feature
             controller.Dispose();
         }
 
-        biwReferencesController.Dispose();
+        context.Dispose();
     }
 
     public override void OnGUI()
@@ -331,32 +329,32 @@ public class BuilderInWorldController : Feature
     private void ConfigureLoadingController()
     {
         initialLoadingController = new BuilderInWorldLoadingController();
-        initialLoadingController.Initialize(initialLoadingView);
+        initialLoadingController.Initialize();
     }
 
     public void InitControllers()
     {
-        biwEntityHandler.Init(biwReferencesController);
-        biwModeController.Init(biwReferencesController);
-        biwPublishController.Init(biwReferencesController);
-        biwCreatorController.Init(biwReferencesController);
-        biwOutlinerController.Init(biwReferencesController);
-        biwFloorHandler.Init(biwReferencesController);
-        bIWInputHandler.Init(biwReferencesController);
-        biwSaveController.Init(biwReferencesController);
-        biwActionController.Init(biwReferencesController);
-        biwInputWrapper.Init(biwReferencesController);
+        entityHandler.Init(context);
+        modeController.Init(context);
+        publishController.Init(context);
+        creatorController.Init(context);
+        outlinerController.Init(context);
+        floorHandler.Init(context);
+        inputHandler.Init(context);
+        saveController.Init(context);
+        actionController.Init(context);
+        inputWrapper.Init(context);
 
-        controllers.Add(biwEntityHandler);
-        controllers.Add(biwModeController);
-        controllers.Add(biwPublishController);
-        controllers.Add(biwCreatorController);
-        controllers.Add(biwOutlinerController);
-        controllers.Add(biwFloorHandler);
-        controllers.Add(bIWInputHandler);
-        controllers.Add(biwSaveController);
-        controllers.Add(biwActionController);
-        controllers.Add(biwInputWrapper);
+        controllers.Add(entityHandler);
+        controllers.Add(modeController);
+        controllers.Add(publishController);
+        controllers.Add(creatorController);
+        controllers.Add(outlinerController);
+        controllers.Add(floorHandler);
+        controllers.Add(inputHandler);
+        controllers.Add(saveController);
+        controllers.Add(actionController);
+        controllers.Add(inputWrapper);
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -372,15 +370,8 @@ public class BuilderInWorldController : Feature
             GameObject.Destroy(outliner);
         }
 
-        biwFloorHandler?.Clean();
-        biwCreatorController?.Clean();
-    }
-
-    [ContextMenu("Activate feature")]
-    public void ActivateFeature()
-    {
-        activeFeature = true;
-        HUDController.i.taskbarHud.SetBuilderInWorldStatus(activeFeature);
+        floorHandler?.Clean();
+        creatorController?.Clean();
     }
 
     public void ChangeEditModeStatusByShortcut(DCLAction_Trigger action)
@@ -430,7 +421,7 @@ public class BuilderInWorldController : Feature
 
             if (sceneToEdit.entities.ContainsKey(entityID))
             {
-                DCLBuilderInWorldEntity entityToCheck = biwEntityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+                DCLBuilderInWorldEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
 
                 if (entityToCheck == null)
                     continue;
@@ -550,9 +541,11 @@ public class BuilderInWorldController : Feature
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
+
+        biwAudioHandler.gameObject.SetActive(true);
         //Note (Adrian) this should handle different when we have the full flow of the feature
         if (activateCamera)
-            biwModeController.ActivateCamera(sceneToEdit);
+            modeController.ActivateCamera(sceneToEdit);
 
         if (catalogAdded)
             StartEditMode();
@@ -613,8 +606,8 @@ public class BuilderInWorldController : Feature
 
         if (IsNewScene())
         {
-            biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
-            biwFloorHandler.OnAllParcelsFloorLoaded += OnAllParcelsFloorLoaded;
+            floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+            floorHandler.OnAllParcelsFloorLoaded += OnAllParcelsFloorLoaded;
             SetupNewScene();
         }
         else
@@ -638,7 +631,6 @@ public class BuilderInWorldController : Feature
             groundVisual.SetActive(false);
         }
         startEditorTimeStamp = Time.realtimeSinceStartup;
-        OnEnterEditMode?.Invoke();
 
         BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BuilderInWorldUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BuilderInWorldUtils.GetSceneSize(sceneToEdit));
         BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
@@ -649,7 +641,7 @@ public class BuilderInWorldController : Feature
         if (!initialLoadingController.isActive)
             return;
 
-        biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+        floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(onHideAction: () =>
         {
             inputController.inputTypeMode = InputTypeMode.BUILD_MODE;
@@ -662,14 +654,14 @@ public class BuilderInWorldController : Feature
     private void OpenNewProjectDetailsIfNeeded()
     {
         if (builderInWorldBridge.builderProject.isNewEmptyProject)
-            biwModeController.OpenNewProjectDetails();
+            modeController.OpenNewProjectDetails();
     }
 
     public void StartExitMode()
     {
-        if (biwSaveController.numberOfSaves > 0)
+        if (saveController.numberOfSaves > 0)
         {
-            biwModeController.TakeSceneScreenshotForExit();
+            modeController.TakeSceneScreenshotForExit();
 
             HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
                 BIWSettings.EXIT_MODAL_TITLE,
@@ -691,7 +683,7 @@ public class BuilderInWorldController : Feature
     {
         Environment.i.platform.cullingController.Start();
 
-        biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+        floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
@@ -700,7 +692,7 @@ public class BuilderInWorldController : Feature
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
-        biwOutlinerController.CancelAllOutlines();
+        outlinerController.CancelAllOutlines();
 
         cursorGO.SetActive(true);
 
@@ -729,7 +721,7 @@ public class BuilderInWorldController : Feature
         isBuilderInWorldActivated = false;
         RenderSettings.skybox = previousSkyBoxMaterial;
 
-        OnExitEditMode?.Invoke();
+        biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.appMode.Set(AppMode.DEFAULT);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
@@ -762,7 +754,7 @@ public class BuilderInWorldController : Feature
 
     public bool IsNewScene() { return sceneToEdit.entities.Count <= 0; }
 
-    public void SetupNewScene() { biwFloorHandler.CreateDefaultFloor(); }
+    public void SetupNewScene() { floorHandler.CreateDefaultFloor(); }
 
     void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
 
@@ -772,7 +764,7 @@ public class BuilderInWorldController : Feature
         {
             var parcelSceneTarget = (ParcelScene)targetScene;
             if (sceneToEdit != null && sceneToEdit != parcelSceneTarget)
-                biwActionController.Clear();
+                actionController.Clear();
 
             sceneToEdit = parcelSceneTarget;
         }
@@ -791,7 +783,7 @@ public class BuilderInWorldController : Feature
                 ParcelScene parcelScene = (ParcelScene)scene;
 
                 if (sceneToEdit != null && sceneToEdit != parcelScene)
-                    biwActionController.Clear();
+                    actionController.Clear();
 
                 sceneToEdit = parcelScene;
                 break;

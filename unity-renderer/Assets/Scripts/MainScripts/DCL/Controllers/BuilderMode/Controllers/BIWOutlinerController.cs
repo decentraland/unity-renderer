@@ -22,18 +22,18 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     private Material cameraOutlinerMaterial;
 
-    private IBIWEntityHandler biwEntityHandler;
+    private IBIWEntityHandler entityHandler;
 
     private List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
-    public override void Init(BIWReferencesController referencesController)
+    public override void Init(BIWContext context)
     {
-        base.Init(referencesController);
-        cameraOutlinerMaterial = referencesController.projectReferences.cameraOutlinerMaterial;
+        base.Init(context);
+        cameraOutlinerMaterial = context.projectReferences.cameraOutlinerMaterial;
 
-        biwEntityHandler = referencesController.biwEntityHandler;
+        entityHandler = context.entityHandler;
     }
 
     public override void EnterEditMode(ParcelScene scene)
@@ -62,7 +62,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         {
             if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
             {
-                DCLBuilderInWorldEntity entity = biwEntityHandler.GetEntityOnPointer();
+                DCLBuilderInWorldEntity entity = entityHandler.GetEntityOnPointer();
                 RemoveEntitiesOutlineOutsidePointerOrUnselected();
 
                 if (entity != null && !entity.IsSelected)
@@ -126,7 +126,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     public void RemoveEntitiesOutlineOutsidePointerOrUnselected()
     {
-        var entity = biwEntityHandler.GetEntityOnPointer();
+        var entity = entityHandler.GetEntityOnPointer();
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
             if (!entitiesOutlined[i].IsSelected || entity != entitiesOutlined[i])

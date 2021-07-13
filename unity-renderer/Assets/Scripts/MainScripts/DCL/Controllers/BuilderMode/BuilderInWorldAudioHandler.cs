@@ -9,20 +9,11 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     const float MUSIC_FADE_OUT_TIME_ON_EXIT = 5f;
     const float MUSIC_FADE_OUT_TIME_ON_TUTORIAL = 3f;
 
-    [SerializeField]
-    BIWCreatorController creatorController;
+    private IBIWCreatorController creatorController;
 
-    [SerializeField]
-    GameObject builderInWorldModesParent;
+    private IBIWEntityHandler entityHandler;
 
-    [SerializeField]
-    BuilderInWorldController inWorldController;
-
-    [SerializeField]
-    BIWEntityHandler entityHandler;
-
-    [SerializeField]
-    BIWModeController modeController;
+    private IBIWModeController modeController;
 
     [Header("Audio Events")]
     [SerializeField]
@@ -57,9 +48,15 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
 
-    private void Start()
+    private void Start() { playPlacementSoundOnDeselect = false; }
+
+    public void SetReferences(BIWContext context)
     {
-        playPlacementSoundOnDeselect = false;
+        creatorController = context.creatorController;
+
+        entityHandler = context.entityHandler;
+
+        modeController = context.modeController;
 
         AddListeners();
     }
@@ -96,7 +93,6 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     public void EnterEditMode(ParcelScene scene)
     {
-
         UpdateEntityCount();
         CoroutineStarter.Start(StartBuilderMusic());
         if (HUDController.i.builderInWorldMainHud != null)
@@ -154,13 +150,13 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void OnTutorialEnabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
     }
 
     private void OnTutorialDisabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             CoroutineStarter.Start(StartBuilderMusic());
     }
 
@@ -168,7 +164,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     {
         yield return new WaitForSeconds(MUSIC_DELAY_TIME_ON_START);
 
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             eventBuilderMusic.Play();
     }
 

@@ -9,7 +9,7 @@ public class BIWController
 
     protected bool isEditModeActive = false;
 
-    public virtual void Init(BIWReferencesController referencesController) { isEditModeActive = false; }
+    public virtual void Init(BIWContext context) { isEditModeActive = false; }
 
     public virtual void EnterEditMode(ParcelScene scene)
     {

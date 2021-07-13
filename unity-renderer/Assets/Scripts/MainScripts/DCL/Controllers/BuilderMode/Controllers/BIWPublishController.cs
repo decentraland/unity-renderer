@@ -5,8 +5,8 @@ public interface IBIWPublishController { }
 
 public class BIWPublishController : BIWController, IBIWPublishController
 {
-    private IBIWEntityHandler biwEntityHandler;
-    private IBIWCreatorController biwCreatorController;
+    private IBIWEntityHandler entityHandler;
+    private IBIWCreatorController creatorController;
 
     private BuilderInWorldBridge builderInWorldBridge;
 
@@ -20,12 +20,12 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private bool reportSceneLimitsOverpassedAnalytic = true;
     private float startPublishingTimestamp = 0;
 
-    public override void Init(BIWReferencesController biwReferencesController)
+    public override void Init(BIWContext biwContext)
     {
-        base.Init(biwReferencesController);
+        base.Init(biwContext);
 
-        biwEntityHandler = biwReferencesController.biwEntityHandler;
-        biwCreatorController = biwReferencesController.biwCreatorController;
+        entityHandler = biwContext.entityHandler;
+        creatorController = biwContext.creatorController;
 
         if (HUDController.i?.builderInWorldMainHud != null)
         {
@@ -68,13 +68,13 @@ public class BIWPublishController : BIWController, IBIWPublishController
 
     public bool CanPublish()
     {
-        if (biwCreatorController.IsAnyErrorOnEntities())
+        if (creatorController.IsAnyErrorOnEntities())
             return false;
 
         if (!sceneToEdit.metricsController.IsInsideTheLimits())
             return false;
 
-        if (!biwEntityHandler.AreAllEntitiesInsideBoundaries())
+        if (!entityHandler.AreAllEntitiesInsideBoundaries())
             return false;
 
         reportSceneLimitsOverpassedAnalytic = true;
@@ -87,11 +87,11 @@ public class BIWPublishController : BIWController, IBIWPublishController
             return;
 
         string feedbackMessage = "";
-        if (biwCreatorController.IsAnyErrorOnEntities())
+        if (creatorController.IsAnyErrorOnEntities())
         {
             feedbackMessage = FEEDBACK_MESSAGE_ENTITY_ERROR;
         }
-        else if (!biwEntityHandler.AreAllEntitiesInsideBoundaries())
+        else if (!entityHandler.AreAllEntitiesInsideBoundaries())
         {
             feedbackMessage = FEEDBACK_MESSAGE_OUTSIDE_BOUNDARIES;
         }

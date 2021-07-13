@@ -12,7 +12,7 @@ public class VoxelController
     [Header("References")]
     public VoxelPrefab voxelPrefab;
 
-    public BuilderInWorldController buildModeController;
+    public BIWMainController buildModeController;
     public BIWOutlinerController outlinerController;
     public BIWEntityHandler biwEntityHandler;
     public FreeCameraMovement freeCameraMovement;

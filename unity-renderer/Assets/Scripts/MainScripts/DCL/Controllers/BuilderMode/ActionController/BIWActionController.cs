@@ -7,7 +7,7 @@ using DCL.Controllers;
 using UnityEngine;
 using static BuildInWorldCompleteAction;
 
-public interface IBIActionController
+public interface IBIWActionController
 {
     public event System.Action OnRedo;
     public event System.Action OnUndo;
@@ -19,27 +19,27 @@ public interface IBIActionController
     public void CreateActionEntityCreated(IDCLEntity entity);
 }
 
-public class BIWActionController : BIWController, IBIActionController
+public class BIWActionController : BIWController, IBIWActionController
 {
     private static bool VERBOSE = false;
 
     public event System.Action OnRedo;
     public event System.Action OnUndo;
 
-    private IBIWEntityHandler biwEntityHandler;
-    private IBIWFloorHandler biwFloorHandler;
+    private IBIWEntityHandler entityHandler;
+    private IBIWFloorHandler floorHandler;
 
     private readonly List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
 
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
 
-    public override void Init(BIWReferencesController referencesController)
+    public override void Init(BIWContext context)
     {
-        base.Init(referencesController);
+        base.Init(context);
 
-        biwEntityHandler  = referencesController.biwEntityHandler;
-        biwFloorHandler = referencesController.biwFloorHandler;
+        entityHandler  = context.entityHandler;
+        floorHandler = context.floorHandler;
 
         if (HUDController.i.builderInWorldMainHud == null)
             return;
@@ -189,17 +189,17 @@ public class BIWActionController : BIWController, IBIActionController
         {
             case ActionType.MOVE:
                 Vector3 convertedPosition = (Vector3) value;
-                biwEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
+                entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
                 break;
 
             case ActionType.ROTATE:
                 Vector3 convertedAngles = (Vector3) value;
-                biwEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
+                entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
                 break;
 
             case ActionType.SCALE:
                 Vector3 convertedScale = (Vector3) value;
-                IDCLEntity entityToApply = biwEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
+                IDCLEntity entityToApply = entityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
                 Transform parent = entityToApply.gameObject.transform.parent;
 
                 entityToApply.gameObject.transform.localScale = new Vector3(convertedScale.x / parent.localScale.x, convertedScale.y / parent.localScale.y, convertedScale.z / parent.localScale.z);
@@ -208,9 +208,9 @@ public class BIWActionController : BIWController, IBIActionController
             case ActionType.CREATE:
                 string entityString = (string) value;
                 if (isUndo)
-                    biwEntityHandler.DeleteEntity(entityString);
+                    entityHandler.DeleteEntity(entityString);
                 else
-                    biwEntityHandler.CreateEntityFromJSON(entityString);
+                    entityHandler.CreateEntityFromJSON(entityString);
 
                 break;
 
@@ -218,17 +218,17 @@ public class BIWActionController : BIWController, IBIActionController
                 string deletedEntityString = (string) value;
 
                 if (isUndo)
-                    biwEntityHandler.CreateEntityFromJSON(deletedEntityString);
+                    entityHandler.CreateEntityFromJSON(deletedEntityString);
                 else
-                    biwEntityHandler.DeleteEntity(deletedEntityString);
+                    entityHandler.DeleteEntity(deletedEntityString);
 
                 break;
             case ActionType.CHANGE_FLOOR:
                 string catalogItemToApply = (string) value;
 
                 CatalogItem floorObject = JsonConvert.DeserializeObject<CatalogItem>(catalogItemToApply);
-                biwEntityHandler.DeleteFloorEntities();
-                biwFloorHandler.CreateFloor(floorObject);
+                entityHandler.DeleteFloorEntities();
+                floorHandler.CreateFloor(floorObject);
                 break;
         }
     }

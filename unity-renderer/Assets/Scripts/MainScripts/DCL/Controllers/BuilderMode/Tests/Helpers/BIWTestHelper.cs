@@ -13,10 +13,10 @@ using UnityEngine.UI;
 
 public static class BIWTestHelper
 {
-    public static BIWReferencesController CreateMockUpReferenceController()
+    public static BIWContext CreateMockUpReferenceController()
     {
-        BIWReferencesController referencesController = new BIWReferencesController();
-        referencesController.Init(
+        BIWContext context = new BIWContext();
+        context.Init(
             Substitute.For<IBIWOutlinerController>(),
             Substitute.For<IBIWInputHandler>(),
             Substitute.For<IBIWInputWrapper>(),
@@ -25,12 +25,12 @@ public static class BIWTestHelper
             Substitute.For<IBIWModeController>(),
             Substitute.For<IBIWFloorHandler>(),
             Substitute.For<IBIWEntityHandler>(),
-            Substitute.For<IBIActionController>(),
+            Substitute.For<IBIWActionController>(),
             Substitute.For<IBIWSaveController>()
         );
-        return referencesController;
+        return context;
     }
-    public static BIWReferencesController CreateReferencesControllerWithGenericMocks(params object[] mocks)
+    public static BIWContext CreateReferencesControllerWithGenericMocks(params object[] mocks)
     {
         IBIWOutlinerController outliner = Substitute.For<IBIWOutlinerController>();
         IBIWInputHandler inputHandler = Substitute.For<IBIWInputHandler>();
@@ -40,7 +40,7 @@ public static class BIWTestHelper
         IBIWModeController modeController = Substitute.For<IBIWModeController>();
         IBIWFloorHandler floorHandler = Substitute.For<IBIWFloorHandler>();
         IBIWEntityHandler entityHandler = Substitute.For<IBIWEntityHandler>();
-        IBIActionController actionController = Substitute.For<IBIActionController>();
+        IBIWActionController actionController = Substitute.For<IBIWActionController>();
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
 
         foreach ( var mock in mocks)
@@ -71,7 +71,7 @@ public static class BIWTestHelper
                 case IBIWEntityHandler eh:
                     entityHandler = eh;
                     break;
-                case IBIActionController ac:
+                case IBIWActionController ac:
                     actionController = ac;
                     break;
                 case IBIWSaveController sc:
@@ -80,8 +80,8 @@ public static class BIWTestHelper
             }
         }
 
-        BIWReferencesController referencesController = new BIWReferencesController();
-        referencesController.Init(
+        BIWContext context = new BIWContext();
+        context.Init(
             outliner,
             inputHandler,
             inputWrapper,
@@ -93,7 +93,7 @@ public static class BIWTestHelper
             actionController,
             saveController
         );
-        return referencesController;
+        return context;
     }
 
     public static DCLBuilderInWorldEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)

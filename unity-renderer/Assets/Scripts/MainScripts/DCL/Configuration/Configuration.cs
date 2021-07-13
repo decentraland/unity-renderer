@@ -9,11 +9,11 @@ namespace DCL.Configuration
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
-        public static readonly int SELECTION_LAYER = LayerMask.NameToLayer("Selection");
-        public static readonly int DEFAULT_LAYER = LayerMask.NameToLayer("Default");
-        public static readonly int COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
-        public static readonly int GIZMOS_LAYER = LayerMask.NameToLayer("Gizmo");
-        public static readonly int GROUND_LAYER = LayerMask.NameToLayer("Ground");
+        public static readonly LayerMask SELECTION_LAYER = LayerMask.NameToLayer("Selection");
+        public static readonly LayerMask DEFAULT_LAYER = LayerMask.NameToLayer("Default");
+        public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
+        public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
+        public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
         public const string VOXEL_ASSETS_PACK_ID = "b51e5e7c-c56b-4ad9-b9d2-1dc1c6546169";
         public const string SMART_ITEM_ASSETS_PACK_ID = "07e7e010-3003-496d-a720-2a714a63a58b";

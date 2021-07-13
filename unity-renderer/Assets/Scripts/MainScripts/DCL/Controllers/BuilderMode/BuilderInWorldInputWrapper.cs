@@ -38,9 +38,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     private bool currentClickIsOnUi = false;
     private GameObject builderInputGameObject;
 
-    public override void Init(BIWReferencesController referencesController)
+    public override void Init(BIWContext context)
     {
-        base.Init(referencesController);
+        base.Init(context);
         builderInputGameObject = new GameObject("BuilderInput");
         builderInputGameObject.AddComponent<DCLBuilderInput>();
 
@@ -81,6 +81,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     private void MouseUp(int buttonId, Vector3 mousePosition)
     {
+        if (!isEditModeActive)
+            return;
+
         if (currentClickIsOnUi)
         {
             OnMouseClickOnUI?.Invoke(buttonId, mousePosition);
@@ -106,6 +109,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     private void MouseDown(int buttonId, Vector3 mousePosition)
     {
+        if (!isEditModeActive)
+            return;
+
         lastTimeMouseDown = Time.unscaledTime;
         lastMousePosition = mousePosition;
         currentClickIsOnUi = BuilderInWorldUtils.IsPointerOverUIElement();
@@ -118,6 +124,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     private void MouseWheel(float axisValue)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!canInputBeMade)
             return;
         if (!BuilderInWorldUtils.IsPointerOverUIElement())
@@ -126,6 +135,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!CanDrag())
             return;
 
@@ -134,6 +146,9 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
     private void MouseRawDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!CanDrag())
             return;
 

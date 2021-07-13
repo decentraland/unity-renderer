@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BIWReferencesController
+public class BIWContext
 {
     private const string PROJECT_REFERENCES_PATH = "ScriptableObjects/ProjectReferences";
     private const string GOD_MODE_DYNAMIC_VARIABLE_PATH = "ScriptableObjects/GodModeVariables";
@@ -21,27 +21,27 @@ public class BIWReferencesController
     private BIWInputsReferences inputsReferencesValue;
 
     // BIW Controllers
-    public IBIWOutlinerController biwOutlinerController => biwOutlinerControllerValue;
-    public IBIWInputHandler biwInputHandler => biwInputHandlerValue;
-    public IBIWInputWrapper biwInputWrapper => biwInputWrapperValue;
-    public IBIWPublishController biwPublishController => biwPublishControllerValue;
-    public IBIWCreatorController biwCreatorController => biwCreatorControllerValue;
-    public IBIWModeController biwModeController => biwModeControllerValue;
-    public IBIWFloorHandler biwFloorHandler => biwFloorHandlerValue;
-    public IBIWEntityHandler biwEntityHandler => biwEntityHandlerValue;
-    public IBIActionController BiwBiActionController => biwBiActionControllerValue;
-    public IBIWSaveController biwSaveController => biwSaveControllerValue;
+    public IBIWOutlinerController outlinerController => outlinerControllerValue;
+    public IBIWInputHandler inputHandler => inputHandlerValue;
+    public IBIWInputWrapper inputWrapper => inputWrapperValue;
+    public IBIWPublishController publishController => publishControllerValue;
+    public IBIWCreatorController creatorController => creatorControllerValue;
+    public IBIWModeController modeController => modeControllerValue;
+    public IBIWFloorHandler floorHandler => floorHandlerValue;
+    public IBIWEntityHandler entityHandler => entityHandlerValue;
+    public IBIWActionController actionController => actionControllerValue;
+    public IBIWSaveController saveController => saveControllerValue;
 
-    private IBIWOutlinerController biwOutlinerControllerValue;
-    private IBIWInputHandler biwInputHandlerValue;
-    private IBIWInputWrapper biwInputWrapperValue;
-    private IBIWPublishController biwPublishControllerValue;
-    private IBIWCreatorController biwCreatorControllerValue;
-    private IBIWModeController biwModeControllerValue;
-    private IBIWFloorHandler biwFloorHandlerValue;
-    private IBIWEntityHandler biwEntityHandlerValue;
-    private IBIActionController biwBiActionControllerValue;
-    private IBIWSaveController biwSaveControllerValue;
+    private IBIWOutlinerController outlinerControllerValue;
+    private IBIWInputHandler inputHandlerValue;
+    private IBIWInputWrapper inputWrapperValue;
+    private IBIWPublishController publishControllerValue;
+    private IBIWCreatorController creatorControllerValue;
+    private IBIWModeController modeControllerValue;
+    private IBIWFloorHandler floorHandlerValue;
+    private IBIWEntityHandler entityHandlerValue;
+    private IBIWActionController actionControllerValue;
+    private IBIWSaveController saveControllerValue;
 
     public void Init(IBIWOutlinerController outlinerController,
         IBIWInputHandler bIWInputHandler,
@@ -51,7 +51,7 @@ public class BIWReferencesController
         IBIWModeController biwModeController,
         IBIWFloorHandler biwFloorHandler,
         IBIWEntityHandler biwEntityHandler,
-        IBIActionController biActionController,
+        IBIWActionController ibiwActionController,
         IBIWSaveController biwSaveController)
     {
         projectReferencesValue = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
@@ -59,16 +59,16 @@ public class BIWReferencesController
         firstPersonDynamicVariablesValue = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
         inputsReferencesValue = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
 
-        biwOutlinerControllerValue = outlinerController;
-        biwInputHandlerValue = bIWInputHandler;
-        biwInputWrapperValue = biwInputWrapper;
-        biwPublishControllerValue = biwPublishController;
-        biwCreatorControllerValue = biwCreatorController;
-        biwModeControllerValue = biwModeController;
-        biwFloorHandlerValue = biwFloorHandler;
-        biwEntityHandlerValue = biwEntityHandler;
-        biwBiActionControllerValue = biActionController;
-        biwSaveControllerValue = biwSaveController;
+        outlinerControllerValue = outlinerController;
+        inputHandlerValue = bIWInputHandler;
+        inputWrapperValue = biwInputWrapper;
+        publishControllerValue = biwPublishController;
+        creatorControllerValue = biwCreatorController;
+        modeControllerValue = biwModeController;
+        floorHandlerValue = biwFloorHandler;
+        entityHandlerValue = biwEntityHandler;
+        actionControllerValue = ibiwActionController;
+        saveControllerValue = biwSaveController;
     }
 
     public void Dispose()

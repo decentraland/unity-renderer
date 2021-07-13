@@ -16,8 +16,6 @@ namespace DCL
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-        public GameObject builderInWorldPrefab;
-
         public DebugConfig debugConfig;
 
         private PerformanceMetricsController performanceMetricsController;
@@ -46,7 +44,6 @@ namespace DCL
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
                 featureController = new FeatureController();
-                featureController.SetBuilderInWorldPrefab(builderInWorldPrefab);
             }
 
             DCL.Interface.WebInterface.SendSystemInfoReport();
@@ -90,7 +87,11 @@ namespace DCL
             featureController?.Update();
         }
 
-        private void LateUpdate() { Environment.i.world.sceneController.LateUpdate(); }
+        private void LateUpdate()
+        {
+            Environment.i.world.sceneController.LateUpdate();
+            featureController?.LateUpdate();
+        }
 
         private void OnDestroy()
         {
@@ -98,6 +99,7 @@ namespace DCL
                 Environment.Dispose();
             featureController?.OnDestroy();
         }
+        private void OnGUI() { featureController?.OnGUI(); }
 
         #region RuntimeMessagingBridge
 

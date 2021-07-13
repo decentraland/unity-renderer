@@ -7,6 +7,7 @@ using UnityEngine;
 
 public interface IBIWModeController
 {
+    public event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     public event Action OnInputDone;
     public Vector3 GetCurrentEditionPosition();
     public void CreatedEntity(DCLBuilderInWorldEntity entity);
@@ -43,8 +44,8 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject cursorGO;
     private GameObject cameraParentGO;
 
-    private IBIActionController biwActionController;
-    private IBIWEntityHandler biwEntityHandler;
+    private IBIWActionController actionController;
+    private IBIWEntityHandler entityHandler;
 
     private BuilderInWorldFirstPersonMode firstPersonMode;
     private BuilderInWorldGodMode godMode;
@@ -67,9 +68,9 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Init(BIWReferencesController biwReferencesController)
+    public override void Init(BIWContext biwContext)
     {
-        base.Init(biwReferencesController);
+        base.Init(biwContext);
 
         cursorGO = InitialSceneReferences.i.cursorCanvas;
         cameraParentGO = InitialSceneReferences.i.cameraParent;
@@ -78,8 +79,8 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode = new BuilderInWorldFirstPersonMode();
         godMode = new BuilderInWorldGodMode();
 
-        firstPersonMode.Init(biwReferencesController);
-        godMode.Init(biwReferencesController);
+        firstPersonMode.Init(biwContext);
+        godMode.Init(biwContext);
 
         firstPersonMode.OnInputDone += InputDone;
         godMode.OnInputDone += InputDone;
@@ -91,15 +92,15 @@ public class BIWModeController : BIWController, IBIWModeController
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
 
-        biwActionController = biwReferencesController.BiwBiActionController;
-        biwEntityHandler = biwReferencesController.biwEntityHandler;
-        toggleSnapModeInputAction = biwReferencesController.inputsReferences.toggleSnapModeInputAction;
+        actionController = biwContext.actionController;
+        entityHandler = biwContext.entityHandler;
+        toggleSnapModeInputAction = biwContext.inputsReferences.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
         toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
 
-        firstPersonMode.OnActionGenerated += biwActionController.AddAction;
-        godMode.OnActionGenerated += biwActionController.AddAction;
+        firstPersonMode.OnActionGenerated += actionController.AddAction;
+        godMode.OnActionGenerated += actionController.AddAction;
 
         SetEditorGameObjects();
     }
@@ -113,8 +114,8 @@ public class BIWModeController : BIWController, IBIWModeController
         firstPersonMode.OnInputDone -= InputDone;
         godMode.OnInputDone -= InputDone;
 
-        firstPersonMode.OnActionGenerated -= biwActionController.AddAction;
-        godMode.OnActionGenerated -= biwActionController.AddAction;
+        firstPersonMode.OnActionGenerated -= actionController.AddAction;
+        godMode.OnActionGenerated -= actionController.AddAction;
 
         firstPersonMode.Dispose();
         godMode.Dispose();
@@ -139,8 +140,8 @@ public class BIWModeController : BIWController, IBIWModeController
 
     private void SetEditorGameObjects()
     {
-        godMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, biwEntityHandler.GetSelectedEntityList());
-        firstPersonMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, biwEntityHandler.GetSelectedEntityList());
+        godMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, entityHandler.GetSelectedEntityList());
+        firstPersonMode.SetEditorReferences(editionGO, undoGO, snapGO, freeMovementGO, entityHandler.GetSelectedEntityList());
     }
 
     private void InitGameObjects()
@@ -309,7 +310,7 @@ public class BIWModeController : BIWController, IBIWModeController
         {
             currentActiveMode.Activate(sceneToEdit);
             currentActiveMode.SetSnapActive(isSnapActive);
-            biwEntityHandler.SetActiveMode(currentActiveMode);
+            entityHandler.SetActiveMode(currentActiveMode);
         }
 
         OnChangedEditModeState?.Invoke(previousState, state);

@@ -23,21 +23,21 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     private InputAction_Hold.Started rotationHoldStartDelegate;
     private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
-    public override void Init(BIWReferencesController biwReferencesController)
+    public override void Init(BIWContext biwContext)
     {
-        base.Init(biwReferencesController);
-        maxDistanceToSelectEntitiesValue = biwReferencesController.firstPersonDynamicVariables.maxDistanceToSelectEntities;
+        base.Init(biwContext);
+        maxDistanceToSelectEntitiesValue = biwContext.firstPersonDynamicVariables.maxDistanceToSelectEntities;
 
-        snapFactor = biwReferencesController.firstPersonDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwReferencesController.firstPersonDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwReferencesController.firstPersonDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwReferencesController.firstPersonDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = biwContext.firstPersonDynamicVariables.snapFactor;
+        snapRotationDegresFactor = biwContext.firstPersonDynamicVariables.snapRotationDegresFactor;
+        snapScaleFactor =  biwContext.firstPersonDynamicVariables.snapScaleFactor;
+        snapDistanceToActivateMovement =  biwContext.firstPersonDynamicVariables.snapDistanceToActivateMovement;
 
-        scaleSpeed =  biwReferencesController.firstPersonDynamicVariables.scaleSpeed;
-        rotationSpeed =  biwReferencesController.firstPersonDynamicVariables.rotationSpeed;
-        distanceFromCameraForNewEntitties =  biwReferencesController.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
+        scaleSpeed =  biwContext.firstPersonDynamicVariables.scaleSpeed;
+        rotationSpeed =  biwContext.firstPersonDynamicVariables.rotationSpeed;
+        distanceFromCameraForNewEntitties =  biwContext.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
 
-        rotationHold = biwReferencesController.inputsReferences.firstPersonRotationHold;
+        rotationHold = biwContext.inputsReferences.firstPersonRotationHold;
 
         rotationHoldStartDelegate = (action) => { shouldRotate = true; };
         rotationHoldFinishedDelegate = (action) => { shouldRotate = false; };
