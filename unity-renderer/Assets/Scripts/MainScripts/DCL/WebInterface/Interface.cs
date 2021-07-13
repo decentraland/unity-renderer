@@ -507,8 +507,6 @@ namespace DCL.Interface
         {
             public FriendsController.UserStatus.Realm realm = new FriendsController.UserStatus.Realm();
             public Vector2 gridPosition;
-            public bool tryOtherRealms;
-            public HotScenesController.HotSceneInfo.Realm[] nextMostPopulatedRealms;
         }
 
         [System.Serializable]
@@ -1139,22 +1137,13 @@ namespace DCL.Interface
 
         public static void GoToMagic() { SendMessage("GoToMagic"); }
 
-        public static void JumpIn(
-            int x,
-            int y,
-            string serverName,
-            string layerName,
-            bool tryOtherRealms = false,
-            HotScenesController.HotSceneInfo.Realm[] nextMostPopulatedRealms = null)
+        public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;
             jumpInPayload.realm.layer = layerName;
 
             jumpInPayload.gridPosition.x = x;
             jumpInPayload.gridPosition.y = y;
-
-            jumpInPayload.tryOtherRealms = tryOtherRealms;
-            jumpInPayload.nextMostPopulatedRealms = nextMostPopulatedRealms;
 
             SendMessage("JumpIn", jumpInPayload);
         }
