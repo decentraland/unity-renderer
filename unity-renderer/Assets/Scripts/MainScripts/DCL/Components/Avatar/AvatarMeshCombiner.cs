@@ -73,7 +73,7 @@ namespace DCL
             }
 
             {
-                //Debug.Log("Reset Bones...");
+                Debug.Log("Combining...");
 
                 var bindPoses = bindPosesContainer.sharedMesh.bindposes;
 
@@ -90,12 +90,8 @@ namespace DCL
                     tmpBones[i].localScale = new Vector3(bindPoseScale.x / boneScale.x,
                         bindPoseScale.y / boneScale.y,
                         bindPoseScale.z / boneScale.z);
-
-                    //Debug.Log("Scale = " + tmpBones[i].localScale);
                 }
             }
-
-            int totalVertexCount = 0;
 
             for (int i = 0; i < rs.Length; i++)
             {
@@ -138,7 +134,6 @@ namespace DCL
                     transform = meshTransform.localToWorldMatrix
                 });
 
-                totalVertexCount += mesh.vertexCount;
                 r.transform.parent = prevParent;
             }
 
@@ -178,7 +173,7 @@ namespace DCL
             newSkinnedMeshRenderer.sharedMesh = finalMesh;
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
-            newSkinnedMeshRenderer.localBounds = bounds;
+            newSkinnedMeshRenderer.localBounds = bonesContainer.localBounds;
             newSkinnedMeshRenderer.sharedMaterials = mats.ToArray();
 
             //result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
