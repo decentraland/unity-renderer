@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace DCL
 {
-    public static class MeshCombiner
+    public static class AvatarMeshCombiner
     {
         private static Matrix4x4[] bindposes;
 
-        public static GameObject Combine(SkinnedMeshRenderer bonesContainer, Transform root, bool useBakeMesh = true, int index = 0)
+        public static GameObject Combine(SkinnedMeshRenderer bonesContainer, Transform root, bool useBakeMesh = true)
         {
             Transform transform = root;
 
@@ -24,7 +24,6 @@ namespace DCL
             List<Material> mats = new List<Material>();
 
             GameObject result = new GameObject("Combined Avatar");
-            Debug.Log("Combining...", result);
             result.transform.parent = null;
             result.transform.position = Vector3.zero;
 
@@ -59,7 +58,7 @@ namespace DCL
 
                 bindPosesContainer = rs[ri];
 
-                Debug.Log("BindPoses name: " + bindPosesContainer.transform.parent.name);
+                //Debug.Log("BindPoses name: " + bindPosesContainer.transform.parent.name);
 
                 if ( bindposes == null )
                     bindposes = rs[ri].sharedMesh.bindposes;
@@ -74,7 +73,7 @@ namespace DCL
             }
 
             {
-                Debug.Log("Reset Bones...");
+                //Debug.Log("Reset Bones...");
 
                 var bindPoses = bindPosesContainer.sharedMesh.bindposes;
 
@@ -84,11 +83,19 @@ namespace DCL
                     Matrix4x4 bindPose = bindPoses[i].inverse;
                     tmpBones[i].position = bindPose.MultiplyPoint3x4(Vector3.zero);
                     tmpBones[i].rotation = bindPose.rotation;
-                    tmpBones[i].localScale = new Vector3(bindPose.lossyScale.x / tmpBones[i].lossyScale.x,
-                        bindPose.lossyScale.y / tmpBones[i].lossyScale.y,
-                        bindPose.lossyScale.z / tmpBones[i].lossyScale.z);
+
+                    Vector3 bindPoseScale = bindPose.lossyScale;
+                    Vector3 boneScale = tmpBones[i].lossyScale;
+
+                    tmpBones[i].localScale = new Vector3(bindPoseScale.x / boneScale.x,
+                        bindPoseScale.y / boneScale.y,
+                        bindPoseScale.z / boneScale.z);
+
+                    //Debug.Log("Scale = " + tmpBones[i].localScale);
                 }
             }
+
+            int totalVertexCount = 0;
 
             for (int i = 0; i < rs.Length; i++)
             {
@@ -117,22 +124,21 @@ namespace DCL
 
                 r.enabled = false;
                 Transform prevParent = meshTransform.parent;
-                string parentName = prevParent.name;
+
                 r.transform.SetParent(null, true);
 
-                //if ( subMeshCounter < 4 && !parentName.Contains("Mask") )
+                mats.Add(r.sharedMaterial);
+
+                var meshBoneWeights = r.sharedMesh.boneWeights;
+                boneWeights.AddRange(meshBoneWeights);
+
+                combineInstances.Add( new CombineInstance()
                 {
-//                    subMeshCounter++;
-                    mats.Add(r.sharedMaterial);
-                    boneWeights.AddRange(r.sharedMesh.boneWeights);
+                    mesh = mesh,
+                    transform = meshTransform.localToWorldMatrix
+                });
 
-                    combineInstances.Add( new CombineInstance()
-                    {
-                        mesh = mesh,
-                        transform = meshTransform.localToWorldMatrix
-                    });
-                }
-
+                totalVertexCount += mesh.vertexCount;
                 r.transform.parent = prevParent;
             }
 
@@ -159,8 +165,8 @@ namespace DCL
             }
 
             finalMesh.bindposes = newPoses.ToArray();
-
             finalMesh.boneWeights = boneWeights.ToArray();
+            finalMesh.Optimize();
             finalMesh.UploadMeshData(true);
 
             var bounds = finalMesh.bounds;
@@ -174,7 +180,6 @@ namespace DCL
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
             newSkinnedMeshRenderer.localBounds = bounds;
             newSkinnedMeshRenderer.sharedMaterials = mats.ToArray();
-            //newSkinnedMeshRenderer.enabled = false;
 
             //result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
             //result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;
