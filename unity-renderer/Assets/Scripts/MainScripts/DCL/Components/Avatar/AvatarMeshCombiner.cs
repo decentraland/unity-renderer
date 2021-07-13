@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -8,7 +9,7 @@ namespace DCL
     {
         private static Matrix4x4[] bindposes;
 
-        public static GameObject Combine(SkinnedMeshRenderer bonesContainer, Transform root, bool useBakeMesh = true)
+        public static GameObject Combine(SkinnedMeshRenderer bonesContainer, Transform root, System.Func<Renderer, bool> filterFunction = null)
         {
             Transform transform = root;
 
@@ -103,16 +104,9 @@ namespace DCL
 
                 Mesh mesh = null;
 
-                if ( useBakeMesh )
-                {
-                    mesh = new Mesh();
-                    r.BakeMesh(mesh, true);
-                    bakedMeshes.Add(mesh);
-                }
-                else
-                {
-                    mesh = r.sharedMesh;
-                }
+                mesh = new Mesh();
+                r.BakeMesh(mesh, true);
+                bakedMeshes.Add(mesh);
 
                 //Debug.Log("Adding weights " + r.sharedMesh.boneWeights.Length + " ... vertices = " + mesh.vertices.Length);
                 //sourceNormals.AddRange(r.sharedMesh.normals);
@@ -120,11 +114,21 @@ namespace DCL
                 Transform meshTransform = r.transform;
 
                 r.enabled = false;
+
+                bool canMerge = true;
+
+                if ( filterFunction != null )
+                    canMerge = filterFunction.Invoke(r);
+
+                if ( !canMerge )
+                    continue;
+
                 Transform prevParent = meshTransform.parent;
 
                 r.transform.SetParent(null, true);
 
-                mats.Add(r.sharedMaterial);
+                if ( !r.sharedMaterial.name.Contains("Skin") )
+                    mats.Add(r.sharedMaterial);
 
                 var meshBoneWeights = r.sharedMesh.boneWeights;
                 boneWeights.AddRange(meshBoneWeights);
@@ -140,15 +144,12 @@ namespace DCL
 
             transform.position = lastPos;
 
-            finalMesh.CombineMeshes(combineInstances.ToArray(), false, true);
+            finalMesh.CombineMeshes(combineInstances.ToArray(), true, true);
             //finalMesh.normals = sourceNormals.ToArray();
 
-            if (useBakeMesh)
+            foreach ( var mesh in bakedMeshes )
             {
-                foreach ( var mesh in bakedMeshes )
-                {
-                    UnityEngine.Object.Destroy(mesh);
-                }
+                UnityEngine.Object.Destroy(mesh);
             }
 
             var poses = bindPosesContainer.sharedMesh.bindposes;
@@ -175,7 +176,9 @@ namespace DCL
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
             newSkinnedMeshRenderer.localBounds = bonesContainer.localBounds;
-            newSkinnedMeshRenderer.sharedMaterials = mats.ToArray();
+            newSkinnedMeshRenderer.sharedMaterial = mats[0];
+            newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
+            newSkinnedMeshRenderer.updateWhenOffscreen = false;
 
             //result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
             //result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;

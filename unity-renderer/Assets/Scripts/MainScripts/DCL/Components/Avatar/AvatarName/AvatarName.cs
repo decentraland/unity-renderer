@@ -20,6 +20,7 @@ public class AvatarName : MonoBehaviour
 
     public void SetName(string name)
     {
+        return;
         talkingAnimator?.gameObject.SetActive(false);
         if (string.IsNullOrEmpty(name))
         {
@@ -44,6 +45,7 @@ public class AvatarName : MonoBehaviour
         {
             talkingAnimator.gameObject.SetActive(talking);
         }
+
         talkingAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, talking);
     }
 
@@ -52,6 +54,7 @@ public class AvatarName : MonoBehaviour
         canvas = GetComponentInParent<Canvas>();
         canvasRect = (RectTransform)canvas.transform;
         talkingAnimator?.gameObject.SetActive(false);
+        canvas.gameObject.SetActive(false);
     }
 
     void OnEnable()
@@ -60,7 +63,7 @@ public class AvatarName : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    void LateUpdate()
+    void BeginCameraRendering()
     {
         if (string.IsNullOrEmpty(nameText.text))
             return;

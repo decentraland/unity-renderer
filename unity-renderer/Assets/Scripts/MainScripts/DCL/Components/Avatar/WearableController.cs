@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityGLTF.Cache;
 using Object = UnityEngine.Object;
 
 public class WearableController
@@ -187,7 +188,7 @@ public class WearableController
 
         for (var i = 0; i < materials.Count; i++)
         {
-            Object.Destroy(materials[i]);
+            PersistentAssetCache.MaterialCacheByCRC.Remove(materials[i].ComputeCRC().ToString());
         }
     }
 
