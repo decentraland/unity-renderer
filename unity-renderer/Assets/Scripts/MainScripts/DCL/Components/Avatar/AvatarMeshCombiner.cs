@@ -24,6 +24,7 @@ namespace DCL
             List<Material> mats = new List<Material>();
 
             GameObject result = new GameObject("Combined Avatar");
+            result.layer = root.gameObject.layer;
             result.transform.parent = null;
             result.transform.position = Vector3.zero;
 
