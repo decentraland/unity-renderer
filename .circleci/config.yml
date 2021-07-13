@@ -320,9 +320,9 @@ jobs:
           command: npm run test
       - run:
           working_directory: *node_workspace
-          name: prepare code coverage
+          name: upload code coverage
           command: |
-            cp -r /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report/ /tmp/workspace/unity-renderer/browser-interface/dist/code-coverage/
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
       - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
