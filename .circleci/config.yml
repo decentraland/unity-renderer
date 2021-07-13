@@ -318,12 +318,12 @@ jobs:
           working_directory: *node_workspace
           name: npm run test
           command: npm run test
+      - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
           name: upload code coverage
           command: |
             aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
-      - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
           name: Deploy artifacts
