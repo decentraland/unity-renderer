@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -69,6 +70,7 @@ public class BasicMaterialVisualTests : VisualTestsBase
     [UnityTest]
     [VisualTest]
     [Explicit]
+    [Category("Explicit")]
     public IEnumerator StandardConfigurations_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(StandardConfigurations()); }
 
     [UnityTest]
@@ -89,6 +91,40 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
         LoadWrapper loader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => loader.alreadyLoaded);
+
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest]
+    [VisualTest]
+    [Explicit]
+    [Category("Explicit")]
+    public IEnumerator TransparentObjectsAndSSAO_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(TransparentObjectsAndSSAO()); }
+
+    [UnityTest]
+    [VisualTest]
+    [Explicit]
+    [Category("Explicit")] //Enable the test once we properly render opaque objects with SSAO behind transparents
+    public IEnumerator TransparentObjectsAndSSAO()
+    {
+        yield return InitVisualTestsScene("BasicMaterialVisualTests_TransparentObjectsAndSSAO");
+
+        VisualTestHelpers.SetSSAOActive(true);
+
+        Vector3 camTarget = new Vector3(5, 1, 5);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(4.6f, 1.8f, 0.6f), camTarget);
+
+        PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
+        IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
+        TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.identity, Vector3.one * 3);
+        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model { alphaTest = 1, transparencyMode = 1, albedoColor = Vector4.one });
+
+        BoxShape box1 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(4, 1, 6), true);
+        TestHelpers.AttachPBRMaterialToEntity(scene, box1.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.blue });
+
+        BoxShape box2 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 6.5f), true);
+        TestHelpers.AttachPBRMaterialToEntity(scene, box2.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.red });
+        yield return new WaitForAllMessagesProcessed();
 
         yield return VisualTestHelpers.TakeSnapshot();
     }

@@ -1,8 +1,11 @@
 using DCL.Configuration;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace DCL.Helpers
 {
@@ -237,7 +240,7 @@ namespace DCL.Helpers
             float imageAffinity = ((testImagePixels.Length - differentPixels) * 100) / testImagePixels.Length;
 
             // Save diff image
-            if (imageAffinity < TestSettings.VISUAL_TESTS_APPROVED_AFFINITY)
+            if (true || imageAffinity < TestSettings.VISUAL_TESTS_APPROVED_AFFINITY)
             {
                 Texture2D diffImage = new Texture2D(baselineImage.width, baselineImage.height);
                 diffImage.SetPixels32(diffImagePixels);
@@ -320,5 +323,32 @@ namespace DCL.Helpers
         }
 
         public static void RepositionVisualTestsCamera(Camera camera, Vector3? position = null, Vector3? target = null) { RepositionVisualTestsCamera(camera.transform, position, target); }
+
+        public static void SetSSAOActive(bool active)
+        {
+            var urpAsset = GraphicsSettings.renderPipelineAsset as UniversalRenderPipelineAsset;
+
+            ScriptableRenderer forwardRenderer = urpAsset.GetRenderer(0);
+            FieldInfo featuresField = typeof(ScriptableRenderer).GetField("m_RendererFeatures", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            IList features = featuresField.GetValue(forwardRenderer) as IList;
+            ScriptableRendererFeature ssaoFeature = features[0] as ScriptableRendererFeature;
+
+            if (!active)
+            {
+                ssaoFeature.SetActive(false);
+                return;
+            }
+
+            FieldInfo settingsField = ssaoFeature.GetType().GetField("m_Settings", BindingFlags.NonPublic | BindingFlags.Instance);
+            object settings = settingsField.GetValue(ssaoFeature);
+
+            FieldInfo sourceField = settings.GetType().GetField("Source", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo downsampleField = settings.GetType().GetField("Downsample", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            ssaoFeature.SetActive(true);
+            sourceField.SetValue(settings, 1);
+            downsampleField.SetValue(settings, false);
+        }
     }
 }
