@@ -4,6 +4,7 @@ using DCL.HelpAndSupportHUD;
 using DCL.Huds.QuestsPanel;
 using DCL.Huds.QuestsTracker;
 using DCL.SettingsPanelHUD;
+using LoadingHUD;
 using SignupHUD;
 
 public class HUDFactory : IHUDFactory
@@ -95,6 +96,9 @@ public class HUDFactory : IHUDFactory
                 break;
             case HUDElementID.BUILDER_PROJECTS_PANEL:
                 hudElement = new BuilderProjectsPanelController();
+                break;
+            case HUDElementID.LOADING:
+                hudElement = new LoadingHUDController();
                 break;
         }
 
