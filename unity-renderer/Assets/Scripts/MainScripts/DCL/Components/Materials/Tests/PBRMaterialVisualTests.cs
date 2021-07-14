@@ -32,8 +32,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
         }, camTarget, out IDCLEntity entity);
         yield return matPBR.routine;
 
-
-        yield return new WaitForAllMessagesProcessed();
+        yield return null;
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
@@ -81,14 +80,21 @@ public class PBRMaterialVisualTests : VisualTestsBase
         PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
         IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
         TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.identity, Vector3.one * 3);
-        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model { alphaTest = 1, transparencyMode = 1, albedoColor = Vector4.one });
+        PBRMaterial planeMaterial = TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model { alphaTest = 1, transparencyMode = 1, albedoColor = Vector4.one });
+        yield return plane.routine;
+        yield return planeMaterial.routine;
 
         BoxShape box1 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(4, 1, 6), true);
-        TestHelpers.AttachPBRMaterialToEntity(scene, box1.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.blue });
+        PBRMaterial box1Material = TestHelpers.AttachPBRMaterialToEntity(scene, box1.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.blue });
+        yield return box1.routine;
+        yield return box1Material.routine;
 
         BoxShape box2 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 6.5f), true);
-        TestHelpers.AttachPBRMaterialToEntity(scene, box2.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.red });
-        yield return new WaitForAllMessagesProcessed();
+        PBRMaterial box2Material = TestHelpers.AttachPBRMaterialToEntity(scene, box2.attachedEntities.FirstOrDefault(), new PBRMaterial.Model { transparencyMode = 0, albedoColor = Color.red });
+        yield return box2.routine;
+        yield return box2Material.routine;
+
+        yield return null;
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
@@ -116,11 +122,14 @@ public class PBRMaterialVisualTests : VisualTestsBase
         DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
         DCLTexture alphaTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/alphaTexture.png");
         DCLTexture emissionTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/Gradient A4.png");
+        yield return texture.routine;
+        yield return alphaTexture.routine;
+        yield return emissionTexture.routine;
 
         PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
         IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
         TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.Euler(0, 0, 180), Vector3.one * 3);
-        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
+        PBRMaterial planeMaterial = TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
         {
             albedoColor = new Color(1, 1, 1, alpha),
             transparencyMode = 2,
@@ -130,8 +139,10 @@ public class PBRMaterialVisualTests : VisualTestsBase
             emissiveIntensity = emissiveIntensity,
             emissiveTexture = emissionTexture.id
         });
+        yield return plane.routine;
+        yield return planeMaterial.routine;
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return null;
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
@@ -152,18 +163,23 @@ public class PBRMaterialVisualTests : VisualTestsBase
 
         DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
         DCLTexture alphaTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
+        yield return texture.routine;
+        yield return alphaTexture.routine;
 
         PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
         IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
         TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.Euler(0, 0, 180), Vector3.one * 3);
-        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
+        PBRMaterial planeMaterial = TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
         {
             transparencyMode = 2,
             albedoTexture = texture.id,
             alphaTexture = alphaTexture.id,
         });
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return plane.routine;
+        yield return planeMaterial.routine;
+
+        yield return null;
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
@@ -189,18 +205,21 @@ public class PBRMaterialVisualTests : VisualTestsBase
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(4.6f, 1.8f, 0.6f), camTarget);
 
         DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
+        yield return texture.routine;
 
         PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
         IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
         TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.Euler(0, 0, 180), Vector3.one * 3);
-        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
+        PBRMaterial planeMaterial = TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
         {
             transparencyMode = 2,
             albedoTexture = texture.id,
             albedoColor = new Color(1, 1, 1, alpha)
         });
+        yield return plane.routine;
+        yield return planeMaterial.routine;
 
-        yield return new WaitForAllMessagesProcessed();
+        yield return null;
 
         yield return VisualTestHelpers.TakeSnapshot();
     }
