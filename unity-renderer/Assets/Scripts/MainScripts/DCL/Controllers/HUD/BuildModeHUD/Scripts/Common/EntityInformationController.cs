@@ -126,8 +126,10 @@ public class EntityInformationController : IEntityInformationController
 
         if (entity.HasSmartItemComponent())
         {
-            if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
-                entityInformationView.smartItemList.SetSmartItemParameters(entity.GetSmartItemParameters(), ((SmartItemComponent) baseComponent).GetValues());
+            entityInformationView.SetSmartItemListViewActive(false);
+            //TODO: Remove this comment when we implement smart items in builder in world
+            //if (entity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent baseComponent))
+            //   entityInformationView.smartItemList.SetSmartItemParameters(entity.GetSmartItemParameters(), ((SmartItemComponent) baseComponent).GetValues());
         }
         else
         {
