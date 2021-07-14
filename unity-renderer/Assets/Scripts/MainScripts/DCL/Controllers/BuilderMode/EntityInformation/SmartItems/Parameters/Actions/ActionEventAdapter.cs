@@ -14,11 +14,11 @@ public class ActionEventAdapter : MonoBehaviour
     public Button addActionBtn;
     public SmartItemListView smartItemListView;
 
-    List<DCLBuilderInWorldEntity> entityList;
+    List<BIWEntity> entityList;
 
     SmartItemComponent selectedComponent;
-    DCLBuilderInWorldEntity selectedEntity;
-    List<DCLBuilderInWorldEntity> filteredList = new List<DCLBuilderInWorldEntity>();
+    BIWEntity selectedEntity;
+    List<BIWEntity> filteredList = new List<BIWEntity>();
 
     private void Start()
     {
@@ -26,7 +26,7 @@ public class ActionEventAdapter : MonoBehaviour
         actionDropDown.onValueChanged.AddListener(GenerateParametersFromIndex);
     }
 
-    public void SetContent(List<DCLBuilderInWorldEntity> entityList)
+    public void SetContent(List<BIWEntity> entityList)
     {
         this.entityList = entityList;
         filteredList = BuilderInWorldUtils.FilterEntitiesBySmartItemComponentAndActions(entityList);
@@ -92,7 +92,7 @@ public class ActionEventAdapter : MonoBehaviour
         entityDropDown.options = new List<TMP_Dropdown.OptionData>();
 
         List<string> optionsLabelList = new List<string>();
-        foreach (DCLBuilderInWorldEntity entity in filteredList)
+        foreach (BIWEntity entity in filteredList)
         {
             optionsLabelList.Add(entity.GetDescriptiveName());
         }

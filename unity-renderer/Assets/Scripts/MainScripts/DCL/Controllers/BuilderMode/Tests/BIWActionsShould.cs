@@ -125,7 +125,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         biwActionController.TryToRedoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
-        DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[ENTITY_ID].gameObject);
+        BIWEntity biwEntity = Utils.GetOrCreateComponent<BIWEntity>(scene.entities[ENTITY_ID].gameObject);
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
         biwActionController.CreateActionEntityDeleted(biwEntity);
@@ -156,7 +156,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         buildModeAction.CreateChangeFloorAction(oldFloor, newFloor);
         biwActionController.AddAction(buildModeAction);
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -167,7 +167,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         biwActionController.TryToUndoAction();
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -179,7 +179,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         biwActionController.TryToRedoAction();
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {

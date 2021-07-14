@@ -17,7 +17,7 @@ namespace Tests.BuildModeHUDViews
         public void SetCurrentEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity newEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity newEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             newEntity.entityUniqueId = "testId";
             entityInformationView.currentEntity = null;
 
@@ -95,11 +95,11 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             string newEntityName = "Test name";
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             testEntity.entityUniqueId = "testId";
             entityInformationView.currentEntity = testEntity;
 
-            DCLBuilderInWorldEntity entity = null;
+            BIWEntity entity = null;
             string entityName = "";
             entityInformationView.OnNameChange += (changedEntity, name) =>
             {

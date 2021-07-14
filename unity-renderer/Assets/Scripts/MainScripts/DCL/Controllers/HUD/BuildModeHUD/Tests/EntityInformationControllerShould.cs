@@ -80,9 +80,9 @@ namespace Tests.BuildModeHUDControllers
         public void NameChangedCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             string testText = "Test text";
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity returnedEntity = null;
             string returnedText = "";
             entityInformationController.OnNameChange += (entity, name) =>
             {
@@ -148,7 +148,7 @@ namespace Tests.BuildModeHUDControllers
         public void SetEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
 
             // Act
@@ -194,7 +194,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateEntityNameCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             entityInformationController.isChangingName = false;
 
             // Act
@@ -270,7 +270,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
 
             // Act
             entityInformationController.UpdateInfo(testEntity);

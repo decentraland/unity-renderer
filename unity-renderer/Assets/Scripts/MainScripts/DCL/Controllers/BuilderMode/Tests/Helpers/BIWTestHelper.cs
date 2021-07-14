@@ -96,12 +96,12 @@ public static class BIWTestHelper
         return context;
     }
 
-    public static DCLBuilderInWorldEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
+    public static BIWEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
     {
         if (model == null)
             model = new SmartItemComponent.Model();
 
-        DCLBuilderInWorldEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         scene.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
 

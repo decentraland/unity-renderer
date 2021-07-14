@@ -10,11 +10,11 @@ public interface IBIWModeController
     public event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     public event Action OnInputDone;
     public Vector3 GetCurrentEditionPosition();
-    public void CreatedEntity(DCLBuilderInWorldEntity entity);
+    public void CreatedEntity(BIWEntity entity);
 
     public float GetMaxDistanceToSelectEntities() ;
 
-    public void EntityDoubleClick(DCLBuilderInWorldEntity entity);
+    public void EntityDoubleClick(BIWEntity entity);
 
     public Vector3 GetMousePosition();
 
@@ -232,11 +232,11 @@ public class BIWModeController : BIWController, IBIWModeController
 
     public bool ShouldCancelUndoAction() { return currentActiveMode.ShouldCancelUndoAction(); }
 
-    public void CreatedEntity(DCLBuilderInWorldEntity entity) { currentActiveMode?.CreatedEntity(entity); }
+    public void CreatedEntity(BIWEntity entity) { currentActiveMode?.CreatedEntity(entity); }
 
     public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
 
-    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity); }
+    public void EntityDoubleClick(BIWEntity entity) {  currentActiveMode.EntityDoubleClick(entity); }
 
     public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 

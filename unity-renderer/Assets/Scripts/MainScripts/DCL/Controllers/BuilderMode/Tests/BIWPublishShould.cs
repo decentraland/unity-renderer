@@ -38,7 +38,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     public void TestEntityOutsidePublish()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity = biwEntityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity = biwEntityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         entity.gameObject.transform.position = Vector3.one * 9999;
@@ -51,7 +51,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     public IEnumerator TestEntityInsidePublish()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity = biwEntityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity = biwEntityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         TestHelpers.CreateAndSetShape(scene, entity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {

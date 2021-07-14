@@ -397,7 +397,7 @@ namespace DCL.Camera
 
         public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
-        public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
+        public void FocusOnEntities(List<BIWEntity> entitiesToFocus)
         {
             if (entitiesToFocus.Count <= 0)
                 return;
@@ -434,11 +434,11 @@ namespace DCL.Camera
             smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
         }
 
-        Vector3 FindMidPoint(List<DCLBuilderInWorldEntity> entitiesToLook)
+        Vector3 FindMidPoint(List<BIWEntity> entitiesToLook)
         {
             Vector3 finalPosition = Vector3.zero;
             int totalPoints = 0;
-            foreach (DCLBuilderInWorldEntity entity in entitiesToLook)
+            foreach (BIWEntity entity in entitiesToLook)
             {
                 if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
                 {

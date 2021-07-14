@@ -422,7 +422,7 @@ public class BIWMainController : Feature
 
             if (sceneToEdit.entities.ContainsKey(entityID))
             {
-                DCLBuilderInWorldEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+                BIWEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
 
                 if (entityToCheck == null)
                     continue;

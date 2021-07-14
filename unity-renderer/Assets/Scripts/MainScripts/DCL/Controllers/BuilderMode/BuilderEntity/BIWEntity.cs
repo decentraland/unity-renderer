@@ -8,14 +8,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DCLBuilderInWorldEntity : EditableEntity
+public class BIWEntity : EditableEntity
 {
     public string entityUniqueId;
 
-    public event Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
-    public event Action<DCLBuilderInWorldEntity> OnStatusUpdate;
-    public event Action<DCLBuilderInWorldEntity> OnDelete;
-    public event Action<DCLBuilderInWorldEntity> OnErrorStatusChange;
+    public event Action<BIWEntity> OnShapeFinishLoading;
+    public event Action<BIWEntity> OnStatusUpdate;
+    public event Action<BIWEntity> OnDelete;
+    public event Action<BIWEntity> OnErrorStatusChange;
 
     public bool IsLocked
     {

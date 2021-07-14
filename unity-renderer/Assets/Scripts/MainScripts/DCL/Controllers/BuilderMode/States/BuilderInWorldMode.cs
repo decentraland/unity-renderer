@@ -27,7 +27,7 @@ public class BuilderInWorldMode
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
     protected bool isSnapActive = false, isMultiSelectionActive = false, isModeActive = false;
-    protected List<DCLBuilderInWorldEntity> selectedEntities;
+    protected List<BIWEntity> selectedEntities;
 
     protected bool isNewObjectPlaced = false;
 
@@ -41,7 +41,7 @@ public class BuilderInWorldMode
         biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
-    public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
+    public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<BIWEntity> selectedEntities)
     {
         editionGO = goToEdit;
         this.undoGO = undoGO;
@@ -82,9 +82,9 @@ public class BuilderInWorldMode
 
     public virtual void SetDuplicationOffset(float offset) { }
 
-    public virtual void EntityDoubleClick(DCLBuilderInWorldEntity entity) { }
+    public virtual void EntityDoubleClick(BIWEntity entity) { }
 
-    public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
+    public virtual void SelectedEntity(BIWEntity selectedEntity)
     {
         CenterGameObjectToEdit();
 
@@ -95,7 +95,7 @@ public class BuilderInWorldMode
     {
         if (selectedEntities.Count > 0)
         {
-            foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+            foreach (BIWEntity entity in selectedEntities)
             {
                 entity.rootEntity.gameObject.transform.SetParent(null);
             }
@@ -103,7 +103,7 @@ public class BuilderInWorldMode
             editionGO.transform.position = GetCenterPointOfSelectedObjects();
             editionGO.transform.rotation = Quaternion.Euler(0, 0, 0);
             editionGO.transform.localScale = Vector3.one;
-            foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+            foreach (BIWEntity entity in selectedEntities)
             {
                 entity.rootEntity.gameObject.transform.SetParent(editionGO.transform);
             }
@@ -112,7 +112,7 @@ public class BuilderInWorldMode
 
     public virtual void MouseClickDetected()
     {
-        DCLBuilderInWorldEntity entityToSelect = biwEntityHandler.GetEntityOnPointer();
+        BIWEntity entityToSelect = biwEntityHandler.GetEntityOnPointer();
         if (entityToSelect != null)
         {
             biwEntityHandler.EntityClicked(entityToSelect);
@@ -123,9 +123,9 @@ public class BuilderInWorldMode
         }
     }
 
-    public virtual void CreatedEntity(DCLBuilderInWorldEntity createdEntity) { isNewObjectPlaced = true; }
+    public virtual void CreatedEntity(BIWEntity createdEntity) { isNewObjectPlaced = true; }
 
-    public virtual void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)
+    public virtual void EntityDeselected(BIWEntity entityDeselected)
     {
         CenterGameObjectToEdit();
 
@@ -137,7 +137,7 @@ public class BuilderInWorldMode
         isNewObjectPlaced = false;
     }
 
-    public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
+    public virtual void OnDeleteEntity(BIWEntity entity) { }
 
     public virtual void OnDeselectedEntities() { biwEntityHandler.ReportTransform(true); }
 
@@ -159,7 +159,7 @@ public class BuilderInWorldMode
         freeMovementGO.transform.rotation = zeroAnglesQuaternion;
         editionGO.transform.rotation = zeroAnglesQuaternion;
 
-        foreach (DCLBuilderInWorldEntity decentralandEntityToEdit in selectedEntities)
+        foreach (BIWEntity decentralandEntityToEdit in selectedEntities)
         {
             decentralandEntityToEdit.ResetTransfrom();
         }
@@ -174,7 +174,7 @@ public class BuilderInWorldMode
         float totalX = 0f;
         float totalY = 0f;
         float totalZ = 0f;
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             totalX += entity.rootEntity.gameObject.transform.position.x;
             totalY += entity.rootEntity.gameObject.transform.position.y;

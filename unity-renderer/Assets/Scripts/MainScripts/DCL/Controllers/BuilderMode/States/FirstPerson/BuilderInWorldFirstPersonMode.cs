@@ -176,7 +176,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         SetObjectIfSnapOrNot();
     }
 
-    public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
+    public override void SelectedEntity(BIWEntity selectedEntity)
     {
         base.SelectedEntity(selectedEntity);
 
@@ -188,7 +188,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
     }
 
-    public override void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
+    public override void CreatedEntity(BIWEntity createdEntity)
     {
         base.CreatedEntity(createdEntity);
         Utils.LockCursor();

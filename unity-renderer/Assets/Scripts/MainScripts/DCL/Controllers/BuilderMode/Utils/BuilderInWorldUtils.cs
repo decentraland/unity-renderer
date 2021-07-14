@@ -324,11 +324,11 @@ public static partial class BuilderInWorldUtils
 
     public static EntityData ConvertJSONToEntityData(string json) { return JsonConvert.DeserializeObject<EntityData>(json); }
 
-    public static List<DCLBuilderInWorldEntity> RemoveGroundEntities(List<DCLBuilderInWorldEntity> entityList)
+    public static List<BIWEntity> RemoveGroundEntities(List<BIWEntity> entityList)
     {
-        List<DCLBuilderInWorldEntity> newList = new List<DCLBuilderInWorldEntity>();
+        List<BIWEntity> newList = new List<BIWEntity>();
 
-        foreach (DCLBuilderInWorldEntity entity in entityList)
+        foreach (BIWEntity entity in entityList)
         {
             if (entity.isFloor)
                 continue;
@@ -339,11 +339,11 @@ public static partial class BuilderInWorldUtils
         return newList;
     }
 
-    public static List<DCLBuilderInWorldEntity> FilterEntitiesBySmartItemComponentAndActions(List<DCLBuilderInWorldEntity> entityList)
+    public static List<BIWEntity> FilterEntitiesBySmartItemComponentAndActions(List<BIWEntity> entityList)
     {
-        List<DCLBuilderInWorldEntity> newList = new List<DCLBuilderInWorldEntity>();
+        List<BIWEntity> newList = new List<BIWEntity>();
 
-        foreach (DCLBuilderInWorldEntity entity in entityList)
+        foreach (BIWEntity entity in entityList)
         {
             if (!entity.HasSmartItemComponent() || !entity.HasSmartItemActions())
                 continue;

@@ -149,11 +149,11 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         }
         else if (isSquareMultiSelectionInputActive && isMouseDragging)
         {
-            List<DCLBuilderInWorldEntity> allEntities = null;
+            List<BIWEntity> allEntities = null;
 
             allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
 
-            foreach (DCLBuilderInWorldEntity entity in allEntities)
+            foreach (BIWEntity entity in allEntities)
             {
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
@@ -204,7 +204,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (gizmoManager.GetSelectedGizmo() != BIWSettings.ROTATE_GIZMO_NAME)
             return;
 
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             entity.AddRotation(transformValue);
         }
@@ -260,7 +260,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public void UpdateGizmosToSelectedEntities()
     {
         List<EditableEntity> editableEntities = new List<EditableEntity>();
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             editableEntities.Add(entity);
         }
@@ -453,17 +453,17 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private void EndBoundMultiSelection()
     {
         freeCameraController.SetCameraCanMove(true);
-        List<DCLBuilderInWorldEntity> allEntities = null;
+        List<BIWEntity> allEntities = null;
 
         allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
 
-        List<DCLBuilderInWorldEntity> selectedInsideBoundsEntities = new List<DCLBuilderInWorldEntity>();
+        List<BIWEntity> selectedInsideBoundsEntities = new List<BIWEntity>();
         int alreadySelectedEntities = 0;
 
         if (!isMultiSelectionActive)
             biwEntityHandler.DeselectEntities();
 
-        foreach (DCLBuilderInWorldEntity entity in allEntities)
+        foreach (BIWEntity entity in allEntities)
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
@@ -481,7 +481,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         if (selectedInsideBoundsEntities.Count == alreadySelectedEntities && alreadySelectedEntities > 0)
         {
-            foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
+            foreach (BIWEntity entity in selectedInsideBoundsEntities)
             {
                 biwEntityHandler.DeselectEntity(entity);
             }
@@ -531,7 +531,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         gizmoManager.ForceRelativeScaleRatio();
     }
 
-    public override void OnDeleteEntity(DCLBuilderInWorldEntity entity)
+    public override void OnDeleteEntity(BIWEntity entity)
     {
         base.OnDeleteEntity(entity);
         biwSaveController.TryToSave();
@@ -574,7 +574,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         editionGO.transform.position += Vector3.right * offset;
     }
 
-    public override void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
+    public override void CreatedEntity(BIWEntity createdEntity)
     {
         base.CreatedEntity(createdEntity);
 
@@ -591,12 +591,12 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public override Vector3 GetCreatedEntityPoint() { return GetFloorPointAtMouse(Input.mousePosition); }
 
-    public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
+    public override void SelectedEntity(BIWEntity selectedEntity)
     {
         base.SelectedEntity(selectedEntity);
 
         List<EditableEntity> editableEntities = new List<EditableEntity>();
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             editableEntities.Add(entity);
         }
@@ -611,7 +611,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         UpdateActionsInteractable();
     }
 
-    public override void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)
+    public override void EntityDeselected(BIWEntity entityDeselected)
     {
         base.EntityDeselected(entityDeselected);
         if (selectedEntities.Count <= 0)
@@ -625,7 +625,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         isPlacingNewObject = false;
     }
 
-    public override void EntityDoubleClick(DCLBuilderInWorldEntity entity)
+    public override void EntityDoubleClick(BIWEntity entity)
     {
         base.EntityDoubleClick(entity);
         if (!entity.IsLocked)
@@ -733,7 +733,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     void OnGizmosTransformStart(string gizmoType)
     {
         outlinerController.SetOutlineCheckActive(false);
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             TransformActionStarted(entity.rootEntity, gizmoType);
         }
@@ -742,7 +742,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     void OnGizmosTransformEnd(string gizmoType)
     {
         outlinerController.SetOutlineCheckActive(true);
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             TransformActionEnd(entity.rootEntity, gizmoType);
         }
@@ -766,7 +766,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     #endregion
 
-    public void FocusGameObject(List<DCLBuilderInWorldEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
+    public void FocusGameObject(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
     Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
     {

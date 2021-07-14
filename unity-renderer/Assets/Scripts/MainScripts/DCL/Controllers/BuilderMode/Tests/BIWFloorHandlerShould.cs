@@ -53,7 +53,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwFloorHandler.CreateFloor(floorItem);
 
         //Assert
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -63,7 +63,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
             }
         }
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -96,7 +96,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwFloorHandler.ChangeFloor(newFloor);
 
         //Assert
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {

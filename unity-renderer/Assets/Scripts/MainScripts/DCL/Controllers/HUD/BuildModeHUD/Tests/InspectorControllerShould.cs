@@ -35,7 +35,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             inspectorController.inspectorView.entityList = new GameObject("_EntityListView").AddComponent<EntityListView>();
-            List<DCLBuilderInWorldEntity> testEntities = new List<DCLBuilderInWorldEntity>();
+            List<BIWEntity> testEntities = new List<BIWEntity>();
 
             // Act
             inspectorController.SetEntityList(testEntities);
@@ -73,8 +73,8 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             EntityAction testAction = actionToInvoke;
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity returnedEntity = null;
 
             switch (actionToInvoke)
             {
@@ -106,9 +106,9 @@ namespace Tests.BuildModeHUDControllers
         public void EntityRenameCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
             string testText = "Test text";
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity returnedEntity = null;
             string returnedText = "";
 
             inspectorController.OnEntityRename += (entity, name) =>

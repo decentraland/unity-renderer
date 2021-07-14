@@ -18,11 +18,11 @@ public class SmartItemActionEventAdapter : MonoBehaviour
 
     private SmartItemActionEvent actionEvent;
 
-    private DCLBuilderInWorldEntity selectedEntity;
-    private List<DCLBuilderInWorldEntity> filteredList = new List<DCLBuilderInWorldEntity>();
+    private BIWEntity selectedEntity;
+    private List<BIWEntity> filteredList = new List<BIWEntity>();
 
-    private Dictionary<DCLBuilderInWorldEntity, Sprite> entitySpriteDict = new Dictionary<DCLBuilderInWorldEntity, Sprite>();
-    private Dictionary<string, DCLBuilderInWorldEntity> entityPromiseKeeperDict = new Dictionary<string, DCLBuilderInWorldEntity>();
+    private Dictionary<BIWEntity, Sprite> entitySpriteDict = new Dictionary<BIWEntity, Sprite>();
+    private Dictionary<string, BIWEntity> entityPromiseKeeperDict = new Dictionary<string, BIWEntity>();
 
     private void Start()
     {
@@ -67,7 +67,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         filteredList = BuilderInWorldUtils.FilterEntitiesBySmartItemComponentAndActions(actionEvent.entityList);
 
         GenerateEntityDropdownContent();
-        foreach (DCLBuilderInWorldEntity entity in filteredList)
+        foreach (BIWEntity entity in filteredList)
         {
             GetThumbnail(entity);
         }
@@ -145,7 +145,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         int index = 0;
         int indexToUse = 0;
 
-        foreach (DCLBuilderInWorldEntity entity in filteredList)
+        foreach (BIWEntity entity in filteredList)
         {
             var item = new TMP_Dropdown.OptionData();
             item.text = entity.GetDescriptiveName();
@@ -164,7 +164,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
         entityDropDown.SetValueWithoutNotify(indexToUse);
     }
 
-    private void GetThumbnail(DCLBuilderInWorldEntity entity)
+    private void GetThumbnail(BIWEntity entity)
     {
         var url = entity.GetCatalogItemAssociated()?.thumbnailURL;
 

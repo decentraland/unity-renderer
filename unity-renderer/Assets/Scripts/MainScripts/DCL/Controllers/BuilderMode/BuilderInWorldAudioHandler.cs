@@ -113,9 +113,9 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void OnAssetSpawn() { eventAssetSpawn.Play(); }
 
-    private void OnAssetDelete(List<DCLBuilderInWorldEntity> entities)
+    private void OnAssetDelete(List<BIWEntity> entities)
     {
-        foreach (DCLBuilderInWorldEntity deletedEntity in entities)
+        foreach (BIWEntity deletedEntity in entities)
         {
             if (entitiesOutOfBounds.Contains(deletedEntity.rootEntity.entityId))
             {
@@ -128,7 +128,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void OnAssetSelect() { eventAssetSelect.Play(); }
 
-    private void OnAssetDeselect(DCLBuilderInWorldEntity entity)
+    private void OnAssetDeselect(BIWEntity entity)
     {
         if (playPlacementSoundOnDeselect)
         {

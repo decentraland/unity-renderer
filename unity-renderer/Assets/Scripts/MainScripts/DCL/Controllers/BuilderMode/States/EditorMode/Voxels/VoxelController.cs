@@ -20,7 +20,7 @@ public class VoxelController
 
     public LayerMask groundLayer;
 
-    DCLBuilderInWorldEntity lastVoxelCreated;
+    BIWEntity lastVoxelCreated;
 
     GameObject editionGO;
     bool mousePressed = false, isVoxelModelActivated = false, isCreatingMultipleVoxels = false;
@@ -112,9 +112,9 @@ public class VoxelController
 
     public void EndMultiVoxelSelection()
     {
-        List<DCLBuilderInWorldEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
+        List<BIWEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
 
-        foreach (DCLBuilderInWorldEntity voxelEntity in voxelEntities)
+        foreach (BIWEntity voxelEntity in voxelEntities)
         {
             if (BuilderInWorldUtils.IsWithInSelectionBounds(voxelEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
             {
@@ -133,8 +133,8 @@ public class VoxelController
         int zDifference = Mathf.Abs(firstPosition.z - lastPosition.z);
 
         List<Vector3Int> mustContainVoxelList = new List<Vector3Int>();
-        List<DCLBuilderInWorldEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
-        List<DCLBuilderInWorldEntity> allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+        List<BIWEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
+        List<BIWEntity> allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
 
         for (int x = 0; x <= xDifference; x++)
         {
@@ -188,9 +188,9 @@ public class VoxelController
         }
     }
 
-    bool ExistVoxelAtPosition(Vector3Int position, List<DCLBuilderInWorldEntity> voxelEntities)
+    bool ExistVoxelAtPosition(Vector3Int position, List<BIWEntity> voxelEntities)
     {
-        foreach (DCLBuilderInWorldEntity voxelEntity in voxelEntities)
+        foreach (BIWEntity voxelEntity in voxelEntities)
         {
             if (position == ConverPositionToVoxelPosition(voxelEntity.transform.position))
                 return true;
@@ -282,7 +282,7 @@ public class VoxelController
         isCreatingMultipleVoxels = true;
     }
 
-    public void SetVoxelSelected(DCLBuilderInWorldEntity decentralandEntityToEdit)
+    public void SetVoxelSelected(BIWEntity decentralandEntityToEdit)
     {
         lastVoxelCreated = decentralandEntityToEdit;
         lastVoxelCreated.transform.localPosition = Vector3.zero;
@@ -297,13 +297,13 @@ public class VoxelController
         return position;
     }
 
-    bool IsVoxelAtValidPoint(VoxelPrefab voxelPrefab, List<DCLBuilderInWorldEntity> entitiesToCheck)
+    bool IsVoxelAtValidPoint(VoxelPrefab voxelPrefab, List<BIWEntity> entitiesToCheck)
     {
         if (!currentScene.IsInsideSceneBoundaries(voxelPrefab.meshRenderer.bounds))
             return false;
         Bounds bounds = voxelPrefab.meshRenderer.bounds;
         bounds.size -= Vector3.one * VOXEL_BOUND_ERROR;
-        foreach (DCLBuilderInWorldEntity entity in entitiesToCheck)
+        foreach (BIWEntity entity in entitiesToCheck)
         {
             if (entity.rootEntity.meshesInfo == null || entity.rootEntity.meshesInfo.renderers == null)
                 continue;

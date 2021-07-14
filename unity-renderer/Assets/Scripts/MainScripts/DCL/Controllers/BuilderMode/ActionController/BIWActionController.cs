@@ -14,8 +14,8 @@ public interface IBIWActionController
     public void AddAction(BuildInWorldCompleteAction action);
     public void TryToRedoAction();
     public void TryToUndoAction();
-    public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList);
-    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity);
+    public void CreateActionEntityDeleted(List<BIWEntity> entityList);
+    public void CreateActionEntityDeleted(BIWEntity entity);
     public void CreateActionEntityCreated(IDCLEntity entity);
 }
 
@@ -136,14 +136,14 @@ public class BIWActionController : BIWController, IBIWActionController
             Debug.Log("Undo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
     }
 
-    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity) { CreateActionEntityDeleted(new List<DCLBuilderInWorldEntity> { entity }); }
+    public void CreateActionEntityDeleted(BIWEntity entity) { CreateActionEntityDeleted(new List<BIWEntity> { entity }); }
 
-    public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList)
+    public void CreateActionEntityDeleted(List<BIWEntity> entityList)
     {
         BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
         List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
 
-        foreach (DCLBuilderInWorldEntity entity in entityList)
+        foreach (BIWEntity entity in entityList)
         {
             BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity.rootEntity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity.rootEntity), entity.rootEntity.entityId);
             entityActionList.Add(builderInWorldEntityAction);

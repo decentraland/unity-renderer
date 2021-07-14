@@ -27,7 +27,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private IBIWSaveController saveController;
 
     private DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
-    private DCLBuilderMeshLoadIndicator meshLoadIndicator;
+    private BIWFloorLoading floorLoadingSpinnerPrefab;
 
     private GameObject floorPrefab;
 
@@ -36,6 +36,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
+    private readonly List<BIWFloorLoading> loadingFloorObjects = new List<BIWFloorLoading>();
 
     public override void Init(BIWContext context)
     {
@@ -45,14 +46,14 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         entityHandler = context.entityHandler;
 
         dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferences.floorLoadingPrefab, context.projectReferences.floorLoadingPrefab.transform.position, context.projectReferences.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
-        meshLoadIndicator = dclBuilderMeshLoadIndicatorController.indicator;
+        floorLoadingSpinnerPrefab = dclBuilderMeshLoadIndicatorController.indicator;
         creatorController = context.creatorController;
         saveController = context.saveController;
 
         floorPrefab = context.projectReferences.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
-        meshLoadIndicator.SetCamera(InitialSceneReferences.i.mainCamera);
+        floorLoadingSpinnerPrefab.Initialize(InitialSceneReferences.i.mainCamera);
 
         dclBuilderMeshLoadIndicatorController.gameObject.SetActive(false);
     }
@@ -61,11 +62,9 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     {
         entityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
         Clean();
-
-        GameObject.Destroy(dclBuilderMeshLoadIndicatorController.gameObject);
     }
 
-    private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)
+    private void OnFloorEntityDeleted(BIWEntity entity)
     {
         if (entity.isFloor)
             RemovePlaceHolder(entity);
@@ -74,7 +73,10 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     public void Clean()
     {
         RemoveAllPlaceHolders();
-        dclBuilderMeshLoadIndicatorController.Dispose();
+        for (int i = 0; i < loadingFloorObjects.Count; i++)
+        {
+            GameObject.Destroy(loadingFloorObjects[i].gameObject);
+        }
     }
 
     public bool ExistsFloorPlaceHolderForEntity(string entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
@@ -100,7 +102,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public CatalogItem FindCurrentFloorCatalogItem()
     {
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -128,7 +130,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = creatorController.CreateCatalogItem(
+            BIWEntity decentralandEntity = creatorController.CreateCatalogItem(
                 floorSceneObject,
                 WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel),
                 false,
@@ -149,7 +151,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         lastFloorCalalogItemUsed = floorSceneObject;
     }
 
-    private void RemovePlaceHolder(DCLBuilderInWorldEntity entity)
+    private void RemovePlaceHolder(BIWEntity entity)
     {
         entity.OnShapeFinishLoading -= RemovePlaceHolder;
         RemovePlaceHolder(entity.rootEntity.entityId);
