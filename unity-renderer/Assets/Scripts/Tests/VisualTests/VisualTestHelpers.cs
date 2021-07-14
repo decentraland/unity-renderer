@@ -240,7 +240,7 @@ namespace DCL.Helpers
             float imageAffinity = ((testImagePixels.Length - differentPixels) * 100) / testImagePixels.Length;
 
             // Save diff image
-            if (true || imageAffinity < TestSettings.VISUAL_TESTS_APPROVED_AFFINITY)
+            if (imageAffinity < TestSettings.VISUAL_TESTS_APPROVED_AFFINITY)
             {
                 Texture2D diffImage = new Texture2D(baselineImage.width, baselineImage.height);
                 diffImage.SetPixels32(diffImagePixels);
