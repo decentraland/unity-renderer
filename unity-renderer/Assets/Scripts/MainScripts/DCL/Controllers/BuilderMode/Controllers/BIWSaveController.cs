@@ -62,12 +62,14 @@ public class BIWSaveController : BIWController, IBIWSaveController
 
     public override void ExitEditMode()
     {
-        base.ExitEditMode();
         if (numberOfSaves > 0)
         {
+            ForceSave();
+
             HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
             ResetNumberOfSaves();
         }
+        base.ExitEditMode();
     }
 
     public void SetSaveActivation(bool isActive, bool tryToSave = false)

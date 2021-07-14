@@ -19,15 +19,17 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
     public void SettingsCorrectLayers()
     {
         //Arrange
-        LayerMask SELECTION_LAYER = LayerMask.NameToLayer("Selection");
-        LayerMask DEFAULT_LAYER = LayerMask.NameToLayer("Default");
-        LayerMask COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
+        LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
+        LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");
+        LayerMask COLLIDER_SELECTION_LAYER_INDEX = LayerMask.NameToLayer("OnBuilderPointerClick");
+        LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 
         //Assert
-        Assert.AreEqual(SELECTION_LAYER, BIWSettings.SELECTION_LAYER);
-        Assert.AreEqual(DEFAULT_LAYER, BIWSettings.DEFAULT_LAYER);
+        Assert.AreEqual(SELECTION_LAYER_INDEX, BIWSettings.SELECTION_LAYER_INDEX);
+        Assert.AreEqual(DEFAULT_LAYER_INDEX, BIWSettings.DEFAULT_LAYER_INDEX);
+        Assert.AreEqual(COLLIDER_SELECTION_LAYER_INDEX, BIWSettings.COLLIDER_SELECTION_LAYER_INDEX);
         Assert.AreEqual(COLLIDER_SELECTION_LAYER, BIWSettings.COLLIDER_SELECTION_LAYER);
         Assert.AreEqual(GIZMOS_LAYER, BIWSettings.GIZMOS_LAYER);
         Assert.AreEqual(GROUND_LAYER, BIWSettings.GROUND_LAYER);

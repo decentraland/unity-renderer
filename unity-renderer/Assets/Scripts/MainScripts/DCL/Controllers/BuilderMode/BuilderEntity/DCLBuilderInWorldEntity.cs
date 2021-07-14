@@ -65,7 +65,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool isVoxel { get; set; } = false;
 
-    CatalogItem associatedCatalogItem;
+    private CatalogItem associatedCatalogItem;
 
     public bool isFloor { get; set; } = false;
     public bool isNFT { get; private set; } = false;
@@ -617,7 +617,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             if (meshInfo.renderers[i] == null)
                 continue;
             GameObject entityColliderChildren = new GameObject(entity.entityId);
-            entityColliderChildren.layer = BIWSettings.COLLIDER_SELECTION_LAYER;
+            entityColliderChildren.layer = BIWSettings.COLLIDER_SELECTION_LAYER_INDEX;
 
             Transform t = entityColliderChildren.transform;
             t.SetParent(meshInfo.renderers[i].transform);
@@ -637,7 +637,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
                 meshCollider.sharedMesh = meshInfo.renderers[i].GetComponent<MeshFilter>().sharedMesh;
             }
 
-            meshCollider.enabled = meshInfo.renderers[i].enabled;
+            meshCollider.enabled = true;
             colliderList.Add(entityColliderChildren);
 
             if (isNFT)

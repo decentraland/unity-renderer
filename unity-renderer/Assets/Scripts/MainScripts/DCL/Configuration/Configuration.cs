@@ -9,9 +9,10 @@ namespace DCL.Configuration
         public const string BASE_URL_CATALOG = "https://builder-api.decentraland.{ENV}/v1/assetPacks";
         public const string BASE_URL_ASSETS_PACK_CONTENT = "https://builder-api.decentraland.{ENV}/v1/storage/assetPacks/";
 
-        public static readonly LayerMask SELECTION_LAYER = LayerMask.NameToLayer("Selection");
-        public static readonly LayerMask DEFAULT_LAYER = LayerMask.NameToLayer("Default");
-        public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.NameToLayer("OnBuilderPointerClick");
+        public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
+        public static readonly LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");
+        public static readonly LayerMask COLLIDER_SELECTION_LAYER_INDEX = LayerMask.NameToLayer("OnBuilderPointerClick");
+        public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");
 

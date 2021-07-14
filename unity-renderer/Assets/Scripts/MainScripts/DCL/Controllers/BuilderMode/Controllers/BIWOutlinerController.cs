@@ -109,7 +109,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         {
             if ( entity.rootEntity.meshesInfo.renderers[i] == null)
                 continue;
-            entity.rootEntity.meshesInfo.renderers[i].gameObject.layer = BIWSettings.SELECTION_LAYER;
+            entity.rootEntity.meshesInfo.renderers[i].gameObject.layer = BIWSettings.SELECTION_LAYER_INDEX;
         }
     }
 
@@ -153,7 +153,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
             {
                 if ( entityToQuitOutline.rootEntity.meshesInfo.renderers[x] == null)
                     continue;
-                entityToQuitOutline.rootEntity.meshesInfo.renderers[x].gameObject.layer = BIWSettings.DEFAULT_LAYER;
+                entityToQuitOutline.rootEntity.meshesInfo.renderers[x].gameObject.layer = BIWSettings.DEFAULT_LAYER_INDEX;
             }
         }
 

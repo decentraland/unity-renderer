@@ -226,7 +226,8 @@ public class BIWMainController : Feature
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
-        GameObject.Destroy(biwAudioHandler.gameObject);
+        if (biwAudioHandler.gameObject != null)
+            GameObject.Destroy(biwAudioHandler.gameObject);
 
         foreach (var controller in controllers)
         {

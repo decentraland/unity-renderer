@@ -63,10 +63,10 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     public void OutlineLayer()
     {
         outlinerController.OutlineEntity(entity);
-        Assert.AreEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER);
+        Assert.AreEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER_INDEX);
 
         outlinerController.CancelEntityOutline(entity);
-        Assert.AreNotEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER);
+        Assert.AreNotEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER_INDEX);
     }
 
     [Test]
