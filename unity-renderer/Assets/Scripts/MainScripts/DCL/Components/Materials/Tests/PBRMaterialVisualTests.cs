@@ -162,9 +162,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
         VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(4.6f, 1.8f, 0.6f), camTarget);
 
         DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
-        DCLTexture alphaTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
         yield return texture.routine;
-        yield return alphaTexture.routine;
 
         PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
         IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
@@ -173,7 +171,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
         {
             transparencyMode = 2,
             albedoTexture = texture.id,
-            alphaTexture = alphaTexture.id,
+            alphaTexture = texture.id,
         });
 
         yield return plane.routine;

@@ -28,7 +28,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
         base.SetUp_Renderer();
 
-        VisualTestHelpers.currentTestName = testName;
+        VisualTestHelpers.currentTestName = testName.Replace(".", "_");
         VisualTestHelpers.snapshotIndex = 0;
 
         DCLCharacterController.i.PauseGravity();
