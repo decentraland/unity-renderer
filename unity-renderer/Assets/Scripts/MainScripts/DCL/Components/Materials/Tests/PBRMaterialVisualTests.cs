@@ -10,16 +10,12 @@ using UnityEngine.TestTools;
 
 public class PBRMaterialVisualTests : VisualTestsBase
 {
-    [UnityTest]
-    [VisualTest]
-    [Explicit]
-    [Category("Explicit")]
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaTextureShouldWork_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(AlphaTextureShouldWork()); }
 
-    [UnityTest]
-    [VisualTest]
-    [Category("Explicit")]
-    [Explicit]
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     public IEnumerator AlphaTextureShouldWork()
     {
         yield return InitVisualTestsScene("PBRMaterialVisualTests_AlphaTextureShouldWork");
@@ -42,14 +38,11 @@ public class PBRMaterialVisualTests : VisualTestsBase
         yield return VisualTestHelpers.TakeSnapshot();
     }
 
-    [UnityTest]
-    [VisualTest]
-    [Explicit]
-    [Category("Explicit")]
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     public IEnumerator StandardConfigurations_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(StandardConfigurations()); }
 
-    [UnityTest]
-    [VisualTest]
+    [UnityTest, VisualTest]
     public IEnumerator StandardConfigurations()
     {
         yield return InitVisualTestsScene("PBRMaterialVisualTests_StandardConfigurations");
@@ -70,16 +63,12 @@ public class PBRMaterialVisualTests : VisualTestsBase
         yield return VisualTestHelpers.TakeSnapshot();
     }
 
-    [UnityTest]
-    [VisualTest]
-    [Explicit]
-    [Category("Explicit")]
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     public IEnumerator TransparentObjectsAndSSAO_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(TransparentObjectsAndSSAO()); }
 
-    [UnityTest]
-    [VisualTest]
-    [Explicit]
-    [Category("Explicit")] //Enable the test once we properly render opaque objects with SSAO behind transparents
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")] //Enable the test once we properly render opaque objects with SSAO behind transparents
     public IEnumerator TransparentObjectsAndSSAO()
     {
         yield return InitVisualTestsScene("PBRMaterialVisualTests_TransparentObjectsAndSSAO");
@@ -104,17 +93,14 @@ public class PBRMaterialVisualTests : VisualTestsBase
         yield return VisualTestHelpers.TakeSnapshot();
     }
 
-    [UnityTest]
-    [VisualTest]
-    [Explicit]
-    [Category("Explicit")]
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
     [TestCase(1, 100, ExpectedResult = null)]
     [TestCase(0.2f, 100, ExpectedResult = null)]
     [TestCase(1f, 10, ExpectedResult = null)]
     public IEnumerator Emission_AlphaTexture_AlbedoAlpha_Generate(float alpha, float emissiveIntensity) { yield return VisualTestHelpers.GenerateBaselineForTest(Emission_AlphaTexture_AlbedoAlpha(alpha, emissiveIntensity)); }
 
-    [UnityTest]
-    [VisualTest]
+    [UnityTest, VisualTest]
     [TestCase(1, 100, ExpectedResult = null)]
     [TestCase(0.2f, 100, ExpectedResult = null)]
     [TestCase(1f, 10, ExpectedResult = null)]
@@ -143,6 +129,75 @@ public class PBRMaterialVisualTests : VisualTestsBase
             emissiveColor = Color.blue,
             emissiveIntensity = emissiveIntensity,
             emissiveTexture = emissionTexture.id
+        });
+
+        yield return new WaitForAllMessagesProcessed();
+
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    public IEnumerator Same_AlbedoTexture_AlphaTexture_Generate() { yield return VisualTestHelpers.GenerateBaselineForTest(Same_AlbedoTexture_AlphaTexture()); }
+
+    [UnityTest, VisualTest]
+    public IEnumerator Same_AlbedoTexture_AlphaTexture()
+    {
+        yield return InitVisualTestsScene($"PBRMaterialVisualTests_Same_AlbedoTexture_AlphaTexture");
+
+        VisualTestHelpers.SetSSAOActive(true);
+
+        Vector3 camTarget = new Vector3(5, 1, 5);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(4.6f, 1.8f, 0.6f), camTarget);
+
+        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
+        DCLTexture alphaTexture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
+
+        PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
+        IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
+        TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.Euler(0, 0, 180), Vector3.one * 3);
+        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
+        {
+            transparencyMode = 2,
+            albedoTexture = texture.id,
+            alphaTexture = alphaTexture.id,
+        });
+
+        yield return new WaitForAllMessagesProcessed();
+
+        yield return VisualTestHelpers.TakeSnapshot();
+    }
+
+    [UnityTest, VisualTest]
+    [Explicit, Category("Explicit")]
+    [TestCase(1, ExpectedResult = null)]
+    [TestCase(0.75f, ExpectedResult = null)]
+    [TestCase(0.25f, ExpectedResult = null)]
+    public IEnumerator AlbedoTexture_AlbedoAlpha_Generate(float alpha) { yield return VisualTestHelpers.GenerateBaselineForTest(AlbedoTexture_AlbedoAlpha(alpha)); }
+
+    [UnityTest, VisualTest]
+    [TestCase(1, ExpectedResult = null)]
+    [TestCase(0.75f, ExpectedResult = null)]
+    [TestCase(0.25f, ExpectedResult = null)]
+    public IEnumerator AlbedoTexture_AlbedoAlpha(float alpha)
+    {
+        yield return InitVisualTestsScene($"PBRMaterialVisualTests_AlbedoTexture_AlbedoAlpha_{alpha}");
+
+        VisualTestHelpers.SetSSAOActive(true);
+
+        Vector3 camTarget = new Vector3(5, 1, 5);
+        VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(4.6f, 1.8f, 0.6f), camTarget);
+
+        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestAssetsUtils.GetPath() + "/Images/avatar.png");
+
+        PlaneShape plane = TestHelpers.CreateEntityWithPlaneShape(scene, new Vector3(5, 1, 5), true);
+        IDCLEntity planeEntity = plane.attachedEntities.FirstOrDefault();
+        TestHelpers.SetEntityTransform(scene, planeEntity, new Vector3(5, 1, 5), Quaternion.Euler(0, 0, 180), Vector3.one * 3);
+        TestHelpers.AttachPBRMaterialToEntity(scene, planeEntity, new PBRMaterial.Model
+        {
+            transparencyMode = 2,
+            albedoTexture = texture.id,
+            albedoColor = new Color(1, 1, 1, alpha)
         });
 
         yield return new WaitForAllMessagesProcessed();
