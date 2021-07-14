@@ -9,7 +9,7 @@ using static WearableLiterals;
 
 namespace DCL
 {
-    public class AvatarRenderer : MonoBehaviour
+    public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         public enum VisualCue
         {
@@ -24,6 +24,7 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
+        public MeshRenderer lodRenderer;
 
         private AvatarModel model;
 
@@ -549,8 +550,13 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
+        public MeshRenderer GetLODRenderer() { return lodRenderer; }
+
+        public Transform GetTransform() { return transform; }
+
         private void HideAll()
         {
+            // TODO: Cache this somewhere (maybe when the LoadAvatar finishes) instead of fetching this on every call
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
             for (int i = 0; i < renderers.Length; i++)
