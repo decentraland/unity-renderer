@@ -6,6 +6,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
+using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,7 +17,7 @@ public class HUDController : IHUDController
 
     static bool VERBOSE = false;
     public static HUDController i { get; private set; }
-    
+
     public IHUDFactory hudFactory = null;
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
@@ -95,6 +96,7 @@ public class HUDController : IHUDController
     public QuestsTrackerHUDController questsTrackerHUD => GetHUDElement(HUDElementID.QUESTS_TRACKER) as QuestsTrackerHUDController;
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
+    public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -359,6 +361,11 @@ public class HUDController : IHUDController
                     taskbarHud.SetBuilderInWorldStatus(true);
                 }
                 OnBuilderProjectPanelCreation?.Invoke();
+                break;
+            case HUDElementID.LOADING:
+                CreateHudElement(configuration, hudElementId);
+                if (configuration.active)
+                    loadingController.Initialize();
                 break;
         }
 
