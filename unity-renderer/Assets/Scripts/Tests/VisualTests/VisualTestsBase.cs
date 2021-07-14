@@ -10,6 +10,7 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
 
     protected override IEnumerator SetUp()
     {
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
         VisualTestHelpers.SetSSAOActive(false);
         yield break;
     }
@@ -38,5 +39,11 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
 
         yield return null;
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+        return base.TearDown();
     }
 }
