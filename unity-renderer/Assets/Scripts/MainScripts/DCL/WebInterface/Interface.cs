@@ -1242,5 +1242,11 @@ namespace DCL.Interface
             var payload = new UnpublishScenePayload() { coordinates = $"{sceneCoordinates.x},{sceneCoordinates.y}" };
             SendMessage("UnpublishScene", payload);
         }
+
+        public static void NotifyStatusThroughChat(string message)
+        {
+            stringPayload.value = message;
+            SendMessage("NotifyStatusThroughChat", stringPayload);
+        }
     }
 }

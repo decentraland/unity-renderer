@@ -6,6 +6,7 @@ using TMPro;
 using System.Linq;
 using DCL;
 using static DCL.Interface.WebInterface;
+using DCL.Interface;
 
 internal class HotSceneCellView : MonoBehaviour
 {
@@ -169,11 +170,13 @@ internal class HotSceneCellView : MonoBehaviour
 
         if (nextMostPopulatedRealms.Count > 0)
         {
+            WebInterface.NotifyStatusThroughChat("Trying to connect to the next more populated realm...");
             HotScenesController.HotSceneInfo.Realm nextRealmToTry = nextMostPopulatedRealms.Dequeue();
             OnJumpIn?.Invoke(hotSceneInfo.baseCoords, nextRealmToTry.serverName, nextRealmToTry.layer);
         }
         else
         {
+            WebInterface.NotifyStatusThroughChat("You'll stay in your current realm.");
             RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
             RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
             OnJumpIn?.Invoke(hotSceneInfo.baseCoords, null, null);
