@@ -1,4 +1,5 @@
 using System;
+
 public enum HUDElementID
 {
     NONE = 0,
@@ -37,8 +38,10 @@ public enum HUDElementID
     QUESTS_TRACKER = 27,
     BUILDER_PROJECTS_PANEL = 28,
     SIGNUP = 29,
-    COUNT = 30
+    LOADING = 30,
+    COUNT = 31
 }
+
 public interface IHUDFactory
 {
     IHUD CreateHUD(HUDElementID elementID);
