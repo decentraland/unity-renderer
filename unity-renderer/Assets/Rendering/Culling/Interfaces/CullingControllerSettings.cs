@@ -18,7 +18,7 @@ namespace DCL.Rendering
 
         public float enableAnimationCullingDistance = 7.5f;
 
-        public int ignoredLayersMask = LayerMask.GetMask("Tutorial", "CharacterPreview", "AvatarLOD");
+        public int ignoredLayersMask = LayerMask.GetMask("Tutorial", "CharacterPreview", "ViewportCullingIgnored");
 
         public CullingControllerProfile rendererProfile =
             new CullingControllerProfile
