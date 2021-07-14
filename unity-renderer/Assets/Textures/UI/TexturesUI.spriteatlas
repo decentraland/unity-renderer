@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7229178
+    totalSpriteSurfaceArea: 7451729
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -159,7 +159,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8512d2a614988894b967cb17ea417d0b, type: 3}
   - {fileID: 21300000, guid: 51bee6e6d6f314363a939973c91dff7a, type: 3}
   - {fileID: 21300000, guid: 518e3be6157b64d5a9fabd3e9c35622d, type: 3}
-  - {fileID: 21300000, guid: 3a4ad9f62fe60453da372a1c74d0efc4, type: 3}
   - {fileID: 21300000, guid: 100172170ea424b1f94f8c64e2d48da1, type: 3}
   - {fileID: 21300000, guid: e4194917179d34ea897e31a5b487a894, type: 3}
   - {fileID: 21300000, guid: ab2e3227afa824e9b807f1cbbdf2dfcf, type: 3}
@@ -202,9 +201,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: e36f3569fbdef4c609c33f7a1cebace5, type: 3}
   - {fileID: 21300000, guid: 247c07994d33848d5be25ccac8f0538d, type: 3}
   - {fileID: 21300000, guid: 604176a988cdc416ca612d5e95156254, type: 3}
+  - {fileID: 21300000, guid: 35746db90808fac4aa31ef672b070378, type: 3}
   - {fileID: 21300000, guid: dfa96dc92a2fe43f0a599dc990c5b013, type: 3}
   - {fileID: 21300000, guid: fe978ce97262047958378b8cdf8b4f25, type: 3}
   - {fileID: 21300000, guid: 24c3c5f961cc64b788832e6bcb64ff7a, type: 3}
+  - {fileID: 21300000, guid: a0a0cd0aeeeca764789dd6862cdf8a59, type: 3}
   - {fileID: 21300000, guid: a1317b1aff4d943b9b7361cc061816bf, type: 3}
   - {fileID: 21300000, guid: 7b9d8b2a13149489fac02d8d802c41b6, type: 3}
   - {fileID: 21300000, guid: c911da3afe9724d9e9b54f5a13c970d7, type: 3}
@@ -278,7 +279,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c5a46d6e8b3d645649baea76db91f811, type: 3}
   - {fileID: 21300000, guid: b01bb67eac45b4ce4b289efdfb7c1847, type: 3}
   - {fileID: 21300000, guid: 6e8b3a7ec6a0949b4a3ba5a6c983c30f, type: 3}
-  - {fileID: 21300000, guid: bd444b7e346a6e547af4156af246a29a, type: 3}
   - {fileID: 21300000, guid: c45d4d8e8fcf6424b8e469d188bf4db7, type: 3}
   - {fileID: 21300000, guid: a746d1fe363ff4d8cbd468660965f720, type: 3}
   - {fileID: 21300000, guid: c22ef80fbf1174314befe1d0347230d2, type: 3}
@@ -315,7 +315,7 @@ SpriteAtlas:
   - NFTStarContainer
   - ContainerRadius6
   - VoiceChatCross
-  - Isologotipo
+  - DecentralandIsologotipo68
   - SceneInfoContainer
   - Button16
   - BlockUser
@@ -391,7 +391,6 @@ SpriteAtlas:
   - InputGray
   - Frame10
   - BlockIcon
-  - WarningIconMagenta
   - BackgroundPattern
   - CheckmarkContainer
   - LandIcon
@@ -434,9 +433,11 @@ SpriteAtlas:
   - Ellipse128
   - MessageIcon
   - FriendsIcon
+  - ContainerRadius100
   - Star
   - OperatorIcon
   - TaskbarCheckmark
+  - TeleportImg
   - OngoingEventIcon
   - Handle
   - Emotes
@@ -510,7 +511,6 @@ SpriteAtlas:
   - PinIconOn
   - Button6
   - EditIcon
-  - WhitePixel
   - Spinner30
   - LandEmpty
   - PatternPC
