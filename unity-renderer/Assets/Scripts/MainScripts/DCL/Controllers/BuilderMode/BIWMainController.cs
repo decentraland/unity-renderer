@@ -714,6 +714,12 @@ public class BIWMainController : Feature
 
         ExitBiwControllers();
 
+        if (biwSaveController.numberOfSaves > 0)
+        {
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            biwSaveController.ResetNumberOfSaves();
+        }
+
         foreach (var groundVisual in groundVisualsGO)
         {
             groundVisual.SetActive(true);
