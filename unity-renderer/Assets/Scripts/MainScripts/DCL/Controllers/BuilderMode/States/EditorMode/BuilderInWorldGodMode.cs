@@ -189,7 +189,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.TRANSLATE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
         builderInWorldEntityHandler.ReportTransform(true);
-        biwSaveController.ForceSave();
+        biwSaveController.TryToSave();
     }
 
     public void UpdateSelectionRotation(Vector3 rotation)
@@ -202,7 +202,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         TransformActionEnd(selectedEntities[0].rootEntity, BuilderInWorldSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
         builderInWorldEntityHandler.ReportTransform(true);
-        biwSaveController.ForceSave();
+        biwSaveController.TryToSave();
     }
 
     public void UpdateSelectionScale(Vector3 scale)
@@ -222,7 +222,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         TransformActionEnd(entityToUpdate.rootEntity, BuilderInWorldSettings.SCALE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
         builderInWorldEntityHandler.ReportTransform(true);
-        biwSaveController.ForceSave();
+        biwSaveController.TryToSave();
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -271,7 +271,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (isPlacingNewObject)
         {
             builderInWorldEntityHandler.DeselectEntities();
-            biwSaveController.ForceSave();
+            biwSaveController.TryToSave();
             return;
         }
 
@@ -438,7 +438,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (wasGizmosActive && !isPlacingNewObject)
         {
             gizmoManager.ShowGizmo();
-            biwSaveController.ForceSave();
+            biwSaveController.TryToSave();
         }
 
         wasGizmosActive = false;
@@ -543,7 +543,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void OnDeleteEntity(DCLBuilderInWorldEntity entity)
     {
         base.OnDeleteEntity(entity);
-        biwSaveController.ForceSave();
+        biwSaveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
@@ -781,7 +781,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 break;
         }
 
-        biwSaveController.ForceSave();
+        biwSaveController.TryToSave();
     }
 
     #endregion

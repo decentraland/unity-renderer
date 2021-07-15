@@ -30,6 +30,12 @@ public class BIWSaveController : BIWController
         }
     }
 
+    public override void ExitEditMode()
+    {
+        ForceSave();
+        base.ExitEditMode();
+    }
+
     private void OnDestroy()
     {
         if (builderInWorldBridge != null)

@@ -72,19 +72,25 @@ namespace DCL
                 worldRuntimeBuilder: WorldRuntimeContextBuilder,
                 hudBuilder: HUDContextBuilder);
         }
+        
         protected virtual MessagingContext MessagingContextBuilder() { return MessagingContextFactory.CreateDefault(); }
+        
         protected virtual PlatformContext PlatformContextBuilder() { return PlatformContextFactory.CreateDefault(); }
+        
         protected virtual WorldRuntimeContext WorldRuntimeContextBuilder() { return WorldRuntimeContextFactory.CreateDefault(componentFactory); }
+        
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
+        
         private void Start()
         {
             Environment.i.world.sceneController.Start();
             featureController?.Start();
         }
 
+
         private void Update()
         {
-            Environment.i.platform.idleChecker.Update();
+            Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
             featureController?.Update();

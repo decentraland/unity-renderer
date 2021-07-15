@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3653805652683081651}
   - component: {fileID: 7701290377581287658}
   - component: {fileID: 8242017988712305001}
+  - component: {fileID: 6402082374581292810}
   m_Layer: 0
   m_Name: Bridges
   m_TagString: Untagged
@@ -119,5 +120,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3d5810e12824c4b8e9f944765b04a28c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6402082374581292810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6401575379531892522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ab929cd616fbde4fa9b696c94c91e6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
