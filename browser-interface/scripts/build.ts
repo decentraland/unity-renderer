@@ -102,9 +102,9 @@ async function buildRollup() {
 }
 
 async function createTypings() {
-  console.log("> writing typings.d.ts")
+  console.log("> writing index.d.ts")
   writeFileSync(
-    path.resolve(DIST_PATH, "typings.d.ts"),
+    path.resolve(DIST_PATH, "index.d.ts"),
     `
 import * as Renderer from '${typingsRoot}/index'
 declare var DclRenderer: typeof Renderer
@@ -120,7 +120,7 @@ async function createPackageJson() {
       {
         name: "@dcl/unity-renderer",
         main: "index.js",
-        typings: "typings.d.ts",
+        typings: "index.d.ts",
         version: `1.0.${process.env.CIRCLE_BUILD_NUM || "0-development"}`,
         tag: process.env.CIRCLE_TAG,
         commit: process.env.CIRCLE_SHA1,
