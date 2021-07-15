@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec7c97eeb1c384018b86eecd76172faa, type: 3}
+  m_Name: AvatarLODAssetReferences
+  m_EditorClassIdentifier: 
+  impostorTextures:
+  - {fileID: 2800000, guid: 2c0d28ddc77804586a3342ffe0d00efc, type: 3}
+  - {fileID: 2800000, guid: f9dd2a1a4a49e439db4e9525a2073093, type: 3}
+  - {fileID: 2800000, guid: 7ef9d637e33ee4d41a3ef9ce1edcd7de, type: 3}
+  - {fileID: 2800000, guid: 984f996d3dc27467ca4270cc647fb6b0, type: 3}
+  - {fileID: 2800000, guid: a129e0f74741b41ef8052502c925c73f, type: 3}
+  - {fileID: 2800000, guid: e86c0a948ece94fb28c764d792739f42, type: 3}
+  - {fileID: 2800000, guid: f260c83bac5274ac59d214cca1e1e64e, type: 3}
+  - {fileID: 2800000, guid: 224a1507f313a48478b956551bf8536b, type: 3}
+  - {fileID: 2800000, guid: 36889c0d2815d4f429719b5f923139c8, type: 3}
+  - {fileID: 2800000, guid: 5552a1e823f1b45feb4c11b1d51edaa9, type: 3}
+  - {fileID: 2800000, guid: de0e512ba6f6c4435b612ba6dfe75119, type: 3}
+  - {fileID: 2800000, guid: 091950c37623a4f7b915c2e37ead2b02, type: 3}
+  - {fileID: 2800000, guid: 53ad2d65838d547a4a5c1503832e8c7c, type: 3}

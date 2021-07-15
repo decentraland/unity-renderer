@@ -11,6 +11,7 @@ namespace DCL
 
         private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
         private float lastLODsVerticalMovementTime = -1;
+        private AvatarLODAssetReferences assetReferences;
 
         public AvatarsLODController()
         {
@@ -18,6 +19,8 @@ namespace DCL
                         .Then(config =>
                         {
                             DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
+                            if (config.features.enableAvatarLODs)
+                                assetReferences = Resources.Load<AvatarLODAssetReferences>("AvatarLODs/AvatarLODAssetReferences");
                         });
         }
 
@@ -114,7 +117,24 @@ namespace DCL
 
         private void ToggleLOD(IAvatarRenderer avatarRenderer, bool enabled)
         {
-            avatarRenderer.GetLODRenderer().gameObject.SetActive(enabled);
+            var lodRenderer = avatarRenderer.GetLODRenderer();
+            if (lodRenderer.gameObject.activeSelf == enabled)
+                return;
+
+            if (enabled)
+            {
+                // SpriteAtlas makes the sprite.texture return the whole atlas...
+                /*string randomlySelectedSpriteName = Random.Range(0, impostorAtlas.spriteCount).ToString();
+                Debug.Log("Setting sprite: " + randomlySelectedSpriteName);
+                Texture2D randomTex = impostorAtlas.GetSprite(randomlySelectedSpriteName).texture; // use SharedTexture???
+                lodRenderer.material.mainTexture = randomTex;
+                lodRenderer.material.SetTexture("_BaseMap", randomTex);*/
+
+                lodRenderer.material.SetTexture("_BaseMap", assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
+                // TODO: To achieve 1 draw call on impostors: optimize having all the textures in a real atlas and randomize discretely the UVs of the instantiated quad, all having the same material and tex: https://docs.unity3d.com/ScriptReference/Mesh-uv.html
+            }
+
+            lodRenderer.gameObject.SetActive(enabled);
             avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
     }
