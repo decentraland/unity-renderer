@@ -13,7 +13,7 @@ using UnityEngine;
 public class BIWOutlinerShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    private BIWEntity entity;
+    private DCLBuilderInWorldEntity entity;
     private BIWEntityHandler entityHandler;
     private BIWOutlinerController outlinerController;
 
@@ -63,10 +63,10 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     public void OutlineLayer()
     {
         outlinerController.OutlineEntity(entity);
-        Assert.AreEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER_INDEX);
+        Assert.AreEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, LayerMask.NameToLayer("Selection"));
 
         outlinerController.CancelEntityOutline(entity);
-        Assert.AreNotEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, BIWSettings.SELECTION_LAYER_INDEX);
+        Assert.AreNotEqual(entity.rootEntity.meshesInfo.renderers[0].gameObject.layer, LayerMask.NameToLayer("Selection"));
     }
 
     [Test]
