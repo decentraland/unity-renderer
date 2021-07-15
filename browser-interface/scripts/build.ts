@@ -60,8 +60,6 @@ async function buildRollup() {
   const banner = readFileSync(path.resolve(DIST_PATH, "unity.loader.js")).toString()
   console.log("> compiling src folder")
 
-  ensureFileExists(path.resolve(DIST_PATH, typingsRoot), "index.d.ts")
-
   for (let file of Object.values(generatedFiles)) {
     ensureFileExists(DIST_PATH, file)
   }
@@ -110,6 +108,7 @@ import * as Renderer from '${typingsRoot}/index'
 declare var DclRenderer: typeof Renderer
     `
   )
+  ensureFileExists(path.resolve(DIST_PATH, typingsRoot), "index.d.ts")
 }
 
 async function createPackageJson() {
