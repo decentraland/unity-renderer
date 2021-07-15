@@ -22,7 +22,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private Transform lookAtT;
     private MouseCatcher mouseCatcher;
     private PlayerAvatarController avatarRenderer;
-    private BIWGizmosController gizmoManager;
+    private IBIWGizmosController gizmoManager;
     private IBIWOutlinerController outlinerController;
 
     private InputAction_Trigger focusOnSelectedEntitiesInputAction;
@@ -46,29 +46,28 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private Vector3 lastMousePosition;
     private Vector3 dragStartedPoint;
-    private GameObject builderGO;
 
     public const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
+        base.Init(context);
 
         lookAtT = new GameObject("BIWGodModeTransform").transform;
-        maxDistanceToSelectEntitiesValue = biwContext.godModeDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = context.godModeDynamicVariables.maxDistanceToSelectEntities;
 
-        snapFactor = biwContext.godModeDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwContext.godModeDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwContext.godModeDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwContext.godModeDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = context.godModeDynamicVariables.snapFactor;
+        snapRotationDegresFactor = context.godModeDynamicVariables.snapRotationDegresFactor;
+        snapScaleFactor =  context.godModeDynamicVariables.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.godModeDynamicVariables.snapDistanceToActivateMovement;
 
-        initialEagleCameraHeight = biwContext.godModeDynamicVariables.initialEagleCameraHeight;
-        initialEagleCameraDistance = biwContext.godModeDynamicVariables.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = biwContext.godModeDynamicVariables.initialEagleCameraLookAtHeight;
+        initialEagleCameraHeight = context.godModeDynamicVariables.initialEagleCameraHeight;
+        initialEagleCameraDistance = context.godModeDynamicVariables.initialEagleCameraDistance;
+        initialEagleCameraLookAtHeight = context.godModeDynamicVariables.initialEagleCameraLookAtHeight;
 
-        snapDragFactor = biwContext.godModeDynamicVariables.snapDragFactor;
+        snapDragFactor = context.godModeDynamicVariables.snapDragFactor;
 
-        outlinerController = biwContext.outlinerController;
+        outlinerController = context.outlinerController;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -88,33 +87,31 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         avatarRenderer = InitialSceneReferences.i.playerAvatarController;
         cameraController = InitialSceneReferences.i.cameraController;
 
-        BIWGizmosController.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
-        BIWGizmosController.OnGizmoTransformObjectStart += OnGizmosTransformStart;
-
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
         BIWInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
-        focusOnSelectedEntitiesInputAction = biwContext.inputsReferences.focusOnSelectedEntitiesInputAction;
-        multiSelectionInputAction = biwContext.inputsReferences.multiSelectionInputAction;
+        focusOnSelectedEntitiesInputAction = context.inputsReferences.focusOnSelectedEntitiesInputAction;
+        multiSelectionInputAction = context.inputsReferences.multiSelectionInputAction;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
 
-        builderGO = GameObject.Instantiate(biwContext.projectReferences.godModeBuilderPrefab, biwContext.projectReferences.godModeBuilderPrefab.transform.position, biwContext.projectReferences.godModeBuilderPrefab.transform.rotation);
-        gizmoManager = builderGO.GetComponentInChildren<BIWGizmosController>();
+        gizmoManager = context.gizmosController;
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
+        gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
+        gizmoManager.OnGizmoTransformObjectStart += OnGizmosTransformStart;
     }
 
     public override void Dispose()
     {
         base.Dispose();
-        BIWGizmosController.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
-        BIWGizmosController.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
+        gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
+        gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
 
         BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
         BIWInputWrapper.OnMouseUp -= OnInputMouseUp;
@@ -123,8 +120,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
 
-        GameObject.Destroy(lookAtT.gameObject);
-        GameObject.Destroy(builderGO);
+        if (lookAtT.gameObject != null)
+            GameObject.Destroy(lookAtT.gameObject);
 
         if (HUDController.i.builderInWorldMainHud == null)
             return;
@@ -421,7 +418,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             gizmoManager.HasAxisHover())
             return;
 
-        if (gizmoManager.isActiveAndEnabled)
+        if (gizmoManager.IsGizmoActive())
         {
             gizmoManager.HideGizmo();
             wasGizmosActive = true;
@@ -524,10 +521,6 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
 
         cameraController.SetCameraMode(CameraMode.ModeId.BuildingToolGodMode);
-
-        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
-        gizmoManager.InitializeGizmos(Camera.main, freeCameraController.transform);
-        gizmoManager.ForceRelativeScaleRatio();
     }
 
     public override void OnDeleteEntity(BIWEntity entity)

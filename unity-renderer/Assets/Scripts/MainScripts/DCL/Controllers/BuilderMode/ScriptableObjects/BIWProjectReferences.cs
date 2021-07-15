@@ -14,6 +14,6 @@ public class BIWProjectReferences : ScriptableObject
     public GameObject errorPrefab;
     public GameObject floorPlaceHolderPrefab;
     public GameObject loadingPrefab;
-    public GameObject godModeBuilderPrefab;
+    public GameObject gizmosPrefab;
     public GameObject audioPrefab;
 }

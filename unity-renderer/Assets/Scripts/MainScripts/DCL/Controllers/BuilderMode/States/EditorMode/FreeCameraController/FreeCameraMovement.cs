@@ -125,9 +125,6 @@ namespace DCL.Camera
             BIWInputWrapper.OnMouseDown += OnInputMouseDown;
             BIWInputWrapper.OnMouseUp += OnInputMouseUp;
 
-            BIWGizmosController.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
-            BIWGizmosController.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
-
             advanceForwardStartDelegate = (action) => isAdvancingForward = true;
             advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
 
@@ -342,10 +339,6 @@ namespace DCL.Camera
         }
 
         public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
-
-        private void OnGizmoTransformObjectEnd(string gizmoType) { isCameraAbleToMove = true; }
-
-        private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
 
         private void MouseWheel(float axis)
         {

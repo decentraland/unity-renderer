@@ -26,7 +26,9 @@ public static class BIWTestHelper
             Substitute.For<IBIWFloorHandler>(),
             Substitute.For<IBIWEntityHandler>(),
             Substitute.For<IBIWActionController>(),
-            Substitute.For<IBIWSaveController>()
+            Substitute.For<IBIWSaveController>(),
+            Substitute.For<IBIWRaycastController>(),
+            Substitute.For<IBIWGizmosController>()
         );
         return context;
     }
@@ -42,6 +44,8 @@ public static class BIWTestHelper
         IBIWEntityHandler entityHandler = Substitute.For<IBIWEntityHandler>();
         IBIWActionController actionController = Substitute.For<IBIWActionController>();
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
+        IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
+        IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
 
         foreach ( var mock in mocks)
         {
@@ -77,6 +81,12 @@ public static class BIWTestHelper
                 case IBIWSaveController sc:
                     saveController = sc;
                     break;
+                case IBIWRaycastController rc:
+                    raycastController = rc;
+                    break;
+                case IBIWGizmosController gc:
+                    gizmosController = gc;
+                    break;
             }
         }
 
@@ -91,7 +101,9 @@ public static class BIWTestHelper
             floorHandler,
             entityHandler,
             actionController,
-            saveController
+            saveController,
+            raycastController,
+            gizmosController
         );
         return context;
     }

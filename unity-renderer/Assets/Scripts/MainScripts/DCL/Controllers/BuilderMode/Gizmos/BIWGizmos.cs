@@ -1,14 +1,34 @@
 using DCL.Configuration;
 using UnityEngine;
 
-public abstract class BIWGizmos : MonoBehaviour
+public interface IBIWGizmos
+{
+    public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
+
+    public bool initialized { get; }
+    public GameObject gameObject { get; }
+    public void Initialize(Camera camera, Transform cameraHolderTransform);
+    public Vector3 GetActiveAxisVector();
+    public void OnEndDrag();
+    public void ForceRelativeScaleRatio();
+    public string GetGizmoType();
+    public void SetTargetTransform(Transform entityTransform);
+    public void OnBeginDrag(BIWGizmosAxis axis, Transform entityTransform);
+    public float OnDrag(Vector3 hitPoint, Vector2 mousePosition);
+    public bool RaycastHit(Ray ray, out Vector3 hitPoint);
+}
+
+public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 {
     [SerializeField] private string gizmoType = string.Empty;
     [SerializeField] protected BIWGizmosAxis axisX;
     [SerializeField] protected BIWGizmosAxis axisY;
     [SerializeField] protected BIWGizmosAxis axisZ;
 
-    public bool initialized { get; private set; }
+    public bool initialized => initializedValue;
+    public GameObject gameObject => gameObject;
+    public bool initializedValue { get; private set; }
+
     protected float snapFactor = 0;
 
     protected bool worldOrientedGizmos = true;
@@ -28,7 +48,7 @@ public abstract class BIWGizmos : MonoBehaviour
 
     public virtual void Initialize(Camera camera, Transform cameraHolderTransform)
     {
-        initialized = true;
+        initializedValue = true;
         relativeScaleRatio = transform.localScale / GetCameraPlaneDistance(cameraHolderTransform, transform.position);
         builderCamera = camera;
         this.cameraHolderTransform = cameraHolderTransform;
@@ -67,7 +87,7 @@ public abstract class BIWGizmos : MonoBehaviour
         axis.SetColorHighlight();
     }
 
-    public virtual float OnDrag(Vector3 hitPoint, Vector2 mousePosition)
+    public float OnDrag(Vector3 hitPoint, Vector2 mousePosition)
     {
         float axisValue = GetHitPointToAxisValue(activeAxis, hitPoint, mousePosition);
 
@@ -92,7 +112,7 @@ public abstract class BIWGizmos : MonoBehaviour
         return 0;
     }
 
-    public virtual void OnEndDrag() { activeAxis.SetColorDefault(); }
+    public void OnEndDrag() { activeAxis.SetColorDefault(); }
 
     public virtual bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {

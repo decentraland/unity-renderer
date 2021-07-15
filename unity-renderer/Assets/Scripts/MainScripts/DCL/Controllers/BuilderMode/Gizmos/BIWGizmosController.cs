@@ -1,34 +1,81 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
+using DCL.Camera;
 using UnityEngine;
 
-public class BIWGizmosController : MonoBehaviour
+public interface IBIWGizmosController
 {
     public delegate void GizmoTransformDelegate(string gizmoType);
 
-    public static event GizmoTransformDelegate OnGizmoTransformObjectStart;
-    public static event GizmoTransformDelegate OnGizmoTransformObject;
-    public static event GizmoTransformDelegate OnGizmoTransformObjectEnd;
+    public event GizmoTransformDelegate OnGizmoTransformObjectStart;
+    public event GizmoTransformDelegate OnGizmoTransformObject;
+    public event GizmoTransformDelegate OnGizmoTransformObjectEnd;
+    public event Action<Vector3> OnChangeTransformValue;
+    public string GetSelectedGizmo();
+    public void SetSnapFactor(float position, float rotation, float scale);
+    public void SetSelectedEntities(Transform selectionParent, List<EditableEntity> entities);
+    public void ShowGizmo();
+    public void HideGizmo(bool setInactiveGizmos = false);
+    public bool IsGizmoActive();
+    public void ForceRelativeScaleRatio();
+    public bool HasAxisHover();
+    public void SetGizmoType(string gizmoType);
+}
+
+public class BIWGizmosController : BIWController, IBIWGizmosController
+{
+    public event IBIWGizmosController.GizmoTransformDelegate OnGizmoTransformObjectStart;
+    public event IBIWGizmosController.GizmoTransformDelegate OnGizmoTransformObject;
+    public event IBIWGizmosController.GizmoTransformDelegate OnGizmoTransformObjectEnd;
 
     public event Action<Vector3> OnChangeTransformValue;
 
-    public BIWRaycast builderRaycast;
+    private IBIWRaycastController raycastController;
 
-    [SerializeField] private BIWGizmos[] gizmos = null;
+    private IBIWGizmos[] gizmos;
 
-    public bool isTransformingObject { private set; get; }
-    public BIWGizmos activeGizmo { private set; get; }
+    private bool isTransformingObject;
+    private IBIWGizmos activeGizmo;
 
     private SnapInfo snapInfo = new SnapInfo();
-
-    private bool isGameObjectActive = false;
-    private bool isGizmosInitialized = false;
 
     private BIWGizmosAxis hoveredAxis = null;
 
     private Transform selectedEntitiesParent;
     private List<EditableEntity> selectedEntities;
+    private GameObject gizmosGO;
+    private FreeCameraMovement freeCameraMovement;
+
+    public override void Init(BIWContext context)
+    {
+        base.Init(context);
+        gizmosGO = GameObject.Instantiate(context.projectReferences.gizmosPrefab, context.projectReferences.gizmosPrefab.transform.position, context.projectReferences.gizmosPrefab.transform.rotation);
+        gizmos = gizmosGO.GetComponentsInChildren<IBIWGizmos>(true);
+
+        raycastController = context.raycastController;
+
+        raycastController.OnGizmosAxisPressed += OnGizmosAxisPressed;
+        BIWInputWrapper.OnMouseUp += OnMouseUp;
+        BIWInputWrapper.OnMouseDrag += OnMouseDrag;
+        if (InitialSceneReferences.i.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+            freeCameraMovement = (FreeCameraMovement)cameraState;
+
+        // NOTE(Adrian): Take into account that right now to get the relative scale of the gizmos, we set the gizmos in the player position and the camera
+        InitializeGizmos(InitialSceneReferences.i.mainCamera, freeCameraMovement.transform);
+        ForceRelativeScaleRatio();
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        if (gizmosGO != null)
+            GameObject.Destroy(gizmosGO);
+        raycastController.OnGizmosAxisPressed -= OnGizmosAxisPressed;
+        BIWInputWrapper.OnMouseUp -= OnMouseUp;
+        BIWInputWrapper.OnMouseDrag -= OnMouseDrag;
+    }
 
     public string GetSelectedGizmo()
     {
@@ -56,7 +103,7 @@ public class BIWGizmosController : MonoBehaviour
         isTransformingObject = true;
         activeGizmo = hittedAxis.GetGizmo();
         activeGizmo.OnBeginDrag(hittedAxis, selectedEntitiesParent);
-
+        freeCameraMovement.SetCameraCanMove(false);
         OnGizmoTransformObjectStart?.Invoke(activeGizmo.GetGizmoType());
     }
 
@@ -70,6 +117,7 @@ public class BIWGizmosController : MonoBehaviour
     private void OnEndDrag()
     {
         activeGizmo.OnEndDrag();
+        freeCameraMovement.SetCameraCanMove(true);
         OnGizmoTransformObjectEnd?.Invoke(activeGizmo.GetGizmoType());
         isTransformingObject = false;
     }
@@ -99,6 +147,7 @@ public class BIWGizmosController : MonoBehaviour
 
     public void ShowGizmo()
     {
+        gizmosGO.gameObject.SetActive(true);
         if (activeGizmo != null)
         {
             activeGizmo.SetTargetTransform(selectedEntitiesParent);
@@ -116,9 +165,10 @@ public class BIWGizmosController : MonoBehaviour
         {
             SetGizmoType(DCL.Components.DCLGizmos.Gizmo.NONE);
         }
+        gizmosGO.gameObject.SetActive(false);
     }
 
-    private bool IsGizmoActive() { return activeGizmo != null; }
+    public bool IsGizmoActive() { return activeGizmo != null; }
 
     private bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
@@ -130,27 +180,9 @@ public class BIWGizmosController : MonoBehaviour
         return false;
     }
 
-    private void OnEnable()
+    public override void Update()
     {
-        if (!isGameObjectActive)
-        {
-            BIWObjectSelector.OnGizmosAxisPressed += OnGizmosAxisPressed;
-            BIWInputWrapper.OnMouseUp += OnMouseUp;
-            BIWInputWrapper.OnMouseDrag += OnMouseDrag;
-            isGameObjectActive = true;
-        }
-    }
-
-    private void OnDisable()
-    {
-        BIWObjectSelector.OnGizmosAxisPressed -= OnGizmosAxisPressed;
-        BIWInputWrapper.OnMouseUp -= OnMouseUp;
-        BIWInputWrapper.OnMouseDrag -= OnMouseDrag;
-        isGameObjectActive = false;
-    }
-
-    private void Update()
-    {
+        base.Update();
         if (!isTransformingObject)
         {
             CheckGizmoHover(Input.mousePosition);
@@ -191,18 +223,14 @@ public class BIWGizmosController : MonoBehaviour
         }
     }
 
-    public void InitializeGizmos(Camera camera, Transform cameraTransform)
+    private void InitializeGizmos(Camera camera, Transform cameraTransform)
     {
-        if (!isGizmosInitialized)
+        for (int i = 0; i < gizmos.Length; i++)
         {
-            for (int i = 0; i < gizmos.Length; i++)
+            if (!gizmos[i].initialized)
             {
-                if (!gizmos[i].initialized)
-                {
-                    gizmos[i].Initialize(camera, cameraTransform);
-                }
+                gizmos[i].Initialize(camera, cameraTransform);
             }
-            isGizmosInitialized = true;
         }
     }
 
@@ -235,7 +263,7 @@ public class BIWGizmosController : MonoBehaviour
             if (isTransformingObject && hasMouseMoved)
             {
                 Vector3 hit;
-                if (RaycastHit(builderRaycast.GetMouseRay(mousePosition), out hit))
+                if (RaycastHit(raycastController.GetMouseRay(mousePosition), out hit))
                 {
                     OnDrag(hit, mousePosition);
                 }
@@ -245,10 +273,8 @@ public class BIWGizmosController : MonoBehaviour
 
     private void CheckGizmoHover(Vector3 mousePosition)
     {
-        if (builderRaycast.builderCamera == null)
-            return;
         RaycastHit hit;
-        if (builderRaycast.RaycastToGizmos(mousePosition, out hit))
+        if (raycastController.RaycastToGizmos(mousePosition, out hit))
         {
             BIWGizmosAxis gizmoAxis = hit.collider.gameObject.GetComponent<BIWGizmosAxis>();
             SetAxisHover(gizmoAxis);

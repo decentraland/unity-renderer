@@ -31,6 +31,8 @@ public class BIWContext
     public IBIWEntityHandler entityHandler => entityHandlerValue;
     public IBIWActionController actionController => actionControllerValue;
     public IBIWSaveController saveController => saveControllerValue;
+    public IBIWRaycastController raycastController => raycastControllerValue;
+    public IBIWGizmosController gizmosController => gizmosControllerValue;
 
     private IBIWOutlinerController outlinerControllerValue;
     private IBIWInputHandler inputHandlerValue;
@@ -42,17 +44,21 @@ public class BIWContext
     private IBIWEntityHandler entityHandlerValue;
     private IBIWActionController actionControllerValue;
     private IBIWSaveController saveControllerValue;
+    private IBIWRaycastController raycastControllerValue;
+    private IBIWGizmosController gizmosControllerValue;
 
     public void Init(IBIWOutlinerController outlinerController,
-        IBIWInputHandler bIWInputHandler,
-        IBIWInputWrapper biwInputWrapper,
-        IBIWPublishController biwPublishController,
-        IBIWCreatorController biwCreatorController,
-        IBIWModeController biwModeController,
-        IBIWFloorHandler biwFloorHandler,
-        IBIWEntityHandler biwEntityHandler,
-        IBIWActionController ibiwActionController,
-        IBIWSaveController biwSaveController)
+        IBIWInputHandler inputHandler,
+        IBIWInputWrapper inputWrapper,
+        IBIWPublishController publishController,
+        IBIWCreatorController creatorController,
+        IBIWModeController modeController,
+        IBIWFloorHandler floorHandler,
+        IBIWEntityHandler entityHandler,
+        IBIWActionController actionController,
+        IBIWSaveController saveController,
+        IBIWRaycastController raycastController,
+        IBIWGizmosController gizmosController)
     {
         projectReferencesValue = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
         godModeDynamicVariablesValue = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
@@ -60,15 +66,17 @@ public class BIWContext
         inputsReferencesValue = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
 
         outlinerControllerValue = outlinerController;
-        inputHandlerValue = bIWInputHandler;
-        inputWrapperValue = biwInputWrapper;
-        publishControllerValue = biwPublishController;
-        creatorControllerValue = biwCreatorController;
-        modeControllerValue = biwModeController;
-        floorHandlerValue = biwFloorHandler;
-        entityHandlerValue = biwEntityHandler;
-        actionControllerValue = ibiwActionController;
-        saveControllerValue = biwSaveController;
+        inputHandlerValue = inputHandler;
+        inputWrapperValue = inputWrapper;
+        publishControllerValue = publishController;
+        creatorControllerValue = creatorController;
+        modeControllerValue = modeController;
+        floorHandlerValue = floorHandler;
+        entityHandlerValue = entityHandler;
+        actionControllerValue = actionController;
+        saveControllerValue = saveController;
+        raycastControllerValue = raycastController;
+        gizmosControllerValue = gizmosController;
     }
 
     public void Dispose()

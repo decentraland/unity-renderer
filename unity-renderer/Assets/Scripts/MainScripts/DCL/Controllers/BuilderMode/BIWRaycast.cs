@@ -4,41 +4,47 @@ using DCL;
 using DCL.Configuration;
 using UnityEngine;
 
-public class BIWRaycast : MonoBehaviour
+public interface IBIWRaycastController
 {
-    public Camera builderCamera;
+    public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
+    public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo);
+    public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer);
+    public Ray GetMouseRay(Vector3 mousePosition);
+}
+
+public class BIWRaycastController : BIWController, IBIWRaycastController
+{
+    public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
+
+    private Camera builderCamera;
 
     private const float RAYCAST_MAX_DISTANCE = 10000f;
 
-    public LayerMask defaultMask { get; private set; }
     public LayerMask gizmoMask { get; private set; }
 
-    private Plane groundPlane;
-    private Plane entityHitPlane;
-
-    private void Awake()
+    public override void Init(BIWContext context)
     {
-        defaultMask = BIWSettings.COLLIDER_SELECTION_LAYER;
-        gizmoMask = BIWSettings.GIZMOS_LAYER;
+        base.Init(context);
 
-        groundPlane = new Plane(Vector3.up, Vector3.zero);
-        if (builderCamera == null)
-            builderCamera = InitialSceneReferences.i.mainCamera;
+        gizmoMask = BIWSettings.GIZMOS_LAYER;
+        BIWInputWrapper.OnMouseDown += OnMouseDown;
+
+        builderCamera = InitialSceneReferences.i.mainCamera;
     }
 
-    public void SetEntityHitPlane(float height) { entityHitPlane = new Plane(Vector3.up, new Vector3(0, height, 0)); }
-
-    public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, bool checkGizmo = false)
+    public override void Dispose()
     {
-        if (checkGizmo)
-        {
-            if (Raycast(mousePosition, gizmoMask, out hitInfo))
-            {
-                return true;
-            }
-        }
+        base.Dispose();
+        BIWInputWrapper.OnMouseDown -= OnMouseDown;
+    }
 
-        return Physics.Raycast(GetMouseRay(mousePosition), out hitInfo, RAYCAST_MAX_DISTANCE, mask);
+    private void OnMouseDown(int buttonId, Vector3 mousePosition)
+    {
+        if (buttonId != 0)
+        {
+            return;
+        }
+        CheckGizmosRaycast(mousePosition);
     }
 
     public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer)
@@ -56,39 +62,38 @@ public class BIWRaycast : MonoBehaviour
 
     public Ray GetMouseRay(Vector3 mousePosition) { return builderCamera.ScreenPointToRay(mousePosition); }
 
+    #region Gizmos
+
+    private void CheckGizmosRaycast(Vector3 mousePosition)
+    {
+        RaycastHit hit;
+        if (Raycast(mousePosition, gizmoMask, out hit, CompareSelectionHit))
+        {
+            BIWGizmosAxis gizmosAxis = hit.collider.gameObject.GetComponent<BIWGizmosAxis>();
+            if (gizmosAxis != null)
+            {
+                OnGizmosAxisPressed?.Invoke(gizmosAxis);
+            }
+        }
+    }
+
     public bool RaycastToGizmos(Ray ray, out RaycastHit hitInfo) { return Physics.Raycast(ray, out hitInfo, RAYCAST_MAX_DISTANCE, gizmoMask); }
 
     public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo) { return RaycastToGizmos(GetMouseRay(mousePosition), out hitInfo); }
 
-    public bool RaycastToGround(Vector3 mousePosition, out Vector3 hitPosition)
+    private RaycastHit CompareSelectionHit(RaycastHit[] hits)
     {
-        Ray ray = GetMouseRay(mousePosition);
-        return RaycastToGround(ray, out hitPosition);
-    }
+        RaycastHit closestHit = hits[0];
 
-    public bool RaycastToGround(Ray ray, out Vector3 hitPosition)
-    {
-        float raycastDistance = 0.0f;
-
-        if (groundPlane.Raycast(ray, out raycastDistance))
+        if (IsGizmoHit(closestHit)) // Gizmos has always priority
         {
-            hitPosition = ray.GetPoint(raycastDistance);
-            return true;
+            return closestHit;
         }
-        hitPosition = Vector3.zero;
-        return false;
+        return closestHit;
     }
 
-    public Vector3 RaycastToEntityHitPlane(Vector3 mousePosition)
-    {
-        Ray ray = GetMouseRay(mousePosition);
-        float raycastDistance = 0.0f;
+    private bool IsGizmoHit(RaycastHit hit) { return hit.collider.gameObject.GetComponent<BIWGizmosAxis>() != null; }
 
-        if (entityHitPlane.Raycast(ray, out raycastDistance))
-        {
-            return ray.GetPoint(raycastDistance);
-        }
+    #endregion
 
-        return Vector3.zero;
-    }
 }

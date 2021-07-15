@@ -23,21 +23,21 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     private InputAction_Hold.Started rotationHoldStartDelegate;
     private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
-        maxDistanceToSelectEntitiesValue = biwContext.firstPersonDynamicVariables.maxDistanceToSelectEntities;
+        base.Init(context);
+        maxDistanceToSelectEntitiesValue = context.firstPersonDynamicVariables.maxDistanceToSelectEntities;
 
-        snapFactor = biwContext.firstPersonDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwContext.firstPersonDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwContext.firstPersonDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwContext.firstPersonDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = context.firstPersonDynamicVariables.snapFactor;
+        snapRotationDegresFactor = context.firstPersonDynamicVariables.snapRotationDegresFactor;
+        snapScaleFactor =  context.firstPersonDynamicVariables.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.firstPersonDynamicVariables.snapDistanceToActivateMovement;
 
-        scaleSpeed =  biwContext.firstPersonDynamicVariables.scaleSpeed;
-        rotationSpeed =  biwContext.firstPersonDynamicVariables.rotationSpeed;
-        distanceFromCameraForNewEntitties =  biwContext.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
+        scaleSpeed =  context.firstPersonDynamicVariables.scaleSpeed;
+        rotationSpeed =  context.firstPersonDynamicVariables.rotationSpeed;
+        distanceFromCameraForNewEntitties =  context.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
 
-        rotationHold = biwContext.inputsReferences.firstPersonRotationHold;
+        rotationHold = context.inputsReferences.firstPersonRotationHold;
 
         rotationHoldStartDelegate = (action) => { shouldRotate = true; };
         rotationHoldFinishedDelegate = (action) => { shouldRotate = false; };

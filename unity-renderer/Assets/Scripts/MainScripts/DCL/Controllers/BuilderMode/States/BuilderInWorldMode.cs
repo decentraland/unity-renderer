@@ -33,11 +33,11 @@ public class BuilderInWorldMode
 
     protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
 
-    public virtual void Init(BIWContext biwContext)
+    public virtual void Init(BIWContext context)
     {
-        biwEntityHandler = biwContext.entityHandler;
-        biwSaveController = biwContext.saveController;
-        ibiwActionController = biwContext.actionController;
+        biwEntityHandler = context.entityHandler;
+        biwSaveController = context.saveController;
+        ibiwActionController = context.actionController;
         biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 

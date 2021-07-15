@@ -29,6 +29,8 @@ public class BIWMainController : Feature
     private BIWActionController actionController;
     private BIWSaveController saveController;
     private BIWInputWrapper inputWrapper;
+    private BIWRaycastController raycastController;
+    private BIWGizmosController gizmosController;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
@@ -144,7 +146,9 @@ public class BIWMainController : Feature
             floorHandler,
             entityHandler,
             actionController,
-            saveController
+            saveController,
+            raycastController,
+            gizmosController
         );
 
         skyBoxMaterial = context.projectReferences.skyBoxMaterial;
@@ -162,6 +166,8 @@ public class BIWMainController : Feature
         actionController = new BIWActionController();
         saveController = new BIWSaveController();
         inputWrapper = new BIWInputWrapper();
+        raycastController = new BIWRaycastController();
+        gizmosController = new BIWGizmosController();
     }
 
     private void InitBuilderProjectPanel()
@@ -332,7 +338,7 @@ public class BIWMainController : Feature
         initialLoadingController.Initialize();
     }
 
-    public void InitControllers()
+    private void InitControllers()
     {
         entityHandler.Init(context);
         modeController.Init(context);
@@ -344,6 +350,8 @@ public class BIWMainController : Feature
         saveController.Init(context);
         actionController.Init(context);
         inputWrapper.Init(context);
+        raycastController.Init(context);
+        gizmosController.Init(context);
 
         controllers.Add(entityHandler);
         controllers.Add(modeController);
@@ -355,6 +363,8 @@ public class BIWMainController : Feature
         controllers.Add(saveController);
         controllers.Add(actionController);
         controllers.Add(inputWrapper);
+        controllers.Add(raycastController);
+        controllers.Add(gizmosController);
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }

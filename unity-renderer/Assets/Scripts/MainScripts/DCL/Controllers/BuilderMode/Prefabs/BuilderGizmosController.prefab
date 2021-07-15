@@ -537,7 +537,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4685460382834116846}
-  - component: {fileID: -4246166291163389048}
   m_Layer: 0
   m_Name: BuilderGizmosController
   m_TagString: Untagged
@@ -562,23 +561,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-4246166291163389048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4685460382834116841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9480bbaa60ba7f047b99ea0288324ddd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  builderRaycast: {fileID: 0}
-  gizmos:
-  - {fileID: 447367954118193395}
-  - {fileID: 4985415839172520561}
-  - {fileID: 4566961020849640316}
 --- !u!1 &4685460382852399601
 GameObject:
   m_ObjectHideFlags: 0
