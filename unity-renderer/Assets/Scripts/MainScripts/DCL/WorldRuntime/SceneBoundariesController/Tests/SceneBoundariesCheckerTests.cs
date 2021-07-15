@@ -84,7 +84,7 @@ namespace SceneBoundariesCheckerTests
         {
             TestHelpers.CreateEntityWithGLTFShape(scene, new Vector3(8, 1, 8), TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb", out var entity);
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
             TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(-28, 1, 8) });
             yield return TestHelpers.CreateAudioSourceWithClipForEntity(entity);
 
