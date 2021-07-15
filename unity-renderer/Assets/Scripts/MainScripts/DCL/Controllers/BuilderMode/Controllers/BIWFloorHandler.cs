@@ -1,5 +1,4 @@
 using System;
-using Builder.MeshLoadIndicator;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -26,9 +25,6 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private IBIWCreatorController creatorController;
     private IBIWSaveController saveController;
 
-    private DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
-    private BIWFloorLoading floorLoadingSpinnerPrefab;
-
     private GameObject floorPrefab;
 
     private int numberOfParcelsLoaded;
@@ -36,7 +32,6 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
-    private readonly List<BIWFloorLoading> loadingFloorObjects = new List<BIWFloorLoading>();
 
     public override void Init(BIWContext context)
     {
@@ -45,17 +40,12 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         entityHandler = context.entityHandler;
 
-        dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferences.floorLoadingPrefab, context.projectReferences.floorLoadingPrefab.transform.position, context.projectReferences.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
-        floorLoadingSpinnerPrefab = dclBuilderMeshLoadIndicatorController.indicator;
         creatorController = context.creatorController;
         saveController = context.saveController;
 
         floorPrefab = context.projectReferences.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
-        floorLoadingSpinnerPrefab.Initialize(InitialSceneReferences.i.mainCamera);
-
-        dclBuilderMeshLoadIndicatorController.gameObject.SetActive(false);
     }
 
     public override void Dispose()
@@ -70,14 +60,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             RemovePlaceHolder(entity);
     }
 
-    public void Clean()
-    {
-        RemoveAllPlaceHolders();
-        for (int i = 0; i < loadingFloorObjects.Count; i++)
-        {
-            GameObject.Destroy(loadingFloorObjects[i].gameObject);
-        }
-    }
+    public void Clean() { RemoveAllPlaceHolders(); }
 
     public bool ExistsFloorPlaceHolderForEntity(string entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
 
@@ -140,8 +123,8 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
             if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
             {
-                dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
                 GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
+                floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(InitialSceneReferences.i.mainCamera);
                 floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
                 decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
             }
@@ -176,7 +159,6 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         GameObject floorPlaceHolder = floorPlaceHolderDict[entityId];
         floorPlaceHolderDict.Remove(entityId);
         GameObject.Destroy(floorPlaceHolder);
-        dclBuilderMeshLoadIndicatorController.HideIndicator(entityId);
     }
 
     private void RemoveAllPlaceHolders()
@@ -193,6 +175,5 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         base.ExitEditMode();
 
         RemoveAllPlaceHolders();
-        dclBuilderMeshLoadIndicatorController.HideAllIndicators();
     }
 }

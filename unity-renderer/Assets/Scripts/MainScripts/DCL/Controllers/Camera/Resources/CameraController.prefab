@@ -1015,7 +1015,7 @@ MonoBehaviour:
   lookSpeedV: 2
   smoothCameraPanAceleration: 5
   dragSpeed: 3
-  zoomSpeed: 30
+  zoomSpeed: 60
   advanceFowardInputAction: {fileID: 11400000, guid: e1259dcd82d671841b98120f45cd5e1e,
     type: 2}
   advanceBackInputAction: {fileID: 11400000, guid: c7d2789965fbcb643ae73d7f5e49851c,

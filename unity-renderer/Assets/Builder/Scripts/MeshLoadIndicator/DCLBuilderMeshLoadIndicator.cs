@@ -12,6 +12,7 @@ namespace Builder.MeshLoadIndicator
 
         private void LateUpdate()
         {
+            builderCamera = Camera.main;
             transform.LookAt(transform.position + builderCamera.transform.rotation * Vector3.forward,
                 builderCamera.transform.rotation * Vector3.up);
 

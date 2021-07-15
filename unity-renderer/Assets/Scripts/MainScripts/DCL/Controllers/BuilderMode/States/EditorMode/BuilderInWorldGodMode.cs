@@ -1,4 +1,3 @@
-using Builder.Gizmos;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -23,7 +22,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     private Transform lookAtT;
     private MouseCatcher mouseCatcher;
     private PlayerAvatarController avatarRenderer;
-    private DCLBuilderGizmoManager gizmoManager;
+    private BIWGizmosController gizmoManager;
     private IBIWOutlinerController outlinerController;
 
     private InputAction_Trigger focusOnSelectedEntitiesInputAction;
@@ -89,8 +88,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         avatarRenderer = InitialSceneReferences.i.playerAvatarController;
         cameraController = InitialSceneReferences.i.cameraController;
 
-        DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
-        DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmosTransformStart;
+        BIWGizmosController.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
+        BIWGizmosController.OnGizmoTransformObjectStart += OnGizmosTransformStart;
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;
@@ -106,7 +105,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
 
         builderGO = GameObject.Instantiate(biwContext.projectReferences.godModeBuilderPrefab, biwContext.projectReferences.godModeBuilderPrefab.transform.position, biwContext.projectReferences.godModeBuilderPrefab.transform.rotation);
-        gizmoManager = builderGO.GetComponentInChildren<DCLBuilderGizmoManager>();
+        gizmoManager = builderGO.GetComponentInChildren<BIWGizmosController>();
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
     }
@@ -114,8 +113,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void Dispose()
     {
         base.Dispose();
-        DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
-        DCLBuilderGizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
+        BIWGizmosController.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
+        BIWGizmosController.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
 
         BIWInputWrapper.OnMouseDown -= OnInputMouseDown;
         BIWInputWrapper.OnMouseUp -= OnInputMouseUp;

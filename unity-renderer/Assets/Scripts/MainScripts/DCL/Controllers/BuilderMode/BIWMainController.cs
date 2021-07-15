@@ -1,4 +1,3 @@
-using Builder;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -367,7 +366,7 @@ public class BIWMainController : Feature
 
         if (Camera.main != null)
         {
-            DCLBuilderOutline outliner = Camera.main.GetComponent<DCLBuilderOutline>();
+            BIWOutline outliner = Camera.main.GetComponent<BIWOutline>();
             GameObject.Destroy(outliner);
         }
 

@@ -1,4 +1,3 @@
-using Builder.Gizmos;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -126,8 +125,8 @@ namespace DCL.Camera
             BIWInputWrapper.OnMouseDown += OnInputMouseDown;
             BIWInputWrapper.OnMouseUp += OnInputMouseUp;
 
-            DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
-            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
+            BIWGizmosController.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
+            BIWGizmosController.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
 
             advanceForwardStartDelegate = (action) => isAdvancingForward = true;
             advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;

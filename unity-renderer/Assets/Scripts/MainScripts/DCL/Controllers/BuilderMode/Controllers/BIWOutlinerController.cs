@@ -1,4 +1,3 @@
-using Builder;
 using DCL.Configuration;
 using DCL.Controllers;
 using System.Collections.Generic;
@@ -163,11 +162,10 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private void ActivateBuilderInWorldCamera()
     {
         Camera camera = Camera.main;
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
-
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         if (outliner == null)
         {
-            outliner = camera.gameObject.AddComponent(typeof(DCLBuilderOutline)) as DCLBuilderOutline;
+            outliner = camera.gameObject.AddComponent(typeof(BIWOutline)) as BIWOutline;
             outliner.SetOutlineMaterial(cameraOutlinerMaterial);
         }
         else
@@ -188,7 +186,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         if (camera == null)
             return;
 
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         if (outliner != null)
         {
             outliner.enabled = false;
@@ -206,7 +204,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         if (camera == null)
             return;
 
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         outliner.Dispose();
         GameObject.Destroy(outliner);
     }
