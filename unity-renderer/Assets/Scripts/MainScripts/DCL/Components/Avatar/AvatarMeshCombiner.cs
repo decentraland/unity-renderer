@@ -1,23 +1,87 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
 {
+    //    public class AvatarTexturePacker : IDisposable
+    //    {
+    //        /*
+    //        ATLAS APPROACH
+    //        - hw = height and width square size
+    //        - For each avatar, pack all textures reduced to 256hw
+    //        - This allows for packing 16 textures on 1024hw, or 32 on 2048hw. (or 16 in 2048hw if we go for 512hw)
+    // */
+    //
+    //        public AvatarTexturePacker ()
+    //        {
+    //        }
+    //
+    //        private HashSet<Vector2> packedOffsets = new HashSet<Vector2>();
+    //        private Queue<Vector2> packedOffsetsQueue = new Queue<Vector2>();
+    //
+    //        void PackOffset( Vector2 currentArray, float maxWidth, float maxHeight )
+    //        {
+    //            var right = currentArray + Vector2.right;
+    //            var up = currentArray + Vector2.up;
+    //
+    //            if ( !packedOffsets.Contains(currentArray))
+    //            {
+    //                packedOffsets.Add(currentArray);
+    //                packedOffsetsQueue.Enqueue(currentArray);
+    //            }
+    //
+    //            if ( right.x < maxWidth && !packedOffsets.Contains(right))
+    //                PackOffset(right, maxWidth, maxHeight);
+    //
+    //            if ( up.y < maxHeight && !packedOffsets.Contains(up))
+    //                PackOffset(up, maxWidth, maxHeight);
+    //        }
+    //
+    //        private RenderTexture atlas;
+    //
+    //        public void Pack(Texture2D[] textures, float tileSize, Vector2 atlasSize)
+    //        {
+    //            packedOffsetsQueue.Clear();
+    //            packedOffsets.Clear();
+    //            PackOffset(Vector2.zero, atlasSize.x / tileSize, atlasSize.y / tileSize);
+    //
+    //            atlas = new RenderTexture((int)atlasSize.x, (int)atlasSize.y, 0, RenderTextureFormat.Default); //RenderTexture.GetTemporary(256, 256);
+    //
+    //            foreach ( Texture2D tex in textures )
+    //            {
+    //                Vector2 scale = Vector2.one;
+    //                scale.x = tileSize / tex.width;
+    //                scale.y = tileSize / tex.height;
+    //                Vector2 offsetToPack = packedOffsetsQueue.Dequeue();
+    //
+    //                Graphics.Blit(tex, atlas, scale, offsetToPack * Vector2.one * tileSize);
+    //            }
+    //        }
+    //
+    //        public void Dispose()
+    //        {
+    //            atlas.DiscardContents();
+    //        }
+    //    }
+
     public class AvatarShaderTexturePointers
     {
+        private ILogger logger = new Logger(Debug.unityLogger.logHandler);
         private static readonly int GLOBAL_AVATAR_TEXTURE_ARRAY = Shader.PropertyToID("_GlobalAvatarTextureArray");
         const int MAX_ID_COUNT = 400;
 
         public Texture[] textures;
         public Queue<int> availableIds = new Queue<int>();
         private Dictionary<Texture, int> textureToId = new Dictionary<Texture, int>();
+
         private Texture2DArray textureArray;
 
         public AvatarShaderTexturePointers ()
         {
-            textureArray = new Texture2DArray(256, 256, MAX_ID_COUNT, TextureFormat.ARGB32, true, true);
+            textureArray = new Texture2DArray(256, 256, MAX_ID_COUNT, TextureFormat.ARGB32, false, false);
 
             for ( int i = 0 ; i < MAX_ID_COUNT; i++ )
             {
@@ -26,13 +90,14 @@ namespace DCL
 
             textures = new Texture[MAX_ID_COUNT];
             UpdateShaderData();
+            logger.logEnabled = true;
         }
 
         public int AddTexture(Texture texture)
         {
             if ( texture == null )
             {
-                //Debug.Log("Adding null texture to global texture cache!");
+                logger.Log("Adding null texture to global texture cache!");
                 return -1;
             }
 
@@ -43,11 +108,22 @@ namespace DCL
             textures[newId] = texture;
 
             Texture2D newTexture = ConvertTexture(texture as Texture2D);
-            Graphics.CopyTexture(newTexture, 0, 0, textureArray, newId, 0);
 
-            //Debug.Log($"Adding {newId} texture to global texture cache!", textureArray);
+            logger.Log("CopyTextureSupport = " + SystemInfo.copyTextureSupport);
+
+            //if (SystemInfo.copyTextureSupport == UnityEngine.Rendering.CopyTextureSupport.None)
+            {
+                textureArray.SetPixelData(newTexture.GetRawTextureData(), 0, newId);
+                textureArray.Apply();
+            }
+            //else
+            //{
+            //Graphics.CopyTexture(newTexture, 0, 0, textureArray, newId, 0);
+            //}
+
+            logger.Log($"Adding {newId} texture to global texture cache!", textureArray);
             textureToId.Add(texture, newId);
-            //UpdateShaderData();
+            UpdateShaderData();
             return newId;
         }
 
@@ -55,15 +131,15 @@ namespace DCL
         {
             RenderTexture rt = RenderTexture.GetTemporary(256, 256);
 
-            source.filterMode = FilterMode.Trilinear;
-            rt.filterMode = FilterMode.Trilinear;
-            rt.useMipMap = true;
+            RenderTexture.active = rt;
+            source.filterMode = FilterMode.Point;
+            rt.filterMode = FilterMode.Point;
 
             Graphics.Blit(source, rt);
 
-            Texture2D nTex = new Texture2D(256, 256, TextureFormat.ARGB32, true);
-
-            Graphics.CopyTexture(rt, nTex);
+            Texture2D nTex = new Texture2D(256, 256, TextureFormat.ARGB32, false);
+            nTex.ReadPixels(new Rect(0, 0, 256, 256), 0, 0);
+            nTex.Apply();
 
             RenderTexture.ReleaseTemporary(rt);
             return nTex;
@@ -214,7 +290,8 @@ namespace DCL
 
                 var meshBoneWeights = r.sharedMesh.boneWeights;
 
-                //Debug.Log($"Setting texture ids... basemap: {id1} ... emission: {id2}");
+                if ( id1 != -1 || id2 != -1 )
+                    Debug.Log($"Setting texture ids... basemap: {id1} ... emission: {id2}");
 
                 texturePointers.AddRange(Enumerable.Repeat(new Vector2(id1, id2), meshBoneWeights.Length));
 
@@ -257,8 +334,8 @@ namespace DCL
 
             finalMesh.bindposes = newPoses.ToArray();
             finalMesh.boneWeights = boneWeights.ToArray();
-            finalMesh.SetUVs(7, texturePointers);
-            finalMesh.SetUVs(6, emissionColors);
+            finalMesh.SetUVs(3, emissionColors);
+            finalMesh.SetUVs(4, texturePointers);
             finalMesh.SetColors(colors);
             finalMesh.Optimize();
             finalMesh.UploadMeshData(true);

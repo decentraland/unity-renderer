@@ -31,8 +31,8 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma fragmentoption ARB_precision_hint_fastest
             #pragma multi_compile_fog
+            #pragma target 4.0
             #pragma require 2darray
             //#pragma multi_compile _ _EMISSION
             //#pragma multi_compile _ _ALPHATEST_ON
@@ -45,8 +45,8 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float2 texcoord : TEXCOORD0;
-                float4 emission_color : TEXCOORD6;
-                float2 texture_indexes : TEXCOORD7;
+                float4 emission_color : TEXCOORD3;
+                float2 texture_indexes : TEXCOORD4;
             };
 
             struct v2f
@@ -54,8 +54,8 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float2 cap : TEXCOORD1;
-                float2 texture_indexes : TEXCOORD7;
-                float4 emission_color : TEXCOORD6;
+                float4 emission_color : TEXCOORD3;
+                float2 texture_indexes : TEXCOORD4;
                 float4 color : COLOR;
                 UNITY_FOG_COORDS(2)
             };
@@ -108,6 +108,7 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
                                                        float3(i.uv.x, i.uv.y, i.texture_indexes[1]));
                 }
 
+                albedo.g = 0;
                 fixed4 tex = albedo * i.color;
                 fixed4 matcap = tex2D(_MatCap, i.cap);
 
@@ -133,6 +134,4 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             ENDCG
         }
     }
-
-    Fallback "DCL/LWRP/Lit"
 }
