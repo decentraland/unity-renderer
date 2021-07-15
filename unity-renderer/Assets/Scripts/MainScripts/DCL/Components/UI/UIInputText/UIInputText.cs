@@ -22,7 +22,15 @@ namespace DCL.Components
             public string onFocus;
             public string onBlur;
 
-            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
+            public override BaseModel GetDataFromJSON(string json)
+            {
+                Model model = Utils.SafeFromJson<Model>(json);
+                // SDK is sending the textModel as fields in the upper (UIInputText) model
+                // so our current model hierarchy in Unity does not represent what SDK send
+                // therefore having to parse this twice
+                model.textModel = Utils.SafeFromJson<TextShape.Model>(json);
+                return model;
+            }
         }
 
         public override string referencesContainerPrefabName => "UIInputText";
