@@ -396,6 +396,9 @@ namespace DCL
             }
         }
 
+        // public Texture[] textures;
+        // public Texture2DArray texture2DArray;
+
         void AvatarMergeTest()
         {
             if ( combinedAvatar != null )
@@ -413,6 +416,9 @@ namespace DCL
 
                 return;
             }
+
+            // texture2DArray = Shader.GetGlobalTexture("_GlobalAvatarTextureArray") as Texture2DArray;
+            // textures = AvatarMeshCombiner.pointers.textures;
 
             Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
