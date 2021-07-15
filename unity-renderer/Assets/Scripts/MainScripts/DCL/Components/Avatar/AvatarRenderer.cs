@@ -486,14 +486,6 @@ namespace DCL
             animator.SetExpressionValues(id, timestamp);
         }
 
-        void Update()
-        {
-            if ( Input.GetKeyDown(KeyCode.J))
-            {
-                combinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMaterial = lightweightMat;
-            }
-        }
-
         private void AddWearableController(WearableItem wearable)
         {
             if (wearable == null)
