@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using System.Linq;
 using DCL;
 using DCL.Components;
@@ -112,7 +113,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
     [TestCase(1f, 10, ExpectedResult = null)]
     public IEnumerator Emission_AlphaTexture_AlbedoAlpha(float alpha, float emissiveIntensity)
     {
-        yield return InitVisualTestsScene($"PBRMaterialVisualTests_Emission_AlphaTexture_AlbedoAlpha_{alpha}_{emissiveIntensity}");
+        yield return InitVisualTestsScene($"PBRMaterialVisualTests_Emission_AlphaTexture_AlbedoAlpha_{alpha.ToString(CultureInfo.InvariantCulture)}_{emissiveIntensity.ToString(CultureInfo.InvariantCulture)}");
 
         VisualTestHelpers.SetSSAOActive(true);
 
@@ -195,7 +196,7 @@ public class PBRMaterialVisualTests : VisualTestsBase
     [TestCase(0.25f, ExpectedResult = null)]
     public IEnumerator AlbedoTexture_AlbedoAlpha(float alpha)
     {
-        yield return InitVisualTestsScene($"PBRMaterialVisualTests_AlbedoTexture_AlbedoAlpha_{alpha}");
+        yield return InitVisualTestsScene($"PBRMaterialVisualTests_AlbedoTexture_AlbedoAlpha_{alpha.ToString(CultureInfo.InvariantCulture)}");
 
         VisualTestHelpers.SetSSAOActive(true);
 

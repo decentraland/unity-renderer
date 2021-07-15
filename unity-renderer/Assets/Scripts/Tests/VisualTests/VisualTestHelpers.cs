@@ -155,7 +155,6 @@ namespace DCL.Helpers
                 Directory.CreateDirectory(snapshotPath);
             }
 
-            Debug.Log($"[DEBUG] Taking snapshot at {finalPath}");
             byte[] bytes = currentSnapshot.EncodeToPNG();
             File.WriteAllBytes(finalPath, bytes);
 
