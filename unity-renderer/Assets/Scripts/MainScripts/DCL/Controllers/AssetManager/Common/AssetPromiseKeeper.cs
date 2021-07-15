@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -80,6 +80,7 @@ namespace DCL
         {
             this.library = library;
             CoroutineStarter.Start(ProcessBlockedPromisesQueue());
+            CoroutineStarter.Start(ProcessInProgressPromisesToForgetQueue());
         }
 
         public AssetPromiseType Keep(AssetPromiseType promise)
@@ -124,6 +125,40 @@ namespace DCL
             promise.Load();
 
             return promise;
+        }
+
+        public AssetPromiseType ForgetAfterFinish(AssetPromiseType promise)
+        {
+            if (promise == null)
+                return null;
+
+            if (promise.state == AssetPromiseState.LOADING)
+            {
+                toForgetInProgressPromisesQueue.Enqueue(promise);
+                return promise;
+            }
+            else
+            {
+                return Forget(promise);
+            }
+        }
+
+        Queue<AssetPromiseType> toForgetInProgressPromisesQueue = new Queue<AssetPromiseType>();
+
+        IEnumerator ProcessInProgressPromisesToForgetQueue()
+        {
+            while (true)
+            {
+                if (toForgetInProgressPromisesQueue.Count <= 0)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                AssetPromiseType promise = toForgetInProgressPromisesQueue.Dequeue();
+                yield return new WaitUntil(() => promise.state != AssetPromiseState.LOADING);
+                Forget(promise);
+            }
         }
 
         public AssetPromiseType Forget(AssetPromiseType promise)
