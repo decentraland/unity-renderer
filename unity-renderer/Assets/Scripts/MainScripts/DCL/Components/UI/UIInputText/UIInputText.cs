@@ -22,12 +22,7 @@ namespace DCL.Components
             public string onFocus;
             public string onBlur;
 
-            public override BaseModel GetDataFromJSON(string json)
-            {
-                Model model = Utils.SafeFromJson<Model>(json);
-                model.textModel = Utils.SafeFromJson<TextShape.Model>(json);
-                return model;
-            }
+            public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }
         }
 
         public override string referencesContainerPrefabName => "UIInputText";
