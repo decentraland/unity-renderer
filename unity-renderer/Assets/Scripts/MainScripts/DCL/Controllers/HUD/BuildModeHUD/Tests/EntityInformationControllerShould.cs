@@ -2,9 +2,11 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
@@ -271,6 +273,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             BIWEntity testEntity = new BIWEntity();
+            testEntity.Init(Substitute.For<IDCLEntity>(), new Material(""));
 
             // Act
             entityInformationController.UpdateInfo(testEntity);

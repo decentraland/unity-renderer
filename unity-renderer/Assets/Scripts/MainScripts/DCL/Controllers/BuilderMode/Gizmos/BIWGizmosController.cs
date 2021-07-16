@@ -13,6 +13,9 @@ public interface IBIWGizmosController
     public event GizmoTransformDelegate OnGizmoTransformObject;
     public event GizmoTransformDelegate OnGizmoTransformObjectEnd;
     public event Action<Vector3> OnChangeTransformValue;
+
+    public IBIWGizmos activeGizmo { get;  set; }
+
     public string GetSelectedGizmo();
     public void SetSnapFactor(float position, float rotation, float scale);
     public void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
@@ -37,7 +40,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private IBIWGizmos[] gizmos;
 
     private bool isTransformingObject;
-    private IBIWGizmos activeGizmo;
+    public IBIWGizmos activeGizmo { get; set; }
 
     private SnapInfo snapInfo = new SnapInfo();
 
