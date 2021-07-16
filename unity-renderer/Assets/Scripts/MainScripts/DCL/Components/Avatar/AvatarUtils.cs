@@ -66,15 +66,14 @@ public static class AvatarUtils
     public static void SetColorInHierarchy(Transform transformRoot,
         string materialsContainingThisName,
         Color colorToChange,
-        string shaderId = "_BaseColor")
+        int propertyId)
     {
-        int _Color = Shader.PropertyToID(shaderId);
-
         MapSharedMaterialsRecursively(
             transformRoot,
             (mat) =>
             {
-                mat.SetColor(_Color, colorToChange);
+                mat.SetColor(propertyId, colorToChange);
+                AvatarMeshCombiner.logger.Log($"Setting Color To {colorToChange} ... propId = {propertyId} ... mat = {mat.GetHashCode()}");
                 return mat;
             },
             materialsContainingThisName);

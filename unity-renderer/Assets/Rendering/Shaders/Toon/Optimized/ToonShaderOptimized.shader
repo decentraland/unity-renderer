@@ -39,7 +39,7 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
 
             #include "UnityCG.cginc"
 
-            struct mesh_data
+            struct MeshData
             {
                 float4 color : COLOR;
                 float4 vertex : POSITION;
@@ -72,7 +72,7 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             float _Cutoff;
             CBUFFER_END
 
-            v2f vert(mesh_data v)
+            v2f vert(MeshData v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);

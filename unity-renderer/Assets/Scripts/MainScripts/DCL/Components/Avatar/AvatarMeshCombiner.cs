@@ -4,340 +4,202 @@ using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
 
+
+// Recipe:
+
+// - Re-arrange boneWeights manually
+// - Re-arrange normals manually
+//     - It seems that normals are scaled by the matrix when using CombineMeshes.
+//       This is wrong and and shouldn't happen, so we have to arrange them manually.
+
+// - Call BakeMesh with useScale to TRUE
+
+// - Doesn't matter if we have an animation or not, BUT IT HAS TO BE BAKED BEFORE THE ANIMATION STARTS
+//      - If animation already was played, we re-position all bones according to original mesh bindposes matrix
+//        matrix has to be inversed and multiplied by 0 to get position. rotation and scale can be extracted directly
+//        using Matrix4x4 methods.
+
+// - Set bounds using combined mesh bounds
+
+// - Root bone has to be correctly aligned, or the mesh is not going to be baked correctly
+
 namespace DCL
 {
-    //    public class AvatarTexturePacker : IDisposable
-    //    {
-    //        /*
-    //        ATLAS APPROACH
-    //        - hw = height and width square size
-    //        - For each avatar, pack all textures reduced to 256hw
-    //        - This allows for packing 16 textures on 1024hw, or 32 on 2048hw. (or 16 in 2048hw if we go for 512hw)
-    // */
-    //
-    //        public AvatarTexturePacker ()
-    //        {
-    //        }
-    //
-    //        private HashSet<Vector2> packedOffsets = new HashSet<Vector2>();
-    //        private Queue<Vector2> packedOffsetsQueue = new Queue<Vector2>();
-    //
-    //        void PackOffset( Vector2 currentArray, float maxWidth, float maxHeight )
-    //        {
-    //            var right = currentArray + Vector2.right;
-    //            var up = currentArray + Vector2.up;
-    //
-    //            if ( !packedOffsets.Contains(currentArray))
-    //            {
-    //                packedOffsets.Add(currentArray);
-    //                packedOffsetsQueue.Enqueue(currentArray);
-    //            }
-    //
-    //            if ( right.x < maxWidth && !packedOffsets.Contains(right))
-    //                PackOffset(right, maxWidth, maxHeight);
-    //
-    //            if ( up.y < maxHeight && !packedOffsets.Contains(up))
-    //                PackOffset(up, maxWidth, maxHeight);
-    //        }
-    //
-    //        private RenderTexture atlas;
-    //
-    //        public void Pack(Texture2D[] textures, float tileSize, Vector2 atlasSize)
-    //        {
-    //            packedOffsetsQueue.Clear();
-    //            packedOffsets.Clear();
-    //            PackOffset(Vector2.zero, atlasSize.x / tileSize, atlasSize.y / tileSize);
-    //
-    //            atlas = new RenderTexture((int)atlasSize.x, (int)atlasSize.y, 0, RenderTextureFormat.Default); //RenderTexture.GetTemporary(256, 256);
-    //
-    //            foreach ( Texture2D tex in textures )
-    //            {
-    //                Vector2 scale = Vector2.one;
-    //                scale.x = tileSize / tex.width;
-    //                scale.y = tileSize / tex.height;
-    //                Vector2 offsetToPack = packedOffsetsQueue.Dequeue();
-    //
-    //                Graphics.Blit(tex, atlas, scale, offsetToPack * Vector2.one * tileSize);
-    //            }
-    //        }
-    //
-    //        public void Dispose()
-    //        {
-    //            atlas.DiscardContents();
-    //        }
-    //    }
-
-    public class AvatarShaderTexturePointers
-    {
-        private ILogger logger = new Logger(Debug.unityLogger.logHandler);
-        private static readonly int GLOBAL_AVATAR_TEXTURE_ARRAY = Shader.PropertyToID("_GlobalAvatarTextureArray");
-        const int MAX_ID_COUNT = 400;
-
-        public Texture[] textures;
-        public Queue<int> availableIds = new Queue<int>();
-        private Dictionary<Texture, int> textureToId = new Dictionary<Texture, int>();
-
-        private Texture2DArray textureArray;
-
-        public AvatarShaderTexturePointers ()
-        {
-            textureArray = new Texture2DArray(256, 256, MAX_ID_COUNT, TextureFormat.ARGB32, false, false);
-
-            for ( int i = 0 ; i < MAX_ID_COUNT; i++ )
-            {
-                availableIds.Enqueue(i);
-            }
-
-            textures = new Texture[MAX_ID_COUNT];
-            UpdateShaderData();
-            logger.logEnabled = true;
-        }
-
-        public int AddTexture(Texture texture)
-        {
-            if ( texture == null )
-            {
-                logger.Log("Adding null texture to global texture cache!");
-                return -1;
-            }
-
-            if ( textureToId.ContainsKey(texture))
-                return textureToId[texture];
-
-            int newId = availableIds.Dequeue();
-            textures[newId] = texture;
-
-            Texture2D newTexture = ConvertTexture(texture as Texture2D);
-
-            logger.Log("CopyTextureSupport = " + SystemInfo.copyTextureSupport);
-
-            //if (SystemInfo.copyTextureSupport == UnityEngine.Rendering.CopyTextureSupport.None)
-            {
-                textureArray.SetPixelData(newTexture.GetRawTextureData(), 0, newId);
-                textureArray.Apply();
-            }
-            //else
-            //{
-            //Graphics.CopyTexture(newTexture, 0, 0, textureArray, newId, 0);
-            //}
-
-            logger.Log($"Adding {newId} texture to global texture cache!", textureArray);
-            textureToId.Add(texture, newId);
-            UpdateShaderData();
-            return newId;
-        }
-
-        public static Texture2D ConvertTexture(Texture2D source)
-        {
-            RenderTexture rt = RenderTexture.GetTemporary(256, 256);
-
-            RenderTexture.active = rt;
-            source.filterMode = FilterMode.Point;
-            rt.filterMode = FilterMode.Point;
-
-            Graphics.Blit(source, rt);
-
-            Texture2D nTex = new Texture2D(256, 256, TextureFormat.ARGB32, false);
-            nTex.ReadPixels(new Rect(0, 0, 256, 256), 0, 0);
-            nTex.Apply();
-
-            RenderTexture.ReleaseTemporary(rt);
-            return nTex;
-        }
-
-
-        public void RemoveTexture(Texture texture)
-        {
-            if ( !textureToId.ContainsKey(texture))
-                return;
-
-            availableIds.Enqueue(textureToId[texture]);
-            textureToId.Remove(texture);
-        }
-
-        public void UpdateShaderData()
-        {
-            Shader.SetGlobalTexture(GLOBAL_AVATAR_TEXTURE_ARRAY, textureArray);
-        }
-    }
-
     public static class AvatarMeshCombiner
     {
-        public static AvatarShaderTexturePointers pointers = new AvatarShaderTexturePointers();
+        public class CombineLayer
+        {
+            public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
+            public Dictionary<Texture2D, int> idMap = new Dictionary<Texture2D, int>();
+        }
+
+        public static ILogger logger = new Logger(Debug.unityLogger.logHandler);
 
         public static GameObject Combine(SkinnedMeshRenderer bonesContainer, Transform root, System.Func<Renderer, bool> filterFunction = null)
         {
-            Transform transform = root;
+            logger.logEnabled = true;
 
-            var rs = root.GetComponentsInChildren<SkinnedMeshRenderer>(false);
-            var tmpBones = bonesContainer.bones;
-
-            List<CombineInstance> combineInstances = new List<CombineInstance>();
-            Mesh finalMesh = new Mesh();
-
-            Vector3 lastPos = transform.position;
-            transform.position = Vector3.zero;
-
-            List<Material> mats = new List<Material>();
-
-            GameObject result = new GameObject("Combined Avatar");
-            result.layer = root.gameObject.layer;
-            result.transform.parent = null;
-            result.transform.position = Vector3.zero;
-
-            List<Mesh> bakedMeshes = new List<Mesh>();
-            List<BoneWeight> boneWeights = new List<BoneWeight>();
-            //List<Vector3> sourceNormals = new List<Vector3>();
-            List<Vector2> texturePointers = new List<Vector2>();
-            List<Color> colors = new List<Color>();
-            List<Vector4> emissionColors = new List<Vector4>();
-
+            //
+            // Find first enabled SkinnedMeshRenderer with valid sharedMesh
+            //
             SkinnedMeshRenderer bindPosesContainer = null;
+            var renderers = root.GetComponentsInChildren<SkinnedMeshRenderer>(false);
 
-            // Recipe:
-
-            // - Re-arrange boneWeights manually
-            // - Re-arrange normals manually
-            //     - It seems that normals are scaled by the matrix when using CombineMeshes.
-            //       This is wrong and and shouldn't happen, so we have to arrange them manually.
-
-            // - Call BakeMesh with useScale to TRUE
-
-            // - Doesn't matter if we have an animation or not, BUT IT HAS TO BE BAKED BEFORE THE ANIMATION STARTS
-            //      - If animation already was played, we re-position all bones according to original mesh bindposes matrix
-            //        matrix has to be inversed and multiplied by 0 to get position. rotation and scale can be extracted directly
-            //        using Matrix4x4 methods.
-
-            // - Set bounds using combined mesh bounds
-
-            // - Root bone has to be correctly aligned, or the mesh is not going to be baked correctly
-
-            for ( int ri = 0; ri < rs.Length; ri++ )
+            for ( int i = 0; i < renderers.Length; i++ )
             {
-                if ( rs[ri].sharedMesh == null || !rs[ri].enabled )
+                if ( renderers[i].sharedMesh == null || !renderers[i].enabled )
                     continue;
 
-                bindPosesContainer = rs[ri];
-
-                //Debug.Log("BindPoses name: " + bindPosesContainer.transform.parent.name);
+                bindPosesContainer = renderers[i];
                 break;
             }
 
             if (bindPosesContainer == null)
             {
-                Debug.Log("Combine failure!");
+                logger.Log("Combine failure!");
                 return null;
             }
 
+            //
+            // Reset bones
+            //
+            ResetBones(bonesContainer, bindPosesContainer);
+
+            //
+            // Get combined layers
+            //
+            var layers = Slice( renderers, filterFunction );
+
+            if ( layers == null )
             {
-                Debug.Log("Combining...");
-
-                var bindPoses = bindPosesContainer.sharedMesh.bindposes;
-
-                // Reset bones
-                for ( int i = 0 ; i < tmpBones.Length; i++ )
-                {
-                    Matrix4x4 bindPose = bindPoses[i].inverse;
-                    tmpBones[i].position = bindPose.MultiplyPoint3x4(Vector3.zero);
-                    tmpBones[i].rotation = bindPose.rotation;
-
-                    Vector3 bindPoseScale = bindPose.lossyScale;
-                    Vector3 boneScale = tmpBones[i].lossyScale;
-
-                    tmpBones[i].localScale = new Vector3(bindPoseScale.x / boneScale.x,
-                        bindPoseScale.y / boneScale.y,
-                        bindPoseScale.z / boneScale.z);
-                }
+                logger.Log("Combine failure! 2");
+                return null;
             }
 
-            for (int i = 0; i < rs.Length; i++)
+            //
+            // Start combining meshes
+            //
+            Mesh finalMesh = new Mesh();
+
+            List<CombineInstance> combineInstances = new List<CombineInstance>();
+            List<BoneWeight> boneWeights = new List<BoneWeight>();
+            List<Vector2> texturePointers = new List<Vector2>();
+            List<Color> colors = new List<Color>();
+            List<Vector4> emissionColors = new List<Vector4>();
+
+            bool RendererIsInvalid(Func<Renderer, bool> func, SkinnedMeshRenderer skinnedMeshRenderer)
             {
-                var r = rs[i];
-
-                if ( r.sharedMesh == null || !r.enabled )
-                    continue;
-
-                Mesh mesh = null;
-
-                mesh = new Mesh();
-                r.BakeMesh(mesh, true);
-                bakedMeshes.Add(mesh);
-
-                //Debug.Log("Adding weights " + r.sharedMesh.boneWeights.Length + " ... vertices = " + mesh.vertices.Length);
-                //sourceNormals.AddRange(r.sharedMesh.normals);
-
-                Transform meshTransform = r.transform;
-
-                r.enabled = false;
+                if ( skinnedMeshRenderer.sharedMesh == null || !skinnedMeshRenderer.enabled )
+                    return true;
 
                 bool canMerge = true;
 
-                if ( filterFunction != null )
-                    canMerge = filterFunction.Invoke(r);
+                if ( func != null )
+                    canMerge = func.Invoke(skinnedMeshRenderer);
 
                 if ( !canMerge )
-                    continue;
+                    return true;
 
-                Transform prevParent = meshTransform.parent;
-
-                r.transform.SetParent(null, true);
-
-                Material mat = r.sharedMaterial;
-                mats.Add(mat);
-
-                int id1 = pointers.AddTexture(mat.GetTexture(ShaderUtils.BaseMap));
-                int id2 = pointers.AddTexture(mat.GetTexture(ShaderUtils.EmissionMap));
-
-                var meshBoneWeights = r.sharedMesh.boneWeights;
-
-                if ( id1 != -1 || id2 != -1 )
-                    Debug.Log($"Setting texture ids... basemap: {id1} ... emission: {id2}");
-
-                texturePointers.AddRange(Enumerable.Repeat(new Vector2(id1, id2), meshBoneWeights.Length));
-
-                Color baseColor = mat.GetColor(ShaderUtils.BaseColor);
-                Color emissionColor = mat.GetColor(ShaderUtils.EmissionColor);
-                Vector4 emissionColorV4 = new Vector4(emissionColor.r, emissionColor.g, emissionColor.b, emissionColor.a);
-
-                colors.AddRange(Enumerable.Repeat(baseColor, meshBoneWeights.Length));
-                emissionColors.AddRange(Enumerable.Repeat(emissionColorV4, meshBoneWeights.Length));
-
-                boneWeights.AddRange(meshBoneWeights);
-
-                combineInstances.Add( new CombineInstance()
-                {
-                    mesh = mesh,
-                    transform = meshTransform.localToWorldMatrix
-                });
-
-                r.transform.parent = prevParent;
+                return false;
             }
 
-            transform.position = lastPos;
+            Material mainMaterial =  Resources.Load<Material>("OptimizedToonMaterial");
+            List<Material> materials = new List<Material>();
+
+            for (int layerIndex = 0; layerIndex < layers.Count; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers.ToArray();
+
+                Material newMaterial = UnityEngine.Object.Instantiate(mainMaterial);
+                materials.Add( newMaterial );
+
+                for (int i = 0; i < layerRenderers.Length; i++)
+                {
+                    var renderer = layerRenderers[i];
+
+                    if (RendererIsInvalid(filterFunction, renderer))
+                        continue;
+
+                    Mesh mesh = new Mesh();
+                    renderer.BakeMesh(mesh, true);
+
+                    // Bone Weights
+                    var meshBoneWeights = renderer.sharedMesh.boneWeights;
+                    int elementsCount = meshBoneWeights.Length;
+                    boneWeights.AddRange(meshBoneWeights);
+
+                    // Texture IDs
+                    Material mat = renderer.sharedMaterial;
+
+                    Texture2D baseMap = (Texture2D)mat.GetTexture(ShaderUtils.BaseMap);
+                    Texture2D emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
+
+                    int id1 = baseMap != null ? layer.idMap[baseMap] : -1;
+                    int id2 = emissionMap != null ? layer.idMap[emissionMap] : -1;
+
+                    texturePointers.AddRange(Enumerable.Repeat(new Vector2(id1, id2), elementsCount));
+
+                    if ( id1 != -1 )
+                    {
+                        string targetMap = $"_AvatarMap{(id1 + 1)}";
+                        newMaterial.SetTexture(targetMap, baseMap);
+                        //logger.Log($"(opaque) Setting map {targetMap} to {baseMap}");
+                    }
+
+                    if ( id2 != -1 )
+                    {
+                        string targetMap = $"_AvatarMap{(id2 + 1)}";
+                        newMaterial.SetTexture(targetMap, emissionMap);
+                        //logger.Log($"(emission) Setting map {targetMap} to {baseMap}");
+                    }
+
+                    // Base Colors
+                    Color baseColor = mat.GetColor(ShaderUtils.BaseColor);
+                    colors.AddRange(Enumerable.Repeat(baseColor, elementsCount));
+
+                    // Emission Colors
+                    Color emissionColor = mat.GetColor(ShaderUtils.EmissionColor);
+                    Vector4 emissionColorV4 = new Vector4(emissionColor.r, emissionColor.g, emissionColor.b, emissionColor.a);
+                    emissionColors.AddRange(Enumerable.Repeat(emissionColorV4, elementsCount));
+
+                    Transform meshTransform = renderer.transform;
+                    meshTransform.SetParent(null, true);
+                    Transform prevParent = meshTransform.parent;
+
+                    combineInstances.Add( new CombineInstance()
+                    {
+                        subMeshIndex = layerIndex,
+                        mesh = mesh,
+                        transform = meshTransform.localToWorldMatrix
+                    });
+
+                    meshTransform.SetParent( prevParent );
+                    renderer.enabled = false;
+                }
+            }
+
+            // Vector3 lastPos = transform.position;
+            // transform.position = Vector3.zero;
+            //
+            // transform.position = lastPos;
 
             finalMesh.CombineMeshes(combineInstances.ToArray(), true, true);
-            //finalMesh.normals = sourceNormals.ToArray();
 
-            foreach ( var mesh in bakedMeshes )
+            for ( int i = 0; i < combineInstances.Count; i++ )
             {
-                UnityEngine.Object.Destroy(mesh);
+                UnityEngine.Object.Destroy(combineInstances[i].mesh);
             }
 
             var poses = bindPosesContainer.sharedMesh.bindposes;
+            finalMesh.bindposes = poses;
 
-            List<Matrix4x4> newPoses = new List<Matrix4x4>();
-
-            for ( int i = 0; i < poses.Length; i++ )
-            {
-                newPoses.Add( poses[i] );
-            }
-
-            finalMesh.bindposes = newPoses.ToArray();
             finalMesh.boneWeights = boneWeights.ToArray();
             finalMesh.SetUVs(3, emissionColors);
             finalMesh.SetUVs(4, texturePointers);
             finalMesh.SetColors(colors);
             finalMesh.Optimize();
+
             finalMesh.UploadMeshData(true);
 
             var bounds = finalMesh.bounds;
@@ -345,20 +207,123 @@ namespace DCL
             newCenter.Scale(new Vector3(1, 0, 1));
             bounds.center = newCenter;
 
+            GameObject result = new GameObject("Combined Avatar");
+            result.layer = root.gameObject.layer;
+            result.transform.parent = null;
+            result.transform.position = Vector3.zero;
+
             var newSkinnedMeshRenderer = result.AddComponent<SkinnedMeshRenderer>();
             newSkinnedMeshRenderer.sharedMesh = finalMesh;
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
             newSkinnedMeshRenderer.localBounds = bonesContainer.localBounds;
-            newSkinnedMeshRenderer.sharedMaterial = Resources.Load<Material>("OptimizedToonMaterial");
+            newSkinnedMeshRenderer.sharedMaterials = materials.ToArray();
             newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
             newSkinnedMeshRenderer.updateWhenOffscreen = false;
+            newSkinnedMeshRenderer.skinnedMotionVectors = false;
 
-            //result.AddComponent<MeshFilter>().sharedMesh = finalMesh;
-            //result.AddComponent<MeshRenderer>().sharedMaterials = newSkinnedMeshRenderer.sharedMaterials;
+            //result.transform.parent = null;
 
-            result.transform.parent = root;
+            return result;
+        }
 
+        private static void ResetBones(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer bindPosesContainer)
+        {
+            var bindPoses = bindPosesContainer.sharedMesh.bindposes;
+            var tmpBones = bonesContainer.bones;
+
+            for ( int i = 0 ; i < tmpBones.Length; i++ )
+            {
+                Matrix4x4 bindPose = bindPoses[i].inverse;
+                tmpBones[i].position = bindPose.MultiplyPoint3x4(Vector3.zero);
+                tmpBones[i].rotation = bindPose.rotation;
+
+                Vector3 bindPoseScale = bindPose.lossyScale;
+                Vector3 boneScale = tmpBones[i].lossyScale;
+
+                tmpBones[i].localScale = new Vector3(bindPoseScale.x / boneScale.x,
+                    bindPoseScale.y / boneScale.y,
+                    bindPoseScale.z / boneScale.z);
+            }
+        }
+
+        private static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers, System.Func<Renderer, bool> filterFunction)
+        {
+            logger.Log("Slice Start!");
+            List<CombineLayer> result = new List<CombineLayer>();
+
+            CombineLayer currentLayer = new CombineLayer();
+            result.Add(currentLayer);
+            int textureId = 0;
+
+            bool CanAddToMap(Texture2D tex)
+            {
+                return tex != null && !currentLayer.idMap.ContainsKey(tex);
+            }
+
+            void AddToMap(Texture2D tex)
+            {
+                if ( !CanAddToMap(tex) )
+                    return;
+
+                currentLayer.idMap.Add(tex, textureId);
+                textureId++;
+            }
+
+            foreach ( var r in renderers )
+            {
+                if ( !filterFunction(r) || !r.enabled || r.sharedMesh == null )
+                {
+                    logger.Log($"Filtering out renderer: {r.transform.parent.name}");
+                    continue;
+                }
+
+                // TODO(Brian): Group renderers on opaque and transparents as well
+
+                currentLayer.renderers.Add(r);
+                var mats = r.sharedMaterials;
+
+                for ( int i = 0; i < mats.Length; i++ )
+                {
+                    var mat = mats[i];
+
+                    if (mat == null)
+                        continue;
+
+                    var baseMap = (Texture2D)mat.GetTexture(ShaderUtils.BaseMap);
+                    var emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
+
+                    AddToMap(baseMap);
+                    AddToMap(emissionMap);
+
+                    if ( textureId >= 12 )
+                    {
+                        textureId = 0;
+                        currentLayer = new CombineLayer();
+                        result.Add(currentLayer);
+                    }
+                }
+            }
+
+            // No valid materials were found
+            if ( result.Count == 1 && textureId == 0 )
+            {
+                logger.Log("Slice End Fail!");
+                return null;
+            }
+
+            int layInd = 0;
+
+            foreach ( var layer in result )
+            {
+                string rendererNames = layer.renderers
+                    .Select( (x) => $"{x.transform.parent.name}" )
+                    .Aggregate( (i, j) => i + "\n" + j);
+
+                logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.idMap.Count}\nrenderers: {rendererNames}");
+            }
+
+            logger.Log("Slice End Success!");
             return result;
         }
     }

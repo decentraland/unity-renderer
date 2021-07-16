@@ -11,9 +11,9 @@ namespace DCL.Helpers
 
         public static void OptimizeMaterial(Material material)
         {
-#if !UNITY_EDITOR
-            material.name = "Material";
-#endif
+// #if !UNITY_EDITOR
+//             material.name = "Material";
+// #endif
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
             material.EnableKeyword("_EMISSION");
             material.EnableKeyword("_NORMALMAP");
