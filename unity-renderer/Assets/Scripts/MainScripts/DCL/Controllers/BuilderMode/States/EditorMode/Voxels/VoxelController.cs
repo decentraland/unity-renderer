@@ -52,7 +52,7 @@ public class VoxelController
         Vector3Int currentPosition = Vector3Int.zero;
         VoxelEntityHit voxelHit = buildModeController.GetCloserUnselectedVoxelEntityOnPointer();
 
-        if (voxelHit != null && voxelHit.entityHitted.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
+        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
         {
             Vector3Int position = ConverPositionToVoxelPosition(voxelHit.entityHitted.rootEntity.gameObject.transform.position);
             position += voxelHit.hitVector;
@@ -85,7 +85,7 @@ public class VoxelController
         if (voxelHit != null && voxelHit.entityHitted.IsSelected)
             return;
 
-        if (voxelHit != null && voxelHit.entityHitted.tag == BIWSettings.VOXEL_TAG)
+        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG)
         {
             Vector3 position = ConverPositionToVoxelPosition(voxelHit.entityHitted.rootEntity.gameObject.transform.position);
             position += voxelHit.hitVector;
@@ -116,7 +116,7 @@ public class VoxelController
 
         foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (BuilderInWorldUtils.IsWithInSelectionBounds(voxelEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
+            if (BuilderInWorldUtils.IsWithInSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
             {
                 biwEntityHandler.SelectEntity(voxelEntity);
             }
@@ -192,7 +192,7 @@ public class VoxelController
     {
         foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (position == ConverPositionToVoxelPosition(voxelEntity.transform.position))
+            if (position == ConverPositionToVoxelPosition(voxelEntity.rootEntity.transform.position))
                 return true;
         }
 
@@ -218,7 +218,7 @@ public class VoxelController
 
         if (isCreatingMultipleVoxels)
         {
-            lastVoxelCreated.transform.SetParent(null);
+            lastVoxelCreated.rootEntity.transform.SetParent(null);
             bool canVoxelsBeCreated = true;
 
             foreach (VoxelPrefab voxel in createdVoxels.Values)
@@ -276,7 +276,7 @@ public class VoxelController
         if (buttonID != 0 || !isVoxelModelActivated || lastVoxelCreated == null)
             return;
 
-        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.transform.position);
+        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.rootEntity.transform.position);
         mousePressed = true;
         freeCameraMovement.SetCameraCanMove(false);
         isCreatingMultipleVoxels = true;
@@ -285,7 +285,7 @@ public class VoxelController
     public void SetVoxelSelected(BIWEntity decentralandEntityToEdit)
     {
         lastVoxelCreated = decentralandEntityToEdit;
-        lastVoxelCreated.transform.localPosition = Vector3.zero;
+        lastVoxelCreated.rootEntity.transform.localPosition = Vector3.zero;
     }
 
     public Vector3Int ConverPositionToVoxelPosition(Vector3 rawPosition)

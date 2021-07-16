@@ -58,7 +58,7 @@ public class BIWNftsShould : IntegrationTestSuite
         CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
 
-        BIWEntity biwEntity = Utils.GetOrCreateComponent<BIWEntity>(scene.entities[ENTITY_ID].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
         NFTShape nftShape = (NFTShape) scene.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));

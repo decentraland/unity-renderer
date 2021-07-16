@@ -226,7 +226,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
             return;
 
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
-        selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
+        selectedEntities[0].rootEntity.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
         biwEntityHandler.ReportTransform(true);
@@ -242,10 +242,10 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         TransformActionStarted(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
-        entityToUpdate.transform.SetParent(null);
-        entityToUpdate.transform.localScale = scale;
+        entityToUpdate.rootEntity.transform.SetParent(null);
+        entityToUpdate.rootEntity.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
-        entityToUpdate.transform.SetParent(editionGO.transform);
+        entityToUpdate.rootEntity.transform.SetParent(editionGO.transform);
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
@@ -255,7 +255,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void UpdateGizmosToSelectedEntities()
     {
-        List<EditableEntity> editableEntities = new List<EditableEntity>();
+        List<BIWEntity> editableEntities = new List<BIWEntity>();
         foreach (BIWEntity entity in selectedEntities)
         {
             editableEntities.Add(entity);
@@ -535,7 +535,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void OnDeselectedEntities()
     {
         base.OnDeselectedEntities();
-        gizmoManager.SetSelectedEntities(editionGO.transform, new List<EditableEntity>());
+        gizmoManager.SetSelectedEntities(editionGO.transform, new List<BIWEntity>());
     }
 
     public override void Deactivate()
@@ -587,7 +587,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         base.SelectedEntity(selectedEntity);
 
-        List<EditableEntity> editableEntities = new List<EditableEntity>();
+        List<BIWEntity> editableEntities = new List<BIWEntity>();
         foreach (BIWEntity entity in selectedEntities)
         {
             editableEntities.Add(entity);

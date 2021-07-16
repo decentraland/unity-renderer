@@ -8,8 +8,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BIWEntity : EditableEntity
+public class BIWEntity
 {
+    public GameObject gameObject => rootEntity.gameObject;
+    public Transform transform => rootEntity.transform;
+
+    public IDCLEntity rootEntity { protected set; get; }
     public string entityUniqueId;
 
     public event Action<BIWEntity> OnShapeFinishLoading;
@@ -140,17 +144,17 @@ public class BIWEntity : EditableEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
-    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
 
-    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
+    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
 
-    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
+    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
 
-    public void PositionReported() { lastPositionReported = transform.position; }
+    public void PositionReported() { lastPositionReported = rootEntity.transform.position; }
 
-    public void ScaleReported() { lastScaleReported = transform.lossyScale; }
+    public void ScaleReported() { lastScaleReported = rootEntity.transform.lossyScale; }
 
-    public void RotationReported() { lastRotationReported = transform.rotation; }
+    public void RotationReported() { lastRotationReported = rootEntity.transform.rotation; }
 
     #region Error Handling
 
@@ -189,9 +193,9 @@ public class BIWEntity : EditableEntity
         IsSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
-        lastPositionReported = transform.position;
-        lastScaleReported = transform.lossyScale;
-        lastRotationReported = transform.rotation;
+        lastPositionReported = rootEntity.transform.position;
+        lastScaleReported = rootEntity.transform.lossyScale;
+        lastRotationReported = rootEntity.transform.rotation;
     }
 
     public void Deselect()
@@ -209,8 +213,8 @@ public class BIWEntity : EditableEntity
 
     public void ToggleShowStatus()
     {
-        rootEntity.gameObject.SetActive(!gameObject.activeSelf);
-        IsVisible = gameObject.activeSelf;
+        rootEntity.gameObject.SetActive(!rootEntity.gameObject.activeSelf);
+        IsVisible = rootEntity.gameObject.activeSelf;
         OnStatusUpdate?.Invoke(this);
     }
 
@@ -259,7 +263,7 @@ public class BIWEntity : EditableEntity
         {
             for (int i = entityColliderGameObject.Count - 1; i > 0; i--)
             {
-                Destroy(entityColliderGameObject[i]);
+                GameObject.Destroy(entityColliderGameObject[i]);
             }
         }
 
@@ -488,7 +492,7 @@ public class BIWEntity : EditableEntity
     void SetEntityAsVoxel()
     {
         isVoxel = true;
-        gameObject.tag = BIWSettings.VOXEL_TAG;
+        rootEntity.gameObject.tag = BIWSettings.VOXEL_TAG;
     }
 
     void SaveOriginalMaterial()
@@ -601,12 +605,12 @@ public class BIWEntity : EditableEntity
 
         //Note: When we are duplicating the GLTF and NFT component, their colliders are duplicated too
         //So we eliminate any previous collider to ensure that only 1 collider remain active
-        Transform[] children = GetComponentsInChildren<Transform>();
+        Transform[] children = rootEntity.transform.GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
             if (child.gameObject.layer ==  BIWSettings.COLLIDER_SELECTION_LAYER)
             {
-                Destroy(child.gameObject);
+                GameObject.Destroy(child.gameObject);
             }
         }
 

@@ -555,7 +555,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         entity.RemoveSharedComponent(typeof(DCLName), false);
         entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
 
-        BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.gameObject, entity.gameObject, false, false);
+        BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
         BIWEntity convertedEntity = SetupEntityToEdit(entity);
 
         NotifyEntityIsCreated(entity);
@@ -692,7 +692,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     {
         if (!convertedEntities.ContainsKey(GetConvertedUniqueKeyForEntity(entity)))
         {
-            BIWEntity entityToEdit = entity.gameObject.AddComponent<BIWEntity>();
+            BIWEntity entityToEdit = new BIWEntity();
             entityToEdit.Init(entity, editMaterial);
             convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
             entity.OnRemoved += RemoveConvertedEntity;
@@ -794,7 +794,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         creatorController.RemoveLoadingObjectInmediate(entityToDelete.rootEntity.entityId);
         if (sceneToEdit.entities.ContainsKey(idToRemove))
             sceneToEdit.RemoveEntity(idToRemove, true);
-        GameObject.Destroy(entityToDelete);
+
         hudController?.RefreshCatalogAssetPack();
         EntityListChanged();
         bridge?.RemoveEntityOnKernel(idToRemove, sceneToEdit);

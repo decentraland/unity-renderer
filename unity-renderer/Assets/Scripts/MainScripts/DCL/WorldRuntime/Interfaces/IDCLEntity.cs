@@ -9,6 +9,7 @@ namespace DCL.Models
     public interface IDCLEntity : ICleanable, ICleanableEventDispatcher
     {
         GameObject gameObject { get; set; }
+        Transform transform { get; set; }
         string entityId { get; set; }
         MeshesInfo meshesInfo { get; set; }
         GameObject meshRootGameObject { get; }

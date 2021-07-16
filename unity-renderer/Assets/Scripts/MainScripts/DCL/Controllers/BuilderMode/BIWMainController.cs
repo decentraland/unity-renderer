@@ -438,7 +438,7 @@ public class BIWMainController : Feature
 
                 Camera camera = Camera.main;
 
-                if (!entityToCheck.IsSelected && entityToCheck.tag == BIWSettings.VOXEL_TAG)
+                if (!entityToCheck.IsSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
                 {
                     if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
                     {

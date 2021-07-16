@@ -19,7 +19,7 @@ namespace Tests.BuildModeHUDViews
         public void InvokeEntityActionCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             testEntity.entityUniqueId = "testId";
             EntityListAdapter testEntityListAdapter = new GameObject("_EntityListAdapter").AddComponent<EntityListAdapter>();
             testEntity.entityUniqueId = "testId";
@@ -47,7 +47,7 @@ namespace Tests.BuildModeHUDViews
         public void RenameEntityCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             testEntity.entityUniqueId = "testId";
             string testText = "Test text";
             BIWEntity retournedEntity = null;
@@ -86,11 +86,11 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             List<BIWEntity> testList = new List<BIWEntity>();
-            BIWEntity testEntity1 = new GameObject("_DCLBuilderInWorldEntity1").AddComponent<BIWEntity>();
+            BIWEntity testEntity1 = new BIWEntity();
             testEntity1.entityUniqueId = "testId1";
-            BIWEntity testEntity2 = new GameObject("_DCLBuilderInWorldEntity2").AddComponent<BIWEntity>();
+            BIWEntity testEntity2 = new BIWEntity();
             testEntity1.entityUniqueId = "testId2";
-            BIWEntity testEntity3 = new GameObject("_DCLBuilderInWorldEntity3").AddComponent<BIWEntity>();
+            BIWEntity testEntity3 = new BIWEntity();
             testEntity1.entityUniqueId = "testId3";
             testList.Add(testEntity1);
             testList.Add(testEntity2);
@@ -113,11 +113,11 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             List<BIWEntity> testList = new List<BIWEntity>();
-            BIWEntity testEntity1 = new GameObject("_DCLBuilderInWorldEntity1").AddComponent<BIWEntity>();
+            BIWEntity testEntity1 = new BIWEntity();
             testEntity1.entityUniqueId = "testId1";
-            BIWEntity testEntity2 = new GameObject("_DCLBuilderInWorldEntity2").AddComponent<BIWEntity>();
+            BIWEntity testEntity2 = new BIWEntity();
             testEntity1.entityUniqueId = "testId2";
-            BIWEntity testEntity3 = new GameObject("_DCLBuilderInWorldEntity3").AddComponent<BIWEntity>();
+            BIWEntity testEntity3 = new BIWEntity();
             testEntity1.entityUniqueId = "testId3";
             testList.Add(testEntity1);
             testList.Add(testEntity2);

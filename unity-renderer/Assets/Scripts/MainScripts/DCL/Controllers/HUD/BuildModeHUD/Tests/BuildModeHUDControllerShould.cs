@@ -445,7 +445,7 @@ namespace Tests.BuildModeHUDControllers
         public void EntityInformationSetEntityCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
 
             // Act
@@ -492,9 +492,9 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             List<BIWEntity> testEntityList = new List<BIWEntity>();
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity1").AddComponent<BIWEntity>());
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity2").AddComponent<BIWEntity>());
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity3").AddComponent<BIWEntity>());
+            testEntityList.Add(new BIWEntity());
+            testEntityList.Add(new BIWEntity());
+            testEntityList.Add(new BIWEntity());
 
             // Act
             buildModeHUDController.SetEntityList(testEntityList);

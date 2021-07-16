@@ -73,7 +73,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             EntityAction testAction = actionToInvoke;
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             BIWEntity returnedEntity = null;
 
             switch (actionToInvoke)
@@ -106,7 +106,7 @@ namespace Tests.BuildModeHUDControllers
         public void EntityRenameCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             string testText = "Test text";
             BIWEntity returnedEntity = null;
             string returnedText = "";

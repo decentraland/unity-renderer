@@ -125,7 +125,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         biwActionController.TryToRedoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
-        BIWEntity biwEntity = Utils.GetOrCreateComponent<BIWEntity>(scene.entities[ENTITY_ID].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
         biwActionController.CreateActionEntityDeleted(biwEntity);

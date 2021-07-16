@@ -63,7 +63,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
-        BIWEntity biwEntity = Utils.GetOrCreateComponent<BIWEntity>(scene.entities[entityId].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[entityId], null);
 
         Assert.IsTrue(biwEntity.entityUniqueId == scene.sceneData.id + scene.entities[entityId].entityId, "Entity id is not created correctly, this can lead to weird behaviour");

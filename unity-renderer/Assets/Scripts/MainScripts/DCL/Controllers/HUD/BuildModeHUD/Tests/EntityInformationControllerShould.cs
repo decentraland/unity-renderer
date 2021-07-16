@@ -80,7 +80,7 @@ namespace Tests.BuildModeHUDControllers
         public void NameChangedCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             string testText = "Test text";
             BIWEntity returnedEntity = null;
             string returnedText = "";
@@ -148,7 +148,7 @@ namespace Tests.BuildModeHUDControllers
         public void SetEntityCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
 
             // Act
@@ -194,7 +194,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateEntityNameCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
             entityInformationController.isChangingName = false;
 
             // Act
@@ -270,7 +270,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            BIWEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<BIWEntity>();
+            BIWEntity testEntity = new BIWEntity();
 
             // Act
             entityInformationController.UpdateInfo(testEntity);

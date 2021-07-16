@@ -218,11 +218,11 @@ public class EntityInformationController : IEntityInformationController
 
     public void UpdateInfo(BIWEntity entity)
     {
-        if (entity != null && entity.gameObject != null)
+        if (entity != null && entity.rootEntity.gameObject != null)
         {
-            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
-            Vector3 currentRotation = entity.gameObject.transform.rotation.eulerAngles;
-            Vector3 currentScale = entity.gameObject.transform.lossyScale;
+            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.rootEntity.gameObject.transform.position, parcelScene);
+            Vector3 currentRotation = entity.rootEntity.gameObject.transform.rotation.eulerAngles;
+            Vector3 currentScale = entity.rootEntity.gameObject.transform.lossyScale;
 
             currentRotation = entity.GetEulerRotation();
 

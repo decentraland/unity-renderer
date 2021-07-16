@@ -165,7 +165,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
             return;
 
         GameObject instantiatedError = GameObject.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
-        instantiatedError.transform.SetParent(entity.transform, true);
+        instantiatedError.transform.SetParent(entity.rootEntity.transform, true);
         instantiatedError.transform.localPosition = Vector3.zero;
 
         errorGameObjects.Add(entity, instantiatedError);
@@ -224,7 +224,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
             entityHandler.Select(entity.rootEntity);
         }
 
-        entity.gameObject.transform.eulerAngles = Vector3.zero;
+        entity.rootEntity.gameObject.transform.eulerAngles = Vector3.zero;
 
         modeController.CreatedEntity(entity);
 
@@ -246,7 +246,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
         if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
             return;
 
-        BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
+        BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.rootEntity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
         entity.OnShapeFinishLoading += OnShapeLoadFinish;
     }

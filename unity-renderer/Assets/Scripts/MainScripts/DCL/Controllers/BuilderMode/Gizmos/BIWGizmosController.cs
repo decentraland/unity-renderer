@@ -15,7 +15,7 @@ public interface IBIWGizmosController
     public event Action<Vector3> OnChangeTransformValue;
     public string GetSelectedGizmo();
     public void SetSnapFactor(float position, float rotation, float scale);
-    public void SetSelectedEntities(Transform selectionParent, List<EditableEntity> entities);
+    public void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
     public void ShowGizmo();
     public void HideGizmo(bool setInactiveGizmos = false);
     public bool IsGizmoActive();
@@ -44,7 +44,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private BIWGizmosAxis hoveredAxis = null;
 
     private Transform selectedEntitiesParent;
-    private List<EditableEntity> selectedEntities;
+    private List<BIWEntity> selectedEntities;
     private GameObject gizmosGO;
     private FreeCameraMovement freeCameraMovement;
 
@@ -234,7 +234,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         }
     }
 
-    public void SetSelectedEntities(Transform selectionParent, List<EditableEntity> entities)
+    public void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities)
     {
         selectedEntities = entities;
         selectedEntitiesParent = selectionParent;
