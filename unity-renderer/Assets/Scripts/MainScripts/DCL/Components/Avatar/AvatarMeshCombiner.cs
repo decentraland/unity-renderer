@@ -98,7 +98,10 @@ namespace DCL
                     canMerge = func.Invoke(skinnedMeshRenderer);
 
                 if ( !canMerge )
+                {
+                    skinnedMeshRenderer.enabled = false;
                     return true;
+                }
 
                 return false;
             }

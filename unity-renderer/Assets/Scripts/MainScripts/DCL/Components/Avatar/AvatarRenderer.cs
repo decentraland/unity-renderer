@@ -396,15 +396,13 @@ namespace DCL
             }
         }
 
-        // public Texture[] textures;
-        // public Texture2DArray texture2DArray;
 
         void AvatarMergeTest()
         {
             if ( combinedAvatar != null )
                 combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
 
-            GameObject newCombinedAvatar = AvatarMeshCombiner_TextureArray.Combine(
+            GameObject newCombinedAvatar = AvatarMeshCombiner.Combine(
                 bodyShapeController.skinnedMeshRenderer,
                 transform,
                 (r) => !r.transform.parent.gameObject.name.Contains("Mask"));
@@ -416,9 +414,6 @@ namespace DCL
 
                 return;
             }
-
-            // texture2DArray = Shader.GetGlobalTexture("_GlobalAvatarTextureArray") as Texture2DArray;
-            // textures = AvatarMeshCombiner.pointers.textures;
 
             Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
