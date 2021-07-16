@@ -402,10 +402,17 @@ namespace DCL
             if ( combinedAvatar != null )
                 combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
 
+            float time = Time.realtimeSinceStartup;
+            ILogger logger = new Logger(Debug.unityLogger.logHandler);
+            logger.logEnabled = true;
+
             GameObject newCombinedAvatar = AvatarMeshCombiner.Combine(
                 bodyShapeController.skinnedMeshRenderer,
                 transform,
                 (r) => !r.transform.parent.gameObject.name.Contains("Mask"));
+
+            float totalTime = Time.realtimeSinceStartup - time;
+            logger.Log("AvatarMeshCombiner.Combine time = " + totalTime);
 
             if ( newCombinedAvatar == null )
             {
