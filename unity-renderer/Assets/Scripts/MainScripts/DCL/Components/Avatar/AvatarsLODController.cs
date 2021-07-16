@@ -70,7 +70,7 @@ namespace DCL
                 if (!lodGO.activeSelf)
                     continue;
 
-                if (applyVerticalMovement)
+                if (applyVerticalMovement && Vector3.Distance(lodGO.transform.position, CommonScriptableObjects.playerUnityPosition.Get()) > 2 * DataStore.i.avatarsLOD.LODDistance.Get())
                     lodGO.transform.localPosition = new Vector3(lodGO.transform.localPosition.x, (lodGO.transform.localPosition.y > LODS_LOCAL_Y_POS ? LODS_LOCAL_Y_POS : LODS_LOCAL_Y_POS + LODS_VERTICAL_MOVEMENT), lodGO.transform.localPosition.z);
 
                 Vector3 previousForward = lodGO.transform.forward;
