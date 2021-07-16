@@ -8,6 +8,7 @@ namespace DCL
         private const float LODS_LOCAL_Y_POS = 1.8f;
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
+        private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
 
         private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
         private float lastLODsVerticalMovementTime = -1;
@@ -130,7 +131,7 @@ namespace DCL
                 lodRenderer.material.mainTexture = randomTex;
                 lodRenderer.material.SetTexture("_BaseMap", randomTex);*/
 
-                lodRenderer.material.SetTexture("_BaseMap", assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
+                lodRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
                 // TODO: To achieve 1 draw call on impostors: optimize having all the textures in a real atlas and randomize discretely the UVs of the instantiated quad, all having the same material and tex: https://docs.unity3d.com/ScriptReference/Mesh-uv.html
             }
 
