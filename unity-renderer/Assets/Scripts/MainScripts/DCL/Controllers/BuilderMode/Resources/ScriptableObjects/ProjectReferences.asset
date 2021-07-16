@@ -20,11 +20,9 @@ MonoBehaviour:
     type: 3}
   floorPlaceHolderPrefab: {fileID: 3848538323447533592, guid: ea1dee13f58202f409bb86c92a202112,
     type: 3}
-  floorLoadingPrefab: {fileID: 5950472912581580848, guid: 4b06f4730ab123b40ab632c252c2fc2f,
-    type: 3}
   loadingPrefab: {fileID: 9065723555097372216, guid: d21a9c099a778423a908066cf9f458a0,
     type: 3}
-  godModeBuilderPrefab: {fileID: 8249807546955247409, guid: b27d38856c5f37c498d7ad7c2f767f0b,
+  gizmosPrefab: {fileID: 4685460382834116841, guid: f4ac074c7daa15a41944a941614cb443,
     type: 3}
   audioPrefab: {fileID: 5263035319998155755, guid: 0d9a89d47f96fbe47930f8c6b1e14fd0,
     type: 3}
