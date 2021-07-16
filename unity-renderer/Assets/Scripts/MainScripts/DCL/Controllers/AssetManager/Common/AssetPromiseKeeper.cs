@@ -132,7 +132,7 @@ namespace DCL
             if (promise == null)
                 return null;
 
-            if (promise.state == AssetPromiseState.LOADING)
+            if (promise.keepWaiting)
             {
                 toForgetInProgressPromisesQueue.Enqueue(promise);
                 return promise;
@@ -156,7 +156,7 @@ namespace DCL
                 }
 
                 AssetPromiseType promise = toForgetInProgressPromisesQueue.Dequeue();
-                yield return new WaitUntil(() => promise.state != AssetPromiseState.LOADING);
+                yield return new WaitUntil(() => !promise.keepWaiting);
                 Forget(promise);
             }
         }
