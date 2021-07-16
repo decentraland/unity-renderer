@@ -7,7 +7,7 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
         //_EmissionMap ("Emission Map (RGB)", 2DArray) = "black" {}
         //[HDR] _EmissionColor ("Emission Color", Color) = (0, 0, 0, 0)
         //_Cutoff("AlphaCutout", Range(0.0, 1.0)) = 0.5
-        _GlobalAvatarTextureArray_ST ("Global Texture Transform", Vector) = (1,1,0,0)
+        //_GlobalAvatarTextureArray_ST ("Global Texture Transform", Vector) = (1,1,0,0)
 
         [HideInInspector] _AlphaClip("__clip", Float) = 0.0
         [HideInInspector] _SrcBlend("__src", Float) = 1.0
@@ -32,7 +32,6 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
-            #pragma target 4.0
             #pragma require 2darray
             //#pragma multi_compile _ _EMISSION
             //#pragma multi_compile _ _ALPHATEST_ON
@@ -66,9 +65,6 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             uniform sampler2D _MatCap;
 
             CBUFFER_START(UnityPerMaterial)
-            float4 _GlobalAvatarTextureArray_ST;
-            fixed4 _BaseColor;
-            float4 _EmissionColor;
             float _Cutoff;
             CBUFFER_END
 
@@ -76,7 +72,7 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.texcoord, _GlobalAvatarTextureArray);
+                o.uv = v.texcoord; //TRANSFORM_TEX(v.texcoord, _GlobalAvatarTextureArray);
                 o.texture_indexes = float2(abs(v.texture_indexes[0]), abs(v.texture_indexes[1]));
                 o.color = v.color;
                 o.emission_color = v.emission_color;
@@ -108,7 +104,6 @@ Shader "DCL/Toon Shader Legacy (Texture Arrays)"
                                                        float3(i.uv.x, i.uv.y, i.texture_indexes[1]));
                 }
 
-                albedo.g = 0;
                 fixed4 tex = albedo * i.color;
                 fixed4 matcap = tex2D(_MatCap, i.cap);
 

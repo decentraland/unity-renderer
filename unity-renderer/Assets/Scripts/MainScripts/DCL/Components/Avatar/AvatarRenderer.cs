@@ -404,7 +404,7 @@ namespace DCL
             if ( combinedAvatar != null )
                 combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
 
-            GameObject newCombinedAvatar = AvatarMeshCombiner.Combine(
+            GameObject newCombinedAvatar = AvatarMeshCombiner_TextureArray.Combine(
                 bodyShapeController.skinnedMeshRenderer,
                 transform,
                 (r) => !r.transform.parent.gameObject.name.Contains("Mask"));
