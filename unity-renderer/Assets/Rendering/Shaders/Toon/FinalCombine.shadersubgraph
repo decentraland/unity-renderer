@@ -4,9 +4,6 @@
     "m_ObjectId": "a16fa58c0ca545b88aa9b34ca03ed698",
     "m_Properties": [
         {
-            "m_Id": "24af0d9adbfd298db24937d3fcabd0c3"
-        },
-        {
             "m_Id": "9a83afec825641888a9ef9ee903c7579"
         },
         {
@@ -251,30 +248,6 @@
 }
 
 {
-    "m_SGVersion": 2,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
-    "m_ObjectId": "24af0d9adbfd298db24937d3fcabd0c3",
-    "m_Guid": {
-        "m_GuidSerialized": "58422dd9-4c2d-44d4-ad67-97ec870eeabd"
-    },
-    "m_Name": "Emissive Color",
-    "m_DefaultReferenceName": "Color_E739F888",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_Value": {
-        "r": 1.0,
-        "g": 1.0,
-        "b": 1.0,
-        "a": 0.0
-    },
-    "m_ColorMode": 0
-}
-
-{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.SubGraphOutputNode",
     "m_ObjectId": "2a813d1a51f2928cafdc2328d8325f6a",
@@ -486,7 +459,7 @@
 }
 
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
     "m_ObjectId": "5bbe166f6231498b9430d5561c5114db",
     "m_Guid": {
@@ -510,7 +483,7 @@
 }
 
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
     "m_ObjectId": "6e9547cfd2d68f87a68a7c0579c5d4a7",
     "m_Guid": {
@@ -608,7 +581,7 @@
 }
 
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
     "m_ObjectId": "9a83afec825641888a9ef9ee903c7579",
     "m_Guid": {

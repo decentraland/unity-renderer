@@ -142,33 +142,6 @@ Shader "DCL/Toon Shader Legacy (Branching)"
                 else
                     result = defaultColor;
 
-
-                // if (index >= 0 && index <= 4)
-                // {
-                //     result = tex2D(_AvatarMap1, uv);
-                //     //result += tex2D(_AvatarMap2, uv) * int(mask & (1 << 1));
-                //     //result += tex2D(_AvatarMap3, uv) * int(mask & (1 << 2));
-                //     //result += tex2D(_AvatarMap4, uv) * int(mask & (1 << 3));
-                // }
-                // else if (index > 4 && index <= 8)
-                // {
-                //     result += tex2D(_AvatarMap5, uv) * (mask & (1 << 4));
-                //     result += tex2D(_AvatarMap6, uv) * (mask & (1 << 5));
-                //     result += tex2D(_AvatarMap7, uv) * (mask & (1 << 6));
-                //     result += tex2D(_AvatarMap8, uv) * (mask & (1 << 7));
-                // }
-                // else if (index > 8 && index <= 12)
-                // {
-                //     result += tex2D(_AvatarMap9, uv) * (mask & (1 << 8));
-                //     result += tex2D(_AvatarMap10, uv) * (mask & (1 << 9));
-                //     result += tex2D(_AvatarMap11, uv) * (mask & (1 << 10));
-                //     result += tex2D(_AvatarMap12, uv) * (mask & (1 << 11));
-                // }
-                // else
-                // {
-                //     return defaultColor;
-                // }
-
                 return result;
             }
 

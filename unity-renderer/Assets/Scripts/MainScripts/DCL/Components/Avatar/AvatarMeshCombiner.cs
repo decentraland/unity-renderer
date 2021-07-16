@@ -157,6 +157,11 @@ namespace DCL
                         //logger.Log($"(emission) Setting map {targetMap} to {baseMap}");
                     }
 
+                    newMaterial.SetInt(ShaderUtils.Cull, mat.GetInt(ShaderUtils.Cull));
+                    newMaterial.SetInt(ShaderUtils.ZWrite, mat.GetInt(ShaderUtils.ZWrite));
+                    newMaterial.SetInt(ShaderUtils.SrcBlend, mat.GetInt(ShaderUtils.SrcBlend));
+                    newMaterial.SetInt(ShaderUtils.DstBlend, mat.GetInt(ShaderUtils.DstBlend));
+
                     // Base Colors
                     Color baseColor = mat.GetColor(ShaderUtils.BaseColor);
                     colors.AddRange(Enumerable.Repeat(baseColor, elementsCount));
@@ -199,7 +204,7 @@ namespace DCL
 
             finalMesh.boneWeights = boneWeights.ToArray();
             finalMesh.SetUVs(3, emissionColors);
-            finalMesh.SetUVs(4, texturePointers);
+            finalMesh.SetUVs(2, texturePointers);
             finalMesh.SetColors(colors);
             finalMesh.Optimize();
 
