@@ -137,8 +137,8 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
-        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
+        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject, transform =  avatarGameObject.transform };
+        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject , transform =  firstPersonCameraGameObject.transform };
     }
 
     private void SubscribeToInput()
@@ -442,10 +442,7 @@ public class DCLCharacterController : MonoBehaviour
         return null;
     }
 
-    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
-    {
-        return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
-    }
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo) { return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo); }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
     {
