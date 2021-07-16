@@ -52,9 +52,9 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
     public void CleanFeedback()
     {
-        foreach (var meshInfo in currentMeshesInvalidated)
+        for (int i = 0; i < currentMeshesInvalidated.Count; i++)
         {
-            RemoveInvalidMeshEffect(meshInfo);
+            RemoveInvalidMeshEffect(currentMeshesInvalidated[i]);
         }
 
         currentMeshesInvalidated.Clear();
