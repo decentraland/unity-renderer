@@ -75,7 +75,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         CreateFloor(newFloorObject);
 
-        BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
+        BIWCompleteAction buildAction = new BIWCompleteAction();
 
         buildAction.CreateChangeFloorAction(lastFloor, newFloorObject);
         actionController.AddAction(buildAction);
@@ -100,7 +100,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public void CreateDefaultFloor()
     {
-        CatalogItem floorSceneObject = BuilderInWorldUtils.CreateFloorSceneObject();
+        CatalogItem floorSceneObject = BIWUtils.CreateFloorSceneObject();
         CreateFloor(floorSceneObject);
     }
 

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using DCL.Configuration;
 using UnityEngine;
 
-public class BuilderInWorldMode
+public class BIWMode
 {
     public event Action OnInputDone;
-    public event Action<BuildInWorldCompleteAction> OnActionGenerated;
+    public event Action<BIWCompleteAction> OnActionGenerated;
 
     public float maxDistanceToSelectEntities => maxDistanceToSelectEntitiesValue;
 
@@ -31,7 +31,7 @@ public class BuilderInWorldMode
 
     protected bool isNewObjectPlaced = false;
 
-    protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
+    protected List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
     public virtual void Init(BIWContext context)
     {
@@ -88,7 +88,7 @@ public class BuilderInWorldMode
     {
         CenterGameObjectToEdit();
 
-        BuilderInWorldUtils.CopyGameObjectStatus(editionGO, undoGO, false, false);
+        BIWUtils.CopyGameObjectStatus(editionGO, undoGO, false, false);
     }
 
     public virtual void CenterGameObjectToEdit()
@@ -189,7 +189,7 @@ public class BuilderInWorldMode
 
     protected void TransformActionStarted(IDCLEntity entity, string type)
     {
-        BuilderInWorldEntityAction buildModeEntityAction = new BuilderInWorldEntityAction(entity);
+        BIWEntityAction buildModeEntityAction = new BIWEntityAction(entity);
         switch (type)
         {
             case BIWSettings.TRANSLATE_GIZMO_NAME:
@@ -208,8 +208,8 @@ public class BuilderInWorldMode
 
     protected void TransformActionEnd(IDCLEntity entity, string type)
     {
-        List<BuilderInWorldEntityAction> removeList = new List<BuilderInWorldEntityAction>();
-        foreach (BuilderInWorldEntityAction entityAction in actionList)
+        List<BIWEntityAction> removeList = new List<BIWEntityAction>();
+        foreach (BIWEntityAction entityAction in actionList)
         {
             if (entityAction.entityId != entity.entityId)
                 continue;
@@ -236,23 +236,23 @@ public class BuilderInWorldMode
             }
         }
 
-        foreach (BuilderInWorldEntityAction entityAction in removeList)
+        foreach (BIWEntityAction entityAction in removeList)
         {
             actionList.Remove(entityAction);
         }
     }
 
-    protected void ActionFinish(BuildInWorldCompleteAction.ActionType type)
+    protected void ActionFinish(BIWCompleteAction.ActionType type)
     {
         if (actionList.Count > 0 && selectedEntities.Count > 0)
         {
-            BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+            BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
             buildModeAction.actionType = type;
             buildModeAction.CreateActionType(actionList, type);
             OnActionGenerated?.Invoke(buildModeAction);
 
-            actionList = new List<BuilderInWorldEntityAction>();
+            actionList = new List<BIWEntityAction>();
         }
     }
     public virtual void Update() { }

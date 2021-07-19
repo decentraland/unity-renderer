@@ -64,7 +64,7 @@ public class SmartItemActionEventAdapter : MonoBehaviour
     public void SetContent(SmartItemActionEvent actionEvent)
     {
         this.actionEvent = actionEvent;
-        filteredList = BuilderInWorldUtils.FilterEntitiesBySmartItemComponentAndActions(actionEvent.entityList);
+        filteredList = BIWUtils.FilterEntitiesBySmartItemComponentAndActions(actionEvent.entityList);
 
         GenerateEntityDropdownContent();
         foreach (BIWEntity entity in filteredList)

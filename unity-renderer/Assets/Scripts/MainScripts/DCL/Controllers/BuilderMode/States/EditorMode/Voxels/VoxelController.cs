@@ -116,7 +116,7 @@ public class VoxelController
 
         foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (BuilderInWorldUtils.IsWithInSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
+            if (BIWUtils.IsWithInSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
             {
                 biwEntityHandler.SelectEntity(voxelEntity);
             }
@@ -230,10 +230,10 @@ public class VoxelController
                 }
             }
 
-            BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-            buildAction.actionType = BuildInWorldCompleteAction.ActionType.CREATE;
+            BIWCompleteAction buildAction = new BIWCompleteAction();
+            buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
 
-            List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
+            List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
 
             foreach (Vector3Int voxelPosition in createdVoxels.Keys)
             {
@@ -243,8 +243,8 @@ public class VoxelController
                     entity.gameObject.tag = BIWSettings.VOXEL_TAG;
                     entity.gameObject.transform.position = voxelPosition;
 
-                    BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity, entity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity));
-                    entityActionList.Add(builderInWorldEntityAction);
+                    BIWEntityAction biwEntityAction = new BIWEntityAction(entity, entity.entityId, BIWUtils.ConvertEntityToJSON(entity));
+                    entityActionList.Add(biwEntityAction);
                 }
 
                 GameObject.Destroy(createdVoxels[voxelPosition].gameObject);
@@ -256,7 +256,7 @@ public class VoxelController
             }
             else
             {
-                buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATE);
+                buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
                 biwActionController.AddAction(buildAction);
             }
 

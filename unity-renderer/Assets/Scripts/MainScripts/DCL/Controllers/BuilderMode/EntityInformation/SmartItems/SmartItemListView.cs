@@ -27,7 +27,7 @@ public class SmartItemListView : MonoBehaviour
         }
     }
 
-    public void SetEntityList(List<BIWEntity> entitiesList) { this.entitiesList = BuilderInWorldUtils.RemoveGroundEntities(entitiesList); }
+    public void SetEntityList(List<BIWEntity> entitiesList) { this.entitiesList = BIWUtils.RemoveGroundEntities(entitiesList); }
 
     void InstantiateParameter(SmartItemParameter parameter, Dictionary<object, object> smartItemValues, SmartItemUIParameterAdapter parameterAdapterPrefab)
     {

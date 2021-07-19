@@ -9,7 +9,7 @@ using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BuilderInWorldGodMode : BuilderInWorldMode
+public class BiwGodMode : BIWMode
 {
     private float initialEagleCameraHeight = 10f;
     private float initialEagleCameraDistance = 10f;
@@ -154,7 +154,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
 
-                if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
                     outlinerController.OutlineEntity(entity);
                 }
@@ -171,9 +171,9 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.OnGUI();
         if (mouseMainBtnPressed && isSquareMultiSelectionInputActive)
         {
-            var rect = BuilderInWorldUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
-            BuilderInWorldUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
-            BuilderInWorldUtils.DrawScreenRectBorder(rect, 1, Color.white);
+            var rect = BIWUtils.GetScreenRect(lastMousePosition, Input.mousePosition);
+            BIWUtils.DrawScreenRect(rect, new Color(1f, 1f, 1f, 0.25f));
+            BIWUtils.DrawScreenRectBorder(rect, 1, Color.white);
         }
     }
 
@@ -215,7 +215,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
         UpdateGizmosToSelectedEntities();
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
-        ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
+        ActionFinish(BIWCompleteAction.ActionType.MOVE);
         biwEntityHandler.ReportTransform(true);
         biwSaveController.TryToSave();
     }
@@ -228,7 +228,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         selectedEntities[0].rootEntity.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
-        ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
+        ActionFinish(BIWCompleteAction.ActionType.ROTATE);
         biwEntityHandler.ReportTransform(true);
         biwSaveController.TryToSave();
     }
@@ -248,7 +248,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         entityToUpdate.rootEntity.transform.SetParent(editionGO.transform);
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
-        ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
+        ActionFinish(BIWCompleteAction.ActionType.SCALE);
         biwEntityHandler.ReportTransform(true);
         biwSaveController.TryToSave();
     }
@@ -286,7 +286,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         isMouseDragging = true;
         if (buttonId != 0 ||
             selectedEntities.Count <= 0 ||
-            BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER) ||
+            BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER) ||
             isSquareMultiSelectionInputActive)
             return;
 
@@ -386,7 +386,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         var entity = biwEntityHandler.GetEntityOnPointer();
         if ((entity == null
              || (entity != null && !entity.IsSelected))
-            && !BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
+            && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
         {
             isSquareMultiSelectionInputActive = true;
             outlinerController.SetOutlineCheckActive(false);
@@ -463,7 +463,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
-                if (BuilderInWorldUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
+                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
                     && !entity.IsLocked)
                 {
                     if (entity.IsSelected)
@@ -669,7 +669,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (entity.meshRootGameObject == null
             || entity.meshesInfo == null
-            || BuilderInWorldUtils.IsBoundInsideCamera(entity.meshesInfo.mergedBounds))
+            || BIWUtils.IsBoundInsideCamera(entity.meshesInfo.mergedBounds))
             return;
 
         LookAtEntity(entity);
@@ -743,13 +743,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             case BIWSettings.TRANSLATE_GIZMO_NAME:
 
-                ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
+                ActionFinish(BIWCompleteAction.ActionType.MOVE);
                 break;
             case BIWSettings.ROTATE_GIZMO_NAME:
-                ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
+                ActionFinish(BIWCompleteAction.ActionType.ROTATE);
                 break;
             case BIWSettings.SCALE_GIZMO_NAME:
-                ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
+                ActionFinish(BIWCompleteAction.ActionType.SCALE);
                 break;
         }
 
@@ -762,7 +762,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
     {
-        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
 
         return parcelScene.transform.position
@@ -772,7 +772,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     void SetLookAtObject(ParcelScene parcelScene)
     {
-        Vector3 middlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(parcelScene);
+        Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 

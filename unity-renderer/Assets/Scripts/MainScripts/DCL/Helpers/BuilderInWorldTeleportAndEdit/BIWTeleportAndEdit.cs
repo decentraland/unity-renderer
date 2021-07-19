@@ -4,7 +4,7 @@ using DCL.Interface;
 using UnityEngine;
 using DataStore = DCL.DataStore;
 
-public static class BuilderInWorldTeleportAndEdit
+public static class BIWTeleportAndEdit
 {
     public static event Action<Vector2Int> OnTeleportStart;
     public static event Action<Vector2Int> OnTeleportEnd;

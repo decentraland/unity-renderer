@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
+public class BiwFirstPersonMode : BIWMode
 {
     private float scaleSpeed = 0.25f;
     private float rotationSpeed = 0.5f;
@@ -83,7 +83,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
             }
             else if (Vector3.Distance(snapGO.transform.position, editionGO.transform.position) >= snapDistanceToActivateMovement)
             {
-                BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+                BIWUtils.CopyGameObjectStatus(editionGO, snapGO, false);
                 snapObjectAlreadyMoved = true;
                 SetEditObjectParent();
             }
@@ -123,7 +123,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     private void UndoSelection()
     {
-        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        BIWUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
         biwEntityHandler.DeselectEntities();
     }
 
@@ -185,7 +185,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         SetObjectIfSnapOrNot();
 
         currentYRotationAdded = 0;
-        BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+        BIWUtils.CopyGameObjectStatus(editionGO, snapGO, false);
     }
 
     public override void CreatedEntity(BIWEntity createdEntity)
@@ -315,7 +315,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         currentYRotationAdded += angleToRotate;
         editionGO.transform.Rotate(Vector3.up, angleToRotate);
         snapGO.transform.Rotate(Vector3.up, angleToRotate);
-        snapGO.transform.rotation = Quaternion.Euler(BuilderInWorldUtils.SnapFilterEulerAngles(snapGO.transform.rotation.eulerAngles, snapRotationDegresFactor));
+        snapGO.transform.rotation = Quaternion.Euler(BIWUtils.SnapFilterEulerAngles(snapGO.transform.rotation.eulerAngles, snapRotationDegresFactor));
     }
 
     void ScaleSelection(float scaleFactor)

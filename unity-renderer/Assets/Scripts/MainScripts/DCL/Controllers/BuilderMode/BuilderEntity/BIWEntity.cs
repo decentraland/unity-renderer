@@ -136,7 +136,7 @@ public class BIWEntity
 
         string assetId = catalogHolder.GetAssetId();
 
-        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
         return null;
@@ -242,7 +242,7 @@ public class BIWEntity
                 {
                     if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                     {
-                        BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
+                        BIWNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
                         break;
                     }
                 }
@@ -409,7 +409,7 @@ public class BIWEntity
             {
                 if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                 {
-                    BuilderInWorldNFTController.i.UseNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
+                    BIWNFTController.i.UseNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
                     break;
                 }
             }

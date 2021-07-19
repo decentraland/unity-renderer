@@ -38,7 +38,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
         biwCreatorController.CreateCatalogItem(item);
@@ -57,7 +57,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
         biwCreatorController.CreateCatalogItem(item);
@@ -79,7 +79,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
         biwCreatorController.CreateCatalogItem(item);
@@ -95,7 +95,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
         biwCreatorController.CreateCatalogItem(item);
@@ -112,7 +112,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
 
@@ -129,7 +129,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
         biwCreatorController.CreateCatalogItem(item);
         BIWEntity entity = entityHandler.GetAllEntitiesFromCurrentScene().FirstOrDefault();
         biwCreatorController.CreateErrorOnEntity(entity);
@@ -147,7 +147,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         //Act
         biwCreatorController.CreateCatalogItem(item);
@@ -175,7 +175,7 @@ public class BIWCreatorShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
-        BuilderInWorldNFTController.i.ClearNFTs();
+        BIWNFTController.i.ClearNFTs();
         foreach (var placeHolder in GameObject.FindObjectsOfType<BIWLoadingPlaceHolder>())
         {
             placeHolder.Dispose();

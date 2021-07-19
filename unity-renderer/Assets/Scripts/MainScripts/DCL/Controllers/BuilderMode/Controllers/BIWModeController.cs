@@ -47,8 +47,8 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWActionController actionController;
     private IBIWEntityHandler entityHandler;
 
-    private BuilderInWorldFirstPersonMode firstPersonMode;
-    private BuilderInWorldGodMode godMode;
+    private BiwFirstPersonMode firstPersonMode;
+    private BiwGodMode godMode;
 
     private InputAction_Trigger toggleSnapModeInputAction;
 
@@ -57,7 +57,7 @@ public class BIWModeController : BIWController, IBIWModeController
 
     private EditModeState currentEditModeState = EditModeState.Inactive;
 
-    private BuilderInWorldMode currentActiveMode;
+    private BIWMode currentActiveMode;
 
     private bool isSnapActive = true;
 
@@ -76,8 +76,8 @@ public class BIWModeController : BIWController, IBIWModeController
         cameraParentGO = InitialSceneReferences.i.cameraParent;
         InitGameObjects();
 
-        firstPersonMode = new BuilderInWorldFirstPersonMode();
-        godMode = new BuilderInWorldGodMode();
+        firstPersonMode = new BiwFirstPersonMode();
+        godMode = new BiwGodMode();
 
         firstPersonMode.Init(biwContext);
         godMode.Init(biwContext);
@@ -178,7 +178,7 @@ public class BIWModeController : BIWController, IBIWModeController
         if (undoGO == null || editionGO == null)
             return;
 
-        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        BIWUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
     }
 
     public override void OnGUI()
@@ -214,7 +214,7 @@ public class BIWModeController : BIWController, IBIWModeController
         snapGO.transform.SetParent(null);
     }
 
-    public BuilderInWorldMode GetCurrentMode() => currentActiveMode;
+    public BIWMode GetCurrentMode() => currentActiveMode;
 
     public EditModeState GetCurrentStateMode() => currentEditModeState;
 

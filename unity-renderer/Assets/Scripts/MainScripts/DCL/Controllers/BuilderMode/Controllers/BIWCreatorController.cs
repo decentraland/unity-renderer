@@ -186,7 +186,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
 
     public BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null)
     {
-        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
+        if (catalogItem.IsNFT() && BIWNFTController.i.IsNFTInUse(catalogItem.id))
             return null;
 
         IsInsideTheLimits(catalogItem);

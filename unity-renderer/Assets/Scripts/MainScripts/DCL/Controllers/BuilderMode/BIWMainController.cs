@@ -101,7 +101,7 @@ public class BIWMainController : Feature
 
         InitHUD();
 
-        BuilderInWorldTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
+        BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
 
         ConfigureLoadingController();
         InitControllers();
@@ -111,8 +111,8 @@ public class BIWMainController : Feature
         builderInWorldBridge.AskKernelForCatalogHeaders();
 
         isCatalogLoading = true;
-        BuilderInWorldNFTController.i.Initialize();
-        BuilderInWorldNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
+        BIWNFTController.i.Initialize();
+        BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
         editModeChangeInputAction = context.inputsReferences.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
@@ -217,13 +217,13 @@ public class BIWMainController : Feature
             HUDController.i.builderInWorldMainHud.OnLogoutAction -= ExitEditMode;
         }
 
-        BuilderInWorldTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
+        BIWTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
 
         if (initialLoadingController != null)
             initialLoadingController.Dispose();
 
 
-        BuilderInWorldNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+        BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
         CleanItems();
@@ -325,7 +325,7 @@ public class BIWMainController : Feature
             return;
 
         if (areCatalogHeadersReady)
-            catalogAsyncOp = BuilderInWorldUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
+            catalogAsyncOp = BIWUtils.MakeGetCall(BIWUrlUtils.GetUrlCatalog(), CatalogReceived, catalogCallHeaders);
         else
             builderInWorldBridge.AskKernelForCatalogHeaders();
 
@@ -587,13 +587,13 @@ public class BIWMainController : Feature
             return;
 
         isEnteringEditMode = false;
-        BuilderInWorldNFTController.i.ClearNFTs();
+        BIWNFTController.i.ClearNFTs();
 
         ParcelSettings.VISUAL_LOADING_ENABLED = false;
 
         sceneToEdit.SetEditMode(true);
         cursorGO.SetActive(false);
-        parcelUnityMiddlePoint = BuilderInWorldUtils.CalculateUnityMiddlePoint(sceneToEdit);
+        parcelUnityMiddlePoint = BIWUtils.CalculateUnityMiddlePoint(sceneToEdit);
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -605,7 +605,7 @@ public class BIWMainController : Feature
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
-        DataStore.i.builderInWorld.showTaskBar.Set(true);
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
@@ -642,7 +642,7 @@ public class BIWMainController : Feature
         }
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
-        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BuilderInWorldUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BuilderInWorldUtils.GetSceneSize(sceneToEdit));
+        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
         BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
     }
 
@@ -698,7 +698,7 @@ public class BIWMainController : Feature
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-        DataStore.i.builderInWorld.showTaskBar.Set(true);
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
 

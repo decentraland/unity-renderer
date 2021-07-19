@@ -130,7 +130,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         if (!canInputBeMade)
             return;
 
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
         {
             OnMouseUp?.Invoke(buttonId, mousePosition);
             if (Vector3.Distance(mousePosition, lastMousePosition) >= MOVEMENT_CLICK_THRESHOLD)
@@ -150,7 +150,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
         lastTimeMouseDown = Time.unscaledTime;
         lastMousePosition = mousePosition;
-        currentClickIsOnUi = BuilderInWorldUtils.IsPointerOverUIElement();
+        currentClickIsOnUi = BIWUtils.IsPointerOverUIElement();
 
         if (!canInputBeMade)
             return;
@@ -165,7 +165,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
         if (!canInputBeMade)
             return;
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
             OnMouseWheel?.Invoke(axisValue);
     }
 
@@ -195,7 +195,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     {
         if (!canInputBeMade ||
             currentClickIsOnUi ||
-            BuilderInWorldUtils.IsPointerOverUIElement())
+            BIWUtils.IsPointerOverUIElement())
             return false;
 
         return true;

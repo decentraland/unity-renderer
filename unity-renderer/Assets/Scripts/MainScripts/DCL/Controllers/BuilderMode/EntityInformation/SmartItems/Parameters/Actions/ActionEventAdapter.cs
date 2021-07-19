@@ -29,7 +29,7 @@ public class ActionEventAdapter : MonoBehaviour
     public void SetContent(List<BIWEntity> entityList)
     {
         this.entityList = entityList;
-        filteredList = BuilderInWorldUtils.FilterEntitiesBySmartItemComponentAndActions(entityList);
+        filteredList = BIWUtils.FilterEntitiesBySmartItemComponentAndActions(entityList);
 
         GenerateEntityDropdownContent();
         SelectedEntity(0);

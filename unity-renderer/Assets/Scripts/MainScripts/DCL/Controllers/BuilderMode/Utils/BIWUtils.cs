@@ -18,7 +18,7 @@ using DCL.Controllers;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
-public static partial class BuilderInWorldUtils
+public static partial class BIWUtils
 {
     public static LandRole GetLandOwnershipType(List<LandWithAccess> lands, ParcelScene scene)
     {

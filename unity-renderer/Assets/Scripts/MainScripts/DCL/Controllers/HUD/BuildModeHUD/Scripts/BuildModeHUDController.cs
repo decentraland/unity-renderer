@@ -560,7 +560,7 @@ public class BuildModeHUDController : IHUD
 
     public void ChangeVisibilityOfUI()
     {
-        DataStore.i.builderInWorld.showTaskBar.Set(!IsVisible());
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(!IsVisible());
         SetVisibility(!IsVisible());
     }
 

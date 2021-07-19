@@ -59,7 +59,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     {
         if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
         {
-            if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
+            if (!BIWUtils.IsPointerOverUIElement() && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
             {
                 BIWEntity entity = entityHandler.GetEntityOnPointer();
                 RemoveEntitiesOutlineOutsidePointerOrUnselected();

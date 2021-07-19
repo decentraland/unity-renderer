@@ -181,7 +181,7 @@ public static class BIWTestHelper
             string jsonValue = File.ReadAllText(jsonPath);
             NFTOwner owner = NFTOwner.defaultNFTOwner;
             owner.assets.Add(JsonUtility.FromJson<NFTInfo>(jsonValue));
-            BuilderInWorldNFTController.i.NftsFeteched(owner);
+            BIWNFTController.i.NftsFeteched(owner);
         }
     }
 }

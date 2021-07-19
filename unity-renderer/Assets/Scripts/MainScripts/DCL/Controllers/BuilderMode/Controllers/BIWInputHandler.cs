@@ -134,7 +134,7 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         if (Time.timeSinceLevelLoad < nexTimeToReceiveInput)
             return;
 
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
             HUDController.i.builderInWorldMainHud.HideExtraBtns();
 
         if (Utils.isCursorLocked || modeController.IsGodModeActive())

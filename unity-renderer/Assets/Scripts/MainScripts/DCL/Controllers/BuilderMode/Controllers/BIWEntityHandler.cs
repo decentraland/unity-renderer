@@ -30,7 +30,7 @@ public interface IBIWEntityHandler
     public List<BIWEntity> GetSelectedEntityList();
     public BIWEntity GetEntityOnPointer();
     public bool IsAnyEntitySelected();
-    public void SetActiveMode(BuilderInWorldMode buildMode);
+    public void SetActiveMode(BIWMode buildMode);
     public void SetMultiSelectionActive(bool isActive);
     public void ChangeLockStateSelectedEntities();
     public void DeleteEntitiesOutsideSceneBoundaries();
@@ -70,7 +70,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private readonly Dictionary<string, BIWEntity> convertedEntities = new Dictionary<string, BIWEntity>();
     private readonly List<BIWEntity> selectedEntities = new List<BIWEntity>();
 
-    private BuilderInWorldMode currentActiveMode;
+    private BIWMode currentActiveMode;
     private bool isMultiSelectionActive = false;
     private bool isSecondayClickPressed = false;
 
@@ -211,7 +211,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
 
-    public void SetActiveMode(BuilderInWorldMode buildMode)
+    public void SetActiveMode(BIWMode buildMode)
     {
         currentActiveMode = buildMode;
         DeselectEntities();
@@ -524,10 +524,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void DuplicateSelectedEntities()
     {
-        BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-        buildAction.actionType = BuildInWorldCompleteAction.ActionType.CREATE;
+        BIWCompleteAction buildAction = new BIWCompleteAction();
+        buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
 
-        List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
+        List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
         List<BIWEntity> entitiesToDuplicate = new List<BIWEntity>(selectedEntities);
         DeselectEntities();
 
@@ -537,14 +537,14 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
                 continue;
 
             var entityDuplicated = DuplicateEntity(entityToDuplicate);
-            BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entityDuplicated.rootEntity, entityDuplicated.rootEntity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entityDuplicated.rootEntity));
-            entityActionList.Add(builderInWorldEntityAction);
+            BIWEntityAction biwEntityAction = new BIWEntityAction(entityDuplicated.rootEntity, entityDuplicated.rootEntity.entityId, BIWUtils.ConvertEntityToJSON(entityDuplicated.rootEntity));
+            entityActionList.Add(biwEntityAction);
             SelectEntity(entityDuplicated);
         }
 
         currentActiveMode?.SetDuplicationOffset(DUPLICATE_OFFSET);
 
-        buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATE);
+        buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
         actionController.AddAction(buildAction);
     }
 
@@ -555,7 +555,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         entity.RemoveSharedComponent(typeof(DCLName), false);
         entity.RemoveSharedComponent(typeof(DCLLockedOnEdit), false);
 
-        BuilderInWorldUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
+        BIWUtils.CopyGameObjectStatus(entityToDuplicate.rootEntity.gameObject, entity.gameObject, false, false);
         BIWEntity convertedEntity = SetupEntityToEdit(entity);
 
         NotifyEntityIsCreated(entity);
@@ -565,7 +565,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public IDCLEntity CreateEntityFromJSON(string entityJson)
     {
-        EntityData data = BuilderInWorldUtils.ConvertJSONToEntityData(entityJson);
+        EntityData data = BIWUtils.ConvertJSONToEntityData(entityJson);
 
         IDCLEntity newEntity = sceneToEdit.CreateEntity(data.entityId);
 

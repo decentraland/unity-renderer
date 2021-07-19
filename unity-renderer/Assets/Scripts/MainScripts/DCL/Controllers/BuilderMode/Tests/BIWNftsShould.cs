@@ -41,21 +41,21 @@ public class BIWNftsShould : IntegrationTestSuite
     [Test]
     public void NftsUsage()
     {
-        string idToTest = BuilderInWorldNFTController.i.GetNfts()[0].assetContract.address;
+        string idToTest = BIWNFTController.i.GetNfts()[0].assetContract.address;
 
-        Assert.IsFalse(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        Assert.IsFalse(BIWNFTController.i.IsNFTInUse(idToTest));
 
-        BuilderInWorldNFTController.i.UseNFT(idToTest);
-        Assert.IsTrue(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        BIWNFTController.i.UseNFT(idToTest);
+        Assert.IsTrue(BIWNFTController.i.IsNFTInUse(idToTest));
 
-        BuilderInWorldNFTController.i.StopUsingNFT(idToTest);
-        Assert.IsFalse(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        BIWNFTController.i.StopUsingNFT(idToTest);
+        Assert.IsFalse(BIWNFTController.i.IsNFTInUse(idToTest));
     }
 
     [Test]
     public void NftComponent()
     {
-        CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem catalogItem = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
 
         BIWEntity biwEntity = new BIWEntity();
@@ -79,7 +79,7 @@ public class BIWNftsShould : IntegrationTestSuite
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
-        BuilderInWorldNFTController.i.ClearNFTs();
+        BIWNFTController.i.ClearNFTs();
         yield return base.TearDown();
         PoolManager.i.Cleanup();
     }
