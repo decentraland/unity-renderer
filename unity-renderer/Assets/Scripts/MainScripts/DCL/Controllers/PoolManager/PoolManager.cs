@@ -31,6 +31,11 @@ namespace DCL
             return poolableValues.Contains(poolable);
         }
 
+        public bool HasPoolable(GameObject gameObject)
+        {
+            return poolables.ContainsKey(gameObject);
+        }
+
         public PoolableObject GetPoolable(GameObject gameObject)
         {
             if (gameObject == null)
@@ -56,10 +61,17 @@ namespace DCL
 
         GameObject containerValue = null;
 
-        void EnsureContainer()
+        void EnsureContainer(string name = null)
         {
+            string containerName = "_PoolManager";
+
+            if ( !string.IsNullOrEmpty(name))
+            {
+                containerName += $"({name})";
+            }
+
             if (containerValue == null)
-                containerValue = new GameObject("_PoolManager");
+                containerValue = new GameObject(containerName);
         }
 
         public System.Action<CrashPayload> CrashPayloadEvent;
@@ -67,6 +79,14 @@ namespace DCL
         public PoolManager()
         {
             EnsureContainer();
+
+            initializing = !CommonScriptableObjects.rendererState.Get();
+            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
+        }
+
+        public PoolManager(string name = null)
+        {
+            EnsureContainer(name);
 
             initializing = !CommonScriptableObjects.rendererState.Get();
             CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
@@ -83,7 +103,7 @@ namespace DCL
 
             if (ContainsPool(id))
             {
-                if (Pool.FindPoolInGameObject(original, out Pool poolAlreadyExists))
+                if (Pool.FindPoolInGameObject(this, original, out Pool poolAlreadyExists))
                 {
                     Debug.LogWarning("WARNING: Object is already being contained in an existing pool!. Returning it.");
                     poolAlreadyExists.persistent = isPersistent;
@@ -101,7 +121,7 @@ namespace DCL
             if (!enablePrewarm)
                 maxPrewarmCount = 0;
 
-            Pool pool = new Pool(id.ToString(), maxPrewarmCount);
+            Pool pool = new Pool(this, id.ToString(), maxPrewarmCount);
 
             pool.id = id;
             pool.original = original;

@@ -15,6 +15,7 @@ namespace DCL
         public Asset_GLTF()
         {
             container = new GameObject();
+            container.transform.position = EnvironmentSettings.MORDOR;
             container.name = "Asset_GLTF Container";
             visible = true;
         }

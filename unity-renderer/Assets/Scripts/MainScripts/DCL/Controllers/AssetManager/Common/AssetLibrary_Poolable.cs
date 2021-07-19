@@ -9,7 +9,13 @@ namespace DCL
         IPooledObjectInstantiator instantiator;
         public Dictionary<object, AssetType> masterAssets = new Dictionary<object, AssetType>();
 
-        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator) { this.instantiator = instantiator; }
+        private PoolManager poolManager;
+
+        public AssetLibrary_Poolable(PoolManager poolManager, IPooledObjectInstantiator instantiator)
+        {
+            this.poolManager = poolManager;
+            this.instantiator = instantiator;
+        }
 
         private void OnPoolRemoved(Pool pool)
         {
@@ -32,13 +38,10 @@ namespace DCL
             if (!masterAssets.ContainsKey(asset.id))
                 masterAssets.Add(asset.id, asset);
 
-            Pool pool = PoolManager.i.AddPool(asset.id, asset.container, instantiator);
+            Pool pool = poolManager.AddPool(asset.id, asset.container, instantiator);
 
             pool.OnCleanup -= OnPoolRemoved;
             pool.OnCleanup += OnPoolRemoved;
-
-            if (asset.container == null)
-                return false;
 
             return true;
         }
@@ -50,9 +53,9 @@ namespace DCL
 
             AssetType clone = masterAssets[id].Clone() as AssetType;
 
-            if (PoolManager.i.ContainsPool(clone.id))
+            if (poolManager.ContainsPool(clone.id))
             {
-                clone.container = PoolManager.i.Get(clone.id).gameObject;
+                clone.container = poolManager.Get(clone.id).gameObject;
             }
             else
             {
@@ -70,9 +73,9 @@ namespace DCL
 
             AssetType clone = masterAssets[id].Clone() as AssetType;
 
-            if (PoolManager.i.ContainsPool(clone.id))
+            if (poolManager.ContainsPool(clone.id))
             {
-                clone.container = PoolManager.i.GetPool(id).InstantiateAsOriginal();
+                clone.container = poolManager.GetPool(id).InstantiateAsOriginal();
             }
             else
             {
@@ -97,7 +100,13 @@ namespace DCL
                 return;
             }
 
-            PoolManager.i.Release(asset.container);
+            if ( !poolManager.HasPoolable(asset.container))
+            {
+                Object.Destroy(asset.container);
+                return;
+            }
+
+            poolManager.Release(asset.container);
         }
 
         public override bool Contains(object id)

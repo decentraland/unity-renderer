@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL
@@ -132,15 +133,19 @@ namespace DCL
             if (promise == null)
                 return null;
 
-            if (promise.keepWaiting)
+            if (promise.state == AssetPromiseState.LOADING)
             {
                 toForgetInProgressPromisesQueue.Enqueue(promise);
+
+                if ( promise.asset is Asset_WithPoolableContainer assetWithContainer )
+                {
+                    assetWithContainer.container.transform.position = EnvironmentSettings.MORDOR;
+                }
+
                 return promise;
             }
-            else
-            {
-                return Forget(promise);
-            }
+
+            return Forget(promise);
         }
 
         Queue<AssetPromiseType> toForgetInProgressPromisesQueue = new Queue<AssetPromiseType>();
@@ -156,7 +161,8 @@ namespace DCL
                 }
 
                 AssetPromiseType promise = toForgetInProgressPromisesQueue.Dequeue();
-                yield return new WaitUntil(() => !promise.keepWaiting);
+                yield return promise;
+
                 Forget(promise);
             }
         }

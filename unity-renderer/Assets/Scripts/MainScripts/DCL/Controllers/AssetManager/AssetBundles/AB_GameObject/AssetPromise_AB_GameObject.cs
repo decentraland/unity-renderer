@@ -82,16 +82,21 @@ namespace DCL
         {
             if (subPromise != null)
                 return $"{subPromise.ToString()} ... AB_GameObject state = {state}";
-            else
-                return $"subPromise == null? state = {state}";
+
+            return $"subPromise == null? state = {state}";
         }
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action OnFail)
         {
             subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
-            subPromise.OnSuccessEvent += (x) => success = true;
+            subPromise.OnSuccessEvent += (x) =>
+            {
+                success = true;
+            };
+
             asset.ownerPromise = subPromise;
+
             AssetPromiseKeeper_AB.i.Keep(subPromise);
 
             yield return subPromise;
@@ -101,7 +106,9 @@ namespace DCL
                 yield return InstantiateABGameObjects();
 
                 if (subPromise.asset == null || asset.container == null)
+                {
                     success = false;
+                }
             }
 
             if (success)

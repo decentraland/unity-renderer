@@ -14,6 +14,8 @@ namespace DCL
 
     public class Pool : ICleanable
     {
+        private PoolManager owner;
+
         public delegate void OnReleaseAllDlg(Pool pool);
 
         public const int PREWARM_ACTIVE_MULTIPLIER = 2;
@@ -48,11 +50,13 @@ namespace DCL
 
         public int usedObjectsCount { get { return usedObjects.Count; } }
 
-        public Pool(string name, int maxPrewarmCount)
+        public Pool(PoolManager owner, string name, int maxPrewarmCount)
         {
 #if UNITY_EDITOR
             Application.quitting += OnIsQuitting;
 #endif
+            this.owner = owner;
+
             if (PoolManager.USE_POOL_CONTAINERS)
                 container = new GameObject("Pool - " + name);
 
@@ -73,7 +77,7 @@ namespace DCL
         public PoolableObject Get()
         {
             // These extra instantiations during initialization are to populate pools that will be used a lot later  
-            if (PoolManager.i.initializing)
+            if (owner.initializing)
             {
                 int count = usedObjectsCount;
 
@@ -133,12 +137,12 @@ namespace DCL
 
         private PoolableObject SetupPoolableObject(GameObject gameObject, bool active = false)
         {
-            if (PoolManager.i.poolables.ContainsKey(gameObject))
-                return PoolManager.i.GetPoolable(gameObject);
+            if (owner.poolables.ContainsKey(gameObject))
+                return owner.GetPoolable(gameObject);
 
             PoolableObject poolable = new PoolableObject(this, gameObject);
-            PoolManager.i.poolables.Add(gameObject, poolable);
-            PoolManager.i.poolableValues.Add(poolable);
+            owner.poolables.Add(gameObject, poolable);
+            owner.poolableValues.Add(poolable);
 
             if (!active)
             {
@@ -164,7 +168,7 @@ namespace DCL
                 return;
 #endif
 
-            if (poolable == null || !PoolManager.i.HasPoolable(poolable))
+            if (poolable == null || !owner.HasPoolable(poolable))
                 return;
 
             DisablePoolableObject(poolable);
@@ -231,15 +235,15 @@ namespace DCL
 
             while (unusedObjects.Count > 0)
             {
-                PoolManager.i.poolables.Remove(unusedObjects.First.Value.gameObject);
-                PoolManager.i.poolableValues.Remove(unusedObjects.First.Value);
+                owner.poolables.Remove(unusedObjects.First.Value.gameObject);
+                owner.poolableValues.Remove(unusedObjects.First.Value);
                 unusedObjects.RemoveFirst();
             }
 
             while (usedObjects.Count > 0)
             {
-                PoolManager.i.poolables.Remove(usedObjects.First.Value.gameObject);
-                PoolManager.i.poolableValues.Remove(usedObjects.First.Value);
+                owner.poolables.Remove(usedObjects.First.Value.gameObject);
+                owner.poolableValues.Remove(usedObjects.First.Value);
                 usedObjects.RemoveFirst();
             }
 
@@ -303,11 +307,11 @@ namespace DCL
                 this.container.name = $"in: {unusedObjectsCount} out: {usedObjectsCount} id: {id} persistent: {persistent}";
         }
 #endif
-        public static bool FindPoolInGameObject(GameObject gameObject, out Pool pool)
+        public static bool FindPoolInGameObject(PoolManager poolManager, GameObject gameObject, out Pool pool)
         {
             pool = null;
 
-            if (PoolManager.i.poolables.TryGetValue(gameObject, out PoolableObject poolable))
+            if (poolManager.poolables.TryGetValue(gameObject, out PoolableObject poolable))
             {
                 pool = poolable.pool;
                 return true;
