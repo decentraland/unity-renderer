@@ -6,7 +6,7 @@ public interface IBIWGizmos
     public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
 
     public bool initialized { get; }
-    public GameObject gameObject { get; }
+    public GameObject currentGameObject { get; }
     public void Initialize(Camera camera, Transform cameraHolderTransform);
     public Vector3 GetActiveAxisVector();
     public void OnEndDrag();
@@ -26,7 +26,7 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
     [SerializeField] protected BIWGizmosAxis axisZ;
 
     public bool initialized => initializedValue;
-    public GameObject gameObject => gameObject;
+    public GameObject currentGameObject { get; private set; }
     public bool initializedValue { get; private set; }
 
     protected float snapFactor = 0;
@@ -48,6 +48,7 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 
     public virtual void Initialize(Camera camera, Transform cameraHolderTransform)
     {
+        this.currentGameObject = gameObject;
         initializedValue = true;
         relativeScaleRatio = transform.localScale / GetCameraPlaneDistance(cameraHolderTransform, transform.position);
         builderCamera = camera;

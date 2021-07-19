@@ -154,7 +154,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         if (activeGizmo != null)
         {
             activeGizmo.SetTargetTransform(selectedEntitiesParent);
-            activeGizmo.gameObject.SetActive(true);
+            activeGizmo.currentGameObject.SetActive(true);
         }
     }
 
@@ -162,7 +162,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     {
         if (activeGizmo != null)
         {
-            activeGizmo.gameObject.SetActive(false);
+            activeGizmo.currentGameObject.SetActive(false);
         }
         if (setInactiveGizmos)
         {
