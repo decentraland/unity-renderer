@@ -20,12 +20,12 @@ public class BIWPublishController : BIWController, IBIWPublishController
     private bool reportSceneLimitsOverpassedAnalytic = true;
     private float startPublishingTimestamp = 0;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
+        base.Init(context);
 
-        entityHandler = biwContext.entityHandler;
-        creatorController = biwContext.creatorController;
+        entityHandler = context.entityHandler;
+        creatorController = context.creatorController;
 
         if (HUDController.i?.builderInWorldMainHud != null)
         {
@@ -33,7 +33,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
             HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += StartPublishScene;
         }
 
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
+        builderInWorldBridge = context.sceneReferences.builderInWorldBridge;
 
         if (builderInWorldBridge != null)
             builderInWorldBridge.OnPublishEnd += PublishEnd;

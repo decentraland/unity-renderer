@@ -20,11 +20,11 @@ public class BIWSaveController : BIWController, IBIWSaveController
     private float nextTimeToSave;
     private bool canActivateSave = true;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
+        base.Init(context);
 
-        bridge = InitialSceneReferences.i.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridge;
         if (bridge != null)
             bridge.OnKernelUpdated += TryToSave;
 

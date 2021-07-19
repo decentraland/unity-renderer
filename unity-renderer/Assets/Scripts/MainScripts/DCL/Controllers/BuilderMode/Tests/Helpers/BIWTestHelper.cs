@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
@@ -28,7 +29,8 @@ public static class BIWTestHelper
             Substitute.For<IBIWActionController>(),
             Substitute.For<IBIWSaveController>(),
             Substitute.For<IBIWRaycastController>(),
-            Substitute.For<IBIWGizmosController>()
+            Substitute.For<IBIWGizmosController>(),
+            new InitialSceneReferences()
         );
         return context;
     }
@@ -46,6 +48,7 @@ public static class BIWTestHelper
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
         IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
         IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
+        InitialSceneReferences sceneReferences = new InitialSceneReferences();
 
         foreach ( var mock in mocks)
         {
@@ -87,6 +90,9 @@ public static class BIWTestHelper
                 case IBIWGizmosController gc:
                     gizmosController = gc;
                     break;
+                case InitialSceneReferences isr:
+                    sceneReferences = isr;
+                    break;
             }
         }
 
@@ -103,7 +109,8 @@ public static class BIWTestHelper
             actionController,
             saveController,
             raycastController,
-            gizmosController
+            gizmosController,
+            sceneReferences
         );
         return context;
     }

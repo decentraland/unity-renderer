@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -16,7 +17,8 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
         BIWActionController actionController = new BIWActionController();
         var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
             actionController,
-            biwModeController
+            biwModeController,
+            InitialSceneReferences.i
         );
 
         biwModeController.Init(referencesController);

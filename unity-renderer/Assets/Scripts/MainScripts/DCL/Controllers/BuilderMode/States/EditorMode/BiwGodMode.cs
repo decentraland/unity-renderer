@@ -82,11 +82,11 @@ public class BiwGodMode : BIWMode
             HUDController.i.builderInWorldMainHud.OnPublishAction += TakeSceneScreenshotForPublish;
         }
 
-        if (InitialSceneReferences.i.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
+        if (context.sceneReferences.cameraController.TryGetCameraStateByType<FreeCameraMovement>(out CameraStateBase cameraState))
             freeCameraController = (FreeCameraMovement) cameraState;
-        mouseCatcher = InitialSceneReferences.i.mouseCatcher;
-        avatarRenderer = InitialSceneReferences.i.playerAvatarController;
-        cameraController = InitialSceneReferences.i.cameraController;
+        mouseCatcher = context.sceneReferences.mouseCatcher;
+        avatarRenderer = context.sceneReferences.playerAvatarController;
+        cameraController = context.sceneReferences.cameraController;
 
         BIWInputWrapper.OnMouseDown += OnInputMouseDown;
         BIWInputWrapper.OnMouseUp += OnInputMouseUp;

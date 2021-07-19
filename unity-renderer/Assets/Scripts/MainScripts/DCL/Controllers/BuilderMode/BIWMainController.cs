@@ -148,7 +148,8 @@ public class BIWMainController : Feature
             actionController,
             saveController,
             raycastController,
-            gizmosController
+            gizmosController,
+            InitialSceneReferences.i
         );
 
         skyBoxMaterial = context.projectReferences.skyBoxMaterial;
