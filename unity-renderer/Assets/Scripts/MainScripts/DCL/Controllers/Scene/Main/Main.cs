@@ -43,9 +43,9 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
-                featureController = new FeatureController();
             }
 
+            featureController = new FeatureController();
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
@@ -69,34 +69,33 @@ namespace DCL
                 worldRuntimeBuilder: WorldRuntimeContextBuilder,
                 hudBuilder: HUDContextBuilder);
         }
-        
+
         protected virtual MessagingContext MessagingContextBuilder() { return MessagingContextFactory.CreateDefault(); }
-        
+
         protected virtual PlatformContext PlatformContextBuilder() { return PlatformContextFactory.CreateDefault(); }
-        
+
         protected virtual WorldRuntimeContext WorldRuntimeContextBuilder() { return WorldRuntimeContextFactory.CreateDefault(componentFactory); }
-        
+
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
-        
+
         private void Start()
         {
             Environment.i.world.sceneController.Start();
             featureController?.Start();
         }
 
-
         private void Update()
         {
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            featureController?.Update();
+            featureController.Update();
         }
 
         private void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            featureController?.LateUpdate();
+            featureController.LateUpdate();
         }
 
         private void OnDestroy()
@@ -105,7 +104,7 @@ namespace DCL
                 Environment.Dispose();
             featureController?.OnDestroy();
         }
-        private void OnGUI() { featureController?.OnGUI(); }
+        private void OnGUI() { featureController.OnGUI(); }
 
         #region RuntimeMessagingBridge
 
