@@ -25,10 +25,35 @@ using UnityEngine;
 
 namespace DCL
 {
+    public static class AvatarMeshCombinerUtils
+    {
+        /// <summary>
+        /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
+        /// </summary>
+        /// <param name="renderer">Renderer to be checked.</param>
+        /// <returns>True if its opaque</returns>
+        internal static bool IsOpaque(Renderer renderer)
+        {
+            Material firstMat = renderer.sharedMaterials[0];
+
+            if (firstMat == null)
+                return true;
+
+            if (firstMat.HasProperty(ShaderUtils.ZWrite) &&
+                (int) firstMat.GetFloat(ShaderUtils.ZWrite) == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+
     public static class AvatarMeshCombiner
     {
         public class CombineLayer
         {
+            public bool isOpaque;
             public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
             public Dictionary<Texture2D, int> idMap = new Dictionary<Texture2D, int>();
         }
@@ -157,7 +182,6 @@ namespace DCL
                         //logger.Log($"(emission) Setting map {targetMap} to {baseMap}");
                     }
 
-                    newMaterial.SetInt(ShaderUtils.Cull, mat.GetInt(ShaderUtils.Cull));
                     newMaterial.SetInt(ShaderUtils.ZWrite, mat.GetInt(ShaderUtils.ZWrite));
                     newMaterial.SetInt(ShaderUtils.SrcBlend, mat.GetInt(ShaderUtils.SrcBlend));
                     newMaterial.SetInt(ShaderUtils.DstBlend, mat.GetInt(ShaderUtils.DstBlend));
@@ -278,37 +302,44 @@ namespace DCL
                 textureId++;
             }
 
-            foreach ( var r in renderers )
+            // Group renderers on opaque and transparent materials
+            var surfaceGroups = renderers.GroupBy( AvatarMeshCombinerUtils.IsOpaque );
+
+            foreach ( var group in surfaceGroups )
             {
-                if ( !filterFunction(r) || !r.enabled || r.sharedMesh == null )
+                var groupRenderers = group.ToArray();
+                currentLayer.isOpaque = group.Key;
+
+                foreach ( var r in groupRenderers )
                 {
-                    logger.Log($"Filtering out renderer: {r.transform.parent.name}");
-                    continue;
-                }
-
-                // TODO(Brian): Group renderers on opaque and transparents as well
-
-                currentLayer.renderers.Add(r);
-                var mats = r.sharedMaterials;
-
-                for ( int i = 0; i < mats.Length; i++ )
-                {
-                    var mat = mats[i];
-
-                    if (mat == null)
-                        continue;
-
-                    var baseMap = (Texture2D)mat.GetTexture(ShaderUtils.BaseMap);
-                    var emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
-
-                    AddToMap(baseMap);
-                    AddToMap(emissionMap);
-
-                    if ( textureId >= 12 )
+                    if ( !filterFunction(r) || !r.enabled || r.sharedMesh == null )
                     {
-                        textureId = 0;
-                        currentLayer = new CombineLayer();
-                        result.Add(currentLayer);
+                        logger.Log($"Filtering out renderer: {r.transform.parent.name}");
+                        continue;
+                    }
+
+                    currentLayer.renderers.Add(r);
+                    var mats = r.sharedMaterials;
+
+                    for ( int i = 0; i < mats.Length; i++ )
+                    {
+                        var mat = mats[i];
+
+                        if (mat == null)
+                            continue;
+
+                        var baseMap = (Texture2D)mat.GetTexture(ShaderUtils.BaseMap);
+                        var emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
+
+                        AddToMap(baseMap);
+                        AddToMap(emissionMap);
+
+                        if ( textureId >= 12 )
+                        {
+                            textureId = 0;
+                            currentLayer = new CombineLayer();
+                            result.Add(currentLayer);
+                        }
                     }
                 }
             }
