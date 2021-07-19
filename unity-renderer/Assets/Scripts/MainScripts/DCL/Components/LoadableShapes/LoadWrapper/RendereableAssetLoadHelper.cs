@@ -104,8 +104,17 @@ namespace DCL.Components
 
         public void Unload()
         {
-            AssetPromiseKeeper_GLTF.i.ForgetAfterFinish(gltfPromise);
-            AssetPromiseKeeper_AB_GameObject.i.ForgetAfterFinish(abPromise);
+            if ( gltfPromise != null )
+            {
+                gltfPromise.settings.parent = null;
+                AssetPromiseKeeper_GLTF.i.ForgetAfterFinish(gltfPromise);
+            }
+
+            if ( abPromise != null )
+            {
+                abPromise.settings.parent = null;
+                AssetPromiseKeeper_AB_GameObject.i.ForgetAfterFinish(abPromise);
+            }
         }
 
         void LoadAssetBundle(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)
