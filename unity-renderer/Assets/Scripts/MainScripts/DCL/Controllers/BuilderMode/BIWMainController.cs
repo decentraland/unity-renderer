@@ -42,7 +42,7 @@ public class BIWMainController : Feature
 
     private Material skyBoxMaterial;
 
-    private bool isBuilderInWorldActivated = false;
+    public bool isBuilderInWorldActivated { get; private set; } = false;
 
     private InputAction_Trigger editModeChangeInputAction;
 
@@ -78,13 +78,12 @@ public class BIWMainController : Feature
             return;
 
         activeFeature = true;
-
         isInit = true;
 
         BIWCatalogManager.Init();
 
         CreateControllers();
-        InitReferences();
+        InitReferences(InitialSceneReferences.i);
 
 
         if (builderInWorldBridge != null)
@@ -122,11 +121,11 @@ public class BIWMainController : Feature
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    private void InitReferences()
+    private void InitReferences(InitialSceneReferences initalReference)
     {
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        inputController = InitialSceneReferences.i.inputController;
+        builderInWorldBridge = initalReference.builderInWorldBridge;
+        cursorGO = initalReference.cursorCanvas;
+        inputController = initalReference.inputController;
 
         List<GameObject> grounds = new List<GameObject>();
         for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
