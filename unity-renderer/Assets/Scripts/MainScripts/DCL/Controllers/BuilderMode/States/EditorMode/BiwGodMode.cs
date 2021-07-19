@@ -68,6 +68,7 @@ public class BiwGodMode : BIWMode
         snapDragFactor = context.godModeDynamicVariables.snapDragFactor;
 
         outlinerController = context.outlinerController;
+        gizmoManager = context.gizmosController;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {
@@ -99,8 +100,6 @@ public class BiwGodMode : BIWMode
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
-
-        gizmoManager = context.gizmosController;
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
         gizmoManager.OnGizmoTransformObjectEnd += OnGizmosTransformEnd;
@@ -295,7 +294,7 @@ public class BiwGodMode : BIWMode
 
         if (canDragSelectedEntities)
         {
-            Vector3 currentPoint = GetFloorPointAtMouse(mousePosition);
+            Vector3 currentPoint = raycastController.GetFloorPointAtMouse(mousePosition);
             Vector3 initialEntityPosition = editionGO.transform.position;
 
             if (isSnapActive)
@@ -372,7 +371,7 @@ public class BiwGodMode : BIWMode
         if (buttonID != 0)
             return;
 
-        dragStartedPoint = GetFloorPointAtMouse(position);
+        dragStartedPoint = raycastController.GetFloorPointAtMouse(position);
 
         if (isSnapActive)
         {
@@ -383,7 +382,7 @@ public class BiwGodMode : BIWMode
         if (isPlacingNewObject)
             return;
 
-        var entity = biwEntityHandler.GetEntityOnPointer();
+        var entity = raycastController.GetEntityOnPointer();
         if ((entity == null
              || (entity != null && !entity.IsSelected))
             && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
@@ -581,7 +580,7 @@ public class BiwGodMode : BIWMode
             createdEntity.rootEntity.gameObject.tag = BIWSettings.VOXEL_TAG;
     }
 
-    public override Vector3 GetCreatedEntityPoint() { return GetFloorPointAtMouse(Input.mousePosition); }
+    public override Vector3 GetCreatedEntityPoint() { return raycastController.GetFloorPointAtMouse(Input.mousePosition); }
 
     public override void SelectedEntity(BIWEntity selectedEntity)
     {
@@ -778,13 +777,8 @@ public class BiwGodMode : BIWMode
 
     void SetEditObjectAtMouse()
     {
-        RaycastHit hit;
-
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
+        if (raycastController.RayCastFloor(out Vector3 destination))
         {
-            Vector3 destination = hit.point;
             if (isSnapActive)
             {
                 destination.x = Mathf.Round(destination.x / snapDragFactor) * snapDragFactor;
@@ -796,19 +790,6 @@ public class BiwGodMode : BIWMode
             if (selectedEntities.Count > 0 && selectedEntities[0].isNFT)
                 editionGO.transform.position += Vector3.up * 2f;
         }
-    }
-
-    Vector3 GetFloorPointAtMouse(Vector3 mousePosition)
-    {
-        RaycastHit hit;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-
-        if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
-        {
-            return hit.point;
-        }
-
-        return Vector3.zero;
     }
 
     private void ResetCamera() { freeCameraController.ResetCameraPosition(); }

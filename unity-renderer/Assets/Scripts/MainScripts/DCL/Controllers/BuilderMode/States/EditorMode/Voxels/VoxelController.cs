@@ -12,7 +12,7 @@ public class VoxelController
     [Header("References")]
     public VoxelPrefab voxelPrefab;
 
-    public BIWMainController buildModeController;
+    public BIWRaycastController raycastController;
     public BIWOutlinerController outlinerController;
     public BIWEntityHandler biwEntityHandler;
     public FreeCameraMovement freeCameraMovement;
@@ -50,7 +50,7 @@ public class VoxelController
             return;
 
         Vector3Int currentPosition = Vector3Int.zero;
-        VoxelEntityHit voxelHit = buildModeController.GetCloserUnselectedVoxelEntityOnPointer();
+        VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
         if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
         {
@@ -80,7 +80,7 @@ public class VoxelController
         if (mousePressed || !isVoxelModelActivated)
             return;
 
-        VoxelEntityHit voxelHit = buildModeController.GetCloserUnselectedVoxelEntityOnPointer();
+        VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
         if (voxelHit != null && voxelHit.entityHitted.IsSelected)
             return;

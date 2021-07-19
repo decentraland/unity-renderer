@@ -7,9 +7,12 @@ using UnityEngine;
 public interface IBIWRaycastController
 {
     public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
+    public bool RayCastFloor(out Vector3 position);
+    public Vector3 GetFloorPointAtMouse(Vector3 mousePosition);
     public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo);
     public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer);
     public Ray GetMouseRay(Vector3 mousePosition);
+    public BIWEntity GetEntityOnPointer();
 }
 
 public class BIWRaycastController : BIWController, IBIWRaycastController
@@ -17,6 +20,8 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
 
     private Camera builderCamera;
+    private IBIWEntityHandler entityHandler;
+    private IBIWModeController modeController;
 
     private const float RAYCAST_MAX_DISTANCE = 10000f;
 
@@ -26,6 +31,8 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     {
         base.Init(context);
 
+        entityHandler = context.entityHandler;
+        modeController = context.modeController;
         gizmoMask = BIWSettings.GIZMOS_LAYER;
         BIWInputWrapper.OnMouseDown += OnMouseDown;
 
@@ -47,6 +54,45 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         CheckGizmosRaycast(mousePosition);
     }
 
+    public BIWEntity GetEntityOnPointer()
+    {
+        Camera camera = Camera.main;
+
+        if (camera == null)
+            return null;
+
+        RaycastHit hit;
+        UnityEngine.Ray ray = camera.ScreenPointToRay(modeController.GetMousePosition());
+        float distanceToSelect = modeController.GetMaxDistanceToSelectEntities();
+
+        if (Physics.Raycast(ray, out hit, distanceToSelect, BIWSettings.COLLIDER_SELECTION_LAYER))
+        {
+            string entityID = hit.collider.gameObject.name;
+
+            if (sceneToEdit.entities.ContainsKey(entityID))
+            {
+                return entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+            }
+        }
+
+        return null;
+    }
+
+    public bool RayCastFloor(out Vector3 position)
+    {
+        RaycastHit hit;
+
+        UnityEngine.Ray ray = GetMouseRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
+        {
+            position = hit.point;
+            return true;
+        }
+        position = Vector3.zero;
+        return false;
+    }
+
     public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer)
     {
         RaycastHit[] hits;
@@ -58,6 +104,56 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         }
         hitInfo = new RaycastHit();
         return false;
+    }
+
+    public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
+    {
+        RaycastHit[] hits;
+        UnityEngine.Ray ray = GetMouseRay(Input.mousePosition);
+
+        float currentDistance = 9999;
+        VoxelEntityHit voxelEntityHit = null;
+
+        hits = Physics.RaycastAll(ray, BIWSettings.RAYCAST_MAX_DISTANCE, BIWSettings.COLLIDER_SELECTION_LAYER);
+
+        foreach (RaycastHit hit in hits)
+        {
+            string entityID = hit.collider.gameObject.name;
+
+            if (sceneToEdit.entities.ContainsKey(entityID))
+            {
+                BIWEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
+
+                if (entityToCheck == null)
+                    continue;
+
+                Camera camera = Camera.main;
+
+                if (!entityToCheck.IsSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
+                {
+                    if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
+                    {
+                        voxelEntityHit = new VoxelEntityHit(entityToCheck, hit);
+                        currentDistance = Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position);
+                    }
+                }
+            }
+        }
+
+        return voxelEntityHit;
+    }
+
+    public Vector3 GetFloorPointAtMouse(Vector3 mousePosition)
+    {
+        RaycastHit hit;
+        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+
+        if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
+        {
+            return hit.point;
+        }
+
+        return Vector3.zero;
     }
 
     public Ray GetMouseRay(Vector3 mousePosition) { return builderCamera.ScreenPointToRay(mousePosition); }

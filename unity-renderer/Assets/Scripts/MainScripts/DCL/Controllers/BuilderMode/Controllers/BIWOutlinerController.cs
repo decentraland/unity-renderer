@@ -21,6 +21,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     private Material cameraOutlinerMaterial;
 
+    private IBIWRaycastController raycastController;
     private IBIWEntityHandler entityHandler;
 
     private List<BIWEntity> entitiesOutlined = new List<BIWEntity>();
@@ -33,6 +34,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         cameraOutlinerMaterial = context.projectReferences.cameraOutlinerMaterial;
 
         entityHandler = context.entityHandler;
+        raycastController = context.raycastController;
     }
 
     public override void EnterEditMode(ParcelScene scene)
@@ -61,7 +63,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         {
             if (!BIWUtils.IsPointerOverUIElement() && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
             {
-                BIWEntity entity = entityHandler.GetEntityOnPointer();
+                BIWEntity entity = raycastController.GetEntityOnPointer();
                 RemoveEntitiesOutlineOutsidePointerOrUnselected();
 
                 if (entity != null && !entity.IsSelected)
@@ -125,7 +127,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     public void RemoveEntitiesOutlineOutsidePointerOrUnselected()
     {
-        var entity = entityHandler.GetEntityOnPointer();
+        var entity = raycastController.GetEntityOnPointer();
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
             if (!entitiesOutlined[i].IsSelected || entity != entitiesOutlined[i])

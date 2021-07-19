@@ -23,6 +23,7 @@ public class BIWMode
     protected IBIWEntityHandler biwEntityHandler;
     protected IBIWSaveController biwSaveController;
     protected IBIWActionController ibiwActionController;
+    protected IBIWRaycastController raycastController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
@@ -38,6 +39,7 @@ public class BIWMode
         biwEntityHandler = context.entityHandler;
         biwSaveController = context.saveController;
         ibiwActionController = context.actionController;
+        raycastController = context.raycastController;
         biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
@@ -112,7 +114,7 @@ public class BIWMode
 
     public virtual void MouseClickDetected()
     {
-        BIWEntity entityToSelect = biwEntityHandler.GetEntityOnPointer();
+        BIWEntity entityToSelect = raycastController.GetEntityOnPointer();
         if (entityToSelect != null)
         {
             biwEntityHandler.EntityClicked(entityToSelect);

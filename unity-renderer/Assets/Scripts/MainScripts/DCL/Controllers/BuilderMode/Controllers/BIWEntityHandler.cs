@@ -19,6 +19,7 @@ public interface IBIWEntityHandler
     public event Action<List<BIWEntity>> OnDeleteSelectedEntities;
     public event Action<BIWEntity> OnEntityDeleted;
     public BIWEntity GetConvertedEntity(string entityId);
+    public BIWEntity GetConvertedEntity(IDCLEntity entity);
     public void DeleteEntity(BIWEntity entityToDelete);
     public void DeleteEntity(string entityId);
     public void DeleteFloorEntities();
@@ -28,7 +29,6 @@ public interface IBIWEntityHandler
     public List<BIWEntity> GetAllEntitiesFromCurrentScene();
     public void DeselectEntities();
     public List<BIWEntity> GetSelectedEntityList();
-    public BIWEntity GetEntityOnPointer();
     public bool IsAnyEntitySelected();
     public void SetActiveMode(BIWMode buildMode);
     public void SetMultiSelectionActive(bool isActive);
@@ -59,6 +59,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private IBIWModeController modeController;
     private IBIWActionController actionController;
     private IBIWCreatorController creatorController;
+    private IBIWRaycastController raycastController;
 
     private BuilderInWorldBridge bridge;
     private Material editMaterial;
@@ -120,6 +121,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         modeController = context.modeController;
         actionController = context.actionController;
         creatorController = context.creatorController;
+        raycastController = context.raycastController;
 
         editMaterial = context.projectReferences.editMaterial;
 
@@ -240,7 +242,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public bool IsPointerInSelectedEntity()
     {
-        BIWEntity entityInPointer = GetEntityOnPointer();
+        BIWEntity entityInPointer = raycastController.GetEntityOnPointer();
         if (entityInPointer == null)
             return false;
 
@@ -333,30 +335,6 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         currentActiveMode?.OnDeselectedEntities();
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-    }
-
-    public BIWEntity GetEntityOnPointer()
-    {
-        Camera camera = Camera.main;
-
-        if (camera == null)
-            return null;
-
-        RaycastHit hit;
-        UnityEngine.Ray ray = camera.ScreenPointToRay(modeController.GetMousePosition());
-        float distanceToSelect = modeController.GetMaxDistanceToSelectEntities();
-
-        if (Physics.Raycast(ray, out hit, distanceToSelect, BIWSettings.COLLIDER_SELECTION_LAYER))
-        {
-            string entityID = hit.collider.gameObject.name;
-
-            if (sceneToEdit.entities.ContainsKey(entityID))
-            {
-                return GetConvertedEntity(sceneToEdit.entities[entityID]);
-            }
-        }
-
-        return null;
     }
 
     public void EntityClicked(BIWEntity entityToSelect)

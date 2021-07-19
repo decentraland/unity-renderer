@@ -415,43 +415,6 @@ public class BIWMainController : Feature
         TryStartEnterEditMode(true, null, "Shortcut");
     }
 
-    public VoxelEntityHit GetCloserUnselectedVoxelEntityOnPointer()
-    {
-        RaycastHit[] hits;
-        UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        float currentDistance = 9999;
-        VoxelEntityHit voxelEntityHit = null;
-
-        hits = Physics.RaycastAll(ray, BIWSettings.RAYCAST_MAX_DISTANCE, BIWSettings.COLLIDER_SELECTION_LAYER);
-
-        foreach (RaycastHit hit in hits)
-        {
-            string entityID = hit.collider.gameObject.name;
-
-            if (sceneToEdit.entities.ContainsKey(entityID))
-            {
-                BIWEntity entityToCheck = entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
-
-                if (entityToCheck == null)
-                    continue;
-
-                Camera camera = Camera.main;
-
-                if (!entityToCheck.IsSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
-                {
-                    if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
-                    {
-                        voxelEntityHit = new VoxelEntityHit(entityToCheck, hit);
-                        currentDistance = Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position);
-                    }
-                }
-            }
-        }
-
-        return voxelEntityHit;
-    }
-
     private void NewSceneAdded(IParcelScene newScene)
     {
         if (newScene.sceneData.id != sceneToEditId)
