@@ -44,12 +44,12 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         entityHandler = context.entityHandler;
 
-        dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferences.floorLoadingPrefab, context.projectReferences.floorLoadingPrefab.transform.position, context.projectReferences.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
+        dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferencesAsset.floorLoadingPrefab, context.projectReferencesAsset.floorLoadingPrefab.transform.position, context.projectReferencesAsset.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
         meshLoadIndicator = dclBuilderMeshLoadIndicatorController.indicator;
         creatorController = context.creatorController;
         saveController = context.saveController;
 
-        floorPrefab = context.projectReferences.floorPlaceHolderPrefab;
+        floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
         meshLoadIndicator.SetCamera(InitialSceneReferences.i.mainCamera);

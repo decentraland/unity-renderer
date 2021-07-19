@@ -94,7 +94,7 @@ public class BIWModeController : BIWController, IBIWModeController
 
         actionController = biwContext.actionController;
         entityHandler = biwContext.entityHandler;
-        toggleSnapModeInputAction = biwContext.inputsReferences.toggleSnapModeInputAction;
+        toggleSnapModeInputAction = biwContext.inputsReferencesAsset.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
         toggleSnapModeInputAction.OnTriggered += snapModeDelegate;

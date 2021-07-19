@@ -14,7 +14,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         yield return base.SetUp();
         var referencesController = BIWTestHelper.CreateMockUpReferenceController();
-        gizmosController = referencesController.projectReferences.godModeBuilderPrefab.GetComponentInChildren<DCLBuilderGizmoManager>();
+        gizmosController = referencesController.projectReferencesAsset.godModeBuilderPrefab.GetComponentInChildren<DCLBuilderGizmoManager>();
     }
 
     [Test]

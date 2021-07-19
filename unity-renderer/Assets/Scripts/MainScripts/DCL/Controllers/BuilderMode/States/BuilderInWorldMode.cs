@@ -20,9 +20,9 @@ public class BuilderInWorldMode
     protected float snapScaleFactor = 0.5f;
     protected float snapDistanceToActivateMovement = 10f;
 
-    protected IBIWEntityHandler biwEntityHandler;
-    protected IBIWSaveController biwSaveController;
-    protected IBIWActionController ibiwActionController;
+    protected IBIWEntityHandler entityHandler;
+    protected IBIWSaveController saveController;
+    protected IBIWActionController actionController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
@@ -35,10 +35,10 @@ public class BuilderInWorldMode
 
     public virtual void Init(BIWContext biwContext)
     {
-        biwEntityHandler = biwContext.entityHandler;
-        biwSaveController = biwContext.saveController;
-        ibiwActionController = biwContext.actionController;
-        biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
+        entityHandler = biwContext.entityHandler;
+        saveController = biwContext.saveController;
+        actionController = biwContext.actionController;
+        entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
     public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
@@ -51,14 +51,14 @@ public class BuilderInWorldMode
         this.selectedEntities = selectedEntities;
     }
 
-    public virtual void Dispose() { biwEntityHandler.OnEntityDeleted -= OnDeleteEntity; }
+    public virtual void Dispose() { entityHandler.OnEntityDeleted -= OnDeleteEntity; }
 
     public virtual void Activate(ParcelScene scene) { isModeActive = true; }
 
     public virtual void Deactivate()
     {
         isModeActive = false;
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 
     public virtual void SetSnapActive(bool isActive)
@@ -112,14 +112,14 @@ public class BuilderInWorldMode
 
     public virtual void MouseClickDetected()
     {
-        DCLBuilderInWorldEntity entityToSelect = biwEntityHandler.GetEntityOnPointer();
+        DCLBuilderInWorldEntity entityToSelect = entityHandler.GetEntityOnPointer();
         if (entityToSelect != null)
         {
-            biwEntityHandler.EntityClicked(entityToSelect);
+            entityHandler.EntityClicked(entityToSelect);
         }
         else if (!isMultiSelectionActive)
         {
-            biwEntityHandler.DeselectEntities();
+            entityHandler.DeselectEntities();
         }
     }
 
@@ -131,7 +131,7 @@ public class BuilderInWorldMode
 
         if (isNewObjectPlaced)
         {
-            ibiwActionController.CreateActionEntityCreated(entityDeselected.rootEntity);
+            actionController.CreateActionEntityCreated(entityDeselected.rootEntity);
         }
 
         isNewObjectPlaced = false;
@@ -139,7 +139,7 @@ public class BuilderInWorldMode
 
     public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
 
-    public virtual void OnDeselectedEntities() { biwEntityHandler.ReportTransform(true); }
+    public virtual void OnDeselectedEntities() { entityHandler.ReportTransform(true); }
 
     public virtual void CheckInput() { }
 

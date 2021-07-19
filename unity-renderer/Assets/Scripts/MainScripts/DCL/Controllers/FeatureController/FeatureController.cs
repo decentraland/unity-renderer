@@ -64,7 +64,7 @@ public class FeatureController
         currentConfig = config;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : Feature
+    private void HandleFeature<T>(bool isActive) where T : Feature, new ()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -72,7 +72,7 @@ public class FeatureController
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : Feature
+    private void InitializeFeature<T>() where T : Feature, new ()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {
@@ -80,7 +80,9 @@ public class FeatureController
                 return;
         }
 
-        Feature feature = (Feature) Activator.CreateInstance(typeof (T));
+        //NOTE: We should revise this code on the future, because we'd want to use custom constructors to DI.
+        //      So here we most likely need to use an abstract factory, or just pass the new Feature object by argument.
+        Feature feature = new T();
         feature.Initialize();
         activeFeatures.Add(feature);
     }

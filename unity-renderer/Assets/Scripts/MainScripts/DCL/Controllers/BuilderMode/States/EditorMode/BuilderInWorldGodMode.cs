@@ -56,18 +56,18 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         base.Init(biwContext);
 
         lookAtT = new GameObject("BIWGodModeTransform").transform;
-        maxDistanceToSelectEntitiesValue = biwContext.godModeDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = biwContext.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = biwContext.godModeDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwContext.godModeDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwContext.godModeDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwContext.godModeDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = biwContext.godModeDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = biwContext.godModeDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  biwContext.godModeDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  biwContext.godModeDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        initialEagleCameraHeight = biwContext.godModeDynamicVariables.initialEagleCameraHeight;
-        initialEagleCameraDistance = biwContext.godModeDynamicVariables.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = biwContext.godModeDynamicVariables.initialEagleCameraLookAtHeight;
+        initialEagleCameraHeight = biwContext.godModeDynamicVariablesAsset.initialEagleCameraHeight;
+        initialEagleCameraDistance = biwContext.godModeDynamicVariablesAsset.initialEagleCameraDistance;
+        initialEagleCameraLookAtHeight = biwContext.godModeDynamicVariablesAsset.initialEagleCameraLookAtHeight;
 
-        snapDragFactor = biwContext.godModeDynamicVariables.snapDragFactor;
+        snapDragFactor = biwContext.godModeDynamicVariablesAsset.snapDragFactor;
 
         outlinerController = biwContext.outlinerController;
 
@@ -97,15 +97,15 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         BIWInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
-        focusOnSelectedEntitiesInputAction = biwContext.inputsReferences.focusOnSelectedEntitiesInputAction;
-        multiSelectionInputAction = biwContext.inputsReferences.multiSelectionInputAction;
+        focusOnSelectedEntitiesInputAction = biwContext.inputsReferencesAsset.focusOnSelectedEntitiesInputAction;
+        multiSelectionInputAction = biwContext.inputsReferencesAsset.multiSelectionInputAction;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
         multiSelectionInputAction.OnStarted += (o) => ChangeSnapTemporaryActivated();
         multiSelectionInputAction.OnFinished += (o) => ChangeSnapTemporaryDeactivated();
 
-        builderGO = GameObject.Instantiate(biwContext.projectReferences.godModeBuilderPrefab, biwContext.projectReferences.godModeBuilderPrefab.transform.position, biwContext.projectReferences.godModeBuilderPrefab.transform.rotation);
+        builderGO = GameObject.Instantiate(biwContext.projectReferencesAsset.godModeBuilderPrefab, biwContext.projectReferencesAsset.godModeBuilderPrefab.transform.position, biwContext.projectReferencesAsset.godModeBuilderPrefab.transform.rotation);
         gizmoManager = builderGO.GetComponentInChildren<DCLBuilderGizmoManager>();
 
         gizmoManager.OnChangeTransformValue += EntitiesTransfromByGizmos;
@@ -151,7 +151,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             List<DCLBuilderInWorldEntity> allEntities = null;
 
-            allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+            allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
 
             foreach (DCLBuilderInWorldEntity entity in allEntities)
             {
@@ -220,8 +220,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         UpdateGizmosToSelectedEntities();
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.MOVE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateSelectionRotation(Vector3 rotation)
@@ -233,8 +233,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         selectedEntities[0].transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.ROTATE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateSelectionScale(Vector3 scale)
@@ -253,8 +253,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         ActionFinish(BuildInWorldCompleteAction.ActionType.SCALE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -272,8 +272,8 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (isPlacingNewObject)
         {
-            biwEntityHandler.DeselectEntities();
-            biwSaveController.TryToSave();
+            entityHandler.DeselectEntities();
+            saveController.TryToSave();
             return;
         }
 
@@ -346,7 +346,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             mouseSecondaryBtnPressed = false;
             if (CanCancelAction(position))
-                biwEntityHandler.CancelSelection();
+                entityHandler.CancelSelection();
 
             freeCameraController.StopDetectingMovement();
         }
@@ -387,7 +387,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (isPlacingNewObject)
             return;
 
-        var entity = biwEntityHandler.GetEntityOnPointer();
+        var entity = entityHandler.GetEntityOnPointer();
         if ((entity == null
              || (entity != null && !entity.IsSelected))
             && !BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
@@ -418,7 +418,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void StarDraggingSelectedEntities()
     {
-        if (!biwEntityHandler.IsPointerInSelectedEntity() ||
+        if (!entityHandler.IsPointerInSelectedEntity() ||
             gizmoManager.HasAxisHover())
             return;
 
@@ -439,7 +439,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         if (wasGizmosActive && !isPlacingNewObject)
         {
             gizmoManager.ShowGizmo();
-            biwSaveController.TryToSave();
+            saveController.TryToSave();
         }
 
         wasGizmosActive = false;
@@ -455,13 +455,13 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         freeCameraController.SetCameraCanMove(true);
         List<DCLBuilderInWorldEntity> allEntities = null;
 
-        allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+        allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
 
         List<DCLBuilderInWorldEntity> selectedInsideBoundsEntities = new List<DCLBuilderInWorldEntity>();
         int alreadySelectedEntities = 0;
 
         if (!isMultiSelectionActive)
-            biwEntityHandler.DeselectEntities();
+            entityHandler.DeselectEntities();
 
         foreach (DCLBuilderInWorldEntity entity in allEntities)
         {
@@ -473,7 +473,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                     if (entity.IsSelected)
                         alreadySelectedEntities++;
 
-                    biwEntityHandler.SelectEntity(entity);
+                    entityHandler.SelectEntity(entity);
                     selectedInsideBoundsEntities.Add(entity);
                 }
             }
@@ -483,7 +483,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
         {
             foreach (DCLBuilderInWorldEntity entity in selectedInsideBoundsEntities)
             {
-                biwEntityHandler.DeselectEntity(entity);
+                entityHandler.DeselectEntity(entity);
             }
         }
 
@@ -534,7 +534,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     public override void OnDeleteEntity(DCLBuilderInWorldEntity entity)
     {
         base.OnDeleteEntity(entity);
-        biwSaveController.TryToSave();
+        saveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
@@ -642,7 +642,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
     {
         if (isPlacingNewObject)
         {
-            biwEntityHandler.DestroyLastCreatedEntities();
+            entityHandler.DestroyLastCreatedEntities();
             isPlacingNewObject = false;
             return true;
         }
@@ -761,7 +761,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
                 break;
         }
 
-        biwSaveController.TryToSave();
+        saveController.TryToSave();
     }
 
     #endregion
@@ -823,7 +823,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     private void TakeSceneScreenshotForPublish()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
@@ -833,7 +833,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void TakeSceneScreenshotForExit()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
         {
@@ -843,7 +843,7 @@ public class BuilderInWorldGodMode : BuilderInWorldMode
 
     public void OpenNewProjectDetails()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {

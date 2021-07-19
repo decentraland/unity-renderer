@@ -121,10 +121,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         actionController = context.actionController;
         creatorController = context.creatorController;
 
-        editMaterial = context.projectReferences.editMaterial;
+        editMaterial = context.projectReferencesAsset.editMaterial;
 
-        hideSelectedEntitiesAction = context.inputsReferences.hideSelectedEntitiesAction;
-        showAllEntitiesAction = context.inputsReferences.showAllEntitiesAction;
+        hideSelectedEntitiesAction = context.inputsReferencesAsset.hideSelectedEntitiesAction;
+        showAllEntitiesAction = context.inputsReferencesAsset.showAllEntitiesAction;
 
         hideSelectedEntitiesDelegate = (action) => ChangeShowStateSelectedEntities();
         showAllEntitiesDelegate = (action) => ShowAllEntities();

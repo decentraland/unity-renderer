@@ -31,7 +31,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     public override void Init(BIWContext context)
     {
         base.Init(context);
-        cameraOutlinerMaterial = context.projectReferences.cameraOutlinerMaterial;
+        cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;
 
         entityHandler = context.entityHandler;
     }

@@ -26,18 +26,18 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     public override void Init(BIWContext biwContext)
     {
         base.Init(biwContext);
-        maxDistanceToSelectEntitiesValue = biwContext.firstPersonDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = biwContext.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = biwContext.firstPersonDynamicVariables.snapFactor;
-        snapRotationDegresFactor = biwContext.firstPersonDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  biwContext.firstPersonDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwContext.firstPersonDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = biwContext.firstPersonDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = biwContext.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  biwContext.firstPersonDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  biwContext.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        scaleSpeed =  biwContext.firstPersonDynamicVariables.scaleSpeed;
-        rotationSpeed =  biwContext.firstPersonDynamicVariables.rotationSpeed;
-        distanceFromCameraForNewEntitties =  biwContext.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
+        scaleSpeed =  biwContext.firstPersonDynamicVariablesAsset.scaleSpeed;
+        rotationSpeed =  biwContext.firstPersonDynamicVariablesAsset.rotationSpeed;
+        distanceFromCameraForNewEntitties =  biwContext.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
 
-        rotationHold = biwContext.inputsReferences.firstPersonRotationHold;
+        rotationHold = biwContext.inputsReferencesAsset.firstPersonRotationHold;
 
         rotationHoldStartDelegate = (action) => { shouldRotate = true; };
         rotationHoldFinishedDelegate = (action) => { shouldRotate = false; };
@@ -113,7 +113,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     public override bool ShouldCancelUndoAction()
     {
-        if (biwEntityHandler.GetSelectedEntityList().Count >= 1)
+        if (entityHandler.GetSelectedEntityList().Count >= 1)
         {
             UndoSelection();
             return true;
@@ -124,7 +124,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     private void UndoSelection()
     {
         BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 
     public override void SetDuplicationOffset(float offset)
