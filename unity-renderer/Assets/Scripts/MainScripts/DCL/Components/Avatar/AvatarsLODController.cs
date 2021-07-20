@@ -124,15 +124,8 @@ namespace DCL
 
             if (enabled)
             {
-                // SpriteAtlas makes the sprite.texture return the whole atlas...
-                /*string randomlySelectedSpriteName = Random.Range(0, impostorAtlas.spriteCount).ToString();
-                Debug.Log("Setting sprite: " + randomlySelectedSpriteName);
-                Texture2D randomTex = impostorAtlas.GetSprite(randomlySelectedSpriteName).texture; // use SharedTexture???
-                lodRenderer.material.mainTexture = randomTex;
-                lodRenderer.material.SetTexture("_BaseMap", randomTex);*/
-
+                // By using the DCL/URP/Unlit shader in the material we take advantage of the SRP Batcher to draw all the quad lod impostors in 2 draw calls, avoiding having to reuse the same material an tex in all impostors
                 lodRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
-                // TODO: To achieve 1 draw call on impostors: optimize having all the textures in a real atlas and randomize discretely the UVs of the instantiated quad, all having the same material and tex: https://docs.unity3d.com/ScriptReference/Mesh-uv.html
             }
 
             lodRenderer.gameObject.SetActive(enabled);
