@@ -133,6 +133,9 @@ public class AvatarEditorHUDController : IHUD
 
     private void QueryNftCollections(string userId)
     {
+        if (string.IsNullOrEmpty(userId))
+            return;
+
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
            .Then((nfts) =>
            {
