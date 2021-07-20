@@ -54,7 +54,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     public override void Init(BIWContext context)
     {
         base.Init(context);
-        gizmosGO = GameObject.Instantiate(context.projectReferences.gizmosPrefab, context.projectReferences.gizmosPrefab.transform.position, context.projectReferences.gizmosPrefab.transform.rotation);
+        gizmosGO = GameObject.Instantiate(context.projectReferencesAsset.gizmosPrefab, context.projectReferencesAsset.gizmosPrefab.transform.position, context.projectReferencesAsset.gizmosPrefab.transform.rotation);
         gizmos = gizmosGO.GetComponentsInChildren<IBIWGizmos>(true);
 
         raycastController = context.raycastController;

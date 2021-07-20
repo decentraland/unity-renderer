@@ -45,7 +45,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         saveController = context.saveController;
         mainCamera = context.sceneReferences.mainCamera;
 
-        floorPrefab = context.projectReferences.floorPlaceHolderPrefab;
+        floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
     }

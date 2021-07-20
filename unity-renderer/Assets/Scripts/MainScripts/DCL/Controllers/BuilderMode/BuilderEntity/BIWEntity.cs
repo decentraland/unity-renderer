@@ -382,7 +382,7 @@ public class BIWEntity
     {
         currentRotation = Vector3.zero;
         rootEntity.gameObject.transform.eulerAngles = currentRotation;
-
+        rootEntity.gameObject.transform.localScale = Vector3.one;
         OnStatusUpdate?.Invoke(this);
     }
 

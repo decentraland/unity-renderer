@@ -20,9 +20,9 @@ public class BIWMode
     protected float snapScaleFactor = 0.5f;
     protected float snapDistanceToActivateMovement = 10f;
 
-    protected IBIWEntityHandler biwEntityHandler;
-    protected IBIWSaveController biwSaveController;
-    protected IBIWActionController ibiwActionController;
+    protected IBIWEntityHandler entityHandler;
+    protected IBIWSaveController saveController;
+    protected IBIWActionController actionController;
     protected IBIWRaycastController raycastController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
@@ -36,11 +36,11 @@ public class BIWMode
 
     public virtual void Init(BIWContext context)
     {
-        biwEntityHandler = context.entityHandler;
-        biwSaveController = context.saveController;
-        ibiwActionController = context.actionController;
+        entityHandler = context.entityHandler;
+        saveController = context.saveController;
+        actionController = context.actionController;
         raycastController = context.raycastController;
-        biwEntityHandler.OnEntityDeleted += OnDeleteEntity;
+        entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
     public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<BIWEntity> selectedEntities)
@@ -53,14 +53,14 @@ public class BIWMode
         this.selectedEntities = selectedEntities;
     }
 
-    public virtual void Dispose() { biwEntityHandler.OnEntityDeleted -= OnDeleteEntity; }
+    public virtual void Dispose() { entityHandler.OnEntityDeleted -= OnDeleteEntity; }
 
     public virtual void Activate(ParcelScene scene) { isModeActive = true; }
 
     public virtual void Deactivate()
     {
         isModeActive = false;
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 
     public virtual void SetSnapActive(bool isActive)
@@ -117,11 +117,11 @@ public class BIWMode
         BIWEntity entityToSelect = raycastController.GetEntityOnPointer();
         if (entityToSelect != null)
         {
-            biwEntityHandler.EntityClicked(entityToSelect);
+            entityHandler.EntityClicked(entityToSelect);
         }
         else if (!isMultiSelectionActive)
         {
-            biwEntityHandler.DeselectEntities();
+            entityHandler.DeselectEntities();
         }
     }
 
@@ -133,7 +133,7 @@ public class BIWMode
 
         if (isNewObjectPlaced)
         {
-            ibiwActionController.CreateActionEntityCreated(entityDeselected.rootEntity);
+            actionController.CreateActionEntityCreated(entityDeselected.rootEntity);
         }
 
         isNewObjectPlaced = false;
@@ -141,7 +141,7 @@ public class BIWMode
 
     public virtual void OnDeleteEntity(BIWEntity entity) { }
 
-    public virtual void OnDeselectedEntities() { biwEntityHandler.ReportTransform(true); }
+    public virtual void OnDeselectedEntities() { entityHandler.ReportTransform(true); }
 
     public virtual void CheckInput() { }
 

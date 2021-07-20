@@ -11,43 +11,26 @@ public class BIWContext
     private const string INPUTS_PATH = "ScriptableObjects/InputReferences";
 
     //Scriptable Objects
-    public BIWProjectReferences projectReferences => projectReferencesValue;
-    public BIWGodModeDynamicVariables godModeDynamicVariables => godModeDynamicVariablesValue;
-    public BIWFirstPersonDynamicVariables firstPersonDynamicVariables => firstPersonDynamicVariablesValue;
-    public BIWInputsReferences inputsReferences => inputsReferencesValue;
-
-    private BIWProjectReferences projectReferencesValue;
-    private BIWGodModeDynamicVariables godModeDynamicVariablesValue;
-    private BIWFirstPersonDynamicVariables firstPersonDynamicVariablesValue;
-    private BIWInputsReferences inputsReferencesValue;
+    public BIWProjectReferences projectReferencesAsset { get; private set; }
+    public BIWGodModeDynamicVariables godModeDynamicVariablesAsset { get; private set; }
+    public BIWFirstPersonDynamicVariables firstPersonDynamicVariablesAsset { get; private set; }
+    public BIWInputsReferences inputsReferencesAsset { get; private set; }
 
     // BIW Controllers
-    public IBIWOutlinerController outlinerController => outlinerControllerValue;
-    public IBIWInputHandler inputHandler => inputHandlerValue;
-    public IBIWInputWrapper inputWrapper => inputWrapperValue;
-    public IBIWPublishController publishController => publishControllerValue;
-    public IBIWCreatorController creatorController => creatorControllerValue;
-    public IBIWModeController modeController => modeControllerValue;
-    public IBIWFloorHandler floorHandler => floorHandlerValue;
-    public IBIWEntityHandler entityHandler => entityHandlerValue;
-    public IBIWActionController actionController => actionControllerValue;
-    public IBIWSaveController saveController => saveControllerValue;
-    public IBIWRaycastController raycastController => raycastControllerValue;
-    public IBIWGizmosController gizmosController => gizmosControllerValue;
+    public IBIWOutlinerController outlinerController { get; private set; }
+    public IBIWInputHandler inputHandler { get; private set; }
+    public IBIWInputWrapper inputWrapper { get; private set; }
+    public IBIWPublishController publishController { get; private set; }
+    public IBIWCreatorController creatorController { get; private set; }
+    public IBIWModeController modeController { get; private set; }
+    public IBIWFloorHandler floorHandler { get; private set; }
+    public IBIWEntityHandler entityHandler { get; private set; }
+    public IBIWActionController actionController { get; private set; }
+    public IBIWSaveController saveController { get; private set; }
+    public IBIWRaycastController raycastController { get; private set; }
+    public IBIWGizmosController gizmosController { get; private set; }
     public InitialSceneReferences sceneReferences { get; private set; }
 
-    private IBIWOutlinerController outlinerControllerValue;
-    private IBIWInputHandler inputHandlerValue;
-    private IBIWInputWrapper inputWrapperValue;
-    private IBIWPublishController publishControllerValue;
-    private IBIWCreatorController creatorControllerValue;
-    private IBIWModeController modeControllerValue;
-    private IBIWFloorHandler floorHandlerValue;
-    private IBIWEntityHandler entityHandlerValue;
-    private IBIWActionController actionControllerValue;
-    private IBIWSaveController saveControllerValue;
-    private IBIWRaycastController raycastControllerValue;
-    private IBIWGizmosController gizmosControllerValue;
 
     public void Init(IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,
@@ -63,32 +46,32 @@ public class BIWContext
         IBIWGizmosController gizmosController,
         InitialSceneReferences sceneReferences)
     {
-        projectReferencesValue = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
-        godModeDynamicVariablesValue = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
-        firstPersonDynamicVariablesValue = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
-        inputsReferencesValue = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
+        projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
+        godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
+        firstPersonDynamicVariablesAsset = Resources.Load<BIWFirstPersonDynamicVariables>(FIRST_PERSON_DYNAMIC_VARIABLE_PATH);
+        inputsReferencesAsset = Resources.Load<BIWInputsReferences>(INPUTS_PATH);
 
-        outlinerControllerValue = outlinerController;
-        inputHandlerValue = inputHandler;
-        inputWrapperValue = inputWrapper;
-        publishControllerValue = publishController;
-        creatorControllerValue = creatorController;
-        modeControllerValue = modeController;
-        floorHandlerValue = floorHandler;
-        entityHandlerValue = entityHandler;
-        actionControllerValue = actionController;
-        saveControllerValue = saveController;
-        raycastControllerValue = raycastController;
-        gizmosControllerValue = gizmosController;
+        this.outlinerController = outlinerController;
+        this.inputHandler = inputHandler;
+        this.inputWrapper = inputWrapper;
+        this.publishController = publishController;
+        this.creatorController = creatorController;
+        this.modeController = modeController;
+        this.floorHandler = floorHandler;
+        this.entityHandler = entityHandler;
+        this.actionController = actionController;
+        this.saveController = saveController;
+        this.raycastController = raycastController;
+        this.gizmosController = gizmosController;
         this.sceneReferences = sceneReferences;
     }
 
     public void Dispose()
     {
-        projectReferencesValue = null;
-        godModeDynamicVariablesValue = null;
-        firstPersonDynamicVariablesValue = null;
-        inputsReferencesValue = null;
+        projectReferencesAsset = null;
+        godModeDynamicVariablesAsset = null;
+        firstPersonDynamicVariablesAsset = null;
+        inputsReferencesAsset = null;
     }
 
 }

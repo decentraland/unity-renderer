@@ -54,18 +54,18 @@ public class BiwGodMode : BIWMode
         base.Init(context);
 
         lookAtT = new GameObject("BIWGodModeTransform").transform;
-        maxDistanceToSelectEntitiesValue = context.godModeDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = context.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = context.godModeDynamicVariables.snapFactor;
-        snapRotationDegresFactor = context.godModeDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  context.godModeDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  context.godModeDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = context.godModeDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = context.godModeDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  context.godModeDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.godModeDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        initialEagleCameraHeight = context.godModeDynamicVariables.initialEagleCameraHeight;
-        initialEagleCameraDistance = context.godModeDynamicVariables.initialEagleCameraDistance;
-        initialEagleCameraLookAtHeight = context.godModeDynamicVariables.initialEagleCameraLookAtHeight;
+        initialEagleCameraHeight = context.godModeDynamicVariablesAsset.initialEagleCameraHeight;
+        initialEagleCameraDistance = context.godModeDynamicVariablesAsset.initialEagleCameraDistance;
+        initialEagleCameraLookAtHeight = context.godModeDynamicVariablesAsset.initialEagleCameraLookAtHeight;
 
-        snapDragFactor = context.godModeDynamicVariables.snapDragFactor;
+        snapDragFactor = context.godModeDynamicVariablesAsset.snapDragFactor;
 
         outlinerController = context.outlinerController;
         gizmoManager = context.gizmosController;
@@ -93,8 +93,8 @@ public class BiwGodMode : BIWMode
         BIWInputWrapper.OnMouseUpOnUI += OnInputMouseUpOnUi;
         BIWInputWrapper.OnMouseDrag += OnInputMouseDrag;
 
-        focusOnSelectedEntitiesInputAction = context.inputsReferences.focusOnSelectedEntitiesInputAction;
-        multiSelectionInputAction = context.inputsReferences.multiSelectionInputAction;
+        focusOnSelectedEntitiesInputAction = context.inputsReferencesAsset.focusOnSelectedEntitiesInputAction;
+        multiSelectionInputAction = context.inputsReferencesAsset.multiSelectionInputAction;
 
         focusOnSelectedEntitiesInputAction.OnTriggered += (o) => FocusOnSelectedEntitiesInput();
 
@@ -146,7 +146,7 @@ public class BiwGodMode : BIWMode
         {
             List<BIWEntity> allEntities = null;
 
-            allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+            allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
 
             foreach (BIWEntity entity in allEntities)
             {
@@ -215,8 +215,8 @@ public class BiwGodMode : BIWMode
         UpdateGizmosToSelectedEntities();
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.MOVE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateSelectionRotation(Vector3 rotation)
@@ -228,8 +228,8 @@ public class BiwGodMode : BIWMode
         selectedEntities[0].rootEntity.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.ROTATE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateSelectionScale(Vector3 scale)
@@ -248,8 +248,8 @@ public class BiwGodMode : BIWMode
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.SCALE);
-        biwEntityHandler.ReportTransform(true);
-        biwSaveController.TryToSave();
+        entityHandler.ReportTransform(true);
+        saveController.TryToSave();
     }
 
     public void UpdateGizmosToSelectedEntities()
@@ -267,8 +267,8 @@ public class BiwGodMode : BIWMode
     {
         if (isPlacingNewObject)
         {
-            biwEntityHandler.DeselectEntities();
-            biwSaveController.TryToSave();
+            entityHandler.DeselectEntities();
+            saveController.TryToSave();
             return;
         }
 
@@ -341,7 +341,7 @@ public class BiwGodMode : BIWMode
         {
             mouseSecondaryBtnPressed = false;
             if (CanCancelAction(position))
-                biwEntityHandler.CancelSelection();
+                entityHandler.CancelSelection();
 
             freeCameraController.StopDetectingMovement();
         }
@@ -413,7 +413,7 @@ public class BiwGodMode : BIWMode
 
     private void StarDraggingSelectedEntities()
     {
-        if (!biwEntityHandler.IsPointerInSelectedEntity() ||
+        if (!entityHandler.IsPointerInSelectedEntity() ||
             gizmoManager.HasAxisHover())
             return;
 
@@ -434,7 +434,7 @@ public class BiwGodMode : BIWMode
         if (wasGizmosActive && !isPlacingNewObject)
         {
             gizmoManager.ShowGizmo();
-            biwSaveController.TryToSave();
+            saveController.TryToSave();
         }
 
         wasGizmosActive = false;
@@ -450,13 +450,13 @@ public class BiwGodMode : BIWMode
         freeCameraController.SetCameraCanMove(true);
         List<BIWEntity> allEntities = null;
 
-        allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+        allEntities = entityHandler.GetAllEntitiesFromCurrentScene();
 
         List<BIWEntity> selectedInsideBoundsEntities = new List<BIWEntity>();
         int alreadySelectedEntities = 0;
 
         if (!isMultiSelectionActive)
-            biwEntityHandler.DeselectEntities();
+            entityHandler.DeselectEntities();
 
         foreach (BIWEntity entity in allEntities)
         {
@@ -468,7 +468,7 @@ public class BiwGodMode : BIWMode
                     if (entity.IsSelected)
                         alreadySelectedEntities++;
 
-                    biwEntityHandler.SelectEntity(entity);
+                    entityHandler.SelectEntity(entity);
                     selectedInsideBoundsEntities.Add(entity);
                 }
             }
@@ -478,7 +478,7 @@ public class BiwGodMode : BIWMode
         {
             foreach (BIWEntity entity in selectedInsideBoundsEntities)
             {
-                biwEntityHandler.DeselectEntity(entity);
+                entityHandler.DeselectEntity(entity);
             }
         }
 
@@ -525,7 +525,7 @@ public class BiwGodMode : BIWMode
     public override void OnDeleteEntity(BIWEntity entity)
     {
         base.OnDeleteEntity(entity);
-        biwSaveController.TryToSave();
+        saveController.TryToSave();
 
         if (selectedEntities.Count == 0)
             gizmoManager.HideGizmo();
@@ -633,7 +633,7 @@ public class BiwGodMode : BIWMode
     {
         if (isPlacingNewObject)
         {
-            biwEntityHandler.DestroyLastCreatedEntities();
+            entityHandler.DestroyLastCreatedEntities();
             isPlacingNewObject = false;
             return true;
         }
@@ -752,7 +752,7 @@ public class BiwGodMode : BIWMode
                 break;
         }
 
-        biwSaveController.TryToSave();
+        saveController.TryToSave();
     }
 
     #endregion
@@ -796,7 +796,7 @@ public class BiwGodMode : BIWMode
 
     private void TakeSceneScreenshotForPublish()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
@@ -806,7 +806,7 @@ public class BiwGodMode : BIWMode
 
     public void TakeSceneScreenshotForExit()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshotFromResetPosition((sceneSnapshot) =>
         {
@@ -816,7 +816,7 @@ public class BiwGodMode : BIWMode
 
     public void OpenNewProjectDetails()
     {
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
 
         freeCameraController.TakeSceneScreenshot((sceneSnapshot) =>
         {
