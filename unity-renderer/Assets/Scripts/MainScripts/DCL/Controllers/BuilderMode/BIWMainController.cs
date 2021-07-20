@@ -230,6 +230,7 @@ public class BIWMainController : Feature
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
+        biwAudioHandler.Dispose();
         if (biwAudioHandler.gameObject != null)
             GameObject.Destroy(biwAudioHandler.gameObject);
 
@@ -276,7 +277,6 @@ public class BIWMainController : Feature
         {
             checkerInsideSceneOptimizationCounter++;
         }
-
     }
 
     public override void LateUpdate()

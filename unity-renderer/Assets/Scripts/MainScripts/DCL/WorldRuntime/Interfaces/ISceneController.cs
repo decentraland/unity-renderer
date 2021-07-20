@@ -20,7 +20,7 @@ namespace DCL
         void ParseQuery(object payload, string sceneId);
         void SendSceneMessage(string payload);
         event Action<string> OnReadyScene;
-        IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null);
+        IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null, string entityId = null);
         void SendSceneReady(string sceneId);
         void ActivateBuilderInWorldEditScene();
         void DeactivateBuilderInWorldEditScene();

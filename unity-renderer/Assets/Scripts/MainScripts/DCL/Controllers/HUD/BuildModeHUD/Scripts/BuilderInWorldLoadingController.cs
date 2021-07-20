@@ -14,7 +14,7 @@ public interface IBuilderInWorldLoadingController
 
 public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 {
-    public bool isActive => initialLoadingView.isActive;
+    public bool isActive => initialLoadingView != null && initialLoadingView.isActive;
 
     internal IBuilderInWorldLoadingView initialLoadingView;
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
@@ -22,8 +23,13 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     [Test]
     public void EnterBuilderInWorld()
     {
+        //Arrange
+        mainController.CatalogLoaded();
+        scene.CreateEntity("Test");
+
         //Act
-        mainController.TryStartEnterEditMode();
+        mainController.TryStartEnterEditMode(false, scene, "Test");
+        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
 
         //Assert
         Assert.IsTrue(mainController.isBuilderInWorldActivated);
@@ -33,7 +39,11 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void ExitBuilderInWorld()
     {
         //Arrange
-        mainController.TryStartEnterEditMode();
+        mainController.CatalogLoaded();
+        scene.CreateEntity("Test");
+
+        mainController.TryStartEnterEditMode(false, scene, "Test");
+        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
 
         //Act
         mainController.ExitEditMode();

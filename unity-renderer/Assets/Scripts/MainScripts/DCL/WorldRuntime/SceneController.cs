@@ -48,10 +48,7 @@ namespace DCL
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
         }
 
-        private void OnDebugModeSet()
-        {
-            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
-        }
+        private void OnDebugModeSet() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker()); }
 
         public void Start()
         {
@@ -424,7 +421,7 @@ namespace DCL
         //======================================================================
         public event Action<string> OnReadyScene;
 
-        public IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
+        public IParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null, string entityId =  null)
         {
             if (data == null)
             {
@@ -444,6 +441,7 @@ namespace DCL
             if (Environment.i.world.state.loadedScenes.ContainsKey(data.id))
             {
                 Debug.LogWarning($"Scene {data.id} is already loaded.");
+                OnReadyScene?.Invoke(data.id);
                 return Environment.i.world.state.loadedScenes[data.id];
             }
 
@@ -462,8 +460,10 @@ namespace DCL
             Environment.i.messaging.manager.AddControllerIfNotExists(this, data.id);
 
             Environment.i.world.state.loadedScenes.Add(data.id, newScene);
+            if (!string.IsNullOrEmpty(entityId))
+                newScene.CreateEntity(entityId);
             OnNewSceneAdded?.Invoke(newScene);
-
+            OnReadyScene?.Invoke(newScene.sceneData.id);
             return newScene;
         }
 
