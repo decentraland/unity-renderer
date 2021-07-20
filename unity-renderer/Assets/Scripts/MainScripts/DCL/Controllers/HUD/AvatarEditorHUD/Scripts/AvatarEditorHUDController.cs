@@ -137,24 +137,12 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
-           .Then((nfts) =>
-           {
-               ownedNftCollectionsL1 = nfts;
-           })
-           .Catch((error) =>
-           {
-               Debug.LogError(error);
-           });
+           .Then((nfts) => ownedNftCollectionsL1 = nfts)
+           .Catch((error) => Debug.LogError(error));
 
         DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
-           .Then((nfts) =>
-           {
-               ownedNftCollectionsL2 = nfts;
-           })
-           .Catch((error) =>
-           {
-               Debug.LogError(error);
-           });
+           .Then((nfts) => ownedNftCollectionsL2 = nfts)
+           .Catch((error) => Debug.LogError(error));
     }
 
     public void RetryLoadOwnedWearables()
