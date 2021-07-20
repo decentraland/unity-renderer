@@ -207,6 +207,9 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
             return;
 
         BIWOutline outliner = camera.GetComponent<BIWOutline>();
+        if (outliner == null)
+            return;
+        ;
         outliner.Dispose();
         GameObject.Destroy(outliner);
     }

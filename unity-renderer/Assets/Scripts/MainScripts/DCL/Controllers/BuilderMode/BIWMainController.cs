@@ -36,7 +36,7 @@ public class BIWMainController : Feature
     private BuilderInWorldAudioHandler biwAudioHandler;
     private BIWContext context;
 
-    private readonly List<BIWController> controllers = new List<BIWController>();
+    private readonly List<IBIWController> controllers = new List<IBIWController>();
 
     private ParcelScene sceneToEdit;
 
@@ -83,7 +83,8 @@ public class BIWMainController : Feature
         BIWCatalogManager.Init();
 
         CreateControllers();
-        InitReferences(InitialSceneReferences.i);
+        InitReferences(InitialSceneReferences.i
+        );
 
 
         if (builderInWorldBridge != null)
@@ -121,8 +122,9 @@ public class BIWMainController : Feature
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    private void InitReferences(InitialSceneReferences initalReference)
+    public void InitReferences(InitialSceneReferences initalReference)
     {
+
         builderInWorldBridge = initalReference.builderInWorldBridge;
         cursorGO = initalReference.cursorCanvas;
         inputController = initalReference.inputController;
@@ -245,6 +247,8 @@ public class BIWMainController : Feature
     public override void OnGUI()
     {
         base.OnGUI();
+        if (!isBuilderInWorldActivated)
+            return;
 
         foreach (var controller in controllers)
         {
@@ -281,6 +285,9 @@ public class BIWMainController : Feature
 
     public override void LateUpdate()
     {
+        if (!isBuilderInWorldActivated)
+            return;
+
         foreach (var controller in controllers)
         {
             controller.LateUpdate();
@@ -339,31 +346,24 @@ public class BIWMainController : Feature
 
     private void InitControllers()
     {
-        entityHandler.Init(context);
-        modeController.Init(context);
-        publishController.Init(context);
-        creatorController.Init(context);
-        outlinerController.Init(context);
-        floorHandler.Init(context);
-        inputHandler.Init(context);
-        saveController.Init(context);
-        actionController.Init(context);
-        inputWrapper.Init(context);
-        raycastController.Init(context);
-        gizmosController.Init(context);
+        InitController(entityHandler);
+        InitController(modeController);
+        InitController(publishController);
+        InitController(creatorController);
+        InitController(outlinerController);
+        InitController(floorHandler);
+        InitController(inputHandler);
+        InitController(saveController);
+        InitController(actionController);
+        InitController(inputWrapper);
+        InitController(raycastController);
+        InitController(gizmosController);
+    }
 
-        controllers.Add(entityHandler);
-        controllers.Add(modeController);
-        controllers.Add(publishController);
-        controllers.Add(creatorController);
-        controllers.Add(outlinerController);
-        controllers.Add(floorHandler);
-        controllers.Add(inputHandler);
-        controllers.Add(saveController);
-        controllers.Add(actionController);
-        controllers.Add(inputWrapper);
-        controllers.Add(raycastController);
-        controllers.Add(gizmosController);
+    public void InitController(IBIWController controller)
+    {
+        controller.Init(context);
+        controllers.Add(controller);
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -746,7 +746,7 @@ public class BIWMainController : Feature
         }
     }
 
-    public void FindSceneToEdit()
+    public IParcelScene FindSceneToEdit()
     {
         foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
@@ -758,9 +758,11 @@ public class BIWMainController : Feature
                     actionController.Clear();
 
                 sceneToEdit = parcelScene;
+                return sceneToEdit;
                 break;
             }
         }
+        return null;
     }
 
     private void OnPlayerTeleportedToEditScene(Vector2Int coords)

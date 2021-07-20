@@ -9,7 +9,6 @@ using UnityEngine;
 
 public class BIWGodModeShould : IntegrationTestSuite_Legacy
 {
-
     private BiwGodMode godMode;
     private GameObject mockedGameObject;
 
