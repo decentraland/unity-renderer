@@ -8,11 +8,14 @@ namespace DCL
         private const float LODS_LOCAL_Y_POS = 1.8f;
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
-        private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
+        // private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
+
+        // 2048x2048 atlas with 512x1024 snapshot-sprites
+        private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
+        private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
 
         private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
         private float lastLODsVerticalMovementTime = -1;
-        private AvatarLODAssetReferences assetReferences;
 
         public AvatarsLODController()
         {
@@ -20,8 +23,6 @@ namespace DCL
                         .Then(config =>
                         {
                             DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
-                            if (config.features.enableAvatarLODs)
-                                assetReferences = Resources.Load<AvatarLODAssetReferences>("AvatarLODs/AvatarLODAssetReferences");
                         });
         }
 
@@ -124,8 +125,20 @@ namespace DCL
 
             if (enabled)
             {
-                // By using the DCL/URP/Unlit shader in the material we take advantage of the SRP Batcher to draw all the quad lod impostors in 2 draw calls, avoiding having to reuse the same material an tex in all impostors
-                lodRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
+                // lodRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
+
+                float spriteColumnsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS;
+                float spriteRowsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_ROWS;
+                float randomUVX = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteColumnsUnit;
+                float randomUVY = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteRowsUnit;
+                Vector2[] uvs = new Vector2[4]; // Quads have only 4 vertices
+                uvs[0].Set(randomUVX, randomUVY);
+                uvs[1].Set(randomUVX + spriteColumnsUnit, randomUVY);
+                uvs[2].Set(randomUVX, randomUVY + spriteRowsUnit);
+                uvs[3].Set(randomUVX + spriteColumnsUnit, randomUVY + spriteRowsUnit);
+
+                // TODO: Cache this component in AvatarRenderer
+                lodRenderer.GetComponent<MeshFilter>().mesh.uv = uvs;
             }
 
             lodRenderer.gameObject.SetActive(enabled);
