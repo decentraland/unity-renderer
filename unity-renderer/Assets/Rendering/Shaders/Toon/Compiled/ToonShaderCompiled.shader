@@ -1,4 +1,4 @@
-﻿Shader "DCL/Toon Shader"
+﻿Shader "Master_ToonShader"
 {
     Properties
     {
@@ -960,9 +960,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -2054,9 +2052,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -4651,9 +4647,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -5626,9 +5620,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -6701,9 +6693,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -9294,9 +9284,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
@@ -10270,9 +10258,7 @@
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = IsGammaSpace()
-                                                                              ? LinearToSRGB(_LightColor)
-                                                                              : _LightColor;
+                float4 _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0 = _LightColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 _ToonShader_7540b263a099a28799339fadc2a1d8ac;
