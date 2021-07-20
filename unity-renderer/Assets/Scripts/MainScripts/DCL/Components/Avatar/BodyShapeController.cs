@@ -186,16 +186,6 @@ public class BodyShapeController : WearableController, IBodyShapeController
     {
         bool headIsVisible = !hiddenList.Contains(WearableLiterals.Misc.HEAD);
 
-        Debug.Log($"Setting head visible = {headIsVisible} ...");
-
-        if ( headRenderer != null )
-        {
-            Debug.Log($"headParent = {headRenderer.transform.parent}");
-
-            if ( headRenderer.transform.parent != null )
-                Debug.Log($"headParent name = {headRenderer.transform.parent.name}");
-        }
-
         headRenderer.enabled = headIsVisible;
         eyebrowsRenderer.enabled = headIsVisible;
         eyesRenderer.enabled = headIsVisible;

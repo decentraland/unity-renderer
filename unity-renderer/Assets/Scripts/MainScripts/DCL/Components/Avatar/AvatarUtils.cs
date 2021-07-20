@@ -73,7 +73,6 @@ public static class AvatarUtils
             (mat) =>
             {
                 mat.SetColor(propertyId, colorToChange);
-                AvatarMeshCombiner.logger.Log($"Setting Color To {colorToChange} ... propId = {propertyId} ... mat = {mat.GetHashCode()}");
                 return mat;
             },
             materialsContainingThisName);
