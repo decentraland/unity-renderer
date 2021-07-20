@@ -18,7 +18,14 @@ namespace LoadingHUD
             view = CreateView();
 
             ClearEvents();
+
             SetViewVisible(visible.Get());
+            view?.SetMessage(message.Get());
+            view?.SetPercentage(percentage.Get() / 100f);
+            view?.SetWalletPrompt(showWalletPrompt.Get());
+            view?.SetTips(showTips.Get());
+
+            // set initial states to prevent reconciliation errors
             visible.OnChange += OnVisibleHUDChanged;
             message.OnChange += OnMessageChanged;
             percentage.OnChange += OnPercentageChanged;
