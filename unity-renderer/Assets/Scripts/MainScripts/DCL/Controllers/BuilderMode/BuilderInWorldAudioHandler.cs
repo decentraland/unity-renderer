@@ -3,26 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuilderInWorldAudioHandler : BIWController
+public class BuilderInWorldAudioHandler : MonoBehaviour
 {
     const float MUSIC_DELAY_TIME_ON_START = 4f;
     const float MUSIC_FADE_OUT_TIME_ON_EXIT = 5f;
     const float MUSIC_FADE_OUT_TIME_ON_TUTORIAL = 3f;
 
-    [SerializeField]
-    BIWCreatorController creatorController;
+    private IBIWCreatorController creatorController;
 
-    [SerializeField]
-    GameObject builderInWorldModesParent;
+    private IBIWEntityHandler entityHandler;
 
-    [SerializeField]
-    BuilderInWorldController inWorldController;
-
-    [SerializeField]
-    BuilderInWorldEntityHandler entityHandler;
-
-    [SerializeField]
-    BIWModeController modeController;
+    private IBIWModeController modeController;
 
     [Header("Audio Events")]
     [SerializeField]
@@ -57,9 +48,15 @@ public class BuilderInWorldAudioHandler : BIWController
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
 
-    private void Start()
+    private void Start() { playPlacementSoundOnDeselect = false; }
+
+    public void SetReferences(BIWContext context)
     {
-        playPlacementSoundOnDeselect = false;
+        creatorController = context.creatorController;
+
+        entityHandler = context.entityHandler;
+
+        modeController = context.modeController;
 
         AddListeners();
     }
@@ -94,10 +91,8 @@ public class BuilderInWorldAudioHandler : BIWController
         entityHandler.OnEntitySelected -= OnAssetSelect;
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    public void EnterEditMode(ParcelScene scene)
     {
-        base.EnterEditMode(scene);
-
         UpdateEntityCount();
         CoroutineStarter.Start(StartBuilderMusic());
         if (HUDController.i.builderInWorldMainHud != null)
@@ -106,10 +101,8 @@ public class BuilderInWorldAudioHandler : BIWController
         gameObject.SetActive(true);
     }
 
-    public override void ExitEditMode()
+    public void ExitEditMode()
     {
-        base.ExitEditMode();
-
         eventBuilderExit.Play();
         CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
@@ -157,13 +150,13 @@ public class BuilderInWorldAudioHandler : BIWController
 
     private void OnTutorialEnabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
     }
 
     private void OnTutorialDisabled()
     {
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             CoroutineStarter.Start(StartBuilderMusic());
     }
 
@@ -171,7 +164,7 @@ public class BuilderInWorldAudioHandler : BIWController
     {
         yield return new WaitForSeconds(MUSIC_DELAY_TIME_ON_START);
 
-        if (inWorldController.isBuilderInWorldActivated)
+        if (gameObject.activeInHierarchy)
             eventBuilderMusic.Play();
     }
 

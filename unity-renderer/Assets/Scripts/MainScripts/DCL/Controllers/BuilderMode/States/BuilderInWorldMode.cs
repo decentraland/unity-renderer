@@ -5,26 +5,24 @@ using System.Collections.Generic;
 using DCL.Configuration;
 using UnityEngine;
 
-public class BuilderInWorldMode : MonoBehaviour
+public class BuilderInWorldMode
 {
-    [Header("Design variables")]
-    public float maxDistanceToSelectEntities = 50;
-
-    [Header("Snap variables")]
-    public float snapFactor = 1f;
-
-    public float snapRotationDegresFactor = 15f;
-    public float snapScaleFactor = 0.5f;
-
-    public float snapDistanceToActivateMovement = 10f;
-
-    [Header("Prefab references")]
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
-    public BIWSaveController biwSaveController;
-    public ActionController actionController;
-
     public event Action OnInputDone;
     public event Action<BuildInWorldCompleteAction> OnActionGenerated;
+
+    public float maxDistanceToSelectEntities => maxDistanceToSelectEntitiesValue;
+
+    protected float maxDistanceToSelectEntitiesValue = 50;
+
+    //Note: Snap variables are set in each mode 
+    protected float snapFactor = 1f;
+    protected float snapRotationDegresFactor = 15f;
+    protected float snapScaleFactor = 0.5f;
+    protected float snapDistanceToActivateMovement = 10f;
+
+    protected IBIWEntityHandler entityHandler;
+    protected IBIWSaveController saveController;
+    protected IBIWActionController actionController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
@@ -35,10 +33,12 @@ public class BuilderInWorldMode : MonoBehaviour
 
     protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
 
-    public virtual void Init()
+    public virtual void Init(BIWContext biwContext)
     {
-        gameObject.SetActive(false);
-        builderInWorldEntityHandler.OnEntityDeleted += OnDeleteEntity;
+        entityHandler = biwContext.entityHandler;
+        saveController = biwContext.saveController;
+        actionController = biwContext.actionController;
+        entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
     public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
@@ -51,19 +51,14 @@ public class BuilderInWorldMode : MonoBehaviour
         this.selectedEntities = selectedEntities;
     }
 
-    private void OnDestroy() { builderInWorldEntityHandler.OnEntityDeleted -= OnDeleteEntity; }
+    public virtual void Dispose() { entityHandler.OnEntityDeleted -= OnDeleteEntity; }
 
-    public virtual void Activate(ParcelScene scene)
-    {
-        gameObject.SetActive(true);
-        isModeActive = true;
-    }
+    public virtual void Activate(ParcelScene scene) { isModeActive = true; }
 
     public virtual void Deactivate()
     {
-        gameObject.SetActive(false);
         isModeActive = false;
-        builderInWorldEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 
     public virtual void SetSnapActive(bool isActive)
@@ -117,14 +112,14 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void MouseClickDetected()
     {
-        DCLBuilderInWorldEntity entityToSelect = builderInWorldEntityHandler.GetEntityOnPointer();
+        DCLBuilderInWorldEntity entityToSelect = entityHandler.GetEntityOnPointer();
         if (entityToSelect != null)
         {
-            builderInWorldEntityHandler.EntityClicked(entityToSelect);
+            entityHandler.EntityClicked(entityToSelect);
         }
         else if (!isMultiSelectionActive)
         {
-            builderInWorldEntityHandler.DeselectEntities();
+            entityHandler.DeselectEntities();
         }
     }
 
@@ -144,7 +139,7 @@ public class BuilderInWorldMode : MonoBehaviour
 
     public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
 
-    public virtual void OnDeselectedEntities() { builderInWorldEntityHandler.ReportTransform(true); }
+    public virtual void OnDeselectedEntities() { entityHandler.ReportTransform(true); }
 
     public virtual void CheckInput() { }
 
@@ -197,13 +192,13 @@ public class BuilderInWorldMode : MonoBehaviour
         BuilderInWorldEntityAction buildModeEntityAction = new BuilderInWorldEntityAction(entity);
         switch (type)
         {
-            case BuilderInWorldSettings.TRANSLATE_GIZMO_NAME:
+            case BIWSettings.TRANSLATE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.position;
                 break;
-            case BuilderInWorldSettings.ROTATE_GIZMO_NAME:
+            case BIWSettings.ROTATE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.rotation.eulerAngles;
                 break;
-            case BuilderInWorldSettings.SCALE_GIZMO_NAME:
+            case BIWSettings.SCALE_GIZMO_NAME:
                 buildModeEntityAction.oldValue = entity.gameObject.transform.lossyScale;
                 break;
         }
@@ -260,4 +255,7 @@ public class BuilderInWorldMode : MonoBehaviour
             actionList = new List<BuilderInWorldEntityAction>();
         }
     }
+    public virtual void Update() { }
+    public virtual void OnGUI() { }
+    public virtual void LateUpdate() { }
 }

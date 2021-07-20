@@ -5,31 +5,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class BIWInputHandler : BIWController
+public interface IBIWInputHandler { }
+
+public class BIWInputHandler : BIWController, IBIWInputHandler
 {
-    [Header("Design variables")]
-    public float msBetweenInputInteraction = 200;
+    private const float MS_BETWEEN_INPUT_INTERACTION = 200;
 
-    [Header("References")]
-    public BuilderInWorldController builderInWorldController;
-    public ActionController actionController;
-    public BIWModeController biwModeController;
-    public BuilderInWorldInputWrapper builderInputWrapper;
-    public BIWOutlinerController outlinerController;
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    private IBIWActionController actionController;
+    private IBIWModeController modeController;
+    private IBIWInputWrapper inputWrapper;
+    private IBIWOutlinerController outlinerController;
+    private IBIWEntityHandler entityHandler;
 
-    [Header("InputActions")]
-    [SerializeField]
-    internal InputAction_Trigger editModeChangeInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleRedoActionInputAction;
-
-    [SerializeField]
-    internal InputAction_Trigger toggleUndoActionInputAction;
-
-    [SerializeField]
-    internal InputAction_Hold multiSelectionInputAction;
+    private InputAction_Trigger toggleRedoActionInputAction;
+    private InputAction_Trigger toggleUndoActionInputAction;
+    private InputAction_Hold multiSelectionInputAction;
 
     private InputAction_Hold.Started multiSelectionStartDelegate;
     private InputAction_Hold.Finished multiSelectionFinishedDelegate;
@@ -41,9 +31,25 @@ public class BIWInputHandler : BIWController
 
     private float nexTimeToReceiveInput;
 
-    void Start()
+    public override void Init(BIWContext biwContext)
     {
-        editModeChangeInputAction.OnTriggered += OnEditModeChangeAction;
+        base.Init(biwContext);
+
+        actionController = biwContext.actionController;
+        modeController = biwContext.modeController;
+        inputWrapper = biwContext.inputWrapper;
+        outlinerController = biwContext.outlinerController;
+        entityHandler = biwContext.entityHandler;
+
+        toggleRedoActionInputAction = biwContext.inputsReferencesAsset.toggleRedoActionInputAction;
+        toggleUndoActionInputAction = biwContext.inputsReferencesAsset.toggleUndoActionInputAction;
+        multiSelectionInputAction = biwContext.inputsReferencesAsset.multiSelectionInputAction;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnStopInput += StopInput;
+            HUDController.i.builderInWorldMainHud.OnResumeInput += ResumeInput;
+        }
 
         redoDelegate = (action) => RedoAction();
         undoDelegate = (action) => UndoAction();
@@ -54,17 +60,17 @@ public class BIWInputHandler : BIWController
         multiSelectionStartDelegate = (action) => StartMultiSelection();
         multiSelectionFinishedDelegate = (action) => EndMultiSelection();
 
-        BuilderInWorldInputWrapper.OnMouseClick += MouseClick;
-        BuilderInWorldInputWrapper.OnMouseClickOnUI += MouseClickOnUI;
-        biwModeController.OnInputDone += InputDone;
+        BIWInputWrapper.OnMouseClick += MouseClick;
+        BIWInputWrapper.OnMouseClickOnUI += MouseClickOnUI;
+        modeController.OnInputDone += InputDone;
 
         multiSelectionInputAction.OnStarted += multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished += multiSelectionFinishedDelegate;
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
-        editModeChangeInputAction.OnTriggered -= OnEditModeChangeAction;
+        base.Dispose();
 
         toggleRedoActionInputAction.OnTriggered -= redoDelegate;
         toggleUndoActionInputAction.OnTriggered -= undoDelegate;
@@ -72,9 +78,9 @@ public class BIWInputHandler : BIWController
         multiSelectionInputAction.OnStarted -= multiSelectionStartDelegate;
         multiSelectionInputAction.OnFinished -= multiSelectionFinishedDelegate;
 
-        BuilderInWorldInputWrapper.OnMouseClick -= MouseClick;
-        BuilderInWorldInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
-        biwModeController.OnInputDone -= InputDone;
+        BIWInputWrapper.OnMouseClick -= MouseClick;
+        BIWInputWrapper.OnMouseClickOnUI -= MouseClickOnUI;
+        modeController.OnInputDone -= InputDone;
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnStopInput -= StopInput;
@@ -82,63 +88,41 @@ public class BIWInputHandler : BIWController
         }
     }
 
-    public override void Init()
+    public override void Update()
     {
-        base.Init();
-        if (HUDController.i.builderInWorldMainHud != null)
-        {
-            HUDController.i.builderInWorldMainHud.OnStopInput += StopInput;
-            HUDController.i.builderInWorldMainHud.OnResumeInput += ResumeInput;
-        }
-    }
-
-    protected override void FrameUpdate()
-    {
-        base.FrameUpdate();
+        base.Update();
 
         if (Time.timeSinceLevelLoad < nexTimeToReceiveInput)
             return;
 
-        if (Utils.isCursorLocked || biwModeController.IsGodModeActive())
+        if (Utils.isCursorLocked || modeController.IsGodModeActive())
             CheckEditModeInput();
-        biwModeController.CheckInput();
-    }
-
-    public override void EnterEditMode(ParcelScene scene)
-    {
-        base.EnterEditMode(scene);
-        builderInputWrapper.gameObject.SetActive(true);
-    }
-
-    public override void ExitEditMode()
-    {
-        base.ExitEditMode();
-        builderInputWrapper.gameObject.SetActive(false);
+        modeController.CheckInput();
     }
 
     private void CheckEditModeInput()
     {
         outlinerController.CheckOutline();
 
-        if (builderInWorldEntityHandler.IsAnyEntitySelected())
+        if (entityHandler.IsAnyEntitySelected())
         {
-            biwModeController.CheckInputSelectedEntities();
+            modeController.CheckInputSelectedEntities();
         }
     }
 
     private void StartMultiSelection()
     {
         isMultiSelectionActive = true;
-        builderInWorldEntityHandler.SetMultiSelectionActive(isMultiSelectionActive);
+        entityHandler.SetMultiSelectionActive(isMultiSelectionActive);
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-        biwModeController.StartMultiSelection();
+        modeController.StartMultiSelection();
     }
 
     private void EndMultiSelection()
     {
         isMultiSelectionActive = false;
-        builderInWorldEntityHandler.SetMultiSelectionActive(isMultiSelectionActive);
-        biwModeController.EndMultiSelection();
+        entityHandler.SetMultiSelectionActive(isMultiSelectionActive);
+        modeController.EndMultiSelection();
         outlinerController.CancelUnselectedOutlines();
     }
 
@@ -153,7 +137,7 @@ public class BIWInputHandler : BIWController
         if (!BuilderInWorldUtils.IsPointerOverUIElement())
             HUDController.i.builderInWorldMainHud.HideExtraBtns();
 
-        if (Utils.isCursorLocked || biwModeController.IsGodModeActive())
+        if (Utils.isCursorLocked || modeController.IsGodModeActive())
         {
             if (buttonID == 0)
             {
@@ -169,8 +153,6 @@ public class BIWInputHandler : BIWController
 
     public bool IsMultiSelectionActive() => isMultiSelectionActive;
 
-    private void OnEditModeChangeAction(DCLAction_Trigger action) { builderInWorldController.ChangeEditModeStatusByShortcut(); }
-
     private void RedoAction()
     {
         actionController.TryToRedoAction();
@@ -181,17 +163,17 @@ public class BIWInputHandler : BIWController
     {
         InputDone();
 
-        if (biwModeController.ShouldCancelUndoAction())
+        if (modeController.ShouldCancelUndoAction())
             return;
 
         actionController.TryToUndoAction();
     }
 
-    private void MouseClickDetected() { biwModeController.MouseClickDetected(); }
+    private void MouseClickDetected() { modeController.MouseClickDetected(); }
 
-    private void InputDone() { nexTimeToReceiveInput = Time.timeSinceLevelLoad + msBetweenInputInteraction / 1000; }
+    private void InputDone() { nexTimeToReceiveInput = Time.timeSinceLevelLoad + MS_BETWEEN_INPUT_INTERACTION / 1000; }
 
-    private void StopInput() { builderInputWrapper.StopInput(); }
+    private void StopInput() { inputWrapper.StopInput(); }
 
-    private void ResumeInput() { builderInputWrapper.ResumeInput(); }
+    private void ResumeInput() { inputWrapper.ResumeInput(); }
 }

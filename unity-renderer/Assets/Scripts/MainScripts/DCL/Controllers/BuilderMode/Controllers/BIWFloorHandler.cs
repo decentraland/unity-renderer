@@ -9,41 +9,60 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BIWFloorHandler : BIWController
+public interface IBIWFloorHandler
 {
-    [Header("Design Variables")]
-    public float secondsToTimeOut = 10f;
+    public void CreateFloor(CatalogItem floorSceneObject);
+    public bool IsCatalogItemFloor(CatalogItem floorSceneObject);
+    public void ChangeFloor(CatalogItem newFloorObject);
+}
 
-    [Header("Prefab References")]
-    public ActionController actionController;
-
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
-    public DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
-    public DCLBuilderMeshLoadIndicator meshLoadIndicator;
-    public BIWCreatorController biwCreatorController;
-    public BIWSaveController biwSaveController;
-
-    [Header("Prefabs")]
-    public GameObject floorPrefab;
-
+public class BIWFloorHandler : BIWController, IBIWFloorHandler
+{
     public event Action OnAllParcelsFloorLoaded;
+
+    private IBIWActionController actionController;
+
+    private IBIWEntityHandler entityHandler;
+    private IBIWCreatorController creatorController;
+    private IBIWSaveController saveController;
+
+    private DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
+    private DCLBuilderMeshLoadIndicator meshLoadIndicator;
+
+    private GameObject floorPrefab;
+
     private int numberOfParcelsLoaded;
 
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
 
-    private void Start()
+    public override void Init(BIWContext context)
     {
-        builderInWorldEntityHandler.OnEntityDeleted += OnFloorEntityDeleted;
+        base.Init(context);
+        actionController = context.actionController;
+
+        entityHandler = context.entityHandler;
+
+        dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferencesAsset.floorLoadingPrefab, context.projectReferencesAsset.floorLoadingPrefab.transform.position, context.projectReferencesAsset.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
+        meshLoadIndicator = dclBuilderMeshLoadIndicatorController.indicator;
+        creatorController = context.creatorController;
+        saveController = context.saveController;
+
+        floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
+
+        entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
         meshLoadIndicator.SetCamera(InitialSceneReferences.i.mainCamera);
+
+        dclBuilderMeshLoadIndicatorController.gameObject.SetActive(false);
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
-        builderInWorldEntityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
-
+        entityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
         Clean();
+
+        GameObject.Destroy(dclBuilderMeshLoadIndicatorController.gameObject);
     }
 
     private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)
@@ -62,12 +81,12 @@ public class BIWFloorHandler : BIWController
 
     public void ChangeFloor(CatalogItem newFloorObject)
     {
-        biwSaveController.SetSaveActivation(false);
+        saveController.SetSaveActivation(false);
         CatalogItem lastFloor = lastFloorCalalogItemUsed;
         if (lastFloor == null)
             lastFloor = FindCurrentFloorCatalogItem();
 
-        builderInWorldEntityHandler.DeleteFloorEntities();
+        entityHandler.DeleteFloorEntities();
 
         CreateFloor(newFloorObject);
 
@@ -76,12 +95,12 @@ public class BIWFloorHandler : BIWController
         buildAction.CreateChangeFloorAction(lastFloor, newFloorObject);
         actionController.AddAction(buildAction);
 
-        biwSaveController.SetSaveActivation(true, true);
+        saveController.SetSaveActivation(true, true);
     }
 
     public CatalogItem FindCurrentFloorCatalogItem()
     {
-        foreach (DCLBuilderInWorldEntity entity in builderInWorldEntityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -92,7 +111,7 @@ public class BIWFloorHandler : BIWController
         return null;
     }
 
-    public bool IsCatalogItemFloor(CatalogItem floorSceneObject) { return string.Equals(floorSceneObject.category, BuilderInWorldSettings.FLOOR_CATEGORY); }
+    public bool IsCatalogItemFloor(CatalogItem floorSceneObject) { return string.Equals(floorSceneObject.category, BIWSettings.FLOOR_CATEGORY); }
 
     public void CreateDefaultFloor()
     {
@@ -109,7 +128,7 @@ public class BIWFloorHandler : BIWController
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = biwCreatorController.CreateCatalogItem(
+            DCLBuilderInWorldEntity decentralandEntity = creatorController.CreateCatalogItem(
                 floorSceneObject,
                 WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel),
                 false,
@@ -126,7 +145,7 @@ public class BIWFloorHandler : BIWController
             }
         }
 
-        builderInWorldEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
         lastFloorCalalogItemUsed = floorSceneObject;
     }
 

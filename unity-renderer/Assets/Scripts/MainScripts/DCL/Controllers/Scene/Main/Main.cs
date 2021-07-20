@@ -16,8 +16,6 @@ namespace DCL
         public static Main i { get; private set; }
 
         public PoolableComponentFactory componentFactory;
-        public GameObject builderInWorldPrefab;
-
         public DebugConfig debugConfig;
 
         private PerformanceMetricsController performanceMetricsController;
@@ -45,10 +43,9 @@ namespace DCL
                 performanceMetricsController = new PerformanceMetricsController();
                 RenderProfileManifest.i.Initialize();
                 SetupEnvironment();
-                featureController = new FeatureController();
-                featureController.SetBuilderInWorldPrefab(builderInWorldPrefab);
             }
 
+            featureController = new FeatureController();
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
@@ -72,37 +69,42 @@ namespace DCL
                 worldRuntimeBuilder: WorldRuntimeContextBuilder,
                 hudBuilder: HUDContextBuilder);
         }
-        
+
         protected virtual MessagingContext MessagingContextBuilder() { return MessagingContextFactory.CreateDefault(); }
-        
+
         protected virtual PlatformContext PlatformContextBuilder() { return PlatformContextFactory.CreateDefault(); }
-        
+
         protected virtual WorldRuntimeContext WorldRuntimeContextBuilder() { return WorldRuntimeContextFactory.CreateDefault(componentFactory); }
-        
+
         protected virtual HUDContext HUDContextBuilder() { return HUDContextFactory.CreateDefault(); }
-        
+
         private void Start()
         {
             Environment.i.world.sceneController.Start();
             featureController?.Start();
         }
 
-
         private void Update()
         {
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            featureController?.Update();
+            featureController.Update();
         }
 
-        private void LateUpdate() { Environment.i.world.sceneController.LateUpdate(); }
+        private void LateUpdate()
+        {
+            Environment.i.world.sceneController.LateUpdate();
+            featureController.LateUpdate();
+        }
 
         private void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
+            featureController?.OnDestroy();
         }
+        private void OnGUI() { featureController.OnGUI(); }
 
         #region RuntimeMessagingBridge
 

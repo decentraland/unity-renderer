@@ -7,23 +7,39 @@ using DCL.Controllers;
 using UnityEngine;
 using static BuildInWorldCompleteAction;
 
-public class ActionController : BIWController
+public interface IBIWActionController
 {
-    public static bool VERBOSE = false;
+    public event System.Action OnRedo;
+    public event System.Action OnUndo;
+    public void AddAction(BuildInWorldCompleteAction action);
+    public void TryToRedoAction();
+    public void TryToUndoAction();
+    public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList);
+    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity);
+    public void CreateActionEntityCreated(IDCLEntity entity);
+}
 
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
-    public BIWFloorHandler biwFloorHandler;
+public class BIWActionController : BIWController, IBIWActionController
+{
+    private static bool VERBOSE = false;
 
-    public System.Action OnUndo, OnRedo;
+    public event System.Action OnRedo;
+    public event System.Action OnUndo;
 
-    readonly List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
+    private IBIWEntityHandler entityHandler;
+    private IBIWFloorHandler floorHandler;
 
-    int currentUndoStepIndex = 0;
-    int currentRedoStepIndex = 0;
+    private readonly List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
 
-    public override void Init()
+    private int currentUndoStepIndex = 0;
+    private int currentRedoStepIndex = 0;
+
+    public override void Init(BIWContext context)
     {
-        base.Init();
+        base.Init(context);
+
+        entityHandler  = context.entityHandler;
+        floorHandler = context.floorHandler;
 
         if (HUDController.i.builderInWorldMainHud == null)
             return;
@@ -31,12 +47,15 @@ public class ActionController : BIWController
         HUDController.i.builderInWorldMainHud.OnRedoAction += TryToRedoAction;
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
-        if (HUDController.i.builderInWorldMainHud == null)
-            return;
-        HUDController.i.builderInWorldMainHud.OnUndoAction -= TryToUndoAction;
-        HUDController.i.builderInWorldMainHud.OnRedoAction -= TryToRedoAction;
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnUndoAction -= TryToUndoAction;
+            HUDController.i.builderInWorldMainHud.OnRedoAction -= TryToRedoAction;
+        }
+
+        Clear();
     }
 
     public override void EnterEditMode(ParcelScene scene)
@@ -170,17 +189,17 @@ public class ActionController : BIWController
         {
             case ActionType.MOVE:
                 Vector3 convertedPosition = (Vector3) value;
-                builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
+                entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.position = convertedPosition;
                 break;
 
             case ActionType.ROTATE:
                 Vector3 convertedAngles = (Vector3) value;
-                builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
+                entityHandler.GetConvertedEntity(entityIdToApply).rootEntity.gameObject.transform.eulerAngles = convertedAngles;
                 break;
 
             case ActionType.SCALE:
                 Vector3 convertedScale = (Vector3) value;
-                IDCLEntity entityToApply = builderInWorldEntityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
+                IDCLEntity entityToApply = entityHandler.GetConvertedEntity(entityIdToApply).rootEntity;
                 Transform parent = entityToApply.gameObject.transform.parent;
 
                 entityToApply.gameObject.transform.localScale = new Vector3(convertedScale.x / parent.localScale.x, convertedScale.y / parent.localScale.y, convertedScale.z / parent.localScale.z);
@@ -189,9 +208,9 @@ public class ActionController : BIWController
             case ActionType.CREATE:
                 string entityString = (string) value;
                 if (isUndo)
-                    builderInWorldEntityHandler.DeleteEntity(entityString);
+                    entityHandler.DeleteEntity(entityString);
                 else
-                    builderInWorldEntityHandler.CreateEntityFromJSON(entityString);
+                    entityHandler.CreateEntityFromJSON(entityString);
 
                 break;
 
@@ -199,17 +218,17 @@ public class ActionController : BIWController
                 string deletedEntityString = (string) value;
 
                 if (isUndo)
-                    builderInWorldEntityHandler.CreateEntityFromJSON(deletedEntityString);
+                    entityHandler.CreateEntityFromJSON(deletedEntityString);
                 else
-                    builderInWorldEntityHandler.DeleteEntity(deletedEntityString);
+                    entityHandler.DeleteEntity(deletedEntityString);
 
                 break;
             case ActionType.CHANGE_FLOOR:
                 string catalogItemToApply = (string) value;
 
                 CatalogItem floorObject = JsonConvert.DeserializeObject<CatalogItem>(catalogItemToApply);
-                builderInWorldEntityHandler.DeleteFloorEntities();
-                biwFloorHandler.CreateFloor(floorObject);
+                entityHandler.DeleteFloorEntities();
+                floorHandler.CreateFloor(floorObject);
                 break;
         }
     }

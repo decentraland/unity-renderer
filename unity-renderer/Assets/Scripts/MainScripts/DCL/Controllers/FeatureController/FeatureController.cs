@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using DCL;
 using UnityEngine;
 
+/// <summary>
+/// This class is used to handle a feature that needs the monobehaviour callbacks.
+///
+/// You need to add it as a feature toggle in gitlab so kernel will understand when to activate it and deactivate it.
+/// After that, you feature manager should herith from 'Feature' so it can start receveing monobehaviour callbacks whene it is activated
+/// </summary>
 public class FeatureController
 {
-    private GameObject builderInWorldFeaturePrefab;
-
     private List<Feature> activeFeatures = new List<Feature>();
 
-    private GameObject builderInWorld;
     private KernelConfigModel currentConfig;
-
-    public void SetBuilderInWorldPrefab(GameObject biwPrefab) { builderInWorldFeaturePrefab = biwPrefab; }
 
     public KernelConfigModel GetCurrentConfig() { return currentConfig; }
 
@@ -23,7 +24,14 @@ public class FeatureController
         KernelConfig.i.OnChange += OnKernelConfigChanged;
     }
 
-    // Update is called once per frame
+    public void OnGUI()
+    {
+        foreach (Feature feature in activeFeatures)
+        {
+            feature.OnGUI();
+        }
+    }
+
     public void Update()
     {
         foreach (Feature feature in activeFeatures)
@@ -32,27 +40,62 @@ public class FeatureController
         }
     }
 
+    public void LateUpdate()
+    {
+        foreach (Feature feature in activeFeatures)
+        {
+            feature.LateUpdate();
+        }
+    }
+
+    public void OnDestroy()
+    {
+        foreach (Feature feature in activeFeatures)
+        {
+            feature.Dispose();
+        }
+    }
+
     public void OnKernelConfigChanged(KernelConfigModel current, KernelConfigModel previous) { ApplyFeaturesConfig(current); }
 
     public void ApplyFeaturesConfig(KernelConfigModel config)
     {
-        HandleBuilderInWorld(config.features.enableBuilderInWorld);
+        HandleFeature<BIWMainController>(config.features.enableBuilderInWorld);
         currentConfig = config;
     }
 
-    private void HandleBuilderInWorld(bool isActive)
+    private void HandleFeature<T>(bool isActive) where T : Feature, new ()
     {
         if (isActive)
-        {
-            if (builderInWorld != null)
-                return;
-            builderInWorld = GameObject.Instantiate(builderInWorldFeaturePrefab);
-
-        }
+            InitializeFeature<T>();
         else
+            RemoveFeature<T>();
+    }
+
+    private void InitializeFeature<T>() where T : Feature, new ()
+    {
+        for (int i = 0; i < activeFeatures.Count; i++)
         {
-            if (builderInWorld != null)
-                GameObject.Destroy(builderInWorld);
+            if (activeFeatures[i].GetType() == typeof(T))
+                return;
+        }
+
+        //NOTE: We should revise this code on the future, because we'd want to use custom constructors to DI.
+        //      So here we most likely need to use an abstract factory, or just pass the new Feature object by argument.
+        Feature feature = new T();
+        feature.Initialize();
+        activeFeatures.Add(feature);
+    }
+
+    private void RemoveFeature<T>() where T : Feature
+    {
+        for (int i = 0; i < activeFeatures.Count; i++)
+        {
+            if (activeFeatures[i].GetType() == typeof(T))
+            {
+                activeFeatures[i].Dispose();
+                activeFeatures.Remove(activeFeatures[i]);
+            }
         }
     }
 
