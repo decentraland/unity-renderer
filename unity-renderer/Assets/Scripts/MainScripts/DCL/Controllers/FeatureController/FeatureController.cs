@@ -8,7 +8,7 @@ using UnityEngine;
 /// This class is used to handle a feature that needs the monobehaviour callbacks.
 ///
 /// You need to add it as a feature toggle in gitlab so kernel will understand when to activate it and deactivate it.
-/// After that, you feature manager should herith from 'Feature' so it can start receveing monobehaviour callbacks whene it is activated
+/// After that, yours feature manager should inherit from 'Feature' so it can start receiving monobehaviour callbacks where it is activated
 /// </summary>
 public class FeatureController
 {
