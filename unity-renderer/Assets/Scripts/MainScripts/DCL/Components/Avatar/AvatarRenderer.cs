@@ -379,7 +379,7 @@ namespace DCL
             else
             {
                 OnSuccessEvent?.Invoke();
-                AvatarMergeTest();
+                MergeAvatar();
             }
         }
 
@@ -397,8 +397,9 @@ namespace DCL
             }
         }
 
+        private IAvatarMeshCombineHelper _avatarMeshCombineHelper = new AvatarMeshCombineHelper();
 
-        void AvatarMergeTest()
+        void MergeAvatar()
         {
             if ( combinedAvatar != null )
                 combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
@@ -407,10 +408,16 @@ namespace DCL
             ILogger logger = new Logger(Debug.unityLogger.logHandler);
             logger.logEnabled = true;
 
-            GameObject newCombinedAvatar = AvatarMeshCombiner.Combine(
-                bodyShapeController.skinnedMeshRenderer,
-                transform,
-                (r) => !r.transform.parent.gameObject.name.Contains("Mask"));
+            SkinnedMeshRenderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+
+            Material materialAsset = Resources.Load<Material>("OptimizedToonMaterial");
+
+            renderers = renderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToArray();
+
+            GameObject newCombinedAvatar = _avatarMeshCombineHelper.Combine(
+                bodyShapeController.upperBodyRenderer,
+                renderers,
+                materialAsset);
 
             float totalTime = Time.realtimeSinceStartup - time;
             logger.Log("AvatarMeshCombiner.Combine time = " + totalTime);
@@ -433,6 +440,11 @@ namespace DCL
 
             combinedAvatar = newCombinedAvatar;
             combinedAvatarMesh = newCombinedAvatarMesh;
+
+            for ( int i = 0; i < renderers.Length; i++ )
+            {
+                renderers[i].enabled = false;
+            }
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)

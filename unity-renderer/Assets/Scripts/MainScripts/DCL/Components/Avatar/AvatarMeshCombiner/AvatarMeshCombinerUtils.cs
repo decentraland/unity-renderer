@@ -11,7 +11,7 @@ namespace DCL
 
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler);
 
-        internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers, System.Func<Renderer, bool> filterFunction)
+        internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers)
         {
             // Define helper methods
             bool CanAddToMap(CombineLayer layer, Texture2D tex)
@@ -47,7 +47,7 @@ namespace DCL
 
                 foreach ( var r in groupRenderers )
                 {
-                    if ( !filterFunction(r) || !r.enabled || r.sharedMesh == null )
+                    if ( !r.enabled || r.sharedMesh == null )
                     {
                         //logger.Log($"Filtering out renderer: {r.transform.parent.name}");
                         continue;
@@ -95,27 +95,29 @@ namespace DCL
                     .Aggregate( (i, j) => i + "\n" + j);
 
                 logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.idMap.Count}\nrenderers: {rendererNames}");
+                layInd++;
             }
 
             logger.Log("Slice End Success!");
             return result;
         }
 
-        internal static void ResetBones(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer bindPosesContainer)
+        internal static void ResetBones(SkinnedMeshRenderer renderer)
         {
-            var bindPoses = bindPosesContainer.sharedMesh.bindposes;
-            var tmpBones = bonesContainer.bones;
+            var bindPoses = renderer.sharedMesh.bindposes;
+            var bones = renderer.bones;
 
-            for ( int i = 0 ; i < tmpBones.Length; i++ )
+            for ( int i = 0 ; i < bones.Length; i++ )
             {
+                Transform bone = bones[i];
                 Matrix4x4 bindPose = bindPoses[i].inverse;
-                tmpBones[i].position = bindPose.MultiplyPoint3x4(Vector3.zero);
-                tmpBones[i].rotation = bindPose.rotation;
+                bone.position = bindPose.MultiplyPoint3x4(Vector3.zero);
+                bone.rotation = bindPose.rotation;
 
                 Vector3 bindPoseScale = bindPose.lossyScale;
-                Vector3 boneScale = tmpBones[i].lossyScale;
+                Vector3 boneScale = bone.lossyScale;
 
-                tmpBones[i].localScale = new Vector3(bindPoseScale.x / boneScale.x,
+                bone.localScale = new Vector3(bindPoseScale.x / boneScale.x,
                     bindPoseScale.y / boneScale.y,
                     bindPoseScale.z / boneScale.z);
             }
