@@ -55,7 +55,8 @@ public class BIWMode
 
     public virtual void Dispose() { biwEntityHandler.OnEntityDeleted -= OnDeleteEntity; }
 
-    public virtual void Activate(ParcelScene scene) { isModeActive = true; }
+    public bool IsActive() { return isModeActive; }
+    public virtual void Activate(IParcelScene scene) { isModeActive = true; }
 
     public virtual void Deactivate()
     {

@@ -28,7 +28,7 @@ public class BiwGodMode : BIWMode
     private InputAction_Trigger focusOnSelectedEntitiesInputAction;
     private InputAction_Hold multiSelectionInputAction;
 
-    private ParcelScene sceneToEdit;
+    private IParcelScene sceneToEdit;
 
     private bool isPlacingNewObject = false;
     private bool mouseMainBtnPressed = false;
@@ -485,7 +485,7 @@ public class BiwGodMode : BIWMode
         outlinerController.CancelAllOutlines();
     }
 
-    public override void Activate(ParcelScene scene)
+    public override void Activate(IParcelScene scene)
     {
         base.Activate(scene);
         sceneToEdit = scene;
@@ -506,7 +506,7 @@ public class BiwGodMode : BIWMode
         HUDController.i.builderInWorldMainHud?.ActivateGodModeUI();
     }
 
-    public void ActivateCamera(ParcelScene parcelScene)
+    public void ActivateCamera(IParcelScene parcelScene)
     {
         freeCameraController.gameObject.SetActive(true);
         SetLookAtObject(parcelScene);
@@ -759,17 +759,17 @@ public class BiwGodMode : BIWMode
 
     public void FocusGameObject(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
-    Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
+    Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
+        Vector3 direction = (parcelScene.GetSceneTransform().position - middlePoint).normalized;
 
-        return parcelScene.transform.position
+        return parcelScene.GetSceneTransform().position
                + direction * initialEagleCameraDistance
                + Vector3.up * initialEagleCameraHeight;
     }
 
-    void SetLookAtObject(ParcelScene parcelScene)
+    void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;

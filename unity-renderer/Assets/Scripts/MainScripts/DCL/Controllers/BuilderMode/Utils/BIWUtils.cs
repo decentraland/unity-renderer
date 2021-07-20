@@ -81,7 +81,7 @@ public static partial class BIWUtils
         return size;
     }
 
-    public static Vector3 CalculateUnityMiddlePoint(ParcelScene parcelScene)
+    public static Vector3 CalculateUnityMiddlePoint(IParcelScene parcelScene)
     {
         Vector3 position;
 

@@ -143,7 +143,7 @@ public class BiwFirstPersonMode : BIWMode
         initialRotation = zeroAnglesQuaternion;
     }
 
-    public override void Activate(ParcelScene scene)
+    public override void Activate(IParcelScene scene)
     {
         base.Activate(scene);
         SetEditObjectParent();
