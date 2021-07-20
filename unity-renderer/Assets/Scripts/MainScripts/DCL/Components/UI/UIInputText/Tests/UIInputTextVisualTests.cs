@@ -30,7 +30,7 @@ public class UIInputTextVisualTests : UIVisualTestsBase
             height = new UIValue(50f, UIValue.Unit.PERCENT)
         }, mainContainerId);
 
-        yield return CreateUIComponent<UIInputText, UIInputText.Model>(CLASS_ID.UI_INPUT_TEXT_SHAPE, new UIInputText.Model
+        yield return CreateUIComponent<UIInputText, Mock_UIInputTextModel>(CLASS_ID.UI_INPUT_TEXT_SHAPE, new Mock_UIInputTextModel
         {
             parentComponent = mainContainerId,
             width = new UIValue(80f, UIValue.Unit.PERCENT),
@@ -41,12 +41,17 @@ public class UIInputTextVisualTests : UIVisualTestsBase
             placeholderColor = Color.gray,
             positionX = new UIValue(10f, UIValue.Unit.PERCENT),
             positionY = new UIValue(10f),
-            textModel = new TextShape.Model
-            {
-                fontSize = 10f
-            }
+            fontSize = 10f
         }, "textInput");
 
         yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
+    }
+
+    // Our current architecture for UIInputText/UIText does not represent the one from the SDK
+    // so we are forced to use a mock model that contains what we need.
+    // Further information: https://github.com/decentraland/unity-renderer/issues/805
+    private class Mock_UIInputTextModel : UIInputText.Model
+    {
+        public float fontSize;
     }
 }
