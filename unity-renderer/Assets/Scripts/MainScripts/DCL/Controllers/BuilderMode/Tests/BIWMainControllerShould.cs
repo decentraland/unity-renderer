@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Tests;
 using UnityEngine;
 
-public class BIWMainControllerShould : IntegrationTestSuite
+public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
     private BIWMainController mainController;
 
@@ -15,6 +15,7 @@ public class BIWMainControllerShould : IntegrationTestSuite
         mainController = new BIWMainController();
         var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
         );
+        BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = true;
         mainController.Initialize();
     }
 
@@ -44,7 +45,7 @@ public class BIWMainControllerShould : IntegrationTestSuite
     protected override IEnumerator TearDown()
     {
         mainController.Dispose();
-
+        BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = false;
         yield return base.TearDown();
     }
 }

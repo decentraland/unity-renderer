@@ -69,9 +69,11 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnDeleteSelectedEntities += OnAssetDelete;
         modeController.OnChangedEditModeState += OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += OnEntityBoundsCheckerStatusChanged;
-
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected += OnAssetDeselect;
         entityHandler.OnEntitySelected += OnAssetSelect;
@@ -84,8 +86,11 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         modeController.OnChangedEditModeState -= OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
 
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected -= OnAssetDeselect;
         entityHandler.OnEntitySelected -= OnAssetSelect;
