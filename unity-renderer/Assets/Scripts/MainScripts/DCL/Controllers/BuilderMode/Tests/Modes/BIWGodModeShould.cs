@@ -92,7 +92,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         selectedEntities.Add(new BIWEntity());
 
         //Act
-        context.inputsReferences.multiSelectionInputAction.RaiseOnStarted();
+        context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
         //Assert
         Assert.IsTrue(godMode.IsSnapActive);
@@ -104,10 +104,10 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         //Arrange
         modeController.SetSnapActive(false);
         selectedEntities.Add(new BIWEntity());
-        context.inputsReferences.multiSelectionInputAction.RaiseOnStarted();
+        context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
         //Act
-        context.inputsReferences.multiSelectionInputAction.RaiseOnFinished();
+        context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();
 
         //Assert
         Assert.IsFalse(godMode.IsSnapActive);
@@ -154,7 +154,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        context.inputsReferences.multiSelectionInputAction.RaiseOnFinished();
+        context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();
         raycastController.Dispose();
         modeController.Dispose();
         gizmosController.Dispose();

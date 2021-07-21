@@ -12,7 +12,7 @@ public class BIWAudioShould : IntegrationTestSuite
     {
         yield return base.SetUp();
         var context =  BIWTestHelper.CreateMockUpReferenceController();
-        gameObjectToDestroy = GameObject.Instantiate(context.projectReferences.audioPrefab);
+        gameObjectToDestroy = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab);
         audioHandler = gameObjectToDestroy.GetComponent<BuilderInWorldAudioHandler>();
         audioHandler.Init(context);
     }
