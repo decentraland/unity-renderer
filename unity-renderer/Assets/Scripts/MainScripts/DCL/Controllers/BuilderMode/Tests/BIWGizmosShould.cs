@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Builder.Gizmos;
+using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        var referencesController = BIWTestHelper.CreateMockUpReferenceController();
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(InitialSceneReferences.i);
         gizmosController = new BIWGizmosController();
         gizmosController.Init(referencesController);
         gizmosController.EnterEditMode(scene);

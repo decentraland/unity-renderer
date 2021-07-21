@@ -8,7 +8,7 @@ using UnityEngine;
 /// This class is used to handle a feature that needs the monobehaviour callbacks.
 ///
 /// You need to add it as a feature toggle in gitlab so kernel will understand when to activate it and deactivate it.
-/// After that, you feature manager should herith from 'Feature' so it can start receveing monobehaviour callbacks whene it is activated
+/// After that, yours feature manager should inherit from 'Feature' so it can start receiving monobehaviour callbacks where it is activated
 /// </summary>
 public class FeatureController
 {
@@ -64,7 +64,7 @@ public class FeatureController
         currentConfig = config;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : Feature
+    private void HandleFeature<T>(bool isActive) where T : Feature, new ()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -72,7 +72,7 @@ public class FeatureController
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : Feature
+    private void InitializeFeature<T>() where T : Feature, new ()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {
@@ -80,7 +80,9 @@ public class FeatureController
                 return;
         }
 
-        Feature feature = (Feature) Activator.CreateInstance(typeof (T));
+        //NOTE: We should revise this code on the future, because we'd want to use custom constructors to DI.
+        //      So here we most likely need to use an abstract factory, or just pass the new Feature object by argument.
+        Feature feature = new T();
         feature.Initialize();
         activeFeatures.Add(feature);
     }

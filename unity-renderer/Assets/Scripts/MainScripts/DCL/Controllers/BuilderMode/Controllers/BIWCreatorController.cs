@@ -53,8 +53,8 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
         floorHandler = biwContext.floorHandler;
         entityHandler = biwContext.entityHandler;
 
-        loadingObjectPrefab = biwContext.projectReferences.loadingPrefab;
-        errorPrefab = biwContext.projectReferences.errorPrefab;
+        loadingObjectPrefab = biwContext.projectReferencesAsset.loadingPrefab;
+        errorPrefab = biwContext.projectReferencesAsset.errorPrefab;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {

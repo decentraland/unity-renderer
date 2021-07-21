@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
-    public class EntityInformationControllerShould
+    public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {
         private EntityInformationController entityInformationController;
 
@@ -273,7 +273,9 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             BIWEntity testEntity = new BIWEntity();
-            testEntity.Init(Substitute.For<IDCLEntity>(), new Material(""));
+
+            var entity = TestHelpers.CreateSceneEntity(scene, "entityId");
+            testEntity.Init(entity, null);
 
             // Act
             entityInformationController.UpdateInfo(testEntity);

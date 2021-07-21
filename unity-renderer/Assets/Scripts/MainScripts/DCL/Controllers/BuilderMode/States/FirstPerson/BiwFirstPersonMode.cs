@@ -26,18 +26,18 @@ public class BiwFirstPersonMode : BIWMode
     public override void Init(BIWContext context)
     {
         base.Init(context);
-        maxDistanceToSelectEntitiesValue = context.firstPersonDynamicVariables.maxDistanceToSelectEntities;
+        maxDistanceToSelectEntitiesValue = context.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = context.firstPersonDynamicVariables.snapFactor;
-        snapRotationDegresFactor = context.firstPersonDynamicVariables.snapRotationDegresFactor;
-        snapScaleFactor =  context.firstPersonDynamicVariables.snapScaleFactor;
-        snapDistanceToActivateMovement =  context.firstPersonDynamicVariables.snapDistanceToActivateMovement;
+        snapFactor = context.firstPersonDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = context.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  context.firstPersonDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        scaleSpeed =  context.firstPersonDynamicVariables.scaleSpeed;
-        rotationSpeed =  context.firstPersonDynamicVariables.rotationSpeed;
-        distanceFromCameraForNewEntitties =  context.firstPersonDynamicVariables.distanceFromCameraForNewEntitties;
+        scaleSpeed =  context.firstPersonDynamicVariablesAsset.scaleSpeed;
+        rotationSpeed =  context.firstPersonDynamicVariablesAsset.rotationSpeed;
+        distanceFromCameraForNewEntitties =  context.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
 
-        rotationHold = context.inputsReferences.firstPersonRotationHold;
+        rotationHold = context.inputsReferencesAsset.firstPersonRotationHold;
 
         rotationHoldStartDelegate = (action) => { shouldRotate = true; };
         rotationHoldFinishedDelegate = (action) => { shouldRotate = false; };
@@ -113,7 +113,7 @@ public class BiwFirstPersonMode : BIWMode
 
     public override bool ShouldCancelUndoAction()
     {
-        if (biwEntityHandler.GetSelectedEntityList().Count >= 1)
+        if (entityHandler.GetSelectedEntityList().Count >= 1)
         {
             UndoSelection();
             return true;
@@ -124,7 +124,7 @@ public class BiwFirstPersonMode : BIWMode
     private void UndoSelection()
     {
         BIWUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
-        biwEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 
     public override void SetDuplicationOffset(float offset)

@@ -20,11 +20,11 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
 
     private const string VIEW_PATH = "BuilderInWorldLoadingView";
 
-    public void Initialize() { AsignMainView(CreateView()); }
+    public void Initialize() { AssignMainView(CreateView()); }
 
-    public void Initialize(IBuilderInWorldLoadingView view) { AsignMainView(view); }
+    public void Initialize(IBuilderInWorldLoadingView view) { AssignMainView(view); }
 
-    private void AsignMainView(IBuilderInWorldLoadingView view)
+    private void AssignMainView(IBuilderInWorldLoadingView view)
     {
         initialLoadingView = view;
 

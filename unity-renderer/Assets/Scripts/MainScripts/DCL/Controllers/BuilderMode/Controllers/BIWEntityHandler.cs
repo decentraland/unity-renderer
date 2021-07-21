@@ -114,7 +114,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += ChangeEntityBoundsCheckerStatus;
 
-        bridge = InitialSceneReferences.i.builderInWorldBridge;
+        bridge = context.sceneReferences.builderInWorldBridge;
 
         outlinerController = context.outlinerController;
 
@@ -123,10 +123,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         creatorController = context.creatorController;
         raycastController = context.raycastController;
 
-        editMaterial = context.projectReferences.editMaterial;
+        editMaterial = context.projectReferencesAsset.editMaterial;
 
-        hideSelectedEntitiesAction = context.inputsReferences.hideSelectedEntitiesAction;
-        showAllEntitiesAction = context.inputsReferences.showAllEntitiesAction;
+        hideSelectedEntitiesAction = context.inputsReferencesAsset.hideSelectedEntitiesAction;
+        showAllEntitiesAction = context.inputsReferencesAsset.showAllEntitiesAction;
 
         hideSelectedEntitiesDelegate = (action) => ChangeShowStateSelectedEntities();
         showAllEntitiesDelegate = (action) => ShowAllEntities();

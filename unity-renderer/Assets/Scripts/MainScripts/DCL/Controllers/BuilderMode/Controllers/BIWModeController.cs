@@ -68,19 +68,19 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
+        base.Init(context);
 
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        cameraParentGO = InitialSceneReferences.i.cameraParent;
+        cursorGO = context.sceneReferences.cursorCanvas;
+        cameraParentGO = context.sceneReferences.cameraParent;
         InitGameObjects();
 
         firstPersonMode = new BiwFirstPersonMode();
         godMode = new BiwGodMode();
 
-        firstPersonMode.Init(biwContext);
-        godMode.Init(biwContext);
+        firstPersonMode.Init(context);
+        godMode.Init(context);
 
         firstPersonMode.OnInputDone += InputDone;
         godMode.OnInputDone += InputDone;
@@ -92,9 +92,9 @@ public class BIWModeController : BIWController, IBIWModeController
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
 
-        actionController = biwContext.actionController;
-        entityHandler = biwContext.entityHandler;
-        toggleSnapModeInputAction = biwContext.inputsReferences.toggleSnapModeInputAction;
+        actionController = context.actionController;
+        entityHandler = context.entityHandler;
+        toggleSnapModeInputAction = context.inputsReferencesAsset.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
         toggleSnapModeInputAction.OnTriggered += snapModeDelegate;

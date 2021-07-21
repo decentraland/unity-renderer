@@ -16,7 +16,7 @@ public interface IBIWController
     public void Dispose();
 }
 
-public class BIWController : IBIWController
+public abstract class BIWController : IBIWController
 {
     protected ParcelScene sceneToEdit;
 

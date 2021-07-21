@@ -32,6 +32,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
+    private Camera mainCamera;
 
     public override void Init(BIWContext context)
     {
@@ -42,8 +43,9 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         creatorController = context.creatorController;
         saveController = context.saveController;
+        mainCamera = context.sceneReferences.mainCamera;
 
-        floorPrefab = context.projectReferences.floorPlaceHolderPrefab;
+        floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
     }
@@ -124,7 +126,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
             {
                 GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
-                floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(InitialSceneReferences.i.mainCamera);
+                floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(mainCamera);
                 floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
                 decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
             }

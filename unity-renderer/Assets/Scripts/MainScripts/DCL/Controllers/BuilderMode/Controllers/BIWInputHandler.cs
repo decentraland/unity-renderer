@@ -41,9 +41,9 @@ public class BIWInputHandler : BIWController, IBIWInputHandler
         outlinerController = biwContext.outlinerController;
         entityHandler = biwContext.entityHandler;
 
-        toggleRedoActionInputAction = biwContext.inputsReferences.toggleRedoActionInputAction;
-        toggleUndoActionInputAction = biwContext.inputsReferences.toggleUndoActionInputAction;
-        multiSelectionInputAction = biwContext.inputsReferences.multiSelectionInputAction;
+        toggleRedoActionInputAction = biwContext.inputsReferencesAsset.toggleRedoActionInputAction;
+        toggleUndoActionInputAction = biwContext.inputsReferencesAsset.toggleUndoActionInputAction;
+        multiSelectionInputAction = biwContext.inputsReferencesAsset.multiSelectionInputAction;
 
         if (HUDController.i.builderInWorldMainHud != null)
         {

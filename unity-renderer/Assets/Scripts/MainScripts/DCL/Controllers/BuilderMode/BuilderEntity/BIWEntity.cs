@@ -113,7 +113,8 @@ public class BIWEntity
 
 
         entityUniqueId = rootEntity.scene.sceneData.id + rootEntity.entityId;
-        IsVisible = rootEntity.gameObject.activeSelf;
+        if (rootEntity.gameObject != null)
+            IsVisible = rootEntity.gameObject.activeSelf;
 
         isShapeComponentSet = false;
         InitRotation();
@@ -286,7 +287,8 @@ public class BIWEntity
     public void InitRotation()
     {
         //TODO : We need to implement the initial rotation from the transform component instead of getting the current rotation
-        currentRotation = rootEntity.gameObject.transform.eulerAngles;
+        if (rootEntity.gameObject != null)
+            currentRotation = rootEntity.gameObject.transform.eulerAngles;
     }
 
     #endregion
@@ -385,7 +387,7 @@ public class BIWEntity
     {
         currentRotation = Vector3.zero;
         rootEntity.gameObject.transform.eulerAngles = currentRotation;
-
+        rootEntity.gameObject.transform.localScale = Vector3.one;
         OnStatusUpdate?.Invoke(this);
     }
 

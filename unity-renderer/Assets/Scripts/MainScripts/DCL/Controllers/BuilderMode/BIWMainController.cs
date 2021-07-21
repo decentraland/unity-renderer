@@ -114,10 +114,10 @@ public class BIWMainController : Feature
         BIWNFTController.i.Initialize();
         BIWNFTController.i.OnNFTUsageChange += OnNFTUsageChange;
 
-        editModeChangeInputAction = context.inputsReferences.editModeChangeInputAction;
+        editModeChangeInputAction = context.inputsReferencesAsset.editModeChangeInputAction;
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
-        biwAudioHandler = GameObject.Instantiate(context.projectReferences.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
+        biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
         biwAudioHandler.Init(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
@@ -149,10 +149,11 @@ public class BIWMainController : Feature
             actionController,
             saveController,
             raycastController,
-            gizmosController
+            gizmosController,
+            InitialSceneReferences.i
         );
 
-        skyBoxMaterial = context.projectReferences.skyBoxMaterial;
+        skyBoxMaterial = context.projectReferencesAsset.skyBoxMaterial;
     }
 
     private void CreateControllers()

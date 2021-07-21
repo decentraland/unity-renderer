@@ -12,7 +12,6 @@ namespace Builder.MeshLoadIndicator
 
         private void LateUpdate()
         {
-            builderCamera = Camera.main;
             transform.LookAt(transform.position + builderCamera.transform.rotation * Vector3.forward,
                 builderCamera.transform.rotation * Vector3.up);
 
@@ -25,7 +24,5 @@ namespace Builder.MeshLoadIndicator
             Plane plane = new Plane(camera.transform.forward, camera.transform.position);
             return plane.GetDistanceToPoint(objectPosition);
         }
-
-        public void SetCamera(Camera camera) { builderCamera = camera; }
     }
 }
