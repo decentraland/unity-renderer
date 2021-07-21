@@ -228,6 +228,10 @@ public class BIWMainController : Feature
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
+
+        floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+        DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
+
         CleanItems();
 
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
@@ -669,7 +673,7 @@ public class BIWMainController : Feature
 
         cursorGO.SetActive(true);
 
-        sceneToEdit.SetEditMode(false);
+        sceneToEdit?.SetEditMode(false);
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
