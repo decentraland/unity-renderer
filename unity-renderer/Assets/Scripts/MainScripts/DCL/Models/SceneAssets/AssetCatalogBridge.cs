@@ -102,10 +102,6 @@ public class AssetCatalogBridge : MonoBehaviour
         if (sceneObjectCatalog.ContainsKey(sceneObject.id))
             return;
 
-        //TODO: SmartItems This quit all the smart items from the catalog
-        if (sceneObject.IsSmartItem())
-            return;
-
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);
         OnSceneObjectAdded?.Invoke(sceneObject);
     }

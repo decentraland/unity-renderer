@@ -6,7 +6,7 @@ namespace DCL.Controllers
 {
     public class SceneBoundsFeedbackStyle_Simple : ISceneBoundsFeedbackStyle
     {
-        public void OnRendererExitBounds(Renderer renderer) { renderer.enabled = false; }
+        private readonly List<Renderer> disabledRenderers = new List<Renderer>();
 
         public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
         {
@@ -25,7 +25,22 @@ namespace DCL.Controllers
                     continue;
 
                 meshesInfo.renderers[i].enabled = isInsideBoundaries;
+
+                if (isInsideBoundaries && disabledRenderers.Contains(meshesInfo.renderers[i]))
+                    disabledRenderers.Remove( meshesInfo.renderers[i]);
+                else if (!isInsideBoundaries && !disabledRenderers.Contains(meshesInfo.renderers[i]))
+                    disabledRenderers.Add( meshesInfo.renderers[i]);
             }
+        }
+
+        public void CleanFeedback()
+        {
+            foreach (var renderer in disabledRenderers)
+            {
+                renderer.enabled = true;
+            }
+
+            disabledRenderers.Clear();
         }
 
         public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)

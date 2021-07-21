@@ -485,6 +485,10 @@ public class BuilderInWorldController : MonoBehaviour
             return;
         }
 
+        //If the scene is still not loaded, we return as we still can't enter in builder in world 
+        if (sceneToEditId != null)
+            return;
+
         isEnteringEditMode = true;
         previousAllUIHidden = CommonScriptableObjects.allUIHidden.Get();
         NotificationsController.i.allowNotifications = false;
@@ -636,12 +640,6 @@ public class BuilderInWorldController : MonoBehaviour
     public void ExitEditMode()
     {
         Environment.i.platform.cullingController.Start();
-
-        if (biwSaveController.numberOfSaves > 0)
-        {
-            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
-            biwSaveController.ResetNumberOfSaves();
-        }
 
         biwFloorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
         initialLoadingController.Hide(true);
