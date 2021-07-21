@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Interface;
 using UnityEngine;
 
@@ -18,6 +19,8 @@ public class UsersAroundListHUDController : IHUD
     private readonly List<string> usersToUnmute = new List<string>();
     private bool isMuteAll = false;
     private Coroutine updateMuteStatusRoutine = null;
+
+    private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
 
     public event System.Action OnOpen;
 
@@ -43,8 +46,8 @@ public class UsersAroundListHUDController : IHUD
             CoroutineStarter.Stop(updateMuteStatusRoutine);
         }
 
-        MinimapMetadata.GetMetadata().OnUserInfoUpdated -= MapRenderer_OnUserInfoUpdated;
-        MinimapMetadata.GetMetadata().OnUserInfoRemoved -= MapRenderer_OnUserInfoRemoved;
+        otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
+        otherPlayersStatus.OnRemoved += OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
         profile.OnUpdate -= OnUserProfileUpdate;
@@ -114,37 +117,37 @@ public class UsersAroundListHUDController : IHUD
         usersListView.OnGoToCrowdPressed += OnGoToCrowd;
         usersListView.OnOpen += OnListOpen;
 
-        MinimapMetadata.GetMetadata().OnUserInfoUpdated += MapRenderer_OnUserInfoUpdated;
-        MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
+        otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
+        otherPlayersStatus.OnRemoved -= OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
         profile.OnUpdate += OnUserProfileUpdate;
     }
 
-    void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
+    void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
     {
-        usersListView.AddOrUpdateUser(userInfo);
+        usersListView.AddOrUpdateUser(playerStatus);
 
-        if (!trackedUsersHashSet.Contains(userInfo.userId))
+        if (!trackedUsersHashSet.Contains(userId))
         {
-            trackedUsersHashSet.Add(userInfo.userId);
+            trackedUsersHashSet.Add(userId);
 
-            bool isMuted = profile.muted.Contains(userInfo.userId);
-            bool isBlocked = profile.blocked != null ? profile.blocked.Contains(userInfo.userId) : false;
+            bool isMuted = profile.muted.Contains(userId);
+            bool isBlocked = profile.blocked != null ? profile.blocked.Contains(userId) : false;
 
-            usersListView.SetUserMuted(userInfo.userId, isMuted);
-            usersListView.SetUserBlocked(userInfo.userId, isBlocked);
+            usersListView.SetUserMuted(userId, isMuted);
+            usersListView.SetUserBlocked(userId, isBlocked);
 
             if (isMuteAll && !isMuted)
             {
-                OnMuteUser(userInfo.userId, true);
+                OnMuteUser(userId, true);
             }
         }
 
         usersButtonView?.SetUsersCount(trackedUsersHashSet.Count);
     }
 
-    void MapRenderer_OnUserInfoRemoved(string userId)
+    void OnOtherPlayerStatusRemoved(string userId, PlayerStatus playerStatus)
     {
         if (trackedUsersHashSet.Contains(userId))
         {

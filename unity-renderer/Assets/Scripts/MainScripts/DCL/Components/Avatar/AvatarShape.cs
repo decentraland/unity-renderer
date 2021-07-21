@@ -31,8 +31,9 @@ namespace DCL
         public bool everythingIsLoaded;
 
         private Vector3? lastAvatarPosition = null;
-        private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
         bool initializedPosition = false;
+
+        private PlayerStatus playerStatus = null;
 
         private void Awake()
         {
@@ -110,10 +111,8 @@ namespace DCL
                     entity.gameObject.transform.localRotation, true);
             }
 
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.localPosition;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+            Debug.Log($"Updating {model.name}");
+            UpdatePlayerStatus(model);
 
             avatarName.SetName(model.name);
             avatarName.SetTalking(model.talking);
@@ -124,6 +123,30 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+        }
+
+        private void UpdatePlayerStatus(AvatarModel model)
+        {
+            // Remove the player status if the userId changes
+            if ( playerStatus != null && playerStatus.id != model.id)
+                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+
+            if (string.IsNullOrEmpty(model?.id))
+                return;
+
+            bool isNew = false;
+            if (playerStatus == null)
+            {
+                playerStatus = new PlayerStatus();
+                isNew = true;
+            }
+            playerStatus.id = model.id;
+            playerStatus.name = model.name;
+            playerStatus.isTalking = model.talking;
+            playerStatus.worldPosition = lastAvatarPosition ?? entity.gameObject.transform.localPosition;
+            Debug.Log($"{playerStatus.name} {playerStatus.worldPosition.ToString()}");
+            if (isNew)
+                DataStore.i.player.otherPlayersStatus.Add(playerStatus.id, playerStatus);
         }
 
         public void DisablePassport()
@@ -144,8 +167,9 @@ namespace DCL
 
         private void OnWorldReposition(Vector3 current, Vector3 previous)
         {
-            avatarUserInfo.worldPosition = entity.gameObject.transform.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+            if (playerStatus == null)
+                return;
+            playerStatus.worldPosition = entity.gameObject.transform.position;
         }
 
         private void OnEntityTransformChanged(object newModel)
@@ -153,11 +177,8 @@ namespace DCL
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             lastAvatarPosition = newTransformModel.position;
 
-            var model = (AvatarModel) this.model;
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = newTransformModel.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+            AvatarModel model = (AvatarModel) this.model;
+            UpdatePlayerStatus(model);
         }
 
         public override void OnPoolGet()
@@ -176,6 +197,9 @@ namespace DCL
         {
             base.Cleanup();
 
+            if (playerStatus != null)
+                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+
             Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
 
             avatarRenderer.CleanupAvatar();
@@ -193,11 +217,6 @@ namespace DCL
                 entity.OnTransformChange = null;
                 entity = null;
             }
-
-            var model = (AvatarModel) this.model;
-            if (model != null)
-                avatarUserInfo.userId = model.id;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }
