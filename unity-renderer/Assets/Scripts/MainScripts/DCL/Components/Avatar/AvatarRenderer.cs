@@ -22,6 +22,7 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
         public MeshRenderer lodRenderer;
+        public MeshFilter lodMeshFilter;
 
         private AvatarModel model;
 
@@ -494,6 +495,8 @@ namespace DCL
         }
 
         public MeshRenderer GetLODRenderer() { return lodRenderer; }
+
+        public Mesh GetLODMesh() { return lodMeshFilter.mesh; }
 
         public Transform GetTransform() { return transform; }
 

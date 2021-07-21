@@ -137,8 +137,7 @@ namespace DCL
                 uvs[2].Set(randomUVX, randomUVY + spriteRowsUnit);
                 uvs[3].Set(randomUVX + spriteColumnsUnit, randomUVY + spriteRowsUnit);
 
-                // TODO: Cache this component in AvatarRenderer
-                lodRenderer.GetComponent<MeshFilter>().mesh.uv = uvs;
+                avatarRenderer.GetLODMesh().uv = uvs;
             }
 
             lodRenderer.gameObject.SetActive(enabled);

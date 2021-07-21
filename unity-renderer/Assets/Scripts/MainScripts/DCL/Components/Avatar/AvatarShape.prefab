@@ -137,6 +137,7 @@ MonoBehaviour:
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
   lodRenderer: {fileID: 460331166937761317}
+  lodMeshFilter: {fileID: 4641928589876789443}
 --- !u!114 &6790643881566083082
 MonoBehaviour:
   m_ObjectHideFlags: 0
