@@ -151,14 +151,14 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             BIWEntity testEntity = new BIWEntity();
-            ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
+            IParcelScene testScene2 = Substitute.For<IParcelScene>();
 
             // Act
-            entityInformationController.SetEntity(testEntity, testScene);
+            entityInformationController.SetEntity(testEntity, testScene2);
 
             // Assert
             entityInformationController.entityInformationView.Received(1).SetCurrentEntity(testEntity);
-            Assert.AreEqual(testScene, entityInformationController.parcelScene, "The parcel scene does not match!");
+            Assert.AreEqual(testScene2, entityInformationController.parcelScene, "The parcel scene does not match!");
             entityInformationController.entityInformationView.Received(1).SetEntityThumbnailEnable(false);
         }
 
