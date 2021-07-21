@@ -442,10 +442,7 @@ public class DCLCharacterController : MonoBehaviour
         return null;
     }
 
-    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
-    {
-        return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
-    }
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo) { return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo); }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
     {
@@ -463,7 +460,7 @@ public class DCLCharacterController : MonoBehaviour
         float rayMagnitude = (bounds.extents.y + extraDistance);
         float originScale = scale * bounds.extents.x;
 
-        if (!CastGroundCheckingRay(Vector3.zero, out hitInfo, rayMagnitude, groundLayers) // center
+        if (!CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers) // center
             && !CastGroundCheckingRay( transform.position + transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // forward
             && !CastGroundCheckingRay( transform.position + transform.right * originScale, out hitInfo, rayMagnitude, groundLayers) // right
             && !CastGroundCheckingRay( transform.position + -transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // back
