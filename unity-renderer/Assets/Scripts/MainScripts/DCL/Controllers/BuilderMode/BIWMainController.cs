@@ -118,7 +118,7 @@ public class BIWMainController : Feature
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
         biwAudioHandler = GameObject.Instantiate(context.projectReferences.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
-        biwAudioHandler.SetReferences(context);
+        biwAudioHandler.Init(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
 

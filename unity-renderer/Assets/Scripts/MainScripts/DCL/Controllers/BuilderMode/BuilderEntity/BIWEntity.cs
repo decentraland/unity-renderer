@@ -21,6 +21,7 @@ public class BIWEntity
     public event Action<BIWEntity> OnDelete;
     public event Action<BIWEntity> OnErrorStatusChange;
 
+    public bool IsDeleted { get; private set; }
     public bool IsLocked
     {
         get { return GetIsLockedValue(); }
@@ -63,6 +64,7 @@ public class BIWEntity
         set
         {
             isVisibleValue = value;
+            rootEntity?.gameObject?.SetActive(isVisibleValue);
             OnStatusUpdate?.Invoke(this);
         }
     }
@@ -226,6 +228,7 @@ public class BIWEntity
     {
         Deselect();
         Dispose();
+        IsDeleted = true;
         OnDelete?.Invoke(this);
     }
 

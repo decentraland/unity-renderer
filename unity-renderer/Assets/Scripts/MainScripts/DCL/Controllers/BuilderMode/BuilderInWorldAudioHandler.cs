@@ -51,7 +51,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
 
     private void Start() { playPlacementSoundOnDeselect = false; }
 
-    public void SetReferences(BIWContext context)
+    public void Init(BIWContext context)
     {
         creatorController = context.creatorController;
 

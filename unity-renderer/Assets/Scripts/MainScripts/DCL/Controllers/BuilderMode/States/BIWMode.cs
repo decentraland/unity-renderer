@@ -75,6 +75,8 @@ public class BIWMode
         HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActive);
     }
 
+    public bool IsSnapActive => isSnapActive;
+
     public virtual void StartMultiSelection() { isMultiSelectionActive = true; }
 
     public virtual Vector3 GetPointerPosition() { return Input.mousePosition; }

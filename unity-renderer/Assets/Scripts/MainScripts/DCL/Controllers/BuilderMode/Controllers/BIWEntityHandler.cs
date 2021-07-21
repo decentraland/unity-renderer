@@ -209,6 +209,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         lastTransformReportTime = DCLTime.realtimeSinceStartup;
     }
 
+    public float GetLastTimeReport() { return lastTransformReportTime; }
+
     public List<BIWEntity> GetSelectedEntityList() { return selectedEntities; }
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
@@ -642,7 +644,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             DeleteEntity(entity, false);
         }
 
-        hudController.HideEntityInformation();
+        hudController?.HideEntityInformation();
     }
 
     public void EntityListChanged()

@@ -77,8 +77,45 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(outlinerController.IsEntityOutlined(entity));
     }
 
+    [Test]
+    public void CheckOutline()
+    {
+        //Arrange
+        outlinerController.OutlineEntity(entity);
+
+        //Act
+        for (int i = 0; i <= BIWOutlinerController.OUTLINER_OPTIMIZATION_TIMES; i++)
+        {
+            outlinerController.CheckOutline();
+        }
+
+        //Assert
+        Assert.IsFalse(outlinerController.IsEntityOutlined(entity));
+    }
+
+    [Test]
+    public void CheckCameraComponetAdded()
+    {
+        //Act
+        outlinerController.EnterEditMode(scene);
+
+        //Assert
+        Assert.IsTrue(Camera.main.GetComponent<BIWOutline>().enabled);
+    }
+
+    [Test]
+    public void CheckCameraComponentRemoved()
+    {
+        //Act
+        outlinerController.ExitEditMode();
+
+        //Assert
+        Assert.IsFalse(Camera.main.GetComponent<BIWOutline>().enabled);
+    }
+
     protected override IEnumerator TearDown()
     {
+        outlinerController.ExitEditMode();
         outlinerController.Dispose();
         entityHandler.Dispose();
         yield return base.TearDown();

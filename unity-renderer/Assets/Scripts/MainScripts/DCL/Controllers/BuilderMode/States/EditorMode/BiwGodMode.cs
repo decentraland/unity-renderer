@@ -573,6 +573,8 @@ public class BiwGodMode : BIWMode
         {
             isPlacingNewObject = true;
             outlinerController.SetOutlineCheckActive(false);
+
+            SetEditObjectAtMouse();
         }
 
         gizmoManager.HideGizmo();
@@ -702,7 +704,7 @@ public class BiwGodMode : BIWMode
 
     public void ScaleMode() { GizmosMode( BIWSettings.SCALE_GIZMO_NAME); }
 
-    void GizmosMode(string gizmos)
+    private void GizmosMode(string gizmos)
     {
         if ((!isModeActive && isPlacingNewObject) || mouseSecondaryBtnPressed)
             return;

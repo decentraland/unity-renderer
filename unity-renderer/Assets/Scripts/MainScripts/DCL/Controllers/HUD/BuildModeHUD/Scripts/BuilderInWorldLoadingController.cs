@@ -43,6 +43,7 @@ public class BuilderInWorldLoadingController : IBuilderInWorldLoadingController
     public void Dispose()
     {
         initialLoadingView.StopTipsCarousel();
+        initialLoadingView.Dispose();
         GameObject.Destroy(initialLoadingView.viewGO);
     }
 

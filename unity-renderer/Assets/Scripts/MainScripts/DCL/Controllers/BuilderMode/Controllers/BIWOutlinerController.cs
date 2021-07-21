@@ -17,6 +17,7 @@ public interface IBIWOutlinerController
 
 public class BIWOutlinerController : BIWController, IBIWOutlinerController
 {
+    public const int OUTLINER_OPTIMIZATION_TIMES = 10;
     private const int BUILDER_RENDERER_INDEX = 1;
 
     private Material cameraOutlinerMaterial;
@@ -59,7 +60,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     public void CheckOutline()
     {
-        if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
+        if (outlinerOptimizationCounter >= OUTLINER_OPTIMIZATION_TIMES && isOutlineCheckActive)
         {
             if (!BIWUtils.IsPointerOverUIElement() && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
             {

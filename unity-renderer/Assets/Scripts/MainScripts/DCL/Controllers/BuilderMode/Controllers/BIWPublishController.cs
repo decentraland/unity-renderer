@@ -81,10 +81,10 @@ public class BIWPublishController : BIWController, IBIWPublishController
         return true;
     }
 
-    void CheckPublishConditions()
+    public string CheckPublishConditions()
     {
         if (HUDController.i.builderInWorldMainHud is null)
-            return;
+            return "";
 
         string feedbackMessage = "";
         if (creatorController.IsAnyErrorOnEntities())
@@ -105,7 +105,8 @@ public class BIWPublishController : BIWController, IBIWPublishController
             }
         }
 
-        HUDController.i.builderInWorldMainHud.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        HUDController.i.builderInWorldMainHud?.SetPublishBtnAvailability(CanPublish(), feedbackMessage);
+        return feedbackMessage;
     }
 
     private void StartPublishFlow()

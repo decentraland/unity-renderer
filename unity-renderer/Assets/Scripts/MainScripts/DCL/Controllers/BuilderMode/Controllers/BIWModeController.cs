@@ -59,7 +59,7 @@ public class BIWModeController : BIWController, IBIWModeController
 
     private BIWMode currentActiveMode;
 
-    private bool isSnapActive = true;
+    private bool isSnapActive = false;
 
     private InputAction_Trigger.Triggered snapModeDelegate;
 
