@@ -122,10 +122,8 @@ namespace DCL
                     var renderer = layerRenderers[i];
 
                     Transform meshTransform = renderer.transform;
-                    Vector3 prevPos = meshTransform.position;
-                    meshTransform.SetParent(null, true);
-                    //meshTransform.position = Vector3.zero;
                     Transform prevParent = meshTransform.parent;
+                    meshTransform.SetParent(null, true);
 
                     data.combineInstances.Add( new CombineInstance()
                     {
@@ -135,7 +133,6 @@ namespace DCL
                     });
 
                     meshTransform.SetParent( prevParent );
-                    //meshTransform.position = prevPos;
                 }
             }
         }
