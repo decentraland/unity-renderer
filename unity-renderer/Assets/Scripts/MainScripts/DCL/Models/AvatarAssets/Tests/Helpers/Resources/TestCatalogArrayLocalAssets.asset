@@ -1019,3 +1019,164 @@ MonoBehaviour:
     rarity: 
     description: 
     issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: Eyewear_Raver.glb
+        contents:
+        - key: AvatarWearables_Emissive_TX.png
+          hash: 
+        - key: AvatarWearables_TP_TX.png
+          hash: 
+        - key: AvatarWearables_TX.png
+          hash: 
+        - key: Eyewear_Raver.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: Eyewear_Raver.glb
+        contents:
+        - key: AvatarWearables_Emissive_TX.png
+          hash: 
+        - key: AvatarWearables_TP_TX.png
+          hash: 
+        - key: AvatarWearables_TX.png
+          hash: 
+        - key: Eyewear_Raver.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: eyewear
+      tags:
+      - accesories
+      - exclusive
+      - eyewear
+      - launch
+      - 20.02.20
+      - decentraland
+      - community
+      - wearables
+      - exclusive
+      replaces:
+      - mask
+      - helmet
+      hides: []
+    id: urn:decentraland:ethereum:collections-v1:community_contest:cw_raver_eyewear
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Raver Googles
+    - code: es
+      text: Antiparras de Raver
+    thumbnail: https://peer.decentraland.org/content/contents/QmPe2CPbt9JLdjpoH5sKAy9KYYL8bsYuUm1ddr3ipUMh6n
+    rarity: legendary
+    description: 
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: M_niftyblocksmith_boots.glb
+        contents:
+        - key: M_niftyblocksmith_boots.glb
+          hash: 
+        - key: blocksmith_v08_lambert4_BaseColor.png
+          hash: 
+        - key: blocksmith_v08_lambert4_Emissive.png
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: M_niftyblocksmith_boots.glb
+        contents:
+        - key: M_niftyblocksmith_boots.glb
+          hash: 
+        - key: blocksmith_v08_lambert4_BaseColor.png
+          hash: 
+        - key: blocksmith_v08_lambert4_Emissive.png
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: feet
+      tags:
+      - moon
+      - feet
+      - mining
+      - dappcraft
+      - exclusive
+      replaces: []
+      hides: []
+    id: urn:decentraland:ethereum:collections-v1:dc_niftyblocksmith:blocksmith_feet
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: DC Nifty Blocksmith Boots
+    thumbnail: https://peer.decentraland.org/content/contents/QmehBEhwZQmuYaKE1Ck5sazZxcpML8f12cyE2WZusRPBcQ
+    rarity: legendary
+    description: These boots will leave digital footprints wherever you go
+    issuedId: 0
+  - data:
+      representations:
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseMale
+        mainFile: Techtribal_Beast_Mask.glb
+        contents:
+        - key: DCL-TechTribal-Alphas.png
+          hash: 
+        - key: DCL-TechTribal-Masks.png
+          hash: 
+        - key: Techtribal_Beast_Mask.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      - bodyShapes:
+        - urn:decentraland:off-chain:base-avatars:BaseFemale
+        mainFile: Techtribal_Beast_Mask.glb
+        contents:
+        - key: DCL-TechTribal-Alphas.png
+          hash: 
+        - key: DCL-TechTribal-Masks.png
+          hash: 
+        - key: Techtribal_Beast_Mask.glb
+          hash: 
+        overrideHides: []
+        overrideReplaces: []
+      category: mask
+      tags:
+      - accessories
+      - man
+      - woman
+      - marc0matic
+      - tech
+      - tribal
+      - mask
+      - animals
+      - beast
+      - punk
+      - fantasy
+      - animal
+      - VR
+      - deer
+      - exclusive
+      replaces: []
+      hides:
+      - facial_hair
+      - eyewear
+    id: urn:decentraland:ethereum:collections-v1:tech_tribal_marc0matic:techtribal_beast_mask
+    baseUrl: 
+    baseUrlBundles: 
+    i18n:
+    - code: en
+      text: Tech Tribal Beast Mask
+    - code: es
+      text: "M\xE1scara de Bestia Tribal de Tecnolog\xEDas"
+    thumbnail: https://peer.decentraland.org/content/contents/Qme3E7qbVmRh51v9CAnXVG5U8yok9jYp8JiSGCxUCESWCq
+    rarity: legendary
+    description: VR Infused Beast Mask created by Marc0Matic
+    issuedId: 0

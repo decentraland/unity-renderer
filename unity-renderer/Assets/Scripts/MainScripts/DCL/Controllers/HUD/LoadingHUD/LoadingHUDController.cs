@@ -34,7 +34,11 @@ namespace LoadingHUD
 
         public void SetVisibility(bool visible) { this.visible.Set(visible); }
 
-        public void Dispose() { ClearEvents(); }
+        public void Dispose()
+        {
+            ClearEvents();
+            view?.Dispose();
+        }
 
         internal void ClearEvents()
         {
