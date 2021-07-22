@@ -1,4 +1,4 @@
-﻿Shader "Master_ToonShader"
+﻿Shader "DCL/Toon Shader"
 {
     Properties
     {
@@ -41,10 +41,10 @@
             }
 
             // Render State
-            Cull Back
-            Blend One Zero
+            Cull [_Cull]
+            Blend [_SrcBlend] [_DstBlend]
             ZTest LEqual
-            ZWrite On
+            ZWrite [_ZWrite]
 
             // Debug
             // <None>
@@ -5775,10 +5775,10 @@
             }
 
             // Render State
-            Cull Back
-            Blend One Zero
+            Cull [_Cull]
+            Blend [_SrcBlend] [_DstBlend]
             ZTest LEqual
-            ZWrite On
+            ZWrite [_ZWrite]
 
             // Debug
             // <None>
