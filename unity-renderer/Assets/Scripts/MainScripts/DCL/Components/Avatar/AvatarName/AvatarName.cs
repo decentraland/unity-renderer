@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AvatarName : MonoBehaviour
 {
+    private const int AVATAR_NAME_SORTING_ORDER = -2;
     const float NAME_VANISHING_POINT_DISTANCE = 20.0f;
     readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
 
@@ -50,6 +51,7 @@ public class AvatarName : MonoBehaviour
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
+        canvas.sortingOrder = AVATAR_NAME_SORTING_ORDER;
         canvasRect = (RectTransform)canvas.transform;
         talkingAnimator?.gameObject.SetActive(false);
     }
