@@ -132,6 +132,8 @@ namespace DCL
             OnFailEvent = null;
             OnSuccessEvent = null;
 
+            CleanMergedAvatar();
+
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
             OnVisualCue?.Invoke(VisualCue.CleanedUp);
@@ -364,13 +366,14 @@ namespace DCL
             isLoading = false;
 
             SetWearableBones();
+
+            //TODO(Brian): Why we do this... why. Refactor me please.
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
             if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
             {
                 lastStickerTimestamp = model.stickerTriggerTimestamp;
                 stickersController?.PlayEmote(model.stickerTriggerId);
             }
-
 
             if (loadSoftFailed)
             {
@@ -432,19 +435,30 @@ namespace DCL
 
             Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
 
-            if ( combinedAvatar != null )
-                Destroy(combinedAvatar);
-
-            if ( combinedAvatarMesh != null )
-                Destroy(combinedAvatarMesh);
+            CleanMergedAvatar();
 
             combinedAvatar = newCombinedAvatar;
             combinedAvatarMesh = newCombinedAvatarMesh;
+
+            combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
+            combinedAvatar.transform.localPosition = Vector3.zero;
+
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
 
             for ( int i = 0; i < renderers.Length; i++ )
             {
                 renderers[i].enabled = false;
             }
+        }
+
+        void CleanMergedAvatar()
+        {
+            if ( combinedAvatar != null )
+                Destroy(combinedAvatar);
+
+            if ( combinedAvatarMesh != null )
+                Destroy(combinedAvatarMesh);
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
