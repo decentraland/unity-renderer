@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AvatarNamesHUD
 {
@@ -15,29 +16,26 @@ namespace AvatarNamesHUD
 
     public class AvatarNamesHUDView : MonoBehaviour, IAvatarNamesHUDView
     {
-        private const float TRACKERS_UPDATE_DELAY = 0.2f;
-        public static Vector3 offset = new Vector3(0, 2, 0);
-
         [SerializeField] internal RectTransform canvasRect;
         [SerializeField] internal RectTransform backgroundsContainer;
         [SerializeField] internal RectTransform namesContainer;
+        [SerializeField] internal RectTransform voiceChatContainer;
         [SerializeField] internal GameObject backgroundPrefab;
         [SerializeField] internal GameObject namePrefab;
+        [SerializeField] internal GameObject voiceChatPrefab;
 
         private readonly Dictionary<string, AvatarNamesTracker> trackers = new Dictionary<string, AvatarNamesTracker>();
         private readonly Queue<AvatarNamesTracker> reserveTrackers = new Queue<AvatarNamesTracker>();
-
-        public Vector3 pos;
-        private void LateUpdate() { offset = pos; }
 
         private void Awake()
         {
             //Prewarming trackers
             for (int i = 0; i < AvatarNamesHUDController.MAX_AVATAR_NAMES; i++)
             {
-                RectTransform background = Instantiate(backgroundPrefab, backgroundsContainer).GetComponent<RectTransform>();
+                Image background = Instantiate(backgroundPrefab, backgroundsContainer).GetComponent<Image>();
                 TextMeshProUGUI nameTMP = Instantiate(namePrefab, namesContainer).GetComponent<TextMeshProUGUI>();
-                AvatarNamesTracker tracker = new AvatarNamesTracker(canvasRect, background, nameTMP);
+                Animator voiceChat = Instantiate(voiceChatPrefab, voiceChatContainer).GetComponent<Animator>();
+                AvatarNamesTracker tracker = new AvatarNamesTracker(canvasRect, background, nameTMP, voiceChat);
                 tracker.SetVisibility(false);
                 reserveTrackers.Enqueue(tracker);
             }
@@ -88,7 +86,6 @@ namespace AvatarNamesHUD
                     kvp.Value.UpdatePosition();
                 }
                 yield return null;
-                //yield return WaitForSecondsCache.Get(TRACKERS_UPDATE_DELAY);
             }
         }
     }

@@ -1,24 +1,28 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AvatarNamesHUD
 {
     public class AvatarNamesTracker
     {
-        const float NAME_VANISHING_POINT_DISTANCE = 20.0f;
+        private const float NAME_VANISHING_POINT_DISTANCE = 20.0f;
+        private readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
         private static Vector3 OFFSET = new Vector3(0, 3f, 0);
 
         private RectTransform canvasRect;
-        private readonly RectTransform background;
+        private readonly Image background;
         private readonly TextMeshProUGUI name;
+        private readonly Animator voiceChat;
 
         private PlayerStatus playerStatus;
 
-        public AvatarNamesTracker(RectTransform canvasRect, RectTransform background, TextMeshProUGUI name)
+        public AvatarNamesTracker(RectTransform canvasRect, Image background, TextMeshProUGUI name, Animator voiceChat)
         {
             this.canvasRect = canvasRect;
             this.background = background;
             this.name = name;
+            this.voiceChat = voiceChat;
         }
 
         public void SetVisibility(bool visible)
@@ -35,7 +39,12 @@ namespace AvatarNamesHUD
 
             name.text = newPlayerStatus.name;
             name.ForceMeshUpdate(); //To get the new bounds
-            background.sizeDelta = name.textBounds.size;
+            background.rectTransform.sizeDelta = name.textBounds.size;
+            if (playerStatus.isTalking && !voiceChat.gameObject.activeSelf)
+            {
+                voiceChat.gameObject.SetActive(playerStatus.isTalking);
+            }
+            voiceChat.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
             UpdatePosition();
         }
 
@@ -60,8 +69,9 @@ namespace AvatarNamesHUD
                 float height = canvasRect.rect.height;
                 screenPoint.Scale(new Vector3(width, height, 0));
                 name.rectTransform.anchoredPosition = screenPoint;
-                background.anchoredPosition = screenPoint;
-                background.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+                background.rectTransform.anchoredPosition = screenPoint;
+                background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+                (voiceChat.transform as RectTransform).anchoredPosition = screenPoint - new Vector3(65, 0, 0);
             }
             else
             {
