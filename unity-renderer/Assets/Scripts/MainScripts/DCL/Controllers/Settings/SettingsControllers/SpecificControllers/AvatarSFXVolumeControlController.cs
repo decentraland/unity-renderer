@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace DCL.SettingsControls
 {
-    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Master Volume", fileName = "MasterVolumeControlController")]
-    public class MasterVolumeControlController : SliderSettingsControlController
+    [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Avatar SFX Volume", fileName = "AvatarSFXVolumeControlController")]
+    public class AvatarSFXVolumeControlController : SliderSettingsControlController
     {
         public override object GetStoredValue() { return 0; }
 
