@@ -12,7 +12,7 @@ public class MapUserIcon : MonoBehaviour
         if (trackedPlayer == null)
             return;
 
-        var gridPosition = Utils.WorldToGridPositionUnclamped(trackedPlayer.worldPosition);
+        var gridPosition = Utils.WorldToGridPositionUnclamped(trackedPlayer.worldPosition + CommonScriptableObjects.worldOffset.Get());
         transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
     }
 }

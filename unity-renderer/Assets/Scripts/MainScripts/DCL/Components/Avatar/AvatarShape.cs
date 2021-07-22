@@ -16,7 +16,6 @@ namespace DCL
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
-        public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
@@ -89,9 +88,6 @@ namespace DCL
                 entity
             );
 
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;
 
@@ -111,11 +107,7 @@ namespace DCL
                     entity.gameObject.transform.localRotation, true);
             }
 
-            Debug.Log($"Updating {model.name}");
             UpdatePlayerStatus(model);
-
-            avatarName.SetName(model.name);
-            avatarName.SetTalking(model.talking);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -143,10 +135,15 @@ namespace DCL
             playerStatus.id = model.id;
             playerStatus.name = model.name;
             playerStatus.isTalking = model.talking;
-            playerStatus.worldPosition = lastAvatarPosition ?? entity.gameObject.transform.localPosition;
-            Debug.Log($"{playerStatus.name} {playerStatus.worldPosition.ToString()}");
+            playerStatus.worldPosition = entity.gameObject.transform.localPosition;
             if (isNew)
                 DataStore.i.player.otherPlayersStatus.Add(playerStatus.id, playerStatus);
+        }
+
+        private void Update()
+        {
+            if (playerStatus != null)
+                playerStatus.worldPosition = entity.gameObject.transform.position;
         }
 
         public void DisablePassport()
@@ -163,13 +160,6 @@ namespace DCL
                 return;
 
             onPointerDown.collider.enabled = true;
-        }
-
-        private void OnWorldReposition(Vector3 current, Vector3 previous)
-        {
-            if (playerStatus == null)
-                return;
-            playerStatus.worldPosition = entity.gameObject.transform.position;
         }
 
         private void OnEntityTransformChanged(object newModel)
@@ -190,7 +180,6 @@ namespace DCL
             oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
-            avatarName.SetName(String.Empty);
         }
 
         public override void Cleanup()
@@ -210,7 +199,6 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
 
             if (entity != null)
             {
