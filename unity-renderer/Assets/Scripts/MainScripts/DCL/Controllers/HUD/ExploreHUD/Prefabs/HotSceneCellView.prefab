@@ -1622,8 +1622,7 @@ MonoBehaviour:
   m_text: 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 131598e906f4d4a048cfa339caa74472, type: 2}
-  m_sharedMaterial: {fileID: -2930943361234166642, guid: 131598e906f4d4a048cfa339caa74472,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7690d5dc153c64a7288ed2bb11a07d7f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2026,7 +2025,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewAnimator: {fileID: 2221954638935796100}
   jumpInButtonAnimator: {fileID: 681963098010535084}
-  crowdCountContainer: {fileID: 90974729195903362}
+  crowdCountContainer: {fileID: 1523610611124711831}
   crowdCount: {fileID: 2967862310429266747}
   eventsContainer: {fileID: 4672095495140026971}
   friendsView: {fileID: 1167237317565750555}
@@ -2335,8 +2334,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -2930943361234166642, guid: 131598e906f4d4a048cfa339caa74472,
-        type: 2}
+      objectReference: {fileID: 2100000, guid: 7690d5dc153c64a7288ed2bb11a07d7f, type: 2}
     - target: {fileID: 2777136830131887387, guid: 523b6c9aa6f4040eab849ba3dad0bb5c,
         type: 3}
       propertyPath: m_fontColor32.rgba
