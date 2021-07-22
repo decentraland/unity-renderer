@@ -15,7 +15,7 @@ MonoBehaviour:
   title: MUSIC
   controlPrefab: {fileID: 3572563192424337713, guid: 9c69fdd3db1d73140bfff48c5a2f72dd,
     type: 3}
-  controlController: {fileID: 11400000, guid: 39ce45b70305178468f725e84e6fcd56, type: 2}
+  controlController: {fileID: 11400000, guid: 54148b65394b4b0478fdf76daa194647, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
   isBeta: 0

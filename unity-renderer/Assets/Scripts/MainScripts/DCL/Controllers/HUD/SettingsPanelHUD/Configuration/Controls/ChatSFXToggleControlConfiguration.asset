@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1beb2919801a5f49833bb7df5673e4e, type: 3}
   m_Name: ChatSFXToggleControlConfiguration
   m_EditorClassIdentifier: 
-  title: 
-  controlPrefab: {fileID: 0}
-  controlController: {fileID: 0}
+  title: CHAT SOUNDS
+  controlPrefab: {fileID: 202718616210799590, guid: aa5ca631e7cc4b543bf10102794f0eea,
+    type: 3}
+  controlController: {fileID: 11400000, guid: 8eb8524505e94194186d3427ce863b57, type: 2}
   flagsThatDisableMe: []
   flagsThatDeactivateMe: []
   isBeta: 0
