@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2548c6ebc3c846446810452bb5cc2606, type: 3}
   m_Name: AudioSection
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 520d44b5687394783ae96976dbb73c7c, type: 3}
-  text: Graphics
+  icon: {fileID: 21300000, guid: 607bb3a0be6f94088977f57354ec95b9, type: 3}
+  text: Audio
   menuButtonPrefab: {fileID: 2470334045984490575, guid: 829d414daa3047541a35abc7d88a1fe5,
     type: 3}
   sectionPrefab: {fileID: 5813236629143711783, guid: eb979bec9ddc8d04291cbfd7ff64b626,
@@ -22,3 +22,4 @@ MonoBehaviour:
   widgets:
     array:
     - {fileID: 11400000, guid: a54da4917143ed148a381888cd82ec2e, type: 2}
+    - {fileID: 11400000, guid: bf33cef7d4d77e046ba0e469b86f8e47, type: 2}
