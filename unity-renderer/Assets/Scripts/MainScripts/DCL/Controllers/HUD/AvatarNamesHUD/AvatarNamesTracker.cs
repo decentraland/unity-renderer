@@ -62,7 +62,6 @@ namespace AvatarNamesHUD
                 name.rectTransform.anchoredPosition = screenPoint;
                 background.anchoredPosition = screenPoint;
                 background.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
-                Debug.Log($"{name.textBounds.ToString()} {name.text}");
             }
             else
             {
