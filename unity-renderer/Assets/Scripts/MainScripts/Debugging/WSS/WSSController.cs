@@ -469,6 +469,8 @@ namespace DCL
                                 break;
                             case "SetKernelConfiguration":
                             case "UpdateRealmsInfo":
+                            case "ConnectionToRealmSuccess":
+                            case "ConnectionToRealmFailed":
                             case "InitializeQuests":
                             case "UpdateQuestProgress":
                             case "SetENSOwnerQueryResult":

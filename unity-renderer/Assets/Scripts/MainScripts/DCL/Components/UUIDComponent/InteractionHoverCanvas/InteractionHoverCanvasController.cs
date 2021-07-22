@@ -41,8 +41,7 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void ConfigureIcon(string button)
     {
-        if ( hoverIcon != null )
-            hoverIcon.SetActive(false);
+        hoverIcon?.SetActive(false);
 
         switch (button)
         {
