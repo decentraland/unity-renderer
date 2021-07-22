@@ -14,6 +14,7 @@ namespace DCL.Helpers
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
 
         private static Collection[] collections;
+
         private static IEnumerator EnsureCollectionsData()
         {
             if (collections?.Length > 0)
@@ -46,15 +47,17 @@ namespace DCL.Helpers
             List<int> randomizedIndices = new List<int>();
             int randomIndex;
             bool addedBaseWearablesCollection = false;
+
             for (int i = 0; i < amount; i++)
             {
                 randomIndex = Random.Range(0, collections.Length);
+
                 while (randomizedIndices.Contains(randomIndex))
                 {
                     randomIndex = Random.Range(0, collections.Length);
                 }
 
-                if (ensureBaseWearables && collections[randomIndex].id == BASE_WEARABLES_COLLECTION_ID)
+                if (collections[randomIndex].id == BASE_WEARABLES_COLLECTION_ID)
                     addedBaseWearablesCollection = true;
 
                 finalCollectionIdsList.Add(collections[randomIndex].id);
@@ -62,8 +65,8 @@ namespace DCL.Helpers
             }
 
             // We add the base wearables collection to make sure we have at least 1 of each avatar body-part
-            if (!addedBaseWearablesCollection)
-                finalCollectionIdsList[0] = BASE_WEARABLES_COLLECTION_ID;
+            if (!addedBaseWearablesCollection && ensureBaseWearables)
+                finalCollectionIdsList.Add( BASE_WEARABLES_COLLECTION_ID );
         }
 
         /// <summary>

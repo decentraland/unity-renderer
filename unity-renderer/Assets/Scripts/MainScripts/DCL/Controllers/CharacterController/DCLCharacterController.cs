@@ -1,3 +1,4 @@
+using System;
 using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
@@ -5,6 +6,7 @@ using UnityEngine;
 using System.Collections;
 using Cinemachine;
 using UnityEngine.SceneManagement;
+using Environment = DCL.Environment;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -19,6 +21,7 @@ public class DCLCharacterController : MonoBehaviour
     public float movementSpeed = 8f;
     public float runningSpeedMultiplier = 2f;
 
+    [Obsolete("This field public access is obsolete. If you aren't within DCLCharacterController, please use CommonScriptableObject.playerXPosition instead.")]
     public DCLCharacterPosition characterPosition;
 
     [Header("Collisions")]
