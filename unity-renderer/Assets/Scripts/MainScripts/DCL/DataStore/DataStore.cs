@@ -27,6 +27,7 @@ namespace DCL
         public readonly BaseVariable<AppMode> appMode = new BaseVariable<AppMode>();
         public readonly DataStore_Player player = new DataStore_Player();
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
+        public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
 
         public class BuilderInWorld
         {
@@ -47,12 +48,29 @@ namespace DCL
             public readonly BaseVariable<bool> questsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> builderProjectsPanelVisible = new BaseVariable<bool>(false);
             public readonly BaseVariable<bool> signupVisible = new BaseVariable<bool>(false);
+            public readonly LoadingHUD loadingHUD = new LoadingHUD();
+
+            public class LoadingHUD
+            {
+                public readonly BaseVariable<bool> visible = new BaseVariable<bool>(false);
+                public readonly BaseVariable<string> message = new BaseVariable<string>(null);
+                public readonly BaseVariable<float> percentage = new BaseVariable<float>(0);
+                public readonly BaseVariable<bool> showWalletPrompt = new BaseVariable<bool>(false);
+                public readonly BaseVariable<bool> showTips = new BaseVariable<bool>(false);
+            }
         }
 
         public class DataStore_Player
         {
             // NOTE: set when character is teleported (DCLCharacterController - Teleport)
             public readonly BaseVariable<Vector3> lastTeleportPosition = new BaseVariable<Vector3>(Vector3.zero);
+        }
+
+        public class DataStore_AvatarsLOD
+        {
+            public readonly BaseVariable<bool> LODEnabled = new BaseVariable<bool>(false); // false because of feature flag...
+            public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
+            public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
         }
     }
 }
