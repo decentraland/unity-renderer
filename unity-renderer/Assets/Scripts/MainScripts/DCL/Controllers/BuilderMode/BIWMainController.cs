@@ -220,6 +220,7 @@ public class BIWMainController : Feature
         }
 
         BIWTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
+        DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
         if (initialLoadingController != null)
             initialLoadingController.Dispose();
@@ -230,7 +231,7 @@ public class BIWMainController : Feature
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
-        DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
+
 
         CleanItems();
 
