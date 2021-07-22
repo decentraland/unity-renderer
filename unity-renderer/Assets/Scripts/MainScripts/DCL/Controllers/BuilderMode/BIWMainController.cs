@@ -225,13 +225,13 @@ public class BIWMainController : Feature
         if (initialLoadingController != null)
             initialLoadingController.Dispose();
 
-
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+
+        BIWNFTController.i.Dispose();
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
 
         floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
-
 
         CleanItems();
 
