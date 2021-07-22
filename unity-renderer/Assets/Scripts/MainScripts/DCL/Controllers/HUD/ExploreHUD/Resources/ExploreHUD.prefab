@@ -3348,7 +3348,7 @@ PrefabInstance:
     - target: {fileID: 3363895446863482644, guid: 8c341d082edd745b38c0660bd79d9d90,
         type: 3}
       propertyPath: m_Maskable
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3363895446863482644, guid: 8c341d082edd745b38c0660bd79d9d90,
         type: 3}
