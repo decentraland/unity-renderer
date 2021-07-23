@@ -7,11 +7,11 @@ namespace DCL.SettingsControls
     [CreateAssetMenu(menuName = "Settings/Controllers/Controls/Music Volume", fileName = "MusicVolumeControlController")]
     public class MusicVolumeControlController : SliderSettingsControlController
     {
-        public override object GetStoredValue() { return 0; }
+        public override object GetStoredValue() { return currentAudioSettings.musicVolume * 100; }
 
         public override void UpdateSetting(object newValue) {
-            //currentGeneralSettings.voiceChatVolume = (float)newValue * 0.01f;
-            //WebInterface.ApplySettings(currentGeneralSettings.voiceChatVolume, (int)currentGeneralSettings.voiceChatAllow);
+            currentAudioSettings.musicVolume = (float)newValue * 0.01f;
+            // TODO: Apply volume change
         }
     }
 }
