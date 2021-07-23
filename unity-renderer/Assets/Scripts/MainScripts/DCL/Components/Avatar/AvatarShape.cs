@@ -120,7 +120,7 @@ namespace DCL
         private void UpdatePlayerStatus(AvatarModel model)
         {
             // Remove the player status if the userId changes
-            if ( playerStatus != null && playerStatus.id != model.id)
+            if (playerStatus != null && (playerStatus.id != model.id || playerStatus.name != model.name))
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
 
             if (string.IsNullOrEmpty(model?.id))
