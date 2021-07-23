@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a8e82aff5ba9e841b56675083935088, type: 3}
   m_Name: MasterVolumeControlController
   m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}

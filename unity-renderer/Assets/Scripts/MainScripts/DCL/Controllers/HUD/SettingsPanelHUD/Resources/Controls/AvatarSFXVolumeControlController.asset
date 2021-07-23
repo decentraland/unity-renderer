@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24e53f822f95314da19811eff3229b7, type: 3}
   m_Name: AvatarSFXVolumeControlController
   m_EditorClassIdentifier: 
+  audioMixer: {fileID: 24100000, guid: 97507d628c02bcf47859b9f108ab1823, type: 2}
