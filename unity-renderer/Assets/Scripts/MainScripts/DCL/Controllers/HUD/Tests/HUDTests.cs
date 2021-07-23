@@ -14,8 +14,8 @@ namespace Tests
 
         protected override IEnumerator SetUp()
         {
-            hudController = DCL.Environment.i.hud.controller;
             yield return base.SetUp();
+            hudController = DCL.Environment.i.hud.controller;
             hudController.Cleanup();
         }
 
@@ -62,7 +62,7 @@ namespace Tests
                 HUDElementID elementID = (HUDElementID) i;
                 if (HUDController.IsHUDElementDeprecated(elementID))
                     continue;
-                
+
                 Assert.IsNotNull(hudController.GetHUDElement(elementID), $"Failed to create {elementID}");
             }
         }

@@ -25,15 +25,15 @@ public class BuilderInWorldBridge : MonoBehaviour
     public event Action<string> OnCatalogHeadersReceived;
 
     //This is done for optimization purposes, recreating new objects can increase garbage collection
-    TransformComponent entityTransformComponentModel = new TransformComponent();
+    private TransformComponent entityTransformComponentModel = new TransformComponent();
 
-    StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
-    SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
-    SaveProjectInfoEvent saveProjectInfo = new SaveProjectInfoEvent();
-    ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
-    EntityPayload entityPayload = new EntityPayload();
-    EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
-    BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
+    private StoreSceneStateEvent storeSceneState = new StoreSceneStateEvent();
+    private SaveSceneStateEvent saveSceneState = new SaveSceneStateEvent();
+    private SaveProjectInfoEvent saveProjectInfo = new SaveProjectInfoEvent();
+    private ModifyEntityComponentEvent modifyEntityComponentEvent = new ModifyEntityComponentEvent();
+    private EntityPayload entityPayload = new EntityPayload();
+    private EntitySingleComponentPayload entitySingleComponentPayload = new EntitySingleComponentPayload();
+    private BuilderProjectPayload builderProjectPayload = new BuilderProjectPayload();
 
     #region MessagesFromKernel
 
@@ -138,7 +138,6 @@ public class BuilderInWorldBridge : MonoBehaviour
         sceneEvent.sceneId = scene.sceneData.id;
         sceneEvent.eventType = BuilderInWorldSettings.STATE_EVENT_NAME;
         sceneEvent.payload = modifyEntityComponentEvent;
-
 
         //Note (Adrian): We use Newtonsoft instead of JsonUtility because we need to deal with super classes, JsonUtility doesn't encode them
         string message = JsonConvert.SerializeObject(sceneEvent, Formatting.None, new JsonSerializerSettings
