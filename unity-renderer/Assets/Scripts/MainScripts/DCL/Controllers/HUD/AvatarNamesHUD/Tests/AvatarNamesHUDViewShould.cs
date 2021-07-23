@@ -26,7 +26,7 @@ namespace Tests.AvatarNamesHUD
         [Test]
         public void TrackPlayer()
         {
-            PlayerStatus user0 = new PlayerStatus { id = "user0", name = "user0" };
+            PlayerStatus user0 = new PlayerStatus { id = "user0", name = "user0", isTalking = false };
             hudView.TrackPlayer(user0);
 
             Assert.AreEqual(MAX_AVATAR_NAMES - 1, hudView.reserveTrackers.Count);
@@ -45,7 +45,7 @@ namespace Tests.AvatarNamesHUD
             Assert.NotNull(tracker.name);
             Assert.AreEqual(user0.name, tracker.name.text);
 
-            Assert.True(tracker.voiceChatCanvasGroup.gameObject.activeSelf);
+            Assert.Fail(tracker.voiceChatCanvasGroup.gameObject.activeSelf);
             Assert.NotNull(tracker.voiceChatCanvasGroup);
             Assert.NotNull(tracker.voiceChatAnimator);
         }
