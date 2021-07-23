@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace DCL
 {
-    // TODO: Cope with avatar shapes recycled from the pool, delete/forget old fetched snapshot
     public class AvatarLODController
     {
         private const bool ONLY_GENERIC_IMPOSTORS = false;
