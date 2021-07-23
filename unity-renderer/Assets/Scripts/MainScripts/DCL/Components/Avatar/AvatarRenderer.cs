@@ -26,7 +26,6 @@ namespace DCL
         public MeshFilter lodMeshFilter;
 
         private AvatarModel model;
-        public AvatarLODController lodController { get; private set; }
 
         public event Action<VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
@@ -39,6 +38,7 @@ namespace DCL
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
         internal StickersController stickersController;
+        internal AvatarLODController lodController;
 
         private long lastStickerTimestamp = -1;
 
@@ -46,6 +46,7 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private AssetPromise_Texture bodySnapshotTexturePromise;
 
         private void Awake()
         {
@@ -75,23 +76,13 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
-            if (lodController != null)
-            {
-                if (!string.IsNullOrEmpty(model.id))
-                {
-                    var snapshotPromise = new AssetPromise_Texture(UserProfileController.GetProfileByUserId(model.id).bodySnapshotURL);
-                    snapshotPromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
-                    snapshotPromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
-                    AssetPromiseKeeper_Texture.i.Keep(snapshotPromise);
-                }
-                else
-                {
-                    lodController.RandomizeAndApplyGenericImpostor();
-                }
-            }
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             void onSuccessWrapper()
             {
+                InitializeLODController();
+
                 onSuccess?.Invoke();
                 this.OnSuccessEvent -= onSuccessWrapper;
             }
@@ -100,6 +91,8 @@ namespace DCL
 
             void onFailWrapper(bool isFatalError)
             {
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
                 onFail?.Invoke();
                 this.OnFailEvent -= onFailWrapper;
             }
@@ -118,6 +111,26 @@ namespace DCL
             StopLoadingCoroutines();
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
+        }
+
+        void InitializeLODController()
+        {
+            if (lodController == null)
+                return;
+
+            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
+
+            if (!string.IsNullOrEmpty(model.id))
+            {
+                bodySnapshotTexturePromise = new AssetPromise_Texture(UserProfileController.GetProfileByUserId(model.id).bodySnapshotURL);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
+                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
+                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            }
+            else
+            {
+                lodController.RandomizeAndApplyGenericImpostor();
+            }
         }
 
         void StopLoadingCoroutines()
@@ -157,6 +170,9 @@ namespace DCL
             isLoading = false;
             OnFailEvent = null;
             OnSuccessEvent = null;
+
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();

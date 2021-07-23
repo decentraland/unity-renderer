@@ -33,7 +33,7 @@ namespace DCL
 
         public void RegisterAvatar(AvatarLODController newAvatar)
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar))
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar) || newAvatar == null)
                 return;
 
             avatarsList.Add(newAvatar);
@@ -41,7 +41,7 @@ namespace DCL
 
         public void RemoveAvatar(AvatarLODController targetAvatar)
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar))
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar) || targetAvatar == null)
                 return;
 
             int listCount = avatarsList.Count;
