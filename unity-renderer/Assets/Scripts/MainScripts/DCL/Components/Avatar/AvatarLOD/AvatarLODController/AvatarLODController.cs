@@ -31,7 +31,6 @@ namespace DCL
 
         public void RandomizeAndApplyGenericImpostor()
         {
-            // TODO: change naming and type to Vector2 spriteSize ??
             Vector2 spriteSize = new Vector2(1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS, 1f / GENERIC_IMPOSTORS_ATLAS_ROWS);
             float randomUVXPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteSize.x;
             float randomUVYPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteSize.y;
