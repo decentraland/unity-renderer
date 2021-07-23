@@ -528,8 +528,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -909,8 +909,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -919,9 +919,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -1004,8 +1002,8 @@
                 float4 _UV_ba7bf77a544742d588bb64f92f7554da_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
-                SampleTexture_float(float3(0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
+                float4 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
                                     (_UV_ba7bf77a544742d588bb64f92f7554da_Out_0.xy),
                                     _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3);
                 #endif
@@ -1013,9 +1011,9 @@
                 float4 _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0 = IN.uv3;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
                 Unity_Multiply_float(_SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3,
-                                     (_UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0.xyz),
+                                     _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0,
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
@@ -1023,7 +1021,7 @@
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
-                surface.Emission = _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
@@ -1620,8 +1618,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -2001,8 +1999,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -2011,9 +2009,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -2096,8 +2092,8 @@
                 float4 _UV_ba7bf77a544742d588bb64f92f7554da_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
-                SampleTexture_float(float3(0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
+                float4 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
                                     (_UV_ba7bf77a544742d588bb64f92f7554da_Out_0.xy),
                                     _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3);
                 #endif
@@ -2105,9 +2101,9 @@
                 float4 _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0 = IN.uv3;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
                 Unity_Multiply_float(_SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3,
-                                     (_UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0.xyz),
+                                     _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0,
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
@@ -2115,7 +2111,7 @@
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
-                surface.Emission = _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
@@ -2229,10 +2225,10 @@
             }
 
             // Render State
-            Cull Back
+            Cull [_Cull]
             Blend One Zero
             ZTest LEqual
-            ZWrite On
+            ZWrite [_ZWrite]
             ColorMask 0
 
             // Debug
@@ -2565,8 +2561,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -2650,8 +2646,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -2660,9 +2656,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -3080,8 +3074,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -3165,8 +3159,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3175,9 +3169,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -3628,8 +3620,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -3714,8 +3706,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3724,9 +3716,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -4219,8 +4209,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -4596,8 +4586,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -4606,9 +4596,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -4691,8 +4679,8 @@
                 float4 _UV_ba7bf77a544742d588bb64f92f7554da_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
-                SampleTexture_float(float3(0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
+                float4 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
                                     (_UV_ba7bf77a544742d588bb64f92f7554da_Out_0.xy),
                                     _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3);
                 #endif
@@ -4700,16 +4688,16 @@
                 float4 _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0 = IN.uv3;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
                 Unity_Multiply_float(_SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3,
-                                     (_UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0.xyz),
+                                     _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0,
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-                surface.Emission = _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
                 return surface;
@@ -5193,8 +5181,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -5569,8 +5557,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -5579,9 +5567,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -6261,8 +6247,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -6642,8 +6628,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -6652,9 +6638,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -6737,8 +6721,8 @@
                 float4 _UV_ba7bf77a544742d588bb64f92f7554da_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
-                SampleTexture_float(float3(0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
+                float4 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
                                     (_UV_ba7bf77a544742d588bb64f92f7554da_Out_0.xy),
                                     _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3);
                 #endif
@@ -6746,9 +6730,9 @@
                 float4 _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0 = IN.uv3;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
                 Unity_Multiply_float(_SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3,
-                                     (_UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0.xyz),
+                                     _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0,
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
@@ -6756,7 +6740,7 @@
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
-                surface.Emission = _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
@@ -7204,8 +7188,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -7289,8 +7273,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -7299,9 +7283,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -7718,8 +7700,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -7803,8 +7785,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -7813,9 +7795,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -8265,8 +8245,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -8351,8 +8331,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -8361,9 +8341,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -8856,8 +8834,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -9233,8 +9211,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -9243,9 +9221,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
@@ -9328,8 +9304,8 @@
                 float4 _UV_ba7bf77a544742d588bb64f92f7554da_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
-                SampleTexture_float(float3(0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
+                float4 _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_G_2,
                                     (_UV_ba7bf77a544742d588bb64f92f7554da_Out_0.xy),
                                     _SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3);
                 #endif
@@ -9337,16 +9313,16 @@
                 float4 _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0 = IN.uv3;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                float4 _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
                 Unity_Multiply_float(_SampleTextureCustomFunction_2a29fd02ac7c4af590e370b851dc2a97_Color_3,
-                                     (_UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0.xyz),
+                                     _UV_1a397fc2a77b4d1bab2b4b1399a194be_Out_0,
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-                surface.Emission = _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2;
+                surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
                 return surface;
@@ -9831,8 +9807,8 @@
 
             // Graph Functions
 
-            // e66d0881390cff6198307e15add3bca7
-            #include "Assets/Rendering/Shaders/Toon/MainLight.hlsl"
+            // 563fef455364aca86b423dcf6a54f497
+            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -10207,8 +10183,8 @@
                 float4 _UV_b422957916a8465cad7c951698becee9_Out_0 = IN.uv0;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float3 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float3(1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
+                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -10217,9 +10193,7 @@
                 float4 _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1;
                 float _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(IN.VertexColor,
-                                                                  (float4(
-                                                                      _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
-                                                                      1.0)),
+                                                                  _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1,
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
