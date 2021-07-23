@@ -1,17 +1,16 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace AvatarNamesHUD
 {
     public interface IAvatarNamesHUDView
     {
+        void Initialize(int maxAvatarNames);
         void SetVisibility(bool visibility);
         void TrackPlayer(PlayerStatus playerStatus);
-        void UntrackPlayer(PlayerStatus playerStatus);
+        void UntrackPlayer(string userId);
         void Dispose();
     }
 
@@ -25,15 +24,35 @@ namespace AvatarNamesHUD
         [SerializeField] internal GameObject namePrefab;
         [SerializeField] internal GameObject voiceChatPrefab;
 
-        private readonly Dictionary<string, AvatarNamesTracker> trackers = new Dictionary<string, AvatarNamesTracker>();
-        private readonly Queue<AvatarNamesTracker> reserveTrackers = new Queue<AvatarNamesTracker>();
+        internal readonly Dictionary<string, AvatarNamesTracker> trackers = new Dictionary<string, AvatarNamesTracker>();
+        internal readonly Queue<AvatarNamesTracker> reserveTrackers = new Queue<AvatarNamesTracker>();
 
         private bool isDestroyed = false;
 
-        private void Awake()
+        public static IAvatarNamesHUDView CreateView()
         {
-            //Prewarming trackers
-            for (int i = 0; i < AvatarNamesHUDController.MAX_AVATAR_NAMES; i++)
+            AvatarNamesHUDView view = Instantiate(Resources.Load<GameObject>("AvatarNamesHUD")).GetComponent<AvatarNamesHUDView>();
+            view.gameObject.name = "_AvatarNamesHUD";
+            return view;
+        }
+
+        private void OnEnable() { StartCoroutine(UpdateTrackersRoutine()); }
+
+        public void Initialize(int maxAvatarNames)
+        {
+            //Return current trackers to reserve
+            trackers.Keys.ToList().ForEach(UntrackPlayer);
+            trackers.Clear();
+
+            //Remove exceeding trackers in the reserve
+            while (reserveTrackers.Count > maxAvatarNames)
+            {
+                AvatarNamesTracker tracker = reserveTrackers.Dequeue();
+                tracker.DestroyUIElements();
+            }
+
+            //Fill the reserve if not ready
+            for (int i = reserveTrackers.Count; i < maxAvatarNames; i++)
             {
                 RectTransform background = Instantiate(backgroundPrefab, backgroundsContainer).GetComponent<RectTransform>();
                 RectTransform nameTMP = Instantiate(namePrefab, namesContainer).GetComponent<RectTransform>();
@@ -42,15 +61,6 @@ namespace AvatarNamesHUD
                 tracker.SetVisibility(false);
                 reserveTrackers.Enqueue(tracker);
             }
-
-            StartCoroutine(UpdateTrackersRoutine());
-        }
-
-        public static IAvatarNamesHUDView CreateView()
-        {
-            AvatarNamesHUDView view = Instantiate(Resources.Load<GameObject>("AvatarNamesHUD")).GetComponent<AvatarNamesHUDView>();
-            view.gameObject.name = "_AvatarNamesHUD";
-            return view;
         }
 
         public void SetVisibility(bool visibility) { gameObject.SetActive(visibility); }
@@ -69,12 +79,12 @@ namespace AvatarNamesHUD
             trackers.Add(playerStatus.id, tracker);
         }
 
-        public void UntrackPlayer(PlayerStatus playerStatus)
+        public void UntrackPlayer(string userId)
         {
-            if (!trackers.TryGetValue(playerStatus.id, out AvatarNamesTracker tracker))
+            if (!trackers.TryGetValue(userId, out AvatarNamesTracker tracker))
                 return;
 
-            trackers.Remove(playerStatus.id);
+            trackers.Remove(userId);
             tracker.SetPlayerStatus(null);
             tracker.SetVisibility(false);
             reserveTrackers.Enqueue(tracker);

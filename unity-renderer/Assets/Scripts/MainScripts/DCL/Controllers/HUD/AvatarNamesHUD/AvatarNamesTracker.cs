@@ -10,17 +10,20 @@ namespace AvatarNamesHUD
         private static readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
         private const float NAME_VANISHING_POINT_DISTANCE = 15.0f;
 
-        private readonly RectTransform canvasRect;
-        private readonly Image background;
-        private readonly CanvasGroup backgroundCanvasGroup;
-        private readonly TextMeshProUGUI name;
-        private readonly CanvasGroup voiceChatCanvasGroup;
-        private readonly Animator voiceChatAnimator;
+        internal readonly RectTransform canvasRect;
+        internal readonly Image background;
+        internal readonly CanvasGroup backgroundCanvasGroup;
+        internal readonly TextMeshProUGUI name;
+        internal readonly CanvasGroup voiceChatCanvasGroup;
+        internal readonly Animator voiceChatAnimator;
 
-        private PlayerStatus playerStatus;
+        internal PlayerStatus playerStatus;
+        internal bool visibility = false;
+        private Camera mainCamera;
 
         public AvatarNamesTracker(RectTransform canvasRect, RectTransform backgroundRect, RectTransform nameRect, RectTransform voiceChatRect)
         {
+            mainCamera = Camera.main;
             this.canvasRect = canvasRect;
             backgroundCanvasGroup = backgroundRect.GetComponent<CanvasGroup>();
             background = backgroundRect.GetComponent<Image>();
@@ -31,11 +34,10 @@ namespace AvatarNamesHUD
 
         public void SetVisibility(bool visible)
         {
-            background?.gameObject.SetActive(visible);
-            name?.gameObject.SetActive(visible);
-            voiceChatCanvasGroup?.gameObject.SetActive(visible);
-            if (visible)
-                UpdateVoiceChat();
+            visibility = visible;
+            background?.gameObject.SetActive(visibility);
+            name?.gameObject.SetActive(visibility);
+            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
         }
 
         public void SetPlayerStatus(PlayerStatus newPlayerStatus)
@@ -49,23 +51,14 @@ namespace AvatarNamesHUD
             UpdatePosition();
         }
 
-        private void UpdateVoiceChat()
-        {
-            if (playerStatus == null)
-                return;
-            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
-        }
-
         public void UpdatePosition()
         {
             if (playerStatus == null)
                 return;
 
-            Camera mainCamera = Camera.main;
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(playerStatus.worldPosition + OFFSET);
             float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
             screenPoint.Scale(canvasRect.rect.size);
-
 
             name.rectTransform.anchoredPosition = screenPoint;
             background.rectTransform.anchoredPosition = screenPoint;
@@ -76,6 +69,15 @@ namespace AvatarNamesHUD
             voiceChatCanvasGroup.alpha = alpha;
             name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
             backgroundCanvasGroup.alpha = alpha;
+            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
+        }
+
+        public void DestroyUIElements()
+        {
+            Object.Destroy(background.gameObject);
+            Object.Destroy(name.gameObject);
+            Object.Destroy(voiceChatCanvasGroup.gameObject);
         }
     }
 }

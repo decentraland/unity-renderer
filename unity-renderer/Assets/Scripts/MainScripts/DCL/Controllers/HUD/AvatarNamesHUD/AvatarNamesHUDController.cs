@@ -3,10 +3,9 @@ using DCL;
 
 namespace AvatarNamesHUD
 {
-
     public class AvatarNamesHUDController : IHUD
     {
-        public const int MAX_AVATAR_NAMES = 200;
+        private int maxAvatarNames;
 
         private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
 
@@ -16,13 +15,16 @@ namespace AvatarNamesHUD
 
         internal virtual IAvatarNamesHUDView CreateView() { return AvatarNamesHUDView.CreateView(); }
 
+        public AvatarNamesHUDController() : this(200) { }
+        public AvatarNamesHUDController(int maxAvatarNames) { this.maxAvatarNames = maxAvatarNames; }
+
         public void Initialize()
         {
             view = CreateView();
+            view?.Initialize(maxAvatarNames);
 
             otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
             otherPlayersStatus.OnRemoved += OnOtherPlayersStatusRemoved;
-
             using var enumerator = otherPlayersStatus.Get().GetEnumerator();
             while (enumerator.MoveNext())
             {
@@ -30,12 +32,12 @@ namespace AvatarNamesHUD
             }
         }
 
-        private void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
+        internal void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
         {
             if (trackingPlayers.Contains(userId))
                 return;
 
-            if (trackingPlayers.Count < MAX_AVATAR_NAMES)
+            if (trackingPlayers.Count < maxAvatarNames)
             {
                 trackingPlayers.Add(userId);
                 view?.TrackPlayer(playerStatus);
@@ -44,14 +46,13 @@ namespace AvatarNamesHUD
                 reservePlayers.AddLast(userId);
         }
 
-        private void OnOtherPlayersStatusRemoved(string userId, PlayerStatus playerStatus)
+        internal void OnOtherPlayersStatusRemoved(string userId, PlayerStatus playerStatus)
         {
-            if (reservePlayers.Remove(userId))
-                view?.UntrackPlayer(playerStatus);
-
+            reservePlayers.Remove(userId);
             if (!trackingPlayers.Remove(userId))
                 return;
 
+            view?.UntrackPlayer(userId);
             while (reservePlayers.Count > 0)
             {
                 LinkedListNode<string> reserveNode = reservePlayers.First;
