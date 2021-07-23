@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -15,6 +16,7 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        DataStore.Clear();
         controller.Dispose();
         yield return base.TearDown();
     }
@@ -42,67 +44,51 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
         yield break;
     }
 
-    //TODO fix tests
-    // [UnityTest]
-    // public IEnumerator AddAndRemovePlayersCorrectly()
-    // {
-    //     UsersAroundListHUDListView listView = controller.usersListView as UsersAroundListHUDListView;
-    //
-    //     string[] users = new string[] { "user1", "user2", "user3" };
-    //
-    //     UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-    //     {
-    //         name = users[0],
-    //         userId = users[0]
-    //     });
-    //     UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-    //     {
-    //         userId = users[1],
-    //         name = users[1]
-    //     });
-    //     UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-    //     {
-    //         name = users[2],
-    //         userId = users[2]
-    //     });
-    //
-    //     MinimapMetadata.GetMetadata()
-    //                    .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-    //                    {
-    //                        userId = users[0],
-    //                        worldPosition = Vector3.zero
-    //                    });
-    //
-    //     MinimapMetadata.GetMetadata()
-    //                    .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-    //                    {
-    //                        userId = users[1],
-    //                        worldPosition = Vector3.zero
-    //                    });
-    //
-    //     Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 2, "listView.content.childCount != 2");
-    //     Assert.IsTrue(listView.availableElements.Count == 0, "listView.availableElements.Count != 0");
-    //
-    //     MinimapMetadata.GetMetadata().RemoveUserInfo(users[1]);
-    //     Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
-    //     Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
-    //
-    //     MinimapMetadata.GetMetadata().RemoveUserInfo(users[0]);
-    //     Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 0, "listView.content.childCount != 0");
-    //     Assert.IsTrue(listView.availableElements.Count == 2, "listView.availableElements.Count != 2");
-    //
-    //
-    //     MinimapMetadata.GetMetadata()
-    //                    .AddOrUpdateUserInfo(new MinimapMetadata.MinimapUserInfo()
-    //                    {
-    //                        userId = users[2],
-    //                        worldPosition = Vector3.zero
-    //                    });
-    //     Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
-    //     Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
-    //
-    //     yield break;
-    // }
+    [UnityTest]
+    public IEnumerator AddAndRemovePlayersCorrectly()
+    {
+        UsersAroundListHUDListView listView = controller.usersListView as UsersAroundListHUDListView;
+
+        string[] users = new string[] { "user1", "user2", "user3" };
+
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            name = users[0],
+            userId = users[0]
+        });
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = users[1],
+            name = users[1]
+        });
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            name = users[2],
+            userId = users[2]
+        });
+
+        DataStore.i.player.otherPlayersStatus.Add(users[0], new PlayerStatus { id = users[0], name = users[0], worldPosition = Vector3.zero });
+        DataStore.i.player.otherPlayersStatus.Add(users[1], new PlayerStatus { id = users[1], name = users[1], worldPosition = Vector3.zero });
+
+        Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 2, "listView.content.childCount != 2");
+        Assert.IsTrue(listView.availableElements.Count == 0, "listView.availableElements.Count != 0");
+
+
+        DataStore.i.player.otherPlayersStatus.Remove(users[1]);
+        Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
+        Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
+
+        DataStore.i.player.otherPlayersStatus.Remove(users[0]);
+        Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 0, "listView.content.childCount != 0");
+        Assert.IsTrue(listView.availableElements.Count == 2, "listView.availableElements.Count != 2");
+
+
+        DataStore.i.player.otherPlayersStatus.Add(users[2], new PlayerStatus { id = users[2], name = users[2], worldPosition = Vector3.zero });
+        Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
+        Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
+
+        yield break;
+    }
 
     int GetVisibleChildren(Transform parent) { return parent.GetComponentsInChildren<UsersAroundListHUDListElementView>(false).Length; }
 }

@@ -70,6 +70,7 @@ namespace AvatarNamesHUD
         {
             otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
             otherPlayersStatus.OnRemoved -= OnOtherPlayersStatusRemoved;
+            view?.Dispose();
         }
     }
 }

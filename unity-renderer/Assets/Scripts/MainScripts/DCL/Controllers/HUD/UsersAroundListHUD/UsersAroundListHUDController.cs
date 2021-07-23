@@ -46,8 +46,8 @@ public class UsersAroundListHUDController : IHUD
             CoroutineStarter.Stop(updateMuteStatusRoutine);
         }
 
-        otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
-        otherPlayersStatus.OnRemoved += OnOtherPlayerStatusRemoved;
+        otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
+        otherPlayersStatus.OnRemoved -= OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
         profile.OnUpdate -= OnUserProfileUpdate;
@@ -117,8 +117,8 @@ public class UsersAroundListHUDController : IHUD
         usersListView.OnGoToCrowdPressed += OnGoToCrowd;
         usersListView.OnOpen += OnListOpen;
 
-        otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
-        otherPlayersStatus.OnRemoved -= OnOtherPlayerStatusRemoved;
+        otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
+        otherPlayersStatus.OnRemoved += OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
         profile.OnUpdate += OnUserProfileUpdate;

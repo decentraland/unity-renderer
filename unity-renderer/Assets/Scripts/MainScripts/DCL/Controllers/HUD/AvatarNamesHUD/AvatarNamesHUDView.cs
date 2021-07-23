@@ -12,6 +12,7 @@ namespace AvatarNamesHUD
         void SetVisibility(bool visibility);
         void TrackPlayer(PlayerStatus playerStatus);
         void UntrackPlayer(PlayerStatus playerStatus);
+        void Dispose();
     }
 
     public class AvatarNamesHUDView : MonoBehaviour, IAvatarNamesHUDView
@@ -26,6 +27,8 @@ namespace AvatarNamesHUD
 
         private readonly Dictionary<string, AvatarNamesTracker> trackers = new Dictionary<string, AvatarNamesTracker>();
         private readonly Queue<AvatarNamesTracker> reserveTrackers = new Queue<AvatarNamesTracker>();
+
+        private bool isDestroyed = false;
 
         private void Awake()
         {
@@ -89,8 +92,14 @@ namespace AvatarNamesHUD
             }
         }
 
-        public static Vector3 Offset;
-        public Vector3 myoff;
-        private void LateUpdate() { Offset = myoff; }
+        private void OnDestroy() { isDestroyed = true; }
+
+        public void Dispose()
+        {
+            if (isDestroyed)
+                return;
+            isDestroyed = true;
+            Destroy(gameObject);
+        }
     }
 }
