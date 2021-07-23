@@ -7,7 +7,7 @@ namespace DCL
     public class CombineLayer
     {
         public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
-        public Dictionary<Texture2D, int> idMap = new Dictionary<Texture2D, int>();
+        public Dictionary<Texture2D, int> textureToId = new Dictionary<Texture2D, int>();
         public CullMode cullMode;
         public bool isOpaque;
     }

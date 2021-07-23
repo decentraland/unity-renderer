@@ -81,8 +81,8 @@ namespace DCL
                     Texture2D emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
                     float cutoff = mat.GetFloat(ShaderUtils.Cutoff);
 
-                    int baseMapId = baseMap != null ? layer.idMap[baseMap] : -1;
-                    int emissionMapId = emissionMap != null ? layer.idMap[emissionMap] : -1;
+                    int baseMapId = baseMap != null ? layer.textureToId[baseMap] : -1;
+                    int emissionMapId = emissionMap != null ? layer.textureToId[emissionMap] : -1;
 
                     data.texturePointers.AddRange(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount));
 
