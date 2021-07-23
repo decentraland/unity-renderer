@@ -129,7 +129,7 @@ internal class HotSceneCellView : MonoBehaviour
         {
             bool isArchipelagoRealm = string.IsNullOrEmpty(hotSceneInfo.realms[i].layer);
 
-            if (isArchipelagoRealm || hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].usersMax)
+            if (isArchipelagoRealm || hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].maxUsers)
             {
                 realm = hotSceneInfo.realms[i];
                 if (i < hotSceneInfo.realms.Length - 1)
@@ -140,10 +140,13 @@ internal class HotSceneCellView : MonoBehaviour
             }
         }
 
-        RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
-        RealmsInfoBridge.OnRealmConnectionSuccess += OnRealmConnectionSuccess;
-        RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
-        RealmsInfoBridge.OnRealmConnectionFailed += OnRealmConnectionFailed;
+        if (!string.IsNullOrEmpty(realm.serverName))
+        {
+            RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
+            RealmsInfoBridge.OnRealmConnectionSuccess += OnRealmConnectionSuccess;
+            RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
+            RealmsInfoBridge.OnRealmConnectionFailed += OnRealmConnectionFailed;
+        }
 
         lastJumpInTried.gridPosition = hotSceneInfo.baseCoords;
         lastJumpInTried.realm.serverName = realm.serverName;
