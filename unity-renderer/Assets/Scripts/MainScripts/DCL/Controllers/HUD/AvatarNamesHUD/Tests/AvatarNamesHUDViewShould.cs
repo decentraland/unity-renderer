@@ -45,7 +45,7 @@ namespace Tests.AvatarNamesHUD
             Assert.NotNull(tracker.name);
             Assert.AreEqual(user0.name, tracker.name.text);
 
-            Assert.Fail(tracker.voiceChatCanvasGroup.gameObject.activeSelf);
+            Assert.False(tracker.voiceChatCanvasGroup.gameObject.activeSelf);
             Assert.NotNull(tracker.voiceChatCanvasGroup);
             Assert.NotNull(tracker.voiceChatAnimator);
         }
