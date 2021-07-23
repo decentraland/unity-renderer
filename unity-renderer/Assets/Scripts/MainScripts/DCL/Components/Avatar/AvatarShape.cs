@@ -177,6 +177,7 @@ namespace DCL
             oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
+            playerStatus = null;
         }
 
         public override void Cleanup()
@@ -184,7 +185,10 @@ namespace DCL
             base.Cleanup();
 
             if (playerStatus != null)
+            {
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+                playerStatus = null;
+            }
 
             Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
 
