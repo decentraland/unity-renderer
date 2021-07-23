@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 794481487695014603}
   - component: {fileID: 379457767874418138}
   - component: {fileID: 3045017452201718559}
+  - component: {fileID: 313052562092771627}
   m_Layer: 0
   m_Name: BGEntry
   m_TagString: Untagged
@@ -75,3 +76,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 2
+--- !u!225 &313052562092771627
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7196769330471660135}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0

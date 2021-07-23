@@ -6,29 +6,36 @@ namespace AvatarNamesHUD
 {
     public class AvatarNamesTracker
     {
-        private const float NAME_VANISHING_POINT_DISTANCE = 20.0f;
-        private readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
-        private static Vector3 OFFSET = new Vector3(0, 3f, 0);
+        private static readonly Vector3 OFFSET = new Vector3(0, 3f, 0);
+        private static readonly int VOICE_CHAT_ANIMATOR_TALKING = Animator.StringToHash("Talking");
+        private const float NAME_VANISHING_POINT_DISTANCE = 15.0f;
 
-        private RectTransform canvasRect;
+        private readonly RectTransform canvasRect;
         private readonly Image background;
+        private readonly CanvasGroup backgroundCanvasGroup;
         private readonly TextMeshProUGUI name;
-        private readonly Animator voiceChat;
+        private readonly CanvasGroup voiceChatCanvasGroup;
+        private readonly Animator voiceChatAnimator;
 
         private PlayerStatus playerStatus;
 
-        public AvatarNamesTracker(RectTransform canvasRect, Image background, TextMeshProUGUI name, Animator voiceChat)
+        public AvatarNamesTracker(RectTransform canvasRect, RectTransform backgroundRect, RectTransform nameRect, RectTransform voiceChatRect)
         {
             this.canvasRect = canvasRect;
-            this.background = background;
-            this.name = name;
-            this.voiceChat = voiceChat;
+            backgroundCanvasGroup = backgroundRect.GetComponent<CanvasGroup>();
+            background = backgroundRect.GetComponent<Image>();
+            name = nameRect.GetComponent<TextMeshProUGUI>();
+            voiceChatCanvasGroup = voiceChatRect.GetComponent<CanvasGroup>();
+            voiceChatAnimator = voiceChatRect.GetComponent<Animator>();
         }
 
         public void SetVisibility(bool visible)
         {
             background?.gameObject.SetActive(visible);
             name?.gameObject.SetActive(visible);
+            voiceChatCanvasGroup?.gameObject.SetActive(visible);
+            if (visible)
+                UpdateVoiceChat();
         }
 
         public void SetPlayerStatus(PlayerStatus newPlayerStatus)
@@ -39,13 +46,14 @@ namespace AvatarNamesHUD
 
             name.text = newPlayerStatus.name;
             name.ForceMeshUpdate(); //To get the new bounds
-            background.rectTransform.sizeDelta = name.textBounds.size;
-            if (playerStatus.isTalking && !voiceChat.gameObject.activeSelf)
-            {
-                voiceChat.gameObject.SetActive(playerStatus.isTalking);
-            }
-            voiceChat.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
             UpdatePosition();
+        }
+
+        private void UpdateVoiceChat()
+        {
+            if (playerStatus == null)
+                return;
+            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
         }
 
         public void UpdatePosition()
@@ -53,34 +61,21 @@ namespace AvatarNamesHUD
             if (playerStatus == null)
                 return;
 
-            var mainCamera = Camera.main;
+            Camera mainCamera = Camera.main;
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(playerStatus.worldPosition + OFFSET);
+            float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
+            screenPoint.Scale(canvasRect.rect.size);
 
-            //uiContainer.alpha = 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
 
-            if (screenPoint.z > 0)
-            {
-                // if (!uiContainer.gameObject.activeSelf)
-                // {
-                //     uiContainer.gameObject.SetActive(true);
-                // }
+            name.rectTransform.anchoredPosition = screenPoint;
+            background.rectTransform.anchoredPosition = screenPoint;
+            background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+            Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
+            (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
 
-                float width = canvasRect.rect.width;
-                float height = canvasRect.rect.height;
-                screenPoint.Scale(new Vector3(width, height, 0));
-                name.rectTransform.anchoredPosition = screenPoint;
-                background.rectTransform.anchoredPosition = screenPoint;
-                background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
-                (voiceChat.transform as RectTransform).anchoredPosition = screenPoint - new Vector3(65, 0, 0);
-            }
-            else
-            {
-                // if (uiContainer.gameObject.activeSelf)
-                // {
-                //     uiContainer.gameObject.SetActive(false);
-                // }
-            }
+            voiceChatCanvasGroup.alpha = alpha;
+            name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
+            backgroundCanvasGroup.alpha = alpha;
         }
-
     }
 }

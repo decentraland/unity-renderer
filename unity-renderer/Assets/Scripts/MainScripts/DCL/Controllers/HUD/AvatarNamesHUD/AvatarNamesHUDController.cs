@@ -24,7 +24,7 @@ namespace AvatarNamesHUD
             otherPlayersStatus.OnRemoved += OnOtherPlayersStatusRemoved;
 
             using var enumerator = otherPlayersStatus.Get().GetEnumerator();
-            while (!enumerator.MoveNext())
+            while (enumerator.MoveNext())
             {
                 OnOtherPlayersStatusAdded(enumerator.Current.Key, enumerator.Current.Value);
             }

@@ -32,9 +32,9 @@ namespace AvatarNamesHUD
             //Prewarming trackers
             for (int i = 0; i < AvatarNamesHUDController.MAX_AVATAR_NAMES; i++)
             {
-                Image background = Instantiate(backgroundPrefab, backgroundsContainer).GetComponent<Image>();
-                TextMeshProUGUI nameTMP = Instantiate(namePrefab, namesContainer).GetComponent<TextMeshProUGUI>();
-                Animator voiceChat = Instantiate(voiceChatPrefab, voiceChatContainer).GetComponent<Animator>();
+                RectTransform background = Instantiate(backgroundPrefab, backgroundsContainer).GetComponent<RectTransform>();
+                RectTransform nameTMP = Instantiate(namePrefab, namesContainer).GetComponent<RectTransform>();
+                RectTransform voiceChat = Instantiate(voiceChatPrefab, voiceChatContainer).GetComponent<RectTransform>();
                 AvatarNamesTracker tracker = new AvatarNamesTracker(canvasRect, background, nameTMP, voiceChat);
                 tracker.SetVisibility(false);
                 reserveTrackers.Enqueue(tracker);
@@ -88,5 +88,9 @@ namespace AvatarNamesHUD
                 yield return null;
             }
         }
+
+        public static Vector3 Offset;
+        public Vector3 myoff;
+        private void LateUpdate() { Offset = myoff; }
     }
 }
