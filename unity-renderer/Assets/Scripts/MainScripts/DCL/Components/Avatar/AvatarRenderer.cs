@@ -21,10 +21,12 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
+
         public MeshRenderer lodRenderer;
         public MeshFilter lodMeshFilter;
 
         private AvatarModel model;
+        public AvatarLODController lodController { get; private set; }
 
         public event Action<VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
@@ -49,6 +51,17 @@ namespace DCL
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
+
+            if (lodRenderer != null)
+            {
+                lodController = new AvatarLODController()
+                {
+                    transform = this.transform,
+                    meshRenderer = lodRenderer,
+                    mesh = lodMeshFilter.mesh
+                };
+                lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
+            }
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -61,6 +74,21 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
+
+            if (lodController != null)
+            {
+                if (!string.IsNullOrEmpty(model.id))
+                {
+                    var snapshotPromise = new AssetPromise_Texture(UserProfileController.GetProfileByUserId(model.id).bodySnapshotURL);
+                    snapshotPromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
+                    snapshotPromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
+                    AssetPromiseKeeper_Texture.i.Keep(snapshotPromise);
+                }
+                else
+                {
+                    lodController.RandomizeAndApplyGenericImpostor();
+                }
+            }
 
             void onSuccessWrapper()
             {
@@ -494,11 +522,7 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
-        public MeshRenderer GetLODRenderer() { return lodRenderer; }
-
-        public Mesh GetLODMesh() { return lodMeshFilter.mesh; }
-
-        public Transform GetTransform() { return transform; }
+        public AvatarLODController GetLODController() { return lodController; }
 
         private void HideAll()
         {

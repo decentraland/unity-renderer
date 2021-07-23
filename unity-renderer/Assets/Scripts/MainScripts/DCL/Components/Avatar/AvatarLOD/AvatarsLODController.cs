@@ -8,13 +8,8 @@ namespace DCL
         private const float LODS_LOCAL_Y_POS = 1.8f;
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
-        // private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
 
-        // 2048x2048 atlas with 512x1024 snapshot-sprites
-        private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
-        private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
-
-        private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
+        private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
         private float lastLODsVerticalMovementTime = -1;
 
         public AvatarsLODController()
@@ -36,7 +31,7 @@ namespace DCL
             UpdateLODsVerticalMovementAndBillboard();
         }
 
-        public void RegisterAvatar(IAvatarRenderer newAvatar)
+        public void RegisterAvatar(AvatarLODController newAvatar)
         {
             if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar))
                 return;
@@ -44,7 +39,7 @@ namespace DCL
             avatarsList.Add(newAvatar);
         }
 
-        public void RemoveAvatar(IAvatarRenderer targetAvatar)
+        public void RemoveAvatar(AvatarLODController targetAvatar)
         {
             if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar))
                 return;
@@ -68,7 +63,7 @@ namespace DCL
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
-                lodGO = avatarsList[i].GetLODRenderer().gameObject;
+                lodGO = avatarsList[i].meshRenderer.gameObject;
                 if (!lodGO.activeSelf)
                     continue;
 
@@ -94,54 +89,27 @@ namespace DCL
             if (!DataStore.i.avatarsLOD.LODEnabled.Get())
                 return;
 
-            SortedList<float, IAvatarRenderer> closeDistanceAvatars = new SortedList<float, IAvatarRenderer>();
-            foreach (IAvatarRenderer avatar in avatarsList)
+            SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
+            foreach (AvatarLODController avatar in avatarsList)
             {
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.GetTransform().position);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
-                    ToggleLOD(avatar, true);
+                    avatar.ToggleLOD(true);
                 else
                     closeDistanceAvatars.Add(distanceToPlayer, avatar);
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            IAvatarRenderer currentAvatar;
+            AvatarLODController currentAvatar;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
                 currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
 
-                ToggleLOD(currentAvatar, isLOD);
+                currentAvatar.ToggleLOD(isLOD);
             }
-        }
-
-        private void ToggleLOD(IAvatarRenderer avatarRenderer, bool enabled)
-        {
-            var lodRenderer = avatarRenderer.GetLODRenderer();
-            if (lodRenderer.gameObject.activeSelf == enabled)
-                return;
-
-            if (enabled)
-            {
-                // lodRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, assetReferences.impostorTextures[Random.Range(0, assetReferences.impostorTextures.Length)]);
-
-                float spriteColumnsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS;
-                float spriteRowsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_ROWS;
-                float randomUVX = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteColumnsUnit;
-                float randomUVY = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteRowsUnit;
-                Vector2[] uvs = new Vector2[4]; // Quads have only 4 vertices
-                uvs[0].Set(randomUVX, randomUVY);
-                uvs[1].Set(randomUVX + spriteColumnsUnit, randomUVY);
-                uvs[2].Set(randomUVX, randomUVY + spriteRowsUnit);
-                uvs[3].Set(randomUVX + spriteColumnsUnit, randomUVY + spriteRowsUnit);
-
-                avatarRenderer.GetLODMesh().uv = uvs;
-            }
-
-            lodRenderer.gameObject.SetActive(enabled);
-            avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
     }
 }

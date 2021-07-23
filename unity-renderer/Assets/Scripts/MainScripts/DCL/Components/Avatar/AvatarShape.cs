@@ -2,9 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -71,7 +68,9 @@ namespace DCL
             avatarRenderer.ApplyModel(model, () =>
             {
                 if (avatarRenderer.lodRenderer != null)
-                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer);
+                {
+                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer.lodController);
+                }
 
                 avatarDone = true;
             }, () => avatarFailed = true);
@@ -176,7 +175,7 @@ namespace DCL
         {
             base.Cleanup();
 
-            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
+            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer.lodController);
 
             avatarRenderer.CleanupAvatar();
 
