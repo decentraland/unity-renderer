@@ -135,7 +135,7 @@ namespace DCL
             playerStatus.id = model.id;
             playerStatus.name = model.name;
             playerStatus.isTalking = model.talking;
-            playerStatus.worldPosition = entity.gameObject.transform.localPosition;
+            playerStatus.worldPosition = entity.gameObject.transform.position;
             if (isNew)
                 DataStore.i.player.otherPlayersStatus.Add(playerStatus.id, playerStatus);
         }
@@ -166,9 +166,6 @@ namespace DCL
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             lastAvatarPosition = newTransformModel.position;
-
-            AvatarModel model = (AvatarModel) this.model;
-            UpdatePlayerStatus(model);
         }
 
         public override void OnPoolGet()
