@@ -8,7 +8,7 @@ namespace DCL
 {
     public static class CombineMeshDataUtils
     {
-        public static void ComputeVertexAttributesData (this CombineMeshData data, List<CombineLayer> layers, Material materialAsset)
+        public static void ComputeBoneWeights( this CombineMeshData data, List<CombineLayer> layers )
         {
             int layersCount = layers.Count;
 
@@ -16,9 +16,6 @@ namespace DCL
             {
                 CombineLayer layer = layers[layerIndex];
                 var layerRenderers = layer.renderers;
-
-                Material newMaterial = UnityEngine.Object.Instantiate(materialAsset);
-                data.materials.Add( newMaterial );
 
                 int layerRenderersCount = layerRenderers.Count;
 
@@ -29,38 +26,79 @@ namespace DCL
                     // Bone Weights
                     var sharedMesh = renderer.sharedMesh;
                     var meshBoneWeights = sharedMesh.boneWeights;
-                    int vertexCount = sharedMesh.vertexCount;
-
                     data.boneWeights.AddRange(meshBoneWeights);
+                }
+            }
+        }
+
+        public static void FlattenMaterials(this CombineMeshData data, List<CombineLayer> layers, Material materialAsset)
+        {
+            int layersCount = layers.Count;
+
+            for (int layerIndex = 0; layerIndex < layersCount; layerIndex++)
+            {
+                CombineLayer layer = layers[layerIndex];
+                var layerRenderers = layer.renderers;
+
+                Material newMaterial = Object.Instantiate(materialAsset);
+
+                CullMode cullMode = layer.cullMode;
+                bool isOpaque = layer.isOpaque;
+
+                if ( isOpaque )
+                {
+                    newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
+                    newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
+                    newMaterial.SetInt(ShaderUtils.ZWrite, 1);
+                    newMaterial.SetInt(ShaderUtils.Surface, 0);
+                }
+                else
+                {
+                    newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.SrcAlpha);
+                    newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
+                    newMaterial.SetInt(ShaderUtils.ZWrite, 0);
+                    newMaterial.SetInt(ShaderUtils.Surface, 1);
+                }
+
+                newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);
+
+                data.materials.Add( newMaterial );
+
+                int layerRenderersCount = layerRenderers.Count;
+
+                for (int i = 0; i < layerRenderersCount; i++)
+                {
+                    var renderer = layerRenderers[i];
+
+                    // Bone Weights
+                    var sharedMesh = renderer.sharedMesh;
+                    int vertexCount = sharedMesh.vertexCount;
 
                     // Texture IDs
                     Material mat = renderer.sharedMaterial;
 
                     Texture2D baseMap = (Texture2D)mat.GetTexture(ShaderUtils.BaseMap);
                     Texture2D emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
+                    float cutoff = mat.GetFloat(ShaderUtils.Cutoff);
 
-                    int id1 = baseMap != null ? layer.idMap[baseMap] : -1;
-                    int id2 = emissionMap != null ? layer.idMap[emissionMap] : -1;
+                    int baseMapId = baseMap != null ? layer.idMap[baseMap] : -1;
+                    int emissionMapId = emissionMap != null ? layer.idMap[emissionMap] : -1;
 
-                    data.texturePointers.AddRange(Enumerable.Repeat(new Vector2(id1, id2), vertexCount));
+                    data.texturePointers.AddRange(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount));
 
-                    if ( id1 != -1 )
+                    if ( baseMapId != -1 )
                     {
-                        string targetMap = $"_AvatarMap{(id1 + 1)}";
+                        string targetMap = $"_AvatarMap{(baseMapId + 1)}";
                         newMaterial.SetTexture(targetMap, baseMap);
                         //logger.Log($"(opaque) Setting map {targetMap} to {baseMap}");
                     }
 
-                    if ( id2 != -1 )
+                    if ( emissionMapId != -1 )
                     {
-                        string targetMap = $"_AvatarMap{(id2 + 1)}";
+                        string targetMap = $"_AvatarMap{(emissionMapId + 1)}";
                         newMaterial.SetTexture(targetMap, emissionMap);
                         //logger.Log($"(emission) Setting map {targetMap} to {baseMap}");
                     }
-
-                    newMaterial.SetInt(ShaderUtils.ZWrite, mat.GetInt(ShaderUtils.ZWrite));
-                    newMaterial.SetInt(ShaderUtils.SrcBlend, mat.GetInt(ShaderUtils.SrcBlend));
-                    newMaterial.SetInt(ShaderUtils.DstBlend, mat.GetInt(ShaderUtils.DstBlend));
 
                     // Base Colors
                     Color baseColor = mat.GetColor(ShaderUtils.BaseColor);
@@ -71,6 +109,8 @@ namespace DCL
                     Vector4 emissionColorV4 = new Vector4(emissionColor.r, emissionColor.g, emissionColor.b, emissionColor.a);
                     data.emissionColors.AddRange(Enumerable.Repeat(emissionColorV4, vertexCount));
                 }
+
+                SRPBatchingHelper.OptimizeMaterial(newMaterial);
             }
         }
 

@@ -8,6 +8,8 @@ namespace DCL
     {
         public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
         public Dictionary<Texture2D, int> idMap = new Dictionary<Texture2D, int>();
+        public CullMode cullMode;
+        public bool isOpaque;
     }
 
     public interface IAvatarMeshCombineHelper
@@ -74,7 +76,7 @@ namespace DCL
 
             if ( layers == null )
             {
-                logger.Log("Combine failure! 2");
+                logger.Log("Combine failure!");
                 return null;
             }
 
@@ -104,13 +106,6 @@ namespace DCL
 
             Mesh finalMesh = CombineSkinnedMeshes(data);
 
-            //finalMesh.bounds = new Bounds();
-            // var bounds = finalMesh.bounds;
-            // Vector3 newCenter = bounds.center;
-            // newCenter.Scale(new Vector3(1, 0, 1));
-            // bounds.center = newCenter;
-            // finalMesh.bounds = bounds;
-
             GameObject result = new GameObject("Combined Avatar");
             result.layer = bonesContainer.gameObject.layer;
             result.transform.parent = null;
@@ -123,8 +118,10 @@ namespace DCL
             newSkinnedMeshRenderer.localBounds = bonesContainer.localBounds;
             newSkinnedMeshRenderer.sharedMaterials = data.materials.ToArray();
             newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
-            newSkinnedMeshRenderer.updateWhenOffscreen = true;
+            newSkinnedMeshRenderer.updateWhenOffscreen = false;
             newSkinnedMeshRenderer.skinnedMotionVectors = false;
+
+            logger.Log(null, "Finish combining avatar. Click here to focus on GameObject.", result);
 
             // The avatar is combined, so we can destroy the baked meshes.
             for ( int i = 0; i < combineInstancesCount; i++ )

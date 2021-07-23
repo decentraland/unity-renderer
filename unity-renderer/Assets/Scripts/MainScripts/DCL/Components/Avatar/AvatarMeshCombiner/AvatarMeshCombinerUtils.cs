@@ -2,15 +2,21 @@
 using System.Linq;
 using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL
 {
     public static class AvatarMeshCombinerUtils
     {
-        private const int MAX_TEXTURE_ID_COUNT = 12;
+        private const int MAX_TEXTURE_ID_COUNT = 10;
 
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="renderers"></param>
+        /// <returns></returns>
         internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers)
         {
             // Define helper methods
@@ -30,30 +36,60 @@ namespace DCL
 
             // Implementation start
             logger.Log("Slice Start!");
-            List<CombineLayer> result = new List<CombineLayer>();
+
+            renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
+
+            Dictionary<int, CullMode> groupToCullMode = new Dictionary<int, CullMode>();
+            Dictionary<int, bool> groupToOpaqueMode = new Dictionary<int, bool>();
+
+            List<List<SkinnedMeshRenderer>> rendererGroups = new List<List<SkinnedMeshRenderer>>();
 
             // Group renderers on opaque and transparent materials
-            var surfaceGroups = renderers.GroupBy( IsOpaque );
-            int textureId = 0;
+            var rendererByOpaqueMode = renderers.GroupBy( IsOpaque );
 
-            foreach ( var group in surfaceGroups )
+            // Then, make subgroups to divide them between culling modes
+            foreach ( var byOpaqueMode in rendererByOpaqueMode )
             {
-                CombineLayer currentLayer = new CombineLayer();
+                var rendererByCullingMode = byOpaqueMode.GroupBy( GetCullMode );
+
+                foreach ( var byCulling in rendererByCullingMode )
+                {
+                    var byCullingRenderers = byCulling.ToList();
+                    rendererGroups.Add(byCullingRenderers);
+                    groupToCullMode.Add(rendererGroups.Count - 1, byCulling.Key);
+                    groupToOpaqueMode.Add(rendererGroups.Count - 1, byOpaqueMode.Key);
+                }
+            }
+
+            logger.Log($"Preparing slice. Found {rendererGroups.Count} groups.");
+
+            /*
+             * The grouping outcome ends up like this:
+             *
+             *                 Opaque           Transparent
+             *             /     |     \        /    |    \
+             *          Back - Front - Off - Back - Front - Off -> rendererGroups
+             */
+
+            List<CombineLayer> result = new List<CombineLayer>();
+
+            for (int groupIndex = 0; groupIndex < rendererGroups.Count; groupIndex++)
+            {
+                var group = rendererGroups[groupIndex];
+                int textureId = 0;
+
+                CombineLayer currentLayer = new CombineLayer
+                {
+                    cullMode = groupToCullMode[ groupIndex ],
+                    isOpaque = groupToOpaqueMode[ groupIndex ]
+                };
 
                 result.Add(currentLayer);
-                textureId = 0;
 
-                var groupRenderers = group.ToArray();
-
-                foreach ( var r in groupRenderers )
+                foreach ( var r in @group )
                 {
-                    if ( !r.enabled || r.sharedMesh == null )
-                    {
-                        //logger.Log($"Filtering out renderer: {r.transform.parent.name}");
-                        continue;
-                    }
-
                     currentLayer.renderers.Add(r);
+
                     var mats = r.sharedMaterials;
 
                     for ( int i = 0; i < mats.Length; i++ )
@@ -70,23 +106,24 @@ namespace DCL
                         AddToMap(currentLayer, emissionMap, ref textureId);
 
                         if ( textureId >= MAX_TEXTURE_ID_COUNT )
-                        {
-                            textureId = 0;
-                            currentLayer = new CombineLayer();
-                            result.Add(currentLayer);
-                        }
+                            break;
                     }
+
+                    if ( textureId >= MAX_TEXTURE_ID_COUNT )
+                        break;
                 }
             }
 
             // No valid materials were found
-            if ( result.Count == 1 && textureId == 0 )
+            if ( result.Count == 1 && result[0].idMap.Count == 0 )
             {
                 logger.Log("Slice End Fail!");
                 return null;
             }
 
             int layInd = 0;
+
+            result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
 
             foreach ( var layer in result )
             {
@@ -102,6 +139,10 @@ namespace DCL
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="renderer"></param>
         internal static void ResetBones(SkinnedMeshRenderer renderer)
         {
             var bindPoses = renderer.sharedMesh.bindposes;
@@ -142,6 +183,21 @@ namespace DCL
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <returns></returns>
+        internal static CullMode GetCullMode( Renderer renderer )
+        {
+            Material firstMat = renderer.sharedMaterials[0];
+
+            if (firstMat == null)
+                return CullMode.Back;
+
+            return (CullMode)firstMat.GetInt( ShaderUtils.Cull );
         }
     }
 }

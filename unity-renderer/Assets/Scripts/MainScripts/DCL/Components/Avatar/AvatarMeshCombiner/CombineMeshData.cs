@@ -15,7 +15,7 @@ namespace DCL
 
         // Combined vertex attributes
         public List<BoneWeight> boneWeights = new List<BoneWeight>();
-        public List<Vector2> texturePointers = new List<Vector2>();
+        public List<Vector3> texturePointers = new List<Vector3>();
         public List<Color> colors = new List<Color>();
         public List<Vector4> emissionColors = new List<Vector4>();
 
@@ -28,9 +28,10 @@ namespace DCL
             this.bindPoses = bindPoses;
             this.renderers = layers.SelectMany( (x) => x.renderers ).ToList();
 
-            this.ComputeVertexAttributesData( layers, materialAsset );
+            this.ComputeBoneWeights( layers );
             this.ComputeCombineInstancesData( layers );
             this.ComputeSubMeshes( layers );
+            this.FlattenMaterials( layers, materialAsset );
         }
     }
 }
