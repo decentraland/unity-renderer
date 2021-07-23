@@ -32,16 +32,15 @@ namespace DCL
         public void RandomizeAndApplyGenericImpostor()
         {
             // TODO: change naming and type to Vector2 spriteSize ??
-            float spriteColumnsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS;
-            float spriteRowsUnit = 1f / GENERIC_IMPOSTORS_ATLAS_ROWS;
-            float randomUVX = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteColumnsUnit;
-            float randomUVY = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteRowsUnit;
+            Vector2 spriteSize = new Vector2(1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS, 1f / GENERIC_IMPOSTORS_ATLAS_ROWS);
+            float randomUVXPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteSize.x;
+            float randomUVYPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteSize.y;
 
             Vector2[] uvs = new Vector2[4]; // Quads have only 4 vertices
-            uvs[0].Set(randomUVX, randomUVY);
-            uvs[1].Set(randomUVX + spriteColumnsUnit, randomUVY);
-            uvs[2].Set(randomUVX, randomUVY + spriteRowsUnit);
-            uvs[3].Set(randomUVX + spriteColumnsUnit, randomUVY + spriteRowsUnit);
+            uvs[0].Set(randomUVXPos, randomUVYPos);
+            uvs[1].Set(randomUVXPos + spriteSize.x, randomUVYPos);
+            uvs[2].Set(randomUVXPos, randomUVYPos + spriteSize.y);
+            uvs[3].Set(randomUVXPos + spriteSize.x, randomUVYPos + spriteSize.y);
             mesh.uv = uvs;
         }
 
