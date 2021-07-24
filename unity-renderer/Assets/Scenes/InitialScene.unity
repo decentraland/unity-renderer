@@ -1098,13 +1098,13 @@ MonoBehaviour:
   cameraController: {fileID: 1608366483}
   bridgesGameObject: {fileID: 287244851}
   wssServerUrl: ws://localhost:4999/
-  openBrowserWhenStart: 1
+  openBrowserWhenStart: 0
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 1
   baseUrlCustom: https://explorer.decentraland.zone/?
   environment: 2
-  startInCoords: {x: 0, y: 0}
+  startInCoords: {x: 100, y: 100}
   forceLocalComms: 0
   allWearables: 0
   testWearables: 0
@@ -1496,6 +1496,16 @@ PrefabInstance:
       propertyPath: m_RendererIndex
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 326638023420856515, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 326638023420856515, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.z
+      value: -3.2
+      objectReference: {fileID: 0}
     - target: {fileID: 326638023455565216, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_Name
@@ -1561,6 +1571,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 326638024179754906, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 326638024179754906, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.z
+      value: -3.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 326638024373888304, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 326638024373888304, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_FollowOffset.z
+      value: -3.2
+      objectReference: {fileID: 0}
     - target: {fileID: 326638024485685085, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -1589,22 +1619,22 @@ PrefabInstance:
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.89239913
+      value: 0.95777726
       objectReference: {fileID: 0}
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.23911741
+      value: -0.24601135
       objectReference: {fileID: 0}
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.36964384
+      value: 0.14412059
       objectReference: {fileID: 0}
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.09904569
+      value: 0.037018314
       objectReference: {fileID: 0}
     - target: {fileID: 2121172076413162887, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
@@ -1614,7 +1644,7 @@ PrefabInstance:
     - target: {fileID: 2952493522718747595, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: far clip plane
-      value: 100
+      value: 75
       objectReference: {fileID: 0}
     - target: {fileID: 2952493522718747595, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
