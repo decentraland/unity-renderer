@@ -1,4 +1,3 @@
-using System;
 using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
@@ -6,7 +5,6 @@ using UnityEngine;
 using System.Collections;
 using Cinemachine;
 using UnityEngine.SceneManagement;
-using Environment = DCL.Environment;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -21,7 +19,6 @@ public class DCLCharacterController : MonoBehaviour
     public float movementSpeed = 8f;
     public float runningSpeedMultiplier = 2f;
 
-    [Obsolete("This field public access is obsolete. If you aren't within DCLCharacterController, please use CommonScriptableObject.playerXPosition instead.")]
     public DCLCharacterPosition characterPosition;
 
     [Header("Collisions")]
@@ -445,10 +442,7 @@ public class DCLCharacterController : MonoBehaviour
         return null;
     }
 
-    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo)
-    {
-        return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo);
-    }
+    public bool CastGroundCheckingRays(float extraDistance, float scale, out RaycastHit hitInfo) { return CastGroundCheckingRays(transform, collider, extraDistance, scale, groundLayers, out hitInfo); }
 
     public bool CastGroundCheckingRay(float extraDistance, out RaycastHit hitInfo)
     {
@@ -466,7 +460,7 @@ public class DCLCharacterController : MonoBehaviour
         float rayMagnitude = (bounds.extents.y + extraDistance);
         float originScale = scale * bounds.extents.x;
 
-        if (!CastGroundCheckingRay(Vector3.zero, out hitInfo, rayMagnitude, groundLayers) // center
+        if (!CastGroundCheckingRay(transform.position, out hitInfo, rayMagnitude, groundLayers) // center
             && !CastGroundCheckingRay( transform.position + transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // forward
             && !CastGroundCheckingRay( transform.position + transform.right * originScale, out hitInfo, rayMagnitude, groundLayers) // right
             && !CastGroundCheckingRay( transform.position + -transform.forward * originScale, out hitInfo, rayMagnitude, groundLayers) // back

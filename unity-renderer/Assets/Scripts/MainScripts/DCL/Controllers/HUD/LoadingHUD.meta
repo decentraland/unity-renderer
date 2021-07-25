@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:unity-renderer/Assets/Scripts/MainScripts/DCL/Components/Avatar/AvatarRendererInterface.meta
-guid: b575c93ae6744034ebe903ed7fbe7159
-=======
-guid: 4077b07e068f71246bd9d4a10376eaa1
->>>>>>> 52077511db367eaf0551214f6ffd7f2f16962e36:unity-renderer/Assets/Scripts/MainScripts/DCL/Controllers/HUD/LoadingHUD.meta
+guid: 73c1a7c92701847c0b02cdf82d3531be
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
