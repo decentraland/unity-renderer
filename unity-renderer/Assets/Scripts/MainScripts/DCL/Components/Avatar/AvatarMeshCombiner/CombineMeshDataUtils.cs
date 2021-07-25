@@ -67,15 +67,15 @@ namespace DCL
                 {
                     newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
                     newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
-                    newMaterial.SetInt(ShaderUtils.ZWrite, 1);
                     newMaterial.SetInt(ShaderUtils.Surface, 0);
+                    newMaterial.SetFloat(ShaderUtils.ZWrite, 1);
                 }
                 else
                 {
                     newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.SrcAlpha);
                     newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
-                    newMaterial.SetInt(ShaderUtils.ZWrite, 0);
                     newMaterial.SetInt(ShaderUtils.Surface, 1);
+                    newMaterial.SetFloat(ShaderUtils.ZWrite, 0);
                 }
 
                 newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);

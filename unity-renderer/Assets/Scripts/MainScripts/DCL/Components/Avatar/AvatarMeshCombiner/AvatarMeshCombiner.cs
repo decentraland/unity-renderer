@@ -45,10 +45,15 @@ namespace DCL
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, data.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, data.texturePointers);
             finalMesh.SetColors(data.colors);
-            finalMesh.subMeshCount = data.subMeshes.Count;
-            finalMesh.SetSubMeshes(data.subMeshes);
-            finalMesh.Optimize();
+
+            if ( data.subMeshes.Count > 1 )
+            {
+                finalMesh.subMeshCount = data.subMeshes.Count;
+                finalMesh.SetSubMeshes(data.subMeshes);
+            }
+
             finalMesh.RecalculateBounds();
+            finalMesh.Optimize();
 
             finalMesh.UploadMeshData(true);
 
@@ -108,17 +113,14 @@ namespace DCL
 
             GameObject result = new GameObject("Combined Avatar");
             result.layer = bonesContainer.gameObject.layer;
-            result.transform.parent = null;
-            result.transform.position = Vector3.zero;
 
             var newSkinnedMeshRenderer = result.AddComponent<SkinnedMeshRenderer>();
             newSkinnedMeshRenderer.sharedMesh = finalMesh;
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
             newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
-            newSkinnedMeshRenderer.localBounds = bonesContainer.localBounds;
             newSkinnedMeshRenderer.sharedMaterials = data.materials.ToArray();
             newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
-            newSkinnedMeshRenderer.updateWhenOffscreen = false;
+            newSkinnedMeshRenderer.updateWhenOffscreen = true;
             newSkinnedMeshRenderer.skinnedMotionVectors = false;
 
             logger.Log(null, "Finish combining avatar. Click here to focus on GameObject.", result);

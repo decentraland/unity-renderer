@@ -15,7 +15,7 @@ namespace DCL.Helpers
             material.EnableKeyword("_EMISSION");
             material.EnableKeyword("_NORMALMAP");
 
-            if (!material.IsKeywordEnabled("_ALPHATEST_ON"))
+            if (!material.IsKeywordEnabled("_ALPHATEST_ON") && material.HasProperty(ShaderUtils.Cutoff))
                 material.SetFloat(ShaderUtils.Cutoff, 0);
 
             material.EnableKeyword("_ALPHATEST_ON");

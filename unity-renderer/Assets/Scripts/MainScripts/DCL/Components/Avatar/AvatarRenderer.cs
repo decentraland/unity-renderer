@@ -383,21 +383,21 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
                 MergeAvatar();
+                SkinnedMeshRenderer skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
+                Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
+                yield return null;
+                Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
             }
         }
 
         private Mesh combinedAvatarMesh;
         private GameObject combinedAvatar;
 
-        [ContextMenu("Show Bones")]
+        [ContextMenu("Show Bounds")]
         public void ShowBones()
         {
-            Transform[] bones = combinedAvatar.GetComponent<SkinnedMeshRenderer>().bones;
-
-            for ( int i = 0; i < bones.Length; i++ )
-            {
-                Debug.DrawLine(bones[i].transform.position, bones[i].transform.position + Vector3.up * 0.1f, Color.red, 10.0f);
-            }
+            SkinnedMeshRenderer skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
+            Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
         }
 
         private IAvatarMeshCombineHelper _avatarMeshCombineHelper = new AvatarMeshCombineHelper();
@@ -433,23 +433,44 @@ namespace DCL
                 return;
             }
 
-            Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-
-            CleanMergedAvatar();
-
-            combinedAvatar = newCombinedAvatar;
-            combinedAvatarMesh = newCombinedAvatarMesh;
-
-            combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
-            combinedAvatar.transform.localPosition = Vector3.zero;
-
-            gameObject.SetActive(false);
-            gameObject.SetActive(true);
-
             for ( int i = 0; i < renderers.Length; i++ )
             {
                 renderers[i].enabled = false;
             }
+
+            if ( combinedAvatar == null )
+            {
+                Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                //CleanMergedAvatar();
+                combinedAvatar = newCombinedAvatar;
+                combinedAvatarMesh = newCombinedAvatarMesh;
+                combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
+                combinedAvatar.transform.localPosition = Vector3.zero;
+            }
+            else
+            {
+                if ( combinedAvatarMesh != null )
+                    Destroy(combinedAvatarMesh);
+
+                var skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
+                var newSkr = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>();
+
+                skr.sharedMesh = newSkr.sharedMesh;
+                skr.rootBone = newSkr.rootBone;
+                skr.bones = newSkr.bones;
+                skr.sharedMaterials = newSkr.sharedMaterials;
+                skr.enabled = true;
+
+                Destroy(newCombinedAvatar.gameObject);
+
+                combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
+                combinedAvatar.transform.localPosition = Vector3.zero;
+
+                combinedAvatarMesh = newSkr.sharedMesh;
+            }
+
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
 
         void CleanMergedAvatar()

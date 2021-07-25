@@ -129,7 +129,7 @@ namespace DCL
                 // put GetMapIds result into currentLayer id map.
                 foreach ( var kvp in mapIdsToInsert )
                 {
-                    logger.Log("Adding textureId " + kvp.Value);
+                    //logger.Log("Adding textureId " + kvp.Value);
                     currentResultLayer.textureToId[ kvp.Key ] = kvp.Value;
                 }
 
@@ -210,15 +210,15 @@ namespace DCL
 
                 for ( int texIdIndex = 0; texIdIndex < textureIds.Length; texIdIndex++ )
                 {
-                    var map = (Texture2D)mat.GetTexture(textureIds[texIdIndex]);
+                    var texture = (Texture2D)mat.GetTexture(textureIds[texIdIndex]);
 
-                    if ( map == null )
+                    if ( texture == null )
                         continue;
 
-                    if ( refDict.ContainsKey(map) )
+                    if ( refDict.ContainsKey(texture) || result.ContainsKey(texture) )
                         continue;
 
-                    result.Add(map, startingId);
+                    result.Add(texture, startingId);
                     startingId++;
                 }
             }
@@ -248,6 +248,8 @@ namespace DCL
                 bone.localScale = new Vector3(bindPoseScale.x / boneScale.x,
                     bindPoseScale.y / boneScale.y,
                     bindPoseScale.z / boneScale.z);
+
+                Debug.DrawLine(bone.position, bone.position + Vector3.up, Color.green, 60);
             }
         }
 
