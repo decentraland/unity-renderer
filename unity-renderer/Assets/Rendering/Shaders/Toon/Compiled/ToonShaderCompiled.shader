@@ -3,7 +3,6 @@
     Properties
     {
         [NoScaleOffset]_MatCap("MatCap", 2D) = "white" {}
-        _Cutoff("AlphaClipThreshold", Float) = 0
         [NoScaleOffset]_AvatarMap1("AvatarMap1", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap2("AvatarMap2", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap3("AvatarMap3", 2D) = "white" {}
@@ -479,7 +478,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -529,7 +527,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -910,7 +908,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -1017,7 +1015,13 @@
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
@@ -1026,7 +1030,7 @@
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -1569,7 +1573,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -1619,7 +1622,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -2000,7 +2003,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -2107,7 +2110,13 @@
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
@@ -2116,7 +2125,7 @@
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -2225,10 +2234,10 @@
             }
 
             // Render State
-            Cull [_Cull]
+            Cull Back
             Blend One Zero
             ZTest LEqual
-            ZWrite [_ZWrite]
+            ZWrite On
             ColorMask 0
 
             // Debug
@@ -2512,7 +2521,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -2562,7 +2570,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -2647,7 +2655,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -2662,10 +2670,16 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -3025,7 +3039,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -3075,7 +3088,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -3160,7 +3173,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3175,10 +3188,16 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -3571,7 +3590,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -3621,7 +3639,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -3707,7 +3725,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3722,11 +3740,17 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -4160,7 +4184,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -4210,7 +4233,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -4587,7 +4610,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -4694,12 +4717,18 @@
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -5132,7 +5161,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -5182,7 +5210,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -5558,7 +5586,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -5647,11 +5675,17 @@
                     _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -6198,7 +6232,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -6248,7 +6281,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -6629,7 +6662,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -6736,7 +6769,13 @@
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.NormalTS = IN.TangentSpaceNormal;
@@ -6745,7 +6784,7 @@
                 surface.Smoothness = 0.5;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -7139,7 +7178,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -7189,7 +7227,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -7274,7 +7312,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -7289,10 +7327,16 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -7651,7 +7695,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -7701,7 +7744,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -7786,7 +7829,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -7801,10 +7844,16 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -8196,7 +8245,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -8246,7 +8294,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -8332,7 +8380,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -8347,11 +8395,17 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -8785,7 +8839,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -8835,7 +8888,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -9212,7 +9265,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -9319,12 +9372,18 @@
                                      _Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
@@ -9758,7 +9817,6 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
-            float _Cutoff;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -9808,7 +9866,7 @@
             // Graph Functions
 
             // 563fef455364aca86b423dcf6a54f497
-            #include "Assets/Rendering/Shaders/Toon/SampleTexture.hlsl"
+            #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
             {
@@ -10184,7 +10242,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(0, 0, 0, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -10273,11 +10331,17 @@
                     _FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+                float4 _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0 = IN.uv2;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_R_1 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[0];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_G_2 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[1];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_B_3 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[2];
+                float _Split_59ccf41d95534d23bcd364e587c6fc61_A_4 = _UV_cc03be3228434292a1e3bf629dbd9a0b_Out_0[3];
                 #endif
                 surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
-                surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+                surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
                 return surface;
             }
 
