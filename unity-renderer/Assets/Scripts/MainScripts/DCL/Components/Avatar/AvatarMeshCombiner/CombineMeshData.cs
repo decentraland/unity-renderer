@@ -14,6 +14,7 @@ namespace DCL
         public List<SubMeshDescriptor> subMeshes = new List<SubMeshDescriptor>();
 
         // Combined vertex attributes
+        // TODO(Brian): use interleaved buffers with SetVertexBufferData
         public List<BoneWeight> boneWeights = new List<BoneWeight>();
         public List<Vector3> texturePointers = new List<Vector3>();
         public List<Color> colors = new List<Color>();

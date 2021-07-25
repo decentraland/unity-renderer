@@ -8,6 +8,24 @@ namespace DCL
 {
     public static class CombineMeshDataUtils
     {
+        public const string AVATAR_MAP_PROPERTY_NAME = "_AvatarMap";
+
+        public static readonly int[] AVATAR_MAP_ID_PROPERTIES =
+        {
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "1"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "2"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "3"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "4"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "5"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "6"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "7"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "8"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "9"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "10"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "11"),
+            Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "12")
+        };
+
         public static void ComputeBoneWeights( this CombineMeshData data, List<CombineLayer> layers )
         {
             int layersCount = layers.Count;
@@ -81,23 +99,24 @@ namespace DCL
                     Texture2D emissionMap = (Texture2D)mat.GetTexture(ShaderUtils.EmissionMap);
                     float cutoff = mat.GetFloat(ShaderUtils.Cutoff);
 
-                    int baseMapId = baseMap != null ? layer.textureToId[baseMap] : -1;
-                    int emissionMapId = emissionMap != null ? layer.textureToId[emissionMap] : -1;
+                    bool baseMapIdIsValid = baseMap != null && layer.textureToId.ContainsKey(baseMap);
+                    bool emissionMapIdIsValid = emissionMap != null && layer.textureToId.ContainsKey(emissionMap);
+
+                    int baseMapId = baseMapIdIsValid ? layer.textureToId[baseMap] : -1;
+                    int emissionMapId = emissionMapIdIsValid ? layer.textureToId[emissionMap] : -1;
 
                     data.texturePointers.AddRange(Enumerable.Repeat(new Vector3(baseMapId, emissionMapId, cutoff), vertexCount));
 
                     if ( baseMapId != -1 )
                     {
-                        string targetMap = $"_AvatarMap{(baseMapId + 1)}";
+                        int targetMap = AVATAR_MAP_ID_PROPERTIES[baseMapId];
                         newMaterial.SetTexture(targetMap, baseMap);
-                        //logger.Log($"(opaque) Setting map {targetMap} to {baseMap}");
                     }
 
                     if ( emissionMapId != -1 )
                     {
-                        string targetMap = $"_AvatarMap{(emissionMapId + 1)}";
+                        int targetMap = AVATAR_MAP_ID_PROPERTIES[emissionMapId];
                         newMaterial.SetTexture(targetMap, emissionMap);
-                        //logger.Log($"(emission) Setting map {targetMap} to {baseMap}");
                     }
 
                     // Base Colors
