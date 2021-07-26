@@ -46,16 +46,16 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     [Test]
     public void UndoRedoMoveAction()
     {
-        BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+        BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
         Vector3 oldPosition = scene.entities[ENTITY_ID].gameObject.transform.position;
         Vector3 newPosition = new Vector3(5, 5, 5);
 
-        BuilderInWorldEntityAction entityAction = new BuilderInWorldEntityAction(ENTITY_ID);
+        BIWEntityAction entityAction = new BIWEntityAction(ENTITY_ID);
         entityAction.oldValue = oldPosition;
         entityAction.newValue = newPosition;
 
-        buildModeAction.CreateActionType(entityAction, BuildInWorldCompleteAction.ActionType.MOVE);
+        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.MOVE);
 
         scene.entities[ENTITY_ID].gameObject.transform.position = newPosition;
         biwActionController.AddAction(buildModeAction);
@@ -70,16 +70,16 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     [Test]
     public void UndoRedoRotateAction()
     {
-        BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+        BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
         Vector3 oldRotation = scene.entities[ENTITY_ID].gameObject.transform.rotation.eulerAngles;
         Vector3 newRotation = new Vector3(5, 5, 5);
 
-        BuilderInWorldEntityAction entityAction = new BuilderInWorldEntityAction(ENTITY_ID);
+        BIWEntityAction entityAction = new BIWEntityAction(ENTITY_ID);
         entityAction.oldValue = oldRotation;
         entityAction.newValue = newRotation;
 
-        buildModeAction.CreateActionType(entityAction, BuildInWorldCompleteAction.ActionType.ROTATE);
+        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.ROTATE);
 
         scene.entities[ENTITY_ID].gameObject.transform.rotation = Quaternion.Euler(newRotation);
         biwActionController.AddAction(buildModeAction);
@@ -94,16 +94,16 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     [Test]
     public void UndoRedoScaleAction()
     {
-        BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+        BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
         Vector3 oldScale = scene.entities[ENTITY_ID].gameObject.transform.localScale;
         Vector3 newScale = new Vector3(5, 5, 5);
 
-        BuilderInWorldEntityAction entityAction = new BuilderInWorldEntityAction(ENTITY_ID);
+        BIWEntityAction entityAction = new BIWEntityAction(ENTITY_ID);
         entityAction.oldValue = oldScale;
         entityAction.newValue = newScale;
 
-        buildModeAction.CreateActionType(entityAction, BuildInWorldCompleteAction.ActionType.SCALE);
+        buildModeAction.CreateActionType(entityAction, BIWCompleteAction.ActionType.SCALE);
 
         scene.entities[ENTITY_ID].gameObject.transform.localScale = newScale;
         biwActionController.AddAction(buildModeAction);
@@ -125,7 +125,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         biwActionController.TryToRedoAction();
         Assert.IsTrue(scene.entities.ContainsKey(ENTITY_ID));
 
-        DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[ENTITY_ID].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
         biwActionController.CreateActionEntityDeleted(biwEntity);
@@ -143,9 +143,9 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
-        CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
-        CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
-        BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+        CatalogItem oldFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem newFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[1];
+        BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
         biwCreatorController.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
@@ -156,7 +156,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
         buildModeAction.CreateChangeFloorAction(oldFloor, newFloor);
         biwActionController.AddAction(buildModeAction);
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -167,7 +167,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         biwActionController.TryToUndoAction();
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -179,7 +179,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         biwActionController.TryToRedoAction();
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -192,7 +192,7 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
-        BuilderInWorldNFTController.i.ClearNFTs();
+        BIWNFTController.i.ClearNFTs();
         entityHandler.Dispose();
         biwActionController.Dispose();
         biwFloorHandler.Dispose();

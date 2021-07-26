@@ -8,14 +8,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DCLBuilderInWorldEntity : EditableEntity
+public class BIWEntity
 {
+    public GameObject gameObject => rootEntity.gameObject;
+    public Transform transform => rootEntity.transform;
+
+    public IDCLEntity rootEntity { protected set; get; }
     public string entityUniqueId;
 
-    public event Action<DCLBuilderInWorldEntity> OnShapeFinishLoading;
-    public event Action<DCLBuilderInWorldEntity> OnStatusUpdate;
-    public event Action<DCLBuilderInWorldEntity> OnDelete;
-    public event Action<DCLBuilderInWorldEntity> OnErrorStatusChange;
+    public event Action<BIWEntity> OnShapeFinishLoading;
+    public event Action<BIWEntity> OnStatusUpdate;
+    public event Action<BIWEntity> OnDelete;
+    public event Action<BIWEntity> OnErrorStatusChange;
 
     public bool IsLocked
     {
@@ -107,7 +111,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
 
         entityUniqueId = rootEntity.scene.sceneData.id + rootEntity.entityId;
-        IsVisible = rootEntity.gameObject.activeSelf;
+        if (rootEntity.gameObject != null)
+            IsVisible = rootEntity.gameObject.activeSelf;
 
         isShapeComponentSet = false;
         InitRotation();
@@ -132,7 +137,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         string assetId = catalogHolder.GetAssetId();
 
-        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
         return null;
@@ -140,17 +145,17 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
-    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
 
-    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
+    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
 
-    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
+    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
 
-    public void PositionReported() { lastPositionReported = transform.position; }
+    public void PositionReported() { lastPositionReported = rootEntity.transform.position; }
 
-    public void ScaleReported() { lastScaleReported = transform.lossyScale; }
+    public void ScaleReported() { lastScaleReported = rootEntity.transform.lossyScale; }
 
-    public void RotationReported() { lastRotationReported = transform.rotation; }
+    public void RotationReported() { lastRotationReported = rootEntity.transform.rotation; }
 
     #region Error Handling
 
@@ -189,9 +194,9 @@ public class DCLBuilderInWorldEntity : EditableEntity
         IsSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
-        lastPositionReported = transform.position;
-        lastScaleReported = transform.lossyScale;
-        lastRotationReported = transform.rotation;
+        lastPositionReported = rootEntity.transform.position;
+        lastScaleReported = rootEntity.transform.lossyScale;
+        lastRotationReported = rootEntity.transform.rotation;
     }
 
     public void Deselect()
@@ -209,8 +214,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
     public void ToggleShowStatus()
     {
-        rootEntity.gameObject.SetActive(!gameObject.activeSelf);
-        IsVisible = gameObject.activeSelf;
+        rootEntity.gameObject.SetActive(!rootEntity.gameObject.activeSelf);
+        IsVisible = rootEntity.gameObject.activeSelf;
         OnStatusUpdate?.Invoke(this);
     }
 
@@ -238,7 +243,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
                 {
                     if (kvp.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                     {
-                        BuilderInWorldNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
+                        BIWNFTController.i.StopUsingNFT(((NFTShape.Model) kvp.Value.GetModel()).assetId);
                         break;
                     }
                 }
@@ -259,7 +264,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
         {
             for (int i = entityColliderGameObject.Count - 1; i > 0; i--)
             {
-                Destroy(entityColliderGameObject[i]);
+                GameObject.Destroy(entityColliderGameObject[i]);
             }
         }
 
@@ -279,7 +284,8 @@ public class DCLBuilderInWorldEntity : EditableEntity
     public void InitRotation()
     {
         //TODO : We need to implement the initial rotation from the transform component instead of getting the current rotation
-        currentRotation = rootEntity.gameObject.transform.eulerAngles;
+        if (rootEntity.gameObject != null)
+            currentRotation = rootEntity.gameObject.transform.eulerAngles;
     }
 
     #endregion
@@ -405,7 +411,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
             {
                 if (keyValuePairBaseDisposable.Value.GetClassId() == (int) CLASS_ID.NFT_SHAPE)
                 {
-                    BuilderInWorldNFTController.i.UseNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
+                    BIWNFTController.i.UseNFT(((NFTShape.Model) keyValuePairBaseDisposable.Value.GetModel()).assetId);
                     break;
                 }
             }
@@ -488,7 +494,7 @@ public class DCLBuilderInWorldEntity : EditableEntity
     void SetEntityAsVoxel()
     {
         isVoxel = true;
-        gameObject.tag = BIWSettings.VOXEL_TAG;
+        rootEntity.gameObject.tag = BIWSettings.VOXEL_TAG;
     }
 
     void SaveOriginalMaterial()
@@ -601,12 +607,12 @@ public class DCLBuilderInWorldEntity : EditableEntity
 
         //Note: When we are duplicating the GLTF and NFT component, their colliders are duplicated too
         //So we eliminate any previous collider to ensure that only 1 collider remain active
-        Transform[] children = GetComponentsInChildren<Transform>();
+        Transform[] children = rootEntity.transform.GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
             if (child.gameObject.layer ==  BIWSettings.COLLIDER_SELECTION_LAYER)
             {
-                Destroy(child.gameObject);
+                GameObject.Destroy(child.gameObject);
             }
         }
 

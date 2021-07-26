@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class BuilderInWorldShould : IntegrationTestSuite_Legacy
+public class BIWShould : IntegrationTestSuite_Legacy
 {
     [Test]
     public void SettingsCorrectLayers()
@@ -47,8 +47,8 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
         //Act
-        bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
-        if (Physics.Raycast(ray, out hit, BuilderInWorldGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
+        bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BiwGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
+        if (Physics.Raycast(ray, out hit, BiwGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
         {
             groundLayerFound = true;
         }
@@ -63,7 +63,7 @@ public class BuilderInWorldShould : IntegrationTestSuite_Legacy
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
-        DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[entityId].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[entityId], null);
 
         Assert.IsTrue(biwEntity.entityUniqueId == scene.sceneData.id + scene.entities[entityId].entityId, "Entity id is not created correctly, this can lead to weird behaviour");

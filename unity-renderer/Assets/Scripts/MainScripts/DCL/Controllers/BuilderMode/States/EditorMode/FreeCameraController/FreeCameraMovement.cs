@@ -1,4 +1,3 @@
-using Builder.Gizmos;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -125,9 +124,6 @@ namespace DCL.Camera
 
             BIWInputWrapper.OnMouseDown += OnInputMouseDown;
             BIWInputWrapper.OnMouseUp += OnInputMouseUp;
-
-            DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
-            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
 
             advanceForwardStartDelegate = (action) => isAdvancingForward = true;
             advanceForwardFinishedDelegate = (action) => isAdvancingForward = false;
@@ -344,10 +340,6 @@ namespace DCL.Camera
 
         public void SetCameraCanMove(bool canMove) { isCameraAbleToMove = canMove; }
 
-        private void OnGizmoTransformObjectEnd(string gizmoType) { isCameraAbleToMove = true; }
-
-        private void OnGizmoTransformObjectStart(string gizmoType) { isCameraAbleToMove = false; }
-
         private void MouseWheel(float axis)
         {
             if (!isCameraAbleToMove)
@@ -397,7 +389,7 @@ namespace DCL.Camera
 
         public override Vector3 OnGetRotation() { return transform.eulerAngles; }
 
-        public void FocusOnEntities(List<DCLBuilderInWorldEntity> entitiesToFocus)
+        public void FocusOnEntities(List<BIWEntity> entitiesToFocus)
         {
             if (entitiesToFocus.Count <= 0)
                 return;
@@ -434,11 +426,11 @@ namespace DCL.Camera
             smoothLookAtCor = CoroutineStarter.Start(SmoothLookAtCorutine(position));
         }
 
-        Vector3 FindMidPoint(List<DCLBuilderInWorldEntity> entitiesToLook)
+        Vector3 FindMidPoint(List<BIWEntity> entitiesToLook)
         {
             Vector3 finalPosition = Vector3.zero;
             int totalPoints = 0;
-            foreach (DCLBuilderInWorldEntity entity in entitiesToLook)
+            foreach (BIWEntity entity in entitiesToLook)
             {
                 if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
                 {

@@ -471,6 +471,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b4489d3b0fae4f40ba54a2e85c1a5dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &929297252 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 54063241633877533, guid: b0965b55b892d438da492708ea09799c,
+    type: 3}
+  m_PrefabInstance: {fileID: 326638024064006570}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &941980743 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 326638022635035865, guid: b0965b55b892d438da492708ea09799c,
@@ -1132,7 +1138,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 326638024064006574}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6c658e5e34c1f31448d8ba1ce4a0fd12, type: 3}
@@ -1169,7 +1175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseCatcherReference: {fileID: 1107221834}
   groundVisualReference: {fileID: 943100645024490817}
-  cameraParentReference: {fileID: 326638024064006574}
+  cameraParentReference: {fileID: 929297252}
   inputControllerReference: {fileID: 326638024064006571}
   cursorCanvasReference: {fileID: 326638024064006572}
   builderInWorldBridgeReference: {fileID: 322303338}
@@ -1422,12 +1428,6 @@ GameObject:
 --- !u!20 &326638024064006573 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 2952493522718747595, guid: b0965b55b892d438da492708ea09799c,
-    type: 3}
-  m_PrefabInstance: {fileID: 326638024064006570}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &326638024064006574 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7107841742800709934, guid: b0965b55b892d438da492708ea09799c,
     type: 3}
   m_PrefabInstance: {fileID: 326638024064006570}
   m_PrefabAsset: {fileID: 0}

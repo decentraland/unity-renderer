@@ -1,15 +1,14 @@
-using Builder;
 using DCL.Configuration;
 using DCL.Controllers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public interface  IBIWOutlinerController
+public interface IBIWOutlinerController
 {
-    public void OutlineEntity(DCLBuilderInWorldEntity entity);
-    public void CancelEntityOutline(DCLBuilderInWorldEntity entityToQuitOutline);
-    public void OutlineEntities(List<DCLBuilderInWorldEntity> entitiesToEdit);
+    public void OutlineEntity(BIWEntity entity);
+    public void CancelEntityOutline(BIWEntity entityToQuitOutline);
+    public void OutlineEntities(List<BIWEntity> entitiesToEdit);
     public void CheckOutline();
     public void CancelUnselectedOutlines();
     public void CancelAllOutlines();
@@ -22,9 +21,10 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     private Material cameraOutlinerMaterial;
 
+    private IBIWRaycastController raycastController;
     private IBIWEntityHandler entityHandler;
 
-    private List<DCLBuilderInWorldEntity> entitiesOutlined = new List<DCLBuilderInWorldEntity>();
+    private List<BIWEntity> entitiesOutlined = new List<BIWEntity>();
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
@@ -34,6 +34,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;
 
         entityHandler = context.entityHandler;
+        raycastController = context.raycastController;
     }
 
     public override void EnterEditMode(ParcelScene scene)
@@ -60,9 +61,9 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     {
         if (outlinerOptimizationCounter >= 10 && isOutlineCheckActive)
         {
-            if (!BuilderInWorldUtils.IsPointerOverUIElement() && !BuilderInWorldUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
+            if (!BIWUtils.IsPointerOverUIElement() && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
             {
-                DCLBuilderInWorldEntity entity = entityHandler.GetEntityOnPointer();
+                BIWEntity entity = raycastController.GetEntityOnPointer();
                 RemoveEntitiesOutlineOutsidePointerOrUnselected();
 
                 if (entity != null && !entity.IsSelected)
@@ -79,17 +80,17 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
             outlinerOptimizationCounter++;
     }
 
-    public bool IsEntityOutlined(DCLBuilderInWorldEntity entity) { return entitiesOutlined.Contains(entity); }
+    public bool IsEntityOutlined(BIWEntity entity) { return entitiesOutlined.Contains(entity); }
 
-    public void OutlineEntities(List<DCLBuilderInWorldEntity> entitiesToEdit)
+    public void OutlineEntities(List<BIWEntity> entitiesToEdit)
     {
-        foreach (DCLBuilderInWorldEntity entityToEdit in entitiesToEdit)
+        foreach (BIWEntity entityToEdit in entitiesToEdit)
         {
             OutlineEntity(entityToEdit);
         }
     }
 
-    public void OutlineEntity(DCLBuilderInWorldEntity entity)
+    public void OutlineEntity(BIWEntity entity)
     {
         if (entity.rootEntity.meshRootGameObject == null)
             return;
@@ -126,7 +127,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
 
     public void RemoveEntitiesOutlineOutsidePointerOrUnselected()
     {
-        var entity = entityHandler.GetEntityOnPointer();
+        var entity = raycastController.GetEntityOnPointer();
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
             if (!entitiesOutlined[i].IsSelected || entity != entitiesOutlined[i])
@@ -142,7 +143,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         }
     }
 
-    public void CancelEntityOutline(DCLBuilderInWorldEntity entityToQuitOutline)
+    public void CancelEntityOutline(BIWEntity entityToQuitOutline)
     {
         if (!entitiesOutlined.Contains(entityToQuitOutline))
             return;
@@ -163,11 +164,10 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private void ActivateBuilderInWorldCamera()
     {
         Camera camera = Camera.main;
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
-
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         if (outliner == null)
         {
-            outliner = camera.gameObject.AddComponent(typeof(DCLBuilderOutline)) as DCLBuilderOutline;
+            outliner = camera.gameObject.AddComponent(typeof(BIWOutline)) as BIWOutline;
             outliner.SetOutlineMaterial(cameraOutlinerMaterial);
         }
         else
@@ -188,7 +188,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         if (camera == null)
             return;
 
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         if (outliner != null)
         {
             outliner.enabled = false;
@@ -206,7 +206,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         if (camera == null)
             return;
 
-        DCLBuilderOutline outliner = camera.GetComponent<DCLBuilderOutline>();
+        BIWOutline outliner = camera.GetComponent<BIWOutline>();
         outliner.Dispose();
         GameObject.Destroy(outliner);
     }

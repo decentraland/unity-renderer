@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public class BuildInWorldCompleteAction
+public class BIWCompleteAction
 {
     public enum ActionType
     {
@@ -22,11 +22,11 @@ public class BuildInWorldCompleteAction
     public delegate void OnApplyValueDelegate(string entityId, object value, ActionType actionType, bool isUndo);
     public event OnApplyValueDelegate OnApplyValue;
 
-    List<BuilderInWorldEntityAction> entityApplied = new List<BuilderInWorldEntityAction>();
+    List<BIWEntityAction> entityApplied = new List<BIWEntityAction>();
 
     public void Redo()
     {
-        foreach (BuilderInWorldEntityAction action in entityApplied)
+        foreach (BIWEntityAction action in entityApplied)
         {
             ApplyValue(action.entityId, action.newValue, false);
         }
@@ -35,7 +35,7 @@ public class BuildInWorldCompleteAction
 
     public void Undo()
     {
-        foreach (BuilderInWorldEntityAction action in entityApplied)
+        foreach (BIWEntityAction action in entityApplied)
         {
             ApplyValue(action.entityId, action.oldValue, true);
         }
@@ -48,22 +48,22 @@ public class BuildInWorldCompleteAction
 
     public void CreateChangeFloorAction(CatalogItem oldFloor, CatalogItem newFloor)
     {
-        BuilderInWorldEntityAction action = new BuilderInWorldEntityAction(JsonConvert.SerializeObject(oldFloor), JsonConvert.SerializeObject(newFloor));
-        List<BuilderInWorldEntityAction> list = new List<BuilderInWorldEntityAction>();
+        BIWEntityAction action = new BIWEntityAction(JsonConvert.SerializeObject(oldFloor), JsonConvert.SerializeObject(newFloor));
+        List<BIWEntityAction> list = new List<BIWEntityAction>();
         list.Add(action);
         CreateAction(list, ActionType.CHANGE_FLOOR);
     }
 
-    public void CreateActionType(BuilderInWorldEntityAction action, ActionType type)
+    public void CreateActionType(BIWEntityAction action, ActionType type)
     {
-        List<BuilderInWorldEntityAction> list = new List<BuilderInWorldEntityAction>();
+        List<BIWEntityAction> list = new List<BIWEntityAction>();
         list.Add(action);
         CreateAction(list, type);
     }
 
-    public void CreateActionType(List<BuilderInWorldEntityAction> entitiesActions, ActionType type) { CreateAction(entitiesActions, type); }
+    public void CreateActionType(List<BIWEntityAction> entitiesActions, ActionType type) { CreateAction(entitiesActions, type); }
 
-    void CreateAction(List<BuilderInWorldEntityAction> entitiesActions, ActionType type)
+    void CreateAction(List<BIWEntityAction> entitiesActions, ActionType type)
     {
         actionType = type;
         entityApplied = entitiesActions;

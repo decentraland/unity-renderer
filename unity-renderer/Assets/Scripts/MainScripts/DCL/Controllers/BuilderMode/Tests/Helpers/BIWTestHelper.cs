@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
@@ -26,7 +27,10 @@ public static class BIWTestHelper
             Substitute.For<IBIWFloorHandler>(),
             Substitute.For<IBIWEntityHandler>(),
             Substitute.For<IBIWActionController>(),
-            Substitute.For<IBIWSaveController>()
+            Substitute.For<IBIWSaveController>(),
+            Substitute.For<IBIWRaycastController>(),
+            Substitute.For<IBIWGizmosController>(),
+            new InitialSceneReferences()
         );
         return context;
     }
@@ -42,6 +46,9 @@ public static class BIWTestHelper
         IBIWEntityHandler entityHandler = Substitute.For<IBIWEntityHandler>();
         IBIWActionController actionController = Substitute.For<IBIWActionController>();
         IBIWSaveController saveController = Substitute.For<IBIWSaveController>();
+        IBIWRaycastController raycastController = Substitute.For<IBIWRaycastController>();
+        IBIWGizmosController gizmosController = Substitute.For<IBIWGizmosController>();
+        InitialSceneReferences sceneReferences = new InitialSceneReferences();
 
         foreach ( var mock in mocks)
         {
@@ -77,6 +84,15 @@ public static class BIWTestHelper
                 case IBIWSaveController sc:
                     saveController = sc;
                     break;
+                case IBIWRaycastController rc:
+                    raycastController = rc;
+                    break;
+                case IBIWGizmosController gc:
+                    gizmosController = gc;
+                    break;
+                case InitialSceneReferences isr:
+                    sceneReferences = isr;
+                    break;
             }
         }
 
@@ -91,17 +107,20 @@ public static class BIWTestHelper
             floorHandler,
             entityHandler,
             actionController,
-            saveController
+            saveController,
+            raycastController,
+            gizmosController,
+            sceneReferences
         );
         return context;
     }
 
-    public static DCLBuilderInWorldEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
+    public static BIWEntity CreateSmartItemEntity(BIWEntityHandler entityHandler, ParcelScene scene, SmartItemComponent.Model model = null)
     {
         if (model == null)
             model = new SmartItemComponent.Model();
 
-        DCLBuilderInWorldEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         scene.EntityComponentCreateOrUpdateWithModel(entity.rootEntity.entityId, CLASS_ID_COMPONENT.SMART_ITEM, model);
 
@@ -169,7 +188,7 @@ public static class BIWTestHelper
             string jsonValue = File.ReadAllText(jsonPath);
             NFTOwner owner = NFTOwner.defaultNFTOwner;
             owner.assets.Add(JsonUtility.FromJson<NFTInfo>(jsonValue));
-            BuilderInWorldNFTController.i.NftsFeteched(owner);
+            BIWNFTController.i.NftsFeteched(owner);
         }
     }
 }

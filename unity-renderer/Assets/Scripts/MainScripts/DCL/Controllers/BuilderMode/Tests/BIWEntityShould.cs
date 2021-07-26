@@ -10,7 +10,7 @@ using UnityEngine;
 public class BIWEntityShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    DCLBuilderInWorldEntity entity;
+    BIWEntity entity;
     BIWEntityHandler entityHandler;
 
     protected override IEnumerator SetUp()

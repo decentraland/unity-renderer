@@ -10,8 +10,8 @@ public interface IEntityInformationController
     event Action<Vector3> OnPositionChange;
     event Action<Vector3> OnRotationChange;
     event Action<Vector3> OnScaleChange;
-    event Action<DCLBuilderInWorldEntity, string> OnNameChange;
-    event Action<DCLBuilderInWorldEntity> OnSmartItemComponentUpdate;
+    event Action<BIWEntity, string> OnNameChange;
+    event Action<BIWEntity> OnSmartItemComponentUpdate;
     event Action OnDisable;
 
     void Initialize(IEntityInformationView view);
@@ -19,15 +19,15 @@ public interface IEntityInformationController
     void PositionChanged(Vector3 pos);
     void RotationChanged(Vector3 rot);
     void ScaleChanged(Vector3 scale);
-    void NameChanged(DCLBuilderInWorldEntity entity, string name);
+    void NameChanged(BIWEntity entity, string name);
     void ToggleDetailsInfo();
     void ToggleBasicInfo();
     void StartChangingName();
     void EndChangingName();
-    void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene);
+    void SetEntity(BIWEntity entity, ParcelScene currentScene);
     void Enable();
     void Disable();
-    void UpdateInfo(DCLBuilderInWorldEntity entity);
+    void UpdateInfo(BIWEntity entity);
     void UpdateEntitiesSelection(int numberOfSelectedEntities);
     void SetTransparencyMode(bool isOn);
 }
@@ -42,15 +42,15 @@ public class EntityInformationController : IEntityInformationController
     public event Action<Vector3> OnPositionChange;
     public event Action<Vector3> OnRotationChange;
     public event Action<Vector3> OnScaleChange;
-    public event Action<DCLBuilderInWorldEntity, string> OnNameChange;
-    public event Action<DCLBuilderInWorldEntity> OnSmartItemComponentUpdate;
+    public event Action<BIWEntity, string> OnNameChange;
+    public event Action<BIWEntity> OnSmartItemComponentUpdate;
     public event Action OnDisable;
 
     internal IEntityInformationView entityInformationView;
     internal ParcelScene parcelScene;
     internal AssetPromise_Texture loadedThumbnailPromise;
     internal bool isChangingName = false;
-    internal DCLBuilderInWorldEntity currentEntity;
+    internal BIWEntity currentEntity;
 
     public void Initialize(IEntityInformationView entityInformationView)
     {
@@ -100,7 +100,7 @@ public class EntityInformationController : IEntityInformationController
 
     public void ScaleChanged(Vector3 scale) { OnScaleChange?.Invoke(scale); }
 
-    public void NameChanged(DCLBuilderInWorldEntity entity, string name) { OnNameChange?.Invoke(entity, name); }
+    public void NameChanged(BIWEntity entity, string name) { OnNameChange?.Invoke(entity, name); }
 
     public void ToggleDetailsInfo() { entityInformationView.ToggleDetailsInfo(); }
 
@@ -110,7 +110,7 @@ public class EntityInformationController : IEntityInformationController
 
     public void EndChangingName() { isChangingName = false; }
 
-    public void SetEntity(DCLBuilderInWorldEntity entity, ParcelScene currentScene)
+    public void SetEntity(BIWEntity entity, ParcelScene currentScene)
     {
         currentEntity = entity;
         EntityDeselected();
@@ -168,7 +168,7 @@ public class EntityInformationController : IEntityInformationController
         entityInformationView.SetEntityThumbnailTexture(texture.texture);
     }
 
-    internal void UpdateEntityName(DCLBuilderInWorldEntity entity)
+    internal void UpdateEntityName(BIWEntity entity)
     {
         if (entity == null)
             return;
@@ -216,13 +216,13 @@ public class EntityInformationController : IEntityInformationController
         }
     }
 
-    public void UpdateInfo(DCLBuilderInWorldEntity entity)
+    public void UpdateInfo(BIWEntity entity)
     {
-        if (entity != null && entity.gameObject != null)
+        if (entity != null && entity.rootEntity.gameObject != null)
         {
-            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.gameObject.transform.position, parcelScene);
-            Vector3 currentRotation = entity.gameObject.transform.rotation.eulerAngles;
-            Vector3 currentScale = entity.gameObject.transform.lossyScale;
+            Vector3 positionConverted = WorldStateUtils.ConvertUnityToScenePosition(entity.rootEntity.gameObject.transform.position, parcelScene);
+            Vector3 currentRotation = entity.rootEntity.gameObject.transform.rotation.eulerAngles;
+            Vector3 currentScale = entity.rootEntity.gameObject.transform.lossyScale;
 
             currentRotation = entity.GetEulerRotation();
 

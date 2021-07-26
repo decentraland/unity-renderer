@@ -21,9 +21,9 @@ public class EntityListAdapter : MonoBehaviour
     public Button lockButton;
     public Image showImg;
     public Image textBoxImage;
-    public System.Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnActionInvoked;
-    public System.Action<DCLBuilderInWorldEntity, string> OnEntityRename;
-    DCLBuilderInWorldEntity currentEntity;
+    public System.Action<EntityAction, BIWEntity, EntityListAdapter> OnActionInvoked;
+    public System.Action<BIWEntity, string> OnEntityRename;
+    BIWEntity currentEntity;
     internal AssetPromise_Texture loadedThumbnailPromise;
 
     private void Start()
@@ -64,7 +64,7 @@ public class EntityListAdapter : MonoBehaviour
         }
     }
 
-    public void SetContent(DCLBuilderInWorldEntity decentrelandEntity)
+    public void SetContent(BIWEntity decentrelandEntity)
     {
         if (currentEntity != null)
         {
@@ -98,7 +98,7 @@ public class EntityListAdapter : MonoBehaviour
 
     public void DeleteEntity() { OnActionInvoked?.Invoke(EntityAction.DELETE, currentEntity, this); }
 
-    void SetInfo(DCLBuilderInWorldEntity entityToEdit)
+    void SetInfo(BIWEntity entityToEdit)
     {
         if (this == null)
             return;
@@ -115,7 +115,7 @@ public class EntityListAdapter : MonoBehaviour
         if (entityToEdit.IsVisible)
             showImg.color = iconsSelectedColor;
         else
-        showImg.color = iconsUnselectedColor;
+            showImg.color = iconsUnselectedColor;
 
         CheckEntityNameColor(entityToEdit);
 
@@ -172,13 +172,13 @@ public class EntityListAdapter : MonoBehaviour
 
     public void AllowNameEdition(bool isAllowed) { nameInputField.enabled = isAllowed; }
 
-    void DeleteAdapter(DCLBuilderInWorldEntity entityToEdit)
+    void DeleteAdapter(BIWEntity entityToEdit)
     {
         if (this != null && entityToEdit.entityUniqueId == currentEntity.entityUniqueId)
             Destroy(gameObject);
     }
 
-    private void SetEntityError(DCLBuilderInWorldEntity entity)
+    private void SetEntityError(BIWEntity entity)
     {
         if (entity != currentEntity)
             return;
@@ -194,7 +194,7 @@ public class EntityListAdapter : MonoBehaviour
         textBoxImage.enabled = isActive;
     }
 
-    private void CheckEntityNameColor(DCLBuilderInWorldEntity entity)
+    private void CheckEntityNameColor(BIWEntity entity)
     {
         if (entity.hasError)
             nameInputField_Text.color = entityErrorColor;

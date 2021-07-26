@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
-public class BuilderInWorldNFTController
+public class BIWNFTController
 {
     public event System.Action OnNFTUsageChange;
     public event System.Action<List<NFTInfo>> OnNftsFetched;
@@ -16,19 +16,19 @@ public class BuilderInWorldNFTController
 
     private Coroutine fechNftsCoroutine;
 
-    private static BuilderInWorldNFTController instance;
+    private static BIWNFTController instance;
 
     private List<NFTInfo> nftsAlreadyInUse = new List<NFTInfo>();
 
     private bool desactivateNFT = false;
 
-    public static BuilderInWorldNFTController i
+    public static BIWNFTController i
     {
         get
         {
             if (instance == null)
             {
-                instance = new BuilderInWorldNFTController();
+                instance = new BIWNFTController();
             }
 
             return instance;

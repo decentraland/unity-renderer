@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
+public class BiwFirstPersonMode : BIWMode
 {
     private float scaleSpeed = 0.25f;
     private float rotationSpeed = 0.5f;
@@ -23,21 +23,21 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
     private InputAction_Hold.Started rotationHoldStartDelegate;
     private InputAction_Hold.Finished rotationHoldFinishedDelegate;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
-        maxDistanceToSelectEntitiesValue = biwContext.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
+        base.Init(context);
+        maxDistanceToSelectEntitiesValue = context.firstPersonDynamicVariablesAsset.maxDistanceToSelectEntities;
 
-        snapFactor = biwContext.firstPersonDynamicVariablesAsset.snapFactor;
-        snapRotationDegresFactor = biwContext.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
-        snapScaleFactor =  biwContext.firstPersonDynamicVariablesAsset.snapScaleFactor;
-        snapDistanceToActivateMovement =  biwContext.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
+        snapFactor = context.firstPersonDynamicVariablesAsset.snapFactor;
+        snapRotationDegresFactor = context.firstPersonDynamicVariablesAsset.snapRotationDegresFactor;
+        snapScaleFactor =  context.firstPersonDynamicVariablesAsset.snapScaleFactor;
+        snapDistanceToActivateMovement =  context.firstPersonDynamicVariablesAsset.snapDistanceToActivateMovement;
 
-        scaleSpeed =  biwContext.firstPersonDynamicVariablesAsset.scaleSpeed;
-        rotationSpeed =  biwContext.firstPersonDynamicVariablesAsset.rotationSpeed;
-        distanceFromCameraForNewEntitties =  biwContext.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
+        scaleSpeed =  context.firstPersonDynamicVariablesAsset.scaleSpeed;
+        rotationSpeed =  context.firstPersonDynamicVariablesAsset.rotationSpeed;
+        distanceFromCameraForNewEntitties =  context.firstPersonDynamicVariablesAsset.distanceFromCameraForNewEntitties;
 
-        rotationHold = biwContext.inputsReferencesAsset.firstPersonRotationHold;
+        rotationHold = context.inputsReferencesAsset.firstPersonRotationHold;
 
         rotationHoldStartDelegate = (action) => { shouldRotate = true; };
         rotationHoldFinishedDelegate = (action) => { shouldRotate = false; };
@@ -83,7 +83,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
             }
             else if (Vector3.Distance(snapGO.transform.position, editionGO.transform.position) >= snapDistanceToActivateMovement)
             {
-                BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+                BIWUtils.CopyGameObjectStatus(editionGO, snapGO, false);
                 snapObjectAlreadyMoved = true;
                 SetEditObjectParent();
             }
@@ -123,7 +123,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
 
     private void UndoSelection()
     {
-        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        BIWUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
         entityHandler.DeselectEntities();
     }
 
@@ -176,7 +176,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         SetObjectIfSnapOrNot();
     }
 
-    public override void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
+    public override void SelectedEntity(BIWEntity selectedEntity)
     {
         base.SelectedEntity(selectedEntity);
 
@@ -185,10 +185,10 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         SetObjectIfSnapOrNot();
 
         currentYRotationAdded = 0;
-        BuilderInWorldUtils.CopyGameObjectStatus(editionGO, snapGO, false);
+        BIWUtils.CopyGameObjectStatus(editionGO, snapGO, false);
     }
 
-    public override void CreatedEntity(DCLBuilderInWorldEntity createdEntity)
+    public override void CreatedEntity(BIWEntity createdEntity)
     {
         base.CreatedEntity(createdEntity);
         Utils.LockCursor();
@@ -315,7 +315,7 @@ public class BuilderInWorldFirstPersonMode : BuilderInWorldMode
         currentYRotationAdded += angleToRotate;
         editionGO.transform.Rotate(Vector3.up, angleToRotate);
         snapGO.transform.Rotate(Vector3.up, angleToRotate);
-        snapGO.transform.rotation = Quaternion.Euler(BuilderInWorldUtils.SnapFilterEulerAngles(snapGO.transform.rotation.eulerAngles, snapRotationDegresFactor));
+        snapGO.transform.rotation = Quaternion.Euler(BIWUtils.SnapFilterEulerAngles(snapGO.transform.rotation.eulerAngles, snapRotationDegresFactor));
     }
 
     void ScaleSelection(float scaleFactor)

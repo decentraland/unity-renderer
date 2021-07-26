@@ -9,7 +9,7 @@ using DCL.Models;
 public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    DCLBuilderInWorldEntity entity;
+    BIWEntity entity;
     BIWEntityHandler entityHandler;
 
     protected override IEnumerator SetUp()
@@ -40,7 +40,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     [Test]
     public void EntitySelectionOperations()
     {
-        DCLBuilderInWorldEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         int entityAmount = entityHandler.GetAllEntitiesFromCurrentScene().Count;
         entityHandler.SelectEntity(createdEntity);
@@ -58,7 +58,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     [Test]
     public void EntityCreationDelete()
     {
-        DCLBuilderInWorldEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         Assert.IsNotNull(createdEntity);
         Assert.AreEqual(entityHandler.GetAllEntitiesFromCurrentScene().Count, 2);
 
@@ -72,7 +72,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         string name = "Test";
 
         entityHandler.SetEntityName(entity, name);
-        DCLBuilderInWorldEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity createdEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         entityHandler.SetEntityName(createdEntity, name);
 
@@ -83,7 +83,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void EntityDuplicate()
     {
         IDCLEntity duplicateEntity = entityHandler.DuplicateEntity(entity).rootEntity;
-        DCLBuilderInWorldEntity convertedEntity = entityHandler.GetConvertedEntity(duplicateEntity);
+        BIWEntity convertedEntity = entityHandler.GetConvertedEntity(duplicateEntity);
 
         Assert.IsNotNull(convertedEntity);
     }

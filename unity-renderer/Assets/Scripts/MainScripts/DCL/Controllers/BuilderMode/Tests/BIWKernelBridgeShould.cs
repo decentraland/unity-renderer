@@ -50,7 +50,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestCreateEntityKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.AddEntityOnKernel(entity.rootEntity, scene);
@@ -63,7 +63,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestRemoveEntityKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.RemoveEntityOnKernel(entity.rootEntity.entityId, scene);
@@ -76,7 +76,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestTransformKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.EntityTransformReport(entity.rootEntity, scene);
@@ -89,7 +89,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestLockComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         entity.ToggleLockStatus();
 
         //Act
@@ -103,7 +103,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestNameComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         entity.SetDescriptiveName("Test");
 
         //Act
@@ -117,7 +117,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestSmartItemComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  BIWTestHelper.CreateSmartItemEntity(entityHandler, scene, null);
+        BIWEntity entity =  BIWTestHelper.CreateSmartItemEntity(entityHandler, scene, null);
 
         //Act
         biwBridge.UpdateSmartItemComponent(entity, scene);

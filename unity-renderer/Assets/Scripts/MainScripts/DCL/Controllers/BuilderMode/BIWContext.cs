@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 public class BIWContext
@@ -26,6 +27,10 @@ public class BIWContext
     public IBIWEntityHandler entityHandler { get; private set; }
     public IBIWActionController actionController { get; private set; }
     public IBIWSaveController saveController { get; private set; }
+    public IBIWRaycastController raycastController { get; private set; }
+    public IBIWGizmosController gizmosController { get; private set; }
+    public InitialSceneReferences sceneReferences { get; private set; }
+
 
     public void Init(IBIWOutlinerController outlinerController,
         IBIWInputHandler inputHandler,
@@ -36,7 +41,10 @@ public class BIWContext
         IBIWFloorHandler floorHandler,
         IBIWEntityHandler entityHandler,
         IBIWActionController actionController,
-        IBIWSaveController saveController)
+        IBIWSaveController saveController,
+        IBIWRaycastController raycastController,
+        IBIWGizmosController gizmosController,
+        InitialSceneReferences sceneReferences)
     {
         projectReferencesAsset = Resources.Load<BIWProjectReferences>(PROJECT_REFERENCES_PATH);
         godModeDynamicVariablesAsset = Resources.Load<BIWGodModeDynamicVariables>(GOD_MODE_DYNAMIC_VARIABLE_PATH);
@@ -53,6 +61,9 @@ public class BIWContext
         this.entityHandler = entityHandler;
         this.actionController = actionController;
         this.saveController = saveController;
+        this.raycastController = raycastController;
+        this.gizmosController = gizmosController;
+        this.sceneReferences = sceneReferences;
     }
 
     public void Dispose()

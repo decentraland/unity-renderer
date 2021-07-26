@@ -10,11 +10,11 @@ public interface IBIWModeController
     public event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
     public event Action OnInputDone;
     public Vector3 GetCurrentEditionPosition();
-    public void CreatedEntity(DCLBuilderInWorldEntity entity);
+    public void CreatedEntity(BIWEntity entity);
 
     public float GetMaxDistanceToSelectEntities() ;
 
-    public void EntityDoubleClick(DCLBuilderInWorldEntity entity);
+    public void EntityDoubleClick(BIWEntity entity);
 
     public Vector3 GetMousePosition();
 
@@ -47,8 +47,8 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWActionController actionController;
     private IBIWEntityHandler entityHandler;
 
-    private BuilderInWorldFirstPersonMode firstPersonMode;
-    private BuilderInWorldGodMode godMode;
+    private BiwFirstPersonMode firstPersonMode;
+    private BiwGodMode godMode;
 
     private InputAction_Trigger toggleSnapModeInputAction;
 
@@ -57,7 +57,7 @@ public class BIWModeController : BIWController, IBIWModeController
 
     private EditModeState currentEditModeState = EditModeState.Inactive;
 
-    private BuilderInWorldMode currentActiveMode;
+    private BIWMode currentActiveMode;
 
     private bool isSnapActive = true;
 
@@ -68,19 +68,19 @@ public class BIWModeController : BIWController, IBIWModeController
     private GameObject snapGO;
     private GameObject freeMovementGO;
 
-    public override void Init(BIWContext biwContext)
+    public override void Init(BIWContext context)
     {
-        base.Init(biwContext);
+        base.Init(context);
 
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        cameraParentGO = InitialSceneReferences.i.cameraParent;
+        cursorGO = context.sceneReferences.cursorCanvas;
+        cameraParentGO = context.sceneReferences.cameraParent;
         InitGameObjects();
 
-        firstPersonMode = new BuilderInWorldFirstPersonMode();
-        godMode = new BuilderInWorldGodMode();
+        firstPersonMode = new BiwFirstPersonMode();
+        godMode = new BiwGodMode();
 
-        firstPersonMode.Init(biwContext);
-        godMode.Init(biwContext);
+        firstPersonMode.Init(context);
+        godMode.Init(context);
 
         firstPersonMode.OnInputDone += InputDone;
         godMode.OnInputDone += InputDone;
@@ -92,9 +92,9 @@ public class BIWModeController : BIWController, IBIWModeController
             HUDController.i.builderInWorldMainHud.OnChangeSnapModeAction += ChangeSnapMode;
         }
 
-        actionController = biwContext.actionController;
-        entityHandler = biwContext.entityHandler;
-        toggleSnapModeInputAction = biwContext.inputsReferencesAsset.toggleSnapModeInputAction;
+        actionController = context.actionController;
+        entityHandler = context.entityHandler;
+        toggleSnapModeInputAction = context.inputsReferencesAsset.toggleSnapModeInputAction;
 
         snapModeDelegate = (action) => ChangeSnapMode();
         toggleSnapModeInputAction.OnTriggered += snapModeDelegate;
@@ -178,7 +178,7 @@ public class BIWModeController : BIWController, IBIWModeController
         if (undoGO == null || editionGO == null)
             return;
 
-        BuilderInWorldUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
+        BIWUtils.CopyGameObjectStatus(undoGO, editionGO, false, false);
     }
 
     public override void OnGUI()
@@ -214,7 +214,7 @@ public class BIWModeController : BIWController, IBIWModeController
         snapGO.transform.SetParent(null);
     }
 
-    public BuilderInWorldMode GetCurrentMode() => currentActiveMode;
+    public BIWMode GetCurrentMode() => currentActiveMode;
 
     public EditModeState GetCurrentStateMode() => currentEditModeState;
 
@@ -232,11 +232,11 @@ public class BIWModeController : BIWController, IBIWModeController
 
     public bool ShouldCancelUndoAction() { return currentActiveMode.ShouldCancelUndoAction(); }
 
-    public void CreatedEntity(DCLBuilderInWorldEntity entity) { currentActiveMode?.CreatedEntity(entity); }
+    public void CreatedEntity(BIWEntity entity) { currentActiveMode?.CreatedEntity(entity); }
 
     public float GetMaxDistanceToSelectEntities() { return currentActiveMode.maxDistanceToSelectEntities; }
 
-    public void EntityDoubleClick(DCLBuilderInWorldEntity entity) {  currentActiveMode.EntityDoubleClick(entity); }
+    public void EntityDoubleClick(BIWEntity entity) {  currentActiveMode.EntityDoubleClick(entity); }
 
     public Vector3 GetMousePosition() { return currentActiveMode.GetPointerPosition(); }
 

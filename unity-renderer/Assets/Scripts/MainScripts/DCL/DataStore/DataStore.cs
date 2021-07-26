@@ -20,7 +20,7 @@ namespace DCL
         public readonly DebugConfig debugConfig = new DebugConfig();
         public readonly BaseVariable<bool> isSignUpFlow = new BaseVariable<bool>();
         public readonly BaseDictionary<string, WearableItem> wearables = new BaseDictionary<string, WearableItem>();
-        public readonly BuilderInWorld builderInWorld = new BuilderInWorld();
+        public readonly DataStore_BuilderInWorld dataStoreBuilderInWorld = new DataStore_BuilderInWorld();
         public readonly DataStore_Quests Quests = new DataStore_Quests();
         public readonly DataStore_HUDs HUDs = new DataStore_HUDs();
         public readonly BaseVariable<bool> isPlayerRendererLoaded = new BaseVariable<bool>();
@@ -29,7 +29,7 @@ namespace DCL
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
         public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
 
-        public class BuilderInWorld
+        public class DataStore_BuilderInWorld
         {
             public readonly BaseDictionary<string, CatalogItem> catalogItemDict = new BaseDictionary<string, CatalogItem>();
             public readonly BaseDictionary<string, CatalogItemPack> catalogItemPackDict = new BaseDictionary<string, CatalogItemPack>();

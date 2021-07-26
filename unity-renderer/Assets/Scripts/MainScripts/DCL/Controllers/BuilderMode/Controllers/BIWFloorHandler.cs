@@ -1,5 +1,4 @@
 using System;
-using Builder.MeshLoadIndicator;
 using DCL;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -26,9 +25,6 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private IBIWCreatorController creatorController;
     private IBIWSaveController saveController;
 
-    private DCLBuilderMeshLoadIndicatorController dclBuilderMeshLoadIndicatorController;
-    private DCLBuilderMeshLoadIndicator meshLoadIndicator;
-
     private GameObject floorPrefab;
 
     private int numberOfParcelsLoaded;
@@ -36,6 +32,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
     private CatalogItem lastFloorCalalogItemUsed;
     private readonly Dictionary<string, GameObject> floorPlaceHolderDict = new Dictionary<string, GameObject>();
     private readonly List<string> loadedFloorEntities = new List<string>();
+    private Camera mainCamera;
 
     public override void Init(BIWContext context)
     {
@@ -44,38 +41,28 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         entityHandler = context.entityHandler;
 
-        dclBuilderMeshLoadIndicatorController = GameObject.Instantiate(context.projectReferencesAsset.floorLoadingPrefab, context.projectReferencesAsset.floorLoadingPrefab.transform.position, context.projectReferencesAsset.floorLoadingPrefab.transform.rotation).GetComponent<DCLBuilderMeshLoadIndicatorController>();
-        meshLoadIndicator = dclBuilderMeshLoadIndicatorController.indicator;
         creatorController = context.creatorController;
         saveController = context.saveController;
+        mainCamera = context.sceneReferences.mainCamera;
 
         floorPrefab = context.projectReferencesAsset.floorPlaceHolderPrefab;
 
         entityHandler.OnEntityDeleted += OnFloorEntityDeleted;
-        meshLoadIndicator.SetCamera(InitialSceneReferences.i.mainCamera);
-
-        dclBuilderMeshLoadIndicatorController.gameObject.SetActive(false);
     }
 
     public override void Dispose()
     {
         entityHandler.OnEntityDeleted -= OnFloorEntityDeleted;
         Clean();
-
-        GameObject.Destroy(dclBuilderMeshLoadIndicatorController.gameObject);
     }
 
-    private void OnFloorEntityDeleted(DCLBuilderInWorldEntity entity)
+    private void OnFloorEntityDeleted(BIWEntity entity)
     {
         if (entity.isFloor)
             RemovePlaceHolder(entity);
     }
 
-    public void Clean()
-    {
-        RemoveAllPlaceHolders();
-        dclBuilderMeshLoadIndicatorController.Dispose();
-    }
+    public void Clean() { RemoveAllPlaceHolders(); }
 
     public bool ExistsFloorPlaceHolderForEntity(string entityId) { return floorPlaceHolderDict.ContainsKey(entityId); }
 
@@ -90,7 +77,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         CreateFloor(newFloorObject);
 
-        BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
+        BIWCompleteAction buildAction = new BIWCompleteAction();
 
         buildAction.CreateChangeFloorAction(lastFloor, newFloorObject);
         actionController.AddAction(buildAction);
@@ -100,7 +87,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public CatalogItem FindCurrentFloorCatalogItem()
     {
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -115,7 +102,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
     public void CreateDefaultFloor()
     {
-        CatalogItem floorSceneObject = BuilderInWorldUtils.CreateFloorSceneObject();
+        CatalogItem floorSceneObject = BIWUtils.CreateFloorSceneObject();
         CreateFloor(floorSceneObject);
     }
 
@@ -128,7 +115,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
 
         foreach (Vector2Int parcel in parcelsPoints)
         {
-            DCLBuilderInWorldEntity decentralandEntity = creatorController.CreateCatalogItem(
+            BIWEntity decentralandEntity = creatorController.CreateCatalogItem(
                 floorSceneObject,
                 WorldStateUtils.ConvertPointInSceneToUnityPosition(initialPosition, parcel),
                 false,
@@ -138,8 +125,8 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
             // It may happen that when you get here, the floor entity is already loaded and it wouldn't be necessary to show its loading indicator.
             if (!loadedFloorEntities.Contains(decentralandEntity.rootEntity.entityId))
             {
-                dclBuilderMeshLoadIndicatorController.ShowIndicator(decentralandEntity.rootEntity.gameObject.transform.position, decentralandEntity.rootEntity.entityId);
                 GameObject floorPlaceHolder = GameObject.Instantiate(floorPrefab, decentralandEntity.rootEntity.gameObject.transform.position, Quaternion.identity);
+                floorPlaceHolder.GetComponentInChildren<BIWFloorLoading>().Initialize(mainCamera);
                 floorPlaceHolderDict.Add(decentralandEntity.rootEntity.entityId, floorPlaceHolder);
                 decentralandEntity.OnShapeFinishLoading += RemovePlaceHolder;
             }
@@ -149,7 +136,7 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         lastFloorCalalogItemUsed = floorSceneObject;
     }
 
-    private void RemovePlaceHolder(DCLBuilderInWorldEntity entity)
+    private void RemovePlaceHolder(BIWEntity entity)
     {
         entity.OnShapeFinishLoading -= RemovePlaceHolder;
         RemovePlaceHolder(entity.rootEntity.entityId);
@@ -174,7 +161,6 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         GameObject floorPlaceHolder = floorPlaceHolderDict[entityId];
         floorPlaceHolderDict.Remove(entityId);
         GameObject.Destroy(floorPlaceHolder);
-        dclBuilderMeshLoadIndicatorController.HideIndicator(entityId);
     }
 
     private void RemoveAllPlaceHolders()
@@ -191,6 +177,5 @@ public class BIWFloorHandler : BIWController, IBIWFloorHandler
         base.ExitEditMode();
 
         RemoveAllPlaceHolders();
-        dclBuilderMeshLoadIndicatorController.HideAllIndicators();
     }
 }

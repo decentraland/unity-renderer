@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Builder.Gizmos;
+using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using NUnit.Framework;
@@ -8,13 +9,15 @@ using UnityEngine;
 
 public class BIWGizmosShould : IntegrationTestSuite_Legacy
 {
-    private DCLBuilderGizmoManager gizmosController;
+    private BIWGizmosController gizmosController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        var referencesController = BIWTestHelper.CreateMockUpReferenceController();
-        gizmosController = referencesController.projectReferencesAsset.godModeBuilderPrefab.GetComponentInChildren<DCLBuilderGizmoManager>();
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(InitialSceneReferences.i);
+        gizmosController = new BIWGizmosController();
+        gizmosController.Init(referencesController);
+        gizmosController.EnterEditMode(scene);
     }
 
     [Test]
@@ -62,10 +65,10 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         gizmosController.SetGizmoType(BIWSettings.TRANSLATE_GIZMO_NAME);
-        DCLBuilderGizmo translateGizmo = gizmosController.activeGizmo;
+        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
-        Assert.IsInstanceOf(typeof(DCLBuilderTranslateGizmo), translateGizmo);
+        Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
     }
 
     [Test]
@@ -73,10 +76,10 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         gizmosController.SetGizmoType(BIWSettings.ROTATE_GIZMO_NAME);
-        DCLBuilderGizmo gizmo = gizmosController.activeGizmo;
+        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
-        Assert.IsInstanceOf(typeof(DCLBuilderRotateGizmo), gizmo);
+        Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
     }
 
     [Test]
@@ -84,9 +87,15 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         gizmosController.SetGizmoType(BIWSettings.SCALE_GIZMO_NAME);
-        DCLBuilderGizmo gizmo = gizmosController.activeGizmo;
+        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
-        Assert.IsInstanceOf(typeof(DCLBuilderScaleGizmo), gizmo);
+        Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        gizmosController.Dispose();
+        yield return base.TearDown();
     }
 }

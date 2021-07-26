@@ -1,4 +1,3 @@
-using Builder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +16,11 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 {
     private const float MS_CLICK_THRESHOLD = 500;
     private const float MOVEMENT_CLICK_THRESHOLD = 50;
+    private const float MOUSE_WHEEL_THROTTLE = 0.1f;
+
+    private const string MOUSE_X_AXIS = "Mouse X";
+    private const string MOUSE_Y_AXIS = "Mouse Y";
+    private const string MOUSE_SCROLLWHEEL = "Mouse ScrollWheel";
 
     public static event Action<int, Vector3> OnMouseClick;
     public static event Action<int, Vector3> OnMouseClickOnUI;
@@ -36,43 +40,75 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     private Vector3 lastMousePosition;
     private bool canInputBeMade = true;
     private bool currentClickIsOnUi = false;
-    private GameObject builderInputGameObject;
+    private int lastMouseWheelAxisDirection = 0;
+    private float lastMouseWheelTime = 0;
 
-    public override void Init(BIWContext context)
+    public override void Update()
     {
-        base.Init(context);
-        builderInputGameObject = new GameObject("BuilderInput");
-        builderInputGameObject.AddComponent<DCLBuilderInput>();
+        base.Update();
+        for (int i = 0; i <= 2; i++)
+        {
+            if (HasMouseButtonInput(i))
+                break;
+        }
 
-        DCLBuilderInput.OnMouseDrag += MouseDrag;
-        DCLBuilderInput.OnMouseRawDrag += MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel += MouseWheel;
-        DCLBuilderInput.OnMouseDown += MouseDown;
-        DCLBuilderInput.OnMouseUp += MouseUp;
+        UpdateMouseWheelInput();
     }
 
-    public override void Dispose()
+    private bool HasMouseButtonInput(int button)
     {
-        base.Dispose();
-        DCLBuilderInput.OnMouseDrag -= MouseDrag;
-        DCLBuilderInput.OnMouseRawDrag -= MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel -= MouseWheel;
-        DCLBuilderInput.OnMouseDown -= MouseDown;
-        DCLBuilderInput.OnMouseUp -= MouseUp;
+        if (Input.GetMouseButtonDown(button))
+        {
+            MouseDown(button, Input.mousePosition);
+            return true;
+        }
 
-        GameObject.Destroy(builderInputGameObject);
+        if (Input.GetMouseButton(button))
+        {
+            MouseDrag(button, Input.mousePosition, Input.GetAxis(MOUSE_X_AXIS), Input.GetAxis(MOUSE_Y_AXIS));
+            MouseRawDrag(button, Input.mousePosition, Input.GetAxis(MOUSE_X_AXIS), Input.GetAxis(MOUSE_Y_AXIS));
+            return true;
+        }
+
+        if (Input.GetMouseButtonUp(button))
+        {
+            MouseUp(button, Input.mousePosition);
+            return true;
+        }
+
+        return false;
     }
 
-    public override void EnterEditMode(ParcelScene scene)
+    private void OnMouseWheelInput(float axisValue)
     {
-        base.EnterEditMode(scene);
-        builderInputGameObject.SetActive(true);
+        int axisDirection = (int)Mathf.Sign(axisValue);
+        if (lastMouseWheelAxisDirection == axisDirection)
+        {
+            if (Time.unscaledTime - lastMouseWheelTime >= MOUSE_WHEEL_THROTTLE)
+            {
+                SetMouseWheelDelta(axisValue, axisDirection);
+            }
+        }
+        else
+        {
+            SetMouseWheelDelta(axisValue, axisDirection);
+        }
     }
 
-    public override void ExitEditMode()
+    private void SetMouseWheelDelta(float axisValue, int axisDirection)
     {
-        base.ExitEditMode();
-        builderInputGameObject.SetActive(false);
+        MouseWheel(axisValue);
+        lastMouseWheelTime = Time.unscaledTime;
+        lastMouseWheelAxisDirection = axisDirection;
+    }
+
+    private void UpdateMouseWheelInput()
+    {
+        float axisValue = Input.GetAxis(MOUSE_SCROLLWHEEL);
+        if (axisValue != 0)
+        {
+            OnMouseWheelInput(axisValue);
+        }
     }
 
     public void StopInput() { canInputBeMade = false; }
@@ -94,7 +130,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         if (!canInputBeMade)
             return;
 
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
         {
             OnMouseUp?.Invoke(buttonId, mousePosition);
             if (Vector3.Distance(mousePosition, lastMousePosition) >= MOVEMENT_CLICK_THRESHOLD)
@@ -114,7 +150,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
         lastTimeMouseDown = Time.unscaledTime;
         lastMousePosition = mousePosition;
-        currentClickIsOnUi = BuilderInWorldUtils.IsPointerOverUIElement();
+        currentClickIsOnUi = BIWUtils.IsPointerOverUIElement();
 
         if (!canInputBeMade)
             return;
@@ -129,7 +165,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
 
         if (!canInputBeMade)
             return;
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
             OnMouseWheel?.Invoke(axisValue);
     }
 
@@ -159,7 +195,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     {
         if (!canInputBeMade ||
             currentClickIsOnUi ||
-            BuilderInWorldUtils.IsPointerOverUIElement())
+            BIWUtils.IsPointerOverUIElement())
             return false;
 
         return true;

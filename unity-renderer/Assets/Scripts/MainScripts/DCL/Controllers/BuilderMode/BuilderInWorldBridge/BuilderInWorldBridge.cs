@@ -70,7 +70,7 @@ public class BuilderInWorldBridge : MonoBehaviour
 
     public void AskKernelForCatalogHeaders() { WebInterface.SendMessage(BIWSettings.BIW_HEADER_REQUEST_EVENT_NAME); }
 
-    public void UpdateSmartItemComponent(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    public void UpdateSmartItemComponent(BIWEntity entity, ParcelScene scene)
     {
         SmartItemComponent smartItemComponent = entity.rootEntity.TryGetComponent<SmartItemComponent>();
         if (smartItemComponent == null)
@@ -99,7 +99,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         WebInterface.SendSceneEvent(scene.sceneData.id, BIWSettings.STATE_EVENT_NAME, saveSceneState);
     }
 
-    public void ChangeEntityLockStatus(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    public void ChangeEntityLockStatus(BIWEntity entity, ParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.LOCKED_ON_EDIT;
@@ -115,7 +115,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         ChangeEntityComponent(entitySingleComponentPayload, scene);
     }
 
-    public void ChangedEntityName(DCLBuilderInWorldEntity entity, ParcelScene scene)
+    public void ChangedEntityName(BIWEntity entity, ParcelScene scene)
     {
         entitySingleComponentPayload.entityId = entity.rootEntity.entityId;
         entitySingleComponentPayload.componentId = (int) CLASS_ID.NAME;

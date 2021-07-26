@@ -31,12 +31,12 @@ public class BuildModeHUDController : IHUD
     public event Action OnChangeSnapModeAction;
     public event Action<CatalogItem> OnCatalogItemSelected;
     public event Action<CatalogItem> OnCatalogItemDropped;
-    public event Action<DCLBuilderInWorldEntity> OnEntityClick;
-    public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
-    public event Action<DCLBuilderInWorldEntity> OnEntityLock;
-    public event Action<DCLBuilderInWorldEntity> OnEntityChangeVisibility;
-    public event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
-    public event Action<DCLBuilderInWorldEntity> OnEntitySmartItemComponentUpdate;
+    public event Action<BIWEntity> OnEntityClick;
+    public event Action<BIWEntity> OnEntityDelete;
+    public event Action<BIWEntity> OnEntityLock;
+    public event Action<BIWEntity> OnEntityChangeVisibility;
+    public event Action<BIWEntity, string> OnEntityRename;
+    public event Action<BIWEntity> OnEntitySmartItemComponentUpdate;
     public event Action<Vector3> OnSelectedObjectPositionChange;
     public event Action<Vector3> OnSelectedObjectRotationChange;
     public event Action<Vector3> OnSelectedObjectScaleChange;
@@ -497,7 +497,7 @@ public class BuildModeHUDController : IHUD
 
     #region EntityInformation
 
-    public void EntityInformationSetEntity(DCLBuilderInWorldEntity entity, ParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
+    public void EntityInformationSetEntity(BIWEntity entity, ParcelScene scene) { controllers.entityInformationController.SetEntity(entity, scene); }
 
     public void ShowEntityInformation(bool activateTransparencyMode = false)
     {
@@ -527,7 +527,7 @@ public class BuildModeHUDController : IHUD
 
     #endregion
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entityList)
+    public void SetEntityList(List<BIWEntity> entityList)
     {
         controllers.inspectorController.SetEntityList(entityList);
 
@@ -560,7 +560,7 @@ public class BuildModeHUDController : IHUD
 
     public void ChangeVisibilityOfUI()
     {
-        DataStore.i.builderInWorld.showTaskBar.Set(!IsVisible());
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(!IsVisible());
         SetVisibility(!IsVisible());
     }
 

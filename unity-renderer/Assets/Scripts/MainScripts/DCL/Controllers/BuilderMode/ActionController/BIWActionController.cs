@@ -5,17 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using UnityEngine;
-using static BuildInWorldCompleteAction;
+using static BIWCompleteAction;
 
 public interface IBIWActionController
 {
     public event System.Action OnRedo;
     public event System.Action OnUndo;
-    public void AddAction(BuildInWorldCompleteAction action);
+    public void AddAction(BIWCompleteAction action);
     public void TryToRedoAction();
     public void TryToUndoAction();
-    public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList);
-    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity);
+    public void CreateActionEntityDeleted(List<BIWEntity> entityList);
+    public void CreateActionEntityDeleted(BIWEntity entity);
     public void CreateActionEntityCreated(IDCLEntity entity);
 }
 
@@ -29,7 +29,7 @@ public class BIWActionController : BIWController, IBIWActionController
     private IBIWEntityHandler entityHandler;
     private IBIWFloorHandler floorHandler;
 
-    private readonly List<BuildInWorldCompleteAction> actionsMade = new List<BuildInWorldCompleteAction>();
+    private readonly List<BIWCompleteAction> actionsMade = new List<BIWCompleteAction>();
 
     private int currentUndoStepIndex = 0;
     private int currentRedoStepIndex = 0;
@@ -73,7 +73,7 @@ public class BIWActionController : BIWController, IBIWActionController
         currentRedoStepIndex = 0;
     }
 
-    public void GoToAction(BuildInWorldCompleteAction action)
+    public void GoToAction(BIWCompleteAction action)
     {
         int index = actionsMade.IndexOf(action);
         int stepsAmount = currentUndoStepIndex - index;
@@ -136,35 +136,35 @@ public class BIWActionController : BIWController, IBIWActionController
             Debug.Log("Undo:  Current actions " + actionsMade.Count + "   Current undo index " + currentUndoStepIndex + "   Current redo index " + currentRedoStepIndex);
     }
 
-    public void CreateActionEntityDeleted(DCLBuilderInWorldEntity entity) { CreateActionEntityDeleted(new List<DCLBuilderInWorldEntity> { entity }); }
+    public void CreateActionEntityDeleted(BIWEntity entity) { CreateActionEntityDeleted(new List<BIWEntity> { entity }); }
 
-    public void CreateActionEntityDeleted(List<DCLBuilderInWorldEntity> entityList)
+    public void CreateActionEntityDeleted(List<BIWEntity> entityList)
     {
-        BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-        List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
+        BIWCompleteAction buildAction = new BIWCompleteAction();
+        List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
 
-        foreach (DCLBuilderInWorldEntity entity in entityList)
+        foreach (BIWEntity entity in entityList)
         {
-            BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity.rootEntity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity.rootEntity), entity.rootEntity.entityId);
-            entityActionList.Add(builderInWorldEntityAction);
+            BIWEntityAction biwEntityAction = new BIWEntityAction(entity.rootEntity.entityId, BIWUtils.ConvertEntityToJSON(entity.rootEntity), entity.rootEntity.entityId);
+            entityActionList.Add(biwEntityAction);
         }
 
-        buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.DELETE);
+        buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.DELETE);
 
         AddAction(buildAction);
     }
 
     public void CreateActionEntityCreated(IDCLEntity entity)
     {
-        BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity, entity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity));
+        BIWEntityAction biwEntityAction = new BIWEntityAction(entity, entity.entityId, BIWUtils.ConvertEntityToJSON(entity));
 
-        BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-        buildAction.CreateActionType(builderInWorldEntityAction, ActionType.CREATE);
+        BIWCompleteAction buildAction = new BIWCompleteAction();
+        buildAction.CreateActionType(biwEntityAction, ActionType.CREATE);
 
         AddAction(buildAction);
     }
 
-    public void AddAction(BuildInWorldCompleteAction action)
+    public void AddAction(BIWCompleteAction action)
     {
         if (currentRedoStepIndex < actionsMade.Count - 1)
             actionsMade.RemoveRange(currentRedoStepIndex, actionsMade.Count - currentRedoStepIndex);

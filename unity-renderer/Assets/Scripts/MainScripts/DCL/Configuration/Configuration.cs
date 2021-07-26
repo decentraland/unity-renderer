@@ -12,6 +12,8 @@ namespace DCL.Configuration
         public static readonly LayerMask SELECTION_LAYER_INDEX = LayerMask.NameToLayer("Selection");
         public static readonly LayerMask DEFAULT_LAYER_INDEX = LayerMask.NameToLayer("Default");
         public static readonly LayerMask COLLIDER_SELECTION_LAYER_INDEX = LayerMask.NameToLayer("OnBuilderPointerClick");
+
+        public static readonly LayerMask SELECTION_LAYER = LayerMask.GetMask("Selection");
         public static readonly LayerMask COLLIDER_SELECTION_LAYER = LayerMask.GetMask("OnBuilderPointerClick");
         public static readonly LayerMask GIZMOS_LAYER = LayerMask.GetMask("Gizmo");
         public static readonly LayerMask GROUND_LAYER = LayerMask.GetMask("Ground");

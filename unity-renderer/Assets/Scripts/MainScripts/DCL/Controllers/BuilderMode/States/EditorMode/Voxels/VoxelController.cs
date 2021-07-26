@@ -12,7 +12,7 @@ public class VoxelController
     [Header("References")]
     public VoxelPrefab voxelPrefab;
 
-    public BIWMainController buildModeController;
+    public BIWRaycastController raycastController;
     public BIWOutlinerController outlinerController;
     public BIWEntityHandler biwEntityHandler;
     public FreeCameraMovement freeCameraMovement;
@@ -20,7 +20,7 @@ public class VoxelController
 
     public LayerMask groundLayer;
 
-    DCLBuilderInWorldEntity lastVoxelCreated;
+    BIWEntity lastVoxelCreated;
 
     GameObject editionGO;
     bool mousePressed = false, isVoxelModelActivated = false, isCreatingMultipleVoxels = false;
@@ -50,9 +50,9 @@ public class VoxelController
             return;
 
         Vector3Int currentPosition = Vector3Int.zero;
-        VoxelEntityHit voxelHit = buildModeController.GetCloserUnselectedVoxelEntityOnPointer();
+        VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
-        if (voxelHit != null && voxelHit.entityHitted.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
+        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
         {
             Vector3Int position = ConverPositionToVoxelPosition(voxelHit.entityHitted.rootEntity.gameObject.transform.position);
             position += voxelHit.hitVector;
@@ -80,12 +80,12 @@ public class VoxelController
         if (mousePressed || !isVoxelModelActivated)
             return;
 
-        VoxelEntityHit voxelHit = buildModeController.GetCloserUnselectedVoxelEntityOnPointer();
+        VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
         if (voxelHit != null && voxelHit.entityHitted.IsSelected)
             return;
 
-        if (voxelHit != null && voxelHit.entityHitted.tag == BIWSettings.VOXEL_TAG)
+        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG)
         {
             Vector3 position = ConverPositionToVoxelPosition(voxelHit.entityHitted.rootEntity.gameObject.transform.position);
             position += voxelHit.hitVector;
@@ -112,11 +112,11 @@ public class VoxelController
 
     public void EndMultiVoxelSelection()
     {
-        List<DCLBuilderInWorldEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
+        List<BIWEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
 
-        foreach (DCLBuilderInWorldEntity voxelEntity in voxelEntities)
+        foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (BuilderInWorldUtils.IsWithInSelectionBounds(voxelEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
+            if (BIWUtils.IsWithInSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
             {
                 biwEntityHandler.SelectEntity(voxelEntity);
             }
@@ -133,8 +133,8 @@ public class VoxelController
         int zDifference = Mathf.Abs(firstPosition.z - lastPosition.z);
 
         List<Vector3Int> mustContainVoxelList = new List<Vector3Int>();
-        List<DCLBuilderInWorldEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
-        List<DCLBuilderInWorldEntity> allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
+        List<BIWEntity> voxelEntities = biwEntityHandler.GetAllVoxelsEntities();
+        List<BIWEntity> allEntities = biwEntityHandler.GetAllEntitiesFromCurrentScene();
 
         for (int x = 0; x <= xDifference; x++)
         {
@@ -188,11 +188,11 @@ public class VoxelController
         }
     }
 
-    bool ExistVoxelAtPosition(Vector3Int position, List<DCLBuilderInWorldEntity> voxelEntities)
+    bool ExistVoxelAtPosition(Vector3Int position, List<BIWEntity> voxelEntities)
     {
-        foreach (DCLBuilderInWorldEntity voxelEntity in voxelEntities)
+        foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (position == ConverPositionToVoxelPosition(voxelEntity.transform.position))
+            if (position == ConverPositionToVoxelPosition(voxelEntity.rootEntity.transform.position))
                 return true;
         }
 
@@ -218,7 +218,7 @@ public class VoxelController
 
         if (isCreatingMultipleVoxels)
         {
-            lastVoxelCreated.transform.SetParent(null);
+            lastVoxelCreated.rootEntity.transform.SetParent(null);
             bool canVoxelsBeCreated = true;
 
             foreach (VoxelPrefab voxel in createdVoxels.Values)
@@ -230,10 +230,10 @@ public class VoxelController
                 }
             }
 
-            BuildInWorldCompleteAction buildAction = new BuildInWorldCompleteAction();
-            buildAction.actionType = BuildInWorldCompleteAction.ActionType.CREATE;
+            BIWCompleteAction buildAction = new BIWCompleteAction();
+            buildAction.actionType = BIWCompleteAction.ActionType.CREATE;
 
-            List<BuilderInWorldEntityAction> entityActionList = new List<BuilderInWorldEntityAction>();
+            List<BIWEntityAction> entityActionList = new List<BIWEntityAction>();
 
             foreach (Vector3Int voxelPosition in createdVoxels.Keys)
             {
@@ -243,8 +243,8 @@ public class VoxelController
                     entity.gameObject.tag = BIWSettings.VOXEL_TAG;
                     entity.gameObject.transform.position = voxelPosition;
 
-                    BuilderInWorldEntityAction builderInWorldEntityAction = new BuilderInWorldEntityAction(entity, entity.entityId, BuilderInWorldUtils.ConvertEntityToJSON(entity));
-                    entityActionList.Add(builderInWorldEntityAction);
+                    BIWEntityAction biwEntityAction = new BIWEntityAction(entity, entity.entityId, BIWUtils.ConvertEntityToJSON(entity));
+                    entityActionList.Add(biwEntityAction);
                 }
 
                 GameObject.Destroy(createdVoxels[voxelPosition].gameObject);
@@ -256,7 +256,7 @@ public class VoxelController
             }
             else
             {
-                buildAction.CreateActionType(entityActionList, BuildInWorldCompleteAction.ActionType.CREATE);
+                buildAction.CreateActionType(entityActionList, BIWCompleteAction.ActionType.CREATE);
                 biwActionController.AddAction(buildAction);
             }
 
@@ -276,16 +276,16 @@ public class VoxelController
         if (buttonID != 0 || !isVoxelModelActivated || lastVoxelCreated == null)
             return;
 
-        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.transform.position);
+        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.rootEntity.transform.position);
         mousePressed = true;
         freeCameraMovement.SetCameraCanMove(false);
         isCreatingMultipleVoxels = true;
     }
 
-    public void SetVoxelSelected(DCLBuilderInWorldEntity decentralandEntityToEdit)
+    public void SetVoxelSelected(BIWEntity decentralandEntityToEdit)
     {
         lastVoxelCreated = decentralandEntityToEdit;
-        lastVoxelCreated.transform.localPosition = Vector3.zero;
+        lastVoxelCreated.rootEntity.transform.localPosition = Vector3.zero;
     }
 
     public Vector3Int ConverPositionToVoxelPosition(Vector3 rawPosition)
@@ -297,13 +297,13 @@ public class VoxelController
         return position;
     }
 
-    bool IsVoxelAtValidPoint(VoxelPrefab voxelPrefab, List<DCLBuilderInWorldEntity> entitiesToCheck)
+    bool IsVoxelAtValidPoint(VoxelPrefab voxelPrefab, List<BIWEntity> entitiesToCheck)
     {
         if (!currentScene.IsInsideSceneBoundaries(voxelPrefab.meshRenderer.bounds))
             return false;
         Bounds bounds = voxelPrefab.meshRenderer.bounds;
         bounds.size -= Vector3.one * VOXEL_BOUND_ERROR;
-        foreach (DCLBuilderInWorldEntity entity in entitiesToCheck)
+        foreach (BIWEntity entity in entitiesToCheck)
         {
             if (entity.rootEntity.meshesInfo == null || entity.rootEntity.meshesInfo.renderers == null)
                 continue;

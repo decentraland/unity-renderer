@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using DCL.Configuration;
 using UnityEngine;
 
-public class BuilderInWorldMode
+public class BIWMode
 {
     public event Action OnInputDone;
-    public event Action<BuildInWorldCompleteAction> OnActionGenerated;
+    public event Action<BIWCompleteAction> OnActionGenerated;
 
     public float maxDistanceToSelectEntities => maxDistanceToSelectEntitiesValue;
 
@@ -23,25 +23,27 @@ public class BuilderInWorldMode
     protected IBIWEntityHandler entityHandler;
     protected IBIWSaveController saveController;
     protected IBIWActionController actionController;
+    protected IBIWRaycastController raycastController;
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
     protected bool isSnapActive = false, isMultiSelectionActive = false, isModeActive = false;
-    protected List<DCLBuilderInWorldEntity> selectedEntities;
+    protected List<BIWEntity> selectedEntities;
 
     protected bool isNewObjectPlaced = false;
 
-    protected List<BuilderInWorldEntityAction> actionList = new List<BuilderInWorldEntityAction>();
+    protected List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
-    public virtual void Init(BIWContext biwContext)
+    public virtual void Init(BIWContext context)
     {
-        entityHandler = biwContext.entityHandler;
-        saveController = biwContext.saveController;
-        actionController = biwContext.actionController;
+        entityHandler = context.entityHandler;
+        saveController = context.saveController;
+        actionController = context.actionController;
+        raycastController = context.raycastController;
         entityHandler.OnEntityDeleted += OnDeleteEntity;
     }
 
-    public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<DCLBuilderInWorldEntity> selectedEntities)
+    public virtual void SetEditorReferences(GameObject goToEdit, GameObject undoGO, GameObject snapGO, GameObject freeMovementGO, List<BIWEntity> selectedEntities)
     {
         editionGO = goToEdit;
         this.undoGO = undoGO;
@@ -82,20 +84,20 @@ public class BuilderInWorldMode
 
     public virtual void SetDuplicationOffset(float offset) { }
 
-    public virtual void EntityDoubleClick(DCLBuilderInWorldEntity entity) { }
+    public virtual void EntityDoubleClick(BIWEntity entity) { }
 
-    public virtual void SelectedEntity(DCLBuilderInWorldEntity selectedEntity)
+    public virtual void SelectedEntity(BIWEntity selectedEntity)
     {
         CenterGameObjectToEdit();
 
-        BuilderInWorldUtils.CopyGameObjectStatus(editionGO, undoGO, false, false);
+        BIWUtils.CopyGameObjectStatus(editionGO, undoGO, false, false);
     }
 
     public virtual void CenterGameObjectToEdit()
     {
         if (selectedEntities.Count > 0)
         {
-            foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+            foreach (BIWEntity entity in selectedEntities)
             {
                 entity.rootEntity.gameObject.transform.SetParent(null);
             }
@@ -103,7 +105,7 @@ public class BuilderInWorldMode
             editionGO.transform.position = GetCenterPointOfSelectedObjects();
             editionGO.transform.rotation = Quaternion.Euler(0, 0, 0);
             editionGO.transform.localScale = Vector3.one;
-            foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+            foreach (BIWEntity entity in selectedEntities)
             {
                 entity.rootEntity.gameObject.transform.SetParent(editionGO.transform);
             }
@@ -112,7 +114,7 @@ public class BuilderInWorldMode
 
     public virtual void MouseClickDetected()
     {
-        DCLBuilderInWorldEntity entityToSelect = entityHandler.GetEntityOnPointer();
+        BIWEntity entityToSelect = raycastController.GetEntityOnPointer();
         if (entityToSelect != null)
         {
             entityHandler.EntityClicked(entityToSelect);
@@ -123,9 +125,9 @@ public class BuilderInWorldMode
         }
     }
 
-    public virtual void CreatedEntity(DCLBuilderInWorldEntity createdEntity) { isNewObjectPlaced = true; }
+    public virtual void CreatedEntity(BIWEntity createdEntity) { isNewObjectPlaced = true; }
 
-    public virtual void EntityDeselected(DCLBuilderInWorldEntity entityDeselected)
+    public virtual void EntityDeselected(BIWEntity entityDeselected)
     {
         CenterGameObjectToEdit();
 
@@ -137,7 +139,7 @@ public class BuilderInWorldMode
         isNewObjectPlaced = false;
     }
 
-    public virtual void OnDeleteEntity(DCLBuilderInWorldEntity entity) { }
+    public virtual void OnDeleteEntity(BIWEntity entity) { }
 
     public virtual void OnDeselectedEntities() { entityHandler.ReportTransform(true); }
 
@@ -159,7 +161,7 @@ public class BuilderInWorldMode
         freeMovementGO.transform.rotation = zeroAnglesQuaternion;
         editionGO.transform.rotation = zeroAnglesQuaternion;
 
-        foreach (DCLBuilderInWorldEntity decentralandEntityToEdit in selectedEntities)
+        foreach (BIWEntity decentralandEntityToEdit in selectedEntities)
         {
             decentralandEntityToEdit.ResetTransfrom();
         }
@@ -174,7 +176,7 @@ public class BuilderInWorldMode
         float totalX = 0f;
         float totalY = 0f;
         float totalZ = 0f;
-        foreach (DCLBuilderInWorldEntity entity in selectedEntities)
+        foreach (BIWEntity entity in selectedEntities)
         {
             totalX += entity.rootEntity.gameObject.transform.position.x;
             totalY += entity.rootEntity.gameObject.transform.position.y;
@@ -189,7 +191,7 @@ public class BuilderInWorldMode
 
     protected void TransformActionStarted(IDCLEntity entity, string type)
     {
-        BuilderInWorldEntityAction buildModeEntityAction = new BuilderInWorldEntityAction(entity);
+        BIWEntityAction buildModeEntityAction = new BIWEntityAction(entity);
         switch (type)
         {
             case BIWSettings.TRANSLATE_GIZMO_NAME:
@@ -208,8 +210,8 @@ public class BuilderInWorldMode
 
     protected void TransformActionEnd(IDCLEntity entity, string type)
     {
-        List<BuilderInWorldEntityAction> removeList = new List<BuilderInWorldEntityAction>();
-        foreach (BuilderInWorldEntityAction entityAction in actionList)
+        List<BIWEntityAction> removeList = new List<BIWEntityAction>();
+        foreach (BIWEntityAction entityAction in actionList)
         {
             if (entityAction.entityId != entity.entityId)
                 continue;
@@ -236,23 +238,23 @@ public class BuilderInWorldMode
             }
         }
 
-        foreach (BuilderInWorldEntityAction entityAction in removeList)
+        foreach (BIWEntityAction entityAction in removeList)
         {
             actionList.Remove(entityAction);
         }
     }
 
-    protected void ActionFinish(BuildInWorldCompleteAction.ActionType type)
+    protected void ActionFinish(BIWCompleteAction.ActionType type)
     {
         if (actionList.Count > 0 && selectedEntities.Count > 0)
         {
-            BuildInWorldCompleteAction buildModeAction = new BuildInWorldCompleteAction();
+            BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
             buildModeAction.actionType = type;
             buildModeAction.CreateActionType(actionList, type);
             OnActionGenerated?.Invoke(buildModeAction);
 
-            actionList = new List<BuilderInWorldEntityAction>();
+            actionList = new List<BIWEntityAction>();
         }
     }
     public virtual void Update() { }

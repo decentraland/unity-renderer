@@ -167,112 +167,112 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         extraBtn.onClick.AddListener(() => OnExtraClick(dummyActionTrigger));
         snapModeBtn.onClick.AddListener(() => OnSnapModeClick(dummyActionTrigger));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             changeCameraModeEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnChangeCameraModePointerEnter?.Invoke(eventData, changeCameraModeTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             changeCameraModeEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             translateEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnTranslatePointerEnter?.Invoke(eventData, translateTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             translateEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             rotateEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnRotatePointerEnter?.Invoke(eventData, rotateTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             rotateEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             scaleEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnScalePointerEnter?.Invoke(eventData, scaleTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             scaleEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             undoEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnUndoPointerEnter?.Invoke(eventData, undoTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             undoEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             redoEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnRedoPointerEnter?.Invoke(eventData, redoTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             redoEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             duplicateEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnDuplicatePointerEnter?.Invoke(eventData, duplicateTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             duplicateEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             deleteEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnDeletePointerEnter?.Invoke(eventData, deleteTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             deleteEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             moreActionsEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnMoreActionsPointerEnter?.Invoke(eventData, moreActionsTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             moreActionsEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             logoutEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnLogoutPointerEnter?.Invoke(eventData, logoutTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             logoutEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             snapModeEventTrigger,
             EventTriggerType.PointerEnter,
             (eventData) => OnSnapModePointerEnter?.Invoke(eventData, snapModeTooltipText));
 
-        BuilderInWorldUtils.ConfigureEventTrigger(
+        BIWUtils.ConfigureEventTrigger(
             snapModeEventTrigger,
             EventTriggerType.PointerExit,
             (eventData) => OnPointerExit?.Invoke());
@@ -300,28 +300,28 @@ public class TopActionsButtonsView : MonoBehaviour, ITopActionsButtonsView
         extraBtn.onClick.RemoveAllListeners();
         snapModeBtn.onClick.RemoveAllListeners();
 
-        BuilderInWorldUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(translateEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(translateEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(rotateEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(rotateEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(deleteEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(deleteEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(moreActionsEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(moreActionsEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerExit);
-        BuilderInWorldUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(changeCameraModeEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(translateEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(translateEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(rotateEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(rotateEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(scaleEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(undoEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(redoEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(duplicateEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(deleteEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(deleteEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(moreActionsEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(moreActionsEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(logoutEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(snapModeEventTrigger, EventTriggerType.PointerExit);
 
         toggleChangeCameraInputAction.OnTriggered -= OnChangeModeClick;
         toggleTranslateInputAction.OnTriggered -= OnTranslateClick;
