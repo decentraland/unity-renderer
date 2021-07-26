@@ -33,9 +33,9 @@ namespace AvatarNamesHUD
         public void SetVisibility(bool visible)
         {
             visibility = visible;
-            background?.gameObject.SetActive(visibility);
-            name?.gameObject.SetActive(visibility);
-            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+            background.gameObject.SetActive(visibility);
+            name.gameObject.SetActive(visibility);
+            voiceChatCanvasGroup.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
         }
 
         public void SetPlayerStatus(PlayerStatus newPlayerStatus)
@@ -59,17 +59,30 @@ namespace AvatarNamesHUD
             float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
             screenPoint.Scale(canvasRect.rect.size);
 
-            name.rectTransform.anchoredPosition = screenPoint;
-            background.rectTransform.anchoredPosition = screenPoint;
-            background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
-            Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
-            (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
+            if (screenPoint.z > 0)
+            {
+                name.rectTransform.anchoredPosition = screenPoint;
+                background.rectTransform.anchoredPosition = screenPoint;
+                background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
+                Vector2 voiceChatOffset = -Vector2.Scale(Vector2.right, background.rectTransform.sizeDelta) * 0.5f;
+                (voiceChatCanvasGroup.transform as RectTransform).anchoredPosition = background.rectTransform.anchoredPosition + voiceChatOffset;
 
-            voiceChatCanvasGroup.alpha = alpha;
-            name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
-            backgroundCanvasGroup.alpha = alpha;
-            voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
-            voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
+                voiceChatCanvasGroup.alpha = alpha;
+                name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
+                backgroundCanvasGroup.alpha = alpha;
+                voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+                voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
+
+                background.gameObject.SetActive(visibility);
+                name.gameObject.SetActive(visibility);
+                voiceChatCanvasGroup.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+            }
+            else
+            {
+                background.gameObject.SetActive(false);
+                name.gameObject.SetActive(false);
+                voiceChatCanvasGroup.gameObject.SetActive(false);
+            }
         }
 
         public void DestroyUIElements()
