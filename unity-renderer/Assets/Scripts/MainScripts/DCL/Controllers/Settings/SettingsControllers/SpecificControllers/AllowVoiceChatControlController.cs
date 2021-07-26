@@ -12,7 +12,7 @@ namespace DCL.SettingsControls
         {
             int newIntValue = (int)newValue;
             currentGeneralSettings.voiceChatAllow = (SettingsData.GeneralSettings.VoiceChatAllow)newIntValue;
-            WebInterface.ApplySettings(currentGeneralSettings.voiceChatVolume, newIntValue);
+            WebInterface.ApplySettings(Settings.i.GetCalculatedVoiceChatVolume(), newIntValue);
         }
     }
 }

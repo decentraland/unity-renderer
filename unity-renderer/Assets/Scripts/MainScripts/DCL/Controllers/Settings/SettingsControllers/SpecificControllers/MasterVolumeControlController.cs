@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using DCL.Helpers;
+using DCL.Interface;
 
 namespace DCL.SettingsControls
 {
@@ -16,7 +17,12 @@ namespace DCL.SettingsControls
 
         public override void UpdateSetting(object newValue) {
             currentAudioSettings.masterVolume = (float)newValue * 0.01f;
+
+            // Update "All" mixer group
             audioMixer.SetFloat("AllBusVolume", Utils.ToAudioMixerGroupVolume(currentAudioSettings.masterVolume));
+
+            // Update voice chat volume
+            WebInterface.ApplySettings(Settings.i.GetCalculatedVoiceChatVolume(), (int)currentGeneralSettings.voiceChatAllow);
         }
     }
 }

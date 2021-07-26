@@ -11,7 +11,6 @@ namespace DCL.SettingsControls
 
         public override void UpdateSetting(object newValue) {
             currentAudioSettings.sceneSFXVolume = (float)newValue * 0.01f;
-            // TODO: Apply volume change
         }
     }
 }

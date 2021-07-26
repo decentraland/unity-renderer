@@ -235,8 +235,10 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
-                targetVolume = baseVolume * distanceVolumeModifier * Settings.i.generalSettings.sfxVolume;
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get()))) {
+                targetVolume = baseVolume * distanceVolumeModifier;
+                targetVolume *= Utils.ToVolumeCurve(Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+            }
 
             texturePlayer.SetVolume(targetVolume);
         }

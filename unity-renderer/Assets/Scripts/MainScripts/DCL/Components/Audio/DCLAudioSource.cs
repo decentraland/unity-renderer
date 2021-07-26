@@ -114,9 +114,11 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
+            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+
             if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
             {
-                audioSource.volume = ((Model)model).volume;
+                audioSource.volume = newVolume;
                 return;
             }
 
@@ -126,7 +128,7 @@ namespace DCL.Components
                 return;
             }
 
-            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? ((Model)model).volume : 0f;
+            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? newVolume : 0f;
         }
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)

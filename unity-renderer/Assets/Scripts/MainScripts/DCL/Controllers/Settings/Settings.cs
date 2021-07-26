@@ -207,6 +207,10 @@ namespace DCL
             OnAudioSettingsChanged?.Invoke(settings);
         }
 
+        public float GetCalculatedVoiceChatVolume() {
+            return Utils.ToVolumeCurve(currentAudioSettings.voiceChatVolume * currentAudioSettings.masterVolume);
+        }
+
         public void SaveSettings()
         {
             PlayerPrefsUtils.SetString(GENERAL_SETTINGS_KEY, JsonUtility.ToJson(currentGeneralSettings));

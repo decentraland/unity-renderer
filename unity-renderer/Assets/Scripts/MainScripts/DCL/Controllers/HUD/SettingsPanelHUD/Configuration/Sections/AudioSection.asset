@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2548c6ebc3c846446810452bb5cc2606, type: 3}
   m_Name: AudioSection
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: 607bb3a0be6f94088977f57354ec95b9, type: 3}
+  icon: {fileID: 21300000, guid: b23d5fabe4435364292b363710d399aa, type: 3}
   text: Audio
   menuButtonPrefab: {fileID: 2470334045984490575, guid: 829d414daa3047541a35abc7d88a1fe5,
     type: 3}
