@@ -20,6 +20,8 @@ namespace AvatarNamesHUD
         internal PlayerStatus playerStatus;
         internal bool visibility = false;
 
+        private static Camera mainCamera = null;
+
         public AvatarNamesTracker(RectTransform canvasRect, RectTransform backgroundRect, RectTransform nameRect, RectTransform voiceChatRect)
         {
             this.canvasRect = canvasRect;
@@ -51,16 +53,18 @@ namespace AvatarNamesHUD
 
         public void UpdatePosition()
         {
-            if (playerStatus == null)
+            if (mainCamera == null)
+                mainCamera = mainCamera = Camera.main;
+
+            if (playerStatus == null || mainCamera == null)
                 return;
 
-            var mainCamera = Camera.main;
             Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(playerStatus.worldPosition + OFFSET);
             float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
-            screenPoint.Scale(canvasRect.rect.size);
 
             if (screenPoint.z > 0)
             {
+                screenPoint.Scale(canvasRect.rect.size);
                 name.rectTransform.anchoredPosition = screenPoint;
                 background.rectTransform.anchoredPosition = screenPoint;
                 background.rectTransform.sizeDelta = new Vector2(name.textBounds.extents.x * 2.5f, 30);
