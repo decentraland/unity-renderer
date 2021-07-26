@@ -11,6 +11,7 @@ namespace LoadingHUD
         void SetPercentage(float percentage);
         void SetWalletPrompt(bool showWalletPrompt);
         void SetTips(bool showTips);
+        void Dispose();
     }
 
     public class LoadingHUDView : MonoBehaviour, ILoadingHUDView
@@ -20,6 +21,8 @@ namespace LoadingHUD
         [SerializeField] internal GameObject walletPrompt;
         [SerializeField] internal GameObject tipsContainer;
         [SerializeField] internal GameObject noTipsContainer;
+
+        private bool isDestroyed = false;
 
         public static ILoadingHUDView CreateView()
         {
@@ -44,6 +47,16 @@ namespace LoadingHUD
         {
             tipsContainer.gameObject.SetActive(showTips);
             noTipsContainer.gameObject.SetActive(!showTips);
+        }
+
+        private void OnDestroy() { isDestroyed = true; }
+
+        public void Dispose()
+        {
+            if (isDestroyed)
+                return;
+            isDestroyed = true;
+            Destroy(gameObject);
         }
     }
 }

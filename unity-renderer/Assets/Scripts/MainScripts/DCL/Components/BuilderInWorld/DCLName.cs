@@ -17,7 +17,7 @@ public class DCLName : BaseDisposable
     public class Model : BaseModel
     {
         public string value;
-        //Note: This value is used for builder to manage the smart items, when the builder is no longer active we should remove it
+        //TODO: This value is used for builder to manage the smart items, when the builder is no longer active we should remove it
         public string builderValue;
 
         public override BaseModel GetDataFromJSON(string json) { return Utils.SafeFromJson<Model>(json); }

@@ -191,6 +191,7 @@ namespace DCL.Bots
 
             AvatarModel avatarModel = new AvatarModel()
             {
+                id = entityId,
                 name = entityId,
                 hairColor = Color.white,
                 eyeColor = Color.white,
