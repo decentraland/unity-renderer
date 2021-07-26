@@ -10,7 +10,6 @@ namespace DCL
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
 
         private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
-        private float lastLODsVerticalMovementTime = -1;
 
         public AvatarsLODController()
         {
@@ -28,7 +27,7 @@ namespace DCL
 
             UpdateAllLODs();
 
-            UpdateLODsVerticalMovementAndBillboard();
+            UpdateLODsBillboard();
         }
 
         public void RegisterAvatar(AvatarLODController newAvatar)
@@ -51,24 +50,22 @@ namespace DCL
                 {
                     avatarsList.RemoveAt(i);
 
+                    targetAvatar.ToggleLOD(false);
+
                     return;
                 }
             }
         }
 
-        private void UpdateLODsVerticalMovementAndBillboard()
+        private void UpdateLODsBillboard()
         {
             int listCount = avatarsList.Count;
-            bool applyVerticalMovement = Time.timeSinceLevelLoad - lastLODsVerticalMovementTime > LODS_VERTICAL_MOVEMENT_DELAY;
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
                 lodGO = avatarsList[i].meshRenderer.gameObject;
                 if (!lodGO.activeSelf)
                     continue;
-
-                if (applyVerticalMovement && Vector3.Distance(lodGO.transform.position, CommonScriptableObjects.playerUnityPosition.Get()) > 2 * DataStore.i.avatarsLOD.LODDistance.Get())
-                    lodGO.transform.localPosition = new Vector3(lodGO.transform.localPosition.x, (lodGO.transform.localPosition.y > LODS_LOCAL_Y_POS ? LODS_LOCAL_Y_POS : LODS_LOCAL_Y_POS + LODS_VERTICAL_MOVEMENT), lodGO.transform.localPosition.z);
 
                 Vector3 previousForward = lodGO.transform.forward;
                 Vector3 lookAtDir = (lodGO.transform.position - CommonScriptableObjects.cameraPosition).normalized;
@@ -77,9 +74,6 @@ namespace DCL
 
                 lodGO.transform.forward = lookAtDir;
             }
-
-            if (applyVerticalMovement)
-                lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
         public void Dispose() { }
@@ -96,9 +90,17 @@ namespace DCL
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
+                {
                     avatar.ToggleLOD(true);
+                }
                 else
+                {
+                    while (closeDistanceAvatars.ContainsKey(distanceToPlayer))
+                    {
+                        distanceToPlayer += 0.0001f;
+                    }
                     closeDistanceAvatars.Add(distanceToPlayer, avatar);
+                }
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
