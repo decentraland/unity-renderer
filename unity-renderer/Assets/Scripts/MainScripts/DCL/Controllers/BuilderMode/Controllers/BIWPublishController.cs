@@ -81,9 +81,13 @@ public class BIWPublishController : BIWController, IBIWPublishController
         return true;
     }
 
+    /// <summary>
+    /// This function will check if you are able to publish the scene to the content server. If no error are present, an empty message will be returned
+    /// </summary>
+    /// <returns>A message the with the reason telling you why you can't publish. If you can publish an empty message will be returned </returns>
     public string CheckPublishConditions()
     {
-        if (HUDController.i.builderInWorldMainHud is null)
+        if (HUDController.i.builderInWorldMainHud == null)
             return "";
 
         string feedbackMessage = "";

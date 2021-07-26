@@ -5,15 +5,15 @@ using UnityEngine;
 
 public interface IBIWController
 {
-    public void Init(BIWContext context);
-    public void EnterEditMode(ParcelScene scene);
-    public void ExitEditMode();
-    public void OnGUI();
+    void Init(BIWContext context);
+    void EnterEditMode(ParcelScene scene);
+    void ExitEditMode();
+    void OnGUI();
 
-    public void LateUpdate();
+    void LateUpdate();
 
-    public void Update();
-    public void Dispose();
+    void Update();
+    void Dispose();
 }
 
 public abstract class BIWController : IBIWController

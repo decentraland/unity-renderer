@@ -6,13 +6,13 @@ using UnityEngine.Rendering.Universal;
 
 public interface IBIWOutlinerController
 {
-    public void OutlineEntity(BIWEntity entity);
-    public void CancelEntityOutline(BIWEntity entityToQuitOutline);
-    public void OutlineEntities(List<BIWEntity> entitiesToEdit);
-    public void CheckOutline();
-    public void CancelUnselectedOutlines();
-    public void CancelAllOutlines();
-    public void SetOutlineCheckActive(bool isActive);
+    void OutlineEntity(BIWEntity entity);
+    void CancelEntityOutline(BIWEntity entityToQuitOutline);
+    void OutlineEntities(List<BIWEntity> entitiesToEdit);
+    void CheckOutline();
+    void CancelUnselectedOutlines();
+    void CancelAllOutlines();
+    void SetOutlineCheckActive(bool isActive);
 }
 
 public class BIWOutlinerController : BIWController, IBIWOutlinerController
@@ -67,7 +67,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
                 BIWEntity entity = raycastController.GetEntityOnPointer();
                 RemoveEntitiesOutlineOutsidePointerOrUnselected();
 
-                if (entity != null && !entity.IsSelected)
+                if (entity != null && !entity.isSelected)
                     OutlineEntity(entity);
             }
             else
@@ -102,7 +102,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         if (entitiesOutlined.Contains(entity))
             return;
 
-        if (entity.IsLocked)
+        if (entity.isLocked)
             return;
 
         entitiesOutlined.Add(entity);
@@ -119,7 +119,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     {
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
-            if (!entitiesOutlined[i].IsSelected)
+            if (!entitiesOutlined[i].isSelected)
             {
                 CancelEntityOutline(entitiesOutlined[i]);
             }
@@ -131,7 +131,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         var entity = raycastController.GetEntityOnPointer();
         for (int i = 0; i < entitiesOutlined.Count; i++)
         {
-            if (!entitiesOutlined[i].IsSelected || entity != entitiesOutlined[i])
+            if (!entitiesOutlined[i].isSelected || entity != entitiesOutlined[i])
                 CancelEntityOutline(entitiesOutlined[i]);
         }
     }
@@ -210,7 +210,7 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         BIWOutline outliner = camera.GetComponent<BIWOutline>();
         if (outliner == null)
             return;
-        ;
+
         outliner.Dispose();
         GameObject.Destroy(outliner);
     }

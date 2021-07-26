@@ -5,10 +5,10 @@ using DCL;
 using UnityEngine;
 
 /// <summary>
-/// This class is used to handle a feature that needs the monobehaviour callbacks.
+/// This class is used to handle a feature that needs the MonoBehaviour callbacks.
 ///
 /// You need to add it as a feature toggle in gitlab so kernel will understand when to activate it and deactivate it.
-/// After that, yours feature manager should inherit from 'Feature' so it can start receiving monobehaviour callbacks where it is activated
+/// After that, your feature manager should inherit from 'Feature' so it can start receiving MonoBehaviour callbacks where it is activated
 /// </summary>
 public class FeatureController
 {

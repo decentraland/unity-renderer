@@ -199,9 +199,9 @@ public static partial class BIWUtils
         return bounds;
     }
 
-    public static bool IsWithInSelectionBounds(Transform transform, Vector3 lastClickMousePosition, Vector3 mousePosition) { return IsWithInSelectionBounds(transform.position, lastClickMousePosition, mousePosition); }
+    public static bool IsWithinSelectionBounds(Transform transform, Vector3 lastClickMousePosition, Vector3 mousePosition) { return IsWithinSelectionBounds(transform.position, lastClickMousePosition, mousePosition); }
 
-    public static bool IsWithInSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
+    public static bool IsWithinSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
     {
         Camera camera = Camera.main;
         var viewPortBounds = GetViewportBounds(camera, lastClickMousePosition, mousePosition);

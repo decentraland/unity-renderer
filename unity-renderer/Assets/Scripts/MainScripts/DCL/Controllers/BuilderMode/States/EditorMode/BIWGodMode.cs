@@ -9,7 +9,7 @@ using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BiwGodMode : BIWMode
+public class BIWGodMode : BIWMode
 {
     private float initialEagleCameraHeight = 10f;
     private float initialEagleCameraDistance = 10f;
@@ -153,7 +153,7 @@ public class BiwGodMode : BIWMode
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
 
-                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
                     outlinerController.OutlineEntity(entity);
                 }
@@ -384,7 +384,7 @@ public class BiwGodMode : BIWMode
 
         var entity = raycastController.GetEntityOnPointer();
         if ((entity == null
-             || (entity != null && !entity.IsSelected))
+             || (entity != null && !entity.isSelected))
             && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
         {
             isSquareMultiSelectionInputActive = true;
@@ -462,10 +462,10 @@ public class BiwGodMode : BIWMode
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
-                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
-                    && !entity.IsLocked)
+                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
+                    && !entity.isLocked)
                 {
-                    if (entity.IsSelected)
+                    if (entity.isSelected)
                         alreadySelectedEntities++;
 
                     entityHandler.SelectEntity(entity);
@@ -596,7 +596,7 @@ public class BiwGodMode : BIWMode
 
         gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
 
-        if (!isMultiSelectionActive && !selectedEntity.IsNew)
+        if (!isMultiSelectionActive && !selectedEntity.isNew)
             TryLookAtEntity(selectedEntity.rootEntity);
 
         snapGO.transform.SetParent(null);
@@ -621,7 +621,7 @@ public class BiwGodMode : BIWMode
     public override void EntityDoubleClick(BIWEntity entity)
     {
         base.EntityDoubleClick(entity);
-        if (!entity.IsLocked)
+        if (!entity.isLocked)
             LookAtEntity(entity.rootEntity);
     }
 

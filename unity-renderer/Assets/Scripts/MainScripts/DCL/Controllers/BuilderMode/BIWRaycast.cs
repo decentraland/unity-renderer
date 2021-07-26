@@ -6,13 +6,13 @@ using UnityEngine;
 
 public interface IBIWRaycastController
 {
-    public event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
-    public bool RayCastFloor(out Vector3 position);
-    public Vector3 GetFloorPointAtMouse(Vector3 mousePosition);
-    public bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo);
-    public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer);
-    public Ray GetMouseRay(Vector3 mousePosition);
-    public BIWEntity GetEntityOnPointer();
+    event System.Action<BIWGizmosAxis> OnGizmosAxisPressed;
+    bool RayCastFloor(out Vector3 position);
+    Vector3 GetFloorPointAtMouse(Vector3 mousePosition);
+    bool RaycastToGizmos(Vector3 mousePosition, out RaycastHit hitInfo);
+    bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer);
+    Ray GetMouseRay(Vector3 mousePosition);
+    BIWEntity GetEntityOnPointer();
 }
 
 public class BIWRaycastController : BIWController, IBIWRaycastController
@@ -129,7 +129,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
 
                 Camera camera = Camera.main;
 
-                if (!entityToCheck.IsSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
+                if (!entityToCheck.isSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
                 {
                     if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
                     {

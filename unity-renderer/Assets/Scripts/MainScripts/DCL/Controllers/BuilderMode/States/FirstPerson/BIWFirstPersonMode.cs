@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BiwFirstPersonMode : BIWMode
+public class BIWFirstPersonMode : BIWMode
 {
     private float scaleSpeed = 0.25f;
     private float rotationSpeed = 0.5f;

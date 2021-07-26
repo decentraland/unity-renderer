@@ -82,7 +82,7 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void TestPublishFeedbackMesasge()
+    public void TestPublishFeedbackMessage()
     {
         //Act
         string result = biwPublishController.CheckPublishConditions();

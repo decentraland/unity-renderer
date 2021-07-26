@@ -573,7 +573,7 @@ public class BIWMainController : Feature
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
-        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
@@ -666,7 +666,7 @@ public class BIWMainController : Feature
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
@@ -674,7 +674,8 @@ public class BIWMainController : Feature
 
         cursorGO.SetActive(true);
 
-        sceneToEdit?.SetEditMode(false);
+        if (sceneToEdit != null)
+            sceneToEdit.SetEditMode(false);
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
@@ -765,7 +766,6 @@ public class BIWMainController : Feature
 
                 sceneToEdit = parcelScene;
                 return sceneToEdit;
-                break;
             }
         }
         return null;

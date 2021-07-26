@@ -3,19 +3,19 @@ using UnityEngine;
 
 public interface IBIWGizmos
 {
-    public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
+    abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
 
-    public bool initialized { get; }
-    public GameObject currentGameObject { get; }
-    public void Initialize(Camera camera, Transform cameraHolderTransform);
-    public Vector3 GetActiveAxisVector();
-    public void OnEndDrag();
-    public void ForceRelativeScaleRatio();
-    public string GetGizmoType();
-    public void SetTargetTransform(Transform entityTransform);
-    public void OnBeginDrag(BIWGizmosAxis axis, Transform entityTransform);
-    public float OnDrag(Vector3 hitPoint, Vector2 mousePosition);
-    public bool RaycastHit(Ray ray, out Vector3 hitPoint);
+    bool initialized { get; }
+    GameObject currentGameObject { get; }
+    void Initialize(Camera camera, Transform cameraHolderTransform);
+    Vector3 GetActiveAxisVector();
+    void OnEndDrag();
+    void ForceRelativeScaleRatio();
+    string GetGizmoType();
+    void SetTargetTransform(Transform entityTransform);
+    void OnBeginDrag(BIWGizmosAxis axis, Transform entityTransform);
+    float OnDrag(Vector3 hitPoint, Vector2 mousePosition);
+    bool RaycastHit(Ray ray, out Vector3 hitPoint);
 }
 
 public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos

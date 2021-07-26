@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Controllers;
 using NSubstitute;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
@@ -32,7 +33,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
         //Act
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Assert
         Assert.IsTrue(mainController.isBuilderInWorldActivated);
@@ -46,7 +49,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Act
         mainController.ExitEditMode();
@@ -73,7 +78,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void FindSceneToEdit()
     {
         //Arrange
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
         CommonScriptableObjects.playerWorldPosition.Set(new Vector3(scene.sceneData.basePosition.x, 0, scene.sceneData.basePosition.y));
 
         //Act
@@ -95,7 +102,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Assert
         controller.Received(1).EnterEditMode(scene);
@@ -112,7 +121,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Act
         mainController.ExitEditMode();
@@ -132,7 +143,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Act
         mainController.OnGUI();
@@ -152,7 +165,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Act
         mainController.LateUpdate();
@@ -186,7 +201,9 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         scene.CreateEntity("Test");
 
         mainController.TryStartEnterEditMode(false, scene, "Test");
-        Environment.i.world.sceneController.CreateTestScene(scene.sceneData, "TestEntiy");
+        ParcelScene createdScene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene(scene.sceneData);
+        createdScene.CreateEntity("TestEntiy");
+        Environment.i.world.sceneController.SendSceneReady(scene.sceneData.id);
 
         //Act
         mainController.Update();

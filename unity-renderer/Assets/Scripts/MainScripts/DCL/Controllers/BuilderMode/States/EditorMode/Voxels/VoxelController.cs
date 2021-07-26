@@ -52,7 +52,7 @@ public class VoxelController
         Vector3Int currentPosition = Vector3Int.zero;
         VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
-        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.IsSelected)
+        if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG && !voxelHit.entityHitted.isSelected)
         {
             Vector3Int position = ConverPositionToVoxelPosition(voxelHit.entityHitted.rootEntity.gameObject.transform.position);
             position += voxelHit.hitVector;
@@ -82,7 +82,7 @@ public class VoxelController
 
         VoxelEntityHit voxelHit = raycastController.GetCloserUnselectedVoxelEntityOnPointer();
 
-        if (voxelHit != null && voxelHit.entityHitted.IsSelected)
+        if (voxelHit != null && voxelHit.entityHitted.isSelected)
             return;
 
         if (voxelHit != null && voxelHit.entityHitted.rootEntity.gameObject.tag == BIWSettings.VOXEL_TAG)
@@ -116,7 +116,7 @@ public class VoxelController
 
         foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (BIWUtils.IsWithInSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
+            if (BIWUtils.IsWithinSelectionBounds(voxelEntity.rootEntity.gameObject.transform, lastMousePosition, Input.mousePosition))
             {
                 biwEntityHandler.SelectEntity(voxelEntity);
             }

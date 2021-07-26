@@ -94,7 +94,7 @@ public class BIWOutlinerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void CheckCameraComponetAdded()
+    public void CheckCameraComponentAdded()
     {
         //Act
         outlinerController.EnterEditMode(scene);

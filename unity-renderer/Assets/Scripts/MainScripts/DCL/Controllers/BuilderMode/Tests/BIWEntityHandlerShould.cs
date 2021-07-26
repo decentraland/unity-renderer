@@ -11,6 +11,10 @@ using Newtonsoft.Json;
 using NSubstitute;
 using UnityEngine.TestTools;
 
+/// <summary>
+/// TODO: This is using IntegrationTestSuite_Legacy instead of the normal because there is a bug in the NSustitute library
+/// where the IDCLEntity are not mocked correctly. After it is fixed, we should go to IntegrationTestSuite 
+/// </summary>
 public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
@@ -33,15 +37,15 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     [Test]
     public void EntitySelectDeselect()
     {
-        Assert.IsFalse(entity.IsSelected);
+        Assert.IsFalse(entity.isSelected);
         entityHandler.SelectEntity(entity);
-        Assert.IsTrue(entity.IsSelected);
+        Assert.IsTrue(entity.isSelected);
 
         Assert.AreEqual(entityHandler.GetSelectedEntityList().Count, 1);
         Assert.AreEqual(entityHandler.GetSelectedEntityList().FirstOrDefault(), entity);
 
         entityHandler.DeselectEntity(entity);
-        Assert.IsFalse(entity.IsSelected);
+        Assert.IsFalse(entity.isSelected);
     }
 
     [Test]
@@ -120,13 +124,13 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void EntityClicked()
     {
         //Arrange
-        bool entitiyIsSelected = entity.IsSelected;
+        bool entitiyIsSelected = entity.isSelected;
 
         //Act
         entityHandler.EntityClicked(entity);
 
         //Assert
-        Assert.AreNotEqual(entitiyIsSelected, entity.IsSelected);
+        Assert.AreNotEqual(entitiyIsSelected, entity.isSelected);
     }
 
     [Test]
@@ -157,14 +161,14 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     public void ChangeLockStateSelectedEntities()
     {
         //Arrange
-        entity.IsLocked = false;
+        entity.isLocked = false;
         entityHandler.SelectEntity(entity);
 
         //Act
         entityHandler.ChangeLockStateSelectedEntities();
 
         //Assert
-        Assert.IsTrue(entity.IsLocked);
+        Assert.IsTrue(entity.isLocked);
     }
 
     [Test]
@@ -172,26 +176,26 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         entityHandler.SelectEntity(entity);
-        entity.IsVisible = true;
+        entity.isVisible = true;
 
         //Act
         entityHandler.ChangeShowStateSelectedEntities();
 
         //Assert
-        Assert.IsFalse(entity.IsVisible);
+        Assert.IsFalse(entity.isVisible);
     }
 
     [Test]
     public void ShowAllEntities()
     {
         //Arrange
-        entity.IsVisible = false;
+        entity.isVisible = false;
 
         //Act
         entityHandler.ShowAllEntities();
 
         //Assert
-        Assert.IsTrue(entity.IsVisible);
+        Assert.IsTrue(entity.isVisible);
     }
 
     [Test]
@@ -208,17 +212,17 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void DesotryLastCreatedEntities()
+    public void DestroyLastCreatedEntities()
     {
         //Arrange
         var newEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero, false);
-        newEntity.IsNew = true;
+        newEntity.isNew = true;
         entityHandler.SelectEntity(newEntity);
         //Act
         entityHandler.DestroyLastCreatedEntities();
 
         //Assert
-        Assert.IsTrue(newEntity.IsDeleted);
+        Assert.IsTrue(newEntity.isDeleted);
     }
 
     [Test]
@@ -226,13 +230,13 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         var newEntity = entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero, false);
-        newEntity.IsNew = true;
+        newEntity.isNew = true;
 
         //Act
         entityHandler.DeleteSingleEntity(newEntity);
 
         //Assert
-        Assert.IsTrue(newEntity.IsDeleted);
+        Assert.IsTrue(newEntity.isDeleted);
     }
 
     [UnityTest]
@@ -240,7 +244,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         var newEntity = entityHandler.CreateEmptyEntity(scene, Vector3.one * 99999, Vector3.one * 99999, false);
-        newEntity.IsNew = true;
+        newEntity.isNew = true;
         newEntity.rootEntity.transform.position = Vector3.one * 444;
 
         TestHelpers.CreateAndSetShape(scene, newEntity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -256,15 +260,15 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entityHandler.DeleteEntitiesOutsideSceneBoundaries();
 
         //Assert
-        Assert.IsTrue(newEntity.IsDeleted);
+        Assert.IsTrue(newEntity.isDeleted);
     }
 
     [Test]
-    public void AreEntitiesInsideBoundaries()
+    public void CheckEntitiesOutsideBoundaries()
     {
         //Arrange
         var newEntity = entityHandler.CreateEmptyEntity(scene, Vector3.one * 99999, Vector3.one * 99999, false);
-        newEntity.IsNew = true;
+        newEntity.isNew = true;
 
         //Act
         bool result =  entityHandler.AreAllEntitiesInsideBoundaries();
@@ -275,8 +279,8 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
-        entity.IsVisible = true;
-        entity.IsLocked = false;
+        entity.isVisible = true;
+        entity.isLocked = false;
         entity.isVoxel = false;
 
         entityHandler.Dispose();

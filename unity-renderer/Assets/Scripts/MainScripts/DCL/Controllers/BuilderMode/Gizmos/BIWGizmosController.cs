@@ -7,24 +7,24 @@ using UnityEngine;
 
 public interface IBIWGizmosController
 {
-    public delegate void GizmoTransformDelegate(string gizmoType);
+    delegate void GizmoTransformDelegate(string gizmoType);
 
-    public event GizmoTransformDelegate OnGizmoTransformObjectStart;
-    public event GizmoTransformDelegate OnGizmoTransformObject;
-    public event GizmoTransformDelegate OnGizmoTransformObjectEnd;
-    public event Action<Vector3> OnChangeTransformValue;
+    event GizmoTransformDelegate OnGizmoTransformObjectStart;
+    event GizmoTransformDelegate OnGizmoTransformObject;
+    event GizmoTransformDelegate OnGizmoTransformObjectEnd;
+    event Action<Vector3> OnChangeTransformValue;
 
     public IBIWGizmos activeGizmo { get;  set; }
 
-    public string GetSelectedGizmo();
-    public void SetSnapFactor(float position, float rotation, float scale);
-    public void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
-    public void ShowGizmo();
-    public void HideGizmo(bool setInactiveGizmos = false);
-    public bool IsGizmoActive();
-    public void ForceRelativeScaleRatio();
-    public bool HasAxisHover();
-    public void SetGizmoType(string gizmoType);
+    string GetSelectedGizmo();
+    void SetSnapFactor(float position, float rotation, float scale);
+    void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
+    void ShowGizmo();
+    void HideGizmo(bool setInactiveGizmos = false);
+    bool IsGizmoActive();
+    void ForceRelativeScaleRatio();
+    bool HasAxisHover();
+    void SetGizmoType(string gizmoType);
 }
 
 public class BIWGizmosController : BIWController, IBIWGizmosController

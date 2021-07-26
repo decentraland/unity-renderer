@@ -15,7 +15,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     private BIWModeController modeController;
     private BIWRaycastController raycastController;
     private BIWGizmosController gizmosController;
-    private BiwGodMode godMode;
+    private BIWGodMode godMode;
     private BIWContext context;
     private GameObject mockedGameObject;
     private List<BIWEntity> selectedEntities;
@@ -42,7 +42,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         raycastController.EnterEditMode(scene);
         gizmosController.EnterEditMode(scene);
 
-        godMode =  (BiwGodMode) modeController.GetCurrentMode();
+        godMode =  (BIWGodMode) modeController.GetCurrentMode();
         godMode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
     }
 
@@ -158,9 +158,9 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         raycastController.Dispose();
         modeController.Dispose();
         gizmosController.Dispose();
-        ;
+
         context.Dispose();
-        ;
+
         GameObject.Destroy(mockedGameObject);
         return base.TearDown();
     }
