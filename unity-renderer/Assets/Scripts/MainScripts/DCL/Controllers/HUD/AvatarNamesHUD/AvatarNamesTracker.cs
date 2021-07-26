@@ -54,7 +54,7 @@ namespace AvatarNamesHUD
         public void UpdatePosition()
         {
             if (mainCamera == null)
-                mainCamera = mainCamera = Camera.main;
+                mainCamera = Camera.main;
 
             if (playerStatus == null || mainCamera == null)
                 return;
@@ -91,7 +91,7 @@ namespace AvatarNamesHUD
 
         public void DestroyUIElements()
         {
-            Object.Destroy(background.gameObject);
+            GameObject.Destroy(background.gameObject);
             Object.Destroy(name.gameObject);
             Object.Destroy(voiceChatCanvasGroup.gameObject);
         }

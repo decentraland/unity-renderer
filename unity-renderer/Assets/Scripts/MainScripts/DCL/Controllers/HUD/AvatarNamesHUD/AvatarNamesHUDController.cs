@@ -5,7 +5,7 @@ namespace AvatarNamesHUD
 {
     public class AvatarNamesHUDController : IHUD
     {
-        private int maxAvatarNames;
+        private const int DEFAULT_MAX_AVATARS = 200;
 
         private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
 
@@ -15,7 +15,9 @@ namespace AvatarNamesHUD
 
         internal virtual IAvatarNamesHUDView CreateView() { return AvatarNamesHUDView.CreateView(); }
 
-        public AvatarNamesHUDController() : this(200) { }
+        private int maxAvatarNames;
+
+        public AvatarNamesHUDController() : this(DEFAULT_MAX_AVATARS) { }
         public AvatarNamesHUDController(int maxAvatarNames) { this.maxAvatarNames = maxAvatarNames; }
 
         public void Initialize()
