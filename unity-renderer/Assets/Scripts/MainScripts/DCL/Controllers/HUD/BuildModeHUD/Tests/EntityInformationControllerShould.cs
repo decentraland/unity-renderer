@@ -10,6 +10,10 @@ using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
+    /// <summary>
+    /// TODO: This is using IntegrationTestSuite_Legacy instead of the normal because there is a bug in the NSustitute library
+    /// where the IDCLEntity are not mocked correctly. After it is fixed, we should go to IntegrationTestSuite 
+    /// </summary>
     public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {
         private EntityInformationController entityInformationController;

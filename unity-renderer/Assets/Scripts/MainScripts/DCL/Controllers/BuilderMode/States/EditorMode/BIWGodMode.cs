@@ -19,7 +19,7 @@ public class BIWGodMode : BIWMode
     private FreeCameraMovement freeCameraController;
 
     private CameraController cameraController;
-    private Transform lookAtT;
+    private Transform lookAtTransform;
     private MouseCatcher mouseCatcher;
     private PlayerAvatarController avatarRenderer;
     private IBIWGizmosController gizmoManager;
@@ -53,7 +53,7 @@ public class BIWGodMode : BIWMode
     {
         base.Init(context);
 
-        lookAtT = new GameObject("BIWGodModeTransform").transform;
+        lookAtTransform = new GameObject("BIWGodModeTransform").transform;
         maxDistanceToSelectEntitiesValue = context.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
 
         snapFactor = context.godModeDynamicVariablesAsset.snapFactor;
@@ -119,8 +119,8 @@ public class BIWGodMode : BIWMode
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
 
-        if (lookAtT.gameObject != null)
-            GameObject.Destroy(lookAtT.gameObject);
+        if (lookAtTransform.gameObject != null)
+            GameObject.Destroy(lookAtTransform.gameObject);
 
         if (HUDController.i.builderInWorldMainHud == null)
             return;
@@ -513,8 +513,8 @@ public class BIWGodMode : BIWMode
 
         Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
-        freeCameraController.LookAt(lookAtT);
-        freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
+        freeCameraController.LookAt(lookAtTransform);
+        freeCameraController.SetResetConfiguration(cameraPosition, lookAtTransform);
 
         if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
             avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
@@ -774,7 +774,7 @@ public class BIWGodMode : BIWMode
     void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
+        lookAtTransform.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
     void SetEditObjectAtMouse()
