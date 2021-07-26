@@ -95,7 +95,7 @@ public class WearablesVisualTests : VisualTestsBase
         yield return new WaitUntil(() => succeeded || failed);
         Assert.IsTrue(succeeded);
         wearable.SetAssetRenderersEnabled(true);
-        wearable.SetupDefaultMaterial(avatarMaterial, skinColor, hairColor);
+        wearable.SetupHairAndSkinColors(skinColor, hairColor);
     }
 
     protected override IEnumerator TearDown()
@@ -104,6 +104,7 @@ public class WearablesVisualTests : VisualTestsBase
         {
             wearable.CleanUp();
         }
+
         return base.TearDown();
     }
 }

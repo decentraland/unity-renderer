@@ -278,7 +278,7 @@ namespace DCL
             {
                 //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
                 if (bodyShapeController.isReady)
-                    bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+                    bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
             }
 
             bool wearablesIsDirty = false;
@@ -383,22 +383,11 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
                 MergeAvatar();
-                SkinnedMeshRenderer skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
-                Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
-                yield return null;
-                Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
             }
         }
 
         private Mesh combinedAvatarMesh;
         private GameObject combinedAvatar;
-
-        [ContextMenu("Show Bounds")]
-        public void ShowBones()
-        {
-            SkinnedMeshRenderer skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
-            Debug.Log($"skr.transform: {skr.transform.position} ... skr.localBounds: {skr.localBounds} ... skr.bounds: {skr.bounds}");
-        }
 
         private IAvatarMeshCombineHelper _avatarMeshCombineHelper = new AvatarMeshCombineHelper();
 
@@ -441,36 +430,28 @@ namespace DCL
             if ( combinedAvatar == null )
             {
                 Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-                //CleanMergedAvatar();
                 combinedAvatar = newCombinedAvatar;
                 combinedAvatarMesh = newCombinedAvatarMesh;
-                combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
-                combinedAvatar.transform.localPosition = Vector3.zero;
-            }
-            else
-            {
-                if ( combinedAvatarMesh != null )
-                    Destroy(combinedAvatarMesh);
-
-                var skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
-                var newSkr = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>();
-
-                skr.sharedMesh = newSkr.sharedMesh;
-                skr.rootBone = newSkr.rootBone;
-                skr.bones = newSkr.bones;
-                skr.sharedMaterials = newSkr.sharedMaterials;
-                skr.enabled = true;
-
-                Destroy(newCombinedAvatar.gameObject);
-
-                combinedAvatar.transform.SetParent( bodyShapeController.skinnedMeshRenderer.transform );
-                combinedAvatar.transform.localPosition = Vector3.zero;
-
-                combinedAvatarMesh = newSkr.sharedMesh;
+                combinedAvatar.transform.SetParent( transform, true );
+                return;
             }
 
-            gameObject.SetActive(false);
-            gameObject.SetActive(true);
+            if ( combinedAvatarMesh != null )
+                Destroy(combinedAvatarMesh);
+
+            var newSkr = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>();
+            combinedAvatarMesh = newSkr.sharedMesh;
+
+            var skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
+            skr.sharedMesh = newSkr.sharedMesh;
+            skr.rootBone = newSkr.rootBone;
+            skr.bones = newSkr.bones;
+            skr.sharedMaterials = newSkr.sharedMaterials;
+            skr.enabled = true;
+
+            Destroy(newCombinedAvatar.gameObject);
+
+            combinedAvatar.transform.SetParent( transform, true );
         }
 
         void CleanMergedAvatar()
@@ -491,7 +472,7 @@ namespace DCL
                 return;
             }
 
-            wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+            wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
         }
 
         void OnBodyShapeLoadingFail(WearableController wearableController)
@@ -518,13 +499,11 @@ namespace DCL
         {
             //NOTE(Brian): Set bones/rootBone of all wearables to be the same of the baseBody,
             //             so all of them are animated together.
-            var mainSkinnedRenderer = bodyShapeController.skinnedMeshRenderer;
-
             using (var enumerator = wearableControllers.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    enumerator.Current.Value.SetAnimatorBones(mainSkinnedRenderer);
+                    enumerator.Current.Value.SetAnimatorBones(bodyShapeController.bones, bodyShapeController.rootBone);
                 }
             }
         }
@@ -574,7 +553,7 @@ namespace DCL
                 default:
                     //If wearable is downloading will call OnWearableLoadingSuccess(and therefore SetupDefaultMaterial) once ready
                     if (wearableController.isReady)
-                        wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+                        wearableController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
                     break;
             }
         }

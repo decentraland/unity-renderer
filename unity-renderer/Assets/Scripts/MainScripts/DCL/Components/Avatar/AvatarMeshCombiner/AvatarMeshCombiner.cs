@@ -15,6 +15,7 @@ namespace DCL
     public interface IAvatarMeshCombineHelper
     {
         GameObject Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset);
+        void CombineWithExistingRenderer(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, SkinnedMeshRenderer targetRenderer);
         Mesh CombineSkinnedMeshes(CombineMeshData combineMeshData);
     }
 
@@ -26,6 +27,10 @@ namespace DCL
         // Channels must be defined with the TEXCOORD semantic.
         private const int TEXTURE_POINTERS_UV_CHANNEL_INDEX = 2;
         private const int EMISSION_COLORS_UV_CHANNEL_INDEX = 3;
+
+        public void CombineWithExistingRenderer(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, SkinnedMeshRenderer targetRenderer)
+        {
+        }
 
         public Mesh CombineSkinnedMeshes(CombineMeshData combineMeshData)
         {
@@ -114,14 +119,21 @@ namespace DCL
             GameObject result = new GameObject("Combined Avatar");
             result.layer = bonesContainer.gameObject.layer;
 
+            Transform rootBone = bonesContainer.rootBone;
+
             var newSkinnedMeshRenderer = result.AddComponent<SkinnedMeshRenderer>();
             newSkinnedMeshRenderer.sharedMesh = finalMesh;
             newSkinnedMeshRenderer.bones = bonesContainer.bones;
-            newSkinnedMeshRenderer.rootBone = bonesContainer.rootBone;
+            newSkinnedMeshRenderer.rootBone = rootBone;
             newSkinnedMeshRenderer.sharedMaterials = data.materials.ToArray();
             newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
-            newSkinnedMeshRenderer.updateWhenOffscreen = true;
+            newSkinnedMeshRenderer.updateWhenOffscreen = false;
             newSkinnedMeshRenderer.skinnedMotionVectors = false;
+
+            // Transform resultTransform = newSkinnedMeshRenderer.transform;
+            // resultTransform.position = rootBone.position;
+            // resultTransform.rotation = rootBone.rotation;
+            // resultTransform.localScale = rootBone.lossyScale;
 
             logger.Log(null, "Finish combining avatar. Click here to focus on GameObject.", result);
 

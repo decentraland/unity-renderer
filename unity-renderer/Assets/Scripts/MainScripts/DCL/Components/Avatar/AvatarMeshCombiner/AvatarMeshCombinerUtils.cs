@@ -248,8 +248,26 @@ namespace DCL
                 bone.localScale = new Vector3(bindPoseScale.x / boneScale.x,
                     bindPoseScale.y / boneScale.y,
                     bindPoseScale.z / boneScale.z);
+            }
 
-                Debug.DrawLine(bone.position, bone.position + Vector3.up, Color.green, 60);
+#if UNITY_EDITOR
+            DrawDebugSkeleton(renderer);
+#endif
+        }
+
+        internal static void DrawDebugSkeleton(SkinnedMeshRenderer renderer)
+        {
+            var bones = renderer.bones;
+
+            for ( int i = 0 ; i < bones.Length; i++ )
+            {
+                Transform bone = bones[i];
+                Debug.DrawLine(bone.position, bone.position + bone.forward, Color.cyan, 60);
+
+                foreach ( Transform child in bone )
+                {
+                    Debug.DrawLine(bone.position, child.position, Color.green, 60);
+                }
             }
         }
 

@@ -15,6 +15,8 @@ public class BodyShapeController : WearableController, IBodyShapeController
 {
     public string bodyShapeId => wearable.id;
     private Transform animationTarget;
+    public Transform[] bones;
+    public Transform rootBone;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
 
@@ -27,9 +29,9 @@ public class BodyShapeController : WearableController, IBodyShapeController
         feetRenderer = original.feetRenderer;
         upperBodyRenderer = original.upperBodyRenderer;
         lowerBodyRenderer = original.lowerBodyRenderer;
+        bones = original.bones;
+        rootBone = original.rootBone;
     }
-
-    public SkinnedMeshRenderer skinnedMeshRenderer { get; private set; }
 
     public override void Load(string bodyShapeId, Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
@@ -92,8 +94,8 @@ public class BodyShapeController : WearableController, IBodyShapeController
     public override void SetAssetRenderersEnabled(bool active)
     {
         base.SetAssetRenderersEnabled(active);
-        if (skinnedMeshRenderer != null)
-            skinnedMeshRenderer.enabled = true;
+        // if (skinnedMeshRenderer != null)
+        //     skinnedMeshRenderer.enabled = true;
     }
 
     public void SetupMouth(Material material, Texture texture, Texture mask, Color color)
@@ -136,13 +138,23 @@ public class BodyShapeController : WearableController, IBodyShapeController
             },
             assetContainer.transform);
 
-        animation.cullingType = AnimationCullingType.BasedOnRenderers;
+        // BasedOnRenderers only acts on child renderers. As all child renderers are deactivated, this feature doesn't work.
+        //
+        // Adding the merged avatar as child require toggling the animation enabled state on/off and is delayed by a frame,
+        // So the avatar can be seen as gigantic in this lapse.
+        //
+        // TODO(Brian): Find a better way to cull animations
+        animation.cullingType = AnimationCullingType.AlwaysAnimate;
 
         var allRenderers = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
+        SkinnedMeshRenderer firstRenderer = null;
         foreach (var r in allRenderers)
         {
             string parentName = r.transform.parent.name.ToLower();
+
+            if ( firstRenderer == null )
+                firstRenderer = r;
 
             if (parentName.Contains("ubody"))
                 upperBodyRenderer = r;
@@ -160,13 +172,11 @@ public class BodyShapeController : WearableController, IBodyShapeController
                 mouthRenderer = r;
         }
 
-        //We create a mock SkinnedMeshRenderer to hold the bones for the animations,
-        //since any of the others SkinnedMeshRenderers in the bodyshape can be disabled arbitrarily
-        skinnedMeshRenderer = animation.gameObject.GetOrCreateComponent<SkinnedMeshRenderer>();
-        skinnedMeshRenderer.enabled = true;
-        skinnedMeshRenderer.rootBone = upperBodyRenderer.rootBone;
-        skinnedMeshRenderer.bones = upperBodyRenderer.bones;
-        skinnedMeshRenderer.localBounds = upperBodyRenderer.localBounds;
+        if ( firstRenderer != null )
+        {
+            bones = firstRenderer.bones;
+            rootBone = firstRenderer.rootBone;
+        }
 
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
