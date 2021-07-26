@@ -50,8 +50,6 @@ namespace Tests.AvatarNamesHUD
 
             yield return null;
 
-            yield return new WaitForSeconds(30);
-
             yield return VisualTestHelpers.TakeSnapshot();
         }
 
