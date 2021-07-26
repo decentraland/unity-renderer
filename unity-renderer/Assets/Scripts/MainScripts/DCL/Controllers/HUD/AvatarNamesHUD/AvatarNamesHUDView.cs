@@ -36,7 +36,11 @@ namespace AvatarNamesHUD
             return view;
         }
 
-        private void OnEnable() { StartCoroutine(UpdateTrackersRoutine()); }
+        private void OnEnable()
+        {
+            canvasRect.GetComponent<Canvas>().sortingOrder = -2;
+            StartCoroutine(UpdateTrackersRoutine());
+        }
 
         public void Initialize(int maxAvatarNames)
         {
