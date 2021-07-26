@@ -211,6 +211,8 @@ public class EntityInformationController : IEntityInformationController
 
         if (entityInformationView.currentEntity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
         {
+            //TODO: we do an early return since the smart item component is not implemented yet 
+            return;
             SmartItemComponent smartItemComponent = (SmartItemComponent) component;
             OnSmartItemComponentUpdate?.Invoke(entityInformationView.currentEntity);
         }

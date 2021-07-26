@@ -49,8 +49,6 @@ public class IntegrationTestSuite_Legacy
             sceneInitialized = true;
         }
 
-        runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
-
         testSceneIntegrityChecker = new TestSceneIntegrityChecker();
 
         //NOTE(Brian): integrity checker is disabled in batch mode to make it run faster in CI
@@ -266,15 +264,24 @@ public class IntegrationTestSuite_Legacy
 
     public static void Reflection_SetField<T>(object instance, string fieldName, T newValue) { instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue); }
 
-    protected GameObject CreateTestGameObject(string name)
+    protected GameObject CreateTestGameObject(string name) { return CreateTestGameObject(name, Vector3.zero); }
+
+    protected GameObject CreateTestGameObject(string name, Vector3 localPosition)
     {
+        if (runtimeGameObjectsRoot == null)
+            runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
+
         GameObject gameObject = new GameObject(name);
         gameObject.transform.SetParent(runtimeGameObjectsRoot.transform);
+        gameObject.transform.localPosition = localPosition;
         return gameObject;
     }
 
     protected GameObject InstantiateTestGameObject(GameObject reference)
     {
+        if (runtimeGameObjectsRoot == null)
+            runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
+
         GameObject gameObject = Object.Instantiate(reference, runtimeGameObjectsRoot.transform, true);
         return gameObject;
     }

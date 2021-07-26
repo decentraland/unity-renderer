@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 
@@ -15,4 +15,5 @@ public interface ITheGraph : IDisposable
     Promise<List<Land>> QueryLands(string tld, string address);
     Promise<List<Land>> QueryLands(string tld, string address, float cacheMaxAgeSeconds);
     Promise<double> QueryPolygonMana(string address);
+    Promise<List<Nft>> QueryNftCollections(string address, NftCollectionsLayer layer);
 }
