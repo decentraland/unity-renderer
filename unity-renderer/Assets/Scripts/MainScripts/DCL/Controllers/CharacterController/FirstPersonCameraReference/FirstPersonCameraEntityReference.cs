@@ -39,6 +39,8 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
 
     private void OnCameraModeChange(CameraMode.ModeId newMode, CameraMode.ModeId prev)
     {
+        CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
+
         if (newMode == CameraMode.ModeId.FirstPerson)
         {
             CommonScriptableObjects.cameraForward.OnChange += UpdateForward;
@@ -49,7 +51,9 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
         }
         else
         {
-            CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
+            if (newMode == CameraMode.ModeId.ThirdPerson)
+                transform.forward = initialParent.forward;
+
             nextParent = initialParent;
 
             if (cameraController != null)
