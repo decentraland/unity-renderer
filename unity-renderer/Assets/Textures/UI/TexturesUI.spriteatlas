@@ -56,7 +56,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 1eee3b038d846456b84c415627892c52, type: 3}
-    totalSpriteSurfaceArea: 7451729
+    totalSpriteSurfaceArea: 7453135
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -155,6 +155,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b16568f5e2de64c8dbc491d9ac2830e9, type: 3}
   - {fileID: 21300000, guid: 91e559f524592ad4a94afd8829f86e75, type: 3}
   - {fileID: 21300000, guid: fb175f167b0cc447c8f2fd84c9671a68, type: 3}
+  - {fileID: 21300000, guid: d1530a26cd1484393bd6f29419fe7ad3, type: 3}
   - {fileID: 21300000, guid: 086c9b76b082a4013aab402d2ef544e5, type: 3}
   - {fileID: 21300000, guid: 8512d2a614988894b967cb17ea417d0b, type: 3}
   - {fileID: 21300000, guid: 51bee6e6d6f314363a939973c91dff7a, type: 3}
@@ -387,6 +388,7 @@ SpriteAtlas:
   - PoiIcon
   - ImageIcon
   - FAQsIcon
+  - PlayersIcon
   - BackpackOutlineIcon
   - InputGray
   - Frame10

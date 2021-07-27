@@ -7,35 +7,35 @@ using UnityEngine.UI;
 public interface IInspectorView
 {
     EntityListView entityList { get; set; }
-    List<DCLBuilderInWorldEntity> entities { get; }
+    List<BIWEntity> entities { get; }
     ISceneLimitsController sceneLimitsController { get; }
 
-    event Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnEntityActionInvoked;
-    event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    event Action<EntityAction, BIWEntity, EntityListAdapter> OnEntityActionInvoked;
+    event Action<BIWEntity, string> OnEntityRename;
 
     void ClearEntitiesList();
     void ConfigureSceneLimits(ISceneLimitsController sceneLimitsController);
-    void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter);
-    void EntityRename(DCLBuilderInWorldEntity entity, string newName);
+    void EntityActionInvoked(EntityAction action, BIWEntity entityToApply, EntityListAdapter adapter);
+    void EntityRename(BIWEntity entity, string newName);
     void SetActive(bool isActive);
     void SetCloseButtonsAction(UnityAction call);
-    void SetEntitiesList(List<DCLBuilderInWorldEntity> entities);
+    void SetEntitiesList(List<BIWEntity> entities);
 }
 
 public class InspectorView : MonoBehaviour, IInspectorView
 {
     public EntityListView entityList { get { return entityListView; } set { entityListView = value; } }
-    public List<DCLBuilderInWorldEntity> entities => entitiesList;
+    public List<BIWEntity> entities => entitiesList;
     public ISceneLimitsController sceneLimitsController { get; internal set; }
 
-    public event Action<EntityAction, DCLBuilderInWorldEntity, EntityListAdapter> OnEntityActionInvoked;
-    public event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    public event Action<EntityAction, BIWEntity, EntityListAdapter> OnEntityActionInvoked;
+    public event Action<BIWEntity, string> OnEntityRename;
 
     [SerializeField] internal EntityListView entityListView;
     [SerializeField] internal SceneLimitsView sceneLimitsView;
     [SerializeField] internal Button closeEntityListBtn;
 
-    internal List<DCLBuilderInWorldEntity> entitiesList;
+    internal List<BIWEntity> entitiesList;
 
     private const string VIEW_PATH = "GodMode/Inspector/InspectorView";
 
@@ -66,15 +66,15 @@ public class InspectorView : MonoBehaviour, IInspectorView
 
     private void OnDisable() { AudioScriptableObjects.dialogClose.Play(); }
 
-    public void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter) { OnEntityActionInvoked?.Invoke(action, entityToApply, adapter); }
+    public void EntityActionInvoked(EntityAction action, BIWEntity entityToApply, EntityListAdapter adapter) { OnEntityActionInvoked?.Invoke(action, entityToApply, adapter); }
 
-    public void EntityRename(DCLBuilderInWorldEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
+    public void EntityRename(BIWEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
 
     public bool IsActive() { return gameObject.activeSelf; }
 
     public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 
-    public void SetEntitiesList(List<DCLBuilderInWorldEntity> entities) { entitiesList = entities; }
+    public void SetEntitiesList(List<BIWEntity> entities) { entitiesList = entities; }
 
     public void ClearEntitiesList() { entitiesList?.Clear(); }
 

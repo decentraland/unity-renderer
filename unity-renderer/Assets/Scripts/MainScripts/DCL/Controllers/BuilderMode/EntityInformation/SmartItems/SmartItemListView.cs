@@ -7,7 +7,7 @@ public class SmartItemListView : MonoBehaviour
 {
     [SerializeField] private SmartItemParameterFactory factory;
 
-    List<DCLBuilderInWorldEntity> entitiesList = new List<DCLBuilderInWorldEntity>();
+    List<BIWEntity> entitiesList = new List<BIWEntity>();
 
     List<GameObject> childrenList = new List<GameObject>();
 
@@ -27,7 +27,7 @@ public class SmartItemListView : MonoBehaviour
         }
     }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.entitiesList = BuilderInWorldUtils.RemoveGroundEntities(entitiesList); }
+    public void SetEntityList(List<BIWEntity> entitiesList) { this.entitiesList = BIWUtils.RemoveGroundEntities(entitiesList); }
 
     void InstantiateParameter(SmartItemParameter parameter, Dictionary<object, object> smartItemValues, SmartItemUIParameterAdapter parameterAdapterPrefab)
     {

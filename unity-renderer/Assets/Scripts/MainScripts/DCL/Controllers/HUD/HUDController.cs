@@ -6,6 +6,7 @@ using DCL.Huds.QuestsTracker;
 using DCL.QuestsController;
 using DCL.SettingsPanelHUD;
 using System.Collections.Generic;
+using AvatarNamesHUD;
 using LoadingHUD;
 using SignupHUD;
 using UnityEngine;
@@ -97,6 +98,7 @@ public class HUDController : IHUDController
     public SignupHUDController signupHUD => GetHUDElement(HUDElementID.SIGNUP) as SignupHUDController;
     public BuilderProjectsPanelController builderProjectsPanelController => GetHUDElement(HUDElementID.BUILDER_PROJECTS_PANEL) as BuilderProjectsPanelController;
     public LoadingHUDController loadingController => GetHUDElement(HUDElementID.LOADING) as LoadingHUDController;
+    public AvatarNamesHUDController avatarNamesController => GetHUDElement(HUDElementID.AVATAR_NAMES) as AvatarNamesHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
@@ -366,6 +368,13 @@ public class HUDController : IHUDController
                 CreateHudElement(configuration, hudElementId);
                 if (configuration.active)
                     loadingController.Initialize();
+                break;
+            case HUDElementID.AVATAR_NAMES:
+                CreateHudElement(configuration, hudElementId);
+                if (configuration.active)
+                {
+                    avatarNamesController.Initialize();
+                }
                 break;
         }
 

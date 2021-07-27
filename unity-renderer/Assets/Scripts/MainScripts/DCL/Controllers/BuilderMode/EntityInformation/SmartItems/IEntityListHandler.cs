@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IEntityListHandler
 {
-    void SetEntityList(List<DCLBuilderInWorldEntity> entityList);
+    void SetEntityList(List<BIWEntity> entityList);
 }
