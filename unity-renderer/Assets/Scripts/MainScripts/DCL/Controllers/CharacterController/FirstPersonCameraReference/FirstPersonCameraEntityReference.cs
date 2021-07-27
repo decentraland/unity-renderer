@@ -59,8 +59,11 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
 
     private void SetNextParent()
     {
-        cameraController.onCameraBlendFinished -= SetNextParent;
-        cameraController.onCameraBlendStarted -= SetNextParent;
+        if (cameraController != null)
+        {
+            cameraController.onCameraBlendFinished -= SetNextParent;
+            cameraController.onCameraBlendStarted -= SetNextParent;
+        }
         transform.SetParent(nextParent);
     }
 }
