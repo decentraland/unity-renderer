@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class VoxelEntityHit
 {
-    public DCLBuilderInWorldEntity entityHitted;
+    public BIWEntity entityHitted;
     public Vector3Int hitVector;
 
     const float HIT_VECTOR_SENSITIVITY = 0.001f;
 
-    public VoxelEntityHit(DCLBuilderInWorldEntity entity, RaycastHit hit)
+    public VoxelEntityHit(BIWEntity entity, RaycastHit hit)
     {
         entityHitted = entity;
         CalculateHitVector(hit);
