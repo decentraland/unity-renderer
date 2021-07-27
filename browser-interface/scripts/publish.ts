@@ -3,7 +3,6 @@ import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
 import fetch from "node-fetch";
-import semver = require("semver");
 
 const DIST_ROOT = resolve(__dirname, "../dist")
 
@@ -12,8 +11,8 @@ async function main() {
   //if (process.env.CIRCLE_BRANCH == "master") {
     await publish(["latest"], "public", DIST_ROOT)
     // inform cdn-pipeline about new version
-    const version = getVersion(DIST_ROOT)
-    const pkgName = (await execute(`npm info . name`, workingDirectory)).trim();
+    const version = await getVersion(DIST_ROOT)
+    const pkgName = (await execute(`npm info . name`, DIST_ROOT)).trim();
     triggerPipeline(pkgName, version, `latest`)
   //}
 }
