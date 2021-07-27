@@ -22,7 +22,6 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             return prom;
         }
 
-
         [UnityTest]
         public IEnumerator BeSetupCorrectlyAfterLoad()
         {
@@ -51,9 +50,10 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             yield return prom;
 
-            Assert.IsTrue(PoolManager.i.ContainsPool(loadedAsset.id), "Not in pool after loaded!");
+            var poolId = keeper.library.AssetIdToPoolId(loadedAsset.id);
+            Assert.IsTrue(PoolManager.i.ContainsPool(poolId), "Not in pool after loaded!");
 
-            Pool pool = PoolManager.i.GetPool(loadedAsset.id);
+            Pool pool = PoolManager.i.GetPool(poolId);
 
             Assert.AreEqual(0, pool.unusedObjectsCount, "incorrect inactive objects in pool");
             Assert.AreEqual(1, pool.usedObjectsCount, "incorrect active objects in pool");
@@ -128,7 +128,6 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             Assert.IsTrue(poolableComponents.TrueForAll(x => x == null));
         }
-
 
         [UnityTest]
         public IEnumerator FailCorrectlyWhenLoadingABWithoutGameObjects()
