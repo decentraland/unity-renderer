@@ -24,7 +24,5 @@ namespace Builder.MeshLoadIndicator
             Plane plane = new Plane(camera.transform.forward, camera.transform.position);
             return plane.GetDistanceToPoint(objectPosition);
         }
-
-        public void SetCamera(Camera camera) { builderCamera = camera; }
     }
 }

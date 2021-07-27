@@ -11,25 +11,31 @@ using UnityEngine.TestTools;
 
 public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
 {
-    private BuilderInWorldEntityHandler entityHandler;
-    private BuilderInWorldController controller;
+    private BIWEntityHandler entityHandler;
     private BIWFloorHandler biwFloorHandler;
     private BIWCreatorController biwCreatorController;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        controller = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
 
-        biwCreatorController = controller.biwCreatorController;
-        biwCreatorController.Init();
-        biwFloorHandler = controller.biwFloorHandler;
-        biwFloorHandler.Init();
-        entityHandler = controller.builderInWorldEntityHandler;
-        entityHandler.Init();
+        biwCreatorController = new BIWCreatorController();
+        biwFloorHandler = new BIWFloorHandler();
+        entityHandler = new BIWEntityHandler();
+
+        var referencesController = BIWTestHelper.CreateReferencesControllerWithGenericMocks(
+            entityHandler,
+            biwFloorHandler,
+            biwCreatorController
+        );
+
+        biwCreatorController.Init(referencesController);
+        biwFloorHandler.Init(referencesController);
+        entityHandler.Init(referencesController);
+
         entityHandler.EnterEditMode(scene);
-
-        biwFloorHandler.dclBuilderMeshLoadIndicatorController.Init();
+        biwFloorHandler.EnterEditMode(scene);
+        entityHandler.EnterEditMode(scene);
     }
 
     [Test]
@@ -37,12 +43,8 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWCatalogManager.Init();
-        BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
-        CatalogItem floorItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
-
-        controller.InitGameObjects();
-        controller.FindSceneToEdit();
-        controller.InitControllers();
+        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        CatalogItem floorItem = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         biwCreatorController.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
@@ -51,7 +53,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwFloorHandler.CreateFloor(floorItem);
 
         //Assert
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -61,7 +63,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
             }
         }
 
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -81,14 +83,10 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         //Arrange
         BIWCatalogManager.Init();
 
-        BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
-        CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
-        CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
-
-        controller.InitGameObjects();
-        controller.FindSceneToEdit();
-        controller.InitControllers();
+        CatalogItem oldFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem newFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[1];
 
         biwCreatorController.EnterEditMode(scene);
         biwFloorHandler.EnterEditMode(scene);
@@ -98,7 +96,7 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
         biwFloorHandler.ChangeFloor(newFloor);
 
         //Assert
-        foreach (DCLBuilderInWorldEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
+        foreach (BIWEntity entity in entityHandler.GetAllEntitiesFromCurrentScene())
         {
             if (entity.isFloor)
             {
@@ -112,9 +110,10 @@ public class BIWFloorHandlerShould : IntegrationTestSuite_Legacy
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
-        BuilderInWorldNFTController.i.ClearNFTs();
-        controller.CleanItems();
-        controller.gameObject.SetActive(false);
+        BIWNFTController.i.ClearNFTs();
+        entityHandler.Dispose();
+        biwFloorHandler.Dispose();
+        biwCreatorController.Dispose();
         yield return base.TearDown();
     }
 }

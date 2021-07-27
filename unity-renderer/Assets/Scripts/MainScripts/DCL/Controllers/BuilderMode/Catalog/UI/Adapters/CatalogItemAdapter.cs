@@ -53,7 +53,7 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
 
         lockedGO.gameObject.SetActive(false);
 
-        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
+        if (catalogItem.IsNFT() && BIWNFTController.i.IsNFTInUse(catalogItem.id))
             lockedGO.gameObject.SetActive(true);
     }
 
