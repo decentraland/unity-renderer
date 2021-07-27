@@ -115,6 +115,8 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            avatarRenderer.InitializeLODController();
         }
 
         public void DisablePassport()

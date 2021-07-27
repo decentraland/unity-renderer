@@ -76,13 +76,14 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
             if (bodySnapshotTexturePromise != null)
                 AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             void onSuccessWrapper()
             {
-                InitializeLODController();
-
                 onSuccess?.Invoke();
                 this.OnSuccessEvent -= onSuccessWrapper;
             }
@@ -113,14 +114,14 @@ namespace DCL
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
 
-        void InitializeLODController()
+        public void InitializeLODController()
         {
             if (lodController == null)
                 return;
 
             Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
 
-            if (!string.IsNullOrEmpty(model.id))
+            if (!string.IsNullOrEmpty(model?.id))
             {
                 bodySnapshotTexturePromise = new AssetPromise_Texture(UserProfileController.GetProfileByUserId(model.id).bodySnapshotURL);
                 bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
@@ -173,6 +174,9 @@ namespace DCL
 
             if (lodController != null)
                 Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
