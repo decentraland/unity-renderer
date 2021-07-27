@@ -31,16 +31,7 @@ async function checkFiles() {
 async function getVersion(workingDirectory: string) {
   const json = JSON.parse(readFileSync(workingDirectory + "/package.json", "utf8"));
 
-  let pkgJsonVersion = json.version;
-  if (!pkgJsonVersion) pkgJsonVersion = "0.0.0";
-
-  const version = semver.parse(pkgJsonVersion.trim());
-
-  if (!version) {
-    throw new Error("Unable to parse semver from " + pkgJsonVersion);
-  }
-
-  return `${version.major}.${version.minor}.${version.patch}`;
+  return json.version;
 }
 
 async function triggerPipeline(
