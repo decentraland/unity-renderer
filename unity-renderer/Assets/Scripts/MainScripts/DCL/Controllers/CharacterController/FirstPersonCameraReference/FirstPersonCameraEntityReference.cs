@@ -41,15 +41,19 @@ public class FirstPersonCameraEntityReference : MonoBehaviour
     {
         if (newMode == CameraMode.ModeId.FirstPerson)
         {
-            nextParent = firtPersonParent;
-            cameraController.onCameraBlendFinished += SetNextParent;
             CommonScriptableObjects.cameraForward.OnChange += UpdateForward;
+            nextParent = firtPersonParent;
+
+            if (cameraController != null)
+                cameraController.onCameraBlendFinished += SetNextParent;
         }
         else
         {
             CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
             nextParent = initialParent;
-            cameraController.onCameraBlendStarted += SetNextParent;
+
+            if (cameraController != null)
+                cameraController.onCameraBlendStarted += SetNextParent;
         }
     }
 
