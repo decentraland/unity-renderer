@@ -19,12 +19,12 @@ namespace Tests.BuildModeHUDViews
         public void InvokeEntityActionCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             testEntity.entityUniqueId = "testId";
             EntityListAdapter testEntityListAdapter = new GameObject("_EntityListAdapter").AddComponent<EntityListAdapter>();
             testEntity.entityUniqueId = "testId";
             EntityAction testEntityAction = EntityAction.SHOW;
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity returnedEntity = null;
             EntityListAdapter returnedEntityListAdapter = null;
             EntityAction retournedEntityAction = EntityAction.DELETE;
             inspectorView.OnEntityActionInvoked += (action, entityToApply, adapter) =>
@@ -47,10 +47,10 @@ namespace Tests.BuildModeHUDViews
         public void RenameEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             testEntity.entityUniqueId = "testId";
             string testText = "Test text";
-            DCLBuilderInWorldEntity retournedEntity = null;
+            BIWEntity retournedEntity = null;
             string retournedText = "";
             inspectorView.OnEntityRename += (entity, newName) =>
             {
@@ -85,17 +85,17 @@ namespace Tests.BuildModeHUDViews
         public void SetEntitiesListCorrectly()
         {
             // Arrange
-            List<DCLBuilderInWorldEntity> testList = new List<DCLBuilderInWorldEntity>();
-            DCLBuilderInWorldEntity testEntity1 = new GameObject("_DCLBuilderInWorldEntity1").AddComponent<DCLBuilderInWorldEntity>();
+            List<BIWEntity> testList = new List<BIWEntity>();
+            BIWEntity testEntity1 = new BIWEntity();
             testEntity1.entityUniqueId = "testId1";
-            DCLBuilderInWorldEntity testEntity2 = new GameObject("_DCLBuilderInWorldEntity2").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity2 = new BIWEntity();
             testEntity1.entityUniqueId = "testId2";
-            DCLBuilderInWorldEntity testEntity3 = new GameObject("_DCLBuilderInWorldEntity3").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity3 = new BIWEntity();
             testEntity1.entityUniqueId = "testId3";
             testList.Add(testEntity1);
             testList.Add(testEntity2);
             testList.Add(testEntity3);
-            inspectorView.entitiesList = new List<DCLBuilderInWorldEntity>();
+            inspectorView.entitiesList = new List<BIWEntity>();
 
             // Act
             inspectorView.SetEntitiesList(testList);
@@ -112,12 +112,12 @@ namespace Tests.BuildModeHUDViews
         public void ClearEntitiesListCorrectly()
         {
             // Arrange
-            List<DCLBuilderInWorldEntity> testList = new List<DCLBuilderInWorldEntity>();
-            DCLBuilderInWorldEntity testEntity1 = new GameObject("_DCLBuilderInWorldEntity1").AddComponent<DCLBuilderInWorldEntity>();
+            List<BIWEntity> testList = new List<BIWEntity>();
+            BIWEntity testEntity1 = new BIWEntity();
             testEntity1.entityUniqueId = "testId1";
-            DCLBuilderInWorldEntity testEntity2 = new GameObject("_DCLBuilderInWorldEntity2").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity2 = new BIWEntity();
             testEntity1.entityUniqueId = "testId2";
-            DCLBuilderInWorldEntity testEntity3 = new GameObject("_DCLBuilderInWorldEntity3").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity3 = new BIWEntity();
             testEntity1.entityUniqueId = "testId3";
             testList.Add(testEntity1);
             testList.Add(testEntity2);

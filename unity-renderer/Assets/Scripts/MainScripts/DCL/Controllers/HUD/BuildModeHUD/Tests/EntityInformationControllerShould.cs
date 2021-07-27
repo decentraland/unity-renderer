@@ -2,13 +2,15 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
-    public class EntityInformationControllerShould
+    public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {
         private EntityInformationController entityInformationController;
 
@@ -80,9 +82,9 @@ namespace Tests.BuildModeHUDControllers
         public void NameChangedCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             string testText = "Test text";
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity returnedEntity = null;
             string returnedText = "";
             entityInformationController.OnNameChange += (entity, name) =>
             {
@@ -148,7 +150,7 @@ namespace Tests.BuildModeHUDControllers
         public void SetEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
 
             // Act
@@ -194,7 +196,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateEntityNameCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             entityInformationController.isChangingName = false;
 
             // Act
@@ -270,7 +272,10 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
+
+            var entity = TestHelpers.CreateSceneEntity(scene, "entityId");
+            testEntity.Init(entity, null);
 
             // Act
             entityInformationController.UpdateInfo(testEntity);

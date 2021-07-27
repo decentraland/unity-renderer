@@ -9,7 +9,7 @@ public class DataStoreBridge : MonoBehaviour
         try
         {
             PublishSceneResultPayload payload = JsonUtility.FromJson<PublishSceneResultPayload>(json);
-            DataStore.i.builderInWorld.unpublishSceneResult.Set(payload, notifyEvent: true);
+            DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.Set(payload, notifyEvent: true);
         }
         catch (Exception e)
         {

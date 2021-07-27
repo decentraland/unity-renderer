@@ -8,49 +8,64 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class BIWCreatorController : BIWController
+public interface IBIWCreatorController
 {
-    [Header("Design variables")]
-    public float secondsToSendAnalytics = 5f;
+    public event Action OnCatalogItemPlaced;
+    public event Action OnInputDone;
+    public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
+    public BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null);
+    public void CreateErrorOnEntity(BIWEntity entity);
+    public void RemoveLoadingObjectInmediate(string entityId);
+    public bool IsAnyErrorOnEntities();
+    public void CreateLoadingObject(BIWEntity entity);
+}
 
-    [Header("Prefab references")]
-    public BIWModeController biwModeController;
+public class BIWCreatorController : BIWController, IBIWCreatorController
+{
+    private const float SECONDS_TO_SEND_ANALYTICS = 5f;
 
-    public BIWFloorHandler biwFloorHandler;
-    public BuilderInWorldEntityHandler builderInWorldEntityHandler;
+    public event Action OnInputDone;
 
-    [FormerlySerializedAs("loadingGO")]
-    [Header("Project references")]
-    public GameObject loadingObjectPrefab;
-    public GameObject errorPrefab;
+    public event Action OnCatalogItemPlaced;
 
-    [SerializeField]
-    internal InputAction_Trigger toggleCreateLastSceneObjectInputAction;
+    private IBIWModeController modeController;
 
-    public Action OnInputDone;
+    private IBIWFloorHandler floorHandler;
+    private IBIWEntityHandler entityHandler;
 
-    public Action OnCatalogItemPlaced;
+    private GameObject loadingObjectPrefab;
+    private GameObject errorPrefab;
 
     private CatalogItem lastCatalogItemCreated;
 
-    private InputAction_Trigger.Triggered createLastSceneObjectDelegate;
-
     private readonly Dictionary<string, BIWLoadingPlaceHolder> loadingGameObjects = new Dictionary<string, BIWLoadingPlaceHolder>();
-    private readonly Dictionary<DCLBuilderInWorldEntity, GameObject> errorGameObjects = new Dictionary<DCLBuilderInWorldEntity, GameObject>();
+    private readonly Dictionary<BIWEntity, GameObject> errorGameObjects = new Dictionary<BIWEntity, GameObject>();
 
     private readonly List<KeyValuePair<CatalogItem, string>> itemsToSendAnalytics = new List<KeyValuePair<CatalogItem, string>>();
 
     private float lastAnalyticsSentTimestamp = 0;
 
-    private void Start()
+    public override void Init(BIWContext biwContext)
     {
-        createLastSceneObjectDelegate = (action) => CreateLastCatalogItem();
-        toggleCreateLastSceneObjectInputAction.OnTriggered += createLastSceneObjectDelegate;
+        base.Init(biwContext);
+
+        modeController = biwContext.modeController;
+        floorHandler = biwContext.floorHandler;
+        entityHandler = biwContext.entityHandler;
+
+        loadingObjectPrefab = biwContext.projectReferencesAsset.loadingPrefab;
+        errorPrefab = biwContext.projectReferencesAsset.errorPrefab;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
+            HUDController.i.builderInWorldMainHud.OnCatalogItemDropped += OnCatalogItemDropped;
+        }
     }
 
-    private void OnDestroy()
+    public override void Dispose()
     {
-        toggleCreateLastSceneObjectInputAction.OnTriggered -= createLastSceneObjectDelegate;
+        base.Dispose();
         if (HUDController.i.builderInWorldMainHud != null)
         {
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
@@ -60,13 +75,13 @@ public class BIWCreatorController : BIWController
         Clean();
     }
 
-    protected override void FrameUpdate()
+    public override void Update()
     {
-        base.FrameUpdate();
+        base.Update();
         if (Time.realtimeSinceStartup >= lastAnalyticsSentTimestamp)
         {
             SendAnalytics();
-            lastAnalyticsSentTimestamp = Time.realtimeSinceStartup + secondsToSendAnalytics;
+            lastAnalyticsSentTimestamp = Time.realtimeSinceStartup + SECONDS_TO_SEND_ANALYTICS;
         }
     }
 
@@ -86,23 +101,13 @@ public class BIWCreatorController : BIWController
             placeHolder.Dispose();
         }
 
-        foreach (DCLBuilderInWorldEntity entity in errorGameObjects.Keys.ToArray())
+        foreach (BIWEntity entity in errorGameObjects.Keys.ToArray())
         {
             DeleteErrorOnEntity(entity);
         }
 
         loadingGameObjects.Clear();
         errorGameObjects.Clear();
-    }
-
-    public override void Init()
-    {
-        base.Init();
-        if (HUDController.i.builderInWorldMainHud != null)
-        {
-            HUDController.i.builderInWorldMainHud.OnCatalogItemSelected += OnCatalogItemSelected;
-            HUDController.i.builderInWorldMainHud.OnCatalogItemDropped += OnCatalogItemDropped;
-        }
     }
 
     public bool IsAnyErrorOnEntities() { return errorGameObjects.Count > 0; }
@@ -154,34 +159,34 @@ public class BIWCreatorController : BIWController
         return true;
     }
 
-    public void CreateErrorOnEntity(DCLBuilderInWorldEntity entity)
+    public void CreateErrorOnEntity(BIWEntity entity)
     {
         if (errorGameObjects.ContainsKey(entity))
             return;
 
-        GameObject instantiatedError = Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
-        instantiatedError.transform.SetParent(entity.transform, true);
+        GameObject instantiatedError = GameObject.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
+        instantiatedError.transform.SetParent(entity.rootEntity.transform, true);
         instantiatedError.transform.localPosition = Vector3.zero;
 
         errorGameObjects.Add(entity, instantiatedError);
         entity.OnDelete += DeleteErrorOnEntity;
     }
 
-    public void DeleteErrorOnEntity(DCLBuilderInWorldEntity entity)
+    public void DeleteErrorOnEntity(BIWEntity entity)
     {
         if (!errorGameObjects.ContainsKey(entity))
             return;
 
         entity.OnDelete -= DeleteErrorOnEntity;
-        Destroy(errorGameObjects[entity]);
+        GameObject.Destroy(errorGameObjects[entity]);
         errorGameObjects.Remove(entity);
     }
 
-    public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { CreateCatalogItem(catalogItem, biwModeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
+    public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false) { CreateCatalogItem(catalogItem, modeController.GetModeCreationEntryPoint(), autoSelect, isFloor); }
 
-    public DCLBuilderInWorldEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null)
+    public BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null)
     {
-        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
+        if (catalogItem.IsNFT() && BIWNFTController.i.IsNFTInUse(catalogItem.id))
             return null;
 
         IsInsideTheLimits(catalogItem);
@@ -189,9 +194,9 @@ public class BIWCreatorController : BIWController
         //Note (Adrian): This is a workaround until the mapping is handle by kernel
         AddSceneMappings(catalogItem);
 
-        Vector3 editionPosition = biwModeController.GetCurrentEditionPosition();
+        Vector3 editionPosition = modeController.GetCurrentEditionPosition();
 
-        DCLBuilderInWorldEntity entity = builderInWorldEntityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
+        BIWEntity entity = entityHandler.CreateEmptyEntity(sceneToEdit, startPosition, editionPosition, false);
         entity.isFloor = isFloor;
         entity.SetRotation(Vector3.zero);
 
@@ -215,18 +220,18 @@ public class BIWCreatorController : BIWController
 
         if (autoSelect)
         {
-            builderInWorldEntityHandler.DeselectEntities();
-            builderInWorldEntityHandler.Select(entity.rootEntity);
+            entityHandler.DeselectEntities();
+            entityHandler.Select(entity.rootEntity);
         }
 
-        entity.gameObject.transform.eulerAngles = Vector3.zero;
+        entity.rootEntity.gameObject.transform.eulerAngles = Vector3.zero;
 
-        biwModeController.CreatedEntity(entity);
+        modeController.CreatedEntity(entity);
 
         lastCatalogItemCreated = catalogItem;
 
-        builderInWorldEntityHandler.EntityListChanged();
-        builderInWorldEntityHandler.NotifyEntityIsCreated(entity.rootEntity);
+        entityHandler.EntityListChanged();
+        entityHandler.NotifyEntityIsCreated(entity.rootEntity);
         OnInputDone?.Invoke();
         OnCatalogItemPlaced?.Invoke();
         return entity;
@@ -236,17 +241,17 @@ public class BIWCreatorController : BIWController
 
     public bool ExistsLoadingGameObjectForEntity(string entityId) { return loadingGameObjects.ContainsKey(entityId); }
 
-    public void CreateLoadingObject(DCLBuilderInWorldEntity entity)
+    public void CreateLoadingObject(BIWEntity entity)
     {
         if (loadingGameObjects.ContainsKey(entity.rootEntity.entityId))
             return;
 
-        BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
+        BIWLoadingPlaceHolder loadingPlaceHolder = GameObject.Instantiate(loadingObjectPrefab, entity.rootEntity.gameObject.transform).GetComponent<BIWLoadingPlaceHolder>();
         loadingGameObjects.Add(entity.rootEntity.entityId, loadingPlaceHolder);
         entity.OnShapeFinishLoading += OnShapeLoadFinish;
     }
 
-    private void OnShapeLoadFinish(DCLBuilderInWorldEntity entity)
+    private void OnShapeLoadFinish(BIWEntity entity)
     {
         entity.OnShapeFinishLoading -= OnShapeLoadFinish;
         RemoveLoadingObject(entity.rootEntity.entityId);
@@ -274,7 +279,7 @@ public class BIWCreatorController : BIWController
 
     #region Add Components
 
-    private void AddSmartItemComponent(DCLBuilderInWorldEntity entity)
+    private void AddSmartItemComponent(BIWEntity entity)
     {
         //Note (Adrian): This will disable the smart item component until it is implemented in kernel
         //TODO: After the implementation in kernel of smart items, we should eliminate this return
@@ -289,14 +294,14 @@ public class BIWCreatorController : BIWController
             ((SmartItemComponent) component).UpdateFromModel(model);
     }
 
-    private void AddEntityNameComponent(CatalogItem catalogItem, DCLBuilderInWorldEntity entity)
+    private void AddEntityNameComponent(CatalogItem catalogItem, BIWEntity entity)
     {
         DCLName name = (DCLName) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.NAME));
         sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, name.id);
-        builderInWorldEntityHandler.SetEntityName(entity, catalogItem.name, false);
+        entityHandler.SetEntityName(entity, catalogItem.name, false);
     }
 
-    private void AddLockedComponent(DCLBuilderInWorldEntity entity)
+    private void AddLockedComponent(BIWEntity entity)
     {
         DCLLockedOnEdit entityLocked = (DCLLockedOnEdit) sceneToEdit.SharedComponentCreate(Guid.NewGuid().ToString(), Convert.ToInt32(CLASS_ID.LOCKED_ON_EDIT));
         if (entity.isFloor)
@@ -307,7 +312,7 @@ public class BIWCreatorController : BIWController
         sceneToEdit.SharedComponentAttach(entity.rootEntity.entityId, entityLocked.id);
     }
 
-    private void AddShape(CatalogItem catalogItem, DCLBuilderInWorldEntity entity)
+    private void AddShape(CatalogItem catalogItem, BIWEntity entity)
     {
         if (catalogItem.IsNFT())
         {
@@ -366,8 +371,8 @@ public class BIWCreatorController : BIWController
     {
         if (lastCatalogItemCreated != null)
         {
-            if (builderInWorldEntityHandler.IsAnyEntitySelected())
-                builderInWorldEntityHandler.DeselectEntities();
+            if (entityHandler.IsAnyEntitySelected())
+                entityHandler.DeselectEntities();
             OnCatalogItemSelected(lastCatalogItemCreated);
             OnInputDone?.Invoke();
         }
@@ -375,9 +380,9 @@ public class BIWCreatorController : BIWController
 
     private void OnCatalogItemSelected(CatalogItem catalogItem)
     {
-        if (biwFloorHandler.IsCatalogItemFloor(catalogItem))
+        if (floorHandler.IsCatalogItemFloor(catalogItem))
         {
-            biwFloorHandler.ChangeFloor(catalogItem);
+            floorHandler.ChangeFloor(catalogItem);
         }
         else
         {
@@ -393,6 +398,6 @@ public class BIWCreatorController : BIWController
     private void OnCatalogItemDropped(CatalogItem catalogItem)
     {
         OnCatalogItemSelected(catalogItem);
-        builderInWorldEntityHandler.DeselectEntities();
+        entityHandler.DeselectEntities();
     }
 }

@@ -56,7 +56,7 @@ public class BuilderProjectsPanelController : IHUD
         StopFetchInterval();
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
-        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
+        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
 
         unpublishPopupController?.Dispose();
@@ -119,7 +119,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.OnEditorPressed += OnGoToEditScene;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
-        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -259,7 +259,7 @@ public class BuilderProjectsPanelController : IHUD
 
     private void OnGoToEditScene(Vector2Int coords)
     {
-        bool isGoingToTeleport = BuilderInWorldTeleportAndEdit.TeleportAndEdit(coords);
+        bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
         if (isGoingToTeleport)
         {
             SetVisibility(false);
