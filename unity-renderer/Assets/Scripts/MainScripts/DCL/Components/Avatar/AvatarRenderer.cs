@@ -119,11 +119,13 @@ namespace DCL
             if (lodController == null)
                 return;
 
-            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
-
+            UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
+                userProfile = UserProfileController.GetProfileByUserId(model.id);
+
+            if (userProfile != null)
             {
-                bodySnapshotTexturePromise = new AssetPromise_Texture(UserProfileController.GetProfileByUserId(model.id).bodySnapshotURL);
+                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
                 bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
                 bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
                 AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
@@ -132,6 +134,8 @@ namespace DCL
             {
                 lodController.RandomizeAndApplyGenericImpostor();
             }
+
+            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
         }
 
         void StopLoadingCoroutines()
