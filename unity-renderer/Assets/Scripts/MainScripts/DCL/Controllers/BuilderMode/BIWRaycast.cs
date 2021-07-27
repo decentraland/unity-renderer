@@ -48,9 +48,8 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
     private void OnMouseDown(int buttonId, Vector3 mousePosition)
     {
         if (buttonId != 0)
-        {
             return;
-        }
+
         CheckGizmosRaycast(mousePosition);
     }
 
@@ -74,7 +73,6 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
                 return entityHandler.GetConvertedEntity(sceneToEdit.entities[entityID]);
             }
         }
-
         return null;
     }
 
@@ -127,16 +125,15 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
                 if (entityToCheck == null)
                     continue;
 
-                Camera camera = Camera.main;
+                if (entityToCheck.isSelected || !entityToCheck.gameObject.CompareTag(BIWSettings.VOXEL_TAG))
+                    continue;
 
-                if (!entityToCheck.isSelected && entityToCheck.gameObject.tag == BIWSettings.VOXEL_TAG)
-                {
-                    if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) < currentDistance)
-                    {
-                        voxelEntityHit = new VoxelEntityHit(entityToCheck, hit);
-                        currentDistance = Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position);
-                    }
-                }
+                Camera camera = Camera.main;
+                if (Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position) >= currentDistance)
+                    continue;
+
+                voxelEntityHit = new VoxelEntityHit(entityToCheck, hit);
+                currentDistance = Vector3.Distance(camera.transform.position, entityToCheck.rootEntity.gameObject.transform.position);
             }
         }
 
@@ -149,9 +146,7 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(mousePosition);
 
         if (Physics.Raycast(ray, out hit, RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
-        {
             return hit.point;
-        }
 
         return Vector3.zero;
     }
@@ -167,9 +162,8 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         {
             BIWGizmosAxis gizmosAxis = hit.collider.gameObject.GetComponent<BIWGizmosAxis>();
             if (gizmosAxis != null)
-            {
                 OnGizmosAxisPressed?.Invoke(gizmosAxis);
-            }
+
         }
     }
 
@@ -182,9 +176,8 @@ public class BIWRaycastController : BIWController, IBIWRaycastController
         RaycastHit closestHit = hits[0];
 
         if (IsGizmoHit(closestHit)) // Gizmos has always priority
-        {
             return closestHit;
-        }
+
         return closestHit;
     }
 
