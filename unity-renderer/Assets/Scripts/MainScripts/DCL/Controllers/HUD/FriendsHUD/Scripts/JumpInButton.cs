@@ -88,10 +88,10 @@ public class JumpInButton : MonoBehaviour
     private void RefreshInfo()
     {
         if (currentPresenceStatus == PresenceStatus.ONLINE &&
-            !string.IsNullOrEmpty(currentRealmServerName) &&
-            !string.IsNullOrEmpty(currentRealmLayerName))
+            !string.IsNullOrEmpty(currentRealmServerName))
         {
-            playerLocationText.text = $"{currentRealmServerName}-{currentRealmLayerName} {(int)currentCoords.x}, {(int)currentCoords.y}";
+            string realmText = string.Format("{0}{1}", currentRealmServerName, !string.IsNullOrEmpty(currentRealmLayerName) ? "-" + currentRealmLayerName : "");
+            playerLocationText.text = $"{realmText} {(int)currentCoords.x}, {(int)currentCoords.y}";
             this.gameObject.SetActive(true);
         }
         else

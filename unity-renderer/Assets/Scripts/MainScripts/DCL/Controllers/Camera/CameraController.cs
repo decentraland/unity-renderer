@@ -88,6 +88,20 @@ namespace DCL.Camera
             camera.enabled = !visibleState;
         }
 
+        public bool TryGetCameraStateByType<T>(out CameraStateBase searchedCameraState)
+        {
+            foreach (CameraStateBase cameraMode in cameraModes)
+            {
+                if (cameraMode.GetType() == typeof(T))
+                {
+                    searchedCameraState = cameraMode;
+                    return true;
+                }
+            }
+            searchedCameraState = null;
+            return false;
+        }
+
         private void OnRenderingStateChanged(bool enabled, bool prevState) { camera.enabled = enabled; }
 
         private void CameraBlocked_OnChange(bool current, bool previous)

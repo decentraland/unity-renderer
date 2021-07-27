@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Variables.RealmsInfo
 {
@@ -23,6 +23,8 @@ namespace Variables.RealmsInfo
         public string domain = string.Empty;
         public string contentServerUrl = string.Empty;
 
+        public bool isArchipelagoRealm => string.IsNullOrEmpty(layer);
+
         public bool Equals(CurrentRealmModel other)
         {
             if (other == null)
@@ -32,7 +34,13 @@ namespace Variables.RealmsInfo
 
         public bool Equals(string serverName, string layer, string domain, string contentServerUrl) { return Equals(serverName, layer) && this.domain == domain && this.contentServerUrl == contentServerUrl; }
 
-        public bool Equals(string serverName, string layer) { return this.serverName == serverName && this.layer == layer; }
+        public bool Equals(string serverName, string layer)
+        {
+            if (isArchipelagoRealm)
+                return this.serverName == serverName;
+            else
+                return this.serverName == serverName && this.layer == layer;
+        }
 
         public CurrentRealmModel Clone()
         {

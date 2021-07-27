@@ -12,7 +12,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
     public ActionsListView actionsListView;
     public Button addActionBtn;
 
-    private List<DCLBuilderInWorldEntity> alreadyFilterList;
+    private List<BIWEntity> alreadyFilterList;
 
     private void Start()
     {
@@ -38,7 +38,7 @@ public class SmartItemActionParameter : SmartItemUIParameterAdapter, IEntityList
         SetParameterValue(actions);
     }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.alreadyFilterList = entitiesList; }
+    public void SetEntityList(List<BIWEntity> entitiesList) { this.alreadyFilterList = entitiesList; }
 
     public override void SetInfo()
     {

@@ -47,10 +47,7 @@ public class TaskbarHUDController : IHUD
 
     public TaskbarMoreMenu moreMenu { get => view.moreMenu; }
 
-    protected internal virtual TaskbarHUDView CreateView()
-    {
-        return TaskbarHUDView.Create(this, chatController, friendsController);
-    }
+    protected internal virtual TaskbarHUDView CreateView() { return TaskbarHUDView.Create(this, chatController, friendsController); }
 
     public void Initialize(
         IMouseCatcher mouseCatcher,
@@ -130,7 +127,7 @@ public class TaskbarHUDController : IHUD
         view.leftWindowContainerAnimator.Show();
 
         CommonScriptableObjects.isTaskbarHUDInitialized.Set(true);
-        DataStore.i.builderInWorld.showTaskBar.OnChange += SetVisibility;
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.OnChange += SetVisibility;
     }
 
     private void View_OnQuestPanelToggled(bool value)
@@ -485,7 +482,7 @@ public class TaskbarHUDController : IHUD
 
         DataStore.i.HUDs.questsPanelVisible.OnChange -= OnToggleQuestsPanelTriggered;
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnBuilderProjectsPanelTriggered;
-        DataStore.i.builderInWorld.showTaskBar.OnChange -= SetVisibility;
+        DataStore.i.dataStoreBuilderInWorld.showTaskBar.OnChange -= SetVisibility;
     }
 
     public void SetVisibility(bool visible, bool previus) { SetVisibility(visible); }
