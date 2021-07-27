@@ -110,20 +110,20 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
     {
         if (isCatalogExpanded)
         {
-            BuilderInWorldUtils.CopyRectTransform(panelRT, panelMinSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(headerRT, headerMinSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(searchBarRT, searchBarMinSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(assetPackRT, assetPackMinSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(categoryRT, assetPackMinSizeRT);
+            BIWUtils.CopyRectTransform(panelRT, panelMinSizeRT);
+            BIWUtils.CopyRectTransform(headerRT, headerMinSizeRT);
+            BIWUtils.CopyRectTransform(searchBarRT, searchBarMinSizeRT);
+            BIWUtils.CopyRectTransform(assetPackRT, assetPackMinSizeRT);
+            BIWUtils.CopyRectTransform(categoryRT, assetPackMinSizeRT);
             AudioScriptableObjects.dialogClose.Play();
         }
         else
         {
-            BuilderInWorldUtils.CopyRectTransform(panelRT, panelMaxSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(headerRT, headerMaxSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(searchBarRT, searchBarMaxSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(assetPackRT, assetPackMaxSizeRT);
-            BuilderInWorldUtils.CopyRectTransform(categoryRT, assetPackMaxSizeRT);
+            BIWUtils.CopyRectTransform(panelRT, panelMaxSizeRT);
+            BIWUtils.CopyRectTransform(headerRT, headerMaxSizeRT);
+            BIWUtils.CopyRectTransform(searchBarRT, searchBarMaxSizeRT);
+            BIWUtils.CopyRectTransform(assetPackRT, assetPackMaxSizeRT);
+            BIWUtils.CopyRectTransform(categoryRT, assetPackMaxSizeRT);
             AudioScriptableObjects.dialogOpen.Play();
         }
 

@@ -12,32 +12,32 @@ public enum EntityAction
 
 public interface IInspectorController
 {
-    event Action<DCLBuilderInWorldEntity> OnEntityClick;
-    event Action<DCLBuilderInWorldEntity> OnEntityDelete;
-    event Action<DCLBuilderInWorldEntity> OnEntityLock;
-    event Action<DCLBuilderInWorldEntity> OnEntityChangeVisibility;
-    event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    event Action<BIWEntity> OnEntityClick;
+    event Action<BIWEntity> OnEntityDelete;
+    event Action<BIWEntity> OnEntityLock;
+    event Action<BIWEntity> OnEntityChangeVisibility;
+    event Action<BIWEntity, string> OnEntityRename;
 
     ISceneLimitsController sceneLimitsController { get; }
 
     void Initialize(IInspectorView inspectorView);
     void Dispose();
     void OpenEntityList();
-    void SetEntityList(List<DCLBuilderInWorldEntity> sceneEntities);
+    void SetEntityList(List<BIWEntity> sceneEntities);
     void ClearList();
     void CloseList();
-    void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter);
-    void EntityRename(DCLBuilderInWorldEntity entity, string newName);
+    void EntityActionInvoked(EntityAction action, BIWEntity entityToApply, EntityListAdapter adapter);
+    void EntityRename(BIWEntity entity, string newName);
     void SetCloseButtonsAction(UnityAction call);
 }
 
 public class InspectorController : IInspectorController
 {
-    public event Action<DCLBuilderInWorldEntity> OnEntityClick;
-    public event Action<DCLBuilderInWorldEntity> OnEntityDelete;
-    public event Action<DCLBuilderInWorldEntity> OnEntityLock;
-    public event Action<DCLBuilderInWorldEntity> OnEntityChangeVisibility;
-    public event Action<DCLBuilderInWorldEntity, string> OnEntityRename;
+    public event Action<BIWEntity> OnEntityClick;
+    public event Action<BIWEntity> OnEntityDelete;
+    public event Action<BIWEntity> OnEntityLock;
+    public event Action<BIWEntity> OnEntityChangeVisibility;
+    public event Action<BIWEntity, string> OnEntityRename;
 
     public ISceneLimitsController sceneLimitsController => inspectorView.sceneLimitsController;
 
@@ -73,7 +73,7 @@ public class InspectorController : IInspectorController
         inspectorView.SetActive(true);
     }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> sceneEntities)
+    public void SetEntityList(List<BIWEntity> sceneEntities)
     {
         inspectorView.SetEntitiesList(sceneEntities);
 
@@ -101,7 +101,7 @@ public class InspectorController : IInspectorController
             inspectorView.entityList.SetActive(false);
     }
 
-    public void EntityActionInvoked(EntityAction action, DCLBuilderInWorldEntity entityToApply, EntityListAdapter adapter)
+    public void EntityActionInvoked(EntityAction action, BIWEntity entityToApply, EntityListAdapter adapter)
     {
         switch (action)
         {
@@ -123,7 +123,7 @@ public class InspectorController : IInspectorController
         }
     }
 
-    public void EntityRename(DCLBuilderInWorldEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
+    public void EntityRename(BIWEntity entity, string newName) { OnEntityRename?.Invoke(entity, newName); }
 
     public void SetCloseButtonsAction(UnityAction call) { inspectorView.SetCloseButtonsAction(call); }
 }
