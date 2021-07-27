@@ -24,10 +24,10 @@ public class BIWCatalogShould
     public void BuilderInWorldSearch()
     {
         string nameToFilter = "Sandy";
-        BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem catalogItemToFilter = null;
-        foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
+        foreach (CatalogItem catalogItem in DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues())
         {
             if (catalogItem.name.Contains(nameToFilter))
             {
@@ -47,10 +47,10 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldQuickBar()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
-        CatalogItemAdapter adapter = BuilderInWorldTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
+        CatalogItemAdapter adapter = BIWTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
         CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
@@ -83,9 +83,9 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldToggleFavorite()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
-        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
 
         FavoritesController favoritesController = new FavoritesController(new GameObject("_FavoritesController").AddComponent<CatalogGroupListView>());
         favoritesController.ToggleFavoriteState(item, null);
@@ -98,20 +98,20 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsSceneObject()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
-        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
-        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemPackDict.Count(), 1);
         Assert.AreEqual(BIWCatalogManager.GetCatalogItemPacksFilteredByCategories().Count, 1);
     }
 
     [Test]
     public void CatalogItemsNfts()
     {
-        BuilderInWorldTestHelper.CreateNFT();
+        BIWTestHelper.CreateNFT();
 
-        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
-        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemPackDict.Count(), 1);
         Assert.AreEqual(BIWCatalogManager.GetCatalogItemPacksFilteredByCategories().Count, 1);
     }
 

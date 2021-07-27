@@ -99,7 +99,7 @@ public class BIWSearchBarController : IBIWSearchBarController
     public void FilterSmartItem()
     {
         filterObjects.Clear();
-        foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
+        foreach (CatalogItem catalogItem in DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues())
         {
             if (!catalogItem.IsSmartItem())
                 continue;
@@ -127,7 +127,7 @@ public class BIWSearchBarController : IBIWSearchBarController
     {
         StringComparison comparison = StringComparison.OrdinalIgnoreCase;
         filterObjects.Clear();
-        foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
+        foreach (CatalogItem catalogItem in DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues())
         {
             if (!MatchtFilter(catalogItem, nameToFilter, comparison))
                 continue;

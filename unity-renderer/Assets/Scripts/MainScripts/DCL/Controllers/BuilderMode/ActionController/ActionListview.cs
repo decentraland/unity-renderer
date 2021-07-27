@@ -2,24 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActionListview : ListView<BuildInWorldCompleteAction>
+public class ActionListview : ListView<BIWCompleteAction>
 {
     public ActionAdapter adapter;
 
-    public System.Action<BuildInWorldCompleteAction> OnActionSelected;
+    public System.Action<BIWCompleteAction> OnActionSelected;
 
     List<ActionAdapter> actionList = new List<ActionAdapter>();
     public override void AddAdapters()
     {
         base.AddAdapters();
 
-        foreach (BuildInWorldCompleteAction action in contentList)
+        foreach (BIWCompleteAction action in contentList)
         {
             CreateAdapter(action);
         }
     }
 
-    public void ActionSelected(BuildInWorldCompleteAction action, ActionAdapter adapter) { OnActionSelected?.Invoke(action); }
+    public void ActionSelected(BIWCompleteAction action, ActionAdapter adapter) { OnActionSelected?.Invoke(action); }
 
     public override void RemoveAdapters()
     {
@@ -27,10 +27,10 @@ public class ActionListview : ListView<BuildInWorldCompleteAction>
         actionList.Clear();
     }
 
-    public void AddAdapter(BuildInWorldCompleteAction action)
+    public void AddAdapter(BIWCompleteAction action)
     {
         if (contentList == null)
-            contentList = new List<BuildInWorldCompleteAction>();
+            contentList = new List<BIWCompleteAction>();
         contentList.Add(action);
         CreateAdapter(action);
     }
@@ -43,7 +43,7 @@ public class ActionListview : ListView<BuildInWorldCompleteAction>
         }
     }
 
-    void CreateAdapter(BuildInWorldCompleteAction action)
+    void CreateAdapter(BIWCompleteAction action)
     {
         ActionAdapter instanciatedAdapter = Instantiate(adapter, contentPanelTransform).GetComponent<ActionAdapter>();
         instanciatedAdapter.SetContent(action);

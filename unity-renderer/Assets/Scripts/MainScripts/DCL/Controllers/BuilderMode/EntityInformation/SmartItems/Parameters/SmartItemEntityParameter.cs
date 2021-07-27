@@ -10,21 +10,21 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
 {
     public TMP_Dropdown dropDown;
 
-    private List<DCLBuilderInWorldEntity> entitiesList;
+    private List<BIWEntity> entitiesList;
 
-    private Dictionary<DCLBuilderInWorldEntity, Sprite> entitySpriteDict = new Dictionary<DCLBuilderInWorldEntity, Sprite>();
-    private Dictionary<string, DCLBuilderInWorldEntity> entityPromiseKeeperDict = new Dictionary<string, DCLBuilderInWorldEntity>();
+    private Dictionary<BIWEntity, Sprite> entitySpriteDict = new Dictionary<BIWEntity, Sprite>();
+    private Dictionary<string, BIWEntity> entityPromiseKeeperDict = new Dictionary<string, BIWEntity>();
 
     private void Start() { dropDown.onValueChanged.AddListener(OnValueChange); }
 
-    public void SetEntityList(List<DCLBuilderInWorldEntity> entitiesList) { this.entitiesList = entitiesList; }
+    public void SetEntityList(List<BIWEntity> entitiesList) { this.entitiesList = entitiesList; }
 
     public override void SetInfo()
     {
         base.SetInfo();
 
         GenerateDropdownContent();
-        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        foreach (BIWEntity entity in entitiesList)
         {
             GetThumbnail(entity);
         }
@@ -37,7 +37,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         dropDown.options = new List<TMP_Dropdown.OptionData>();
 
         List<TMP_Dropdown.OptionData> optionsList = new List<TMP_Dropdown.OptionData>();
-        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        foreach (BIWEntity entity in entitiesList)
         {
             var item = new TMP_Dropdown.OptionData();
             item.text = entity.GetDescriptiveName();
@@ -58,7 +58,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
         }
     }
 
-    private void GetThumbnail(DCLBuilderInWorldEntity entity)
+    private void GetThumbnail(BIWEntity entity)
     {
         var url = entity.GetCatalogItemAssociated()?.thumbnailURL;
 
@@ -90,7 +90,7 @@ public class SmartItemEntityParameter : SmartItemUIParameterAdapter, IEntityList
 
     private void OnValueChange(int currentIndex)
     {
-        foreach (DCLBuilderInWorldEntity entity in entitiesList)
+        foreach (BIWEntity entity in entitiesList)
         {
             if (entity.GetDescriptiveName() == dropDown.options[currentIndex].text)
                 SetParameterValue(entity.rootEntity.entityId);

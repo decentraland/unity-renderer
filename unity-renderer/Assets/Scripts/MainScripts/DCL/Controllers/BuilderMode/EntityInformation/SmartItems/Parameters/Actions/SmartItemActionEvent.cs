@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SmartItemActionEvent
 {
-    public List<DCLBuilderInWorldEntity> entityList;
+    public List<BIWEntity> entityList;
     public SmartItemActionable smartItemActionable;
     public Dictionary<object, object> values;
 }
