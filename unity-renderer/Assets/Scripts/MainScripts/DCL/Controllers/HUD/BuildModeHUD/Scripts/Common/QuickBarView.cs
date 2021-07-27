@@ -77,22 +77,22 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
         {
             int triggerIndex = i;
 
-            BuilderInWorldUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.BeginDrag, (eventData) =>
+            BIWUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.BeginDrag, (eventData) =>
             {
                 BeginDragSlot(triggerIndex);
             });
 
-            BuilderInWorldUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drag, (eventData) =>
+            BIWUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drag, (eventData) =>
             {
                 DragSlot(eventData, triggerIndex);
             });
 
-            BuilderInWorldUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.EndDrag, (eventData) =>
+            BIWUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.EndDrag, (eventData) =>
             {
                 EndDragSlot(triggerIndex);
             });
 
-            BuilderInWorldUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drop, (eventData) =>
+            BIWUtils.ConfigureEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drop, (eventData) =>
             {
                 SetIndexToDrop(triggerIndex);
 
@@ -130,7 +130,7 @@ public class QuickBarView : MonoBehaviour, IQuickBarView
         for (int i = 0; i < shortcutsEventTriggers.Length; i++)
         {
             int triggerIndex = i;
-            BuilderInWorldUtils.RemoveEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drop);
+            BIWUtils.RemoveEventTrigger(shortcutsEventTriggers[triggerIndex], EventTriggerType.Drop);
         }
 
         quickBar1InputAction.OnTriggered -= OnQuickBar1InputTriggedered;

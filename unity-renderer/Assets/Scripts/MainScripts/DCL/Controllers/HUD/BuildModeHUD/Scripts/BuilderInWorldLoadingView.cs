@@ -8,6 +8,7 @@ public interface IBuilderInWorldLoadingView
 {
     bool isActive { get; }
 
+    GameObject viewGO { get; }
     void Show();
     void Hide(bool forzeHidding = false, Action onHideAction = null);
     void StartTipsCarousel();
@@ -33,6 +34,8 @@ public class BuilderInWorldLoadingView : MonoBehaviour, IBuilderInWorldLoadingVi
     [SerializeField] internal LoadingBar loadingBar;
 
     public bool isActive => gameObject.activeSelf;
+
+    public GameObject viewGO => gameObject;
 
     internal Coroutine tipsCoroutine;
     internal Coroutine hideCoroutine;

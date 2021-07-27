@@ -38,15 +38,15 @@ public class PublishBtnView : MonoBehaviour, IPublishBtnView
     private void Awake()
     {
         mainButton.onClick.AddListener(OnPointerClick);
-        BuilderInWorldUtils.ConfigureEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
-        BuilderInWorldUtils.ConfigureEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
+        BIWUtils.ConfigureEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
+        BIWUtils.ConfigureEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
     }
 
     private void OnDestroy()
     {
         mainButton.onClick.RemoveListener(OnPointerClick);
-        BuilderInWorldUtils.RemoveEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(publishButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
     public void OnPointerClick() { OnPublishButtonClick?.Invoke(); }
