@@ -23,16 +23,5 @@ namespace DCL
         // Renderers
         public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
         public List<Material> materials = new List<Material>();
-
-        public void Populate(Matrix4x4[] bindPoses, List<CombineLayer> layers, Material materialAsset)
-        {
-            this.bindPoses = bindPoses;
-            this.renderers = layers.SelectMany( (x) => x.renderers ).ToList();
-
-            this.ComputeBoneWeights( layers );
-            this.ComputeCombineInstancesData( layers );
-            this.ComputeSubMeshes( layers );
-            this.FlattenMaterials( layers, materialAsset );
-        }
     }
 }

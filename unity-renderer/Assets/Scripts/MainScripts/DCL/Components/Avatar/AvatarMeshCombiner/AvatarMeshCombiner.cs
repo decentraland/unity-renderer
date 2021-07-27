@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
@@ -12,14 +16,19 @@ namespace DCL
         public bool isOpaque;
     }
 
-    public interface IAvatarMeshCombineHelper
+
+    public struct AvatarMeshCombinerOutput
     {
-        GameObject Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset);
-        void CombineWithExistingRenderer(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, SkinnedMeshRenderer targetRenderer);
-        Mesh CombineSkinnedMeshes(CombineMeshData combineMeshData);
+        public Mesh mesh;
+        public Material[] materials;
     }
 
-    public class AvatarMeshCombineHelper : IAvatarMeshCombineHelper
+    public interface IAvatarMeshCombiner
+    {
+        AvatarMeshCombinerOutput CombineSkinnedMeshes(CombineMeshData combineMeshData);
+    }
+
+    public static class AvatarMeshCombiner
     {
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler);
 
@@ -28,70 +37,18 @@ namespace DCL
         private const int TEXTURE_POINTERS_UV_CHANNEL_INDEX = 2;
         private const int EMISSION_COLORS_UV_CHANNEL_INDEX = 3;
 
-        public void CombineWithExistingRenderer(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset, SkinnedMeshRenderer targetRenderer)
+        public static AvatarMeshCombinerOutput CombineSkinnedMeshes(Matrix4x4[] bindPoses, List<CombineLayer> layers, Material materialAsset)
         {
-        }
-
-        public Mesh CombineSkinnedMeshes(CombineMeshData combineMeshData)
-        {
-            CombineMeshData data = combineMeshData;
-            Mesh finalMesh = new Mesh();
-            finalMesh.CombineMeshes(combineMeshData.combineInstances.ToArray(), true, true);
-
-            // bindposes and boneWeights have to be reassigned because CombineMeshes doesn't identify
-            // different meshes with boneWeights that correspond to the same bones. Also, bindposes are
-            // stacked and repeated for each mesh when they shouldn't.
-            //
-            // Basically, Mesh.CombineMeshes is bugged for this use case and this is a workaround.
-
-            finalMesh.bindposes = combineMeshData.bindPoses;
-            finalMesh.boneWeights = data.boneWeights.ToArray();
-
-            finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, data.emissionColors);
-            finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, data.texturePointers);
-            finalMesh.SetColors(data.colors);
-
-            if ( data.subMeshes.Count > 1 )
-            {
-                finalMesh.subMeshCount = data.subMeshes.Count;
-                finalMesh.SetSubMeshes(data.subMeshes);
-            }
-
-            finalMesh.Optimize();
-
-            finalMesh.UploadMeshData(true);
-
-            return finalMesh;
-        }
-
-        public GameObject Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
-        {
-            //
-            // Reset bones to put character in T pose. Renderers are going to be baked later.
-            // This is a workaround, it had to be done because renderers original matrices don't match the T pose.
-            // We need wearables in T pose to properly combine the avatar mesh. 
-            //
-            AvatarMeshCombinerUtils.ResetBones(bonesContainer);
-
-            //
-            // Get combined layers. Layers are groups of renderers that have a id -> tex mapping.
-            //
-            // This id is going to get written to uv channels so the material can use up to 12 textures
-            // in a single draw call.
-            //
-            // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
-            //
-            var layers = AvatarMeshCombinerUtils.Slice( renderers );
-
-            if ( layers == null )
-            {
-                logger.Log("Combine failure!");
-                return null;
-            }
-
-            // Prepare mesh data for the combine operation
+            AvatarMeshCombinerOutput result;
             CombineMeshData data = new CombineMeshData();
-            data.Populate(bonesContainer.sharedMesh.bindposes, layers, materialAsset);
+
+            data.bindPoses = bindPoses;
+            data.renderers = layers.SelectMany( (x) => x.renderers ).ToList();
+
+            data.ComputeBoneWeights( layers );
+            data.ComputeCombineInstancesData( layers );
+            data.ComputeSubMeshes( layers );
+            data.FlattenMaterials( layers, materialAsset );
 
             int combineInstancesCount = data.combineInstances.Count;
 
@@ -113,23 +70,8 @@ namespace DCL
                 data.combineInstances[i] = combinedInstance;
             }
 
-            Mesh finalMesh = CombineSkinnedMeshes(data);
-
-            GameObject result = new GameObject("Combined Avatar");
-            result.layer = bonesContainer.gameObject.layer;
-
-            Transform rootBone = bonesContainer.rootBone;
-
-            var newSkinnedMeshRenderer = result.AddComponent<SkinnedMeshRenderer>();
-            newSkinnedMeshRenderer.sharedMesh = finalMesh;
-            newSkinnedMeshRenderer.bones = bonesContainer.bones;
-            newSkinnedMeshRenderer.rootBone = rootBone;
-            newSkinnedMeshRenderer.sharedMaterials = data.materials.ToArray();
-            newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
-            newSkinnedMeshRenderer.updateWhenOffscreen = false;
-            newSkinnedMeshRenderer.skinnedMotionVectors = false;
-
-            logger.Log(null, "Finish combining avatar. Click here to focus on GameObject.", result);
+            Mesh finalMesh = new Mesh();
+            finalMesh.CombineMeshes(data.combineInstances.ToArray(), true, true);
 
             // The avatar is combined, so we can destroy the baked meshes.
             for ( int i = 0; i < combineInstancesCount; i++ )
@@ -137,6 +79,32 @@ namespace DCL
                 if ( data.combineInstances[i].mesh != null )
                     Object.Destroy(data.combineInstances[i].mesh);
             }
+
+            // bindposes and boneWeights have to be reassigned because CombineMeshes doesn't identify
+            // different meshes with boneWeights that correspond to the same bones. Also, bindposes are
+            // stacked and repeated for each mesh when they shouldn't.
+            //
+            // Basically, Mesh.CombineMeshes is bugged for this use case and this is a workaround.
+
+            finalMesh.bindposes = data.bindPoses;
+            finalMesh.boneWeights = data.boneWeights.ToArray();
+
+            finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, data.emissionColors);
+            finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, data.texturePointers);
+            finalMesh.SetColors(data.colors);
+
+            if ( data.subMeshes.Count > 1 )
+            {
+                finalMesh.subMeshCount = data.subMeshes.Count;
+                finalMesh.SetSubMeshes(data.subMeshes);
+            }
+
+            finalMesh.Optimize();
+
+            finalMesh.UploadMeshData(true);
+
+            result.mesh = finalMesh;
+            result.materials = data.materials.ToArray();
 
             return result;
         }

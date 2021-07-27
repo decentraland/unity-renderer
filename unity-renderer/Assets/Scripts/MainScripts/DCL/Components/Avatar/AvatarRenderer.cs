@@ -19,7 +19,6 @@ namespace DCL
 
         private const int MAX_RETRIES = 5;
 
-        public Material lightweightMat;
         public Material defaultMaterial;
         public Material eyeMaterial;
         public Material eyebrowMaterial;
@@ -27,6 +26,7 @@ namespace DCL
         public MeshRenderer lodRenderer;
 
         private AvatarModel model;
+        private AvatarMeshCombinerHelper avatarMeshCombiner;
 
         public event Action<VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
@@ -51,6 +51,7 @@ namespace DCL
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
+            avatarMeshCombiner = new AvatarMeshCombinerHelper();
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -213,6 +214,7 @@ namespace DCL
             }
 
             List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
+
             foreach (var avatarWearablePromise in avatarWearablePromises)
             {
                 yield return avatarWearablePromise;
@@ -226,8 +228,11 @@ namespace DCL
                 {
                     WearableItem wearableItem = avatarWearablePromise.value;
                     wearablesInUse.Add(wearableItem.id);
+
                     if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                    {
                         resolvedWearables.Add(wearableItem);
+                    }
                     else
                     {
                         model.wearables.Remove(wearableItem.id);
@@ -382,85 +387,13 @@ namespace DCL
             else
             {
                 OnSuccessEvent?.Invoke();
-                MergeAvatar();
+                avatarMeshCombiner.Combine(transform, bodyShapeController.upperBodyRenderer);
             }
-        }
-
-        private Mesh combinedAvatarMesh;
-        private GameObject combinedAvatar;
-
-        private IAvatarMeshCombineHelper _avatarMeshCombineHelper = new AvatarMeshCombineHelper();
-
-        void MergeAvatar()
-        {
-            if ( combinedAvatar != null )
-                combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = false;
-
-            float time = Time.realtimeSinceStartup;
-            ILogger logger = new Logger(Debug.unityLogger.logHandler);
-            logger.logEnabled = true;
-
-            SkinnedMeshRenderer[] renderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-
-            Material materialAsset = Resources.Load<Material>("OptimizedToonMaterial");
-
-            renderers = renderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToArray();
-
-            GameObject newCombinedAvatar = _avatarMeshCombineHelper.Combine(
-                bodyShapeController.upperBodyRenderer,
-                renderers,
-                materialAsset);
-
-            float totalTime = Time.realtimeSinceStartup - time;
-            logger.Log("AvatarMeshCombiner.Combine time = " + totalTime);
-
-            if ( newCombinedAvatar == null )
-            {
-                if ( combinedAvatar != null )
-                    combinedAvatar.GetComponent<SkinnedMeshRenderer>().enabled = true;
-
-                return;
-            }
-
-            for ( int i = 0; i < renderers.Length; i++ )
-            {
-                renderers[i].enabled = false;
-            }
-
-            if ( combinedAvatar == null )
-            {
-                Mesh newCombinedAvatarMesh = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-                combinedAvatar = newCombinedAvatar;
-                combinedAvatarMesh = newCombinedAvatarMesh;
-                combinedAvatar.transform.SetParent( transform, true );
-                return;
-            }
-
-            if ( combinedAvatarMesh != null )
-                Destroy(combinedAvatarMesh);
-
-            var newSkr = newCombinedAvatar.GetComponent<SkinnedMeshRenderer>();
-            combinedAvatarMesh = newSkr.sharedMesh;
-
-            var skr = combinedAvatar.GetComponent<SkinnedMeshRenderer>();
-            skr.sharedMesh = newSkr.sharedMesh;
-            skr.rootBone = newSkr.rootBone;
-            skr.bones = newSkr.bones;
-            skr.sharedMaterials = newSkr.sharedMaterials;
-            skr.enabled = true;
-
-            Destroy(newCombinedAvatar.gameObject);
-
-            combinedAvatar.transform.SetParent( transform, true );
         }
 
         void CleanMergedAvatar()
         {
-            if ( combinedAvatar != null )
-                Destroy(combinedAvatar);
-
-            if ( combinedAvatarMesh != null )
-                Destroy(combinedAvatarMesh);
+            avatarMeshCombiner.Dispose();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
