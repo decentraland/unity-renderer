@@ -39,9 +39,10 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             yield return prom;
 
-            Assert.IsTrue(PoolManager.i.ContainsPool(loadedAsset.id), "Not in pool after loaded!");
+            object poolId = keeper.library.AssetIdToPoolId(loadedAsset.id);
+            Assert.IsTrue(PoolManager.i.ContainsPool(poolId), "Not in pool after loaded!");
 
-            Pool pool = PoolManager.i.GetPool(loadedAsset.id);
+            Pool pool = PoolManager.i.GetPool(poolId);
 
             Assert.AreEqual(0, pool.unusedObjectsCount, "incorrect inactive objects in pool");
             Assert.AreEqual(1, pool.usedObjectsCount, "incorrect active objects in pool");
