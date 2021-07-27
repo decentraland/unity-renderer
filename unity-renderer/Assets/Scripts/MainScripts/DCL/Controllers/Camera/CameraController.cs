@@ -136,24 +136,17 @@ namespace DCL.Camera
             {
                 if (!wasBlendingLastFrame)
                 {
-                    if (onCameraBlendStarted != null)
-                    {
-                        onCameraBlendStarted();
-                    }
+                    onCameraBlendStarted?.Invoke();
+
                 }
 
                 wasBlendingLastFrame = true;
             }
-            else
+            else if (wasBlendingLastFrame)
             {
-                if (wasBlendingLastFrame)
-                {
-                    if (onCameraBlendFinished != null)
-                    {
-                        onCameraBlendFinished();
-                    }
-                    wasBlendingLastFrame = false;
-                }
+                onCameraBlendFinished?.Invoke();
+
+                wasBlendingLastFrame = false;
             }
 
             currentCameraState?.OnUpdate();
