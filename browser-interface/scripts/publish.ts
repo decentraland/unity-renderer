@@ -11,11 +11,11 @@ async function main() {
   await checkFiles()
   if (process.env.CIRCLE_BRANCH == "master") {
     await publish(["latest"], "public", DIST_ROOT)
+    // inform cdn-pipeline about new version
+    const version = getVersion(DIST_ROOT)
+    const pkgName = (await execute(`npm info . name`, workingDirectory)).trim();
+    triggerPipeline(pkgName, version, `latest`)
   }
-
-  const version = getVersion(DIST_ROOT)
-  const pkgName = (await execute(`npm info . name`, workingDirectory)).trim();
-  triggerPipeline(pkgName, version, `latest`)
 }
 
 async function checkFiles() {
