@@ -73,7 +73,7 @@ namespace DCL
             //
             // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
             //
-            var layers = AvatarMeshCombinerUtils.Slice( renderers );
+            var layers = CombineLayerUtils.Slice( renderers );
 
             if ( layers == null )
             {

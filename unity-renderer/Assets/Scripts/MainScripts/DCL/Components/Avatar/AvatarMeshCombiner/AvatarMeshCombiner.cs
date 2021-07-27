@@ -16,16 +16,18 @@ namespace DCL
         public bool isOpaque;
     }
 
+    public class FlattenedMaterialsData
+    {
+        public List<Material> materials = new List<Material>();
+        public List<Vector3> texturePointers = new List<Vector3>();
+        public List<Color> colors = new List<Color>();
+        public List<Vector4> emissionColors = new List<Vector4>();
+    }
 
     public struct AvatarMeshCombinerOutput
     {
         public Mesh mesh;
         public Material[] materials;
-    }
-
-    public interface IAvatarMeshCombiner
-    {
-        AvatarMeshCombinerOutput CombineSkinnedMeshes(CombineMeshData combineMeshData);
     }
 
     public static class AvatarMeshCombiner
@@ -40,17 +42,15 @@ namespace DCL
         public static AvatarMeshCombinerOutput CombineSkinnedMeshes(Matrix4x4[] bindPoses, List<CombineLayer> layers, Material materialAsset)
         {
             AvatarMeshCombinerOutput result;
-            CombineMeshData data = new CombineMeshData();
 
-            data.bindPoses = bindPoses;
-            data.renderers = layers.SelectMany( (x) => x.renderers ).ToList();
+            var renderers = layers.SelectMany( (x) => x.renderers ).ToList();
 
-            data.ComputeBoneWeights( layers );
-            data.ComputeCombineInstancesData( layers );
-            data.ComputeSubMeshes( layers );
-            data.FlattenMaterials( layers, materialAsset );
+            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
+            var combineInstancesData = AvatarMeshCombinerUtils.ComputeCombineInstancesData( layers );
+            var subMeshDescriptors = AvatarMeshCombinerUtils.ComputeSubMeshes( layers );
+            var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
 
-            int combineInstancesCount = data.combineInstances.Count;
+            int combineInstancesCount = combineInstancesData.Count;
 
             for ( int i = 0; i < combineInstancesCount; i++)
             {
@@ -62,22 +62,22 @@ namespace DCL
                 //                 We DON'T do this yet because the meshes can be read-only, so the original
                 //                 normals can't be extracted. For normals, visual artifacts are minor because
                 //                 toon shader doesn't use any kind of normal mapping.
-                data.renderers[i].BakeMesh(mesh, true);
+                renderers[i].BakeMesh(mesh, true);
 
-                var combinedInstance = data.combineInstances[i];
+                var combinedInstance = combineInstancesData[i];
                 combinedInstance.mesh = mesh;
 
-                data.combineInstances[i] = combinedInstance;
+                combineInstancesData[i] = combinedInstance;
             }
 
             Mesh finalMesh = new Mesh();
-            finalMesh.CombineMeshes(data.combineInstances.ToArray(), true, true);
+            finalMesh.CombineMeshes(combineInstancesData.ToArray(), true, true);
 
             // The avatar is combined, so we can destroy the baked meshes.
             for ( int i = 0; i < combineInstancesCount; i++ )
             {
-                if ( data.combineInstances[i].mesh != null )
-                    Object.Destroy(data.combineInstances[i].mesh);
+                if ( combineInstancesData[i].mesh != null )
+                    Object.Destroy(combineInstancesData[i].mesh);
             }
 
             // bindposes and boneWeights have to be reassigned because CombineMeshes doesn't identify
@@ -86,17 +86,17 @@ namespace DCL
             //
             // Basically, Mesh.CombineMeshes is bugged for this use case and this is a workaround.
 
-            finalMesh.bindposes = data.bindPoses;
-            finalMesh.boneWeights = data.boneWeights.ToArray();
+            finalMesh.bindposes = bindPoses;
+            finalMesh.boneWeights = boneWeights.ToArray();
 
-            finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, data.emissionColors);
-            finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, data.texturePointers);
-            finalMesh.SetColors(data.colors);
+            finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
+            finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
+            finalMesh.SetColors(flattenedMaterialsData.colors);
 
-            if ( data.subMeshes.Count > 1 )
+            if ( subMeshDescriptors.Count > 1 )
             {
-                finalMesh.subMeshCount = data.subMeshes.Count;
-                finalMesh.SetSubMeshes(data.subMeshes);
+                finalMesh.subMeshCount = subMeshDescriptors.Count;
+                finalMesh.SetSubMeshes(subMeshDescriptors);
             }
 
             finalMesh.Optimize();
@@ -104,7 +104,7 @@ namespace DCL
             finalMesh.UploadMeshData(true);
 
             result.mesh = finalMesh;
-            result.materials = data.materials.ToArray();
+            result.materials = flattenedMaterialsData.materials.ToArray();
 
             return result;
         }
