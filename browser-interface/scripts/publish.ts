@@ -2,6 +2,8 @@ import { exec } from "child_process"
 import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
+import fetch from "node-fetch";
+import semver = require("semver");
 
 const DIST_ROOT = resolve(__dirname, "../dist")
 
@@ -10,6 +12,10 @@ async function main() {
   if (process.env.CIRCLE_BRANCH == "master") {
     await publish(["latest"], "public", DIST_ROOT)
   }
+
+  const version = getVersion(DIST_ROOT)
+  const pkgName = (await execute(`npm info . name`, workingDirectory)).trim();
+  triggerPipeline(pkgName, version, `latest`)
 }
 
 async function checkFiles() {
@@ -20,6 +26,59 @@ async function checkFiles() {
   ensureFileExists(DIST_ROOT, packageJson.main)
   ensureFileExists(DIST_ROOT, packageJson.typings)
   ensureFileExists(DIST_ROOT, "unity.loader.js")
+}
+
+async function getVersion(workingDirectory: string) {
+  const json = JSON.parse(readFileSync(workingDirectory + "/package.json", "utf8"));
+
+  let pkgJsonVersion = json.version;
+  if (!pkgJsonVersion) pkgJsonVersion = "0.0.0";
+
+  const version = semver.parse(pkgJsonVersion.trim());
+
+  if (!version) {
+    throw new Error("Unable to parse semver from " + pkgJsonVersion);
+  }
+
+  return `${version.major}.${version.minor}.${version.patch}`;
+}
+
+async function triggerPipeline(
+  packageName: string,
+  packageTag: string,
+  packageVersion: string
+) {
+  const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN
+  const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL
+
+  if (!GITLAB_STATIC_PIPELINE_URL) return;
+
+  const body = new FormData();
+  if (GITLAB_STATIC_PIPELINE_TOKEN) {
+    body.append("token", GITLAB_STATIC_PIPELINE_TOKEN);
+  }
+  body.append("ref", "master");
+  body.append("variables[PACKAGE_NAME]", packageName);
+  body.append("variables[PACKAGE_DIST_TAG]", packageTag);
+  body.append("variables[PACKAGE_VERSION]", packageVersion);
+  body.append("variables[REPO]", "unity-renderer");
+  body.append("variables[REPO_OWNER]", "decentraland");
+  body.append("variables[COMMIT]", process.env.CIRCLE_SHA1);
+
+  try {
+    const r = await fetch(GITLAB_STATIC_PIPELINE_URL, {
+      body,
+      method: "POST",
+    });
+
+    if (r.ok) {
+      console.info(`Status: ${r.status}`);
+    } else {
+      console.error(`Error triggering pipeline. status: ${r.status}`);
+    }
+  } catch (e) {
+    console.error(`Error triggering pipeline. Unhandled error.`);
+  }
 }
 
 export async function publish(npmTags: string[], access: string, workingDirectory: string): Promise<string> {
