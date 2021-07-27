@@ -57,7 +57,6 @@ namespace DCL
                 finalMesh.SetSubMeshes(data.subMeshes);
             }
 
-            finalMesh.RecalculateBounds();
             finalMesh.Optimize();
 
             finalMesh.UploadMeshData(true);
@@ -129,11 +128,6 @@ namespace DCL
             newSkinnedMeshRenderer.quality = SkinQuality.Bone1;
             newSkinnedMeshRenderer.updateWhenOffscreen = false;
             newSkinnedMeshRenderer.skinnedMotionVectors = false;
-
-            // Transform resultTransform = newSkinnedMeshRenderer.transform;
-            // resultTransform.position = rootBone.position;
-            // resultTransform.rotation = rootBone.rotation;
-            // resultTransform.localScale = rootBone.lossyScale;
 
             logger.Log(null, "Finish combining avatar. Click here to focus on GameObject.", result);
 

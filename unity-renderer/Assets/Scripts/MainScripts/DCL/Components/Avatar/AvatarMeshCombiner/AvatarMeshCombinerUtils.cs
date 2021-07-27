@@ -12,7 +12,7 @@ namespace DCL
     {
         private const int MAX_TEXTURE_ID_COUNT = 12;
 
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler);
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = LogType.Warning };
 
         private static readonly int[] textureIds = new int[] { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
 
@@ -120,7 +120,6 @@ namespace DCL
                 // But can't fit in this one, as previous renderers filled this layer out.
                 if ( textureId + mapIdsToInsert.Count > MAX_TEXTURE_ID_COUNT )
                 {
-                    logger.Log("Case 2?");
                     rendererIndex--;
                     shouldAddLayerToResult = true;
                     continue;

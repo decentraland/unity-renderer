@@ -69,6 +69,10 @@ namespace DCL
                     newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
                     newMaterial.SetInt(ShaderUtils.Surface, 0);
                     newMaterial.SetFloat(ShaderUtils.ZWrite, 1);
+                    newMaterial.EnableKeyword("_ALPHATEST_ON");
+                    newMaterial.DisableKeyword("_ALPHABLEND_ON");
+                    newMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    newMaterial.SetOverrideTag("RenderType", "TransparentCutout");
                 }
                 else
                 {
@@ -76,6 +80,10 @@ namespace DCL
                     newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
                     newMaterial.SetInt(ShaderUtils.Surface, 1);
                     newMaterial.SetFloat(ShaderUtils.ZWrite, 0);
+                    newMaterial.DisableKeyword("_ALPHATEST_ON");
+                    newMaterial.EnableKeyword("_ALPHABLEND_ON");
+                    newMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    newMaterial.SetOverrideTag("RenderType", "Transparent");
                 }
 
                 newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);
