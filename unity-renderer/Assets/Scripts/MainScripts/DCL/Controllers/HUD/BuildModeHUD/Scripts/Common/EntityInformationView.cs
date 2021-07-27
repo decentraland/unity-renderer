@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public interface IEntityInformationView
 {
-    DCLBuilderInWorldEntity currentEntity { get; set; }
+    BIWEntity currentEntity { get; set; }
     AttributeXYZ position { get; }
     AttributeXYZ rotation { get; }
     AttributeXYZ scale { get; }
@@ -14,16 +14,16 @@ public interface IEntityInformationView
 
     event Action OnDisable;
     event Action OnEndChangingName;
-    event Action<DCLBuilderInWorldEntity, string> OnNameChange;
+    event Action<BIWEntity, string> OnNameChange;
     event Action OnStartChangingName;
-    event Action<DCLBuilderInWorldEntity> OnUpdateInfo;
+    event Action<BIWEntity> OnUpdateInfo;
 
     void ChangeEntityName(string newName);
     void Disable();
     void EndChangingName();
     void SeEntityLimitsText(string tris, string mats, string textures);
     void SetActive(bool isActive);
-    void SetCurrentEntity(DCLBuilderInWorldEntity entity);
+    void SetCurrentEntity(BIWEntity entity);
     void SetEntityThumbnailEnable(bool isEnable);
     void SetEntityThumbnailTexture(Texture2D texture);
     void SetNameIFText(string text);
@@ -69,14 +69,14 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
     [SerializeField] internal Button detailsToggleButton;
     [SerializeField] internal Button basicInfoTogglekButton;
 
-    public DCLBuilderInWorldEntity currentEntity { get; set; }
+    public BIWEntity currentEntity { get; set; }
     public AttributeXYZ position => positionAttribute;
     public AttributeXYZ rotation => rotationAttribute;
     public AttributeXYZ scale => scaleAttribute;
     public SmartItemListView smartItemList => smartItemListView;
 
-    public event Action<DCLBuilderInWorldEntity, string> OnNameChange;
-    public event Action<DCLBuilderInWorldEntity> OnUpdateInfo;
+    public event Action<BIWEntity, string> OnNameChange;
+    public event Action<BIWEntity> OnUpdateInfo;
     public event Action OnStartChangingName;
     public event Action OnEndChangingName;
     public event Action OnDisable;
@@ -133,7 +133,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             OnUpdateInfo?.Invoke(currentEntity);
     }
 
-    public void SetCurrentEntity(DCLBuilderInWorldEntity entity) { currentEntity = entity; }
+    public void SetCurrentEntity(BIWEntity entity) { currentEntity = entity; }
 
     public void ToggleDetailsInfo()
     {
