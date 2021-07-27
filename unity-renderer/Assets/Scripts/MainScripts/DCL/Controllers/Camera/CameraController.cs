@@ -135,10 +135,7 @@ namespace DCL.Camera
             if (cameraBrain.IsBlending)
             {
                 if (!wasBlendingLastFrame)
-                {
                     onCameraBlendStarted?.Invoke();
-
-                }
 
                 wasBlendingLastFrame = true;
             }
