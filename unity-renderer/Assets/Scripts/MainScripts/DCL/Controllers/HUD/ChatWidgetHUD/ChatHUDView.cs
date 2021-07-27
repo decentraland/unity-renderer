@@ -152,6 +152,8 @@ public class ChatHUDView : MonoBehaviour
 
         SortEntries();
 
+        Utils.ForceUpdateLayout(chatEntry.transform as RectTransform, delayed: false);
+
         if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
     }
