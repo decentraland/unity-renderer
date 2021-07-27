@@ -30,6 +30,16 @@ namespace DCL
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = LogType.Warning };
 
 
+        /// <summary>
+        /// This method iterates over all the renderers contained in the given CombineLayer list, and
+        /// outputs an array of all the BoneWeights of the renderers in order.
+        ///
+        /// This is needed because Mesh.CombineMeshes don't calculate boneWeights correctly.
+        /// When using Mesh.CombineMeshes, the boneWeights returned correspond to indexes of skeleton copies,
+        /// not the same skeleton.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <returns>A list of BoneWeights that share the same skeleton.</returns>
         public static List<BoneWeight> ComputeBoneWeights( List<CombineLayer> layers )
         {
             List<BoneWeight> result = new List<BoneWeight>();
@@ -56,6 +66,17 @@ namespace DCL
             return result;
         }
 
+        /// <summary>
+        /// FlattenMaterials take a CombineLayer list and returns a FlattenedMaterialsData object.
+        /// 
+        /// This object can be used to construct a combined mesh that has uniform data encoded in uv attributes.
+        /// This type of encoding can be used to greatly reduce draw calls for seemingly unrelated objects.
+        ///
+        /// The returned object also contains a single material per CombineLayer.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <param name="materialAsset">Material asset that will be cloned to generate the returned materials.</param>
+        /// <returns>A FlattenedMaterialsData object. This object can be used to construct a combined mesh that has uniform data encoded in UV attributes.</returns>
         public static FlattenedMaterialsData FlattenMaterials(List<CombineLayer> layers, Material materialAsset)
         {
             var result = new FlattenedMaterialsData();
@@ -151,6 +172,18 @@ namespace DCL
             return result;
         }
 
+        /// <summary>
+        /// ComputeSubMeshes iterates over the given CombineLayer list, and returns a list that can be used to map a
+        /// sub-mesh for each CombineLayer object. A CombineLayer object can group more than a single mesh.
+        ///
+        /// Note that this had to be done because Mesh.CombineMeshes lack the option of controlling the sub-mesh
+        /// output. Currently the only options are to combine everything in a single sub-mesh, or generate a single sub-mesh
+        /// per combined mesh. The CombineLayer approach may need to combine specific meshes to a single sub-mesh
+        /// (because they all can have the same material, if they share the same render state -- i.e. transparency or cull mode).
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice().</param>
+        /// <returns>A SubMeshDescriptor list that can be used later to set the sub-meshes of the final combined mesh
+        /// in a way that each sub-mesh corresponds with its own layer.</returns>
         public static List<SubMeshDescriptor> ComputeSubMeshes(List<CombineLayer> layers)
         {
             List<SubMeshDescriptor> result = new List<SubMeshDescriptor>();
@@ -187,7 +220,13 @@ namespace DCL
             return result;
         }
 
-        public static List<CombineInstance> ComputeCombineInstancesData(List<CombineLayer> layers )
+        /// <summary>
+        /// ComputeCombineInstancesData returns a CombineInstance list that can be used to combine all the meshes
+        /// specified by the given CombineLayer list. This is done via Mesh.CombineMeshes() Unity method.
+        /// </summary>
+        /// <param name="layers">A CombineLayer list. You can generate this array using CombineLayerUtils.Slice()</param>
+        /// <returns>CombineInstance list usable by Mesh.CombineMeshes()</returns>
+        public static List<CombineInstance> ComputeCombineInstancesData(List<CombineLayer> layers)
         {
             var result = new List<CombineInstance>();
             int layersCount = layers.Count;
@@ -208,7 +247,7 @@ namespace DCL
 
                     result.Add( new CombineInstance()
                     {
-                        subMeshIndex = 0,
+                        subMeshIndex = 0, // this means the source sub-mesh, not destination
                         mesh = renderer.sharedMesh,
                         transform = meshTransform.localToWorldMatrix
                     });
@@ -221,9 +260,17 @@ namespace DCL
         }
 
         /// <summary>
+        /// ResetBones will reset the given SkinnedMeshRenderer bones to the original bindposes position.
         /// 
+        /// This is done without taking into account the rootBone. We need to do it this way because the meshes must be
+        /// combined posing to match the raw bindposes matrix.
+        ///
+        /// If the combined mesh don't match the bindposes matrices, the resulting skinning will not work.
+        ///
+        /// For this reason, this method doesn't resemble the original method that unity uses to reset the skeleton found here:
+        /// https://github.com/Unity-Technologies/UnityCsReference/blob/61f92bd79ae862c4465d35270f9d1d57befd1761/Editor/Mono/Inspector/Avatar/AvatarSetupTool.cs#L890
         /// </summary>
-        /// <param name="renderer"></param>
+        /// <param name="renderer">The SkinnedMeshRenderer to be reset.</param>
         internal static void ResetBones(SkinnedMeshRenderer renderer)
         {
             var bindPoses = renderer.sharedMesh.bindposes;

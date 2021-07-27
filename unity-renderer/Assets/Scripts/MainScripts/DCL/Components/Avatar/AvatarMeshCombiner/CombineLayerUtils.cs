@@ -10,15 +10,27 @@ namespace DCL
 {
     public static class CombineLayerUtils
     {
+        private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = LogType.Warning };
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         private static readonly int[] textureIds = new int[] { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
 
         /// <summary>
+        /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.<br/>
         /// 
+        /// Each CombineLayer element represents a combining group, and the renderers are grouped using a set of criteria.<br/>
+        ///
+        /// <ul>
+        /// <li>Each layer must correspond to renderers that share the same cull mode and blend state.</li>
+        /// <li>Each layer can't contain renderers that sum up over MAX_TEXTURE_ID_COUNT textures.</li>
+        /// </ul>
+        /// Those layers can later be used to combine meshes as efficiently as possible by encoding their map
+        /// samplers to UV attributes. This allows the usage of a special shader that can branch samplers according to
+        /// the UV data. By encoding the samplers this way, materials that use different textures and uniform values
+        /// can be grouped together, and thus, meshes can be further combined.
         /// </summary>
-        /// <param name="renderers"></param>
-        /// <returns></returns>
+        /// <param name="renderers">List of renderers to slice.</param>
+        /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
         internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers)
         {
             logger.Log("Slice Start!");
@@ -30,8 +42,8 @@ namespace DCL
             logger.Log($"Preparing slice. Found {rawLayers.Count} groups.");
 
             //
-            // Now, we subdivide the rawLayers.
-            // A single rawLayer will be subdivided if the textures exceed the sampler limit (12 in this case).
+            // Now, we sub-divide the rawLayers.
+            // A single rawLayer will be sub-divided if the textures exceed the sampler limit (12 in this case).
             // Also, in this step the textureToId map is populated.
             //
             List<CombineLayer> result = new List<CombineLayer>();
@@ -50,18 +62,21 @@ namespace DCL
                 return null;
             }
 
-            int layInd = 0;
 
             result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
 
-            foreach ( var layer in result )
+            if ( VERBOSE )
             {
-                string rendererNames = layer.renderers
-                    .Select( (x) => $"{x.transform.parent.name}" )
-                    .Aggregate( (i, j) => i + "\n" + j);
+                int layInd = 0;
+                foreach ( var layer in result )
+                {
+                    string rendererNames = layer.renderers
+                        .Select( (x) => $"{x.transform.parent.name}" )
+                        .Aggregate( (i, j) => i + "\n" + j);
 
-                logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
-                layInd++;
+                    logger.Log($"Layer index: {layInd} ... renderer count: {layer.renderers.Count} ... textures found: {layer.textureToId.Count}\nrenderers: {rendererNames}");
+                    layInd++;
+                }
             }
 
             logger.Log("Slice End Success!");
@@ -69,10 +84,19 @@ namespace DCL
         }
 
         /// <summary>
-        /// 
+        /// <p>
+        /// This method takes a single CombineLayer and sub-divides it according to the texture count of the
+        /// contained renderers of the given layer.
+        /// </p>
+        /// <p>
+        /// The resulting layers will have their <i>textureToId</i> field populated with the found textures.
+        /// The <i>textureToId</i> int value is what will have to be passed over the uv attributes of the combined meshes.
+        /// </p>
         /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
+        /// <param name="layer">The CombineLayer layer to subdivide and populate by the ids.</param>
+        /// <returns>A list that at least is guaranteed to contain the given layer.
+        /// If the given layer exceeds the max texture count, more than a layer can be returned.
+        /// </returns>
         internal static List<CombineLayer> SubdivideLayerByTextures( CombineLayer layer )
         {
             var result = new List<CombineLayer>();
@@ -126,7 +150,6 @@ namespace DCL
                 // put GetMapIds result into currentLayer id map.
                 foreach ( var kvp in mapIdsToInsert )
                 {
-                    //logger.Log("Adding textureId " + kvp.Value);
                     currentResultLayer.textureToId[ kvp.Key ] = kvp.Value;
                 }
 
@@ -144,10 +167,17 @@ namespace DCL
         }
 
         /// <summary>
-        /// 
+        /// <p>
+        /// This method takes a skinned mesh renderer list and turns it into a series of CombineLayer elements.
+        /// Each CombineLayer element represents a combining group, and the renderers are grouped using a set of criteria.
+        /// </p>
+        /// <p>
+        /// For SliceByRenderState, the returned CombineLayer list will be grouped according to shared cull mode and
+        /// blend state.
+        /// </p>
         /// </summary>
-        /// <param name="renderers"></param>
-        /// <returns></returns>
+        /// <param name="renderers">List of renderers to slice.</param>
+        /// <returns>List of CombineLayer objects that can be used to produce a highly optimized combined mesh.</returns>
         internal static List<CombineLayer> SliceByRenderState(SkinnedMeshRenderer[] renderers)
         {
             List<CombineLayer> result = new List<CombineLayer>();
