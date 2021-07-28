@@ -389,12 +389,6 @@ workflows:
             - playmode-tests
 
       - publish-renderer:
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
           requires:
             - build-unity
             - build-js-interface
