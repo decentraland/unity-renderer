@@ -169,6 +169,11 @@ jobs:
             apt-get update
             apt-get install -y xsltproc
             xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
+      - run: apt-get -y -qq install awscli
+      - run:
+          name: upload code coverage
+          command: |
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
       - store_test_results:
           path: ./unity-renderer/test-results
       - store_artifacts:
@@ -177,10 +182,6 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - persist_to_workspace:
-          root: *working_directory
-          paths:
-            - ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
           key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -321,11 +322,6 @@ jobs:
       - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
-          name: upload code coverage
-          command: |
-            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
-      - run:
-          working_directory: *node_workspace
           name: Deploy artifacts
           command: npm run publish-artifacts
 
@@ -381,13 +377,10 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - checkout
-
       - build-js-interface:
           <<: *all_branches_and_tags
           requires:
             - build-unity
-            - playmode-tests
-
       - publish-renderer:
           requires:
             - build-unity
