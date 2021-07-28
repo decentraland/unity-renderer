@@ -19,7 +19,7 @@ async function main() {
     // inform cdn-pipeline about new version
     const version = await getVersion(DIST_ROOT)
     const pkgName = (await execute(`npm info . name`, DIST_ROOT)).trim();
-    triggerPipeline(pkgName, version, `latest`)
+    triggerPipeline(pkgName, `latest`, version)
   }
 }
 
