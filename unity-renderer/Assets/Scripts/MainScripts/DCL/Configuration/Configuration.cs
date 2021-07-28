@@ -40,7 +40,7 @@ namespace DCL.Configuration
         public static float ENTITY_ROTATION_REPORTING_THRESHOLD = 0.1f; // In degrees
 
         //Floor Scene Object
-        public const string FLOOR_ID = "da1fed3c954172146414a66adfa134f7a5e1cb49c902713481bf2fe94180c2cf";
+        public const string FLOOR_ID = "c9b17021-765c-4d9a-9966-ce93a9c323d1";
         public const string FLOOR_MODEL = "FloorBaseGrass_01/FloorBaseGrass_01.glb";
         public const string FLOOR_NAME = "Floor";
         public const string FLOOR_ASSET_PACK_NAME = "Genesis City";

@@ -152,9 +152,9 @@ public class ChatHUDView : MonoBehaviour
 
         SortEntries();
 
-        Utils.ForceUpdateLayout(transform as RectTransform, delayed: false);
+        Utils.ForceUpdateLayout(chatEntry.transform as RectTransform, delayed: false);
 
-        if (setScrollPositionToBottom)
+        if (setScrollPositionToBottom && scrollRect.verticalNormalizedPosition > 0)
             scrollRect.verticalNormalizedPosition = 0;
     }
 
@@ -188,7 +188,11 @@ public class ChatHUDView : MonoBehaviour
         int count = entries.Count;
         for (int i = 0; i < count; i++)
         {
-            entries[i].transform.SetSiblingIndex(i);
+            if (entries[i].transform.GetSiblingIndex() != i)
+            {
+                entries[i].transform.SetSiblingIndex(i);
+                Utils.ForceUpdateLayout(entries[i].transform as RectTransform, delayed: false);
+            }
         }
     }
 
