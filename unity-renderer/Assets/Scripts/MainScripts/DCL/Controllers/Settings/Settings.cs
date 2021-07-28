@@ -215,6 +215,7 @@ namespace DCL
         {
             PlayerPrefsUtils.SetString(GENERAL_SETTINGS_KEY, JsonUtility.ToJson(currentGeneralSettings));
             PlayerPrefsUtils.SetString(QUALITY_SETTINGS_KEY, JsonUtility.ToJson(currentQualitySettings));
+            PlayerPrefsUtils.SetString(AUDIO_SETTINGS_KEY, JsonUtility.ToJson(currentAudioSettings));
             PlayerPrefsUtils.Save();
         }
     }
