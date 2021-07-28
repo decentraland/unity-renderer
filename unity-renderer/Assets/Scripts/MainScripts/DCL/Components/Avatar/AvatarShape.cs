@@ -35,6 +35,7 @@ namespace DCL
         bool initializedPosition = false;
 
         private PlayerStatus playerStatus = null;
+        private Coroutine disableFacialFeatureRoutine = null;
 
         private void Awake()
         {
@@ -45,7 +46,13 @@ namespace DCL
         protected override void OnEnable()
         {
             base.OnEnable();
-            StartCoroutine(SetFacialFeaturesVisibleRoutine());
+
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
+            disableFacialFeatureRoutine = StartCoroutine(SetFacialFeaturesVisibleRoutine());
         }
 
         private void PlayerClicked()
@@ -191,6 +198,12 @@ namespace DCL
         public override void Cleanup()
         {
             base.Cleanup();
+
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
 
             if (playerStatus != null)
             {
