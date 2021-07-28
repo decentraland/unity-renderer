@@ -9,6 +9,11 @@ const DIST_ROOT = resolve(__dirname, "../dist")
 
 async function main() {
   await checkFiles()
+  
+  if (!process.env.GITLAB_PIPELINE_URL) {
+    throw new Error('GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger')
+  }
+  
   if (process.env.CIRCLE_BRANCH == "master") {
     await publish(["latest"], "public", DIST_ROOT)
     // inform cdn-pipeline about new version
@@ -42,8 +47,14 @@ async function triggerPipeline(
   const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN
   const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL
 
-  if (!GITLAB_STATIC_PIPELINE_URL) return;
+  if (!GITLAB_STATIC_PIPELINE_URL) {
+    throw new Error('GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger')
+  }
 
+  if (!process.env.CIRCLE_SHA1) {
+    throw new Error('CIRCLE_SHA1 not present. Skipping CDN pipeline trigger')
+  }
+    
   const body = new FormData();
   if (GITLAB_STATIC_PIPELINE_TOKEN) {
     body.append("token", GITLAB_STATIC_PIPELINE_TOKEN);
@@ -65,10 +76,10 @@ async function triggerPipeline(
     if (r.ok) {
       console.info(`Status: ${r.status}`);
     } else {
-      console.error(`Error triggering pipeline. status: ${r.status}`);
+      throw new Error(`Error triggering pipeline. status: ${r.status}`);
     }
   } catch (e) {
-    console.error(`Error triggering pipeline. Unhandled error.`);
+    throw new Error(`Error triggering pipeline. Unhandled error.`);
   }
 }
 
