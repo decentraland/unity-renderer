@@ -36,6 +36,7 @@ namespace LoadingHUD
             SetMessage("");
             SetPercentage(0);
             SetWalletPrompt(false);
+            SetTips(false);
         }
 
         public void SetVisible(bool isVisible) { gameObject.SetActive(isVisible); }
