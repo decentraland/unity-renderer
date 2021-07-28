@@ -14,13 +14,13 @@ async function main() {
     throw new Error('GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger')
   }
   
-  //if (process.env.CIRCLE_BRANCH == "master") {
-  await publish(["latest"], "public", DIST_ROOT)
-  // inform cdn-pipeline about new version
-  const version = await getVersion(DIST_ROOT)
-  const pkgName = (await execute(`npm info . name`, DIST_ROOT)).trim();
-  triggerPipeline(pkgName, `latest`, version)
-  //}
+  if (process.env.CIRCLE_BRANCH == "master") {
+    await publish(["latest"], "public", DIST_ROOT)
+    // inform cdn-pipeline about new version
+    const version = await getVersion(DIST_ROOT)
+    const pkgName = (await execute(`npm info . name`, DIST_ROOT)).trim();
+    triggerPipeline(pkgName, `latest`, version)
+  }
 }
 
 async function checkFiles() {
