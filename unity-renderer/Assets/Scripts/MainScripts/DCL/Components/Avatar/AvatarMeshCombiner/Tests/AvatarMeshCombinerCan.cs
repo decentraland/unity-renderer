@@ -9,10 +9,12 @@ public class AvatarMeshCombinerCan
     [Test]
     public void Combine()
     {
+        Assert.That( true, Is.False );
     }
 
     [Test]
     public void CombineSkinnedMeshes()
     {
+        Assert.That( true, Is.False );
     }
 }

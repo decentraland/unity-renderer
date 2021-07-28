@@ -10,7 +10,7 @@ namespace DCL
 {
     public static class CombineLayerUtils
     {
-        private static bool VERBOSE = false;
+        private static bool VERBOSE = true;
         private const int MAX_TEXTURE_ID_COUNT = 12;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         private static readonly int[] textureIds = new int[] { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
@@ -42,8 +42,8 @@ namespace DCL
             logger.Log($"Preparing slice. Found {rawLayers.Count} groups.");
 
             //
-            // Now, we sub-divide the rawLayers.
-            // A single rawLayer will be sub-divided if the textures exceed the sampler limit (12 in this case).
+            // Now, we sub-slice the rawLayers.
+            // A single rawLayer will be sub-sliced if the textures exceed the sampler limit (12 in this case).
             // Also, in this step the textureToId map is populated.
             //
             List<CombineLayer> result = new List<CombineLayer>();
@@ -52,7 +52,7 @@ namespace DCL
             {
                 var rawLayer = rawLayers[i];
                 logger.Log($"Processing group {i}. Renderer count: {rawLayer.renderers.Count}. cullMode: {rawLayer.cullMode} - isOpaque: {rawLayer.isOpaque}");
-                result.AddRange(SubdivideLayerByTextures(rawLayer));
+                result.AddRange(SubsliceLayerByTextures(rawLayer));
             }
 
             // No valid materials were found
@@ -85,7 +85,7 @@ namespace DCL
 
         /// <summary>
         /// <p>
-        /// This method takes a single CombineLayer and sub-divides it according to the texture count of the
+        /// This method takes a single CombineLayer and sub-slices it according to the texture count of the
         /// contained renderers of the given layer.
         /// </p>
         /// <p>
@@ -97,7 +97,7 @@ namespace DCL
         /// <returns>A list that at least is guaranteed to contain the given layer.
         /// If the given layer exceeds the max texture count, more than a layer can be returned.
         /// </returns>
-        internal static List<CombineLayer> SubdivideLayerByTextures( CombineLayer layer )
+        internal static List<CombineLayer> SubsliceLayerByTextures( CombineLayer layer )
         {
             var result = new List<CombineLayer>();
             int textureId = 0;
@@ -163,6 +163,15 @@ namespace DCL
                 }
             }
 
+            if ( VERBOSE )
+            {
+                for (int i = 0; i < result.Count; i++)
+                {
+                    var c = result[i];
+                    Debug.Log($"layer {i} - {c}");
+                }
+            }
+
             return result;
         }
 
@@ -224,7 +233,7 @@ namespace DCL
         /// <param name="mats"></param>
         /// <param name="startingId"></param>
         /// <returns></returns>
-        private static Dictionary<Texture2D, int> GetMapIds(ReadOnlyDictionary<Texture2D, int> refDict, in Material[] mats, int startingId)
+        internal static Dictionary<Texture2D, int> GetMapIds(ReadOnlyDictionary<Texture2D, int> refDict, in Material[] mats, int startingId)
         {
             var result = new Dictionary<Texture2D, int>();
 

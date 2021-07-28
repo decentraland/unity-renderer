@@ -14,6 +14,21 @@ namespace DCL
         public Dictionary<Texture2D, int> textureToId = new Dictionary<Texture2D, int>();
         public CullMode cullMode;
         public bool isOpaque;
+
+        public override string ToString()
+        {
+            string rendererString = $"renderer count: {renderers?.Count ?? 0}";
+            string textureIdString = "texture ids: {";
+
+            foreach ( var kvp in textureToId )
+            {
+                textureIdString += $" tx hash: {kvp.Key.GetHashCode()} id: {kvp.Value} ";
+            }
+
+            textureIdString += "}";
+
+            return $"cullMode: {cullMode} - isOpaque: {isOpaque} - {rendererString} - {textureIdString}";
+        }
     }
 
     public class FlattenedMaterialsData
@@ -100,7 +115,6 @@ namespace DCL
             }
 
             finalMesh.Optimize();
-
             finalMesh.UploadMeshData(true);
 
             result.mesh = finalMesh;

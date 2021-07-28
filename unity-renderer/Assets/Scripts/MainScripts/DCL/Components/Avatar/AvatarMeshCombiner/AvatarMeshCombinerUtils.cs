@@ -93,27 +93,9 @@ namespace DCL
                 bool isOpaque = layer.isOpaque;
 
                 if ( isOpaque )
-                {
-                    newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
-                    newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
-                    newMaterial.SetInt(ShaderUtils.Surface, 0);
-                    newMaterial.SetFloat(ShaderUtils.ZWrite, 1);
-                    newMaterial.EnableKeyword("_ALPHATEST_ON");
-                    newMaterial.DisableKeyword("_ALPHABLEND_ON");
-                    newMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    newMaterial.SetOverrideTag("RenderType", "TransparentCutout");
-                }
+                    MaterialUtils.SetOpaque(newMaterial);
                 else
-                {
-                    newMaterial.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.SrcAlpha);
-                    newMaterial.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
-                    newMaterial.SetInt(ShaderUtils.Surface, 1);
-                    newMaterial.SetFloat(ShaderUtils.ZWrite, 0);
-                    newMaterial.DisableKeyword("_ALPHATEST_ON");
-                    newMaterial.EnableKeyword("_ALPHABLEND_ON");
-                    newMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                    newMaterial.SetOverrideTag("RenderType", "Transparent");
-                }
+                    MaterialUtils.SetTransparent(newMaterial);
 
                 newMaterial.SetInt(ShaderUtils.Cull, (int)cullMode);
 
@@ -146,14 +128,28 @@ namespace DCL
 
                     if ( baseMapId != -1 )
                     {
-                        int targetMap = AVATAR_MAP_ID_PROPERTIES[baseMapId];
-                        newMaterial.SetTexture(targetMap, baseMap);
+                        if ( baseMapId < AVATAR_MAP_ID_PROPERTIES.Length )
+                        {
+                            int targetMap = AVATAR_MAP_ID_PROPERTIES[baseMapId];
+                            newMaterial.SetTexture(targetMap, baseMap);
+                        }
+                        else
+                        {
+                            logger.Log(LogType.Error, "FlattenMaterials", $"Base Map ID out of bounds! {baseMapId}");
+                        }
                     }
 
                     if ( emissionMapId != -1 )
                     {
-                        int targetMap = AVATAR_MAP_ID_PROPERTIES[emissionMapId];
-                        newMaterial.SetTexture(targetMap, emissionMap);
+                        if ( baseMapId < AVATAR_MAP_ID_PROPERTIES.Length )
+                        {
+                            int targetMap = AVATAR_MAP_ID_PROPERTIES[emissionMapId];
+                            newMaterial.SetTexture(targetMap, emissionMap);
+                        }
+                        else
+                        {
+                            logger.Log(LogType.Error, "FlattenMaterials", $"Emission Map ID out of bounds! {emissionMapId}");
+                        }
                     }
 
                     // Base Colors

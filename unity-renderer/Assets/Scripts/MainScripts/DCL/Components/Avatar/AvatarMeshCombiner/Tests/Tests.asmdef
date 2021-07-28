@@ -3,7 +3,9 @@
   "rootNamespace": "",
   "references": [
     "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner"
+    "UnityEditor.TestRunner",
+    "AvatarMeshCombiner",
+    "RenderUtils"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
