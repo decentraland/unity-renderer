@@ -100,6 +100,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class DeactivateRenderingACK : ControlEvent<object>
+        {
+            public DeactivateRenderingACK() : base("DeactivateRenderingACK", null) { }
+        }
+
+        [System.Serializable]
         public class SceneEvent<T>
         {
             public string sceneId;
