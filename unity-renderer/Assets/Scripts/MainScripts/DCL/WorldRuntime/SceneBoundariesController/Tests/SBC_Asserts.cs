@@ -70,7 +70,7 @@ namespace SceneBoundariesCheckerTests
 
             var componentModel = new NFTShape.Model()
             {
-                src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
+                src = "local://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/" + TestAssetsUtils.GetAbsolutePath() + "/NFT/nftInfo.json"
             };
             NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
             yield return component.routine;
@@ -139,7 +139,7 @@ namespace SceneBoundariesCheckerTests
 
             var componentModel = new NFTShape.Model()
             {
-                src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
+                src = "local://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/" + TestAssetsUtils.GetAbsolutePath() + "/NFT/nftInfo.json"
             };
             NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
             yield return component.routine;
@@ -288,7 +288,7 @@ namespace SceneBoundariesCheckerTests
 
             var componentModel = new NFTShape.Model()
             {
-                src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
+                src = "local://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/" + TestAssetsUtils.GetAbsolutePath() + "/NFT/nftInfo.json"
             };
             NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
             yield return component.routine;

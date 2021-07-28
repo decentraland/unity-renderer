@@ -30,15 +30,18 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit("Test taking too long")]
-        [Category("Explicit")]
-        public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
-
-        [UnityTest]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene); }
+
+        [UnityTest]
+        public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
+
+        [UnityTest]
+        [Explicit("Test taking too long")]
+        [Category("Explicit")]
+        public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
         [Explicit("Test taking too long")]
@@ -46,17 +49,12 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
-
-        [UnityTest]
-        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
-        [Category("Explicit")]
-        public IEnumerator GLTFShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene); }
-
-        [UnityTest]
         [Explicit("Test taking too long")]
         [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
+
+        [UnityTest]
+        public IEnumerator GLTFShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
         public IEnumerator ChildShapeIsEvaluated() { yield return SBC_Asserts.ChildShapeIsEvaluated(scene); }

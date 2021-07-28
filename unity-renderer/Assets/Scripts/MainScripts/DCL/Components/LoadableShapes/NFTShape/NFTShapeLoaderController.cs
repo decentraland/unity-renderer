@@ -1,10 +1,13 @@
 ﻿using DCL.Components;
 using DCL.Helpers.NFT;
 using System.Collections;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using DCL;
+using Newtonsoft.Json;
 using NFTShape_Internal;
+using UnityGLTF.Loader;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
@@ -118,7 +121,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         darURLProtocol = match.Groups["protocol"].ToString();
-        if (darURLProtocol != "ethereum")
+        if (darURLProtocol != "ethereum" && darURLProtocol != "local")
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The only protocol currently supported is 'ethereum'");
 
@@ -152,17 +155,29 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         bool isError = false;
 
-        yield return NFTHelper.FetchNFTInfo(darURLRegistry, darURLAsset,
-            (info) =>
-            {
-                nftInfo = info;
-            },
-            (error) =>
-            {
-                Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
-                OnLoadingAssetFail?.Invoke();
-                isError = true;
-            });
+        if (darURLProtocol == "local")
+        {
+            FileLoader fileLoader = new FileLoader("");
+            yield return fileLoader.LoadStream(darURLAsset);
+
+            StreamReader streamReader = new StreamReader(fileLoader.LoadedStream);
+            nftInfo = JsonConvert.DeserializeObject<NFTInfo>(streamReader.ReadToEnd());
+            nftInfo.previewImageUrl =  darURLAsset.Replace("/NFT/nftInfo.json", nftInfo.previewImageUrl);
+        }
+        else
+        {
+            yield return NFTHelper.FetchNFTInfo(darURLRegistry, darURLAsset,
+                (info) =>
+                {
+                    nftInfo = info;
+                },
+                (error) =>
+                {
+                    Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
+                    OnLoadingAssetFail?.Invoke();
+                    isError = true;
+                });
+        }
 
         if (isError)
             yield break;
