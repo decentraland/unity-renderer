@@ -39,7 +39,8 @@ public enum HUDElementID
     BUILDER_PROJECTS_PANEL = 28,
     SIGNUP = 29,
     LOADING = 30,
-    COUNT = 31
+    AVATAR_NAMES = 31,
+    COUNT = 32
 }
 
 public interface IHUDFactory

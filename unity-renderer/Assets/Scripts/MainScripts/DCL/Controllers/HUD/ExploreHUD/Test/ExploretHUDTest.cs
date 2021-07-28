@@ -161,14 +161,14 @@ namespace Tests
                             layer = "amber",
                             serverName = "fenrir",
                             usersCount = 10,
-                            usersMax = 50
+                            maxUsers = 50
                         },
                         new HotScenesController.HotSceneInfo.Realm()
                         {
                             layer = "blue",
                             serverName = "unicorn",
                             usersCount = 2,
-                            usersMax = 50
+                            maxUsers = 50
                         }
                     },
                     parcels = new Vector2Int[] { BASECOORD_FIRST_CELL, BASECOORD_FIRST_CELL + new Vector2Int(0, 1) },
@@ -185,7 +185,7 @@ namespace Tests
                             layer = "amber",
                             serverName = "fenrir",
                             usersCount = 1,
-                            usersMax = 50
+                            maxUsers = 50
                         }
                     },
                     parcels = new Vector2Int[] { BASECOORD_SECOND_CELL },
@@ -202,7 +202,7 @@ namespace Tests
                             layer = "red",
                             serverName = "temptation",
                             usersCount = 100,
-                            usersMax = 50
+                            maxUsers = 50
                         }
                     },
                     parcels = new Vector2Int[]

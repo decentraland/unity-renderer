@@ -137,8 +137,8 @@ public class DCLCharacterController : MonoBehaviour
             throw new System.Exception("Both the avatar and first person camera game objects must be set.");
         }
 
-        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject };
-        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject };
+        avatarReference = new DCL.Models.DecentralandEntity { gameObject = avatarGameObject, transform =  avatarGameObject.transform };
+        firstPersonCameraReference = new DCL.Models.DecentralandEntity { gameObject = firstPersonCameraGameObject , transform =  firstPersonCameraGameObject.transform };
     }
 
     private void SubscribeToInput()

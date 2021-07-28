@@ -105,7 +105,7 @@ public class ExploreHUDController : IHUD
             toggleExploreTrigger.RaiseOnTriggered();
         }
 
-        if (string.IsNullOrEmpty(serverName) || string.IsNullOrEmpty(layerName))
+        if (string.IsNullOrEmpty(serverName))
         {
             WebInterface.GoTo(coords.x, coords.y);
         }
