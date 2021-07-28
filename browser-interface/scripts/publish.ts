@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
 import fetch from "node-fetch";
+import FormData from "form-data"
 
 const DIST_ROOT = resolve(__dirname, "../dist")
 
@@ -53,7 +54,7 @@ async function triggerPipeline(
   body.append("variables[PACKAGE_VERSION]", packageVersion);
   body.append("variables[REPO]", "unity-renderer");
   body.append("variables[REPO_OWNER]", "decentraland");
-  body.append("variables[COMMIT]", process.env.CIRCLE_SHA1);
+  body.append("variables[COMMIT]", process.env.CIRCLE_SHA1 as string);
 
   try {
     const r = await fetch(GITLAB_STATIC_PIPELINE_URL, {
