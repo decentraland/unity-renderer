@@ -264,22 +264,6 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeMuteSoundCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<MuteSoundControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "muteSound stored value mismatch");
-            Assert.AreEqual(newValue ? 1f : 0f, AudioListener.volume, "sfxVolume value mismatch");
-        }
-
-        [Test]
         public void ChangeRenderingScaleCorrectly()
         {
             // Arrange

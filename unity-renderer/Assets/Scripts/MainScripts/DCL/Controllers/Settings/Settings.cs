@@ -135,7 +135,6 @@ namespace DCL
         {
             return new SettingsData.GeneralSettings()
             {
-                sfxVolume = 1,
                 mouseSensitivity = 0.6f,
                 scenesLoadRadius = 4,
                 avatarsLODDistance = 16,
@@ -228,7 +227,6 @@ namespace DCL.SettingsData
     {
         public enum VoiceChatAllow { ALL_USERS, VERIFIED_ONLY, FRIENDS_ONLY }
 
-        public float sfxVolume;
         public float mouseSensitivity;
         public float voiceChatVolume;
         public VoiceChatAllow voiceChatAllow;
@@ -239,8 +237,7 @@ namespace DCL.SettingsData
 
         public bool Equals(GeneralSettings settings)
         {
-            return sfxVolume == settings.sfxVolume
-                   && mouseSensitivity == settings.mouseSensitivity
+            return mouseSensitivity == settings.mouseSensitivity
                    && scenesLoadRadius == settings.scenesLoadRadius
                    && avatarsLODDistance == settings.avatarsLODDistance
                    && maxNonLODAvatars == settings.maxNonLODAvatars
