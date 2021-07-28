@@ -13,10 +13,11 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE_DELAY = 0.5f;
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE = 15f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
-        public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
@@ -31,13 +32,27 @@ namespace DCL
         public bool everythingIsLoaded;
 
         private Vector3? lastAvatarPosition = null;
-        private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
         bool initializedPosition = false;
+
+        private PlayerStatus playerStatus = null;
+        private Coroutine disableFacialFeatureRoutine = null;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
+            disableFacialFeatureRoutine = StartCoroutine(SetFacialFeaturesVisibleRoutine());
         }
 
         private void PlayerClicked()
@@ -88,9 +103,6 @@ namespace DCL
                 entity
             );
 
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;
 
@@ -110,13 +122,7 @@ namespace DCL
                     entity.gameObject.transform.localRotation, true);
             }
 
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.localPosition;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
-
-            avatarName.SetName(model.name);
-            avatarName.SetTalking(model.talking);
+            UpdatePlayerStatus(model);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -124,6 +130,35 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+        }
+
+        private void UpdatePlayerStatus(AvatarModel model)
+        {
+            // Remove the player status if the userId changes
+            if (playerStatus != null && (playerStatus.id != model.id || playerStatus.name != model.name))
+                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+
+            if (string.IsNullOrEmpty(model?.id))
+                return;
+
+            bool isNew = false;
+            if (playerStatus == null)
+            {
+                playerStatus = new PlayerStatus();
+                isNew = true;
+            }
+            playerStatus.id = model.id;
+            playerStatus.name = model.name;
+            playerStatus.isTalking = model.talking;
+            playerStatus.worldPosition = entity.gameObject.transform.position;
+            if (isNew)
+                DataStore.i.player.otherPlayersStatus.Add(playerStatus.id, playerStatus);
+        }
+
+        private void Update()
+        {
+            if (playerStatus != null)
+                playerStatus.worldPosition = entity.gameObject.transform.position;
         }
 
         public void DisablePassport()
@@ -142,22 +177,10 @@ namespace DCL
             onPointerDown.collider.enabled = true;
         }
 
-        private void OnWorldReposition(Vector3 current, Vector3 previous)
-        {
-            avatarUserInfo.worldPosition = entity.gameObject.transform.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
-        }
-
         private void OnEntityTransformChanged(object newModel)
         {
             DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
             lastAvatarPosition = newTransformModel.position;
-
-            var model = (AvatarModel) this.model;
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = newTransformModel.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
         }
 
         public override void OnPoolGet()
@@ -169,12 +192,24 @@ namespace DCL
             oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
-            avatarName.SetName(String.Empty);
+            playerStatus = null;
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
+
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
+
+            if (playerStatus != null)
+            {
+                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+                playerStatus = null;
+            }
 
             Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
 
@@ -186,18 +221,23 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
 
             if (entity != null)
             {
                 entity.OnTransformChange = null;
                 entity = null;
             }
+        }
 
-            var model = (AvatarModel) this.model;
-            if (model != null)
-                avatarUserInfo.userId = model.id;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
+        private IEnumerator SetFacialFeaturesVisibleRoutine()
+        {
+            while (true)
+            {
+                yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
+                Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
+                avatarRenderer.SetFacialFeaturesVisible(distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE);
+            }
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

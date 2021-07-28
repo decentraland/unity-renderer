@@ -49,14 +49,14 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
                     layer = "amber",
                     serverName = "fenrir",
                     usersCount = 10,
-                    usersMax = 50
+                    maxUsers = 50
                 },
                 new HotScenesController.HotSceneInfo.Realm()
                 {
                     layer = "blue",
                     serverName = "unicorn",
                     usersCount = 2,
-                    usersMax = 50
+                    maxUsers = 50
                 }
             },
             usersTotalCount = 12
@@ -72,7 +72,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
                     layer = "amber",
                     serverName = "fenrir",
                     usersCount = 1,
-                    usersMax = 50
+                    maxUsers = 50
                 }
             },
             usersTotalCount = 1
@@ -88,7 +88,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
                     layer = "red",
                     serverName = "temptation",
                     usersCount = 100,
-                    usersMax = 50
+                    maxUsers = 50
                 }
             },
             usersTotalCount = 100
@@ -114,7 +114,7 @@ public class HotScenesControllerTests : IntegrationTestSuite_Legacy
                 Assert.IsTrue(l1[i].realms[j].serverName == l2[i].realms[j].serverName, $"HotScenesLists realms serverName mismatch at index {i},{j}");
                 Assert.IsTrue(l1[i].realms[j].layer == l2[i].realms[j].layer, $"HotScenesLists realms layer mismatch at index {i},{j}");
                 Assert.IsTrue(l1[i].realms[j].usersCount == l2[i].realms[j].usersCount, $"HotScenesLists realms usersCount mismatch at index {i},{j}");
-                Assert.IsTrue(l1[i].realms[j].usersMax == l2[i].realms[j].usersMax, $"HotScenesLists realms usersMax mismatch at index {i},{j}");
+                Assert.IsTrue(l1[i].realms[j].maxUsers == l2[i].realms[j].maxUsers, $"HotScenesLists realms usersMax mismatch at index {i},{j}");
             }
         }
     }

@@ -195,6 +195,7 @@ namespace DCL.Bots
 
             AvatarModel avatarModel = new AvatarModel()
             {
+                id = entityId,
                 name = entityId,
                 hairColor = Random.ColorHSV(0, 1, 0, 1, 0.25f, 0.9f),
                 eyeColor = Random.ColorHSV(0, 1, 0, 1, 0f, 0.2f),

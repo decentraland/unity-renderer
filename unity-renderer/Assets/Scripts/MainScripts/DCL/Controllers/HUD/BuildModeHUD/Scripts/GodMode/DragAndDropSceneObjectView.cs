@@ -25,8 +25,8 @@ public class DragAndDropSceneObjectView : MonoBehaviour, IDragAndDropSceneObject
         return view;
     }
 
-    private void Awake() { BuilderInWorldUtils.ConfigureEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop, (eventData) => Drop()); }
-    private void OnDestroy() { BuilderInWorldUtils.RemoveEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop); }
+    private void Awake() { BIWUtils.ConfigureEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop, (eventData) => Drop()); }
+    private void OnDestroy() { BIWUtils.RemoveEventTrigger(dragAndDropEventTrigger, EventTriggerType.Drop); }
 
     public void Drop() { OnDrop?.Invoke(); }
 }

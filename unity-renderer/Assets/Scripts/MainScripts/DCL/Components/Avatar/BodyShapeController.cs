@@ -9,12 +9,15 @@ public interface IBodyShapeController
     void SetupEyes(Material material, Texture texture, Texture mask, Color color);
     void SetupEyebrows(Material material, Texture texture, Color color);
     void SetupMouth(Material material, Texture texture, Texture mask, Color color);
+    void SetFacialFeaturesVisible(bool visible, bool updateVisibility = false);
 }
 
 public class BodyShapeController : WearableController, IBodyShapeController
 {
     public string bodyShapeId => wearable.id;
     private Transform animationTarget;
+    private bool facialFeaturesVisible;
+    private HashSet<string> currentHiddenList = new HashSet<string>();
     public Transform[] bones;
     public Transform rootBone;
 
@@ -119,6 +122,13 @@ public class BodyShapeController : WearableController, IBodyShapeController
             "mouth");
     }
 
+    public void SetFacialFeaturesVisible(bool visible, bool updateVisibility = false)
+    {
+        facialFeaturesVisible = visible;
+        if (updateVisibility)
+            UpdateVisibility(currentHiddenList);
+    }
+
     protected override void PrepareWearable(GameObject assetContainer)
     {
         Animation animation = null;
@@ -194,16 +204,17 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public override void UpdateVisibility(HashSet<string> hiddenList)
     {
-        bool headIsVisible = !hiddenList.Contains(WearableLiterals.Misc.HEAD);
+        currentHiddenList = hiddenList;
+        bool headIsVisible = !currentHiddenList.Contains(WearableLiterals.Misc.HEAD);
 
         headRenderer.enabled = headIsVisible;
-        eyebrowsRenderer.enabled = headIsVisible;
-        eyesRenderer.enabled = headIsVisible;
-        mouthRenderer.enabled = headIsVisible;
+        eyebrowsRenderer.enabled = headIsVisible && facialFeaturesVisible;
+        eyesRenderer.enabled = headIsVisible && facialFeaturesVisible;
+        mouthRenderer.enabled = headIsVisible && facialFeaturesVisible;
 
-        feetRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.FEET);
-        upperBodyRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY);
-        lowerBodyRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY);
+        feetRenderer.enabled = !currentHiddenList.Contains(WearableLiterals.Categories.FEET);
+        upperBodyRenderer.enabled = !currentHiddenList.Contains(WearableLiterals.Categories.UPPER_BODY);
+        lowerBodyRenderer.enabled = !currentHiddenList.Contains(WearableLiterals.Categories.LOWER_BODY);
     }
 
     private void InitializeAvatarAudioHandlers(GameObject container, Animation createdAnimation)

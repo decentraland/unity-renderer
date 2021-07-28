@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -67,7 +67,7 @@ class FriendTracker
             return false;
         if (status.realm == null)
             return false;
-        return !string.IsNullOrEmpty(status.realm.serverName) && !string.IsNullOrEmpty(status.realm.layer);
+        return !string.IsNullOrEmpty(status.realm.serverName);
     }
 
     void OnListenerDisposed(TrackedSceneInfo listener)

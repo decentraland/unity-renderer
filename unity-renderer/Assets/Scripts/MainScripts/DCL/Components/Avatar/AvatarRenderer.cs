@@ -46,6 +46,7 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private bool facialFeaturesVisible = true;
 
         private void Awake()
         {
@@ -360,6 +361,7 @@ namespace DCL
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
+            bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
             foreach (WearableController wearableController in wearableControllers.Values)
             {
@@ -522,6 +524,16 @@ namespace DCL
             {
                 renderers[i].enabled = false;
             }
+        }
+
+        public void SetFacialFeaturesVisible(bool visible)
+        {
+            if (visible == facialFeaturesVisible)
+                return;
+            facialFeaturesVisible = visible;
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetFacialFeaturesVisible(visible, true);
         }
 
         protected virtual void OnDestroy() { CleanupAvatar(); }
