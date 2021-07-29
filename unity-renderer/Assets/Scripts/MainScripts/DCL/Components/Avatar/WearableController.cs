@@ -202,4 +202,18 @@ public class WearableController
 
         return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
     }
+
+    public void SetSSAOEnabled(bool ssaoEnabled)
+    {
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            for (int j = 0; j < assetRenderers[i].materials.Length; j++)
+            {
+                if (ssaoEnabled)
+                    assetRenderers[i].materials[j].DisableKeyword("_SSAO_OFF");
+                else
+                    assetRenderers[i].materials[j].EnableKeyword("_SSAO_OFF");
+            }
+        }
+    }
 }

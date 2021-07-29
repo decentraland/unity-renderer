@@ -44,6 +44,7 @@ namespace DCL
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
         private bool facialFeaturesVisible = true;
+        private bool ssaoEnabled = true;
 
         private void Awake()
         {
@@ -353,9 +354,11 @@ namespace DCL
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
+            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
             foreach (WearableController wearableController in wearableControllers.Values)
             {
                 wearableController.UpdateVisibility(hiddenList);
+                wearableController.SetSSAOEnabled(ssaoEnabled);
             }
 
             CleanUpUnusedItems();
@@ -518,6 +521,18 @@ namespace DCL
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
             bodyShapeController.SetFacialFeaturesVisible(visible, true);
+        }
+
+        public void SetSSAOEnabled(bool newEnabled)
+        {
+            if (newEnabled == ssaoEnabled )
+                return;
+            ssaoEnabled = newEnabled;
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
+            foreach (WearableController wearableController in wearableControllers.Values)
+                wearableController.SetSSAOEnabled(ssaoEnabled);
         }
 
         protected virtual void OnDestroy() { CleanupAvatar(); }

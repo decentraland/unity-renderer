@@ -35,7 +35,7 @@ namespace DCL
         bool initializedPosition = false;
 
         private PlayerStatus playerStatus = null;
-        private Coroutine disableFacialFeatureRoutine = null;
+        private Coroutine checkDistanceRoutine = null;
 
         private void Awake()
         {
@@ -47,12 +47,12 @@ namespace DCL
         {
             base.OnEnable();
 
-            if (disableFacialFeatureRoutine != null)
+            if (checkDistanceRoutine != null)
             {
-                StopCoroutine(disableFacialFeatureRoutine);
-                disableFacialFeatureRoutine = null;
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
             }
-            disableFacialFeatureRoutine = StartCoroutine(SetFacialFeaturesVisibleRoutine());
+            checkDistanceRoutine = StartCoroutine(CheckDistanceToPlayerRoutine());
         }
 
         private void PlayerClicked()
@@ -199,10 +199,10 @@ namespace DCL
         {
             base.Cleanup();
 
-            if (disableFacialFeatureRoutine != null)
+            if (checkDistanceRoutine != null)
             {
-                StopCoroutine(disableFacialFeatureRoutine);
-                disableFacialFeatureRoutine = null;
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
             }
 
             if (playerStatus != null)
@@ -229,14 +229,16 @@ namespace DCL
             }
         }
 
-        private IEnumerator SetFacialFeaturesVisibleRoutine()
+        private IEnumerator CheckDistanceToPlayerRoutine()
         {
             while (true)
             {
                 yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
                 Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
-                avatarRenderer.SetFacialFeaturesVisible(distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE);
+                bool isNear = distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE;
+                avatarRenderer.SetFacialFeaturesVisible(isNear);
+                avatarRenderer.SetSSAOEnabled(isNear);
             }
         }
 
