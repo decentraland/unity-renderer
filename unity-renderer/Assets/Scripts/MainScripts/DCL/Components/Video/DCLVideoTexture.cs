@@ -237,7 +237,7 @@ namespace DCL.Components
 
             if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get()))) {
                 targetVolume = baseVolume * distanceVolumeModifier;
-                targetVolume *= Utils.ToVolumeCurve(Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+                targetVolume *= Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
             }
 
             texturePlayer.SetVolume(targetVolume);

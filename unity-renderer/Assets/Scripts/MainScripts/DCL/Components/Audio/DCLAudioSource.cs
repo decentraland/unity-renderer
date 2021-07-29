@@ -114,7 +114,7 @@ namespace DCL.Components
 
         private void UpdateAudioSourceVolume()
         {
-            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
 
             if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
             {

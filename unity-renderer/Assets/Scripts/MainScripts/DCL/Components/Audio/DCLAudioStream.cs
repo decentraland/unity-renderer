@@ -126,7 +126,7 @@ namespace DCL.Components
         }
 
         private float GetCalculatedSettingsVolume(SettingsData.AudioSettings audioSettings) {
-            return Utils.ToVolumeCurve(audioSettings.sceneSFXVolume * audioSettings.masterVolume);
+            return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume);
         }
 
         private void StopStreaming()

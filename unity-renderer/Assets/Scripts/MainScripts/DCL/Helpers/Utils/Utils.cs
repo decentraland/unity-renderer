@@ -585,7 +585,7 @@ namespace DCL.Helpers
         }
 
         /// <summary>
-        /// Takes linear volume value, converts to exponential curve and maps to value fitting for audio mixer group volume.
+        /// Takes a linear volume value between 0 and 1, converts to exponential curve and maps to a value fitting for audio mixer group volume.
         /// </summary>
         /// <param name="volume">Linear volume (0 to 1)</param>
         /// <returns>Value for audio mixer group volume</returns>

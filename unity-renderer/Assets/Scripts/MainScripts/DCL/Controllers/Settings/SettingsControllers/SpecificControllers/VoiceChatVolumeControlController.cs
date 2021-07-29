@@ -11,7 +11,7 @@ namespace DCL.SettingsControls
         public override void UpdateSetting(object newValue)
         {
             currentAudioSettings.voiceChatVolume = (float)newValue * 0.01f;
-            WebInterface.ApplySettings(Settings.i.GetCalculatedVoiceChatVolume(), (int)currentGeneralSettings.voiceChatAllow);
+            Settings.i.ApplyVoiceChatSettings();
         }
     }
 }
