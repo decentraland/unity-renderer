@@ -122,12 +122,15 @@ public class BodyShapeController : WearableController, IBodyShapeController
         facialFeaturesVisible = visible;
 
         if ( updateVisibility )
-        {
-            bool headIsVisible = !currentHiddenList.Contains(WearableLiterals.Misc.HEAD);
-            eyebrowsRenderer.enabled = headIsVisible && facialFeaturesVisible;
-            eyesRenderer.enabled = headIsVisible && facialFeaturesVisible;
-            mouthRenderer.enabled = headIsVisible && facialFeaturesVisible;
-        }
+            RefreshFacialFeaturesVisibility();
+    }
+
+    void RefreshFacialFeaturesVisibility()
+    {
+        bool headIsVisible = !currentHiddenList.Contains(WearableLiterals.Misc.HEAD);
+        eyebrowsRenderer.enabled = headIsVisible && facialFeaturesVisible;
+        eyesRenderer.enabled = headIsVisible && facialFeaturesVisible;
+        mouthRenderer.enabled = headIsVisible && facialFeaturesVisible;
     }
 
     protected override void PrepareWearable(GameObject assetContainer)
@@ -204,12 +207,12 @@ public class BodyShapeController : WearableController, IBodyShapeController
     public override void UpdateVisibility(HashSet<string> hiddenList)
     {
         currentHiddenList = hiddenList;
+
         bool headIsVisible = !currentHiddenList.Contains(WearableLiterals.Misc.HEAD);
 
         headRenderer.enabled = headIsVisible;
-        eyebrowsRenderer.enabled = headIsVisible && facialFeaturesVisible;
-        eyesRenderer.enabled = headIsVisible && facialFeaturesVisible;
-        mouthRenderer.enabled = headIsVisible && facialFeaturesVisible;
+
+        RefreshFacialFeaturesVisibility();
 
         feetRenderer.enabled = feetActive && !currentHiddenList.Contains(WearableLiterals.Categories.FEET);
         upperBodyRenderer.enabled = upperBodyActive && !currentHiddenList.Contains(WearableLiterals.Categories.UPPER_BODY);

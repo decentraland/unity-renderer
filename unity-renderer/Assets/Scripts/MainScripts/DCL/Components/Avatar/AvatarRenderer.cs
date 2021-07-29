@@ -68,6 +68,7 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
+            // TODO(Brian): Find a better approach than overloading callbacks like this. This code is not readable.
             void onSuccessWrapper()
             {
                 onSuccess?.Invoke();
@@ -163,13 +164,21 @@ namespace DCL
             }
         }
 
+        // TODO(Brian): Pure functions should be extracted from this big LoadAvatar() method and unit-test separately.
+        //              The current approach has tech debt that's getting very expensive and is costing many hours of debugging.
+        //              Avatar Loading should be a self contained operation that doesn't depend on pool management and AvatarShape
+        //              lifecycle like it does now.
         private IEnumerator LoadAvatar()
         {
+            // TODO(Brian): This is an ugly hack, all the loading should be performed
+            //              without being afraid of the gameObject active state.
             yield return new WaitUntil(() => gameObject.activeSelf);
 
             bool loadSoftFailed = false;
 
             WearableItem resolvedBody = null;
+
+            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
             Helpers.Promise<WearableItem> avatarBodyPromise = null;
             if (!string.IsNullOrEmpty(model.bodyShape))
             {
@@ -182,6 +191,8 @@ namespace DCL
             }
 
             List<WearableItem> resolvedWearables = new List<WearableItem>();
+
+            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
             List<Helpers.Promise<WearableItem>> avatarWearablePromises = new List<Helpers.Promise<WearableItem>>();
             if (model.wearables != null)
             {
@@ -216,6 +227,7 @@ namespace DCL
                 yield break;
             }
 
+            // TODO(Brian): Evaluate using UniTask<T> here instead of Helpers.Promise.
             List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
 
             foreach (var avatarWearablePromise in avatarWearablePromises)
@@ -289,6 +301,8 @@ namespace DCL
                     bodyShapeController.SetupHairAndSkinColors(model.skinColor, model.hairColor);
             }
 
+            //TODO(Brian): This logic should be performed in a testeable pure function instead of this inline approach.
+            //             Moreover, this function should work against data, not wearableController instances.
             bool wearablesIsDirty = false;
             HashSet<string> unusedCategories = new HashSet<string>(Categories.ALL);
             int wearableCount = resolvedWearables.Count;
@@ -345,12 +359,14 @@ namespace DCL
                 yield return null;
             }
 
+            //TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
             mouthController?.Load(bodyShapeController, model.skinColor);
 
+            //TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() =>
                 (eyebrowsController == null || (eyebrowsController != null && eyebrowsController.isReady)) &&
                 (eyesController == null || (eyesController != null && eyesController.isReady)) &&
@@ -361,6 +377,9 @@ namespace DCL
                 OnVisualCue?.Invoke(VisualCue.Loaded);
             }
 
+            //TODO(Brian): unusedCategories and hiddenList management is a double negative PITA.
+            //             This method should define how the avatar looks like before loading it and put this information
+            //             in a positive list (i.e. not negative, because leads to double negative checks).
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
@@ -379,7 +398,7 @@ namespace DCL
 
             SetWearableBones();
 
-            //TODO(Brian): Why we do this... why. Refactor me please.
+            //TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
             if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
             {
@@ -535,9 +554,15 @@ namespace DCL
         {
             if (visible == facialFeaturesVisible)
                 return;
+
             facialFeaturesVisible = visible;
+
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
+
+            if (isLoading)
+                return;
+
             bodyShapeController.SetFacialFeaturesVisible(visible, true);
         }
 
