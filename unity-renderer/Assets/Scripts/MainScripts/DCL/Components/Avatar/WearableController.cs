@@ -156,8 +156,9 @@ public class WearableController
         boneRetargetingDirty = false;
     }
 
-    public void CleanUp()
+    public virtual void CleanUp()
     {
+        SetSSAOEnabled(true);
         UnloadMaterials();
         RestoreOriginalMaterials();
         assetRenderers = null;
@@ -205,6 +206,9 @@ public class WearableController
 
     public void SetSSAOEnabled(bool ssaoEnabled)
     {
+        if (assetRenderers == null)
+            return;
+
         for (int i = 0; i < assetRenderers.Length; i++)
         {
             for (int j = 0; j < assetRenderers[i].materials.Length; j++)

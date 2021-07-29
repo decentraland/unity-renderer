@@ -103,6 +103,8 @@ namespace DCL
 
         public void CleanupAvatar()
         {
+            facialFeaturesVisible = true;
+            ssaoEnabled = true;
             StopLoadingCoroutines();
 
             eyebrowsController?.CleanUp();
@@ -525,14 +527,16 @@ namespace DCL
 
         public void SetSSAOEnabled(bool newEnabled)
         {
-            if (newEnabled == ssaoEnabled )
+            if (newEnabled == ssaoEnabled)
                 return;
             ssaoEnabled = newEnabled;
             if (bodyShapeController == null || !bodyShapeController.isReady)
                 return;
             bodyShapeController.SetSSAOEnabled(ssaoEnabled);
             foreach (WearableController wearableController in wearableControllers.Values)
+            {
                 wearableController.SetSSAOEnabled(ssaoEnabled);
+            }
         }
 
         protected virtual void OnDestroy() { CleanupAvatar(); }
