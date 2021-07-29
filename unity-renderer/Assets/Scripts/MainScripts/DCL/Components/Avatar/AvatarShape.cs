@@ -10,6 +10,8 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE_DELAY = 0.5f;
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE = 15f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -30,11 +32,24 @@ namespace DCL
         bool initializedPosition = false;
 
         private PlayerStatus playerStatus = null;
+        private Coroutine disableFacialFeatureRoutine = null;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
+            disableFacialFeatureRoutine = StartCoroutine(SetFacialFeaturesVisibleRoutine());
         }
 
         private void PlayerClicked()
@@ -177,6 +192,12 @@ namespace DCL
         {
             base.Cleanup();
 
+            if (disableFacialFeatureRoutine != null)
+            {
+                StopCoroutine(disableFacialFeatureRoutine);
+                disableFacialFeatureRoutine = null;
+            }
+
             if (playerStatus != null)
             {
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
@@ -196,6 +217,17 @@ namespace DCL
             {
                 entity.OnTransformChange = null;
                 entity = null;
+            }
+        }
+
+        private IEnumerator SetFacialFeaturesVisibleRoutine()
+        {
+            while (true)
+            {
+                yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
+                Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
+                avatarRenderer.SetFacialFeaturesVisible(distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE);
             }
         }
 

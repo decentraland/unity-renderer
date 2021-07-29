@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class ChatHUDController : IDisposable
 {
-    public static int MAX_CHAT_ENTRIES { internal set; get; } = 100;
+    public static int MAX_CHAT_ENTRIES { internal set; get; } = 30;
 
     public ChatHUDView view;
 

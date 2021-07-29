@@ -9,7 +9,6 @@ public class LoadingBridge : MonoBehaviour
     {
         public bool isVisible = false;
         public string message = "";
-        public bool showWalletPrompt = false;
         public bool showTips = false;
     }
 
@@ -20,7 +19,8 @@ public class LoadingBridge : MonoBehaviour
 
         if (!string.IsNullOrEmpty(payload.message))
             DataStore.i.HUDs.loadingHUD.message.Set(payload.message);
-        DataStore.i.HUDs.loadingHUD.showWalletPrompt.Set(payload.showWalletPrompt);
+        // mendez: showWalletPrompt no longer needs to exist
+        DataStore.i.HUDs.loadingHUD.showWalletPrompt.Set(false);
         DataStore.i.HUDs.loadingHUD.showTips.Set(payload.showTips);
     }
 }
