@@ -3,6 +3,7 @@ using DCL.Components;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using UnityGLTF.Cache;
@@ -22,11 +23,16 @@ public class WearableController
     public GameObject assetContainer => loader?.loadedAsset;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
-    protected Renderer[] assetRenderers;
+    protected SkinnedMeshRenderer[] assetRenderers;
 
     public bool boneRetargetingDirty = false;
 
     internal string lastMainFileLoaded = null;
+
+    public IReadOnlyList<SkinnedMeshRenderer> GetRenderers()
+    {
+        return new ReadOnlyCollection<SkinnedMeshRenderer>(assetRenderers);
+    }
 
     public WearableController(WearableItem wearableItem) { this.wearable = wearableItem; }
 
@@ -72,7 +78,7 @@ public class WearableController
                 loader.OnSuccessEvent -= OnSuccessWrapper;
             }
 
-            assetRenderers = gameObject.GetComponentsInChildren<Renderer>();
+            assetRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
             PrepareWearable(gameObject);
             onSuccess?.Invoke(this);
         }
@@ -136,7 +142,7 @@ public class WearableController
         }
     }
 
-    public virtual void SetAssetRenderersEnabled(bool active)
+    public void SetAssetRenderersEnabled(bool active)
     {
         for (var i = 0; i < assetRenderers.Length; i++)
         {
@@ -145,7 +151,9 @@ public class WearableController
         }
     }
 
-    protected virtual void PrepareWearable(GameObject assetContainer) { }
+    protected virtual void PrepareWearable(GameObject assetContainer)
+    {
+    }
 
     public virtual void UpdateVisibility(HashSet<string> hiddenList)
     {

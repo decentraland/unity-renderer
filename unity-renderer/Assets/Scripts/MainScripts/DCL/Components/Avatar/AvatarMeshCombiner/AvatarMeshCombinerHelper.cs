@@ -17,18 +17,16 @@ namespace DCL
             this.container = container;
         }
 
-        public void Combine(Transform root, SkinnedMeshRenderer bonesContainer)
+        public void Combine(Transform root, SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine)
         {
-            if ( renderer != null )
-                renderer.enabled = false;
-
             float time = Time.realtimeSinceStartup;
 
-            SkinnedMeshRenderer[] renderers = root.GetComponentsInChildren<SkinnedMeshRenderer>();
+            SkinnedMeshRenderer[] renderers = renderersToCombine;
 
             Material materialAsset = Resources.Load<Material>("OptimizedToonMaterial");
 
             renderers = renderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToArray();
+            renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
 
             bool combineSuccess = CombineInternal(
                 bonesContainer,
@@ -40,9 +38,6 @@ namespace DCL
 
             if ( !combineSuccess )
             {
-                if ( renderer != null )
-                    renderer.enabled = true;
-
                 return;
             }
 
@@ -50,8 +45,6 @@ namespace DCL
             {
                 renderers[i].enabled = false;
             }
-
-            renderer.enabled = true;
 
             container.transform.SetParent( root, true );
         }
@@ -94,6 +87,7 @@ namespace DCL
 
             if ( renderer == null )
                 renderer = container.AddComponent<SkinnedMeshRenderer>();
+
 
             UnloadAssets();
 

@@ -48,6 +48,8 @@ namespace DCL
         private List<string> wearablesInUse = new List<string>();
         private bool facialFeaturesVisible = true;
 
+        private List<SkinnedMeshRenderer> allRenderers = new List<SkinnedMeshRenderer>();
+
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
@@ -328,7 +330,6 @@ namespace DCL
                 }
             }
 
-
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
             {
@@ -363,12 +364,16 @@ namespace DCL
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
+
             foreach (WearableController wearableController in wearableControllers.Values)
             {
                 wearableController.UpdateVisibility(hiddenList);
             }
 
             CleanUpUnusedItems();
+
+            allRenderers = wearableControllers.SelectMany( x => x.Value.GetRenderers() ).ToList();
+            allRenderers.AddRange( bodyShapeController.GetRenderers() );
 
             isLoading = false;
 
@@ -389,7 +394,7 @@ namespace DCL
             else
             {
                 OnSuccessEvent?.Invoke();
-                avatarMeshCombiner.Combine(transform, bodyShapeController.upperBodyRenderer);
+                avatarMeshCombiner.Combine(transform, bodyShapeController.upperBodyRenderer, allRenderers.ToArray());
             }
         }
 

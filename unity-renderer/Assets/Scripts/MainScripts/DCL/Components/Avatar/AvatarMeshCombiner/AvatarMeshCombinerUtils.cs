@@ -87,7 +87,7 @@ namespace DCL
                 CombineLayer layer = layers[layerIndex];
                 var layerRenderers = layer.renderers;
 
-                Material newMaterial = Object.Instantiate(materialAsset);
+                Material newMaterial = new Material(materialAsset);
 
                 CullMode cullMode = layer.cullMode;
                 bool isOpaque = layer.isOpaque;

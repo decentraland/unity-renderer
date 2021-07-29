@@ -10,7 +10,7 @@ namespace DCL
 {
     public static class CombineLayerUtils
     {
-        private static bool VERBOSE = true;
+        private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
         private static readonly int[] textureIds = new int[] { ShaderUtils.BaseMap, ShaderUtils.EmissionMap };
@@ -34,8 +34,6 @@ namespace DCL
         internal static List<CombineLayer> Slice(SkinnedMeshRenderer[] renderers)
         {
             logger.Log("Slice Start!");
-
-            renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
 
             var rawLayers = SliceByRenderState(renderers);
 
