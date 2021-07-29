@@ -3,6 +3,12 @@
     Properties
     {
         [NoScaleOffset]_MatCap("MatCap", 2D) = "white" {}
+        _GlossIntensity("GlossIntensity", Color) = (0.4811321, 0.4811321, 0.4811321, 1)
+        _MultiplyColor("MultiplyColor", Color) = (0.3679245, 0.3679245, 0.3679245, 1)
+        _AddColor("AddColor", Color) = (0.2358491, 0.2358491, 0.2358491, 1)
+        _LightDir("LightDir", Vector) = (-0.1, 0.8, -0.4, 0)
+        _LightColor("LightColor", Color) = (1, 1, 1, 1)
+        [HDR]_FresnelIntensity("FresnelIntensity", Color) = (0.8705506, 0.8705506, 0.8705506, 1)
         [NoScaleOffset]_AvatarMap1("AvatarMap1", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap2("AvatarMap2", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap3("AvatarMap3", 2D) = "white" {}
@@ -18,15 +24,6 @@
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
-
-        // Blending state
-        [HideInInspector] _Surface("__surface", Float) = 0.0
-        [HideInInspector] _Blend("__blend", Float) = 0.0
-        [HideInInspector] _AlphaClip("__clip", Float) = 0.0
-        [HideInInspector] _SrcBlend("__src", Float) = 1.0
-        [HideInInspector] _DstBlend("__dst", Float) = 0.0
-        [HideInInspector] _ZWrite("__zw", Float) = 1.0
-        [HideInInspector] _Cull("__cull", Float) = 2.0
     }
     SubShader
     {
@@ -481,6 +478,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -499,8 +502,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -529,7 +530,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -629,11 +630,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -660,7 +661,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -720,7 +721,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -734,12 +735,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -749,7 +747,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -782,7 +780,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -911,7 +909,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -926,34 +924,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -967,22 +950,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -1030,7 +1016,7 @@
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
-                surface.Smoothness = 0.5;
+                surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
@@ -1576,6 +1562,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -1594,8 +1586,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -1624,7 +1614,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -1724,11 +1714,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -1755,7 +1745,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -1815,7 +1805,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -1829,12 +1819,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -1844,7 +1831,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -1877,7 +1864,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -2006,7 +1993,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -2021,34 +2008,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -2062,22 +2034,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -2125,7 +2100,7 @@
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
-                surface.Smoothness = 0.5;
+                surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
@@ -2524,6 +2499,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -2542,8 +2523,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -2572,7 +2551,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -2658,7 +2637,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3042,6 +3021,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -3060,8 +3045,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -3090,7 +3073,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -3176,7 +3159,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -3593,6 +3576,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -3611,8 +3600,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -3641,7 +3628,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -3728,7 +3715,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -4187,6 +4174,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -4205,8 +4198,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -4235,7 +4226,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -4335,11 +4326,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -4366,7 +4357,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -4426,7 +4417,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -4440,12 +4431,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -4455,7 +4443,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -4488,7 +4476,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -4613,7 +4601,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -4628,34 +4616,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -4669,22 +4642,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -5164,6 +5140,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -5182,8 +5164,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -5212,7 +5192,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -5312,11 +5292,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -5343,7 +5323,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -5403,7 +5383,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -5417,12 +5397,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -5432,7 +5409,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -5465,7 +5442,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -5589,7 +5566,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -5604,34 +5581,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -5645,22 +5607,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -6232,6 +6197,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -6250,8 +6221,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -6280,7 +6249,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -6380,11 +6349,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -6411,7 +6380,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -6471,7 +6440,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -6485,12 +6454,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -6500,7 +6466,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -6533,7 +6499,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -6662,7 +6628,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -6677,34 +6643,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -6718,22 +6669,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -6781,7 +6735,7 @@
                 surface.NormalTS = IN.TangentSpaceNormal;
                 surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
                 surface.Metallic = 0;
-                surface.Smoothness = 0.5;
+                surface.Smoothness = 0;
                 surface.Occlusion = 1;
                 surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
                 surface.AlphaClipThreshold = _Split_59ccf41d95534d23bcd364e587c6fc61_B_3;
@@ -7178,6 +7132,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -7196,8 +7156,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -7226,7 +7184,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -7312,7 +7270,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -7695,6 +7653,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -7713,8 +7677,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -7743,7 +7705,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -7829,7 +7791,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -8245,6 +8207,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -8263,8 +8231,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -8293,7 +8259,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -8380,7 +8346,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -8839,6 +8805,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -8857,8 +8829,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -8887,7 +8857,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -8987,11 +8957,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -9018,7 +8988,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -9078,7 +9048,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -9092,12 +9062,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -9107,7 +9074,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -9140,7 +9107,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -9265,7 +9232,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -9280,34 +9247,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -9321,22 +9273,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
@@ -9817,6 +9772,12 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
             float4 _MatCap_TexelSize;
+            float4 _GlossIntensity;
+            float4 _MultiplyColor;
+            float4 _AddColor;
+            float3 _LightDir;
+            float4 _LightColor;
+            float4 _FresnelIntensity;
             float4 _AvatarMap1_TexelSize;
             float4 _AvatarMap2_TexelSize;
             float4 _AvatarMap3_TexelSize;
@@ -9835,8 +9796,6 @@
             SAMPLER(SamplerState_Linear_Repeat);
             TEXTURE2D(_MatCap);
             SAMPLER(sampler_MatCap);
-            float3 _LightDir;
-            float4 _LightColor;
             float4 _TintColor;
             TEXTURE2D(_AvatarMap1);
             SAMPLER(sampler_AvatarMap1);
@@ -9865,7 +9824,7 @@
 
             // Graph Functions
 
-            // 563fef455364aca86b423dcf6a54f497
+            // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
             void Unity_Multiply_float(float4 A, float4 B, out float4 Out)
@@ -9965,11 +9924,11 @@
                                                                 float Vector1_1431D892, float Vector1_C2B7F43A,
                                                                 float4 Vector4_453A6B1F, float Vector1_55629F98,
                                                                 float4 Vector4_752D3319, float3 Vector3_FEFB7F68,
-                                                                float4 Vector4_D503119C,
+                                                                float4 Color_778878808e8a4165941cd59bf37b29e0,
                                                                 Bindings_ToonShader_4cadc1cb7cae444909bd6637f15fdf84 IN,
                                                                 out float4 OutVector4_1)
             {
-                float4 _Property_542420e14c0c5f87849098504c24955f_Out_0 = Vector4_D503119C;
+                float4 _Property_13c5118e874f43ca87025f5b8cbc0834_Out_0 = Color_778878808e8a4165941cd59bf37b29e0;
                 UnityTexture2D _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0 = Texture2D_73021B24;
                 float3 _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1;
                 Unity_Normalize_float3(IN.WorldSpaceNormal, _Normalize_4ac7105f0cce6d809db0a96d3e2fb00c_Out_1);
@@ -9996,7 +9955,7 @@
                 Unity_Clamp_float(_Power_cb36ca02acb2de89a61f4d67cfe90ca4_Out_2, 0.38, 0.99,
                                   _Clamp_f5039b8aba04a988afa60b6204315584_Out_3);
                 float2 _Vector2_9a8bf5774b4fbe81af3b38cdf9759855_Out_0 = float2(
-                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.62);
+                    _Clamp_f5039b8aba04a988afa60b6204315584_Out_3, 0.5);
                 float4 _SampleTexture2D_ad1d95648856ff818e55be9d0b398cfc_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.tex,
                     _Property_c92afaf7dbc7425f88dd3d97bccea048_Out_0.samplerstate,
@@ -10056,7 +10015,7 @@
                 Unity_Remap_float(_Multiply_e98732a3f840af8cafb36a5ac3582519_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3);
                 float2 _Vector2_902927a430b8848cac4001e2b7162a76_Out_0 = float2(
-                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.56);
+                    _Remap_0265db7184bf1b849448ca17bcdb406c_Out_3, 0.99);
                 float4 _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0 = SAMPLE_TEXTURE2D(
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.tex,
                     _Property_1fe3423555394477a6d62590b0d06e66_Out_0.samplerstate,
@@ -10070,12 +10029,9 @@
                 float _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_A_7 =
                     _SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0.a;
                 float4 _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0 = Vector4_453A6B1F;
-                float4 _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2;
-                Unity_Multiply_float(_Property_5af2626ce1a42b858ef394924d2ea12f_Out_0, float4(1, 1, 1, 1),
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2);
                 float4 _Multiply_313986370303ba8c966db164632517d4_Out_2;
                 Unity_Multiply_float(_SampleTexture2D_44f962ee9e174d828af166a2779a14e9_RGBA_0,
-                                     _Multiply_cef54df50cf4c38b8108ef8e1fe10088_Out_2,
+                                     _Property_5af2626ce1a42b858ef394924d2ea12f_Out_0,
                                      _Multiply_313986370303ba8c966db164632517d4_Out_2);
                 UnityTexture2D _Property_48552ab976c9128589df548370016ff3_Out_0 = Texture2D_73021B24;
                 float3 _Property_de336b3152b02d8ebc7398ee8ea7cb37_Out_0 = Vector3_FEFB7F68;
@@ -10085,7 +10041,7 @@
                 float _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3;
                 Unity_Remap_float(_DotProduct_dbd3fc968f1428879268db7c8d36e3c4_Out_2, float2(-1, 1), float2(0.01, 0.99),
                                   _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3);
-                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0.5;
+                float _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0 = 0;
                 float2 _Vector2_f73d51750aa36989a7dac5bb620f51ba_Out_0 = float2(
                     _Remap_37bc9bd748de8480ab7556f2a423d375_Out_3, _Float_74e4c61ce84cc9818769d35ed149cc52_Out_0);
                 float4 _SampleTexture2D_c83f1a690e3cc688a0c44677a104da34_RGBA_0 = SAMPLE_TEXTURE2D(
@@ -10118,7 +10074,7 @@
                                  _Add_1d4c8baf3ace1b8e8734ada603ba832a_Out_2,
                                  _Add_5adf131eb3b73a82810f17cdc8575166_Out_2);
                 float4 _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
-                Unity_Multiply_float(_Property_542420e14c0c5f87849098504c24955f_Out_0,
+                Unity_Multiply_float(_Property_13c5118e874f43ca87025f5b8cbc0834_Out_0,
                                      _Add_5adf131eb3b73a82810f17cdc8575166_Out_2,
                                      _Multiply_359a706b4442918d924cabd0309779e3_Out_2);
                 OutVector4_1 = _Multiply_359a706b4442918d924cabd0309779e3_Out_2;
@@ -10242,7 +10198,7 @@
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3;
-                SampleTexture_float(float4(1, 1, 1, 1), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
+                SampleTexture_float(float4(1, 1, 1, 0), _Split_f5c16559fe844f5d973dffa1a7dc8693_R_1,
                                     (_UV_b422957916a8465cad7c951698becee9_Out_0.xy),
                                     _SampleTextureCustomFunction_3b0967cfc20349bc84865f55a6958449_Color_3);
                 #endif
@@ -10257,34 +10213,19 @@
                                                                   _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_277aae7cc727aa83add0c6ebad52386c = IsGammaSpace()
-                                                                    ? float4(0.6698113, 0.6698113, 0.6698113, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6698113, 0.6698113,
-                                                                                     0.6698113)), 0);
-                #endif
-                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_3d13c8c6a18da683b39811bca5bb32b7 = IsGammaSpace()
-                                                                    ? float4(0.6509434, 0.6509434, 0.6509434, 0)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6509434, 0.6509434,
-                                                                                     0.6509434)), 0);
+                float4 _Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0 = _AddColor;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 UnityTexture2D _Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0 = UnityBuildTexture2DStructNoScale(
                     _MatCap);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_86f3d0db259cc78fa59ed5b3e4bae33a = IsGammaSpace()
-                                                                    ? float4(1, 1, 1, 1)
-                                                                    : float4(SRGBToLinear(float3(1, 1, 1)), 1);
+                float4 _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0 = IsGammaSpace()
+                                                                              ? LinearToSRGB(_FresnelIntensity)
+                                                                              : _FresnelIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
-                float4 Color_56e757162d9c8584a3f87be60cd6f7f2 = IsGammaSpace()
-                                                                    ? float4(0.6603774, 0.6603774, 0.6603774, 1)
-                                                                    : float4(SRGBToLinear(
-                                                                                 float3(0.6603774, 0.6603774,
-                                                                                     0.6603774)), 1);
+                float4 _Property_8243a735744a4993b94d1750ac0b3167_Out_0 = _GlossIntensity;
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float3 _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0 = _LightDir;
@@ -10298,22 +10239,25 @@
                 _ToonShader_7540b263a099a28799339fadc2a1d8ac.WorldSpaceViewDirection = IN.WorldSpaceViewDirection;
                 float4 _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1;
                 SG_ToonShader_4cadc1cb7cae444909bd6637f15fdf84(_Property_d8f5bbea07c8f48f850b6e2c29d52497_Out_0, 1.77,
-                                                               -0.27, Color_86f3d0db259cc78fa59ed5b3e4bae33a, 0.17,
-                                                               Color_56e757162d9c8584a3f87be60cd6f7f2,
+                                                               -0.27, _Property_c1c9fca6ea1249809f9114afe82c607c_Out_0,
+                                                               5, _Property_8243a735744a4993b94d1750ac0b3167_Out_0,
                                                                _Property_1ca5484e7ba72584b4df1eec599fea30_Out_0,
                                                                _Property_fcc682e9923fb1898164d8fd1cd170cf_Out_0,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac,
                                                                _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
+                float4 _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0 = _MultiplyColor;
+                #endif
+                #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2;
-                Unity_Multiply_float(Color_3d13c8c6a18da683b39811bca5bb32b7,
-                                     _ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                Unity_Multiply_float(_ToonShader_7540b263a099a28799339fadc2a1d8ac_OutVector4_1,
+                                     _Property_e2eab2d556004d30b4cf607c80ec6bdd_Out_0,
                                      _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2);
                 #endif
                 #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7)
                 float4 _Add_9aa5ce01d828b48c973710b335523c8a_Out_2;
-                Unity_Add_float4(Color_277aae7cc727aa83add0c6ebad52386c,
+                Unity_Add_float4(_Property_19e48f334cac4d18b3d9dfb322bb7508_Out_0,
                                  _Multiply_31d30dc7067a2382993c59f8fd50e105_Out_2,
                                  _Add_9aa5ce01d828b48c973710b335523c8a_Out_2);
                 #endif
