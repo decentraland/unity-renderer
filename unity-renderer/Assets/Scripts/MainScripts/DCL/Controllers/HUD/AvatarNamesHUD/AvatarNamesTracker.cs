@@ -35,8 +35,13 @@ namespace AvatarNamesHUD
         public void SetVisibility(bool visible)
         {
             visibility = visible;
-            background.gameObject.SetActive(visibility);
-            name.gameObject.SetActive(visibility);
+
+            if ( background != null )
+                background.gameObject.SetActive(visibility);
+
+            if ( name != null )
+                name.gameObject.SetActive(visibility);
+
             voiceChatCanvasGroup.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
         }
 
