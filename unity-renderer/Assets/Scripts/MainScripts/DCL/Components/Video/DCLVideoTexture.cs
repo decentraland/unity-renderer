@@ -45,7 +45,17 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture() { model = new Model(); }
+        public DCLVideoTexture()
+        {
+            model = new Model();
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+        }
+
+        ~DCLVideoTexture()
+        {
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
+        }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -225,6 +235,10 @@ namespace DCL.Components
                 texturePlayer.visible = isVisible;
             }
 
+            UpdateVolume();
+        }
+
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
             UpdateVolume();
         }
 
