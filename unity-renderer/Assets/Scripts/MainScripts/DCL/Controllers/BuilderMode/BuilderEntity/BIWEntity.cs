@@ -147,6 +147,7 @@ public class BIWEntity
         if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
+        //Error 404: Item not found, we show a pink box to represent the item
         return null;
     }
 
