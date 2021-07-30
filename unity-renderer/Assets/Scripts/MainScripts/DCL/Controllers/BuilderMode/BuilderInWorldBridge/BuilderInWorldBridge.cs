@@ -56,7 +56,7 @@ public class BuilderInWorldBridge : MonoBehaviour
         }
     }
 
-    public void BuilderInWorldSceneCatalog(string payload)
+    public void AddAssets(string payload)
     {
         //We remove the old assets to they don't collide with the new ones
         foreach (var catalogItem in DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.GetValues())
