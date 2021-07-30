@@ -39,17 +39,14 @@ namespace SceneBoundariesCheckerTests
         public IEnumerator PShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.PShapeIsResetWhenReenteringBounds(scene); }
 
         [UnityTest]
-        [Explicit("Test taking too long")]
         [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenStartingOutOfBounds(scene); }
 
         [UnityTest]
-        [Explicit("Test taking too long")]
         [Category("Explicit")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds() { yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene); }
 
         [UnityTest]
-        [Explicit("Test taking too long")]
         [Category("Explicit")]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds() { yield return SBC_Asserts.NFTShapeIsResetWhenReenteringBounds(scene); }
 
