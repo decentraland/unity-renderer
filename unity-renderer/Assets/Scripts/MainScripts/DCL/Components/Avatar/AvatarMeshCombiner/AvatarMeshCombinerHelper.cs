@@ -7,7 +7,8 @@ namespace DCL
 {
     public class AvatarMeshCombinerHelper : IDisposable
     {
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = LogType.Warning };
+        private static bool VERBOSE = true;
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
         public GameObject container { get; private set; }
         public SkinnedMeshRenderer renderer { get; private set; }
@@ -17,18 +18,16 @@ namespace DCL
             this.container = container;
         }
 
-        public void Combine(Transform root, SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine)
+        public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
             float time = Time.realtimeSinceStartup;
 
             SkinnedMeshRenderer[] renderers = renderersToCombine;
 
-            Material materialAsset = Resources.Load<Material>("OptimizedToonMaterial");
-
-            renderers = renderers.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToArray();
+            // Sanitize renderers list
             renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
 
-            bool combineSuccess = CombineInternal(
+            bool success = CombineInternal(
                 bonesContainer,
                 renderers,
                 materialAsset);
@@ -36,49 +35,28 @@ namespace DCL
             float totalTime = Time.realtimeSinceStartup - time;
             logger.Log("AvatarMeshCombiner.Combine time = " + totalTime);
 
-            if ( !combineSuccess )
-            {
-                return;
-            }
-
+            // Disable original renderers
             for ( int i = 0; i < renderers.Length; i++ )
             {
                 renderers[i].enabled = false;
             }
 
-            container.transform.SetParent( root, true );
+            return success;
         }
 
         internal bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
-            //
-            // Reset bones to put character in T pose. Renderers are going to be baked later.
-            // This is a workaround, it had to be done because renderers original matrices don't match the T pose.
-            // We need wearables in T pose to properly combine the avatar mesh. 
-            //
-            AvatarMeshCombinerUtils.ResetBones(bonesContainer);
+            AvatarMeshCombinerOutput output = AvatarMeshCombiner.CombineSkinnedMeshes(
+                bonesContainer.sharedMesh.bindposes,
+                bonesContainer.bones,
+                renderers,
+                materialAsset);
 
-            //
-            // Get combined layers. Layers are groups of renderers that have a id -> tex mapping.
-            //
-            // This id is going to get written to uv channels so the material can use up to 12 textures
-            // in a single draw call.
-            //
-            // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
-            //
-            var layers = CombineLayerUtils.Slice( renderers );
-
-            if ( layers == null )
+            if ( !output.isValid )
             {
                 logger.LogError("AvatarMeshCombiner", "Combine failed!");
                 return false;
             }
-
-            // Prepare mesh data for the combine operation
-            AvatarMeshCombinerOutput output = AvatarMeshCombiner.CombineSkinnedMeshes(
-                bonesContainer.sharedMesh.bindposes,
-                layers,
-                materialAsset);
 
             Transform rootBone = bonesContainer.rootBone;
 
@@ -87,7 +65,6 @@ namespace DCL
 
             if ( renderer == null )
                 renderer = container.AddComponent<SkinnedMeshRenderer>();
-
 
             UnloadAssets();
 

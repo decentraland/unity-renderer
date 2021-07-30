@@ -41,6 +41,7 @@ namespace DCL
 
     public struct AvatarMeshCombinerOutput
     {
+        public bool isValid;
         public Mesh mesh;
         public Material[] materials;
     }
@@ -54,11 +55,32 @@ namespace DCL
         private const int TEXTURE_POINTERS_UV_CHANNEL_INDEX = 2;
         private const int EMISSION_COLORS_UV_CHANNEL_INDEX = 3;
 
-        public static AvatarMeshCombinerOutput CombineSkinnedMeshes(Matrix4x4[] bindPoses, List<CombineLayer> layers, Material materialAsset)
+        public static AvatarMeshCombinerOutput CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
-            AvatarMeshCombinerOutput result;
+            AvatarMeshCombinerOutput result = new AvatarMeshCombinerOutput();
 
-            var renderers = layers.SelectMany( (x) => x.renderers ).ToList();
+            //
+            // Reset bones to put character in T pose. Renderers are going to be baked later.
+            // This is a workaround, it had to be done because renderers original matrices don't match the T pose.
+            // We need wearables in T pose to properly combine the avatar mesh. 
+            //
+            AvatarMeshCombinerUtils.ResetBones(bindPoses, bones);
+
+            //
+            // Get combined layers. Layers are groups of renderers that have a id -> tex mapping.
+            //
+            // This id is going to get written to uv channels so the material can use up to 12 textures
+            // in a single draw call.
+            //
+            // Layers are divided accounting for the 12 textures limit and transparency/opaque limit.
+            //
+            var layers = CombineLayerUtils.Slice( renderers );
+
+            if ( layers == null )
+            {
+                result.isValid = false;
+                return result;
+            }
 
             var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
             var combineInstancesData = AvatarMeshCombinerUtils.ComputeCombineInstancesData( layers );
@@ -119,6 +141,7 @@ namespace DCL
 
             result.mesh = finalMesh;
             result.materials = flattenedMaterialsData.materials.ToArray();
+            result.isValid = true;
 
             return result;
         }

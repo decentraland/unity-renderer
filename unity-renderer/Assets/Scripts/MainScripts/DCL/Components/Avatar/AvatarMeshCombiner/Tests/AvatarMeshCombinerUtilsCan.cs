@@ -17,7 +17,7 @@ public class AvatarMeshCombinerUtilsCan
         SkinnedMeshRenderer r = null;
 
         // Act
-        AvatarMeshCombinerUtils.ResetBones(r);
+        //AvatarMeshCombinerUtils.ResetBones(r);
 
         // Assert
         Assert.That(true, Is.False);

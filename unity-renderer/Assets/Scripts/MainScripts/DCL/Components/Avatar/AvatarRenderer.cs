@@ -359,7 +359,7 @@ namespace DCL
                 yield return null;
             }
 
-            //TODO(Brian): Evaluate using UniTask<T> instead of this way.
+            // TODO(Brian): Evaluate using UniTask<T> instead of this way.
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
             eyesController?.Load(bodyShapeController, model.eyeColor);
@@ -377,9 +377,10 @@ namespace DCL
                 OnVisualCue?.Invoke(VisualCue.Loaded);
             }
 
-            //TODO(Brian): unusedCategories and hiddenList management is a double negative PITA.
-            //             This method should define how the avatar looks like before loading it and put this information
-            //             in a positive list (i.e. not negative, because leads to double negative checks).
+            // TODO(Brian): unusedCategories and hiddenList management is a double negative PITA.
+            //              The load process should define how the avatar should look like before
+            //              loading it and put this information in a positive list
+            //              (i.e. not negative, because leads to double negative checks).
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
             bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
@@ -398,14 +399,27 @@ namespace DCL
 
             SetWearableBones();
 
-            //TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
+            // TODO(Brian): Expression and sticker update shouldn't be part of avatar loading code!!!! Refactor me please.
             UpdateExpressions(model.expressionTriggerId, model.expressionTriggerTimestamp);
+
             if (lastStickerTimestamp != model.stickerTriggerTimestamp && model.stickerTriggerId != null)
             {
                 lastStickerTimestamp = model.stickerTriggerTimestamp;
-                stickersController?.PlayEmote(model.stickerTriggerId);
+
+                if ( stickersController != null )
+                    stickersController.PlayEmote(model.stickerTriggerId);
             }
 
+            bool mergeSuccess = MergeAvatar();
+
+            if ( !mergeSuccess )
+            {
+                loadSoftFailed = true;
+            }
+
+            // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
+            //              before reaching this branching statement. The failure should be caught with a throw or other
+            //              proper language feature.
             if (loadSoftFailed)
             {
                 OnFailEvent?.Invoke(false);
@@ -413,13 +427,7 @@ namespace DCL
             else
             {
                 OnSuccessEvent?.Invoke();
-                avatarMeshCombiner.Combine(transform, bodyShapeController.upperBodyRenderer, allRenderers.ToArray());
             }
-        }
-
-        void CleanMergedAvatar()
-        {
-            avatarMeshCombiner.Dispose();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
@@ -456,8 +464,8 @@ namespace DCL
 
         private void SetWearableBones()
         {
-            //NOTE(Brian): Set bones/rootBone of all wearables to be the same of the baseBody,
-            //             so all of them are animated together.
+            // NOTE(Brian): Set bones/rootBone of all wearables to be the same of the baseBody,
+            //              so all of them are animated together.
             using (var enumerator = wearableControllers.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -565,6 +573,24 @@ namespace DCL
 
             bodyShapeController.SetFacialFeaturesVisible(visible, true);
         }
+
+        bool MergeAvatar()
+        {
+            var renderersToCombine = new List<SkinnedMeshRenderer>( allRenderers );
+            renderersToCombine = renderersToCombine.Where((r) => !r.transform.parent.gameObject.name.Contains("Mask")).ToList();
+            bool success = avatarMeshCombiner.Combine(bodyShapeController.upperBodyRenderer, renderersToCombine.ToArray(), defaultMaterial);
+
+            if ( success )
+                avatarMeshCombiner.container.transform.SetParent( transform, true );
+
+            return success;
+        }
+
+        void CleanMergedAvatar()
+        {
+            avatarMeshCombiner.Dispose();
+        }
+
 
         protected virtual void OnDestroy() { CleanupAvatar(); }
     }

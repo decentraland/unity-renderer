@@ -266,12 +266,8 @@ namespace DCL
         /// For this reason, this method doesn't resemble the original method that unity uses to reset the skeleton found here:
         /// https://github.com/Unity-Technologies/UnityCsReference/blob/61f92bd79ae862c4465d35270f9d1d57befd1761/Editor/Mono/Inspector/Avatar/AvatarSetupTool.cs#L890
         /// </summary>
-        /// <param name="renderer">The SkinnedMeshRenderer to be reset.</param>
-        internal static void ResetBones(SkinnedMeshRenderer renderer)
+        internal static void ResetBones(Matrix4x4[] bindPoses, Transform[] bones)
         {
-            var bindPoses = renderer.sharedMesh.bindposes;
-            var bones = renderer.bones;
-
             for ( int i = 0 ; i < bones.Length; i++ )
             {
                 Transform bone = bones[i];
@@ -288,14 +284,12 @@ namespace DCL
             }
 
 #if UNITY_EDITOR
-            DrawDebugSkeleton(renderer);
+            DrawDebugSkeleton(bones);
 #endif
         }
 
-        internal static void DrawDebugSkeleton(SkinnedMeshRenderer renderer)
+        internal static void DrawDebugSkeleton(Transform[] bones)
         {
-            var bones = renderer.bones;
-
             for ( int i = 0 ; i < bones.Length; i++ )
             {
                 Transform bone = bones[i];
