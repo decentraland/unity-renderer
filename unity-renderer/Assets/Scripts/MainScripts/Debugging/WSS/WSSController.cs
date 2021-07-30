@@ -494,7 +494,7 @@ namespace DCL
                                 GetBuilderInWorldBridge()?.BuilderInWorldCatalogHeaders(msg.payload);
                                 break;
                             case "AddAssets":
-                                GetBuilderInWorldBridge()?.BuilderInWorldSceneCatalog(msg.payload);
+                                GetBuilderInWorldBridge()?.AddAssets(msg.payload);
                                 break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds))
