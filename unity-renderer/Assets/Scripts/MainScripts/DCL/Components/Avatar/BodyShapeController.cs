@@ -58,62 +58,55 @@ public class BodyShapeController : WearableController, IBodyShapeController
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
     {
-        if (assetContainer?.transform == null)
+        if (assetContainer != null && assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyes when the asset not ready");
             return;
         }
 
+        material.SetTexture(AvatarUtils._EyesTexture, texture);
+        material.SetTexture(AvatarUtils._IrisMask, mask);
+        material.SetColor(AvatarUtils._EyeTint, color);
+
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
-            (mat) =>
-            {
-                material.SetTexture(AvatarUtils._EyesTexture, texture);
-                material.SetTexture(AvatarUtils._IrisMask, mask);
-                material.SetColor(AvatarUtils._EyeTint, color);
-                return material;
-            },
+            (mat) => material,
             "eyes");
     }
 
     public void SetupEyebrows(Material material, Texture texture, Color color)
     {
-        if (assetContainer?.transform == null)
+        if (assetContainer != null && assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup eyebrows when the asset not ready");
             return;
         }
 
+        material.SetTexture(AvatarUtils._BaseMap, texture);
+
+        //NOTE(Brian): This isn't an error, we must also apply hair color to this mat
+        material.SetColor(AvatarUtils._BaseColor, color);
+
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
-            (mat) =>
-            {
-                material.SetTexture(AvatarUtils._BaseMap, texture);
-
-                //NOTE(Brian): This isn't an error, we must also apply hair color to this mat
-                material.SetColor(AvatarUtils._BaseColor, color);
-
-                return material;
-            },
+            (mat) => material,
             "eyebrows");
     }
 
     public void SetupMouth(Material material, Texture texture, Texture mask, Color color)
     {
-        if (assetContainer?.transform == null)
+        if (assetContainer != null && assetContainer.transform == null)
         {
             Debug.LogWarning("Tried to setup mouth when the asset not ready");
             return;
         }
 
-        AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
-            (mat) =>
-            {
-                material.SetTexture(AvatarUtils._BaseMap, texture);
-                material.SetTexture(AvatarUtils._TintMask, mask);
+        material.SetTexture(AvatarUtils._BaseMap, texture);
+        material.SetTexture(AvatarUtils._TintMask, mask);
 
-                //NOTE(Brian): This isn't an error, we must also apply skin color to this mat
-                material.SetColor(AvatarUtils._BaseColor, color);
-                return material;
-            },
+        //NOTE(Brian): This isn't an error, we must also apply skin color to this mat
+        material.SetColor(AvatarUtils._BaseColor, color);
+
+        AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
+            (mat) => material,
             "mouth");
     }
 

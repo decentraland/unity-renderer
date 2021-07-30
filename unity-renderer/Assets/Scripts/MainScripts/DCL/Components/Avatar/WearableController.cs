@@ -23,11 +23,11 @@ public class WearableController
     public GameObject assetContainer => loader?.loadedAsset;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
-    protected SkinnedMeshRenderer[] assetRenderers;
-
     public bool boneRetargetingDirty = false;
-
     internal string lastMainFileLoaded = null;
+
+    protected SkinnedMeshRenderer[] assetRenderers;
+    Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
 
     public IReadOnlyList<SkinnedMeshRenderer> GetRenderers()
     {
@@ -79,6 +79,7 @@ public class WearableController
             }
 
             assetRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>();
+            StoreOriginalMaterials();
             PrepareWearable(gameObject);
             onSuccess?.Invoke(this);
         }
@@ -131,6 +132,7 @@ public class WearableController
 
     public void CleanUp()
     {
+        RestoreOriginalMaterials();
         assetRenderers = null;
 
         if (loader != null)
@@ -166,5 +168,28 @@ public class WearableController
             return false;
 
         return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
+    }
+
+
+    private void StoreOriginalMaterials()
+    {
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            if (originalMaterials.ContainsKey(assetRenderers[i]))
+                continue;
+
+            originalMaterials.Add(assetRenderers[i], assetRenderers[i].sharedMaterials.ToArray());
+        }
+    }
+
+    private void RestoreOriginalMaterials()
+    {
+        foreach (var kvp in originalMaterials)
+        {
+            if (kvp.Key != null)
+                kvp.Key.materials = kvp.Value;
+        }
+
+        originalMaterials.Clear();
     }
 }
