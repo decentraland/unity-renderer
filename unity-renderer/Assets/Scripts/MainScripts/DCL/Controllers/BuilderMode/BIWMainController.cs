@@ -12,7 +12,7 @@ using Environment = DCL.Environment;
 
 public class BIWMainController : Feature
 {
-    public static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
+    internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
 
     private GameObject cursorGO;

@@ -17,7 +17,7 @@ public interface IBIWOutlinerController
 
 public class BIWOutlinerController : BIWController, IBIWOutlinerController
 {
-    public const int OUTLINER_OPTIMIZATION_TIMES = 10;
+    internal const int OUTLINER_OPTIMIZATION_TIMES = 10;
     private const int BUILDER_RENDERER_INDEX = 1;
 
     private Material cameraOutlinerMaterial;
