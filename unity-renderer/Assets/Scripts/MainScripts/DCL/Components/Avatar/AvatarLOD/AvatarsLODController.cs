@@ -9,8 +9,7 @@ namespace DCL
         private const float LODS_VERTICAL_MOVEMENT = 0.1f;
         private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
 
-        private List<IAvatarRenderer> avatarsList = new List<IAvatarRenderer>();
-        private float lastLODsVerticalMovementTime = -1;
+        private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
 
         public AvatarsLODController()
         {
@@ -28,20 +27,20 @@ namespace DCL
 
             UpdateAllLODs();
 
-            UpdateLODsVerticalMovementAndBillboard();
+            UpdateLODsBillboard();
         }
 
-        public void RegisterAvatar(IAvatarRenderer newAvatar)
+        public void RegisterAvatar(AvatarLODController newAvatar)
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar))
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar) || newAvatar == null)
                 return;
 
             avatarsList.Add(newAvatar);
         }
 
-        public void RemoveAvatar(IAvatarRenderer targetAvatar)
+        public void RemoveAvatar(AvatarLODController targetAvatar)
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar))
+            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar) || targetAvatar == null)
                 return;
 
             int listCount = avatarsList.Count;
@@ -51,24 +50,22 @@ namespace DCL
                 {
                     avatarsList.RemoveAt(i);
 
+                    targetAvatar.ToggleLOD(false);
+
                     return;
                 }
             }
         }
 
-        private void UpdateLODsVerticalMovementAndBillboard()
+        private void UpdateLODsBillboard()
         {
             int listCount = avatarsList.Count;
-            bool applyVerticalMovement = Time.timeSinceLevelLoad - lastLODsVerticalMovementTime > LODS_VERTICAL_MOVEMENT_DELAY;
             GameObject lodGO;
             for (int i = 0; i < listCount; i++)
             {
-                lodGO = avatarsList[i].GetLODRenderer().gameObject;
+                lodGO = avatarsList[i].meshRenderer.gameObject;
                 if (!lodGO.activeSelf)
                     continue;
-
-                if (applyVerticalMovement)
-                    lodGO.transform.localPosition = new Vector3(lodGO.transform.localPosition.x, (lodGO.transform.localPosition.y > LODS_LOCAL_Y_POS ? LODS_LOCAL_Y_POS : LODS_LOCAL_Y_POS + LODS_VERTICAL_MOVEMENT), lodGO.transform.localPosition.z);
 
                 Vector3 previousForward = lodGO.transform.forward;
                 Vector3 lookAtDir = (lodGO.transform.position - CommonScriptableObjects.cameraPosition).normalized;
@@ -77,9 +74,6 @@ namespace DCL
 
                 lodGO.transform.forward = lookAtDir;
             }
-
-            if (applyVerticalMovement)
-                lastLODsVerticalMovementTime = Time.timeSinceLevelLoad;
         }
 
         public void Dispose() { }
@@ -89,33 +83,35 @@ namespace DCL
             if (!DataStore.i.avatarsLOD.LODEnabled.Get())
                 return;
 
-            SortedList<float, IAvatarRenderer> closeDistanceAvatars = new SortedList<float, IAvatarRenderer>();
-            foreach (IAvatarRenderer avatar in avatarsList)
+            SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
+            foreach (AvatarLODController avatar in avatarsList)
             {
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.GetTransform().position);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
-                    ToggleLOD(avatar, true);
+                {
+                    avatar.ToggleLOD(true);
+                }
                 else
+                {
+                    while (closeDistanceAvatars.ContainsKey(distanceToPlayer))
+                    {
+                        distanceToPlayer += 0.0001f;
+                    }
                     closeDistanceAvatars.Add(distanceToPlayer, avatar);
+                }
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            IAvatarRenderer currentAvatar;
+            AvatarLODController currentAvatar;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
                 currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
 
-                ToggleLOD(currentAvatar, isLOD);
+                currentAvatar.ToggleLOD(isLOD);
             }
-        }
-
-        private void ToggleLOD(IAvatarRenderer avatarRenderer, bool enabled)
-        {
-            avatarRenderer.GetLODRenderer().gameObject.SetActive(enabled);
-            avatarRenderer.SetVisibility(!enabled); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
         }
     }
 }
