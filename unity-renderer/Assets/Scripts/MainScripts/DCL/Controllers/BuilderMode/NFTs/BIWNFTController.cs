@@ -128,7 +128,7 @@ public class BIWNFTController
                 (error) =>
                 {
                     desactivateNFT = true;
-                    Debug.Log($"error getting NFT from owner:  {error}");
+                    Debug.LogError($"error getting NFT from owner:  {error}");
                 });
         }
     }

@@ -27,7 +27,7 @@ public class BIWMode
 
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
-    protected bool isSnapActive = false, isMultiSelectionActive = false, isModeActive = false;
+    protected bool isSnapActiveValue = false, isMultiSelectionActive = false, isModeActive = false;
     protected List<BIWEntity> selectedEntities;
 
     protected bool isNewObjectPlaced = false;
@@ -66,16 +66,16 @@ public class BIWMode
 
     public virtual void SetSnapActive(bool isActive)
     {
-        if (isActive && !isSnapActive)
+        if (isActive && !isSnapActiveValue)
             AudioScriptableObjects.enable.Play();
-        else if (!isActive && isSnapActive)
+        else if (!isActive && isSnapActiveValue)
             AudioScriptableObjects.disable.Play();
 
-        isSnapActive = isActive;
-        HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActive);
+        isSnapActiveValue = isActive;
+        HUDController.i.builderInWorldMainHud?.SetSnapModeActive(isSnapActiveValue);
     }
 
-    public bool IsSnapActive => isSnapActive;
+    public bool isSnapActive => isSnapActiveValue;
 
     public virtual void StartMultiSelection() { isMultiSelectionActive = true; }
 

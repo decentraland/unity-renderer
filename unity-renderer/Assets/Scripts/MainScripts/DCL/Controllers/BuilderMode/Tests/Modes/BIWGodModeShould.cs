@@ -95,7 +95,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnStarted();
 
         //Assert
-        Assert.IsTrue(godMode.IsSnapActive);
+        Assert.IsTrue(godMode.isSnapActive);
     }
 
     [Test]
@@ -110,7 +110,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         context.inputsReferencesAsset.multiSelectionInputAction.RaiseOnFinished();
 
         //Assert
-        Assert.IsFalse(godMode.IsSnapActive);
+        Assert.IsFalse(godMode.isSnapActive);
     }
 
     [Test]

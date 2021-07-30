@@ -23,9 +23,8 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
     private Material cameraOutlinerMaterial;
 
     private IBIWRaycastController raycastController;
-    private IBIWEntityHandler entityHandler;
 
-    private List<BIWEntity> entitiesOutlined = new List<BIWEntity>();
+    private readonly List<BIWEntity> entitiesOutlined = new List<BIWEntity>();
     private int outlinerOptimizationCounter = 0;
     private bool isOutlineCheckActive = true;
 
@@ -34,7 +33,6 @@ public class BIWOutlinerController : BIWController, IBIWOutlinerController
         base.Init(context);
         cameraOutlinerMaterial = context.projectReferencesAsset.cameraOutlinerMaterial;
 
-        entityHandler = context.entityHandler;
         raycastController = context.raycastController;
     }
 

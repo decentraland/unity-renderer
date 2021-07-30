@@ -12,7 +12,8 @@ namespace Tests.BuildModeHUDControllers
 {
     /// <summary>
     /// TODO: This is using IntegrationTestSuite_Legacy instead of the normal because there is a bug in the NSustitute library
-    /// where the IDCLEntity are not mocked correctly. After it is fixed, we should go to IntegrationTestSuite 
+    /// where the IDCLEntity are not mocked correctly, when you try to use Substitute.For<IDCLEntity>() there is a null reference in the variable pointer to an exception in the castle library
+    /// After it is fixed, we should go to IntegrationTestSuite 
     /// </summary>
     public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {

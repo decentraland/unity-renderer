@@ -83,9 +83,7 @@ public class BIWMainController : Feature
         BIWCatalogManager.Init();
 
         CreateControllers();
-        InitReferences(InitialSceneReferences.i
-        );
-
+        InitReferences(InitialSceneReferences.i);
 
         if (builderInWorldBridge != null)
         {

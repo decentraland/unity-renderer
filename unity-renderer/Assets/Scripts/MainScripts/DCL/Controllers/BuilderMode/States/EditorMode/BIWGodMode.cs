@@ -179,7 +179,7 @@ public class BIWGodMode : BIWMode
     private void ChangeSnapTemporaryDeactivated()
     {
         if (changeSnapTemporaryButtonPressed)
-            SetSnapActive(!isSnapActive);
+            SetSnapActive(!isSnapActiveValue);
 
         changeSnapTemporaryButtonPressed = false;
     }
@@ -191,7 +191,7 @@ public class BIWGodMode : BIWMode
 
         changeSnapTemporaryButtonPressed = true;
 
-        SetSnapActive(!isSnapActive);
+        SetSnapActive(!isSnapActiveValue);
     }
 
     private void EntitiesTransfromByGizmos(Vector3 transformValue)
@@ -297,7 +297,7 @@ public class BIWGodMode : BIWMode
             Vector3 currentPoint = raycastController.GetFloorPointAtMouse(mousePosition);
             Vector3 initialEntityPosition = editionGO.transform.position;
 
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
                 initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
@@ -373,7 +373,7 @@ public class BIWGodMode : BIWMode
 
         dragStartedPoint = raycastController.GetFloorPointAtMouse(position);
 
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             dragStartedPoint.x = Mathf.Round(dragStartedPoint.x);
             dragStartedPoint.z = Mathf.Round(dragStartedPoint.z);
@@ -647,7 +647,7 @@ public class BIWGodMode : BIWMode
     {
         base.SetSnapActive(isActive);
 
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             gizmoManager.SetSnapFactor(snapFactor, snapRotationDegresFactor, snapScaleFactor);
         }
@@ -781,7 +781,7 @@ public class BIWGodMode : BIWMode
     {
         if (raycastController.RayCastFloor(out Vector3 destination))
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 destination.x = Mathf.Round(destination.x / snapDragFactor) * snapDragFactor;
                 destination.z = Mathf.Round(destination.z / snapDragFactor) * snapDragFactor;
