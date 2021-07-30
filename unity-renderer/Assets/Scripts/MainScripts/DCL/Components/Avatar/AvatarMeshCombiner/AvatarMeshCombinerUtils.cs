@@ -255,6 +255,27 @@ namespace DCL
             return result;
         }
 
+        public static Mesh CombineMeshesWithLayers( List<CombineInstance> combineInstancesData, List<CombineLayer> layers )
+        {
+            Mesh result = new Mesh();
+            // Is important to use the layerRenderers to combine (i.e. no the original renderers)
+            // Layer renderers are in a specific order that must be abided, or the combining will be broken.
+            List<SkinnedMeshRenderer> layerRenderers = new List<SkinnedMeshRenderer>();
+
+            for (int i = 0; i < layers.Count; i++)
+            {
+                layerRenderers.AddRange( layers[i].renderers );
+            }
+
+            using (var bakedInstances = new BakedCombineInstances())
+            {
+                bakedInstances.Bake(combineInstancesData, layerRenderers);
+                result.CombineMeshes(combineInstancesData.ToArray(), true, true);
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// ResetBones will reset the given SkinnedMeshRenderer bones to the original bindposes position.
         /// 

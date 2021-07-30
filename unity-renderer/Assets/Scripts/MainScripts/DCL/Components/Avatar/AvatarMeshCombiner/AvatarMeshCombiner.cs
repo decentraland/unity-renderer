@@ -4,10 +4,12 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 namespace DCL
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class CombineLayer
     {
         public List<SkinnedMeshRenderer> renderers = new List<SkinnedMeshRenderer>();
@@ -31,6 +33,9 @@ namespace DCL
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class FlattenedMaterialsData
     {
         public List<Material> materials = new List<Material>();
@@ -39,25 +44,34 @@ namespace DCL
         public List<Vector4> emissionColors = new List<Vector4>();
     }
 
-    public struct AvatarMeshCombinerOutput
-    {
-        public bool isValid;
-        public Mesh mesh;
-        public Material[] materials;
-    }
-
+    /// <summary>
+    /// 
+    /// </summary>
     public static class AvatarMeshCombiner
     {
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler);
+        public struct Output
+        {
+            public bool isValid;
+            public Mesh mesh;
+            public Material[] materials;
+        }
 
         // These must match the channels defined in the material shader.
         // Channels must be defined with the TEXCOORD semantic.
         private const int TEXTURE_POINTERS_UV_CHANNEL_INDEX = 2;
         private const int EMISSION_COLORS_UV_CHANNEL_INDEX = 3;
 
-        public static AvatarMeshCombinerOutput CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bindPoses"></param>
+        /// <param name="bones"></param>
+        /// <param name="renderers"></param>
+        /// <param name="materialAsset"></param>
+        /// <returns></returns>
+        public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
-            AvatarMeshCombinerOutput result = new AvatarMeshCombinerOutput();
+            Output result = new Output();
 
             //
             // Reset bones to put character in T pose. Renderers are going to be baked later.
@@ -82,54 +96,36 @@ namespace DCL
                 return result;
             }
 
-            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
+            // Here, the final combined mesh is generated. This mesh still doesn't have the UV encoded
+            // samplers and some needed attributes. Those will be added below.
             var combineInstancesData = AvatarMeshCombinerUtils.ComputeCombineInstancesData( layers );
-            var subMeshDescriptors = AvatarMeshCombinerUtils.ComputeSubMeshes( layers );
-            var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
+            Mesh finalMesh = AvatarMeshCombinerUtils.CombineMeshesWithLayers(combineInstancesData, layers);
 
-            int combineInstancesCount = combineInstancesData.Count;
-
-            for ( int i = 0; i < combineInstancesCount; i++)
-            {
-                Mesh mesh = new Mesh();
-
-                // Important note: It seems that mesh normals are scaled by the matrix when using BakeMesh.
-                //                 This is wrong and and shouldn't happen, so we have to arrange them manually.
-                //
-                //                 We DON'T do this yet because the meshes can be read-only, so the original
-                //                 normals can't be extracted. For normals, visual artifacts are minor because
-                //                 toon shader doesn't use any kind of normal mapping.
-                renderers[i].BakeMesh(mesh, true);
-
-                var combinedInstance = combineInstancesData[i];
-                combinedInstance.mesh = mesh;
-
-                combineInstancesData[i] = combinedInstance;
-            }
-
-            Mesh finalMesh = new Mesh();
-            finalMesh.CombineMeshes(combineInstancesData.ToArray(), true, true);
-
-            // The avatar is combined, so we can destroy the baked meshes.
-            for ( int i = 0; i < combineInstancesCount; i++ )
-            {
-                if ( combineInstancesData[i].mesh != null )
-                    Object.Destroy(combineInstancesData[i].mesh);
-            }
-
-            // bindposes and boneWeights have to be reassigned because CombineMeshes doesn't identify
-            // different meshes with boneWeights that correspond to the same bones. Also, bindposes are
+            // Note about bindPoses and boneWeights reassignment:
+            //
+            // This has to be done because CombineMeshes doesn't identify different meshes
+            // with boneWeights that correspond to the same bones. Also, bindposes are
             // stacked and repeated for each mesh when they shouldn't.
             //
-            // Basically, Mesh.CombineMeshes is bugged for this use case and this is a workaround.
+            // This is OK when combining multiple SkinnedMeshRenderers that animate independently,
+            // but not in our use case. 
 
             finalMesh.bindposes = bindPoses;
+
+            var boneWeights = AvatarMeshCombinerUtils.ComputeBoneWeights( layers );
             finalMesh.boneWeights = boneWeights.ToArray();
 
+            var flattenedMaterialsData = AvatarMeshCombinerUtils.FlattenMaterials( layers, materialAsset );
             finalMesh.SetUVs(EMISSION_COLORS_UV_CHANNEL_INDEX, flattenedMaterialsData.emissionColors);
             finalMesh.SetUVs(TEXTURE_POINTERS_UV_CHANNEL_INDEX, flattenedMaterialsData.texturePointers);
             finalMesh.SetColors(flattenedMaterialsData.colors);
 
+            // Each layer corresponds with a subMesh. This is to take advantage of the sharedMaterials array.
+            //
+            // When a renderer has many sub-meshes, each materials array element correspond to the sub-mesh of
+            // the same index. Each layer needs to be renderer with its own material, so it becomes very useful.
+            //
+            var subMeshDescriptors = AvatarMeshCombinerUtils.ComputeSubMeshes( layers );
             if ( subMeshDescriptors.Count > 1 )
             {
                 finalMesh.subMeshCount = subMeshDescriptors.Count;

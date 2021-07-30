@@ -5,6 +5,9 @@ using Object = UnityEngine.Object;
 
 namespace DCL
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AvatarMeshCombinerHelper : IDisposable
     {
         private static bool VERBOSE = true;
@@ -18,6 +21,13 @@ namespace DCL
             this.container = container;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bonesContainer"></param>
+        /// <param name="renderersToCombine"></param>
+        /// <param name="materialAsset"></param>
+        /// <returns></returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
             float time = Time.realtimeSinceStartup;
@@ -44,9 +54,16 @@ namespace DCL
             return success;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bonesContainer"></param>
+        /// <param name="renderers"></param>
+        /// <param name="materialAsset"></param>
+        /// <returns></returns>
         internal bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
-            AvatarMeshCombinerOutput output = AvatarMeshCombiner.CombineSkinnedMeshes(
+            AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,
                 renderers,
@@ -82,6 +99,9 @@ namespace DCL
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void UnloadAssets()
         {
             if (renderer == null)
