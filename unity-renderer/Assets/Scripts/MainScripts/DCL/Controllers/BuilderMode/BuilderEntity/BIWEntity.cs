@@ -147,7 +147,7 @@ public class BIWEntity
             return associatedCatalogItem;
 
         //If the item doesn't exist in the catalog, we fallback to the catalog of the scene 
-        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
         //Error 404: Item not found, we show a pink box to represent the item

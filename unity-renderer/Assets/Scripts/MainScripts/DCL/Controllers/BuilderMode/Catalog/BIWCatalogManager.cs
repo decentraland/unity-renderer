@@ -100,7 +100,7 @@ public static class BIWCatalogManager
         return assetPackDic.Values.OrderBy(x => x.title).ToList();
     }
 
-    public static void AddSceneObject(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.dataStoreBuilderInWorld.catalogItemDict); }
+    public static void AddSceneObject(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.builderInWorld.catalogItemDict); }
 
     public static void AddSceneObject(SceneObject sceneObject , BaseDictionary<string, CatalogItem> catalogToAdd )
     {
@@ -111,7 +111,7 @@ public static class BIWCatalogManager
         catalogToAdd.Add(catalogItem.id, catalogItem);
     }
 
-    public static void AddSceneCatalog(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict); }
+    public static void AddSceneCatalog(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.builderInWorld.currentSceneCatalogItemDict); }
 
     public static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
     {
