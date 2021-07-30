@@ -56,6 +56,18 @@ public class BuilderInWorldBridge : MonoBehaviour
         }
     }
 
+    public void BuilderInWorldSceneCatalog(string payload)
+    {
+        //We remove the old assets to they don't collide with the new ones
+        foreach (var catalogItem in DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.GetValues())
+        {
+            AssetCatalogBridge.i.RemoveSceneObjectToSceneCatalog(catalogItem.id);
+        }
+        DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.Clear();
+
+        AssetCatalogBridge.i.AddSceneObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
+    }
+
     public void BuilderInWorldCatalogHeaders(string payload) { OnCatalogHeadersReceived?.Invoke(payload); }
 
     public void BuilderProjectInfo(string payload)
