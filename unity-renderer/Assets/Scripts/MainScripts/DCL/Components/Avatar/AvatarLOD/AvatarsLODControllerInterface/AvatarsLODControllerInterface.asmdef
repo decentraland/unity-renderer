@@ -1,7 +1,8 @@
 {
-    "name": "AvatarRendererInterface",
+    "name": "AvatarsLODControllerInterface",
     "rootNamespace": "",
     "references": [
+        "GUID:46cbc133d57a24117993396eb0fbbc5a",
         "GUID:09421665db03949048c48febfea4311f"
     ],
     "includePlatforms": [],
@@ -9,7 +10,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
