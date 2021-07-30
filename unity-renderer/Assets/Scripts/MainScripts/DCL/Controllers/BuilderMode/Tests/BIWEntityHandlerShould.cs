@@ -245,7 +245,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         //Arrange
         var newEntity = entityHandler.CreateEmptyEntity(scene, Vector3.one * 99999, Vector3.one * 99999, false);
         newEntity.isNew = true;
-        newEntity.rootEntity.transform.position = Vector3.one * 444;
+        newEntity.rootEntity.gameObject.transform.position = Vector3.one * 444;
 
         TestHelpers.CreateAndSetShape(scene, newEntity.rootEntity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new

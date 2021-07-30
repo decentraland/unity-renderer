@@ -192,7 +192,7 @@ public class VoxelController
     {
         foreach (BIWEntity voxelEntity in voxelEntities)
         {
-            if (position == ConverPositionToVoxelPosition(voxelEntity.rootEntity.transform.position))
+            if (position == ConverPositionToVoxelPosition(voxelEntity.rootEntity.gameObject.transform.position))
                 return true;
         }
 
@@ -218,7 +218,7 @@ public class VoxelController
 
         if (isCreatingMultipleVoxels)
         {
-            lastVoxelCreated.rootEntity.transform.SetParent(null);
+            lastVoxelCreated.rootEntity.gameObject.transform.SetParent(null);
             bool canVoxelsBeCreated = true;
 
             foreach (VoxelPrefab voxel in createdVoxels.Values)
@@ -276,7 +276,7 @@ public class VoxelController
         if (buttonID != 0 || !isVoxelModelActivated || lastVoxelCreated == null)
             return;
 
-        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.rootEntity.transform.position);
+        lastVoxelPositionPressed = ConverPositionToVoxelPosition(lastVoxelCreated.rootEntity.gameObject.transform.position);
         mousePressed = true;
         freeCameraMovement.SetCameraCanMove(false);
         isCreatingMultipleVoxels = true;
@@ -285,7 +285,7 @@ public class VoxelController
     public void SetVoxelSelected(BIWEntity decentralandEntityToEdit)
     {
         lastVoxelCreated = decentralandEntityToEdit;
-        lastVoxelCreated.rootEntity.transform.localPosition = Vector3.zero;
+        lastVoxelCreated.rootEntity.gameObject.transform.localPosition = Vector3.zero;
     }
 
     public Vector3Int ConverPositionToVoxelPosition(Vector3 rawPosition)

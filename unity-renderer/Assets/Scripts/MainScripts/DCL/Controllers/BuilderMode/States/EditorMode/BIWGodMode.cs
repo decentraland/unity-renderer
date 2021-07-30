@@ -225,7 +225,7 @@ public class BIWGodMode : BIWMode
             return;
 
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
-        selectedEntities[0].rootEntity.transform.rotation = Quaternion.Euler(rotation);
+        selectedEntities[0].rootEntity.gameObject.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.ROTATE);
         entityHandler.ReportTransform(true);
@@ -241,10 +241,10 @@ public class BIWGodMode : BIWMode
 
         TransformActionStarted(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
-        entityToUpdate.rootEntity.transform.SetParent(null);
-        entityToUpdate.rootEntity.transform.localScale = scale;
+        entityToUpdate.rootEntity.gameObject.transform.SetParent(null);
+        entityToUpdate.rootEntity.gameObject.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
-        entityToUpdate.rootEntity.transform.SetParent(editionGO.transform);
+        entityToUpdate.rootEntity.gameObject.transform.SetParent(editionGO.transform);
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.SCALE);

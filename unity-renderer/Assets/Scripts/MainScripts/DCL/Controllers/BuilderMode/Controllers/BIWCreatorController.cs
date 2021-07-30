@@ -165,7 +165,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
             return;
 
         GameObject instantiatedError = GameObject.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
-        instantiatedError.transform.SetParent(entity.rootEntity.transform, true);
+        instantiatedError.transform.SetParent(entity.rootEntity.gameObject.transform, true);
         instantiatedError.transform.localPosition = Vector3.zero;
 
         errorGameObjects.Add(entity, instantiatedError);

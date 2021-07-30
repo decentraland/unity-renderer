@@ -34,7 +34,7 @@ public class BIWGodCameraShould : IntegrationTestSuite_Legacy
 
         BIWEntity newEntity = new BIWEntity();
         newEntity.Init(TestHelpers.CreateSceneEntity(scene, entityId), null);
-        newEntity.rootEntity.transform.position = Vector3.one * 444;
+        newEntity.rootEntity.gameObject.transform.position = Vector3.one * 444;
 
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new

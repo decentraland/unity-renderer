@@ -11,7 +11,7 @@ using UnityEngine;
 public class BIWEntity
 {
     public GameObject gameObject => rootEntity.gameObject;
-    public Transform transform => rootEntity.transform;
+    public Transform transform => rootEntity.gameObject.transform;
 
     public IDCLEntity rootEntity { protected set; get; }
     public string entityUniqueId;
@@ -148,17 +148,17 @@ public class BIWEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
-    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.gameObject.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
 
-    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
+    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.gameObject.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
 
-    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
+    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.gameObject.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
 
-    public void PositionReported() { lastPositionReported = rootEntity.transform.position; }
+    public void PositionReported() { lastPositionReported = rootEntity.gameObject.transform.position; }
 
-    public void ScaleReported() { lastScaleReported = rootEntity.transform.lossyScale; }
+    public void ScaleReported() { lastScaleReported = rootEntity.gameObject.transform.lossyScale; }
 
-    public void RotationReported() { lastRotationReported = rootEntity.transform.rotation; }
+    public void RotationReported() { lastRotationReported = rootEntity.gameObject.transform.rotation; }
 
     #region Error Handling
 
@@ -197,9 +197,9 @@ public class BIWEntity
         isSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
-        lastPositionReported = rootEntity.transform.position;
-        lastScaleReported = rootEntity.transform.lossyScale;
-        lastRotationReported = rootEntity.transform.rotation;
+        lastPositionReported = rootEntity.gameObject.transform.position;
+        lastScaleReported = rootEntity.gameObject.transform.lossyScale;
+        lastRotationReported = rootEntity.gameObject.transform.rotation;
     }
 
     public void Deselect()
@@ -611,7 +611,7 @@ public class BIWEntity
 
         //Note: When we are duplicating the GLTF and NFT component, their colliders are duplicated too
         //So we eliminate any previous collider to ensure that only 1 collider remain active
-        Transform[] children = rootEntity.transform.GetComponentsInChildren<Transform>();
+        Transform[] children = rootEntity.gameObject.transform.GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
             if (child.gameObject.layer ==  BIWSettings.COLLIDER_SELECTION_LAYER)
