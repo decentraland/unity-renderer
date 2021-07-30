@@ -7,7 +7,7 @@ using UnityEngine;
 ///
 /// This will handle all the monobehaviour callbacks when your feature is activated
 /// </summary>
-public abstract class Feature
+public abstract class PluginFeature
 {
     public virtual void Initialize() { }
     //Note: Do not use OnGUI, try to avoid it if possible since it can be called multiple times per frame
