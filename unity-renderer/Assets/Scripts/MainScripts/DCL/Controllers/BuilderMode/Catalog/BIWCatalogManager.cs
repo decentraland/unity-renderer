@@ -15,7 +15,8 @@ public static class BIWCatalogManager
         if (!IS_INIT)
         {
             BIWNFTController.i.OnNftsFetched += ConvertCollectiblesPack;
-            AssetCatalogBridge.OnSceneObjectAdded += AddSceneObject;
+            AssetCatalogBridge.OnItemAdded += AddSceneObject;
+            AssetCatalogBridge.OnSceneCatalogItemAdded += AddSceneCatalog;
             AssetCatalogBridge.OnSceneAssetPackAdded += AddSceneAssetPack;
             IS_INIT = true;
         }
@@ -24,7 +25,8 @@ public static class BIWCatalogManager
     public static void Dispose()
     {
         BIWNFTController.i.OnNftsFetched -= ConvertCollectiblesPack;
-        AssetCatalogBridge.OnSceneObjectAdded -= AddSceneObject;
+        AssetCatalogBridge.OnItemAdded -= AddSceneObject;
+        AssetCatalogBridge.OnSceneCatalogItemAdded -= AddSceneCatalog;
         AssetCatalogBridge.OnSceneAssetPackAdded -= AddSceneAssetPack;
         IS_INIT = false;
     }
@@ -98,14 +100,18 @@ public static class BIWCatalogManager
         return assetPackDic.Values.OrderBy(x => x.title).ToList();
     }
 
-    public static void AddSceneObject(SceneObject sceneObject)
+    public static void AddSceneObject(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.dataStoreBuilderInWorld.catalogItemDict); }
+
+    public static void AddSceneObject(SceneObject sceneObject , BaseDictionary<string, CatalogItem> catalogToAdd )
     {
-        if (DataStore.i.builderInWorld.catalogItemDict.ContainsKey(sceneObject.id))
+        if (catalogToAdd.ContainsKey(sceneObject.id))
             return;
 
         CatalogItem catalogItem = CreateCatalogItem(sceneObject);
-        DataStore.i.builderInWorld.catalogItemDict.Add(catalogItem.id, catalogItem);
+        catalogToAdd.Add(catalogItem.id, catalogItem);
     }
+
+    public static void AddSceneCatalog(SceneObject sceneObject) { AddSceneObject(sceneObject, DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict); }
 
     public static void AddSceneAssetPack(SceneAssetPack sceneAssetPack)
     {
@@ -120,6 +126,9 @@ public static class BIWCatalogManager
 
     public static string GetAssetPackNameById(string assetPackId)
     {
+        if (string.IsNullOrEmpty(assetPackId))
+            return "";
+
         DataStore.i.builderInWorld.catalogItemPackDict.TryGetValue(assetPackId, out CatalogItemPack catalogItemPack);
         if (catalogItemPack != null)
             return catalogItemPack.title;

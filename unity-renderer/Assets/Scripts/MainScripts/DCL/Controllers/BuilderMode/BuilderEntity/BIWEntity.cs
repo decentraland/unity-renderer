@@ -134,15 +134,23 @@ public class BIWEntity
         if (rootEntity == null)
             return null;
 
+        //We get the catalog reference  
         IAssetCatalogReferenceHolder catalogHolder = rootEntity.TryGetComponent<IAssetCatalogReferenceHolder>();
         if (catalogHolder == null)
             return null;
 
+        //we get the assetId to search in the catalog for the item
         string assetId = catalogHolder.GetAssetId();
 
+        //We try to get the item from the main catalog that is usable right now
         if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
+        //If the item doesn't exist in the catalog, we fallback to the catalog of the scene 
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+            return associatedCatalogItem;
+
+        //Error 404: Item not found, we show a pink box to represent the item
         return null;
     }
 
