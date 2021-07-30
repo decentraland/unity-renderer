@@ -11,7 +11,7 @@ using UnityEngine;
 public class BIWEntity
 {
     public GameObject gameObject => rootEntity.gameObject;
-    public Transform transform => rootEntity.transform;
+    public Transform transform => rootEntity.gameObject.transform;
 
     public IDCLEntity rootEntity { protected set; get; }
     public string entityUniqueId;
@@ -21,7 +21,8 @@ public class BIWEntity
     public event Action<BIWEntity> OnDelete;
     public event Action<BIWEntity> OnErrorStatusChange;
 
-    public bool IsLocked
+    public bool isDeleted { get; private set; }
+    public bool isLocked
     {
         get { return GetIsLockedValue(); }
         set
@@ -33,7 +34,7 @@ public class BIWEntity
 
     private bool isSelectedValue = false;
 
-    public bool IsSelected
+    public bool isSelected
     {
         get { return isSelectedValue; }
         set
@@ -45,7 +46,7 @@ public class BIWEntity
 
     private bool isNewValue = false;
 
-    public bool IsNew
+    public bool isNew
     {
         get { return isNewValue; }
         set
@@ -57,12 +58,14 @@ public class BIWEntity
 
     private bool isVisibleValue = true;
 
-    public bool IsVisible
+    public bool isVisible
     {
         get { return isVisibleValue; }
         set
         {
             isVisibleValue = value;
+            if (rootEntity != null && rootEntity.gameObject != null)
+                rootEntity.gameObject?.SetActive(isVisibleValue);
             OnStatusUpdate?.Invoke(this);
         }
     }
@@ -112,7 +115,7 @@ public class BIWEntity
 
         entityUniqueId = rootEntity.scene.sceneData.id + rootEntity.entityId;
         if (rootEntity.gameObject != null)
-            IsVisible = rootEntity.gameObject.activeSelf;
+            isVisible = rootEntity.gameObject.activeSelf;
 
         isShapeComponentSet = false;
         InitRotation();
@@ -140,11 +143,11 @@ public class BIWEntity
         string assetId = catalogHolder.GetAssetId();
 
         //We try to get the item from the main catalog that is usable right now
-        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.catalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
         //If the item doesn't exist in the catalog, we fallback to the catalog of the scene 
-        if (!string.IsNullOrEmpty(assetId) && DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
+        if (!string.IsNullOrEmpty(assetId) && DataStore.i.builderInWorld.currentSceneCatalogItemDict.TryGetValue(assetId, out associatedCatalogItem))
             return associatedCatalogItem;
 
         //Error 404: Item not found, we show a pink box to represent the item
@@ -153,17 +156,17 @@ public class BIWEntity
 
     public bool HasShape() { return isShapeComponentSet; }
 
-    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
+    public bool HasMovedSinceLastReport() { return Vector3.Distance(lastPositionReported, rootEntity.gameObject.transform.position) >= BIWSettings.ENTITY_POSITION_REPORTING_THRESHOLD; }
 
-    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
+    public bool HasScaledSinceLastReport() { return Math.Abs(lastScaleReported.magnitude - rootEntity.gameObject.transform.lossyScale.magnitude) >= BIWSettings.ENTITY_SCALE_REPORTING_THRESHOLD; }
 
-    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
+    public bool HasRotatedSinceLastReport() { return Quaternion.Angle(lastRotationReported, rootEntity.gameObject.transform.rotation) >= BIWSettings.ENTITY_ROTATION_REPORTING_THRESHOLD; }
 
-    public void PositionReported() { lastPositionReported = rootEntity.transform.position; }
+    public void PositionReported() { lastPositionReported = rootEntity.gameObject.transform.position; }
 
-    public void ScaleReported() { lastScaleReported = rootEntity.transform.lossyScale; }
+    public void ScaleReported() { lastScaleReported = rootEntity.gameObject.transform.lossyScale; }
 
-    public void RotationReported() { lastRotationReported = rootEntity.transform.rotation; }
+    public void RotationReported() { lastRotationReported = rootEntity.gameObject.transform.rotation; }
 
     #region Error Handling
 
@@ -199,21 +202,21 @@ public class BIWEntity
 
     public void Select()
     {
-        IsSelected = true;
+        isSelected = true;
         originalParent = rootEntity.gameObject.transform.parent;
         SetEditMaterial();
-        lastPositionReported = rootEntity.transform.position;
-        lastScaleReported = rootEntity.transform.lossyScale;
-        lastRotationReported = rootEntity.transform.rotation;
+        lastPositionReported = rootEntity.gameObject.transform.position;
+        lastScaleReported = rootEntity.gameObject.transform.lossyScale;
+        lastRotationReported = rootEntity.gameObject.transform.rotation;
     }
 
     public void Deselect()
     {
-        if (!IsSelected)
+        if (!isSelected)
             return;
 
-        IsNew = false;
-        IsSelected = false;
+        isNew = false;
+        isSelected = false;
         if (rootEntity.gameObject != null)
             rootEntity.gameObject.transform.SetParent(originalParent);
 
@@ -223,11 +226,11 @@ public class BIWEntity
     public void ToggleShowStatus()
     {
         rootEntity.gameObject.SetActive(!rootEntity.gameObject.activeSelf);
-        IsVisible = rootEntity.gameObject.activeSelf;
+        isVisible = rootEntity.gameObject.activeSelf;
         OnStatusUpdate?.Invoke(this);
     }
 
-    public void ToggleLockStatus() { IsLocked = !IsLocked; }
+    public void ToggleLockStatus() { isLocked = !isLocked; }
 
     public void ShapeLoadFinish(ISharedComponent component) { OnShapeFinishLoading?.Invoke(this); }
 
@@ -235,6 +238,7 @@ public class BIWEntity
     {
         Deselect();
         Dispose();
+        isDeleted = true;
         OnDelete?.Invoke(this);
     }
 
@@ -406,7 +410,7 @@ public class BIWEntity
         CreateCollidersForEntity(rootEntity);
 
         if (isFloor)
-            IsLocked = true;
+            isLocked = true;
 
         if (IsEntityAVoxel())
             SetEntityAsVoxel();
@@ -587,7 +591,7 @@ public class BIWEntity
     {
         ShapeInit();
 
-        if (IsSelected)
+        if (isSelected)
             SetEditMaterial();
     }
 
@@ -615,7 +619,7 @@ public class BIWEntity
 
         //Note: When we are duplicating the GLTF and NFT component, their colliders are duplicated too
         //So we eliminate any previous collider to ensure that only 1 collider remain active
-        Transform[] children = rootEntity.transform.GetComponentsInChildren<Transform>();
+        Transform[] children = rootEntity.gameObject.transform.GetComponentsInChildren<Transform>();
         foreach (Transform child in children)
         {
             if (child.gameObject.layer ==  BIWSettings.COLLIDER_SELECTION_LAYER)

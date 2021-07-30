@@ -9,7 +9,7 @@ using DCL.Camera;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BiwGodMode : BIWMode
+public class BIWGodMode : BIWMode
 {
     private float initialEagleCameraHeight = 10f;
     private float initialEagleCameraDistance = 10f;
@@ -19,7 +19,7 @@ public class BiwGodMode : BIWMode
     private FreeCameraMovement freeCameraController;
 
     private CameraController cameraController;
-    private Transform lookAtT;
+    private Transform lookAtTransform;
     private MouseCatcher mouseCatcher;
     private PlayerAvatarController avatarRenderer;
     private IBIWGizmosController gizmoManager;
@@ -28,7 +28,7 @@ public class BiwGodMode : BIWMode
     private InputAction_Trigger focusOnSelectedEntitiesInputAction;
     private InputAction_Hold multiSelectionInputAction;
 
-    private ParcelScene sceneToEdit;
+    private IParcelScene sceneToEdit;
 
     private bool isPlacingNewObject = false;
     private bool mouseMainBtnPressed = false;
@@ -53,7 +53,7 @@ public class BiwGodMode : BIWMode
     {
         base.Init(context);
 
-        lookAtT = new GameObject("BIWGodModeTransform").transform;
+        lookAtTransform = new GameObject("BIWGodModeTransform").transform;
         maxDistanceToSelectEntitiesValue = context.godModeDynamicVariablesAsset.maxDistanceToSelectEntities;
 
         snapFactor = context.godModeDynamicVariablesAsset.snapFactor;
@@ -119,8 +119,8 @@ public class BiwGodMode : BIWMode
 
         gizmoManager.OnChangeTransformValue -= EntitiesTransfromByGizmos;
 
-        if (lookAtT.gameObject != null)
-            GameObject.Destroy(lookAtT.gameObject);
+        if (lookAtTransform.gameObject != null)
+            GameObject.Destroy(lookAtTransform.gameObject);
 
         if (HUDController.i.builderInWorldMainHud == null)
             return;
@@ -153,7 +153,7 @@ public class BiwGodMode : BIWMode
                 if (!entity.rootEntity.meshRootGameObject || entity.rootEntity.meshesInfo.renderers.Length <= 0)
                     continue;
 
-                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
+                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
                 {
                     outlinerController.OutlineEntity(entity);
                 }
@@ -179,7 +179,7 @@ public class BiwGodMode : BIWMode
     private void ChangeSnapTemporaryDeactivated()
     {
         if (changeSnapTemporaryButtonPressed)
-            SetSnapActive(!isSnapActive);
+            SetSnapActive(!isSnapActiveValue);
 
         changeSnapTemporaryButtonPressed = false;
     }
@@ -191,7 +191,7 @@ public class BiwGodMode : BIWMode
 
         changeSnapTemporaryButtonPressed = true;
 
-        SetSnapActive(!isSnapActive);
+        SetSnapActive(!isSnapActiveValue);
     }
 
     private void EntitiesTransfromByGizmos(Vector3 transformValue)
@@ -225,7 +225,7 @@ public class BiwGodMode : BIWMode
             return;
 
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
-        selectedEntities[0].rootEntity.transform.rotation = Quaternion.Euler(rotation);
+        selectedEntities[0].rootEntity.gameObject.transform.rotation = Quaternion.Euler(rotation);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.ROTATE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.ROTATE);
         entityHandler.ReportTransform(true);
@@ -241,10 +241,10 @@ public class BiwGodMode : BIWMode
 
         TransformActionStarted(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         // Before change the scale, we unparent the entity to not to make it dependant on the editionGO and after that, reparent it
-        entityToUpdate.rootEntity.transform.SetParent(null);
-        entityToUpdate.rootEntity.transform.localScale = scale;
+        entityToUpdate.rootEntity.gameObject.transform.SetParent(null);
+        entityToUpdate.rootEntity.gameObject.transform.localScale = scale;
         editionGO.transform.localScale = Vector3.one;
-        entityToUpdate.rootEntity.transform.SetParent(editionGO.transform);
+        entityToUpdate.rootEntity.gameObject.transform.SetParent(editionGO.transform);
 
         TransformActionEnd(entityToUpdate.rootEntity, BIWSettings.SCALE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.SCALE);
@@ -297,7 +297,7 @@ public class BiwGodMode : BIWMode
             Vector3 currentPoint = raycastController.GetFloorPointAtMouse(mousePosition);
             Vector3 initialEntityPosition = editionGO.transform.position;
 
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
                 initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
@@ -373,7 +373,7 @@ public class BiwGodMode : BIWMode
 
         dragStartedPoint = raycastController.GetFloorPointAtMouse(position);
 
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             dragStartedPoint.x = Mathf.Round(dragStartedPoint.x);
             dragStartedPoint.z = Mathf.Round(dragStartedPoint.z);
@@ -384,7 +384,7 @@ public class BiwGodMode : BIWMode
 
         var entity = raycastController.GetEntityOnPointer();
         if ((entity == null
-             || (entity != null && !entity.IsSelected))
+             || (entity != null && !entity.isSelected))
             && !BIWUtils.IsPointerOverMaskElement(BIWSettings.GIZMOS_LAYER))
         {
             isSquareMultiSelectionInputActive = true;
@@ -462,10 +462,10 @@ public class BiwGodMode : BIWMode
         {
             if (entity.rootEntity.meshRootGameObject && entity.rootEntity.meshesInfo.renderers.Length > 0)
             {
-                if (BIWUtils.IsWithInSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
-                    && !entity.IsLocked)
+                if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition)
+                    && !entity.isLocked)
                 {
-                    if (entity.IsSelected)
+                    if (entity.isSelected)
                         alreadySelectedEntities++;
 
                     entityHandler.SelectEntity(entity);
@@ -485,7 +485,7 @@ public class BiwGodMode : BIWMode
         outlinerController.CancelAllOutlines();
     }
 
-    public override void Activate(ParcelScene scene)
+    public override void Activate(IParcelScene scene)
     {
         base.Activate(scene);
         sceneToEdit = scene;
@@ -506,15 +506,15 @@ public class BiwGodMode : BIWMode
         HUDController.i.builderInWorldMainHud?.ActivateGodModeUI();
     }
 
-    public void ActivateCamera(ParcelScene parcelScene)
+    public void ActivateCamera(IParcelScene parcelScene)
     {
         freeCameraController.gameObject.SetActive(true);
         SetLookAtObject(parcelScene);
 
         Vector3 cameraPosition = GetInitialCameraPosition(parcelScene);
         freeCameraController.SetPosition(cameraPosition);
-        freeCameraController.LookAt(lookAtT);
-        freeCameraController.SetResetConfiguration(cameraPosition, lookAtT);
+        freeCameraController.LookAt(lookAtTransform);
+        freeCameraController.SetResetConfiguration(cameraPosition, lookAtTransform);
 
         if (cameraController.currentCameraState.cameraModeId != CameraMode.ModeId.BuildingToolGodMode)
             avatarCameraModeBeforeEditing = cameraController.currentCameraState.cameraModeId;
@@ -573,6 +573,8 @@ public class BiwGodMode : BIWMode
         {
             isPlacingNewObject = true;
             outlinerController.SetOutlineCheckActive(false);
+
+            SetEditObjectAtMouse();
         }
 
         gizmoManager.HideGizmo();
@@ -594,7 +596,7 @@ public class BiwGodMode : BIWMode
 
         gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
 
-        if (!isMultiSelectionActive && !selectedEntity.IsNew)
+        if (!isMultiSelectionActive && !selectedEntity.isNew)
             TryLookAtEntity(selectedEntity.rootEntity);
 
         snapGO.transform.SetParent(null);
@@ -619,7 +621,7 @@ public class BiwGodMode : BIWMode
     public override void EntityDoubleClick(BIWEntity entity)
     {
         base.EntityDoubleClick(entity);
-        if (!entity.IsLocked)
+        if (!entity.isLocked)
             LookAtEntity(entity.rootEntity);
     }
 
@@ -645,7 +647,7 @@ public class BiwGodMode : BIWMode
     {
         base.SetSnapActive(isActive);
 
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             gizmoManager.SetSnapFactor(snapFactor, snapRotationDegresFactor, snapScaleFactor);
         }
@@ -702,7 +704,7 @@ public class BiwGodMode : BIWMode
 
     public void ScaleMode() { GizmosMode( BIWSettings.SCALE_GIZMO_NAME); }
 
-    void GizmosMode(string gizmos)
+    private void GizmosMode(string gizmos)
     {
         if ((!isModeActive && isPlacingNewObject) || mouseSecondaryBtnPressed)
             return;
@@ -759,27 +761,27 @@ public class BiwGodMode : BIWMode
 
     public void FocusGameObject(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
-    Vector3 GetInitialCameraPosition(ParcelScene parcelScene)
+    Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        Vector3 direction = (parcelScene.transform.position - middlePoint).normalized;
+        Vector3 direction = (parcelScene.GetSceneTransform().position - middlePoint).normalized;
 
-        return parcelScene.transform.position
+        return parcelScene.GetSceneTransform().position
                + direction * initialEagleCameraDistance
                + Vector3.up * initialEagleCameraHeight;
     }
 
-    void SetLookAtObject(ParcelScene parcelScene)
+    void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
-        lookAtT.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
+        lookAtTransform.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
     void SetEditObjectAtMouse()
     {
         if (raycastController.RayCastFloor(out Vector3 destination))
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 destination.x = Mathf.Round(destination.x / snapDragFactor) * snapDragFactor;
                 destination.z = Mathf.Round(destination.z / snapDragFactor) * snapDragFactor;

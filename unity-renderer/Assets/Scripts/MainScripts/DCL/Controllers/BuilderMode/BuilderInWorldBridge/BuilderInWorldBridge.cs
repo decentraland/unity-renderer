@@ -59,11 +59,11 @@ public class BuilderInWorldBridge : MonoBehaviour
     public void AddAssets(string payload)
     {
         //We remove the old assets to they don't collide with the new ones
-        foreach (var catalogItem in DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.GetValues())
+        foreach (var catalogItem in DataStore.i.builderInWorld.currentSceneCatalogItemDict.GetValues())
         {
             AssetCatalogBridge.i.RemoveSceneObjectToSceneCatalog(catalogItem.id);
         }
-        DataStore.i.dataStoreBuilderInWorld.currentSceneCatalogItemDict.Clear();
+        DataStore.i.builderInWorld.currentSceneCatalogItemDict.Clear();
 
         AssetCatalogBridge.i.AddSceneObjectToSceneCatalog(JsonConvert.DeserializeObject<SceneObject[]>(payload));
     }
