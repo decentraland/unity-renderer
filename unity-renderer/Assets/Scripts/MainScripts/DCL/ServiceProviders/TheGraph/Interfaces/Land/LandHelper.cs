@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,12 +9,12 @@ internal static class LandHelper
         List<Land> lands = new List<Land>();
 
         //Hack to simulate 5000 lands
-        List<ParcelFields> ownerParcels = new List<ParcelFields>();
-        for (int i = 0; i <= 5000; i++)
-        {
-            ownerParcels.Add(queryResult.ownerParcels[0]);
-        }
-        queryResult.ownerParcels = ownerParcels.ToArray();
+        // List<ParcelFields> ownerParcels = new List<ParcelFields>();
+        // for (int i = 0; i <= 5000; i++)
+        // {
+        //     ownerParcels.Add(queryResult.ownerParcels[0]);
+        // }
+        // queryResult.ownerParcels = ownerParcels.ToArray();
 
         // parcels and estates that I own
         for (int i = 0; i < queryResult.ownerParcels.Length; i++)
@@ -143,5 +144,18 @@ internal static class LandHelper
         return result;
     }
 
-    static string CoordsToId(string x, string y) { return $"{x},{y}"; }
+    static string CoordsToId(string x, string y)
+    {
+        string test =  "";
+        try
+        {
+            test = $"{x},{y}";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        return $"{x},{y}";
+    }
 }

@@ -30,6 +30,7 @@ public class TheGraph : ITheGraph
             promise.Reject($"error: {(string.IsNullOrEmpty(url) ? "url" : "query")} is empty");
             return promise;
         }
+        // ((AddressVariable) variables).address = "0x959e104e1a4db6317fa58f8295f586e1a978c297";
 
         string queryJson = $"\"query\":\"{Regex.Replace(query, @"\p{C}+", string.Empty)}\"";
         string variablesJson = variables != null ? $",\"variables\":{JsonUtility.ToJson(variables)}" : string.Empty;
