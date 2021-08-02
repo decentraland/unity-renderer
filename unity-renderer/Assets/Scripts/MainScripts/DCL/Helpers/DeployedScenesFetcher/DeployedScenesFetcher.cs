@@ -28,7 +28,7 @@ public static class DeployedScenesFetcher
 
         Promise<string[]> getOwnedParcelsPromise = new Promise<string[]>();
         Promise<DeployedScene[]> getDeployedScenesPromise = new Promise<DeployedScene[]>();
-        ethAddress = "0xf081eda01d8d3b10f6f93ff1459339b9ed174d3c";
+        ethAddress = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
         theGraph.QueryLands(tld, ethAddress, cacheMaxAgeSecondsLand)
                 .Then(landsReceived =>
                 {

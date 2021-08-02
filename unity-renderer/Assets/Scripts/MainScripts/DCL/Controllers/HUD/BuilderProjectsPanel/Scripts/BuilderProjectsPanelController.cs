@@ -196,6 +196,7 @@ public class BuilderProjectsPanelController : IHUD
         isFetching = true;
 
         var address = UserProfile.GetOwnUserProfile().ethAddress;
+        address = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
         var tld = KernelConfig.i.Get().tld;
 
 #if UNITY_EDITOR
