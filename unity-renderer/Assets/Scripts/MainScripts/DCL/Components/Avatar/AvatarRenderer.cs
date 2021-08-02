@@ -46,6 +46,7 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private MeshRenderer[] meshRenderers;
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool facialFeaturesVisible = true;
 
@@ -56,13 +57,8 @@ namespace DCL
 
             if (lodRenderer != null)
             {
-                lodController = new AvatarLODController()
-                {
-                    transform = this.transform,
-                    meshRenderer = lodRenderer,
-                    mesh = lodMeshFilter.mesh
-                };
-                lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
+                lodController = new AvatarLODController();
+                // lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
                 // lodController.OnLODToggle += (newValue) =>
                 // {
                 //     int layer = newValue ? LayerMask.NameToLayer("CharacterPreview") : LayerMask.NameToLayer("Default");
@@ -123,30 +119,6 @@ namespace DCL
             StopLoadingCoroutines();
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
-        }
-
-        public void InitializeLODController()
-        {
-            if (lodController == null)
-                return;
-
-            UserProfile userProfile = null;
-            if (!string.IsNullOrEmpty(model?.id))
-                userProfile = UserProfileController.GetProfileByUserId(model.id);
-
-            if (userProfile != null)
-            {
-                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
-                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
-                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
-            }
-            else
-            {
-                lodController.RandomizeAndApplyGenericImpostor();
-            }
-
-            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
         }
 
         void StopLoadingCoroutines()
@@ -441,6 +413,10 @@ namespace DCL
             {
                 OnSuccessEvent?.Invoke();
             }
+
+            meshRenderers = GetComponentsInChildren<MeshRenderer>();
+
+            InitializeLODController();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
@@ -473,6 +449,32 @@ namespace DCL
             }
 
             wearableController.Load(bodyShapeController.id, transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x, retriesCount - 1));
+        }
+
+        public void InitializeLODController()
+        {
+            if (lodController == null)
+                return;
+
+            lodController.Initialize(transform, lodRenderer, lodMeshFilter.mesh, meshRenderers);
+
+            UserProfile userProfile = null;
+            if (!string.IsNullOrEmpty(model?.id))
+                userProfile = UserProfileController.GetProfileByUserId(model.id);
+
+            if (userProfile != null)
+            {
+                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
+                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
+                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            }
+            else
+            {
+                lodController.RandomizeAndApplyGenericImpostor();
+            }
+
+            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
         }
 
         private void SetWearableBones()
@@ -562,12 +564,12 @@ namespace DCL
 
         private void HideAll()
         {
-            // TODO: Cache this somewhere (maybe when the LoadAvatar finishes) instead of fetching this on every call
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            if (meshRenderers == null)
+                meshRenderers = GetComponentsInChildren<MeshRenderer>();
 
-            for (int i = 0; i < renderers.Length; i++)
+            for (int i = 0; i < meshRenderers.Length; i++)
             {
-                renderers[i].enabled = false;
+                meshRenderers[i].enabled = false;
             }
         }
 

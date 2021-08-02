@@ -1,22 +1,25 @@
 using UnityEngine;
+using DCL.Configuration;
 
 namespace DCL
 {
     public class AvatarLODController
     {
+        private static Camera snapshotCamera;
+        private static RenderTexture snapshotRenderTexture = new RenderTexture(512, 1024, 32);
+
         private const bool ONLY_GENERIC_IMPOSTORS = false;
         private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
-        private readonly int LOD_IMPOSTOR_LAYER = LayerMask.NameToLayer("CharacterPreview");
-
-        private static Camera snapshotCamera;
 
         // 2048x2048 atlas with 8 512x1024 snapshot-sprites
         private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
         private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
 
-        public Transform transform;
-        public MeshRenderer meshRenderer;
-        public Mesh mesh;
+        private Transform avatarTransform;
+        private MeshRenderer impostorMeshRenderer;
+        private Mesh impostorMesh;
+        private MeshRenderer[] avatarMeshes;
+        private Texture2D snapshotTex = new Texture2D(snapshotRenderTexture.width, snapshotRenderTexture.height, TextureFormat.RGBA32, false);
 
         public delegate void LODToggleEventDelegate(bool newValue);
         public event LODToggleEventDelegate OnLODToggle;
@@ -28,9 +31,22 @@ namespace DCL
                 GameObject cameraGO = new GameObject("AvatarsLODImpostorCamera");
                 snapshotCamera = cameraGO.AddComponent<Camera>();
                 cameraGO.SetActive(false);
-                snapshotCamera.cullingMask = LOD_IMPOSTOR_LAYER;
+                snapshotCamera.cullingMask = PhysicsLayers.characterPreviewLayer;
+                snapshotCamera.targetTexture = snapshotRenderTexture;
             }
         }
+
+        public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, MeshRenderer[] avatarMeshes)
+        {
+            this.avatarTransform = avatarTransform;
+            this.impostorMeshRenderer = impostorMeshRenderer;
+            this.impostorMesh = impostorMesh;
+            this.avatarMeshes = avatarMeshes;
+        }
+
+        public MeshRenderer GetImpostorMeshRenderer() { return impostorMeshRenderer; }
+
+        public Transform GetTransform() { return avatarTransform; }
 
         public void SetImpostorTexture(Texture2D impostorTexture)
         {
@@ -40,7 +56,7 @@ namespace DCL
             ResetMeshUVs();
 
             // GameObject.Destroy(meshRenderer.material.GetTexture(LOD_TEXTURE_SHADER_VAR));
-            meshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, impostorTexture);
+            impostorMeshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, impostorTexture);
         }
 
         public void RandomizeAndApplyGenericImpostor()
@@ -54,7 +70,7 @@ namespace DCL
             uvs[1].Set(randomUVXPos + spriteSize.x, randomUVYPos);
             uvs[2].Set(randomUVXPos, randomUVYPos + spriteSize.y);
             uvs[3].Set(randomUVXPos + spriteSize.x, randomUVYPos + spriteSize.y);
-            mesh.uv = uvs;
+            impostorMesh.uv = uvs;
         }
 
         private void ResetMeshUVs()
@@ -64,22 +80,53 @@ namespace DCL
             uvs[1].Set(1, 0);
             uvs[2].Set(0, 1);
             uvs[3].Set(1, 1);
-            mesh.uv = uvs;
+            impostorMesh.uv = uvs;
+        }
+
+        private void UpdateAvatarMeshesLayer(int newLayer)
+        {
+            for (var i = 0; i < avatarMeshes.Length; i++)
+            {
+                avatarMeshes[i].gameObject.layer = newLayer;
+            }
         }
 
         public void ToggleLOD(bool enabled)
         {
-            if (meshRenderer.gameObject.activeSelf == enabled)
+            if (impostorMeshRenderer.gameObject.activeSelf == enabled)
                 return;
 
             if (enabled)
-            {
-                SetImpostorTexture(TakeSnapshot());
-            }
+                UpdateImpostorSnapshot();
+            else
+                UpdateAvatarMeshesLayer(PhysicsLayers.defaultLayer);
 
-            meshRenderer.gameObject.SetActive(enabled);
+            impostorMeshRenderer.gameObject.SetActive(enabled);
 
-            OnLODToggle?.Invoke(enabled);
+            // OnLODToggle?.Invoke(enabled);
+            ToggleAvatarRendererGameObject(!enabled);
+        }
+
+        private void ToggleAvatarRendererGameObject(bool newValue)
+        {
+            avatarTransform.gameObject.SetActive(newValue); // Toggling AvatarRender GO; TODO: improve this
+        }
+
+        public void UpdateImpostorSnapshot()
+        {
+            // TODO: escape if the distance/angle to the main character didn't change, as the new snapshot will look the same
+
+            // 1. Change wearable 3D meshes layer to PhysicsLayers.characterPreviewLayer
+            UpdateAvatarMeshesLayer(PhysicsLayers.characterPreviewLayer);
+
+            // 2. Turn ON wearable 3D meshes
+            ToggleAvatarRendererGameObject(true);
+
+            // 3. Take 3D meshes snapshot for impostor
+            SetImpostorTexture(TakeSnapshot());
+
+            // 4. Deactivate 3d meshes
+            ToggleAvatarRendererGameObject(false);
         }
 
         private Texture2D TakeSnapshot()
@@ -88,24 +135,17 @@ namespace DCL
             snapshotCamera.gameObject.SetActive(true);
             snapshotCamera.transform.SetParent(Camera.main.transform);
             snapshotCamera.transform.localPosition = Vector3.zero;
-            snapshotCamera.transform.forward = (meshRenderer.transform.position - snapshotCamera.transform.position).normalized;
-            snapshotCamera.transform.position = meshRenderer.transform.position + -snapshotCamera.transform.forward * 2f;
+            snapshotCamera.transform.forward = (impostorMeshRenderer.transform.position - snapshotCamera.transform.position).normalized;
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + -snapshotCamera.transform.forward * 2f;
 
-            // GameObject.Destroy(meshRenderer.material.GetTexture(LOD_TEXTURE_SHADER_VAR));
-
-            RenderTexture rt = new RenderTexture(512, 1024, 32);
-            snapshotCamera.targetTexture = rt;
-            Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
             snapshotCamera.Render();
-            RenderTexture.active = rt;
-            screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-            screenShot.Apply();
+            RenderTexture.active = snapshotRenderTexture;
+            snapshotTex.ReadPixels(new Rect(0, 0, snapshotRenderTexture.width, snapshotRenderTexture.height), 0, 0);
+            snapshotTex.Apply();
 
             snapshotCamera.gameObject.SetActive(false);
 
-            // Debug.Break();
-
-            return screenShot;
+            return snapshotTex;
         }
     }
 }

@@ -122,7 +122,8 @@ namespace DCL
 
             EnablePassport();
 
-            avatarRenderer.InitializeLODController();
+            // yield return null;
+            // avatarRenderer.InitializeLODController();
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
@@ -203,7 +204,7 @@ namespace DCL
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
                 playerStatus = null;
             }
-            
+
             avatarRenderer.CleanupAvatar();
 
             if (poolableObject != null)

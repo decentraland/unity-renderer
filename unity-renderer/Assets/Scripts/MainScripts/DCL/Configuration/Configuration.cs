@@ -160,6 +160,7 @@ namespace DCL.Configuration
         public static int defaultLayer = LayerMask.NameToLayer("Default");
         public static int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
         public static int characterLayer = LayerMask.NameToLayer("CharacterController");
+        public static int characterPreviewLayer = LayerMask.NameToLayer("CharacterPreview");
         public static int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
         public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
 
