@@ -91,12 +91,6 @@ public class BIWMainController : PluginFeature
             builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
         }
 
-        userProfile = UserProfile.GetOwnUserProfile();
-        if (!string.IsNullOrEmpty(userProfile.userId))
-            updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
-        else
-            userProfile.OnUpdate += OnUserProfileUpdate;
-
         InitHUD();
 
         BIWTeleportAndEdit.OnTeleportEnd += OnPlayerTeleportedToEditScene;
@@ -304,6 +298,15 @@ public class BIWMainController : PluginFeature
         HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
     }
 
+    private void ActivateLandAccessBackgroundChecker()
+    {
+        userProfile = UserProfile.GetOwnUserProfile();
+        if (!string.IsNullOrEmpty(userProfile.userId))
+            updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+        else
+            userProfile.OnUpdate += OnUserProfileUpdate;
+    }
+
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
 
     private void CatalogReceived(string catalogJson)
@@ -400,6 +403,9 @@ public class BIWMainController : PluginFeature
             HUDController.i.builderInWorldMainHud.ExitStart();
             return;
         }
+
+        if (landsWithAccess.Count == 0)
+            ActivateLandAccessBackgroundChecker();
 
         FindSceneToEdit();
 

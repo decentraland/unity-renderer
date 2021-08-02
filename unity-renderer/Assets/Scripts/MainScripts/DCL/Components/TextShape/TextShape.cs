@@ -62,8 +62,14 @@ namespace DCL.Components
         public TextMeshPro text;
         public RectTransform rectTransform;
         private Model cachedModel;
+        private Material cachedFontMaterial;
 
-        private void Awake() { model = new Model(); }
+        private void Awake()
+        {
+            model = new Model();
+            cachedFontMaterial = new Material(text.fontSharedMaterial);
+            text.fontSharedMaterial = cachedFontMaterial;
+        }
 
         public void Update()
         {
@@ -130,24 +136,24 @@ namespace DCL.Components
 
             if (model.shadowOffsetX != 0 || model.shadowOffsetY != 0)
             {
-                text.fontMaterial.EnableKeyword("UNDERLAY_ON");
-                text.fontMaterial.SetColor("_UnderlayColor", model.shadowColor);
-                text.fontMaterial.SetFloat("_UnderlaySoftness", model.shadowBlur);
+                text.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
+                text.fontSharedMaterial.SetColor("_UnderlayColor", model.shadowColor);
+                text.fontSharedMaterial.SetFloat("_UnderlaySoftness", model.shadowBlur);
             }
-            else if (text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"))
+            else if (text.fontSharedMaterial.IsKeywordEnabled("UNDERLAY_ON"))
             {
-                text.fontMaterial.DisableKeyword("UNDERLAY_ON");
+                text.fontSharedMaterial.DisableKeyword("UNDERLAY_ON");
             }
 
             if (model.outlineWidth > 0f)
             {
-                text.fontMaterial.EnableKeyword("OUTLINE_ON");
+                text.fontSharedMaterial.EnableKeyword("OUTLINE_ON");
                 text.outlineWidth = model.outlineWidth;
                 text.outlineColor = model.outlineColor;
             }
-            else if (text.fontMaterial.IsKeywordEnabled("OUTLINE_ON"))
+            else if (text.fontSharedMaterial.IsKeywordEnabled("OUTLINE_ON"))
             {
-                text.fontMaterial.DisableKeyword("OUTLINE_ON");
+                text.fontSharedMaterial.DisableKeyword("OUTLINE_ON");
             }
         }
 
@@ -217,5 +223,11 @@ namespace DCL.Components
         }
 
         public override int GetClassId() { return (int) CLASS_ID.UI_TEXT_SHAPE; }
+
+        private void OnDestroy()
+        {
+            base.Cleanup();
+            Object.Destroy(cachedFontMaterial);
+        }
     }
 }
