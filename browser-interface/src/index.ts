@@ -4,6 +4,14 @@
 import future from "fp-future"
 import { generatedFiles } from "../package.json"
 
+import Hls from "./hlsLoader"
+if (!Hls || !Hls.isSupported) {
+  throw new Error("HTTP Live Streaming did not load")
+}
+if (!Hls.isSupported()) {
+  throw new Error("HTTP Live Streaming is not supported in your browser")
+}
+
 // the following function is defined by unity, accessible via unity.loader.js
 // https://docs.unity3d.com/Manual/webgl-templates.html
 // prettier-ignore
@@ -74,7 +82,7 @@ export async function initializeWebRenderer(options: RendererOptions): Promise<D
 
   // The namespace DCL is exposed to global because the unity template uses it to send the messages
   // @see https://github.com/decentraland/unity-renderer/blob/bc2bf1ee0d685132c85606055e592bac038b3471/unity-renderer/Assets/Plugins/JSFunctions.jslib#L6-L29
-  ;(globalThis as any)["DCL"] = {
+  ;(globalThis as any).DCL = {
     // This function get's called by the engine
     EngineStarted() {
       engineStartedFuture.resolve({})

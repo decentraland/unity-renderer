@@ -22,7 +22,6 @@ namespace DCL.Models
         public Dictionary<System.Type, ISharedComponent> sharedComponents { get; private set; } = new Dictionary<System.Type, ISharedComponent>();
 
         public GameObject gameObject { get; set; }
-        public Transform transform { get; set; }
         public string entityId { get; set; }
         public MeshesInfo meshesInfo { get; set; }
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;

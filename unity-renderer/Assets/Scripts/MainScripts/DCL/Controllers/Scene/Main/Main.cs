@@ -21,7 +21,7 @@ namespace DCL
         private PerformanceMetricsController performanceMetricsController;
         private EntryPoint_World worldEntryPoint;
 
-        private FeatureController featureController;
+        private PluginSystem pluginSystem;
 
         void Awake()
         {
@@ -45,7 +45,7 @@ namespace DCL
                 SetupEnvironment();
             }
 
-            featureController = new FeatureController();
+            pluginSystem = new PluginSystem();
             DCL.Interface.WebInterface.SendSystemInfoReport();
 
 #if !UNITY_EDITOR
@@ -81,7 +81,7 @@ namespace DCL
         private void Start()
         {
             Environment.i.world.sceneController.Start();
-            featureController?.Start();
+            pluginSystem?.Start();
         }
 
         private void Update()
@@ -89,22 +89,22 @@ namespace DCL
             Environment.i.platform.Update();
             Environment.i.world.sceneController.Update();
             performanceMetricsController?.Update();
-            featureController.Update();
+            pluginSystem.Update();
         }
 
         private void LateUpdate()
         {
             Environment.i.world.sceneController.LateUpdate();
-            featureController.LateUpdate();
+            pluginSystem.LateUpdate();
         }
 
         private void OnDestroy()
         {
             if (!Configuration.EnvironmentSettings.RUNNING_TESTS)
                 Environment.Dispose();
-            featureController?.OnDestroy();
+            pluginSystem?.OnDestroy();
         }
-        private void OnGUI() { featureController.OnGUI(); }
+        private void OnGUI() { pluginSystem.OnGUI(); }
 
         #region RuntimeMessagingBridge
 

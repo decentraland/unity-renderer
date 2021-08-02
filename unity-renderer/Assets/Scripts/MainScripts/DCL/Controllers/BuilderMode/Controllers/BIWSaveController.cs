@@ -4,9 +4,9 @@ using UnityEngine;
 
 public interface IBIWSaveController
 {
-    public void SetSaveActivation(bool isActive, bool tryToSave = false);
-    public void TryToSave();
-    public void ForceSave();
+    void SetSaveActivation(bool isActive, bool tryToSave = false);
+    void TryToSave();
+    void ForceSave();
 }
 
 public class BIWSaveController : BIWController, IBIWSaveController

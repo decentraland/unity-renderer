@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Helpers;
+using UnityEditor;
 using UnityEngine;
 
 public class BIWGizmosAxis : MonoBehaviour
@@ -8,10 +10,7 @@ public class BIWGizmosAxis : MonoBehaviour
     public Color highLightColor;
     public Renderer objectRenderer;
 
-    MaterialPropertyBlock props;
-
-    static int colorPropertyID;
-    static bool isColorPropertyIdSet = false;
+    private MaterialPropertyBlock props;
 
     private BIWGizmos gizmo = null;
 
@@ -25,9 +24,8 @@ public class BIWGizmosAxis : MonoBehaviour
             return;
 
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(colorPropertyID, highLightColor);
+        props.SetColor(ShaderUtils.BaseColor, highLightColor);
         objectRenderer.SetPropertyBlock(props);
-
     }
 
     public void SetColorDefault()
@@ -36,24 +34,15 @@ public class BIWGizmosAxis : MonoBehaviour
             return;
 
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(colorPropertyID, defaultColor);
+        props.SetColor(ShaderUtils.BaseColor, defaultColor);
         objectRenderer.SetPropertyBlock(props);
-    }
-
-    private void Awake()
-    {
-        if (!isColorPropertyIdSet)
-        {
-            isColorPropertyIdSet = true;
-            colorPropertyID = Shader.PropertyToID("_BaseColor");
-        }
     }
 
     private void Start()
     {
         props = new MaterialPropertyBlock();
         objectRenderer.GetPropertyBlock(props);
-        props.SetColor(colorPropertyID, defaultColor);
+        props.SetColor(ShaderUtils.BaseColor, defaultColor);
         objectRenderer.SetPropertyBlock(props);
     }
 }

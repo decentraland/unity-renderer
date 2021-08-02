@@ -3,7 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BIWController
+public interface IBIWController
+{
+    void Init(BIWContext context);
+    void EnterEditMode(ParcelScene scene);
+    void ExitEditMode();
+    void OnGUI();
+
+    void LateUpdate();
+
+    void Update();
+    void Dispose();
+}
+
+public abstract class BIWController : IBIWController
 {
     protected ParcelScene sceneToEdit;
 
