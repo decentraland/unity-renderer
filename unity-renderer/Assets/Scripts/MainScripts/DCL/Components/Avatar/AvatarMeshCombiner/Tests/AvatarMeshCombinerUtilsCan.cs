@@ -104,9 +104,23 @@ public class AvatarMeshCombinerUtilsCan
         expected.texturePointers = new List<Vector3>();
         expected.emissionColors = new List<Vector4>();
 
+        expected.colors.AddRange(Enumerable.Repeat(Color.blue, 24));
+        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
+        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+
+        expected.colors.AddRange(Enumerable.Repeat(Color.red, 24));
+        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
+        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
         CollectionAssert.AreEquivalent(expected.emissionColors, result.emissionColors);
+
+        // Materials count is 2 because FlattenMaterials doesn't combine layers.
+        // Layer combining is CombineLayerUtils.Slice responsibility.
+        Assert.That( result.materials.Count, Is.EqualTo(2) );
+        Assert.That( CombineLayerUtils.IsOpaque(result.materials[0]), Is.True );
+        Assert.That( CombineLayerUtils.IsOpaque(result.materials[1]), Is.True );
     }
 
     [Test]
@@ -126,9 +140,23 @@ public class AvatarMeshCombinerUtilsCan
         expected.texturePointers = new List<Vector3>();
         expected.emissionColors = new List<Vector4>();
 
+        expected.colors.AddRange(Enumerable.Repeat(Color.blue, 24));
+        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.yellow, 24));
+        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(6, 11, 0.5f), 24));
+
+        expected.colors.AddRange(Enumerable.Repeat(Color.red, 24));
+        expected.emissionColors.AddRange(Enumerable.Repeat((Vector4)Color.white, 24));
+        expected.texturePointers.AddRange(Enumerable.Repeat(new Vector3(4, 10, 0.5f), 24));
+
         CollectionAssert.AreEquivalent(expected.colors, result.colors);
         CollectionAssert.AreEquivalent(expected.texturePointers, result.texturePointers);
         CollectionAssert.AreEquivalent(expected.emissionColors, result.emissionColors);
+
+        // Materials count is 2 because FlattenMaterials doesn't combine layers.
+        // Layer combining is CombineLayerUtils.Slice responsibility.
+        Assert.That( result.materials.Count, Is.EqualTo(2) );
+        Assert.That( CombineLayerUtils.IsOpaque(result.materials[0]), Is.False );
+        Assert.That( CombineLayerUtils.IsOpaque(result.materials[1]), Is.False );
     }
 
     [Test]

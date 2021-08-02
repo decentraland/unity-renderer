@@ -27,7 +27,8 @@ namespace DCL
             Shader.PropertyToID(AVATAR_MAP_PROPERTY_NAME + "12")
         };
 
-        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = LogType.Warning };
+        private static bool VERBOSE = false;
+        private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
 
         /// <summary>
@@ -160,6 +161,8 @@ namespace DCL
                     Color emissionColor = mat.GetColor(ShaderUtils.EmissionColor);
                     Vector4 emissionColorV4 = new Vector4(emissionColor.r, emissionColor.g, emissionColor.b, emissionColor.a);
                     result.emissionColors.AddRange(Enumerable.Repeat(emissionColorV4, vertexCount));
+
+                    logger.Log($"Layer {i} - vertexCount: {vertexCount} - texturePointers: ({baseMapId}, {emissionMapId}, {cutoff}) - emissionColor: {emissionColor} - baseColor: {baseColor}");
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(newMaterial);

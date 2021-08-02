@@ -378,7 +378,7 @@ public class CombineLayerUtilsCan
             SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(CullMode.Back, null, null);
 
             // Act
-            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r);
+            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r.sharedMaterials[0]);
 
             // Assert
             Assert.That(isOpaque, Is.True);
@@ -391,7 +391,7 @@ public class CombineLayerUtilsCan
             SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(CullMode.Back, null, null);
 
             // Act
-            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r);
+            bool isOpaque = DCL.CombineLayerUtils.IsOpaque(r.sharedMaterials[0]);
 
             // Assert
             Assert.That(isOpaque, Is.False);
@@ -410,7 +410,7 @@ public class CombineLayerUtilsCan
         SkinnedMeshRenderer r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(cullMode, null, null);
 
         // Act
-        CullMode resultMode = DCL.CombineLayerUtils.GetCullMode(r);
+        CullMode resultMode = DCL.CombineLayerUtils.GetCullMode(r.sharedMaterials[0]);
 
         // Assert
         Assert.That( resultMode, Is.EqualTo(expectedResult));

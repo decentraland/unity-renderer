@@ -263,17 +263,15 @@ namespace DCL
         /// <summary>
         /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
         /// </summary>
-        /// <param name="renderer">Renderer to be checked.</param>
+        /// <param name="material">Material to be checked</param>
         /// <returns>True if its opaque</returns>
-        internal static bool IsOpaque(Renderer renderer)
+        internal static bool IsOpaque(Material material)
         {
-            Material firstMat = renderer.sharedMaterials[0];
-
-            if (firstMat == null)
+            if (material == null)
                 return true;
 
-            if (firstMat.HasProperty(ShaderUtils.ZWrite) &&
-                (int) firstMat.GetFloat(ShaderUtils.ZWrite) == 0)
+            if (material.HasProperty(ShaderUtils.ZWrite) &&
+                (int) material.GetFloat(ShaderUtils.ZWrite) == 0)
             {
                 return false;
             }
@@ -282,16 +280,38 @@ namespace DCL
         }
 
         /// <summary>
+        /// Determines if the given renderer is going to be enqueued at the opaque section of the rendering pipeline.
+        /// </summary>
+        /// <param name="renderer">Renderer to be checked.</param>
+        /// <returns>True if its opaque</returns>
+        internal static bool IsOpaque(Renderer renderer)
+        {
+            return IsOpaque(renderer.sharedMaterials[0]);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns></returns>
+        internal static CullMode GetCullMode(Material material)
+        {
+            CullMode result = (CullMode)material.GetInt( ShaderUtils.Cull );
+            return result;
+        }
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="renderer"></param>
         /// <returns></returns>
-        internal static CullMode GetCullMode( Renderer renderer )
+        internal static CullMode GetCullMode(Renderer renderer)
         {
-            Material firstMat = renderer.sharedMaterials[0];
-            CullMode result = (CullMode)firstMat.GetInt( ShaderUtils.Cull );
-            return result;
+            return GetCullMode(renderer.sharedMaterials[0]);
         }
+
 
         /// <summary>
         /// 
@@ -300,7 +320,7 @@ namespace DCL
         /// <returns></returns>
         internal static CullMode GetCullModeWithoutCullOff(Renderer renderer)
         {
-            CullMode result = GetCullMode(renderer);
+            CullMode result = GetCullMode(renderer.sharedMaterials[0]);
 
             if (result == CullMode.Off)
                 result = CullMode.Back;
