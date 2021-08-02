@@ -44,7 +44,7 @@ internal static class LandHelper
             var owner = queryResult.operatorAuthorizations[i].owner;
             for (int j = 0; j < owner.parcels.Length; j++)
             {
-                var authLand = FromParcel(owner.parcels[i], LandRole.OPERATOR);
+                var authLand = FromParcel(owner.parcels[j], LandRole.OPERATOR);
                 authLand.operators.Add(lowerCaseAddress);
 
                 // skip if already owned or operated
@@ -56,10 +56,10 @@ internal static class LandHelper
 
             for (int j = 0; j < owner.estates.Length; j++)
             {
-                if (owner.estates[i].parcels.Length == 0)
+                if (owner.estates[j].parcels.Length == 0)
                     continue;
 
-                var authEstate = FromEstate(owner.estates[i], LandRole.OPERATOR);
+                var authEstate = FromEstate(owner.estates[j], LandRole.OPERATOR);
                 authEstate.operators.Add(lowerCaseAddress);
 
                 // skip if already owned or operated
