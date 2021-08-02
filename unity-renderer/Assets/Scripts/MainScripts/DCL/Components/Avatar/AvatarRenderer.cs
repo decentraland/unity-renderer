@@ -63,6 +63,16 @@ namespace DCL
                     mesh = lodMeshFilter.mesh
                 };
                 lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
+                // lodController.OnLODToggle += (newValue) =>
+                // {
+                //     int layer = newValue ? LayerMask.NameToLayer("CharacterPreview") : LayerMask.NameToLayer("Default");
+                //     
+                //     Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+                //     for (int i = 0; i < renderers.Length; i++)
+                //     {
+                //         renderers[i].gameObject.layer = layer;
+                //     }
+                // };
             }
         }
 

@@ -5,10 +5,6 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float LODS_LOCAL_Y_POS = 1.8f;
-        private const float LODS_VERTICAL_MOVEMENT = 0.1f;
-        private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
-
         private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
 
         public AvatarsLODController()
