@@ -81,6 +81,16 @@ public class BIWPublishShould : IntegrationTestSuite_Legacy
         Assert.IsFalse(biwPublishController.CanPublish());
     }
 
+    [Test]
+    public void TestPublishFeedbackMessage()
+    {
+        //Act
+        string result = biwPublishController.CheckPublishConditions();
+
+        //Assert
+        Assert.AreEqual(result, "");
+    }
+
     protected override IEnumerator TearDown()
     {
         biwPublishController.Dispose();

@@ -10,9 +10,9 @@ using System.Linq;
 using UnityEngine;
 using Environment = DCL.Environment;
 
-public class BIWMainController : Feature
+public class BIWMainController : PluginFeature
 {
-    private const bool BYPASS_LAND_OWNERSHIP_CHECK = false;
+    internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
 
     private GameObject cursorGO;
@@ -36,13 +36,13 @@ public class BIWMainController : Feature
     private BuilderInWorldAudioHandler biwAudioHandler;
     private BIWContext context;
 
-    private readonly List<BIWController> controllers = new List<BIWController>();
+    private readonly List<IBIWController> controllers = new List<IBIWController>();
 
     private ParcelScene sceneToEdit;
 
     private Material skyBoxMaterial;
 
-    private bool isBuilderInWorldActivated = false;
+    public bool isBuilderInWorldActivated { get; private set; } = false;
 
     private InputAction_Trigger editModeChangeInputAction;
 
@@ -78,26 +78,18 @@ public class BIWMainController : Feature
             return;
 
         activeFeature = true;
-
         isInit = true;
 
         BIWCatalogManager.Init();
 
         CreateControllers();
-        InitReferences();
-
+        InitReferences(InitialSceneReferences.i);
 
         if (builderInWorldBridge != null)
         {
             builderInWorldBridge.OnCatalogHeadersReceived += CatalogHeadersReceived;
             builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
         }
-
-        userProfile = UserProfile.GetOwnUserProfile();
-        if (!string.IsNullOrEmpty(userProfile.userId))
-            updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
-        else
-            userProfile.OnUpdate += OnUserProfileUpdate;
 
         InitHUD();
 
@@ -118,15 +110,16 @@ public class BIWMainController : Feature
         editModeChangeInputAction.OnTriggered += ChangeEditModeStatusByShortcut;
 
         biwAudioHandler = GameObject.Instantiate(context.projectReferencesAsset.audioPrefab, Vector3.zero, Quaternion.identity).GetComponent<BuilderInWorldAudioHandler>();
-        biwAudioHandler.SetReferences(context);
+        biwAudioHandler.Init(context);
         biwAudioHandler.gameObject.SetActive(false);
     }
 
-    private void InitReferences()
+    public void InitReferences(InitialSceneReferences initalReference)
     {
-        builderInWorldBridge = InitialSceneReferences.i.builderInWorldBridge;
-        cursorGO = InitialSceneReferences.i.cursorCanvas;
-        inputController = InitialSceneReferences.i.inputController;
+
+        builderInWorldBridge = initalReference.builderInWorldBridge;
+        cursorGO = initalReference.cursorCanvas;
+        inputController = initalReference.inputController;
 
         List<GameObject> grounds = new List<GameObject>();
         for (int i = 0; i < InitialSceneReferences.i.groundVisual.transform.transform.childCount; i++)
@@ -219,19 +212,25 @@ public class BIWMainController : Feature
         }
 
         BIWTeleportAndEdit.OnTeleportEnd -= OnPlayerTeleportedToEditScene;
+        DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
         if (initialLoadingController != null)
             initialLoadingController.Dispose();
 
-
         BIWNFTController.i.OnNFTUsageChange -= OnNFTUsageChange;
+
+        BIWNFTController.i.Dispose();
         builderInWorldBridge.OnCatalogHeadersReceived -= CatalogHeadersReceived;
         builderInWorldBridge.OnBuilderProjectInfo -= BuilderProjectPanelInfo;
+
+        floorHandler.OnAllParcelsFloorLoaded -= OnAllParcelsFloorLoaded;
+
         CleanItems();
 
         HUDController.i.OnBuilderProjectPanelCreation -= InitBuilderProjectPanel;
         editModeChangeInputAction.OnTriggered -= ChangeEditModeStatusByShortcut;
 
+        biwAudioHandler.Dispose();
         if (biwAudioHandler.gameObject != null)
             GameObject.Destroy(biwAudioHandler.gameObject);
 
@@ -246,6 +245,8 @@ public class BIWMainController : Feature
     public override void OnGUI()
     {
         base.OnGUI();
+        if (!isBuilderInWorldActivated)
+            return;
 
         foreach (var controller in controllers)
         {
@@ -278,11 +279,13 @@ public class BIWMainController : Feature
         {
             checkerInsideSceneOptimizationCounter++;
         }
-
     }
 
     public override void LateUpdate()
     {
+        if (!isBuilderInWorldActivated)
+            return;
+
         foreach (var controller in controllers)
         {
             controller.LateUpdate();
@@ -293,6 +296,15 @@ public class BIWMainController : Feature
     {
         HUDController.i.builderInWorldMainHud.RefreshCatalogAssetPack();
         HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
+    }
+
+    private void ActivateLandAccessBackgroundChecker()
+    {
+        userProfile = UserProfile.GetOwnUserProfile();
+        if (!string.IsNullOrEmpty(userProfile.userId))
+            updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+        else
+            userProfile.OnUpdate += OnUserProfileUpdate;
     }
 
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
@@ -341,31 +353,24 @@ public class BIWMainController : Feature
 
     private void InitControllers()
     {
-        entityHandler.Init(context);
-        modeController.Init(context);
-        publishController.Init(context);
-        creatorController.Init(context);
-        outlinerController.Init(context);
-        floorHandler.Init(context);
-        inputHandler.Init(context);
-        saveController.Init(context);
-        actionController.Init(context);
-        inputWrapper.Init(context);
-        raycastController.Init(context);
-        gizmosController.Init(context);
+        InitController(entityHandler);
+        InitController(modeController);
+        InitController(publishController);
+        InitController(creatorController);
+        InitController(outlinerController);
+        InitController(floorHandler);
+        InitController(inputHandler);
+        InitController(saveController);
+        InitController(actionController);
+        InitController(inputWrapper);
+        InitController(raycastController);
+        InitController(gizmosController);
+    }
 
-        controllers.Add(entityHandler);
-        controllers.Add(modeController);
-        controllers.Add(publishController);
-        controllers.Add(creatorController);
-        controllers.Add(outlinerController);
-        controllers.Add(floorHandler);
-        controllers.Add(inputHandler);
-        controllers.Add(saveController);
-        controllers.Add(actionController);
-        controllers.Add(inputWrapper);
-        controllers.Add(raycastController);
-        controllers.Add(gizmosController);
+    public void InitController(IBIWController controller)
+    {
+        controller.Init(context);
+        controllers.Add(controller);
     }
 
     private void StartTutorial() { TutorialController.i.SetBuilderInWorldTutorialEnabled(); }
@@ -398,6 +403,9 @@ public class BIWMainController : Feature
             HUDController.i.builderInWorldMainHud.ExitStart();
             return;
         }
+
+        if (landsWithAccess.Count == 0)
+            ActivateLandAccessBackgroundChecker();
 
         FindSceneToEdit();
 
@@ -569,7 +577,7 @@ public class BIWMainController : Feature
         }
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(false);
-        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         DCLCharacterController.OnPositionSet += ExitAfterCharacterTeleport;
 
@@ -662,7 +670,7 @@ public class BIWMainController : Feature
         inputController.inputTypeMode = InputTypeMode.GENERAL;
 
         CommonScriptableObjects.builderInWorldNotNecessaryUIVisibilityStatus.Set(true);
-        DataStore.i.dataStoreBuilderInWorld.showTaskBar.Set(true);
+        DataStore.i.builderInWorld.showTaskBar.Set(true);
 
         ParcelSettings.VISUAL_LOADING_ENABLED = true;
 
@@ -670,7 +678,8 @@ public class BIWMainController : Feature
 
         cursorGO.SetActive(true);
 
-        sceneToEdit.SetEditMode(false);
+        if (sceneToEdit != null)
+            sceneToEdit.SetEditMode(false);
 
         DCLCharacterController.OnPositionSet -= ExitAfterCharacterTeleport;
 
@@ -748,7 +757,7 @@ public class BIWMainController : Feature
         }
     }
 
-    public void FindSceneToEdit()
+    public IParcelScene FindSceneToEdit()
     {
         foreach (IParcelScene scene in Environment.i.world.state.scenesSortedByDistance)
         {
@@ -760,9 +769,10 @@ public class BIWMainController : Feature
                     actionController.Clear();
 
                 sceneToEdit = parcelScene;
-                break;
+                return sceneToEdit;
             }
         }
+        return null;
     }
 
     private void OnPlayerTeleportedToEditScene(Vector2Int coords)

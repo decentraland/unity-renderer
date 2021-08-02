@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class BIWShould : IntegrationTestSuite_Legacy
+public class BIWCommonShould : IntegrationTestSuite_Legacy
 {
     [Test]
     public void SettingsCorrectLayers()
@@ -47,8 +47,8 @@ public class BIWShould : IntegrationTestSuite_Legacy
         UnityEngine.Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
         //Act
-        bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BiwGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
-        if (Physics.Raycast(ray, out hit, BiwGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
+        bool groundLayerFound = Physics.Raycast(fromPosition, direction, out hit, BIWGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER);
+        if (Physics.Raycast(ray, out hit, BIWGodMode.RAYCAST_MAX_DISTANCE, BIWSettings.GROUND_LAYER))
         {
             groundLayerFound = true;
         }
@@ -93,7 +93,7 @@ public class BIWShould : IntegrationTestSuite_Legacy
 
         bool isLocked = true;
         dclLockedOnEdit.SetIsLocked(isLocked);
-        Assert.AreEqual(biwEntity.IsLocked, isLocked);
+        Assert.AreEqual(biwEntity.isLocked, isLocked);
     }
 
     protected override IEnumerator TearDown()

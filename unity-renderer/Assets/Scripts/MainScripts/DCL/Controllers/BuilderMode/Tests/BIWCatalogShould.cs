@@ -27,7 +27,7 @@ public class BIWCatalogShould
         BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem catalogItemToFilter = null;
-        foreach (CatalogItem catalogItem in DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues())
+        foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
         {
             if (catalogItem.name.Contains(nameToFilter))
             {
@@ -48,7 +48,7 @@ public class BIWCatalogShould
     public void BuilderInWorldQuickBar()
     {
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
-        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         CatalogItemAdapter adapter = BIWTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
@@ -85,7 +85,7 @@ public class BIWCatalogShould
     {
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
-        CatalogItem item = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
         FavoritesController favoritesController = new FavoritesController(new GameObject("_FavoritesController").AddComponent<CatalogGroupListView>());
         favoritesController.ToggleFavoriteState(item, null);
@@ -100,8 +100,8 @@ public class BIWCatalogShould
     {
         BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
-        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemDict.Count(), 1);
-        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemPackDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
         Assert.AreEqual(BIWCatalogManager.GetCatalogItemPacksFilteredByCategories().Count, 1);
     }
 
@@ -110,8 +110,8 @@ public class BIWCatalogShould
     {
         BIWTestHelper.CreateNFT();
 
-        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemDict.Count(), 1);
-        Assert.AreEqual(DataStore.i.dataStoreBuilderInWorld.catalogItemPackDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
+        Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
         Assert.AreEqual(BIWCatalogManager.GetCatalogItemPacksFilteredByCategories().Count, 1);
     }
 

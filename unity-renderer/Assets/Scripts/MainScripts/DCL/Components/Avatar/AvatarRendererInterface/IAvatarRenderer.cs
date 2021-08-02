@@ -7,7 +7,6 @@ namespace DCL
         void CleanupAvatar();
         void UpdateExpressions(string id, long timestamp);
         void SetVisibility(bool newVisibility);
-        MeshRenderer GetLODRenderer();
-        Transform GetTransform();
+        AvatarLODController GetLODController();
     }
 }
