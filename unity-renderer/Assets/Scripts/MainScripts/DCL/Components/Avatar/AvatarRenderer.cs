@@ -46,7 +46,7 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
-        private MeshRenderer[] meshRenderers;
+        private List<Renderer> wearableRenderers = new List<Renderer>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool facialFeaturesVisible = true;
 
@@ -88,6 +88,8 @@ namespace DCL
 
             if (bodySnapshotTexturePromise != null)
                 AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+
+            wearableRenderers.Clear();
 
             void onSuccessWrapper()
             {
@@ -414,8 +416,6 @@ namespace DCL
                 OnSuccessEvent?.Invoke();
             }
 
-            meshRenderers = GetComponentsInChildren<MeshRenderer>();
-
             InitializeLODController();
         }
 
@@ -427,6 +427,8 @@ namespace DCL
                 OnWearableLoadingFail(wearableController, 0);
                 return;
             }
+
+            wearableRenderers.AddRange(wearableController.assetRenderers);
 
             wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
         }
@@ -456,7 +458,7 @@ namespace DCL
             if (lodController == null)
                 return;
 
-            lodController.Initialize(transform, lodRenderer, lodMeshFilter.mesh, meshRenderers);
+            lodController.Initialize(transform, lodRenderer, lodMeshFilter.mesh, wearableRenderers);
 
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
@@ -564,12 +566,13 @@ namespace DCL
 
         private void HideAll()
         {
-            if (meshRenderers == null)
-                meshRenderers = GetComponentsInChildren<MeshRenderer>();
+            if (wearableRenderers == null || wearableRenderers.Count == 0)
+                return;
 
-            for (int i = 0; i < meshRenderers.Length; i++)
+            int count = wearableRenderers.Count;
+            for (int i = 0; i < count; i++)
             {
-                meshRenderers[i].enabled = false;
+                wearableRenderers[i].enabled = false;
             }
         }
 

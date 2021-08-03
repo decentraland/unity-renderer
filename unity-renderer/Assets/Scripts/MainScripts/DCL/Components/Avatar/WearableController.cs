@@ -21,7 +21,7 @@ public class WearableController
     public GameObject assetContainer => loader?.loadedAsset;
     public bool isReady => loader != null && loader.isFinished && assetContainer != null;
 
-    protected Renderer[] assetRenderers;
+    public Renderer[] assetRenderers { get; private set; }
 
     List<Material> materials = null;
 

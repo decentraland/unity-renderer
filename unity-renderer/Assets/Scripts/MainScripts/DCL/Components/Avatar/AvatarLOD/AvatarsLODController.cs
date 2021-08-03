@@ -84,7 +84,6 @@ namespace DCL
                 return;
 
             shouldUpdateSnapshots = (Time.timeSinceLevelLoad - lastSnapshotsUpdateTime) >= SNAPSHOTS_FREQUENCY_IN_SECONDS;
-            // shouldUpdateSnapshots = false;
 
             SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
             foreach (AvatarLODController avatar in avatarsList)

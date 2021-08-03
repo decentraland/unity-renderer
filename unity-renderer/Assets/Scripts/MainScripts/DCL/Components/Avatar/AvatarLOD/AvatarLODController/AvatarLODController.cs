@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using DCL.Configuration;
 
@@ -6,7 +7,7 @@ namespace DCL
     public class AvatarLODController
     {
         private static Camera snapshotCamera;
-        private static RenderTexture snapshotRenderTexture = new RenderTexture(512, 1024, 32);
+        private static readonly RenderTexture snapshotRenderTexture = new RenderTexture(512, 1024, 32);
 
         private const bool ONLY_GENERIC_IMPOSTORS = false;
         private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
@@ -18,7 +19,7 @@ namespace DCL
         private Transform avatarTransform;
         private MeshRenderer impostorMeshRenderer;
         private Mesh impostorMesh;
-        private MeshRenderer[] avatarMeshes;
+        private List<Renderer> avatarMeshes;
         private Texture2D snapshotTex = new Texture2D(snapshotRenderTexture.width, snapshotRenderTexture.height, TextureFormat.RGBA32, false);
 
         public delegate void LODToggleEventDelegate(bool newValue);
@@ -31,12 +32,14 @@ namespace DCL
                 GameObject cameraGO = new GameObject("AvatarsLODImpostorCamera");
                 snapshotCamera = cameraGO.AddComponent<Camera>();
                 cameraGO.SetActive(false);
-                snapshotCamera.cullingMask = PhysicsLayers.characterPreviewLayer;
+                snapshotCamera.clearFlags = CameraClearFlags.SolidColor;
+                snapshotCamera.backgroundColor = new Color(0, 0, 0, 0);
+                snapshotCamera.cullingMask = 1 << PhysicsLayers.characterPreviewLayer;
                 snapshotCamera.targetTexture = snapshotRenderTexture;
             }
         }
 
-        public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, MeshRenderer[] avatarMeshes)
+        public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, List<Renderer> avatarMeshes)
         {
             this.avatarTransform = avatarTransform;
             this.impostorMeshRenderer = impostorMeshRenderer;
@@ -85,7 +88,8 @@ namespace DCL
 
         private void UpdateAvatarMeshesLayer(int newLayer)
         {
-            for (var i = 0; i < avatarMeshes.Length; i++)
+            int count = avatarMeshes.Count;
+            for (var i = 0; i < count; i++)
             {
                 avatarMeshes[i].gameObject.layer = newLayer;
             }
