@@ -79,6 +79,9 @@ public class BIWMainController : PluginFeature
         activeFeature = true;
         isInit = true;
 
+        //We init the lands so we don't have a null reference
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
+
         BIWCatalogManager.Init();
 
         CreateControllers();
