@@ -2,9 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -83,13 +80,7 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            avatarRenderer.ApplyModel(model, () =>
-            {
-                if (avatarRenderer.lodRenderer != null)
-                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer);
-
-                avatarDone = true;
-            }, () => avatarFailed = true);
+            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
@@ -130,6 +121,8 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            avatarRenderer.InitializeLODController();
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
@@ -210,9 +203,7 @@ namespace DCL
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
                 playerStatus = null;
             }
-
-            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
-
+            
             avatarRenderer.CleanupAvatar();
 
             if (poolableObject != null)

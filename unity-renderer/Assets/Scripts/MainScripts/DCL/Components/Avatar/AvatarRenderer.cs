@@ -21,7 +21,9 @@ namespace DCL
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
+
         public MeshRenderer lodRenderer;
+        public MeshFilter lodMeshFilter;
 
         private AvatarModel model;
 
@@ -36,6 +38,7 @@ namespace DCL
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
         internal StickersController stickersController;
+        internal AvatarLODController lodController;
 
         private long lastStickerTimestamp = -1;
 
@@ -43,6 +46,7 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private AssetPromise_Texture bodySnapshotTexturePromise;
         private bool facialFeaturesVisible = true;
         private bool ssaoEnabled = true;
 
@@ -50,6 +54,17 @@ namespace DCL
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
+
+            if (lodRenderer != null)
+            {
+                lodController = new AvatarLODController()
+                {
+                    transform = this.transform,
+                    meshRenderer = lodRenderer,
+                    mesh = lodMeshFilter.mesh
+                };
+                lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
+            }
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -63,6 +78,12 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+
             void onSuccessWrapper()
             {
                 onSuccess?.Invoke();
@@ -73,6 +94,8 @@ namespace DCL
 
             void onFailWrapper(bool isFatalError)
             {
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
                 onFail?.Invoke();
                 this.OnFailEvent -= onFailWrapper;
             }
@@ -91,6 +114,30 @@ namespace DCL
             StopLoadingCoroutines();
             isLoading = true;
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
+        }
+
+        public void InitializeLODController()
+        {
+            if (lodController == null)
+                return;
+
+            UserProfile userProfile = null;
+            if (!string.IsNullOrEmpty(model?.id))
+                userProfile = UserProfileController.GetProfileByUserId(model.id);
+
+            if (userProfile != null)
+            {
+                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
+                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
+                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            }
+            else
+            {
+                lodController.RandomizeAndApplyGenericImpostor();
+            }
+
+            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
         }
 
         void StopLoadingCoroutines()
@@ -132,6 +179,12 @@ namespace DCL
             isLoading = false;
             OnFailEvent = null;
             OnSuccessEvent = null;
+
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
@@ -500,9 +553,7 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
-        public MeshRenderer GetLODRenderer() { return lodRenderer; }
-
-        public Transform GetTransform() { return transform; }
+        public AvatarLODController GetLODController() { return lodController; }
 
         private void HideAll()
         {

@@ -9,14 +9,14 @@ using static BIWCompleteAction;
 
 public interface IBIWActionController
 {
-    public event System.Action OnRedo;
-    public event System.Action OnUndo;
-    public void AddAction(BIWCompleteAction action);
-    public void TryToRedoAction();
-    public void TryToUndoAction();
-    public void CreateActionEntityDeleted(List<BIWEntity> entityList);
-    public void CreateActionEntityDeleted(BIWEntity entity);
-    public void CreateActionEntityCreated(IDCLEntity entity);
+    event System.Action OnRedo;
+    event System.Action OnUndo;
+    void AddAction(BIWCompleteAction action);
+    void TryToRedoAction();
+    void TryToUndoAction();
+    void CreateActionEntityDeleted(List<BIWEntity> entityList);
+    void CreateActionEntityDeleted(BIWEntity entity);
+    void CreateActionEntityCreated(IDCLEntity entity);
 }
 
 public class BIWActionController : BIWController, IBIWActionController

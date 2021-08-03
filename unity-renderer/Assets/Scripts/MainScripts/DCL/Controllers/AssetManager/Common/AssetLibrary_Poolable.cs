@@ -6,18 +6,26 @@ namespace DCL
     public class AssetLibrary_Poolable<AssetType> : AssetLibrary<AssetType>
         where AssetType : Asset_WithPoolableContainer
     {
+        private readonly string salt = null;
         IPooledObjectInstantiator instantiator;
         public Dictionary<object, AssetType> masterAssets = new Dictionary<object, AssetType>();
 
-        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator) { this.instantiator = instantiator; }
+        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator) : this(instantiator, null) { }
+        public AssetLibrary_Poolable(IPooledObjectInstantiator instantiator, string salt)
+        {
+            this.instantiator = instantiator;
+            this.salt = salt;
+        }
 
         private void OnPoolRemoved(Pool pool)
         {
             pool.OnCleanup -= OnPoolRemoved;
-            if (masterAssets.ContainsKey(pool.id))
+            object assetId = PoolIdToAssetId(pool.id);
+
+            if (masterAssets.ContainsKey(assetId))
             {
-                masterAssets[pool.id].Cleanup();
-                masterAssets.Remove(pool.id);
+                masterAssets[assetId].Cleanup();
+                masterAssets.Remove(assetId);
             }
         }
 
@@ -32,7 +40,8 @@ namespace DCL
             if (!masterAssets.ContainsKey(asset.id))
                 masterAssets.Add(asset.id, asset);
 
-            Pool pool = PoolManager.i.AddPool(asset.id, asset.container, instantiator);
+            object poolId = AssetIdToPoolId(asset.id);
+            Pool pool = PoolManager.i.AddPool(poolId, asset.container, instantiator);
 
             pool.OnCleanup -= OnPoolRemoved;
             pool.OnCleanup += OnPoolRemoved;
@@ -49,10 +58,11 @@ namespace DCL
                 return null;
 
             AssetType clone = masterAssets[id].Clone() as AssetType;
+            object poolId = AssetIdToPoolId(id);
 
-            if (PoolManager.i.ContainsPool(clone.id))
+            if (PoolManager.i.ContainsPool(poolId))
             {
-                clone.container = PoolManager.i.Get(clone.id).gameObject;
+                clone.container = PoolManager.i.Get(poolId).gameObject;
             }
             else
             {
@@ -69,10 +79,11 @@ namespace DCL
                 return null;
 
             AssetType clone = masterAssets[id].Clone() as AssetType;
+            object poolId = AssetIdToPoolId(id);
 
-            if (PoolManager.i.ContainsPool(clone.id))
+            if (PoolManager.i.ContainsPool(poolId))
             {
-                clone.container = PoolManager.i.GetPool(id).InstantiateAsOriginal();
+                clone.container = PoolManager.i.GetPool(poolId).InstantiateAsOriginal();
             }
             else
             {
@@ -125,5 +136,23 @@ namespace DCL
 
             masterAssets.Clear();
         }
+
+        public object AssetIdToPoolId(object assetId) { return salt == null ? assetId : $"{assetId}{GetSaltSuffix()}"; }
+
+        public object PoolIdToAssetId(object poolId)
+        {
+            if (salt == null)
+                return poolId;
+
+            string id = poolId.ToString();
+            string saltSuffix = GetSaltSuffix();
+            if (id.EndsWith(saltSuffix))
+            {
+                return id.Remove(id.Length - saltSuffix.Length);
+            }
+            return poolId;
+        }
+
+        string GetSaltSuffix() { return  $"_{salt}"; }
     }
 }

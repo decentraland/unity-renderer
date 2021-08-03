@@ -1,3 +1,16 @@
 {
-	"name": "AvatarRendererInterface"
+    "name": "AvatarRendererInterface",
+    "rootNamespace": "",
+    "references": [
+        "GUID:09421665db03949048c48febfea4311f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

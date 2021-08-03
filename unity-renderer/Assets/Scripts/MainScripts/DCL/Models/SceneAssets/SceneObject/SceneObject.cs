@@ -38,7 +38,13 @@ public class SceneObject
     public string script;
     public bool isFavorite = false;
 
-    public string GetComposedThumbnailUrl() { return BIWUrlUtils.GetUrlSceneObjectContent() + thumbnail; }
+    public string GetComposedThumbnailUrl()
+    {
+        //NOTE: This is a workaround since the builder sometimes send the thumbnail composed and sometimes it doesn't
+        //This way we ensure that the base url is only 1 time
+        string urlBase = BIWUrlUtils.GetUrlSceneObjectContent();
+        return urlBase + thumbnail.Replace(urlBase, "");
+    }
 
     public string GetBaseURL() { return BIWUrlUtils.GetUrlSceneObjectContent(); }
 

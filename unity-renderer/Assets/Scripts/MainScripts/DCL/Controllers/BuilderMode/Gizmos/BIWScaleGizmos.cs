@@ -73,9 +73,7 @@ public class BIWScaleGizmos : BIWGizmos
             scaleDirection = Vector3.one;
             float inputDirection = (lastMousePosition.x - initialMousePosition.x) + (lastMousePosition.y - initialMousePosition.y);
             if (inputDirection < 0)
-            {
                 scaleDirection = -Vector3.one;
-            }
 
             initialMousePosition = lastMousePosition;
             initialHitPoint = lastHitPoint;
@@ -100,9 +98,7 @@ public class BIWScaleGizmos : BIWGizmos
         Vector3 newScale = initialEntityScale + scaleDirection * axisValue;
 
         if (Mathf.Abs(newScale.x) < MINIMUN_SCALE_ALLOWED || Mathf.Abs(newScale.y) < MINIMUN_SCALE_ALLOWED)
-        {
             newScale += scaleDirection * MINIMUN_SCALE_ALLOWED;
-        }
 
         return newScale;
     }
@@ -122,13 +118,9 @@ public class BIWScaleGizmos : BIWGizmos
     protected override void SetPreviousAxisValue(float axisValue, float transformValue)
     {
         if (activeAxis == axisProportionalScale)
-        {
             prevAxisValue = 0;
-        }
         else
-        {
             prevAxisValue = axisValue;
-        }
     }
 
     protected override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)

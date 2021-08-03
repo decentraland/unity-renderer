@@ -40,6 +40,7 @@ public class AvatarModel : BaseModel
         if (other == null)
             return;
 
+        id = other.id;
         name = other.name;
         bodyShape = other.bodyShape;
         skinColor = other.skinColor;

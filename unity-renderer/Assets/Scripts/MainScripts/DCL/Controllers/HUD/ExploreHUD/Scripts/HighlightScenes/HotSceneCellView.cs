@@ -148,11 +148,15 @@ internal class HotSceneCellView : MonoBehaviour
             RealmsInfoBridge.OnRealmConnectionFailed += OnRealmConnectionFailed;
         }
 
-        lastJumpInTried.gridPosition = hotSceneInfo.baseCoords;
-        lastJumpInTried.realm.serverName = realm.serverName;
-        lastJumpInTried.realm.layer = realm.layer;
-
+        SetLastJumpInTried(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
         OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
+    }
+
+    private void SetLastJumpInTried(Vector2 position, string serverName, string layer)
+    {
+        lastJumpInTried.gridPosition = position;
+        lastJumpInTried.realm.serverName = serverName;
+        lastJumpInTried.realm.layer = layer;
     }
 
     private void OnRealmConnectionSuccess(JumpInPayload successRealm)
@@ -181,6 +185,7 @@ internal class HotSceneCellView : MonoBehaviour
         {
             WebInterface.NotifyStatusThroughChat("Trying to connect to the next more populated realm...");
             HotScenesController.HotSceneInfo.Realm nextRealmToTry = nextMostPopulatedRealms.Dequeue();
+            SetLastJumpInTried(hotSceneInfo.baseCoords, nextRealmToTry.serverName, nextRealmToTry.layer);
             OnJumpIn?.Invoke(hotSceneInfo.baseCoords, nextRealmToTry.serverName, nextRealmToTry.layer);
         }
         else

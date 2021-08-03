@@ -85,9 +85,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
         if (lastMouseWheelAxisDirection == axisDirection)
         {
             if (Time.unscaledTime - lastMouseWheelTime >= MOUSE_WHEEL_THROTTLE)
-            {
                 SetMouseWheelDelta(axisValue, axisDirection);
-            }
         }
         else
         {
@@ -106,9 +104,7 @@ public class BIWInputWrapper : BIWController, IBIWInputWrapper
     {
         float axisValue = Input.GetAxis(MOUSE_SCROLLWHEEL);
         if (axisValue != 0)
-        {
             OnMouseWheelInput(axisValue);
-        }
     }
 
     public void StopInput() { canInputBeMade = false; }
