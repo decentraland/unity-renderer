@@ -5,7 +5,12 @@
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner",
     "AvatarMeshCombiner",
-    "RenderUtils"
+    "RenderUtils",
+    "AssetPromiseKeeper",
+    "ContentProvider",
+    "TestAssetsUtils",
+    "WebRequest",
+    "WebRequestControllerInterfaces"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
