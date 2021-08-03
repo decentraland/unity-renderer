@@ -104,8 +104,9 @@ namespace DCL.Components
 
         public void Unload()
         {
-            AssetPromiseKeeper_GLTF.i.ForgetAfterFinish(gltfPromise);
-            AssetPromiseKeeper_AB_GameObject.i.ForgetAfterFinish(abPromise);
+            Debug.Log($"PATO: forget {gltfPromise.GetId()} {gltfPromise.GetHashCode()}");
+            AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+            AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
         }
 
         void LoadAssetBundle(string targetUrl, Action<GameObject> OnSuccess, Action OnFail)

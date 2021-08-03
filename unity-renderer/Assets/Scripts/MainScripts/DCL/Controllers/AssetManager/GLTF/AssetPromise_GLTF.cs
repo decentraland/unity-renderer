@@ -1,4 +1,6 @@
+using DCL.Configuration;
 using DCL.Helpers;
+using UnityEngine;
 using UnityGLTF;
 
 namespace DCL
@@ -13,6 +15,10 @@ namespace DCL
 
         GLTFComponent gltfComponent = null;
         object id = null;
+
+        private System.Action OnSuccess;
+        private System.Action OnFail;
+        private bool waitingAssetLoad = false;
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
         {
@@ -32,7 +38,13 @@ namespace DCL
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
-        protected override void OnAfterLoadOrReuse() { settings.ApplyAfterLoad(asset.container.transform); }
+        protected override void OnAfterLoadOrReuse()
+        {
+            if (asset.container != null)
+            {
+                settings.ApplyAfterLoad(asset.container.transform);
+            }
+        }
 
         public override object GetId() { return id; }
 
@@ -52,8 +64,12 @@ namespace DCL
             tmpSettings.OnWebRequestStartEvent += ParseGLTFWebRequestedFile;
 
             gltfComponent.LoadAsset(url, GetId() as string, false, tmpSettings);
-            gltfComponent.OnSuccess += OnSuccess;
-            gltfComponent.OnFail += OnFail;
+
+            this.OnSuccess = OnSuccess;
+            this.OnFail = OnFail;
+
+            gltfComponent.OnSuccess += this.OnSuccess;
+            gltfComponent.OnFail += this.OnFail;
 
             asset.name = url;
         }
@@ -95,7 +111,9 @@ namespace DCL
         protected override void OnCancelLoading()
         {
             if (asset != null)
+            {
                 asset.CancelShow();
+            }
         }
 
         protected override Asset_GLTF GetAsset(object id)
@@ -108,6 +126,67 @@ namespace DCL
             {
                 return base.GetAsset(id);
             }
+        }
+
+        internal override void Unload()
+        {
+            Debug.Log($"PATO: unload {id} waitingAssetLoad = {waitingAssetLoad} state = {state} {GetHashCode()}");
+
+            if (waitingAssetLoad)
+                return;
+
+            settings.parent = null;
+
+            // NOTE: if Unload is called before finish loading we wait until gltf is loaded or failed before unloading it
+            if (state == AssetPromiseState.LOADING && gltfComponent != null)
+            {
+                waitingAssetLoad = true;
+
+                gltfComponent.OnSuccess -= OnSuccess;
+                gltfComponent.OnFail -= OnFail;
+
+                gltfComponent.OnSuccess += DoUnload;
+                gltfComponent.OnFail += DoUnload;
+
+                gltfComponent.CancelIfQueued();
+
+                return;
+            }
+
+            base.Unload();
+        }
+
+        internal override void OnForget()
+        {
+            if (state == AssetPromiseState.LOADING)
+            {
+                settings.parent = null;
+                if (asset != null)
+                {
+                    asset.CancelShow();
+                    asset.Hide();
+                    Debug.Log($"PATO: unchild {id} {GetHashCode()}");
+                }
+            }
+            base.OnForget();
+        }
+
+        // NOTE: master promise are silently forgotten. We should make sure that they are loaded anyway since
+        // other promises are waiting for them
+        internal override void OnSilentForget()
+        {
+            Debug.Log($"PATO: OnSilentForget {id} {GetHashCode()} gltfComponent = {gltfComponent != null}");
+            asset.Hide();
+            if (gltfComponent != null)
+            {
+                gltfComponent.SetIgnoreDistanceTest();
+            }
+        }
+
+        void DoUnload()
+        {
+            Debug.Log($"PATO: DoUnload {id} {GetHashCode()}");
+            base.Unload();
         }
     }
 }

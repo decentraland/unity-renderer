@@ -86,7 +86,7 @@ namespace UnityGLTF
 
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
-        private Coroutine loadingRoutine = null;
+        public Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
         private Camera mainCamera;
         private DCL.IWebRequestController webRequestController;
@@ -114,7 +114,9 @@ namespace UnityGLTF
 
             if (loadingRoutine != null)
             {
-                StopCoroutine(loadingRoutine);
+                //StopCoroutine(loadingRoutine);
+                Debug.LogError($"PATO: load when already loading {idPrefix}");
+                return;
             }
 
             alreadyDecrementedRefCount = false;
@@ -288,11 +290,14 @@ namespace UnityGLTF
 
                     IncrementDownloadCount();
 
+                    Debug.Log($"PATO: start loading {idPrefix} process...");
                     state = State.DOWNLOADING;
 
                     if (transform != null)
                     {
+                        Debug.Log($"PATO: start loading {idPrefix} do start...");
                         yield return sceneImporter.LoadScene(-1);
+                        Debug.Log($"PATO: ended loading {idPrefix}");
 
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
@@ -306,11 +311,13 @@ namespace UnityGLTF
                     }
 
                     state = State.COMPLETED;
+                    Debug.Log($"PATO: finish loading {idPrefix}");
 
                     DecrementDownloadCount();
                 }
                 finally
                 {
+                    Debug.Log($"PATO: finally loading {idPrefix}");
                     if (loader != null)
                     {
                         if (sceneImporter == null)
@@ -335,10 +342,13 @@ namespace UnityGLTF
                     }
 
                     alreadyLoadedAsset = true;
-                    OnFinishedLoadingAsset?.Invoke();
 
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
+                    Debug.Log($"PATO: loading routine finished {idPrefix}");
+
+                    OnFinishedLoadingAsset?.Invoke();
+
                     Destroy(loadingPlaceholder);
                     Destroy(this);
                 }
@@ -352,6 +362,9 @@ namespace UnityGLTF
         private bool TestDistance()
         {
             if (mainCamera == null || this == null)
+                return true;
+
+            if (ignoreDistanceTest)
                 return true;
 
             float dist = Vector3.Distance(mainCamera.transform.position, transform.position);
@@ -377,6 +390,24 @@ namespace UnityGLTF
 
         public void Load(string url) { throw new NotImplementedException(); }
 
+        private bool DEBUG_cancelled = false;
+        private bool ignoreDistanceTest = false;
+
+        public void CancelIfQueued()
+        {
+            Debug.Log($"PATO: try-cancel {idPrefix} state = {state}");
+            DEBUG_cancelled = true;
+            if (state == State.QUEUED || state == State.NONE)
+            {
+                CoroutineStarter.Stop(loadingRoutine);
+                loadingRoutine = null;
+                OnFail_Internal(null);
+                Debug.Log($"PATO: cancelled {idPrefix}");
+            }
+        }
+
+        public void SetIgnoreDistanceTest() { ignoreDistanceTest = true; }
+
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;
@@ -401,6 +432,11 @@ namespace UnityGLTF
             if (sceneImporter != null)
             {
                 sceneImporter.Dispose();
+            }
+
+            if (loadingRoutine != null)
+            {
+                Debug.LogError($"PATO: destroyed while loading {name}");
             }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)

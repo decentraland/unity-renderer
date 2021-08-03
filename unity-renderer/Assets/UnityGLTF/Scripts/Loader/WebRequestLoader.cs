@@ -64,6 +64,7 @@ namespace UnityGLTF.Loader
                 finalUrl = Path.Combine(rootUri, httpRequestPath);
             }
 
+            Debug.Log($"PATO: downloading {finalUrl}");
             WebRequestAsyncOperation asyncOp = webRequestController.Get(
                 url: finalUrl,
                 downloadHandler: new DownloadHandlerBuffer(),
@@ -80,12 +81,15 @@ namespace UnityGLTF.Loader
 
             if (asyncOp.webRequest.downloadedBytes > int.MaxValue)
             {
-                Debug.LogError("Stream is too big for a byte array");
+                Debug.LogError($"Stream is too big for a byte array - {finalUrl}");
                 yield break;
             }
 
             if (asyncOp.webRequest.downloadHandler.data == null)
+            {
+                Debug.LogError($"download data == null - {finalUrl}");
                 yield break;
+            }
 
             //NOTE(Brian): Caution, webRequestResult.downloadHandler.data returns a COPY of the data, if accessed twice,
             //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
@@ -93,7 +97,10 @@ namespace UnityGLTF.Loader
             byte[] data = asyncOp.webRequest.downloadHandler.data;
 
             if (data != null)
+            {
                 LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
+                Debug.Log($"PATO: finish downloading {finalUrl}");
+            }
 
             asyncOp.Dispose();
         }

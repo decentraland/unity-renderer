@@ -146,7 +146,7 @@ namespace DCL
 
         protected virtual bool AddToLibrary() { return library.Add(asset); }
 
-        internal void Unload()
+        internal virtual void Unload()
         {
             if (state == AssetPromiseState.IDLE_AND_EMPTY)
                 return;
@@ -180,6 +180,8 @@ namespace DCL
             isForgotten = true;
             ClearEvents();
         }
+
+        internal virtual void OnSilentForget() { }
 
         protected abstract void OnCancelLoading();
         protected abstract void OnLoad(Action OnSuccess, Action OnFail);

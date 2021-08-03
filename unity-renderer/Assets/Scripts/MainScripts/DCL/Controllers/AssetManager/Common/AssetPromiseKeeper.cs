@@ -80,7 +80,6 @@ namespace DCL
         {
             this.library = library;
             CoroutineStarter.Start(ProcessBlockedPromisesQueue());
-            CoroutineStarter.Start(ProcessInProgressPromisesToForgetQueue());
         }
 
         public AssetPromiseType Keep(AssetPromiseType promise)
@@ -97,6 +96,7 @@ namespace DCL
             }
 
             promise.isDirty = true;
+            Debug.Log($"PATO: Keep_i {promise.GetId()}  {promise.GetHashCode()}");
 
             //NOTE(Brian): We already have a master promise for this id, add to blocked list.
             if (masterPromiseById.ContainsKey(id))
@@ -110,6 +110,7 @@ namespace DCL
 
                 blockedPromises.Add(promise);
                 promise.SetWaitingState();
+                Debug.Log($"PATO: Keep_i {promise.GetId()} waiting  {promise.GetHashCode()}");
                 return promise;
             }
 
@@ -120,45 +121,12 @@ namespace DCL
                 masterPromiseById.Add(id, promise);
             }
 
+            Debug.Log($"PATO: Keep_i {promise.GetId()} load  {promise.GetHashCode()}");
             promise.library = library;
             promise.OnPreFinishEvent += OnRequestCompleted;
             promise.Load();
 
             return promise;
-        }
-
-        public AssetPromiseType ForgetAfterFinish(AssetPromiseType promise)
-        {
-            if (promise == null)
-                return null;
-
-            if (promise.keepWaiting)
-            {
-                toForgetInProgressPromisesQueue.Enqueue(promise);
-                return promise;
-            }
-            else
-            {
-                return Forget(promise);
-            }
-        }
-
-        Queue<AssetPromiseType> toForgetInProgressPromisesQueue = new Queue<AssetPromiseType>();
-
-        IEnumerator ProcessInProgressPromisesToForgetQueue()
-        {
-            while (true)
-            {
-                if (toForgetInProgressPromisesQueue.Count <= 0)
-                {
-                    yield return null;
-                    continue;
-                }
-
-                AssetPromiseType promise = toForgetInProgressPromisesQueue.Dequeue();
-                yield return new WaitUntil(() => !promise.keepWaiting);
-                Forget(promise);
-            }
         }
 
         public AssetPromiseType Forget(AssetPromiseType promise)
@@ -168,6 +136,7 @@ namespace DCL
 
             if (promise.state == AssetPromiseState.IDLE_AND_EMPTY || promise.state == AssetPromiseState.WAITING)
             {
+                Debug.Log($"PATO: Forget_i {promise.GetId()} state = {promise.state} {promise.GetHashCode()}");
                 CleanPromise(promise);
                 promise.OnForget();
                 return promise;
@@ -179,6 +148,7 @@ namespace DCL
             {
                 bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
                 bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
+                Debug.Log($"PATO: Forget_i {promise.GetId()} isMasterPromise = {isMasterPromise} hasBlockedPromises = {hasBlockedPromises}  {promise.GetHashCode()}");
 
                 if (isMasterPromise && hasBlockedPromises)
                 {
@@ -189,10 +159,10 @@ namespace DCL
                     return promise;
                 }
             }
-
+            Debug.Log($"PATO: Forget_i {promise.GetId()} and unload  {promise.GetHashCode()}");
+            promise.OnForget();
             promise.Unload();
             CleanPromise(promise);
-            promise.OnForget();
 
             return promise;
         }
@@ -407,6 +377,6 @@ namespace DCL
             library.Cleanup();
         }
 
-        protected virtual void OnSilentForget(AssetPromiseType promise) { }
+        protected virtual void OnSilentForget(AssetPromiseType promise) { promise.OnSilentForget(); }
     }
 }

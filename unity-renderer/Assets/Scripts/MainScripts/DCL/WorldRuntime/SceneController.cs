@@ -97,6 +97,18 @@ namespace DCL
                 sceneSortDirty = false;
                 SortScenesByDistance();
             }
+
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                var scenes = Environment.i.world.state.loadedScenes
+                                        .Where(x => x.Value.sceneData.basePosition != new Vector2Int(0, 12))
+                                        .ToArray();
+
+                for (int i = 0; i < scenes.Length; i++)
+                {
+                    UnloadParcelSceneExecute(scenes[i].Key);
+                }
+            }
         }
 
         public void LateUpdate()

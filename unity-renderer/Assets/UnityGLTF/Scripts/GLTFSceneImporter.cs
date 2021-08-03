@@ -117,11 +117,7 @@ namespace UnityGLTF
 
         public bool importSkeleton = true;
 
-        public bool useMaterialTransition
-        {
-            get => useMaterialTransitionValue && !renderingIsDisabled;
-            set => useMaterialTransitionValue = value;
-        }
+        public bool useMaterialTransition { get => useMaterialTransitionValue && !renderingIsDisabled; set => useMaterialTransitionValue = value; }
 
         public int maxTextureSize = 1024;
         private const float SAME_KEYFRAME_TIME_DELTA = 0.0001f;
@@ -252,7 +248,9 @@ namespace UnityGLTF
                         Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
                     }
 
+                    Debug.Log($"PATO: Importer LoadJsonStream start {id}");
                     yield return LoadJsonStream(_gltfFileName);
+                    Debug.Log($"PATO: Importer LoadJsonStream end {id}");
                 }
 
                 float profiling = 0, frames = 0, jsonProfiling = 0;
@@ -266,7 +264,9 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
+                    Debug.Log($"PATO: Importer LoadJson start {id}");
                     yield return LoadJson();
+                    Debug.Log($"PATO: Importer LoadJson end {id}");
                 }
 
                 if (PROFILING_ENABLED)
@@ -291,7 +291,9 @@ namespace UnityGLTF
                     frames = Time.frameCount;
                 }
 
+                Debug.Log($"PATO: Importer _LoadScene start {id}");
                 yield return _LoadScene(sceneIndex, showSceneObj);
+                Debug.Log($"PATO: Importer _LoadScene end {id}");
 
                 if (PROFILING_ENABLED)
                 {
@@ -307,8 +309,10 @@ namespace UnityGLTF
                 //              start enqueued coroutines, if this is removed
                 //              the WaitUntil below will fail.
 
+                Debug.Log($"PATO: Importer WaitUntil1 (asynchelper) start {id}");
                 yield return new WaitUntil(
                     () => { return _asyncCoroutineHelper == null || _asyncCoroutineHelper.AllCoroutinesAreFinished(); });
+                Debug.Log($"PATO: Importer WaitUntil1 (asynchelper) end {id}");
 
                 MaterialTransitionController[] matTransitions = CreatedObject.GetComponentsInChildren<MaterialTransitionController>(true);
 
@@ -316,6 +320,7 @@ namespace UnityGLTF
                 {
                     float bailout = 0;
                     //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
+                    Debug.Log($"PATO: Importer WaitUntil2 (MaterialTransition) start {id}");
                     yield return new WaitUntil(
                         () =>
                         {
@@ -338,6 +343,7 @@ namespace UnityGLTF
                             return finishedTransition;
                         }
                     );
+                    Debug.Log($"PATO: Importer WaitUntil2 (MaterialTransition) end {id}");
                 }
 
                 if (!importSkeleton)
@@ -354,6 +360,7 @@ namespace UnityGLTF
             }
             finally
             {
+                Debug.Log($"PATO: Importer finally reached {id}");
                 lock (this)
                 {
                     _isRunning = false;
@@ -495,6 +502,10 @@ namespace UnityGLTF
         static List<string> streamingImagesStaticList = new List<string>();
         List<string> streamingImagesLocalList = new List<string>();
 
+        private int DEBUG_streamingImagesStaticList,
+                    DEBUG_LoadStream,
+                    DEBUG_ConstructBuffer = 0;
+
         protected IEnumerator ConstructImageBuffer(GLTFTexture texture, int textureIndex)
         {
             int sourceId = GetTextureSourceId(texture);
@@ -502,10 +513,12 @@ namespace UnityGLTF
 
             if (image.Uri != null && this.addImagesToPersistentCaching)
             {
+                Debug.Log($"PATO: async streamingImagesStaticList start {++DEBUG_streamingImagesStaticList} {id}");
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
                     yield return new WaitForSeconds(0.1f);
                 }
+                Debug.Log($"PATO: async streamingImagesStaticList end {--DEBUG_streamingImagesStaticList} {id}");
             }
 
             if ((image.Uri == null || !PersistentAssetCache.HasImage(image.Uri, id)) && _assetCache.ImageStreamCache[sourceId] == null)
@@ -516,7 +529,9 @@ namespace UnityGLTF
                     streamingImagesStaticList.Add(image.Uri);
                     streamingImagesLocalList.Add(image.Uri);
 
+                    Debug.Log($"PATO: async LoadStream start {++DEBUG_LoadStream} {id}");
                     yield return _loader.LoadStream(image.Uri);
+                    Debug.Log($"PATO: async LoadStream end {--DEBUG_LoadStream} {id}");
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
 
                     streamingImagesStaticList.Remove(image.Uri);
@@ -525,7 +540,9 @@ namespace UnityGLTF
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
                 {
                     int bufferIndex = image.BufferView.Value.Buffer.Id;
+                    Debug.Log($"PATO: async ConstructBuffer start {++DEBUG_ConstructBuffer} {id}");
                     yield return ConstructBuffer(_gltfRoot.Buffers[bufferIndex], bufferIndex);
+                    Debug.Log($"PATO: async ConstructBuffer end {--DEBUG_ConstructBuffer} {id}");
                 }
             }
 
@@ -1750,6 +1767,8 @@ namespace UnityGLTF
             }
         }
 
+        private int DEBUG_constructMaterial = 0;
+
         IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
         {
             bool shouldUseDefaultMaterial = primitive.Material == null;
@@ -1759,7 +1778,9 @@ namespace UnityGLTF
             if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
                 (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
             {
+                Debug.Log($"PATO: async DownloadAndConstructMaterial start {++DEBUG_constructMaterial} {id}");
                 yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
+                Debug.Log($"PATO: async DownloadAndConstructMaterial end {--DEBUG_constructMaterial} {id}");
             }
 
             MaterialCacheData materialCacheData =
@@ -2630,11 +2651,8 @@ namespace UnityGLTF
             return partialPath;
         }
 
-        public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale)
-        {
-            return new Vector2(offset.x, 1 - textureYScale - offset.y);
-        }
-        
+        public static Vector2 GLTFOffsetToUnitySpace(Vector2 offset, float textureYScale) { return new Vector2(offset.x, 1 - textureYScale - offset.y); }
+
         /// <summary>
         /// 
         /// </summary>
@@ -2647,59 +2665,41 @@ namespace UnityGLTF
             return result;
         }
 
-        public string GetCacheId(string uri)
-        {
-            return $"{uri}@{id}";
-        }
+        public string GetCacheId(string uri) { return $"{uri}@{id}"; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public RefCountedTextureData GetGlobalCachedImage(string uri)
-        {
-            return PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)];
-        }
+        public RefCountedTextureData GetGlobalCachedImage(string uri) { return PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)]; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="refCountedTexture"></param>
-        public void AddGlobalCachedImage(string uri, RefCountedTextureData refCountedTexture)
-        {
-            PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)] = refCountedTexture;
-        }
+        public void AddGlobalCachedImage(string uri, RefCountedTextureData refCountedTexture) { PersistentAssetCache.ImageCacheByUri[GetCacheId(uri)] = refCountedTexture; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public bool BufferIsInGlobalCache(string uri)
-        {
-            return PersistentAssetCache.StreamCacheByUri.ContainsKey(GetCacheId(uri));
-        }
+        public bool BufferIsInGlobalCache(string uri) { return PersistentAssetCache.StreamCacheByUri.ContainsKey(GetCacheId(uri)); }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public RefCountedStreamData GetCachedBuffer(string uri)
-        {
-            return PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)];
-        }
+        public RefCountedStreamData GetCachedBuffer(string uri) { return PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)]; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="refCountedStream"></param>
-        public void AddCachedBuffer(string uri, RefCountedStreamData refCountedStream)
-        {
-            PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)] = refCountedStream;
-        }
+        public void AddCachedBuffer(string uri, RefCountedStreamData refCountedStream) { PersistentAssetCache.StreamCacheByUri[GetCacheId(uri)] = refCountedStream; }
     }
 }
