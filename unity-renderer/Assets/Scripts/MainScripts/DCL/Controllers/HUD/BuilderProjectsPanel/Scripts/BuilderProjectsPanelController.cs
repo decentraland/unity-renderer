@@ -218,6 +218,7 @@ public class BuilderProjectsPanelController : IHUD
         fetchLandPromise
             .Then(lands =>
             {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
                 sectionsController.SetFetchingDataEnd();
                 isFetching = false;
 
