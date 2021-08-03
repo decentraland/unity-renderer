@@ -19,9 +19,10 @@ namespace DCL
         private Transform avatarTransform;
         private MeshRenderer impostorMeshRenderer;
         private Mesh impostorMesh;
-        private List<Renderer> avatarMeshes;
+        private List<Renderer> avatarRenderers;
         private Texture2D snapshotTex = new Texture2D(snapshotRenderTexture.width, snapshotRenderTexture.height, TextureFormat.RGBA32, false);
 
+        public float lastSnapshotsUpdateTime;
         public delegate void LODToggleEventDelegate(bool newValue);
         public event LODToggleEventDelegate OnLODToggle;
 
@@ -39,12 +40,12 @@ namespace DCL
             }
         }
 
-        public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, List<Renderer> avatarMeshes)
+        public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, List<Renderer> avatarRenderers)
         {
             this.avatarTransform = avatarTransform;
             this.impostorMeshRenderer = impostorMeshRenderer;
             this.impostorMesh = impostorMesh;
-            this.avatarMeshes = avatarMeshes;
+            this.avatarRenderers = avatarRenderers;
         }
 
         public MeshRenderer GetImpostorMeshRenderer() { return impostorMeshRenderer; }
@@ -58,7 +59,6 @@ namespace DCL
 
             ResetMeshUVs();
 
-            // GameObject.Destroy(meshRenderer.material.GetTexture(LOD_TEXTURE_SHADER_VAR));
             impostorMeshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, impostorTexture);
         }
 
@@ -86,12 +86,13 @@ namespace DCL
             impostorMesh.uv = uvs;
         }
 
-        private void UpdateAvatarMeshesLayer(int newLayer)
+        private void UpdateAvatarMeshes(int layer, bool enabledState)
         {
-            int count = avatarMeshes.Count;
+            int count = avatarRenderers.Count;
             for (var i = 0; i < count; i++)
             {
-                avatarMeshes[i].gameObject.layer = newLayer;
+                avatarRenderers[i].gameObject.layer = layer;
+                avatarRenderers[i].enabled = enabledState;
             }
         }
 
@@ -100,37 +101,20 @@ namespace DCL
             if (impostorMeshRenderer.gameObject.activeSelf == enabled)
                 return;
 
-            if (enabled)
-                UpdateImpostorSnapshot();
-            else
-                UpdateAvatarMeshesLayer(PhysicsLayers.defaultLayer);
-
             impostorMeshRenderer.gameObject.SetActive(enabled);
 
-            // OnLODToggle?.Invoke(enabled);
-            ToggleAvatarRendererGameObject(!enabled);
-        }
-
-        private void ToggleAvatarRendererGameObject(bool newValue)
-        {
-            avatarTransform.gameObject.SetActive(newValue); // Toggling AvatarRender GO; TODO: improve this
+            UpdateAvatarMeshes(PhysicsLayers.defaultLayer, !enabled);
         }
 
         public void UpdateImpostorSnapshot()
         {
-            // TODO: escape if the distance/angle to the main character didn't change, as the new snapshot will look the same
+            UpdateAvatarMeshes(PhysicsLayers.characterPreviewLayer, true);
 
-            // 1. Change wearable 3D meshes layer to PhysicsLayers.characterPreviewLayer
-            UpdateAvatarMeshesLayer(PhysicsLayers.characterPreviewLayer);
-
-            // 2. Turn ON wearable 3D meshes
-            ToggleAvatarRendererGameObject(true);
-
-            // 3. Take 3D meshes snapshot for impostor
             SetImpostorTexture(TakeSnapshot());
 
-            // 4. Deactivate 3d meshes
-            ToggleAvatarRendererGameObject(false);
+            UpdateAvatarMeshes(PhysicsLayers.characterPreviewLayer, false);
+
+            lastSnapshotsUpdateTime = Time.timeSinceLevelLoad;
         }
 
         private Texture2D TakeSnapshot()

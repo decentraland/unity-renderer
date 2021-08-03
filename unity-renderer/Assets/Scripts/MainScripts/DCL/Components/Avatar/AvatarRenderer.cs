@@ -56,20 +56,7 @@ namespace DCL
             stickersController = GetComponent<StickersController>();
 
             if (lodRenderer != null)
-            {
                 lodController = new AvatarLODController();
-                // lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
-                // lodController.OnLODToggle += (newValue) =>
-                // {
-                //     int layer = newValue ? LayerMask.NameToLayer("CharacterPreview") : LayerMask.NameToLayer("Default");
-                //     
-                //     Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-                //     for (int i = 0; i < renderers.Length; i++)
-                //     {
-                //         renderers[i].gameObject.layer = layer;
-                //     }
-                // };
-            }
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -428,7 +415,7 @@ namespace DCL
                 return;
             }
 
-            wearableRenderers.AddRange(wearableController.assetRenderers);
+            wearableRenderers.AddRange(wearableController.assetRenderers); // TODO: This may get lost if AvatarModel changes just 1 wearable
 
             wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
         }

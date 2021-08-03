@@ -5,11 +5,9 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float SNAPSHOTS_FREQUENCY_IN_SECONDS = 5f;
+        private const float SNAPSHOTS_FREQUENCY_IN_SECONDS = 2f;
 
         private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
-        private float lastSnapshotsUpdateTime = 0f;
-        private bool shouldUpdateSnapshots = true;
 
         public AvatarsLODController()
         {
@@ -83,17 +81,19 @@ namespace DCL
             if (!DataStore.i.avatarsLOD.LODEnabled.Get())
                 return;
 
-            shouldUpdateSnapshots = (Time.timeSinceLevelLoad - lastSnapshotsUpdateTime) >= SNAPSHOTS_FREQUENCY_IN_SECONDS;
-
             SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
             foreach (AvatarLODController avatar in avatarsList)
             {
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.GetTransform().position);
-                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
+                float LODDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+                bool isInLODDistance = distanceToPlayer >= LODDistance;
 
                 if (isInLODDistance)
                 {
-                    ToggleAvatarLOD(avatar, true);
+                    // If distance is farther than 2 LODDistance, we decrease its snapshots frequency
+                    int distanceFrequencyMultiplier = distanceToPlayer < LODDistance * 2 ? 1 : 3;
+
+                    ToggleAvatarLOD(avatar, true, SNAPSHOTS_FREQUENCY_IN_SECONDS * distanceFrequencyMultiplier);
                 }
                 else
                 {
@@ -114,14 +114,13 @@ namespace DCL
 
                 ToggleAvatarLOD(currentAvatar, isLOD);
             }
-
-            if (shouldUpdateSnapshots)
-                lastSnapshotsUpdateTime = Time.timeSinceLevelLoad;
         }
 
-        private void ToggleAvatarLOD(AvatarLODController avatar, bool LODEnabled)
+        private void ToggleAvatarLOD(AvatarLODController avatar, bool LODEnabled, float snapshotFrequency = SNAPSHOTS_FREQUENCY_IN_SECONDS)
         {
-            if (LODEnabled && shouldUpdateSnapshots)
+            bool shouldUpdateSnapshot = (Time.timeSinceLevelLoad - avatar.lastSnapshotsUpdateTime) >= SNAPSHOTS_FREQUENCY_IN_SECONDS;
+
+            if (LODEnabled && shouldUpdateSnapshot)
                 avatar.UpdateImpostorSnapshot();
 
             avatar.ToggleLOD(LODEnabled);

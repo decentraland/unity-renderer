@@ -122,7 +122,6 @@ namespace DCL
 
             EnablePassport();
 
-            // yield return null;
             // avatarRenderer.InitializeLODController();
         }
 
