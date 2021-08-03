@@ -11,7 +11,7 @@ namespace DCL
 {
     public class DCLWebSocketService : WebSocketBehavior
     {
-        // TODO(Mateo): Refactor https://github.com/decentraland/unity-renderer/issues/585
+        public static bool enterAsAGuest = false; // TODO(Mateo): Refactor https://github.com/decentraland/unity-renderer/issues/585
         static bool VERBOSE = false;
 
         private void SendMessageToWeb(string type, string message)
@@ -61,6 +61,8 @@ namespace DCL
             base.OnOpen();
             WebInterface.OnMessageFromEngine += SendMessageToWeb;
             Send("{\"welcome\": true}");
+            if (enterAsAGuest)
+                WebInterface.SendAuthentication(WebInterface.RendererAuthenticationType.Guest);
         }
     }
 
