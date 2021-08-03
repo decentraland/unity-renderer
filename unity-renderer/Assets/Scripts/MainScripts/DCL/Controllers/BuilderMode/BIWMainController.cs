@@ -66,7 +66,6 @@ public class BIWMainController : PluginFeature
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private UserProfile userProfile;
-    private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
 
@@ -404,7 +403,7 @@ public class BIWMainController : PluginFeature
             return;
         }
 
-        if (landsWithAccess.Count == 0)
+        if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0)
             ActivateLandAccessBackgroundChecker();
 
         FindSceneToEdit();
@@ -452,7 +451,7 @@ public class BIWMainController : PluginFeature
         if (BYPASS_LAND_OWNERSHIP_CHECK)
             return true;
 
-        List<Vector2Int> allParcelsWithAccess = landsWithAccess.SelectMany(land => land.parcels).ToList();
+        List<Vector2Int> allParcelsWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.parcels).ToList();
         foreach (Vector2Int parcel in allParcelsWithAccess)
         {
             if (sceneToCheck.sceneData.parcels.Any(currentParcel => currentParcel.x == parcel.x && currentParcel.y == parcel.y))
@@ -464,7 +463,7 @@ public class BIWMainController : PluginFeature
 
     private bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
-        List<DeployedScene> allDeployedScenesWithAccess = landsWithAccess.SelectMany(land => land.scenes).ToList();
+        List<DeployedScene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
         foreach (DeployedScene scene in allDeployedScenesWithAccess)
         {
             if (scene.source != DeployedScene.Source.SDK)
@@ -488,6 +487,7 @@ public class BIWMainController : PluginFeature
     }
 
     public void TryStartEnterEditMode() { TryStartEnterEditMode(true, null); }
+
     public void TryStartEnterEditMode(IParcelScene targetScene) { TryStartEnterEditMode(true, targetScene); }
 
     public void TryStartEnterEditMode(bool activateCamera, IParcelScene targetScene = null , string source = "BuilderPanel")
@@ -614,7 +614,7 @@ public class BIWMainController : PluginFeature
         }
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
-        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
+        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
         BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
     }
 
@@ -816,7 +816,10 @@ public class BIWMainController : PluginFeature
                                  KernelConfig.i.Get().tld,
                                  BIWSettings.CACHE_TIME_LAND,
                                  BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands => landsWithAccess = lands.ToList());
+                             .Then(lands =>
+                             {
+                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                             });
     }
 
     private static void ShowGenericNotification(string message)

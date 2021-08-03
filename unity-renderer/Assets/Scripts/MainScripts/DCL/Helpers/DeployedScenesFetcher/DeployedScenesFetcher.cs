@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using DCL.Helpers;
 
 public static class DeployedScenesFetcher
@@ -92,7 +93,7 @@ public static class DeployedScenesFetcher
             DeployedScene sceneInParcel = scenes.FirstOrDefault(scene => scene.parcels.Contains(result.parcels[i]) && !scenesInLand.Contains(scene));
             if (sceneInParcel != null)
             {
-                sceneInParcel.sceneLand = result;
+                sceneInParcel.SetScene(result);
                 scenesInLand.Add(sceneInParcel);
             }
         }
