@@ -270,6 +270,8 @@ internal class ScenesViewController : IScenesViewController
     private void AddScene(ISceneData sceneData, ISceneCardView sceneCardView, bool notify)
     {
         var dictionary = sceneData.isDeployed ? deployedScenes : projectScenes;
+        if (dictionary.ContainsKey(sceneData.id))
+            return;
         dictionary.Add(sceneData.id, sceneCardView);
 
         if (notify)
