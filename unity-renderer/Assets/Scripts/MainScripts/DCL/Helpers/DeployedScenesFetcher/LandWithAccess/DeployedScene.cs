@@ -61,6 +61,8 @@ public class DeployedScene
         thumbnail = GetNavmapThumbnailUrl(pointerData, contentUrl);
     }
 
+    public void SetScene(LandWithAccess land) { sceneLand = land; }
+
     static Vector2Int StringToVector2Int(string coords)
     {
         string[] coordSplit = coords.Split(',');
