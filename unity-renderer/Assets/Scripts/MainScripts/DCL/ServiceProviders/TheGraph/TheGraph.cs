@@ -70,6 +70,7 @@ public class TheGraph : ITheGraph
 
         Promise<List<Land>> promise = new Promise<List<Land>>();
 
+        cacheMaxAgeSeconds = -1;
         if (cacheMaxAgeSeconds >= 0)
         {
             if (landQueryCache.TryGet(lowerCaseAddress, out List<Land> cacheValue, out float lastUpdate))
@@ -84,7 +85,10 @@ public class TheGraph : ITheGraph
 
         string url = tld == "org" ? LAND_SUBGRAPH_URL_ORG : LAND_SUBGRAPH_URL_ZONE;
 
-        Query(url, TheGraphQueries.getLandQuery, new AddressVariable() { address = lowerCaseAddress })
+        int amount = 10;
+        string query = TheGraphQueries.getLandQuery.Replace("[AMOUNT]", amount.ToString());
+
+        Query(url, query, new AddressVariable() { address = lowerCaseAddress })
             .Then(resultJson =>
             {
                 ProcessReceivedLandsData(promise, resultJson, lowerCaseAddress, true);

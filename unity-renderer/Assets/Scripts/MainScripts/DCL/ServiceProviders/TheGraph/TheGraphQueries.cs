@@ -2,24 +2,24 @@ public static class TheGraphQueries
 {
     public static readonly string getLandQuery = @"
   query Land($address: Bytes) {
-    ownerParcels: parcels(first: 500, where: { estate: null, owner: $address }) {
+    ownerParcels: parcels(first: [AMOUNT], where: { estate: null, owner: $address }) {
       ...parcelFields
     }
-    ownerEstates: estates(first: 500, where: { owner: $address }) {
+    ownerEstates: estates(first: [AMOUNT], where: { owner: $address }) {
       ...estateFields
     }
-    updateOperatorParcels: parcels(first: 500, where: { updateOperator: $address }) {
+    updateOperatorParcels: parcels(first: [AMOUNT], where: { updateOperator: $address }) {
       ...parcelFields
     }
-    updateOperatorEstates: estates(first: 500, where: { updateOperator: $address }) {
+    updateOperatorEstates: estates(first: [AMOUNT], where: { updateOperator: $address }) {
       ...estateFields
     }
-    ownerAuthorizations: authorizations(first: 500, where: { owner: $address, type: \""UpdateManager\"" }) {
+    ownerAuthorizations: authorizations(first: [AMOUNT], where: { owner: $address, type: \""UpdateManager\"" }) {
       operator
       isApproved
       tokenAddress
     }
-    operatorAuthorizations: authorizations(first: 500, where: { operator: $address, type: \""UpdateManager\"" }) {
+    operatorAuthorizations: authorizations(first: [AMOUNT], where: { operator: $address, type: \""UpdateManager\"" }) {
       owner {
         address
         parcels(where: { estate: null }) {
@@ -53,7 +53,7 @@ public static class TheGraphQueries
     }
     updateOperator
     size
-    parcels(first: 500) {
+    parcels(first: [AMOUNT]) {
       x
       y
       tokenId

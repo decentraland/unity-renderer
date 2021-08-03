@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 internal static class LandHelper
 {
@@ -60,6 +61,17 @@ internal static class LandHelper
                     lands.Add(authEstate);
                 }
             }
+        }
+
+        Dictionary<string, Land> landDictionary = new Dictionary<string, Land>();
+        foreach (Land land in lands)
+        {
+            if (landDictionary.ContainsKey(land.id))
+            {
+                Debug.Log("Tierra repetida");
+                continue;
+            }
+            landDictionary.Add(land.id, land);
         }
 
         return lands
