@@ -55,7 +55,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
     }
 
-    void IUsersAroundListHUDListView.AddOrUpdateUser(Player player)
+    void IUsersAroundListHUDListView.AddOrUpdatePlayer(Player player)
     {
         if (userElementDictionary.ContainsKey(player.id))
         {

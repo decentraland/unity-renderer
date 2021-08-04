@@ -126,7 +126,7 @@ public class UsersAroundListHUDController : IHUD
 
     void OnOtherPlayersStatusAdded(string userId, Player player)
     {
-        usersListView.AddOrUpdateUser(player);
+        usersListView.AddOrUpdatePlayer(player);
 
         if (!trackedUsersHashSet.Contains(userId))
         {

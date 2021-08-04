@@ -78,7 +78,7 @@ namespace AvatarNamesHUD
             }
 
             AvatarNamesTracker tracker = reserveTrackers.Dequeue();
-            tracker.SetPlayerStatus(player);
+            tracker.SetPlayer(player);
             tracker.SetVisibility(true);
             trackers.Add(player.id, tracker);
         }
@@ -89,7 +89,7 @@ namespace AvatarNamesHUD
                 return;
 
             trackers.Remove(userId);
-            tracker.SetPlayerStatus(null);
+            tracker.SetPlayer(null);
             tracker.SetVisibility(false);
             reserveTrackers.Enqueue(tracker);
         }

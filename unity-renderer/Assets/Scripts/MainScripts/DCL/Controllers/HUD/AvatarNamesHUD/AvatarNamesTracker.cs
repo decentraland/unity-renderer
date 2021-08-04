@@ -40,7 +40,7 @@ namespace AvatarNamesHUD
             voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
         }
 
-        public void SetPlayerStatus(Player newPlayer)
+        public void SetPlayer(Player newPlayer)
         {
             player = newPlayer;
             if (player == null)

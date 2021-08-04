@@ -106,8 +106,8 @@ namespace DCL
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
-            otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
-            otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
+            otherPlayers.OnAdded += OnOtherPlayersAdded;
+            otherPlayers.OnRemoved += OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -162,8 +162,8 @@ namespace DCL
             playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
-            otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
-            otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
+            otherPlayers.OnAdded -= OnOtherPlayersAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
@@ -309,7 +309,7 @@ namespace DCL
             scenesOfInterestMarkers.Add(sceneInfo, go);
         }
 
-        private void OnOtherPlayersStatusAdded(string userId, Player player)
+        private void OnOtherPlayersAdded(string userId, Player player)
         {
             var poolable = usersInfoPool.Get();
             var marker = poolable.gameObject.GetComponent<MapUserIcon>();
@@ -319,7 +319,7 @@ namespace DCL
             usersInfoMarkers.Add(userId, poolable);
         }
 
-        private void OnOtherPlayerStatusRemoved(string userId, Player player)
+        private void OnOtherPlayerRemoved(string userId, Player player)
         {
             if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
             {

@@ -6,7 +6,7 @@ public interface IUsersAroundListHUDListView
     event Action<bool> OnRequestMuteGlobal;
     event Action OnGoToCrowdPressed;
     event Action OnOpen;
-    void AddOrUpdateUser(Player player);
+    void AddOrUpdatePlayer(Player player);
     void RemoveUser(string userId);
     void SetUserRecording(string userId, bool isRecording);
     void SetUserMuted(string userId, bool isMuted);
