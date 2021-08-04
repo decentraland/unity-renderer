@@ -73,6 +73,9 @@
         },
         {
             "m_Id": "912ef881edf84546b88252cddf20db10"
+        },
+        {
+            "m_Id": "09fa6ec6333d4995b8936503c75c1072"
         }
     ],
     "m_Nodes": [
@@ -476,6 +479,25 @@
         "a": 1.0
     },
     "m_ColorMode": 0
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.ShaderKeyword",
+    "m_ObjectId": "09fa6ec6333d4995b8936503c75c1072",
+    "m_Guid": {
+        "m_GuidSerialized": "9457bc4c-1e0c-473d-b54d-398498fa2717"
+    },
+    "m_Name": "_SSAO_OFF",
+    "m_DefaultReferenceName": "BOOLEAN_09FA6EC6333D4995B8936503C75C1072_ON",
+    "m_OverrideReferenceName": "_SSAO_OFF",
+    "m_GeneratePropertyBlock": true,
+    "m_KeywordType": 0,
+    "m_KeywordDefinition": 1,
+    "m_KeywordScope": 0,
+    "m_Entries": [],
+    "m_Value": 0,
+    "m_IsEditable": true
 }
 
 {
