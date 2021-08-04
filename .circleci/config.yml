@@ -385,5 +385,5 @@ workflows:
           requires:
             - build-unity
             - build-js-interface
-            - playmode-tests
+            # - playmode-tests
             # - editmode-tests
