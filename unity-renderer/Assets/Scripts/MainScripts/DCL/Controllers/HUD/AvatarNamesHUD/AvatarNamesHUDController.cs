@@ -7,7 +7,7 @@ namespace AvatarNamesHUD
     {
         private const int DEFAULT_MAX_AVATARS = 200;
 
-        private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         internal IAvatarNamesHUDView view;
         internal readonly HashSet<string> trackingPlayers = new HashSet<string>();
@@ -25,16 +25,16 @@ namespace AvatarNamesHUD
             view = CreateView();
             view?.Initialize(maxAvatarNames);
 
-            otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
-            otherPlayersStatus.OnRemoved += OnOtherPlayersStatusRemoved;
-            using var enumerator = otherPlayersStatus.Get().GetEnumerator();
+            otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
+            otherPlayers.OnRemoved += OnOtherPlayersStatusRemoved;
+            using var enumerator = otherPlayers.Get().GetEnumerator();
             while (enumerator.MoveNext())
             {
                 OnOtherPlayersStatusAdded(enumerator.Current.Key, enumerator.Current.Value);
             }
         }
 
-        internal void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
+        internal void OnOtherPlayersStatusAdded(string userId, Player player)
         {
             if (trackingPlayers.Contains(userId))
                 return;
@@ -42,13 +42,13 @@ namespace AvatarNamesHUD
             if (trackingPlayers.Count < maxAvatarNames)
             {
                 trackingPlayers.Add(userId);
-                view?.TrackPlayer(playerStatus);
+                view?.TrackPlayer(player);
             }
             else
                 reservePlayers.AddLast(userId);
         }
 
-        internal void OnOtherPlayersStatusRemoved(string userId, PlayerStatus playerStatus)
+        internal void OnOtherPlayersStatusRemoved(string userId, Player player)
         {
             reservePlayers.Remove(userId);
             if (!trackingPlayers.Remove(userId))
@@ -61,7 +61,7 @@ namespace AvatarNamesHUD
                 reservePlayers.RemoveFirst();
                 if (trackingPlayers.Add(reserveNode.Value))
                 {
-                    view?.TrackPlayer(playerStatus);
+                    view?.TrackPlayer(player);
                     return;
                 }
             }
@@ -71,8 +71,8 @@ namespace AvatarNamesHUD
 
         public void Dispose()
         {
-            otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
-            otherPlayersStatus.OnRemoved -= OnOtherPlayersStatusRemoved;
+            otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayersStatusRemoved;
             view?.Dispose();
         }
     }
