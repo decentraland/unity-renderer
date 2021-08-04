@@ -66,7 +66,7 @@ namespace DCL
         {
             // NOTE: set when character is teleported (DCLCharacterController - Teleport)
             public readonly BaseVariable<Vector3> lastTeleportPosition = new BaseVariable<Vector3>(Vector3.zero);
-            public readonly BaseDictionary<string, PlayerStatus> otherPlayersStatus = new BaseDictionary<string, PlayerStatus>();
+            public readonly BaseDictionary<string, Player> otherPlayers = new BaseDictionary<string, Player>();
         }
 
         public class DataStore_AvatarsLOD
