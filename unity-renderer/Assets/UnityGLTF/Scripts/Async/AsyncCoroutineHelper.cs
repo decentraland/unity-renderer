@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 
 namespace UnityGLTF
@@ -33,11 +34,11 @@ namespace UnityGLTF
 
         private IEnumerator CallMethodOnMainThread(CoroutineInfo coroutineInfo)
         {
-            call2 ++;
+            call2++;
             Debug.Log($"PATO: CallMethodOnMainThread start {++calls}");
             yield return coroutineInfo.Coroutine;
             Debug.Log($"PATO: CallMethodOnMainThread end {--calls}");
-            call2 --;
+            call2--;
             coroutineInfo.finished = true;
             runningActions.Remove(coroutineInfo);
             DEBUG_runningActions = runningActions.Count;
@@ -65,7 +66,7 @@ namespace UnityGLTF
                 {
                     runningActions.Add(coroutineInfo);
                     DEBUG_runningActions = runningActions.Count;
-                    StartCoroutine(CallMethodOnMainThread(coroutineInfo));
+                    this.StartThrowingCoroutine(CallMethodOnMainThread(coroutineInfo), (ex) => Debug.LogError($"PATO: {name} {ex}"));
                 }
             }
         }
