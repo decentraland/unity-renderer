@@ -10,6 +10,11 @@ using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
+    /// <summary>
+    /// TODO: This is using IntegrationTestSuite_Legacy instead of the normal because there is a bug in the NSustitute library
+    /// where the IDCLEntity are not mocked correctly, when you try to use Substitute.For<IDCLEntity>() there is a null reference in the variable pointer to an exception in the castle library
+    /// After it is fixed, we should go to IntegrationTestSuite 
+    /// </summary>
     public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {
         private EntityInformationController entityInformationController;
@@ -151,14 +156,14 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             BIWEntity testEntity = new BIWEntity();
-            ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
+            IParcelScene testScene2 = Substitute.For<IParcelScene>();
 
             // Act
-            entityInformationController.SetEntity(testEntity, testScene);
+            entityInformationController.SetEntity(testEntity, testScene2);
 
             // Assert
             entityInformationController.entityInformationView.Received(1).SetCurrentEntity(testEntity);
-            Assert.AreEqual(testScene, entityInformationController.parcelScene, "The parcel scene does not match!");
+            Assert.AreEqual(testScene2, entityInformationController.parcelScene, "The parcel scene does not match!");
             entityInformationController.entityInformationView.Received(1).SetEntityThumbnailEnable(false);
         }
 

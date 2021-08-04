@@ -39,7 +39,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.FirstPerson);
-        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BiwFirstPersonMode));
+        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BIWFirstPersonMode));
     }
 
     [Test]
@@ -53,7 +53,7 @@ public class BIWModeControllerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(biwModeController.GetCurrentStateMode() == BIWModeController.EditModeState.GodMode);
-        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BiwGodMode));
+        Assert.IsTrue(biwModeController.GetCurrentMode().GetType() == typeof(BIWGodMode));
     }
 
     [Test]

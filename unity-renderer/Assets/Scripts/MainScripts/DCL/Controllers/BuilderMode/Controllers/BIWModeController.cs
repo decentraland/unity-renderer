@@ -7,29 +7,29 @@ using UnityEngine;
 
 public interface IBIWModeController
 {
-    public event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
-    public event Action OnInputDone;
-    public Vector3 GetCurrentEditionPosition();
-    public void CreatedEntity(BIWEntity entity);
+    event Action<BIWModeController.EditModeState, BIWModeController.EditModeState> OnChangedEditModeState;
+    event Action OnInputDone;
+    Vector3 GetCurrentEditionPosition();
+    void CreatedEntity(BIWEntity entity);
 
-    public float GetMaxDistanceToSelectEntities() ;
+    float GetMaxDistanceToSelectEntities() ;
 
-    public void EntityDoubleClick(BIWEntity entity);
+    void EntityDoubleClick(BIWEntity entity);
 
-    public Vector3 GetMousePosition();
+    Vector3 GetMousePosition();
 
-    public Vector3 GetModeCreationEntryPoint();
-    public bool IsGodModeActive();
-    public void UndoEditionGOLastStep();
-    public void StartMultiSelection();
+    Vector3 GetModeCreationEntryPoint();
+    bool IsGodModeActive();
+    void UndoEditionGOLastStep();
+    void StartMultiSelection();
 
-    public void EndMultiSelection();
-    public void CheckInput();
+    void EndMultiSelection();
+    void CheckInput();
 
-    public void CheckInputSelectedEntities();
+    void CheckInputSelectedEntities();
 
-    public bool ShouldCancelUndoAction();
-    public void MouseClickDetected();
+    bool ShouldCancelUndoAction();
+    void MouseClickDetected();
 }
 
 public class BIWModeController : BIWController, IBIWModeController
@@ -47,8 +47,8 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWActionController actionController;
     private IBIWEntityHandler entityHandler;
 
-    private BiwFirstPersonMode firstPersonMode;
-    private BiwGodMode godMode;
+    private BIWFirstPersonMode firstPersonMode;
+    private BIWGodMode godMode;
 
     private InputAction_Trigger toggleSnapModeInputAction;
 
@@ -59,7 +59,7 @@ public class BIWModeController : BIWController, IBIWModeController
 
     private BIWMode currentActiveMode;
 
-    private bool isSnapActive = true;
+    private bool isSnapActive = false;
 
     private InputAction_Trigger.Triggered snapModeDelegate;
 
@@ -76,8 +76,8 @@ public class BIWModeController : BIWController, IBIWModeController
         cameraParentGO = context.sceneReferences.cameraParent;
         InitGameObjects();
 
-        firstPersonMode = new BiwFirstPersonMode();
-        godMode = new BiwGodMode();
+        firstPersonMode = new BIWFirstPersonMode();
+        godMode = new BIWGodMode();
 
         firstPersonMode.Init(context);
         godMode.Init(context);

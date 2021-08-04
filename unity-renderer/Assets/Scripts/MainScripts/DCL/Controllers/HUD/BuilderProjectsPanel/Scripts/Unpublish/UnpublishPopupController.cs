@@ -27,7 +27,7 @@ internal class UnpublishPopupController : IDisposable
 
     public void Dispose()
     {
-        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         CoroutineStarter.Stop(fakeProgressRoutine);
         view.OnCancelPressed -= OnCancel;
         view.OnConfirmPressed -= OnConfirmUnpublish;
@@ -44,7 +44,7 @@ internal class UnpublishPopupController : IDisposable
     void OnConfirmUnpublish()
     {
         BIWAnalytics.PlayerUnpublishScene(source.ToString(), coordinates);
-        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
         WebInterface.UnpublishScene(coordinates);
         fakeProgressRoutine = CoroutineStarter.Start(ProgressRoutine());
     }
@@ -68,7 +68,7 @@ internal class UnpublishPopupController : IDisposable
 
     private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)
     {
-        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         CoroutineStarter.Stop(fakeProgressRoutine);
 
         if (current.ok)

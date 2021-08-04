@@ -14,40 +14,40 @@ using Environment = DCL.Environment;
 
 public interface IBIWEntityHandler
 {
-    public event Action<BIWEntity> OnEntityDeselected;
-    public event Action OnEntitySelected;
-    public event Action<List<BIWEntity>> OnDeleteSelectedEntities;
-    public event Action<BIWEntity> OnEntityDeleted;
-    public BIWEntity GetConvertedEntity(string entityId);
-    public BIWEntity GetConvertedEntity(IDCLEntity entity);
-    public void DeleteEntity(BIWEntity entityToDelete);
-    public void DeleteEntity(string entityId);
-    public void DeleteFloorEntities();
-    public void DeleteSelectedEntities();
-    public IDCLEntity CreateEntityFromJSON(string entityJson);
-    public BIWEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true);
-    public List<BIWEntity> GetAllEntitiesFromCurrentScene();
-    public void DeselectEntities();
-    public List<BIWEntity> GetSelectedEntityList();
-    public bool IsAnyEntitySelected();
-    public void SetActiveMode(BIWMode buildMode);
-    public void SetMultiSelectionActive(bool isActive);
-    public void ChangeLockStateSelectedEntities();
-    public void DeleteEntitiesOutsideSceneBoundaries();
-    public bool AreAllSelectedEntitiesInsideBoundaries();
-    public bool AreAllEntitiesInsideBoundaries();
-    public void EntityListChanged();
-    public void NotifyEntityIsCreated(IDCLEntity entity);
-    public void SetEntityName(BIWEntity entityToApply, string newName, bool sendUpdateToKernel = true);
-    public void EntityClicked(BIWEntity entityToSelect);
-    public void ReportTransform(bool forceReport = false);
-    public void CancelSelection();
-    public bool IsPointerInSelectedEntity();
-    public void DestroyLastCreatedEntities();
-    public void Select(IDCLEntity entity);
-    public bool SelectEntity(BIWEntity entityEditable, bool selectedFromCatalog = false);
-    public void DeselectEntity(BIWEntity entity);
-    public int GetCurrentSceneEntityCount();
+    event Action<BIWEntity> OnEntityDeselected;
+    event Action OnEntitySelected;
+    event Action<List<BIWEntity>> OnDeleteSelectedEntities;
+    event Action<BIWEntity> OnEntityDeleted;
+    BIWEntity GetConvertedEntity(string entityId);
+    BIWEntity GetConvertedEntity(IDCLEntity entity);
+    void DeleteEntity(BIWEntity entityToDelete);
+    void DeleteEntity(string entityId);
+    void DeleteFloorEntities();
+    void DeleteSelectedEntities();
+    IDCLEntity CreateEntityFromJSON(string entityJson);
+    BIWEntity CreateEmptyEntity(ParcelScene parcelScene, Vector3 entryPoint, Vector3 editionGOPosition, bool notifyEntityList = true);
+    List<BIWEntity> GetAllEntitiesFromCurrentScene();
+    void DeselectEntities();
+    List<BIWEntity> GetSelectedEntityList();
+    bool IsAnyEntitySelected();
+    void SetActiveMode(BIWMode buildMode);
+    void SetMultiSelectionActive(bool isActive);
+    void ChangeLockStateSelectedEntities();
+    void DeleteEntitiesOutsideSceneBoundaries();
+    bool AreAllSelectedEntitiesInsideBoundaries();
+    bool AreAllEntitiesInsideBoundaries();
+    void EntityListChanged();
+    void NotifyEntityIsCreated(IDCLEntity entity);
+    void SetEntityName(BIWEntity entityToApply, string newName, bool sendUpdateToKernel = true);
+    void EntityClicked(BIWEntity entityToSelect);
+    void ReportTransform(bool forceReport = false);
+    void CancelSelection();
+    bool IsPointerInSelectedEntity();
+    void DestroyLastCreatedEntities();
+    void Select(IDCLEntity entity);
+    bool SelectEntity(BIWEntity entityEditable, bool selectedFromCatalog = false);
+    void DeselectEntity(BIWEntity entity);
+    int GetCurrentSceneEntityCount();
 }
 
 public class BIWEntityHandler : BIWController, IBIWEntityHandler
@@ -209,6 +209,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         lastTransformReportTime = DCLTime.realtimeSinceStartup;
     }
 
+    public float GetLastTimeReport() { return lastTransformReportTime; }
+
     public List<BIWEntity> GetSelectedEntityList() { return selectedEntities; }
 
     public bool IsAnyEntitySelected() { return selectedEntities.Count > 0; }
@@ -344,7 +346,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             if (!isMultiSelectionActive)
                 DeselectEntities();
 
-            if (!entityToSelect.IsLocked)
+            if (!entityToSelect.isLocked)
                 ChangeEntitySelectStatus(entityToSelect);
 
             if (entityToSelect == lastClickedEntity && (lastTimeEntityClicked + BIWSettings.MOUSE_MS_DOUBLE_CLICK_THRESHOLD / 1000f) >= Time.realtimeSinceStartup )
@@ -377,7 +379,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     void ChangeEntitySelectStatus(BIWEntity entityCliked)
     {
-        if (entityCliked.IsSelected)
+        if (entityCliked.isSelected)
             DeselectEntity(entityCliked);
         else
             SelectEntity(entityCliked);
@@ -406,7 +408,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     {
         foreach (BIWEntity entity in convertedEntities.Values)
         {
-            if (!entity.IsVisible)
+            if (!entity.isVisible)
                 entity.ToggleShowStatus();
         }
     }
@@ -417,7 +419,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
         foreach (BIWEntity entity in entitiesToHide)
         {
-            if (entity.IsVisible && entity.IsSelected)
+            if (entity.isVisible && entity.isSelected)
                 DeselectEntity(entity);
             entity.ToggleShowStatus();
         }
@@ -434,10 +436,10 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public bool SelectEntity(BIWEntity entityEditable, bool selectedFromCatalog = false)
     {
-        if (entityEditable.IsLocked)
+        if (entityEditable.isLocked)
             return false;
 
-        if (entityEditable.IsSelected)
+        if (entityEditable.isSelected)
             return false;
 
         entityEditable.Select();
@@ -628,7 +630,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         List<BIWEntity> entitiesToRemove = new List<BIWEntity>();
         foreach (BIWEntity entity in selectedEntities)
         {
-            if (entity.IsSelected && entity.IsNew)
+            if (entity.isSelected && entity.isNew)
                 entitiesToRemove.Add(entity);
         }
 
@@ -642,7 +644,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             DeleteEntity(entity, false);
         }
 
-        hudController.HideEntityInformation();
+        hudController?.HideEntityInformation();
     }
 
     public void EntityListChanged()
@@ -674,7 +676,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             entityToEdit.Init(entity, editMaterial);
             convertedEntities.Add(entityToEdit.entityUniqueId, entityToEdit);
             entity.OnRemoved += RemoveConvertedEntity;
-            entityToEdit.IsNew = hasBeenCreated;
+            entityToEdit.isNew = hasBeenCreated;
 
             string entityName = entityToEdit.GetDescriptiveName();
             var catalogItem = entityToEdit.GetCatalogItemAssociated();
@@ -750,7 +752,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void DeleteEntity(BIWEntity entityToDelete, bool checkSelection)
     {
-        if (entityToDelete.IsSelected && checkSelection)
+        if (entityToDelete.isSelected && checkSelection)
             DeselectEntity(entityToDelete);
 
         if (selectedEntities.Contains(entityToDelete))
@@ -864,14 +866,14 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private void ChangeEntityVisibilityStatus(BIWEntity entityToApply)
     {
         entityToApply.ToggleShowStatus();
-        if (!entityToApply.IsVisible && selectedEntities.Contains(entityToApply))
+        if (!entityToApply.isVisible && selectedEntities.Contains(entityToApply))
             DeselectEntity(entityToApply);
     }
 
     private void ChangeEntityLockStatus(BIWEntity entityToApply)
     {
         entityToApply.ToggleLockStatus();
-        if (entityToApply.IsLocked && selectedEntities.Contains(entityToApply))
+        if (entityToApply.isLocked && selectedEntities.Contains(entityToApply))
             DeselectEntity(entityToApply);
 
         bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);

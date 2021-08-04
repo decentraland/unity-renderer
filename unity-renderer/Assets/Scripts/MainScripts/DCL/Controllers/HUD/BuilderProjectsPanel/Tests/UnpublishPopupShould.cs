@@ -101,7 +101,7 @@ namespace Tests
             view.unpublishButton.onClick.Invoke();
             Assert.AreEqual(UnpublishPopupView.State.UNPUBLISHING, view.state);
 
-            DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.Set(new PublishSceneResultPayload() { ok = true }, true);
+            DataStore.i.builderInWorld.unpublishSceneResult.Set(new PublishSceneResultPayload() { ok = true }, true);
             Assert.AreEqual(UnpublishPopupView.State.DONE_UNPUBLISH, view.state);
         }
 
@@ -114,7 +114,7 @@ namespace Tests
             view.unpublishButton.onClick.Invoke();
             Assert.AreEqual(UnpublishPopupView.State.UNPUBLISHING, view.state);
 
-            DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.Set(new PublishSceneResultPayload() { ok = false }, true);
+            DataStore.i.builderInWorld.unpublishSceneResult.Set(new PublishSceneResultPayload() { ok = false }, true);
             Assert.AreEqual(UnpublishPopupView.State.ERROR_UNPUBLISH, view.state);
         }
     }

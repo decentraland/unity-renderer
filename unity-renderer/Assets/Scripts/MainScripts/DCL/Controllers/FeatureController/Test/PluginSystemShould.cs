@@ -6,36 +6,36 @@ using Tests;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-public class FeatureControllerShould : IntegrationTestSuite
+public class PluginSystemShould : IntegrationTestSuite
 {
 
     [Test]
     public void TestFeatureControllerApplyConfig()
     {
         //Arrange
-        FeatureController featureController = new FeatureController();
+        PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
 
         //Act
-        featureController.ApplyFeaturesConfig(currentConfig);
+        pluginSystem.ApplyFeaturesConfig(currentConfig);
 
         //Assert
-        Assert.AreSame(featureController.GetCurrentConfig(), currentConfig);
+        Assert.AreSame(pluginSystem.GetCurrentConfig(), currentConfig);
     }
 
     [Test]
     public void TestFeatureControllerConfigChange()
     {
         //Arrange
-        FeatureController featureController = new FeatureController();
+        PluginSystem pluginSystem = new PluginSystem();
         KernelConfigModel currentConfig = new KernelConfigModel();
         KernelConfigModel oldConfig = new KernelConfigModel();
-        featureController.ApplyFeaturesConfig(oldConfig);
+        pluginSystem.ApplyFeaturesConfig(oldConfig);
 
         //Act
-        featureController.OnKernelConfigChanged(currentConfig, oldConfig);
+        pluginSystem.OnKernelConfigChanged(currentConfig, oldConfig);
 
         //Assert
-        Assert.AreSame(featureController.GetCurrentConfig(), currentConfig);
+        Assert.AreSame(pluginSystem.GetCurrentConfig(), currentConfig);
     }
 }
