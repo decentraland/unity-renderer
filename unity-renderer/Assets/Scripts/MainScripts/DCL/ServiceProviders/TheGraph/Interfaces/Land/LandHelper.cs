@@ -63,17 +63,6 @@ internal static class LandHelper
             }
         }
 
-        Dictionary<string, Land> landDictionary = new Dictionary<string, Land>();
-        foreach (Land land in lands)
-        {
-            if (landDictionary.ContainsKey(land.id))
-            {
-                Debug.Log("Tierra repetida");
-                continue;
-            }
-            landDictionary.Add(land.id, land);
-        }
-
         return lands
                .Where(land => land.type == LandType.PARCEL || land.parcels.Count > 0)
                .ToList();

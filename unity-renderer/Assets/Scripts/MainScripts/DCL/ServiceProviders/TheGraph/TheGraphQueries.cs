@@ -1,6 +1,9 @@
 public static class TheGraphQueries
 {
-    public static readonly string getLandQuery = @"
+    private const int MAX_LAND_QUERY_AMOUNT = 1000;
+    public static string getLandQuery => landQuery.Replace("[AMOUNT]", MAX_LAND_QUERY_AMOUNT.ToString());
+
+    private static readonly string landQuery = @"
   query Land($address: Bytes) {
     ownerParcels: parcels(first: [AMOUNT], where: { estate: null, owner: $address }) {
       ...parcelFields
