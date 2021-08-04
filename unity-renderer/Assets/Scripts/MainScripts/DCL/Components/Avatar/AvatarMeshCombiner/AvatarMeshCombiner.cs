@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 namespace DCL
 {
     /// <summary>
-    /// 
+    /// This class is used by the AvatarMeshCombiner to combine meshes. Each layer represents a new generated sub-mesh.
     /// </summary>
     public class CombineLayer
     {
@@ -34,7 +34,9 @@ namespace DCL
     }
 
     /// <summary>
-    /// 
+    /// This class is used to determine the original materials uniform properties
+    /// will be passed on to UV values. texturePointers and emissionColors are bound to UV channels.
+    /// Colors are bound to the color channel.
     /// </summary>
     public class FlattenedMaterialsData
     {
@@ -45,7 +47,7 @@ namespace DCL
     }
 
     /// <summary>
-    /// 
+    /// This utility class can combine avatar meshes into a single optimal mesh.
     /// </summary>
     public static class AvatarMeshCombiner
     {
@@ -62,13 +64,22 @@ namespace DCL
         private const int EMISSION_COLORS_UV_CHANNEL_INDEX = 3;
 
         /// <summary>
-        /// 
+        /// CombineSkinnedMeshes combines a list of skinned mesh renderers that share the same bone structure into a
+        /// single mesh with the fewest numbers of sub-meshes as possible. It will return a list of materials that match
+        /// the number of sub-meshes to be used with a Renderer component.
+        /// <br/>
+        /// The sub-meshes are divided according to the following constraints:
+        /// <ul>
+        /// <li>Culling mode</li>
+        /// <li>Transparency or opacity of each renderer to be combined</li>
+        /// <li>Texture count of the accumulated renderers, only including emission and albedo textures.</li>
+        /// </ul>
         /// </summary>
-        /// <param name="bindPoses"></param>
-        /// <param name="bones"></param>
-        /// <param name="renderers"></param>
-        /// <param name="materialAsset"></param>
-        /// <returns></returns>
+        /// <param name="bindPoses">Bindposes that will be used by all the renderers.</param>
+        /// <param name="bones">Bones that will be used by all the renderers.</param>
+        /// <param name="renderers">Renderers to be combined.</param>
+        /// <param name="materialAsset">Material asset to be used in the resulting Output object. This Material will be instantiated for each sub-mesh generated.</param>
+        /// <returns>An Output object with the mesh and materials. Output.isValid will return true if the combining is successful.</returns>
         public static Output CombineSkinnedMeshes(Matrix4x4[] bindPoses, Transform[] bones, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
             Output result = new Output();

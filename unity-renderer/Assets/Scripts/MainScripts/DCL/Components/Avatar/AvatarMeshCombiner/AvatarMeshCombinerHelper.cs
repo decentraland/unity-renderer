@@ -6,7 +6,11 @@ using Object = UnityEngine.Object;
 namespace DCL
 {
     /// <summary>
-    /// 
+    /// AvatarMeshCombinerHelper uses the AvatarMeshCombiner utility class to combine many skinned renderers
+    /// into a single one.
+    ///
+    /// This class will recycle the same gameObject and renderer each time it is called,
+    /// and binds the AvatarMeshCombiner output to a proper well configured SkinnedMeshRenderer. 
     /// </summary>
     public class AvatarMeshCombinerHelper : IDisposable
     {
@@ -22,12 +26,16 @@ namespace DCL
         }
 
         /// <summary>
+        /// Combine will use AvatarMeshCombiner to generate a combined avatar mesh.
+        /// After the avatar is combined, it will generate a new GameObject with a SkinnedMeshRenderer that contains
+        /// the generated mesh. This GameObject and Renderer will be preserved over any number of Combine() calls.
         /// 
+        /// For more details on the combining check out AvatarMeshCombiner.CombineSkinnedMeshes.
         /// </summary>
-        /// <param name="bonesContainer"></param>
-        /// <param name="renderersToCombine"></param>
-        /// <param name="materialAsset"></param>
-        /// <returns></returns>
+        /// <param name="bonesContainer">A SkinnedMeshRenderer that must contain the bones and bindposes that will be used by the combined avatar.</param>
+        /// <param name="renderersToCombine">A list of avatar parts to be combined</param>
+        /// <param name="materialAsset">A material asset that will serve as the base of the combine result. A new materialAsset will be created for each combined sub-mesh.</param>
+        /// <returns>true if succeeded, false if not</returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
             float time = Time.realtimeSinceStartup;
@@ -57,14 +65,7 @@ namespace DCL
             return success;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="bonesContainer"></param>
-        /// <param name="renderers"></param>
-        /// <param name="materialAsset"></param>
-        /// <returns></returns>
-        internal bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
+        private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
@@ -102,9 +103,6 @@ namespace DCL
             return true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         private void UnloadAssets()
         {
             if (renderer == null)
@@ -124,6 +122,9 @@ namespace DCL
             }
         }
 
+        /// <summary>
+        /// Disposes the created mesh, materials, GameObject and Renderer.
+        /// </summary>
         public void Dispose()
         {
             UnloadAssets();
