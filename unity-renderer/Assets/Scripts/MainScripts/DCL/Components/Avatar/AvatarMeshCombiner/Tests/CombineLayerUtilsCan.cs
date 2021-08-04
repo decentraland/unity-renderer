@@ -21,68 +21,45 @@ public class CombineLayerUtilsCan
         {
             SkinnedMeshRenderer r = null;
 
+            Texture2D texAlbedo = new Texture2D(1, 1);
+            Texture2D texEmission = new Texture2D(1, 1);
+
             if ( i % 4 == 0 )
-                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(CullMode.Back);
+                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(albedo: texAlbedo, emission: texEmission);
             else if ( i % 4 == 1 )
-                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(CullMode.Back);
+                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(albedo: texAlbedo, emission: texEmission);
             else if ( i % 4 == 2 )
-                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(CullMode.Front);
+                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithOpaqueMat(CullMode.Front, albedo: texAlbedo, emission: texEmission);
             else if ( i % 4 == 3 )
-                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(CullMode.Front);
+                r = DCL.Helpers.SkinnedMeshRenderer.CreateWithTransparentMat(CullMode.Front, albedo: texAlbedo, emission: texEmission);
 
             skrList.Add(r);
         }
 
         // Act
-        var result = DCL.CombineLayerUtils.Slice(skrList.ToArray());
+        List<CombineLayer> result = DCL.CombineLayerUtils.Slice(skrList.ToArray());
 
         // Assert
-        Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result[0].textureToId.Count, Is.EqualTo(RENDERER_COUNT * 2));
+        Assert.That(result.Count, Is.EqualTo(4));
+        Assert.That(result[0].textureToId.Count, Is.EqualTo(6));
+        Assert.That(result[0].renderers.Count, Is.EqualTo(3));
+        Assert.That(result[0].isOpaque, Is.True);
+        Assert.That(result[0].cullMode, Is.EqualTo(CullMode.Back));
 
-        for ( int i = 0; i < skrList.Count; i++ )
-        {
-            DCL.Helpers.SkinnedMeshRenderer.DestroyAndUnload(skrList[i]);
-        }
-    }
+        Assert.That(result[1].textureToId.Count, Is.EqualTo(4));
+        Assert.That(result[1].renderers.Count, Is.EqualTo(2));
+        Assert.That(result[1].isOpaque, Is.True);
+        Assert.That(result[1].cullMode, Is.EqualTo(CullMode.Front));
 
-    [Test]
-    public void SubsliceLayerByTexturesWithMultiMaterials()
-    {
-        // Arrange
-        List<SkinnedMeshRenderer> skrList = new List<SkinnedMeshRenderer>();
+        Assert.That(result[2].textureToId.Count, Is.EqualTo(6));
+        Assert.That(result[2].renderers.Count, Is.EqualTo(3));
+        Assert.That(result[2].isOpaque, Is.False);
+        Assert.That(result[2].cullMode, Is.EqualTo(CullMode.Back));
 
-        const int RENDERER_COUNT = 3;
-
-        for ( int i = 0; i < RENDERER_COUNT; i++ )
-        {
-            List<Material> materials = new List<Material>()
-            {
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-                DCL.Helpers.Material.Create(CullMode.Off, new Texture2D(1, 1), new Texture2D(1, 1)),
-            };
-
-            var r = DCL.Helpers.SkinnedMeshRenderer.Create(materials.ToArray());
-            skrList.Add(r);
-        }
-
-        CombineLayer layer = new CombineLayer();
-        layer.cullMode = CullMode.Back;
-        layer.isOpaque = true;
-        layer.renderers = skrList;
-
-        // Act
-        var result = DCL.CombineLayerUtils.SubsliceLayerByTextures(layer);
-
-        // Assert
-        // The outcome of this should be two layers, each with the matching materials
-        Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result[0].textureToId.Count, Is.EqualTo(RENDERER_COUNT * 2));
+        Assert.That(result[3].textureToId.Count, Is.EqualTo(4));
+        Assert.That(result[3].renderers.Count, Is.EqualTo(2));
+        Assert.That(result[3].isOpaque, Is.False);
+        Assert.That(result[3].cullMode, Is.EqualTo(CullMode.Front));
 
         for ( int i = 0; i < skrList.Count; i++ )
         {

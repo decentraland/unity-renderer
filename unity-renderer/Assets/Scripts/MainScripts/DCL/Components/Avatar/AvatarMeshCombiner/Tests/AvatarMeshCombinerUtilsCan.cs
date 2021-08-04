@@ -19,7 +19,6 @@ public class AvatarMeshCombinerUtilsCan
     [UnityTest]
     public IEnumerator ResetBones()
     {
-        var keeper = new AssetPromiseKeeper_GLTF();
         GameObject parentMock = new GameObject();
         parentMock.transform.position = new Vector3(1000, 100, 100);
         parentMock.transform.localScale = new Vector3(1, 2, 0.5f);
@@ -29,6 +28,7 @@ public class AvatarMeshCombinerUtilsCan
         parentMock2.transform.localScale = new Vector3(0.5f, 2, 0.5f);
         parentMock2.transform.parent = parentMock.transform;
 
+        var keeper = new AssetPromiseKeeper_GLTF();
         string url = TestAssetsUtils.GetPath() + "/Avatar/Assets/BaseMale.glb";
         WebRequestController webRequestController = WebRequestController.Create();
         AssetPromise_GLTF prom = new AssetPromise_GLTF(url, webRequestController);

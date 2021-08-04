@@ -37,6 +37,9 @@ namespace DCL
             // Sanitize renderers list
             renderers = renderers.Where( (x) => x != null && x.enabled && x.sharedMesh != null ).ToArray();
 
+            if ( renderers.Length == 0 )
+                return false;
+
             bool success = CombineInternal(
                 bonesContainer,
                 renderers,
@@ -108,7 +111,9 @@ namespace DCL
                 return;
 
             if (renderer.sharedMesh != null)
+            {
                 Object.Destroy(renderer.sharedMesh);
+            }
 
             if ( renderer.sharedMaterials != null)
             {
