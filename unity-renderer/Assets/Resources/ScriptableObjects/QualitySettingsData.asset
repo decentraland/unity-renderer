@@ -65,7 +65,7 @@ MonoBehaviour:
     renderScale: 1
     shadows: 1
     softShadows: 1
-    shadowResolution: 1024
+    shadowResolution: 4096
     cameraDrawDistance: 500
     bloom: 1
     fpsCap: 0
