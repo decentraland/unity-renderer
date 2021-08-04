@@ -73,7 +73,7 @@ internal class LandElementView : MonoBehaviour, IDisposable
             string ownership = currentLand.role == LandRole.OWNER ? "Owner" : "Operator";
             BIWAnalytics.PlayerJumpOrEdit("Lands", "Editor", coords, ownership);
         }
-        OnJumpInPressed?.Invoke(coords);
+        OnEditorPressed?.Invoke(coords);
     }
 
     private void OnDestroy()
