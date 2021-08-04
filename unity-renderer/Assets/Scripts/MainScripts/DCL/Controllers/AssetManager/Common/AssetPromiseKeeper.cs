@@ -96,7 +96,6 @@ namespace DCL
             }
 
             promise.isDirty = true;
-            Debug.Log($"PATO: Keep_i {promise.GetId()}  {promise.GetHashCode()}");
 
             //NOTE(Brian): We already have a master promise for this id, add to blocked list.
             if (masterPromiseById.ContainsKey(id))
@@ -110,7 +109,6 @@ namespace DCL
 
                 blockedPromises.Add(promise);
                 promise.SetWaitingState();
-                Debug.Log($"PATO: Keep_i {promise.GetId()} waiting  {promise.GetHashCode()}");
                 return promise;
             }
 
@@ -121,7 +119,6 @@ namespace DCL
                 masterPromiseById.Add(id, promise);
             }
 
-            Debug.Log($"PATO: Keep_i {promise.GetId()} load  {promise.GetHashCode()}");
             promise.library = library;
             promise.OnPreFinishEvent += OnRequestCompleted;
             promise.Load();
@@ -136,7 +133,6 @@ namespace DCL
 
             if (promise.state == AssetPromiseState.IDLE_AND_EMPTY || promise.state == AssetPromiseState.WAITING)
             {
-                Debug.Log($"PATO: Forget_i {promise.GetId()} state = {promise.state} {promise.GetHashCode()}");
                 CleanPromise(promise);
                 promise.OnForget();
                 return promise;
@@ -144,22 +140,18 @@ namespace DCL
 
             object id = promise.GetId();
 
-            if (promise.state == AssetPromiseState.LOADING)
-            {
-                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
-                bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
-                Debug.Log($"PATO: Forget_i {promise.GetId()} isMasterPromise = {isMasterPromise} hasBlockedPromises = {hasBlockedPromises}  {promise.GetHashCode()}");
+            bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
+            bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
 
-                if (isMasterPromise && hasBlockedPromises)
-                {
-                    //NOTE(Brian): Pending promises are waiting for this one.
-                    //             We clear the events because we shouldn't call them, as this promise is forgotten.
-                    OnSilentForget(promise);
-                    promise.OnForget();
-                    return promise;
-                }
+            if (isMasterPromise && hasBlockedPromises)
+            {
+                //NOTE(Brian): Pending promises are waiting for this one.
+                //             We clear the events because we shouldn't call them, as this promise is forgotten.
+                OnSilentForget(promise);
+                promise.OnForget();
+                return promise;
             }
-            Debug.Log($"PATO: Forget_i {promise.GetId()} and unload  {promise.GetHashCode()}");
+
             promise.OnForget();
             promise.Unload();
             CleanPromise(promise);
