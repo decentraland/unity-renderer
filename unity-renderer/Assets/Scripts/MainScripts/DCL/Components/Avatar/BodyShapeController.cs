@@ -229,4 +229,10 @@ public class BodyShapeController : WearableController, IBodyShapeController
             }
         }
     }
+
+    public override void CleanUp()
+    {
+        facialFeaturesVisible = true;
+        base.CleanUp();
+    }
 }

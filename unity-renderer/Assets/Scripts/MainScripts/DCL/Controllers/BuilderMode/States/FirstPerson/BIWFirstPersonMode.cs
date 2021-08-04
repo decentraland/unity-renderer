@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BiwFirstPersonMode : BIWMode
+public class BIWFirstPersonMode : BIWMode
 {
     private float scaleSpeed = 0.25f;
     private float rotationSpeed = 0.5f;
@@ -63,7 +63,7 @@ public class BiwFirstPersonMode : BIWMode
         if (selectedEntities.Count == 0 || isMultiSelectionActive)
             return;
 
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             if (snapObjectAlreadyMoved)
             {
@@ -130,7 +130,7 @@ public class BiwFirstPersonMode : BIWMode
     public override void SetDuplicationOffset(float offset)
     {
         base.SetDuplicationOffset(offset);
-        if (isSnapActive)
+        if (isSnapActiveValue)
             editionGO.transform.position += Vector3.right * offset;
     }
 
@@ -143,7 +143,7 @@ public class BiwFirstPersonMode : BIWMode
         initialRotation = zeroAnglesQuaternion;
     }
 
-    public override void Activate(ParcelScene scene)
+    public override void Activate(IParcelScene scene)
     {
         base.Activate(scene);
         SetEditObjectParent();
@@ -197,7 +197,7 @@ public class BiwFirstPersonMode : BIWMode
     public override void SetSnapActive(bool isActive)
     {
         base.SetSnapActive(isActive);
-        if (isSnapActive)
+        if (isSnapActiveValue)
         {
             snapObjectAlreadyMoved = false;
             snapGO.transform.SetParent(Camera.main.transform);
@@ -213,7 +213,7 @@ public class BiwFirstPersonMode : BIWMode
 
         if (isModeActive && shouldRotate)
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 RotateSelection(snapRotationDegresFactor);
                 InputDone();
@@ -226,7 +226,7 @@ public class BiwFirstPersonMode : BIWMode
 
         if (Input.mouseScrollDelta.y > 0.5f)
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 ScaleSelection(snapScaleFactor);
                 InputDone();
@@ -238,7 +238,7 @@ public class BiwFirstPersonMode : BIWMode
         }
         else if (Input.mouseScrollDelta.y < -0.5f)
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 ScaleSelection(-snapScaleFactor);
                 InputDone();
@@ -257,7 +257,7 @@ public class BiwFirstPersonMode : BIWMode
         if (isMultiSelectionActive)
             return;
 
-        if (!isSnapActive)
+        if (!isSnapActiveValue)
         {
             editionGO.transform.SetParent(null);
             freeMovementGO.transform.position = editionGO.transform.position;
@@ -285,7 +285,7 @@ public class BiwFirstPersonMode : BIWMode
         bool worldPositionStays = false;
         if (!isMultiSelectionActive)
         {
-            if (isSnapActive)
+            if (isSnapActiveValue)
             {
                 if (snapObjectAlreadyMoved)
                     parentToAsign = Camera.main.transform;
@@ -300,7 +300,7 @@ public class BiwFirstPersonMode : BIWMode
         }
         else
         {
-            if (!isSnapActive)
+            if (!isSnapActiveValue)
                 parentToAsign = originalParentGOEdit;
 
             worldPositionStays = true;

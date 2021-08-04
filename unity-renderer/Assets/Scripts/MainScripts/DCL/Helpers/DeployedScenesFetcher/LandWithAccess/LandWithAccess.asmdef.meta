@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:unity-client/Assets/Scripts/MainScripts/DCL/Helpers/DeployedScenesFetcher/DeployedScenesFetcher.asmdef.meta
+guid: 7653ee177bcfe9f498e2fe0753f930d6
+=======
+guid: 3d1a503a92d494d8aa3f35909695fa1f
+>>>>>>> 545821505e4507f4c7d64d7eb4745f244a2cde6f:unity-client/Assets/Scripts/MainScripts/DCL/ServiceProviders/Catalyst/Catalyst.asmdef.meta
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

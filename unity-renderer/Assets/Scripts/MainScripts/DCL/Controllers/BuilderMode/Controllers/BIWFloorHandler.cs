@@ -10,9 +10,9 @@ using UnityEngine;
 
 public interface IBIWFloorHandler
 {
-    public void CreateFloor(CatalogItem floorSceneObject);
-    public bool IsCatalogItemFloor(CatalogItem floorSceneObject);
-    public void ChangeFloor(CatalogItem newFloorObject);
+    void CreateFloor(CatalogItem floorSceneObject);
+    bool IsCatalogItemFloor(CatalogItem floorSceneObject);
+    void ChangeFloor(CatalogItem newFloorObject);
 }
 
 public class BIWFloorHandler : BIWController, IBIWFloorHandler

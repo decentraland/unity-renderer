@@ -41,6 +41,12 @@ public class BIWNFTController
         userProfile.OnUpdate += (x) => FetchNftsFromOwner();
     }
 
+    public void Dispose()
+    {
+        if (fechNftsCoroutine != null)
+            CoroutineStarter.Stop(fechNftsCoroutine);
+    }
+
     public void ClearNFTs() { nftsAlreadyInUse.Clear(); }
 
     public bool IsNFTInUse(string id)
@@ -113,15 +119,17 @@ public class BIWNFTController
         UserProfile userProfile = UserProfile.GetOwnUserProfile();
 
         string userId = userProfile.ethAddress;
-
-        yield return NFTHelper.FetchNFTsFromOwner(userId, (nftOwner) =>
-            {
-                NftsFeteched(nftOwner);
-            },
-            (error) =>
-            {
-                desactivateNFT = true;
-                Debug.Log($"error getting NFT from owner:  {error}");
-            });
+        if (!string.IsNullOrEmpty(userId))
+        {
+            yield return NFTHelper.FetchNFTsFromOwner(userId, (nftOwner) =>
+                {
+                    NftsFeteched(nftOwner);
+                },
+                (error) =>
+                {
+                    desactivateNFT = true;
+                    Debug.LogError($"error getting NFT from owner:  {error}");
+                });
+        }
     }
 }

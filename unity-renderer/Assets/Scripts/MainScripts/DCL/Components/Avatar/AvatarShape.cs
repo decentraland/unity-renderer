@@ -2,9 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -34,8 +31,8 @@ namespace DCL
         private Vector3? lastAvatarPosition = null;
         bool initializedPosition = false;
 
-        private PlayerStatus playerStatus = null;
-        private Coroutine disableFacialFeatureRoutine = null;
+        private Player player = null;
+        private Coroutine checkDistanceRoutine = null;
 
         private void Awake()
         {
@@ -47,12 +44,12 @@ namespace DCL
         {
             base.OnEnable();
 
-            if (disableFacialFeatureRoutine != null)
+            if (checkDistanceRoutine != null)
             {
-                StopCoroutine(disableFacialFeatureRoutine);
-                disableFacialFeatureRoutine = null;
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
             }
-            disableFacialFeatureRoutine = StartCoroutine(SetFacialFeaturesVisibleRoutine());
+            checkDistanceRoutine = StartCoroutine(CheckDistanceToPlayerRoutine());
         }
 
         private void PlayerClicked()
@@ -83,13 +80,7 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            avatarRenderer.ApplyModel(model, () =>
-            {
-                if (avatarRenderer.lodRenderer != null)
-                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer);
-
-                avatarDone = true;
-            }, () => avatarFailed = true);
+            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
@@ -130,35 +121,37 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            avatarRenderer.InitializeLODController();
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
             // Remove the player status if the userId changes
-            if (playerStatus != null && (playerStatus.id != model.id || playerStatus.name != model.name))
-                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
+            if (player != null && (player.id != model.id || player.name != model.name))
+                DataStore.i.player.otherPlayers.Remove(player.id);
 
             if (string.IsNullOrEmpty(model?.id))
                 return;
 
             bool isNew = false;
-            if (playerStatus == null)
+            if (player == null)
             {
-                playerStatus = new PlayerStatus();
+                player = new Player();
                 isNew = true;
             }
-            playerStatus.id = model.id;
-            playerStatus.name = model.name;
-            playerStatus.isTalking = model.talking;
-            playerStatus.worldPosition = entity.gameObject.transform.position;
+            player.id = model.id;
+            player.name = model.name;
+            player.isTalking = model.talking;
+            player.worldPosition = entity.gameObject.transform.position;
             if (isNew)
-                DataStore.i.player.otherPlayersStatus.Add(playerStatus.id, playerStatus);
+                DataStore.i.player.otherPlayers.Add(player.id, player);
         }
 
         private void Update()
         {
-            if (playerStatus != null)
-                playerStatus.worldPosition = entity.gameObject.transform.position;
+            if (player != null)
+                player.worldPosition = entity.gameObject.transform.position;
         }
 
         public void DisablePassport()
@@ -192,26 +185,24 @@ namespace DCL
             oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
-            playerStatus = null;
+            player = null;
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
 
-            if (disableFacialFeatureRoutine != null)
+            if (checkDistanceRoutine != null)
             {
-                StopCoroutine(disableFacialFeatureRoutine);
-                disableFacialFeatureRoutine = null;
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
             }
 
-            if (playerStatus != null)
+            if (player != null)
             {
-                DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
-                playerStatus = null;
+                DataStore.i.player.otherPlayers.Remove(player.id);
+                player = null;
             }
-
-            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
 
             avatarRenderer.CleanupAvatar();
 
@@ -229,14 +220,16 @@ namespace DCL
             }
         }
 
-        private IEnumerator SetFacialFeaturesVisibleRoutine()
+        private IEnumerator CheckDistanceToPlayerRoutine()
         {
             while (true)
             {
                 yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
                 Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
-                avatarRenderer.SetFacialFeaturesVisible(distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE);
+                bool isNear = distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE;
+                avatarRenderer.SetFacialFeaturesVisible(isNear);
+                avatarRenderer.SetSSAOEnabled(isNear);
             }
         }
 

@@ -138,6 +138,7 @@ MonoBehaviour:
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
   lodRenderer: {fileID: 460331166937761317}
+  lodMeshFilter: {fileID: 4641928589876789443}
 --- !u!114 &6790643881566083082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,7 +315,7 @@ Transform:
   m_GameObject: {fileID: 5928028421551267039}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.8, z: 0}
-  m_LocalScale: {x: 1, y: 1.8, z: 0.5}
+  m_LocalScale: {x: 1.3, y: 2.43, z: 0.5}
   m_Children: []
   m_Father: {fileID: 2842120016485600253}
   m_RootOrder: 3

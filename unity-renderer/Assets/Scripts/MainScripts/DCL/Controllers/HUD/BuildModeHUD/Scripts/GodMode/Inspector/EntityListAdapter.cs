@@ -88,7 +88,7 @@ public class EntityListAdapter : MonoBehaviour
 
     public void SelectOrDeselect()
     {
-        if (currentEntity.IsVisible)
+        if (currentEntity.isVisible)
             OnActionInvoked?.Invoke(EntityAction.SELECT, currentEntity, this);
     }
 
@@ -112,17 +112,17 @@ public class EntityListAdapter : MonoBehaviour
         nameInputField.textComponent.enabled = true;
 
 
-        if (entityToEdit.IsVisible)
+        if (entityToEdit.isVisible)
             showImg.color = iconsSelectedColor;
         else
             showImg.color = iconsUnselectedColor;
 
         CheckEntityNameColor(entityToEdit);
 
-        unlockButton.gameObject.SetActive(!entityToEdit.IsLocked);
-        lockButton.gameObject.SetActive(entityToEdit.IsLocked);
+        unlockButton.gameObject.SetActive(!entityToEdit.isLocked);
+        lockButton.gameObject.SetActive(entityToEdit.isLocked);
 
-        if (entityToEdit.IsSelected)
+        if (entityToEdit.isSelected)
         {
             AllowNameEdition(true);
             selectedImg.color = entitySelectedColor;
@@ -198,7 +198,7 @@ public class EntityListAdapter : MonoBehaviour
     {
         if (entity.hasError)
             nameInputField_Text.color = entityErrorColor;
-        else if (!entity.IsVisible || entity.IsLocked)
+        else if (!entity.isVisible || entity.isLocked)
             nameInputField_Text.color = iconsUnselectedColor;
         else
             nameInputField_Text.color = entityWithoutErrorsColor;

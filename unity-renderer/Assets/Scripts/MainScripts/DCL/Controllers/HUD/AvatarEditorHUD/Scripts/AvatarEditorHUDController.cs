@@ -613,6 +613,9 @@ public class AvatarEditorHUDController : IHUD
 
     public void DiscardAndClose()
     {
+        if (!view.isOpen)
+            return;
+
         if (!DataStore.i.isSignUpFlow.Get())
             LoadUserProfile(userProfile);
         else

@@ -24,7 +24,7 @@ public interface IEntityInformationController
     void ToggleBasicInfo();
     void StartChangingName();
     void EndChangingName();
-    void SetEntity(BIWEntity entity, ParcelScene currentScene);
+    void SetEntity(BIWEntity entity, IParcelScene currentScene);
     void Enable();
     void Disable();
     void UpdateInfo(BIWEntity entity);
@@ -47,7 +47,7 @@ public class EntityInformationController : IEntityInformationController
     public event Action OnDisable;
 
     internal IEntityInformationView entityInformationView;
-    internal ParcelScene parcelScene;
+    internal IParcelScene parcelScene;
     internal AssetPromise_Texture loadedThumbnailPromise;
     internal bool isChangingName = false;
     internal BIWEntity currentEntity;
@@ -110,7 +110,7 @@ public class EntityInformationController : IEntityInformationController
 
     public void EndChangingName() { isChangingName = false; }
 
-    public void SetEntity(BIWEntity entity, ParcelScene currentScene)
+    public void SetEntity(BIWEntity entity, IParcelScene currentScene)
     {
         currentEntity = entity;
         EntityDeselected();
@@ -211,8 +211,6 @@ public class EntityInformationController : IEntityInformationController
 
         if (entityInformationView.currentEntity.rootEntity.TryGetBaseComponent(CLASS_ID_COMPONENT.SMART_ITEM, out IEntityComponent component))
         {
-            //TODO: we do an early return since the smart item component is not implemented yet 
-            return;
             SmartItemComponent smartItemComponent = (SmartItemComponent) component;
             OnSmartItemComponentUpdate?.Invoke(entityInformationView.currentEntity);
         }

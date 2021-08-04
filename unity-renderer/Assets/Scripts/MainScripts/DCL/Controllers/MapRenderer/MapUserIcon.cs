@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class MapUserIcon : MonoBehaviour
 {
-    private PlayerStatus trackedPlayer;
+    private Player trackedPlayer;
 
-    public void Populate(PlayerStatus status) { trackedPlayer = status; }
+    public void Populate(Player status) { trackedPlayer = status; }
 
     private void LateUpdate()
     {
