@@ -36,6 +36,8 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     const int THMBL_MARKETPLACE_HEIGHT = 143;
     const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
 
+    static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
+
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
     public event Action<ISceneData> OnSettingsPressed;
@@ -82,7 +84,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
     ISceneData ISceneCardView.sceneData => sceneData;
-    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
+    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
     private ISceneData sceneData;
     private string thumbnailUrl = null;
@@ -93,13 +95,25 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData.coords));
-        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData.coords));
+        jumpInButton.onClick.AddListener( JumpInButtonPressed );
+        editorButton.onClick.AddListener( EditorButtonPressed );
         contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
         settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
 
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
+    }
+
+    private void JumpInButtonPressed()
+    {
+        OnJumpInPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
+    }
+
+    private void EditorButtonPressed()
+    {
+        OnEditorPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
     }
 
     private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
@@ -231,7 +245,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         editorButton.gameObject.SetActive(isEditable);
         editorLockedGO.SetActive(!isEditable);
-        settingsButton.gameObject.SetActive(isEditable);
     }
 
     public void Dispose()

@@ -21,6 +21,7 @@ public class BIWSearchBarView : MonoBehaviour , IBIWSearchBarView
     [Header("Prefab References")]
     [SerializeField] internal TMP_InputField searchInputField;
     [SerializeField] internal Button smartItemButton;
+    [SerializeField] internal Button clearSearchButton;
 
     private void Awake()
     {
@@ -29,12 +30,15 @@ public class BIWSearchBarView : MonoBehaviour , IBIWSearchBarView
             searchInput.onSelect.AddListener((x) => searchInputField.placeholder.gameObject.SetActive(false));
             searchInput.onDeselect.AddListener((x) => searchInputField.placeholder.gameObject.SetActive(true));
         }
+
+        clearSearchButton.onClick.AddListener(() => searchInputField.text = string.Empty);
     }
 
     private void OnDestroy()
     {
         searchInput.onSelect.RemoveAllListeners();
         searchInput.onDeselect.RemoveAllListeners();
+        clearSearchButton.onClick.RemoveAllListeners();
     }
 
     public void SetSmartItemPressStatus(bool isPressed) { smartItemBtn.image.color = isPressed ? smartItemPressedBtnColor : smartItemNormalBtnColor; }

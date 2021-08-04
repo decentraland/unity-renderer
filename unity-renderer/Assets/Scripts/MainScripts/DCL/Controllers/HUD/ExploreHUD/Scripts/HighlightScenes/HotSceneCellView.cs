@@ -1,8 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 using TMPro;
+using System.Linq;
+using DCL;
+using static DCL.Interface.WebInterface;
+using DCL.Interface;
 
 internal class HotSceneCellView : MonoBehaviour
 {
@@ -52,6 +56,8 @@ internal class HotSceneCellView : MonoBehaviour
     private Dictionary<string, ExploreFriendsView> friendViewById;
     private bool isLoaded = false;
     private bool isInitialized = false;
+    private Queue<HotScenesController.HotSceneInfo.Realm> nextMostPopulatedRealms = new Queue<HotScenesController.HotSceneInfo.Realm>();
+    private JumpInPayload lastJumpInTried = new JumpInPayload();
 
     HotScenesController.HotSceneInfo hotSceneInfo;
 
@@ -117,16 +123,78 @@ internal class HotSceneCellView : MonoBehaviour
     public void JumpInPressed()
     {
         HotScenesController.HotSceneInfo.Realm realm = new HotScenesController.HotSceneInfo.Realm() { layer = null, serverName = null };
+        hotSceneInfo.realms = hotSceneInfo.realms.OrderByDescending(x => x.usersCount).ToArray();
+        nextMostPopulatedRealms.Clear();
         for (int i = 0; i < hotSceneInfo.realms.Length; i++)
         {
-            if (hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].usersMax)
+            bool isArchipelagoRealm = string.IsNullOrEmpty(hotSceneInfo.realms[i].layer);
+
+            if (isArchipelagoRealm || hotSceneInfo.realms[i].usersCount < hotSceneInfo.realms[i].maxUsers)
             {
                 realm = hotSceneInfo.realms[i];
+                if (i < hotSceneInfo.realms.Length - 1)
+                {
+                    nextMostPopulatedRealms = new Queue<HotScenesController.HotSceneInfo.Realm>(hotSceneInfo.realms.ToList().GetRange(i + 1, hotSceneInfo.realms.Length - i - 1));
+                }
                 break;
             }
         }
 
+        if (!string.IsNullOrEmpty(realm.serverName))
+        {
+            RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
+            RealmsInfoBridge.OnRealmConnectionSuccess += OnRealmConnectionSuccess;
+            RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
+            RealmsInfoBridge.OnRealmConnectionFailed += OnRealmConnectionFailed;
+        }
+
+        SetLastJumpInTried(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
         OnJumpIn?.Invoke(hotSceneInfo.baseCoords, realm.serverName, realm.layer);
+    }
+
+    private void SetLastJumpInTried(Vector2 position, string serverName, string layer)
+    {
+        lastJumpInTried.gridPosition = position;
+        lastJumpInTried.realm.serverName = serverName;
+        lastJumpInTried.realm.layer = layer;
+    }
+
+    private void OnRealmConnectionSuccess(JumpInPayload successRealm)
+    {
+        bool isArchipelagoRealm = string.IsNullOrEmpty(successRealm.realm.layer);
+
+        if (successRealm.gridPosition != lastJumpInTried.gridPosition ||
+            successRealm.realm.serverName != lastJumpInTried.realm.serverName ||
+            (!isArchipelagoRealm && successRealm.realm.layer != lastJumpInTried.realm.layer))
+            return;
+
+        RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
+        RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
+    }
+
+    private void OnRealmConnectionFailed(JumpInPayload failedRealm)
+    {
+        bool isArchipelagoRealm = string.IsNullOrEmpty(failedRealm.realm.layer);
+
+        if (failedRealm.gridPosition != lastJumpInTried.gridPosition ||
+            failedRealm.realm.serverName != lastJumpInTried.realm.serverName ||
+            (!isArchipelagoRealm && failedRealm.realm.layer != lastJumpInTried.realm.layer))
+            return;
+
+        if (nextMostPopulatedRealms.Count > 0)
+        {
+            WebInterface.NotifyStatusThroughChat("Trying to connect to the next more populated realm...");
+            HotScenesController.HotSceneInfo.Realm nextRealmToTry = nextMostPopulatedRealms.Dequeue();
+            SetLastJumpInTried(hotSceneInfo.baseCoords, nextRealmToTry.serverName, nextRealmToTry.layer);
+            OnJumpIn?.Invoke(hotSceneInfo.baseCoords, nextRealmToTry.serverName, nextRealmToTry.layer);
+        }
+        else
+        {
+            WebInterface.NotifyStatusThroughChat("You'll stay in your current realm.");
+            RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
+            RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
+            OnJumpIn?.Invoke(hotSceneInfo.baseCoords, null, null);
+        }
     }
 
     private void OnDestroy()
@@ -136,6 +204,9 @@ internal class HotSceneCellView : MonoBehaviour
 
         friendsHandler.onFriendAdded -= OnFriendAdded;
         friendsHandler.onFriendRemoved -= OnFriendRemoved;
+
+        RealmsInfoBridge.OnRealmConnectionFailed -= OnRealmConnectionFailed;
+        RealmsInfoBridge.OnRealmConnectionSuccess -= OnRealmConnectionSuccess;
     }
 
     private void OnEnable()

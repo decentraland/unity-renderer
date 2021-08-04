@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -135,6 +136,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 0.07058824, b: 0.38431373, a: 1}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -158,7 +160,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8098144934014490349}
-  - component: {fileID: 3915973121112947369}
+  - component: {fileID: -3755963478816004903}
   m_Layer: 5
   m_Name: Map Scene Icon User
   m_TagString: Untagged
@@ -186,7 +188,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 110, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3915973121112947369
+--- !u!114 &-3755963478816004903
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,7 +197,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 9031851020175058759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d8371267a9a13b45b64248feca59b7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 261addbab92b7244a96d1b5be6f45ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  title: {fileID: 0}

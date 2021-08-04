@@ -49,6 +49,8 @@ ShaderVariantCollection:
       variants:
       - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP
         passType: 13
+      - keywords: _ALPHATEST_ON _EMISSION _NORMALMAP _SSAO_OFF
+        passType: 13
   - first: {fileID: 4800000, guid: 3b75227de96217540aae9be81fbd99f6, type: 3}
     second:
       variants:

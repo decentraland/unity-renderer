@@ -35,21 +35,21 @@ public class BIWNftsShould : IntegrationTestSuite
         scene = (ParcelScene) Environment.i.world.sceneController.CreateTestScene();
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
         BIWCatalogManager.Init();
-        BuilderInWorldTestHelper.CreateNFT();
+        BIWTestHelper.CreateNFT();
     }
 
     [Test]
-    public void NftsUsage()
+    public void NftsOneTimeUsage()
     {
-        string idToTest = BuilderInWorldNFTController.i.GetNfts()[0].assetContract.address;
+        string idToTest = BIWNFTController.i.GetNfts()[0].assetContract.address;
 
-        Assert.IsFalse(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        Assert.IsFalse(BIWNFTController.i.IsNFTInUse(idToTest));
 
-        BuilderInWorldNFTController.i.UseNFT(idToTest);
-        Assert.IsTrue(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        BIWNFTController.i.UseNFT(idToTest);
+        Assert.IsTrue(BIWNFTController.i.IsNFTInUse(idToTest));
 
-        BuilderInWorldNFTController.i.StopUsingNFT(idToTest);
-        Assert.IsFalse(BuilderInWorldNFTController.i.IsNFTInUse(idToTest));
+        BIWNFTController.i.StopUsingNFT(idToTest);
+        Assert.IsFalse(BIWNFTController.i.IsNFTInUse(idToTest));
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class BIWNftsShould : IntegrationTestSuite
         CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
 
-        DCLBuilderInWorldEntity biwEntity = Utils.GetOrCreateComponent<DCLBuilderInWorldEntity>(scene.entities[ENTITY_ID].gameObject);
+        BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);
 
         NFTShape nftShape = (NFTShape) scene.SharedComponentCreate(catalogItem.id, Convert.ToInt32(CLASS_ID.NFT_SHAPE));
@@ -79,7 +79,7 @@ public class BIWNftsShould : IntegrationTestSuite
     protected override IEnumerator TearDown()
     {
         BIWCatalogManager.ClearCatalog();
-        BuilderInWorldNFTController.i.ClearNFTs();
+        BIWNFTController.i.ClearNFTs();
         yield return base.TearDown();
         PoolManager.i.Cleanup();
     }

@@ -91,7 +91,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
 
             // NOTE: In this case, as this code is implementing a very specific retries system (including delays), we use our
             //              custom WebRequest system without retries (requestAttemps = 1) and let the current code to apply the retries.
-            WebRequestAsyncOperation asyncOp = WebRequestController.i.Get(url, requestAttemps: 1, disposeOnCompleted: true);
+            WebRequestAsyncOperation asyncOp = Environment.i.platform.webRequest.Get(url, requestAttemps: 1, disposeOnCompleted: true);
 
             asyncOp.completed += operation =>
             {

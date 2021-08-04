@@ -16,5 +16,6 @@ jobs:
             After the CI passes:
 
             - This branch can be previewed at [https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:${{ github.head_ref }}](https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:${{ github.head_ref }}&ENV=org)
+            - Code coverage report: [https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }}](https://renderer-artifacts.decentraland.org/branch-coverage/${{ github.head_ref }})
 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

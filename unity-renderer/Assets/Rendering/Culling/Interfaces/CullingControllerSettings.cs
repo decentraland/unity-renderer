@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace DCL.Rendering
 {
@@ -17,7 +18,7 @@ namespace DCL.Rendering
 
         public float enableAnimationCullingDistance = 7.5f;
 
-        public int ignoredLayersMask = 0;
+        public int ignoredLayersMask = LayerMask.GetMask("Tutorial", "CharacterPreview", "ViewportCullingIgnored");
 
         public CullingControllerProfile rendererProfile =
             new CullingControllerProfile

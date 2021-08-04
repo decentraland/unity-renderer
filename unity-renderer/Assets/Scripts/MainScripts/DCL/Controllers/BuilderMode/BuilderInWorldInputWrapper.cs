@@ -1,18 +1,32 @@
-using Builder;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BuilderInWorldInputWrapper : MonoBehaviour
+public interface IBIWInputWrapper
 {
-    public float msClickThreshold = 200;
-    public float movementClickThreshold = 50;
+    public void StopInput();
+
+    public void ResumeInput();
+}
+
+public class BIWInputWrapper : BIWController, IBIWInputWrapper
+{
+    private const float MS_CLICK_THRESHOLD = 500;
+    private const float MOVEMENT_CLICK_THRESHOLD = 50;
+    private const float MOUSE_WHEEL_THROTTLE = 0.1f;
+
+    private const string MOUSE_X_AXIS = "Mouse X";
+    private const string MOUSE_Y_AXIS = "Mouse Y";
+    private const string MOUSE_SCROLLWHEEL = "Mouse ScrollWheel";
 
     public static event Action<int, Vector3> OnMouseClick;
+    public static event Action<int, Vector3> OnMouseClickOnUI;
     public static event Action<int, Vector3> OnMouseDown;
     public static event Action<int, Vector3> OnMouseUp;
+    public static event Action<int, Vector3> OnMouseUpOnUI;
 
     public static event Action<float> OnMouseWheel;
 
@@ -26,23 +40,71 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     private Vector3 lastMousePosition;
     private bool canInputBeMade = true;
     private bool currentClickIsOnUi = false;
+    private int lastMouseWheelAxisDirection = 0;
+    private float lastMouseWheelTime = 0;
 
-    private void Awake()
+    public override void Update()
     {
-        DCLBuilderInput.OnMouseDrag += MouseDrag;
-        DCLBuilderInput.OnMouseRawDrag += MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel += MouseWheel;
-        DCLBuilderInput.OnMouseDown += MouseDown;
-        DCLBuilderInput.OnMouseUp += MouseUp;
+        base.Update();
+        for (int i = 0; i <= 2; i++)
+        {
+            if (HasMouseButtonInput(i))
+                break;
+        }
+
+        UpdateMouseWheelInput();
     }
 
-    private void OnDestroy()
+    private bool HasMouseButtonInput(int button)
     {
-        DCLBuilderInput.OnMouseDrag -= MouseDrag;
-        DCLBuilderInput.OnMouseRawDrag -= MouseRawDrag;
-        DCLBuilderInput.OnMouseWheel -= MouseWheel;
-        DCLBuilderInput.OnMouseDown -= MouseDown;
-        DCLBuilderInput.OnMouseUp -= MouseUp;
+        if (Input.GetMouseButtonDown(button))
+        {
+            MouseDown(button, Input.mousePosition);
+            return true;
+        }
+
+        if (Input.GetMouseButton(button))
+        {
+            MouseDrag(button, Input.mousePosition, Input.GetAxis(MOUSE_X_AXIS), Input.GetAxis(MOUSE_Y_AXIS));
+            MouseRawDrag(button, Input.mousePosition, Input.GetAxis(MOUSE_X_AXIS), Input.GetAxis(MOUSE_Y_AXIS));
+            return true;
+        }
+
+        if (Input.GetMouseButtonUp(button))
+        {
+            MouseUp(button, Input.mousePosition);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void OnMouseWheelInput(float axisValue)
+    {
+        int axisDirection = (int)Mathf.Sign(axisValue);
+        if (lastMouseWheelAxisDirection == axisDirection)
+        {
+            if (Time.unscaledTime - lastMouseWheelTime >= MOUSE_WHEEL_THROTTLE)
+                SetMouseWheelDelta(axisValue, axisDirection);
+        }
+        else
+        {
+            SetMouseWheelDelta(axisValue, axisDirection);
+        }
+    }
+
+    private void SetMouseWheelDelta(float axisValue, int axisDirection)
+    {
+        MouseWheel(axisValue);
+        lastMouseWheelTime = Time.unscaledTime;
+        lastMouseWheelAxisDirection = axisDirection;
+    }
+
+    private void UpdateMouseWheelInput()
+    {
+        float axisValue = Input.GetAxis(MOUSE_SCROLLWHEEL);
+        if (axisValue != 0)
+            OnMouseWheelInput(axisValue);
     }
 
     public void StopInput() { canInputBeMade = false; }
@@ -51,27 +113,40 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
 
     private void MouseUp(int buttonId, Vector3 mousePosition)
     {
-        currentClickIsOnUi = false;
+        if (!isEditModeActive)
+            return;
+
+        if (currentClickIsOnUi)
+        {
+            OnMouseClickOnUI?.Invoke(buttonId, mousePosition);
+            currentClickIsOnUi = false;
+            return;
+        }
 
         if (!canInputBeMade)
             return;
 
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
         {
             OnMouseUp?.Invoke(buttonId, mousePosition);
-            if (Vector3.Distance(mousePosition, lastMousePosition) >= movementClickThreshold)
+            if (Vector3.Distance(mousePosition, lastMousePosition) >= MOVEMENT_CLICK_THRESHOLD)
                 return;
-            if (Time.unscaledTime >= lastTimeMouseDown + msClickThreshold / 1000)
+            if (Time.unscaledTime >= lastTimeMouseDown + MS_CLICK_THRESHOLD / 1000)
                 return;
             OnMouseClick?.Invoke(buttonId, mousePosition);
         }
+        else
+            OnMouseUpOnUI?.Invoke(buttonId, mousePosition);
     }
 
     private void MouseDown(int buttonId, Vector3 mousePosition)
     {
+        if (!isEditModeActive)
+            return;
+
         lastTimeMouseDown = Time.unscaledTime;
         lastMousePosition = mousePosition;
-        currentClickIsOnUi = BuilderInWorldUtils.IsPointerOverUIElement();
+        currentClickIsOnUi = BIWUtils.IsPointerOverUIElement();
 
         if (!canInputBeMade)
             return;
@@ -81,14 +156,20 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
 
     private void MouseWheel(float axisValue)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!canInputBeMade)
             return;
-        if (!BuilderInWorldUtils.IsPointerOverUIElement())
+        if (!BIWUtils.IsPointerOverUIElement())
             OnMouseWheel?.Invoke(axisValue);
     }
 
     private void MouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!CanDrag())
             return;
 
@@ -97,6 +178,9 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
 
     private void MouseRawDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
+        if (!isEditModeActive)
+            return;
+
         if (!CanDrag())
             return;
 
@@ -107,7 +191,7 @@ public class BuilderInWorldInputWrapper : MonoBehaviour
     {
         if (!canInputBeMade ||
             currentClickIsOnUi ||
-            BuilderInWorldUtils.IsPointerOverUIElement())
+            BIWUtils.IsPointerOverUIElement())
             return false;
 
         return true;

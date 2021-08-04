@@ -98,10 +98,10 @@ When the steps are followed, you will be able to run the local Unity build by go
 1. Make sure you have the proper Unity version up and running
 2. Make sure you have Kernel repository cloned and set up.
 3. Make sure you are running kernel through `make watch` command.
-4. Produce a Unity wasm targeted build using the Build menu. Then run `npm run build` in the `./browser-interface` directory.
-5. When the build finishes, only copy all the files in the folder `./browser-interface/dist` to `static/unity-renderer` folder within the `kernel` project.
+4. Produce a Unity wasm targeted build using the Build menu.
+5. When the build finishes, copy all the files inside the resulting `/build` folder and paste them inside `kernel/node_modules/@dcl/unity-renderer`.
 6. Run the browser explorer through `localhost:3000`. Now, it should use your local Unity build.
-7. If you need a Unity re-build, you can just replace the files and reload the browser the without restarting the `make watch` process.
+7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
 
 ## Technical how-to guides and explainers
 

@@ -101,6 +101,12 @@ internal class ProfileHUDView : MonoBehaviour
     [SerializeField]
     internal TextMeshProUGUI textCharLimit;
 
+    [SerializeField]
+    internal ManaCounterView manaCounterView;
+
+    [SerializeField]
+    internal ManaCounterView polygonManaCounterView;
+
     [Header("Tutorial Config")]
     [SerializeField]
     internal RectTransform backpackTooltipReference;

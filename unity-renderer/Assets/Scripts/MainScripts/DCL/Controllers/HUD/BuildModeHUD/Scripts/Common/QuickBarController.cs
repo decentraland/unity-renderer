@@ -7,6 +7,7 @@ public interface IQuickBarController
 {
     event Action<int> OnQuickBarShortcutSelected;
     event Action<CatalogItem> OnCatalogItemSelected;
+    event Action<CatalogItem> OnCatalogItemAssigned;
 
     void Initialize(IQuickBarView view, ISceneCatalogController sceneCatalogController);
     void Dispose();
@@ -26,6 +27,7 @@ public class QuickBarController : IQuickBarController
 
     public event Action<int> OnQuickBarShortcutSelected;
     public event Action<CatalogItem> OnCatalogItemSelected;
+    public event Action<CatalogItem> OnCatalogItemAssigned;
 
     internal IQuickBarView quickBarView;
     internal ISceneCatalogController sceneCatalogController;
@@ -150,6 +152,7 @@ public class QuickBarController : IQuickBarController
     {
         quickBarShortcutsCatalogItems[index] = catalogItem;
         quickBarView.SetTextureToShortcut(index, texture);
+        OnCatalogItemAssigned?.Invoke(catalogItem);
     }
 
     public void QuickBarInput(int quickBarSlot) { OnQuickBarShortcutSelected?.Invoke(quickBarSlot); }

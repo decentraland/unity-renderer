@@ -10,15 +10,14 @@ using UnityEngine;
 public class BIWEntityShould : IntegrationTestSuite_Legacy
 {
     private const string ENTITY_ID = "1";
-    DCLBuilderInWorldEntity entity;
-    BuilderInWorldEntityHandler entityHandler;
+    BIWEntity entity;
+    BIWEntityHandler entityHandler;
 
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        BuilderInWorldController controller = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
-        entityHandler = controller.builderInWorldEntityHandler;
-        entityHandler.Init();
+        entityHandler = new BIWEntityHandler();
+        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
 
         TestHelpers.CreateSceneEntity(scene, ENTITY_ID);
         entityHandler.EnterEditMode(scene);
@@ -35,7 +34,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
         entity.SetIsLockedValue(isLocked);
 
         //Assert
-        Assert.AreEqual(entity.IsLocked , isLocked);
+        Assert.AreEqual(entity.isLocked , isLocked);
     }
 
     [Test]

@@ -39,8 +39,6 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
 
     public SceneBoundsFeedbackStyle_BIW() { invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>(); }
 
-    public void OnRendererExitBounds(Renderer renderer) { invalidSubmeshes.Add(renderer); }
-
     public void ApplyFeedback(MeshesInfo meshesInfo, bool isInsideBoundaries)
     {
         if (isInsideBoundaries)
@@ -50,6 +48,16 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
         }
 
         AddInvalidMeshEffect(meshesInfo);
+    }
+
+    public void CleanFeedback()
+    {
+        for (int i = 0; i < currentMeshesInvalidated.Count; i++)
+        {
+            RemoveInvalidMeshEffect(currentMeshesInvalidated[i]);
+        }
+
+        currentMeshesInvalidated.Clear();
     }
 
     public List<Material> GetOriginalMaterials(MeshesInfo meshesInfo)
@@ -119,6 +127,7 @@ public class SceneBoundsFeedbackStyle_BIW : ISceneBoundsFeedbackStyle
             wireframeObject.transform.SetParent(meshesInfo.innerGameObject.transform);
 
             invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+            entityRenderers[i].enabled = true;
         }
 
         currentMeshesInvalidated.Add(meshesInfo);

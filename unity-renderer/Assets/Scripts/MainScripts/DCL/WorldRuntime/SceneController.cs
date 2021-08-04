@@ -48,17 +48,7 @@ namespace DCL
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
         }
 
-        private void OnDebugModeSet()
-        {
-            if (Environment.i.world == null)
-            {
-                //NOTE(Brian): Added this here to prevent the SetDebug() before Awake()
-                //             case. Calling Initialize multiple times in a row is safe.
-                Environment.SetupWithBuilders();
-            }
-
-            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
-        }
+        private void OnDebugModeSet() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker()); }
 
         public void Start()
         {
@@ -302,8 +292,8 @@ namespace DCL
                     case MessagingTypes.OPEN_NFT_DIALOG:
                         {
                             if (msgPayload is Protocol.OpenNftDialog payload)
-                                OnOpenNFTDialogRequest?.Invoke(payload.contactAddress, payload.tokenId,
-                                    payload.comment);
+                                DataStore.i.onOpenNFTPrompt.Set(new NFTPromptModel(payload.contactAddress, payload.tokenId,
+                                    payload.comment), true);
                             break;
                         }
 
@@ -470,7 +460,6 @@ namespace DCL
 
             Environment.i.world.state.loadedScenes.Add(data.id, newScene);
             OnNewSceneAdded?.Invoke(newScene);
-
             return newScene;
         }
 
@@ -891,8 +880,6 @@ namespace DCL
         public event Action<IParcelScene> OnNewSceneAdded;
         public event Action<IParcelScene> OnNewPortableExperienceSceneAdded;
         public event Action<string> OnNewPortableExperienceSceneRemoved;
-
-        public event OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);

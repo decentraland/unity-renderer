@@ -29,7 +29,10 @@ namespace Tests.BuildModeHUDControllers
                 catalogBtnController = Substitute.For<ICatalogBtnController>(),
                 inspectorController = Substitute.For<IInspectorController>(),
                 buildModeConfirmationModalController = Substitute.For<IBuildModeConfirmationModalController>(),
-                topActionsButtonsController = Substitute.For<ITopActionsButtonsController>()
+                topActionsButtonsController = Substitute.For<ITopActionsButtonsController>(),
+                saveHUDController = Substitute.For<ISaveHUDController>(),
+                newProjectDetailsController = Substitute.For<IPublicationDetailsController>(),
+                publicationDetailsController = Substitute.For<IPublicationDetailsController>()
             };
 
             buildModeHUDController = Substitute.ForPartsOf<BuildModeHUDController>();
@@ -57,6 +60,9 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.controllers.catalogBtnController = null;
             buildModeHUDController.controllers.inspectorController = null;
             buildModeHUDController.controllers.topActionsButtonsController = null;
+            buildModeHUDController.controllers.saveHUDController = null;
+            buildModeHUDController.controllers.newProjectDetailsController = null;
+            buildModeHUDController.controllers.publicationDetailsController = null;
 
             // Act
             buildModeHUDController.CreateBuildModeControllers();
@@ -75,6 +81,9 @@ namespace Tests.BuildModeHUDControllers
             Assert.NotNull(buildModeHUDController.controllers.catalogBtnController, "The catalogBtnController is null!");
             Assert.NotNull(buildModeHUDController.controllers.inspectorController, "The inspectorController is null!");
             Assert.NotNull(buildModeHUDController.controllers.topActionsButtonsController, "The topActionsButtonsController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.saveHUDController, "The saveHUDController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.newProjectDetailsController, "The newProjectDetailsController is null!");
+            Assert.NotNull(buildModeHUDController.controllers.publicationDetailsController, "The publicationDetailsController is null!");
         }
 
         [Test]
@@ -92,29 +101,122 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
+        [TestCase("")]
+        [TestCase("Test name")]
+        public void SetBuilderProjectInfoCorrectly(string projectName)
+        {
+            // Arrange
+            string testDesc = "Test name";
+
+            // Act
+            buildModeHUDController.SetBuilderProjectInfo(projectName, testDesc);
+
+            // Assert
+            if (!string.IsNullOrEmpty(projectName))
+            {
+                buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
+                buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(projectName, testDesc);
+            }
+            else
+            {
+                buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetDefaultPublicationInfo();
+                buildModeHUDController.controllers.publicationDetailsController.Received(1).SetDefaultPublicationInfo();
+            }
+        }
+
+        [Test]
+        public void StartNewProjectFlowCorrectly()
+        {
+            // Arrange
+            Texture2D testScreenshot = new Texture2D(10, 10);
+
+            // Act
+            buildModeHUDController.NewProjectStart(testScreenshot);
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetPublicationScreenshot(testScreenshot);
+
+            // TODO: This is temporal until we add the Welcome panel where the user will be able to edit the project info
+            //buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void ConfirmNewProjectDetailsCorrectly()
+        {
+            // Arrange
+            bool newProjectDetailsConfirmed = false;
+            buildModeHUDController.OnSaveSceneInfoAction += (name, desc, image) =>
+            {
+                newProjectDetailsConfirmed = true;
+            };
+
+            // Act
+            buildModeHUDController.SaveSceneInfo();
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneScreenshotTexture();
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneName();
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).GetSceneDescription();
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetCustomPublicationInfo(Arg.Any<string>(), Arg.Any<string>());
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(false);
+            Assert.IsTrue(newProjectDetailsConfirmed);
+        }
+
+        [Test]
+        public void CancelNewProjectDetailsCorrectly()
+        {
+            // Act
+            buildModeHUDController.CancelNewProjectDetails();
+
+            // Assert
+            buildModeHUDController.controllers.newProjectDetailsController.Received(1).SetActive(false);
+        }
+
+        [Test]
         public void PublishStartCorrectly()
         {
             // Act
             buildModeHUDController.PublishStart();
 
             // Assert
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void ConfirmPublicationDetailsCorrectly()
+        {
+            // Act
+            buildModeHUDController.ConfirmPublicationDetails();
+
+            // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                .Configure(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>());
+                                  .Configure(
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>(),
+                                      Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.PUBLISH);
         }
 
         [Test]
-        public void CancelPublishModalCorrectly()
+        public void CancelPublicationDetailsCorrectly()
         {
             // Act
             buildModeHUDController.CancelPublishModal(BuildModeModalType.PUBLISH);
 
             // Assert
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(false, BuildModeModalType.PUBLISH);
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(true);
+        }
+
+        [Test]
+        public void CancelPublishModalCorrectly()
+        {
+            // Act
+            buildModeHUDController.CancelPublicationDetails();
+
+            // Assert
+            buildModeHUDController.controllers.publicationDetailsController.Received(1).SetActive(false);
         }
 
         [Test]
@@ -122,7 +224,7 @@ namespace Tests.BuildModeHUDControllers
         {
             // Arrange
             bool publishConfirmed = false;
-            buildModeHUDController.OnConfirmPublishAction += () => { publishConfirmed = true; };
+            buildModeHUDController.OnConfirmPublishAction += (sceneName, sceneDesc, sceneScreenshot) => { publishConfirmed = true; };
 
             // Act
             buildModeHUDController.ConfirmPublishModal(BuildModeModalType.PUBLISH);
@@ -139,12 +241,6 @@ namespace Tests.BuildModeHUDControllers
             buildModeHUDController.ExitStart();
 
             // Assert
-            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1)
-                .Configure(
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>(),
-                    Arg.Any<string>());
             buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).SetActive(true, BuildModeModalType.EXIT);
         }
 
@@ -170,6 +266,7 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(exitConfirmed, "exitConfirmed is false!");
+            buildModeHUDController.controllers.publicationDetailsController.Received().SetDefaultPublicationInfo();
         }
 
         [Test]
@@ -348,7 +445,7 @@ namespace Tests.BuildModeHUDControllers
         public void EntityInformationSetEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
 
             // Act
@@ -369,9 +466,11 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             buildModeHUDController.controllers.entityInformationController.Received(1).Enable();
             buildModeHUDController.controllers.entityInformationController.Received(1).SetTransparencyMode(activateTransparencyMode);
-            buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(false);
             buildModeHUDController.controllers.sceneCatalogController.Received(1).CloseCatalog();
             buildModeHUDController.controllers.tooltipController.Received(1).HideTooltip();
+
+            if (activateTransparencyMode)
+                buildModeHUDController.controllers.catalogBtnController.Received(1).SetActive(false);
         }
 
         [Test]
@@ -392,10 +491,10 @@ namespace Tests.BuildModeHUDControllers
         public void SetEntityListCorrectly()
         {
             // Arrange
-            List<DCLBuilderInWorldEntity> testEntityList = new List<DCLBuilderInWorldEntity>();
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity1").AddComponent<DCLBuilderInWorldEntity>());
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity2").AddComponent<DCLBuilderInWorldEntity>());
-            testEntityList.Add(new GameObject("_DCLBuilderInWorldEntity3").AddComponent<DCLBuilderInWorldEntity>());
+            List<BIWEntity> testEntityList = new List<BIWEntity>();
+            testEntityList.Add(new BIWEntity());
+            testEntityList.Add(new BIWEntity());
+            testEntityList.Add(new BIWEntity());
 
             // Act
             buildModeHUDController.SetEntityList(testEntityList);
@@ -465,6 +564,35 @@ namespace Tests.BuildModeHUDControllers
             // Assert
             Assert.IsTrue(buildModeHUDController.areExtraButtonsVisible, "The areExtraButtonsVisible is false!");
             buildModeHUDController.view.Received(1).SetVisibilityOfExtraBtns(buildModeHUDController.areExtraButtonsVisible);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetVisibilityOfInspectorCorrectly(bool isVisible)
+        {
+            // Act
+            buildModeHUDController.SetVisibilityOfInspector(isVisible);
+
+            // Assert
+            Assert.AreEqual(isVisible, buildModeHUDController.isEntityListVisible);
+            buildModeHUDController.view.Received(1).SetVisibilityOfInspector(isVisible);
+        }
+
+        [Test]
+        public void ConfigureConfirmationModalCorrectly()
+        {
+            // Arrange
+            string testTitle = "test title";
+            string testSubTitle = "test subTitle";
+            string testCancelText = "test cancel";
+            string testConfirmText = "test confirm";
+
+            // Act
+            buildModeHUDController.ConfigureConfirmationModal(testTitle, testSubTitle, testCancelText, testConfirmText);
+
+            // Assert
+            buildModeHUDController.controllers.buildModeConfirmationModalController.Received(1).Configure(testTitle, testSubTitle, testCancelText, testConfirmText);
         }
     }
 }

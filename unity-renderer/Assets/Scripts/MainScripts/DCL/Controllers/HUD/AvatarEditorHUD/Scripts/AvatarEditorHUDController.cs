@@ -15,7 +15,8 @@ public class AvatarEditorHUDController : IHUD
     private const string LOADING_OWNED_WEARABLES_ERROR_MESSAGE = "There was a problem loading your wearables";
     private const string URL_MARKET_PLACE = "https://market.decentraland.org/browse?section=wearables";
     private const string URL_GET_A_WALLET = "https://docs.decentraland.org/get-a-wallet";
-    private const string URL_SELL_COLLECTIBLE = "https://market.decentraland.org/account";
+    private const string URL_SELL_COLLECTIBLE_GENERIC = "https://market.decentraland.org/account";
+    private const string URL_SELL_SPECIFIC_COLLECTIBLE = "https://market.decentraland.org/contracts/{collectionId}/tokens/{tokenId}";
 
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
@@ -36,6 +37,8 @@ public class AvatarEditorHUDController : IHUD
     private bool prevMouseLockState = false;
     private int ownedWearablesRemainingRequests = LOADING_OWNED_WEARABLES_RETRIES;
     private bool ownedWearablesAlreadyLoaded = false;
+    private List<Nft> ownedNftCollectionsL1 = new List<Nft>();
+    private List<Nft> ownedNftCollectionsL2 = new List<Nft>();
 
     public AvatarEditorHUDView view;
 
@@ -85,6 +88,7 @@ public class AvatarEditorHUDController : IHUD
     {
         LoadOwnedWereables(userProfile);
         LoadUserProfile(userProfile, false);
+        QueryNftCollections(userProfile.userId);
     }
 
     private void LoadOwnedWereables(UserProfile userProfile)
@@ -95,36 +99,50 @@ public class AvatarEditorHUDController : IHUD
         view.ShowCollectiblesLoadingSpinner(true);
         view.ShowCollectiblesLoadingRetry(false);
         CatalogController.RequestOwnedWearables(userProfile.userId)
-            .Then((ownedWearables) =>
-            {
-                ownedWearablesAlreadyLoaded = true;
-                this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
-                LoadUserProfile(userProfile, true);
-                view.ShowCollectiblesLoadingSpinner(false);
-            })
-            .Catch((error) =>
-            {
-                ownedWearablesRemainingRequests--;
-                if (ownedWearablesRemainingRequests > 0)
-                {
-                    Debug.LogWarning("Retrying owned wereables loading...");
-                    LoadOwnedWereables(userProfile);
-                }
-                else
-                {
-                    NotificationsController.i.ShowNotification(new Notification.Model
-                    {
-                        message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
-                        type = NotificationFactory.Type.GENERIC,
-                        timer = 10f,
-                        destroyOnFinish = true
-                    });
+                         .Then((ownedWearables) =>
+                         {
+                             ownedWearablesAlreadyLoaded = true;
+                             this.userProfile.SetInventory(ownedWearables.Select(x => x.id).ToArray());
+                             LoadUserProfile(userProfile, true);
+                             view.ShowCollectiblesLoadingSpinner(false);
+                         })
+                         .Catch((error) =>
+                         {
+                             ownedWearablesRemainingRequests--;
+                             if (ownedWearablesRemainingRequests > 0)
+                             {
+                                 Debug.LogWarning("Retrying owned wereables loading...");
+                                 LoadOwnedWereables(userProfile);
+                             }
+                             else
+                             {
+                                 NotificationsController.i.ShowNotification(new Notification.Model
+                                 {
+                                     message = LOADING_OWNED_WEARABLES_ERROR_MESSAGE,
+                                     type = NotificationFactory.Type.GENERIC,
+                                     timer = 10f,
+                                     destroyOnFinish = true
+                                 });
 
-                    view.ShowCollectiblesLoadingSpinner(false);
-                    view.ShowCollectiblesLoadingRetry(true);
-                    Debug.LogError(error);
-                }
-            });
+                                 view.ShowCollectiblesLoadingSpinner(false);
+                                 view.ShowCollectiblesLoadingRetry(true);
+                                 Debug.LogError(error);
+                             }
+                         });
+    }
+
+    private void QueryNftCollections(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+            return;
+
+        DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.ETHEREUM)
+           .Then((nfts) => ownedNftCollectionsL1 = nfts)
+           .Catch((error) => Debug.LogError(error));
+
+        DCL.Environment.i.platform.serviceProviders.theGraph.QueryNftCollections(userProfile.userId, NftCollectionsLayer.MATIC)
+           .Then((nfts) => ownedNftCollectionsL2 = nfts)
+           .Catch((error) => Debug.LogError(error));
     }
 
     public void RetryLoadOwnedWearables()
@@ -584,15 +602,20 @@ public class AvatarEditorHUDController : IHUD
     public void SaveAvatar(Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
+
         WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, face128Snapshot, face256Snapshot, bodySnapshot, DataStore.i.isSignUpFlow.Get());
         userProfile.OverrideAvatar(avatarModel, face256Snapshot);
+        if (DataStore.i.isSignUpFlow.Get())
+            DataStore.i.HUDs.signupVisible.Set(true);
 
         SetVisibility(false);
-        DataStore.i.isSignUpFlow.Set(false);
     }
 
     public void DiscardAndClose()
     {
+        if (!view.isOpen)
+            return;
+
         if (!DataStore.i.isSignUpFlow.Get())
             LoadUserProfile(userProfile);
         else
@@ -609,7 +632,17 @@ public class AvatarEditorHUDController : IHUD
             WebInterface.OpenURL(URL_GET_A_WALLET);
     }
 
-    public void SellCollectible(string collectibleId) { WebInterface.OpenURL(URL_SELL_COLLECTIBLE); }
+    public void SellCollectible(string collectibleId)
+    {
+        var ownedCollectible = ownedNftCollectionsL1.FirstOrDefault(nft => nft.urn == collectibleId);
+        if (ownedCollectible == null)
+            ownedCollectible = ownedNftCollectionsL2.FirstOrDefault(nft => nft.urn == collectibleId);
+
+        if (ownedCollectible != null)
+            WebInterface.OpenURL(URL_SELL_SPECIFIC_COLLECTIBLE.Replace("{collectionId}", ownedCollectible.collectionId).Replace("{tokenId}", ownedCollectible.tokenId));
+        else
+            WebInterface.OpenURL(URL_SELL_COLLECTIBLE_GENERIC);
+    }
 
     public void ToggleVisibility() { SetVisibility(!view.isOpen); }
 }

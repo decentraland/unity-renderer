@@ -31,6 +31,13 @@ namespace Tests
             );
         }
 
+        protected override PlatformContext CreatePlatformContext()
+        {
+            return DCL.Tests.PlatformContextFactory.CreateWithGenericMocks(
+                WebRequestController.Create()
+            );
+        }
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
@@ -87,16 +94,16 @@ namespace Tests
             var entity = TestHelpers.CreateSceneEntity(scene, entityId);
 
             string onPointerId = "pointerevent-1";
-            var model = new OnPointerDown.Model()
+            var model = new OnPointerEvent.Model()
             {
                 type = OnPointerDown.NAME,
                 uuid = onPointerId
             };
-            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+            var onPointerDownComponent = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerEvent.Model>(scene, entity,
                 model, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             // 2. Attach a shape
-            var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
+            var shapeModel = new LoadableShape.Model();
             shapeModel.src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb";
             var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(shapeModel));
 
@@ -192,6 +199,7 @@ namespace Tests
             {
                 Assert.IsTrue(collider.gameObject.layer != PhysicsLayers.onPointerEventLayer);
             }
+
             Assert.IsNull(onPointerDownComponent.pointerEventHandler.eventColliders.colliders);
         }
     }

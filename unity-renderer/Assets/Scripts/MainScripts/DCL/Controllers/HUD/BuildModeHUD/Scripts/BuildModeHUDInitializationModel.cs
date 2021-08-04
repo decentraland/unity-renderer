@@ -1,6 +1,7 @@
 public class BuildModeHUDInitializationModel
 {
     public ITooltipController tooltipController;
+    public ITooltipController feedbackTooltipController;
     public ISceneCatalogController sceneCatalogController;
     public IQuickBarController quickBarController;
     public IEntityInformationController entityInformationController;
@@ -15,4 +16,6 @@ public class BuildModeHUDInitializationModel
     public ITopActionsButtonsController topActionsButtonsController;
     public IBuildModeConfirmationModalController buildModeConfirmationModalController;
     public ISaveHUDController saveHUDController;
+    public IPublicationDetailsController newProjectDetailsController;
+    public IPublicationDetailsController publicationDetailsController;
 }

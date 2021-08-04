@@ -7,8 +7,6 @@ namespace DCL
 {
     public class WebRequestController : IWebRequestController
     {
-        public static WebRequestController i { get; private set; }
-
         private IWebRequest genericWebRequest;
         private IWebRequestAssetBundle assetBundleWebRequest;
         private IWebRequest textureWebRequest;
@@ -34,8 +32,6 @@ namespace DCL
             IWebRequest textureWebRequest,
             IWebRequestAudio audioClipWebRequest)
         {
-            i = this;
-
             this.genericWebRequest = genericWebRequest;
             this.assetBundleWebRequest = assetBundleWebRequest;
             this.textureWebRequest = textureWebRequest;
@@ -49,9 +45,10 @@ namespace DCL
             Action<UnityWebRequest> OnFail = null,
             int requestAttemps = 3,
             int timeout = 0,
-            bool disposeOnCompleted = true)
+            bool disposeOnCompleted = true,
+            Dictionary<string, string> headers = null)
         {
-            return SendWebRequest(genericWebRequest, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted);
+            return SendWebRequest(genericWebRequest, url, downloadHandler, OnSuccess, OnFail, requestAttemps, timeout, disposeOnCompleted, headers);
         }
 
         public WebRequestAsyncOperation GetAssetBundle(
@@ -110,12 +107,21 @@ namespace DCL
             Action<UnityWebRequest> OnFail,
             int requestAttemps,
             int timeout,
-            bool disposeOnCompleted) where T : IWebRequest
+            bool disposeOnCompleted,
+            Dictionary<string, string> headers = null
+        ) where T : IWebRequest
         {
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
 
             UnityWebRequest request = requestType.CreateWebRequest(url);
             request.timeout = timeout;
+            if (headers != null)
+            {
+                foreach (var item in headers)
+                {
+                    request.SetRequestHeader(item.Key, item.Value);
+                }
+            }
 
             if (downloadHandler != null)
                 request.downloadHandler = downloadHandler;

@@ -7,7 +7,7 @@ using static WearableLiterals;
 
 namespace DCL
 {
-    public class AvatarRenderer : MonoBehaviour
+    public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
         public enum VisualCue
         {
@@ -22,6 +22,9 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
+        public MeshRenderer lodRenderer;
+        public MeshFilter lodMeshFilter;
+
         private AvatarModel model;
 
         public event Action<VisualCue> OnVisualCue;
@@ -35,6 +38,7 @@ namespace DCL
         internal FacialFeatureController mouthController;
         internal AvatarAnimatorLegacy animator;
         internal StickersController stickersController;
+        internal AvatarLODController lodController;
 
         private long lastStickerTimestamp = -1;
 
@@ -42,11 +46,25 @@ namespace DCL
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private AssetPromise_Texture bodySnapshotTexturePromise;
+        private bool facialFeaturesVisible = true;
+        private bool ssaoEnabled = true;
 
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
+
+            if (lodRenderer != null)
+            {
+                lodController = new AvatarLODController()
+                {
+                    transform = this.transform,
+                    meshRenderer = lodRenderer,
+                    mesh = lodMeshFilter.mesh
+                };
+                lodController.OnLODToggle += (newValue) => SetVisibility(!newValue); // TODO: Resolve coping with AvatarModifierArea regarding this toggling (issue #718)
+            }
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -60,6 +78,12 @@ namespace DCL
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
 
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+
             void onSuccessWrapper()
             {
                 onSuccess?.Invoke();
@@ -70,6 +94,8 @@ namespace DCL
 
             void onFailWrapper(bool isFatalError)
             {
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
                 onFail?.Invoke();
                 this.OnFailEvent -= onFailWrapper;
             }
@@ -90,6 +116,30 @@ namespace DCL
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
 
+        public void InitializeLODController()
+        {
+            if (lodController == null)
+                return;
+
+            UserProfile userProfile = null;
+            if (!string.IsNullOrEmpty(model?.id))
+                userProfile = UserProfileController.GetProfileByUserId(model.id);
+
+            if (userProfile != null)
+            {
+                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
+                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
+                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            }
+            else
+            {
+                lodController.RandomizeAndApplyGenericImpostor();
+            }
+
+            Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
+        }
+
         void StopLoadingCoroutines()
         {
             if (loadCoroutine != null)
@@ -100,6 +150,8 @@ namespace DCL
 
         public void CleanupAvatar()
         {
+            facialFeaturesVisible = true;
+            ssaoEnabled = true;
             StopLoadingCoroutines();
 
             eyebrowsController?.CleanUp();
@@ -127,6 +179,12 @@ namespace DCL
             isLoading = false;
             OnFailEvent = null;
             OnSuccessEvent = null;
+
+            if (lodController != null)
+                Environment.i.platform.avatarsLODController.RemoveAvatar(lodController);
+
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
@@ -349,10 +407,13 @@ namespace DCL
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
+            bodyShapeController.SetFacialFeaturesVisible(facialFeaturesVisible);
             bodyShapeController.UpdateVisibility(hiddenList);
+            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
             foreach (WearableController wearableController in wearableControllers.Values)
             {
                 wearableController.UpdateVisibility(hiddenList);
+                wearableController.SetSSAOEnabled(ssaoEnabled);
             }
 
             CleanUpUnusedItems();
@@ -492,13 +553,40 @@ namespace DCL
                 gameObject.SetActive(newVisibility);
         }
 
+        public AvatarLODController GetLODController() { return lodController; }
+
         private void HideAll()
         {
+            // TODO: Cache this somewhere (maybe when the LoadAvatar finishes) instead of fetching this on every call
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
             for (int i = 0; i < renderers.Length; i++)
             {
                 renderers[i].enabled = false;
+            }
+        }
+
+        public void SetFacialFeaturesVisible(bool visible)
+        {
+            if (visible == facialFeaturesVisible)
+                return;
+            facialFeaturesVisible = visible;
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetFacialFeaturesVisible(visible, true);
+        }
+
+        public void SetSSAOEnabled(bool newEnabled)
+        {
+            if (newEnabled == ssaoEnabled)
+                return;
+            ssaoEnabled = newEnabled;
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
+            foreach (WearableController wearableController in wearableControllers.Values)
+            {
+                wearableController.SetSSAOEnabled(ssaoEnabled);
             }
         }
 

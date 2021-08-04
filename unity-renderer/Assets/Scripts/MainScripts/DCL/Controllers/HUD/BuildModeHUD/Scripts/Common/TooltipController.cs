@@ -21,7 +21,6 @@ public class TooltipController : ITooltipController
     {
         this.view = view;
 
-        view.OnShowTooltip += ShowTooltip;
         view.OnHideTooltip += HideTooltip;
     }
 
@@ -29,7 +28,6 @@ public class TooltipController : ITooltipController
     {
         KillTooltipCoroutine();
 
-        view.OnShowTooltip -= ShowTooltip;
         view.OnHideTooltip -= HideTooltip;
     }
 
@@ -43,7 +41,7 @@ public class TooltipController : ITooltipController
             return;
 
         RectTransform selectedRT = dataConverted.pointerEnter.GetComponent<RectTransform>();
-        view.SetTooltipPosition(offset + selectedRT.position - Vector3.up * selectedRT.rect.height);
+        view.SetTooltipPosition(offset + selectedRT.position);
 
         KillTooltipCoroutine();
 
@@ -58,6 +56,9 @@ public class TooltipController : ITooltipController
 
     internal IEnumerator ChangeAlpha(float from, float to)
     {
+        if (view.currentAlpha == to)
+            yield break;
+
         view.SetTooltipAlpha(from);
 
         float currentAlpha = from;

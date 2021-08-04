@@ -102,7 +102,7 @@ jobs:
           name: Get the hash of source files
           command: |
             # hash unity files
-            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find ./unity-renderer -type f \( -not -path '*Library*' \) \( -not -path '*browser-interface*' \) \( -iname \*.unity -o -iname \*.sh -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  -o -iname \*.spriteatlas  -o -iname \*.asset  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
 
             # hash pipeline files
             find ./ -type f \( -iname \*.sh -o -iname \*.yml \) \( -exec md5sum "$PWD"/{} \; \) | sort >> ../.unitysources-checksum
@@ -129,9 +129,6 @@ jobs:
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/editmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
       - store_test_results:
           path: ./unity-renderer/test-results
       - save_cache: &SAVE_CHECKSUM_CACHE_EDITMODE
@@ -165,17 +162,26 @@ jobs:
                 exit $?
             fi;
           no_output_timeout: 30m
+      - run:
+          name: nunit-to-junit
+          when: always
+          command: |
+            apt-get update
+            apt-get install -y xsltproc
+            xsltproc --output unity-renderer/test-results/playmode-results-junit.xml nunit-to-junit.xsl unity-renderer/playmode-results.xml
+      - run: apt-get -y -qq install awscli
+      - run:
+          name: upload code coverage
+          command: |
+            aws s3 sync /tmp/workspace/unity-renderer/unity-renderer/CodeCoverage/Report "s3://${S3_BUCKET}/branch-coverage/${CIRCLE_BRANCH}" --acl public-read
       - store_test_results:
-          path: test-results
+          path: ./unity-renderer/test-results
       - store_artifacts:
           name: Store logs
           path: ./unity-renderer/playmode-logs.txt
       - store_artifacts:
           name: Store test results
           path: ./unity-renderer/playmode-results.xml
-      - store_artifacts:
-          name: Store test coverage
-          path: ./unity-renderer/CodeCoverage
       - save_cache:
           name: Store test cache
           key: unity-playmode-2020-3-{{ checksum "../.unitysources-checksum" }}
@@ -313,7 +319,6 @@ jobs:
           working_directory: *node_workspace
           name: npm run test
           command: npm run test
-
       - run: sudo apt-get -y -qq install awscli
       - run:
           working_directory: *node_workspace
@@ -372,19 +377,11 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - checkout
-
       - build-js-interface:
           <<: *all_branches_and_tags
           requires:
             - build-unity
-
       - publish-renderer:
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              only: /^\d+\.\d+\.\d+(.*)/ # npm tag + latest
           requires:
             - build-unity
             - build-js-interface

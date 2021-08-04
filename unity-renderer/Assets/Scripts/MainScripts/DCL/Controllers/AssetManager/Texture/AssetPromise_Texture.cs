@@ -56,7 +56,7 @@ namespace DCL
 
             if (!url.StartsWith(PLAIN_BASE64_PROTOCOL))
             {
-                webRequestOp = WebRequestController.i.GetTexture(
+                webRequestOp = DCL.Environment.i.platform.webRequest.GetTexture(
                     url: url,
                     OnSuccess: (webRequestResult) =>
                     {
