@@ -9,6 +9,7 @@ using Object = UnityEngine.Object;
 
 public class WearableController
 {
+    private static readonly int DITHER_FADE_PROPERTY = Shader.PropertyToID("_DitherFade");
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
 
@@ -217,6 +218,20 @@ public class WearableController
                     assetRenderers[i].materials[j].DisableKeyword("_SSAO_OFF");
                 else
                     assetRenderers[i].materials[j].EnableKeyword("_SSAO_OFF");
+            }
+        }
+    }
+
+    public void SetFadeDither(float ditherFade)
+    {
+        if (assetRenderers == null)
+            return;
+
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            for (int j = 0; j < assetRenderers[i].materials.Length; j++)
+            {
+                assetRenderers[i].materials[j].SetFloat(DITHER_FADE_PROPERTY, ditherFade);
             }
         }
     }

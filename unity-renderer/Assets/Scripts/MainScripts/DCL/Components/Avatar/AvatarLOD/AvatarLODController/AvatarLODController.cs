@@ -1,65 +1,121 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL
 {
-    public class AvatarLODController
+    public class AvatarLODController : IDisposable
     {
-        private const bool ONLY_GENERIC_IMPOSTORS = false;
-        private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
+        private const float TRANSITION_DURATION = 0.25f;
+        private Player player;
 
-        // 2048x2048 atlas with 8 512x1024 snapshot-sprites
-        private const int GENERIC_IMPOSTORS_ATLAS_COLUMNS = 4;
-        private const int GENERIC_IMPOSTORS_ATLAS_ROWS = 2;
+        private float avatarFade;
+        private float impostorFade;
+        private float targetAvatarFade;
+        private float targetImpostorFade;
 
-        public Transform transform;
-        public MeshRenderer meshRenderer;
-        public Mesh mesh;
+        private bool SSAOEnabled;
+        private bool facialFeaturesEnabled;
 
-        public delegate void LODToggleEventDelegate(bool newValue);
-        public event LODToggleEventDelegate OnLODToggle;
+        private Coroutine currentTransition = null;
 
-        public void SetImpostorTexture(Texture2D impostorTexture)
+        public AvatarLODController(Player player)
         {
-            if (ONLY_GENERIC_IMPOSTORS || impostorTexture == null)
+            this.player = player;
+            avatarFade = 1;
+            impostorFade = 0;
+            SSAOEnabled = false;
+            facialFeaturesEnabled = true;
+            if (player?.renderer == null)
+                return;
+            player.renderer.SetAvatarFade(avatarFade);
+            player.renderer.SetImpostorFade(impostorFade);
+        }
+
+        public void SetAvatarState()
+        {
+            if (player?.renderer == null)
                 return;
 
-            ResetMeshUVs();
-
-            meshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, impostorTexture);
+            SetAvatarFeatures(true, true);
+            StartTransition(1, 0);
         }
 
-        public void RandomizeAndApplyGenericImpostor()
+        public void SetSimpleAvatar()
         {
-            Vector2 spriteSize = new Vector2(1f / GENERIC_IMPOSTORS_ATLAS_COLUMNS, 1f / GENERIC_IMPOSTORS_ATLAS_ROWS);
-            float randomUVXPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_COLUMNS) * spriteSize.x;
-            float randomUVYPos = Random.Range(0, GENERIC_IMPOSTORS_ATLAS_ROWS) * spriteSize.y;
-
-            Vector2[] uvs = new Vector2[4]; // Quads have only 4 vertices
-            uvs[0].Set(randomUVXPos, randomUVYPos);
-            uvs[1].Set(randomUVXPos + spriteSize.x, randomUVYPos);
-            uvs[2].Set(randomUVXPos, randomUVYPos + spriteSize.y);
-            uvs[3].Set(randomUVXPos + spriteSize.x, randomUVYPos + spriteSize.y);
-            mesh.uv = uvs;
-        }
-
-        private void ResetMeshUVs()
-        {
-            Vector2[] uvs = new Vector2[4]; // Quads have only 4 vertices
-            uvs[0].Set(0, 0);
-            uvs[1].Set(1, 0);
-            uvs[2].Set(0, 1);
-            uvs[3].Set(1, 1);
-            mesh.uv = uvs;
-        }
-
-        public void ToggleLOD(bool enabled)
-        {
-            if (meshRenderer.gameObject.activeSelf == enabled)
+            if (player?.renderer == null)
                 return;
 
-            meshRenderer.gameObject.SetActive(enabled);
-
-            OnLODToggle?.Invoke(enabled);
+            SetAvatarFeatures(false, false);
+            StartTransition(1, 0);
         }
+
+        public void SetImpostorState()
+        {
+            if (player?.renderer == null)
+                return;
+
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 1);
+        }
+
+        private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
+        {
+            if (currentTransition != null && Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
+                return;
+
+            targetAvatarFade = newTargetAvatarFade;
+            targetImpostorFade = newTargetImpostorFade;
+            CoroutineStarter.Stop(currentTransition);
+            currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
+        }
+
+        private IEnumerator Transition(float targetAvatarFade, float targetImpostorFade)
+        {
+            while (player.renderer.isLoading)
+            {
+                yield return null;
+            }
+
+            player.renderer.SetAvatarFade(avatarFade);
+            player.renderer.SetImpostorFade(impostorFade);
+            player.renderer.SetVisibility(true);
+            player.renderer.SetImpostorVisibility(true);
+
+            while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
+            {
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / TRANSITION_DURATION * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / TRANSITION_DURATION * Time.deltaTime);
+                player.renderer.SetAvatarFade(avatarFade);
+                player.renderer.SetImpostorFade(impostorFade);
+                yield return null;
+            }
+
+            avatarFade = targetAvatarFade;
+            impostorFade = targetImpostorFade;
+
+            bool avatarVisibility = !Mathf.Approximately(avatarFade, 0);
+            player.renderer.SetVisibility(avatarVisibility);
+            bool impostorVisibility = !Mathf.Approximately(impostorFade, 0);
+            player.renderer.SetImpostorVisibility(impostorVisibility);
+            currentTransition = null;
+        }
+
+        private void SetAvatarFeatures(bool newSSAOEnabled, bool newFacialFeaturesEnabled)
+        {
+            if (SSAOEnabled != newSSAOEnabled)
+            {
+                player.renderer.SetSSAOEnabled(newSSAOEnabled);
+                SSAOEnabled = newSSAOEnabled;
+            }
+
+            if (facialFeaturesEnabled != newFacialFeaturesEnabled)
+            {
+                player.renderer.SetFacialFeaturesVisible(newFacialFeaturesEnabled);
+                facialFeaturesEnabled = newFacialFeaturesEnabled;
+            }
+        }
+
+        public void Dispose() { CoroutineStarter.Stop(currentTransition); }
     }
 }

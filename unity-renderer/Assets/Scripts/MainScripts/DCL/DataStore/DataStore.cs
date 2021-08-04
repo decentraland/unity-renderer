@@ -71,7 +71,6 @@ namespace DCL
 
         public class DataStore_AvatarsLOD
         {
-            public readonly BaseVariable<bool> LODEnabled = new BaseVariable<bool>(false); // false because of feature flag...
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
             public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
         }
