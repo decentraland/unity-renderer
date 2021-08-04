@@ -9,7 +9,7 @@ namespace AvatarNamesHUD
     {
         void Initialize(int maxAvatarNames);
         void SetVisibility(bool visibility);
-        void TrackPlayer(PlayerStatus playerStatus);
+        void TrackPlayer(Player player);
         void UntrackPlayer(string userId);
         void Dispose();
     }
@@ -69,7 +69,7 @@ namespace AvatarNamesHUD
 
         public void SetVisibility(bool visibility) { gameObject.SetActive(visibility); }
 
-        public void TrackPlayer(PlayerStatus playerStatus)
+        public void TrackPlayer(Player player)
         {
             if (reserveTrackers.Count == 0)
             {
@@ -78,9 +78,9 @@ namespace AvatarNamesHUD
             }
 
             AvatarNamesTracker tracker = reserveTrackers.Dequeue();
-            tracker.SetPlayerStatus(playerStatus);
+            tracker.SetPlayerStatus(player);
             tracker.SetVisibility(true);
-            trackers.Add(playerStatus.id, tracker);
+            trackers.Add(player.id, tracker);
         }
 
         public void UntrackPlayer(string userId)

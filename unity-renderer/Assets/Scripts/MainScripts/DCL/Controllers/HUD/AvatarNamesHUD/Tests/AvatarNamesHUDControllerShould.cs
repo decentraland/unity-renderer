@@ -12,6 +12,7 @@ namespace Tests.AvatarNamesHUD
 
         private AvatarNamesHUDController hudController;
         private IAvatarNamesHUDView hudView;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         [SetUp]
         public void SetUp()
@@ -32,10 +33,10 @@ namespace Tests.AvatarNamesHUD
         [Test]
         public void InitializeWithDataProperly()
         {
-            DataStore.i.player.otherPlayersStatus.Add("user0", new PlayerStatus { id = "user0", name = "user0" });
-            DataStore.i.player.otherPlayersStatus.Add("user1", new PlayerStatus { id = "user1", name = "user1" });
-            DataStore.i.player.otherPlayersStatus.Add("user2", new PlayerStatus { id = "user2", name = "user2" });
-            DataStore.i.player.otherPlayersStatus.Add("user3", new PlayerStatus { id = "user3", name = "user3" });
+            otherPlayers.Add("user0", new Player { id = "user0", name = "user0" });
+            otherPlayers.Add("user1", new Player { id = "user1", name = "user1" });
+            otherPlayers.Add("user2", new Player { id = "user2", name = "user2" });
+            otherPlayers.Add("user3", new Player { id = "user3", name = "user3" });
 
             hudController.Initialize();
 
@@ -51,16 +52,16 @@ namespace Tests.AvatarNamesHUD
         public void ReactToDataStoreChanges()
         {
             hudController.Initialize();
-            var user0 = new PlayerStatus { id = "user0", name = "user0" };
-            var user1 = new PlayerStatus { id = "user1", name = "user1" };
-            DataStore.i.player.otherPlayersStatus.Add("user0", user0);
-            DataStore.i.player.otherPlayersStatus.Add("user1", user1);
+            var user0 = new Player { id = "user0", name = "user0" };
+            var user1 = new Player { id = "user1", name = "user1" };
+            otherPlayers.Add("user0", user0);
+            otherPlayers.Add("user1", user1);
 
             hudController.Received().OnOtherPlayersStatusAdded("user0", user0);
             hudController.Received().OnOtherPlayersStatusAdded("user1", user1);
 
             hudController.ClearReceivedCalls();
-            DataStore.i.player.otherPlayersStatus.Remove("user0");
+            otherPlayers.Remove("user0");
             hudController.Received().OnOtherPlayersStatusRemoved("user0", user0);
         }
 
@@ -69,8 +70,8 @@ namespace Tests.AvatarNamesHUD
         {
             hudController.Initialize();
 
-            var user0 = new PlayerStatus { id = "user0", name = "user0" };
-            var user1 = new PlayerStatus { id = "user1", name = "user1" };
+            var user0 = new Player { id = "user0", name = "user0" };
+            var user1 = new Player { id = "user1", name = "user1" };
             hudController.OnOtherPlayersStatusAdded("user0", user0);
             hudController.OnOtherPlayersStatusAdded("user1", user1);
 
@@ -89,8 +90,8 @@ namespace Tests.AvatarNamesHUD
             hudController.trackingPlayers.Add("user1");
             hudController.trackingPlayers.Add("user2");
 
-            var user3 = new PlayerStatus { id = "user3", name = "user3" };
-            var user4 = new PlayerStatus { id = "user4", name = "user4" };
+            var user3 = new Player { id = "user3", name = "user3" };
+            var user4 = new Player { id = "user4", name = "user4" };
             hudController.OnOtherPlayersStatusAdded("user3", user3);
             hudController.OnOtherPlayersStatusAdded("user4", user4);
 
@@ -111,7 +112,7 @@ namespace Tests.AvatarNamesHUD
             hudController.reservePlayers.AddLast("user3");
             hudController.reservePlayers.AddLast("user4");
 
-            hudController.OnOtherPlayersStatusRemoved("user0", new PlayerStatus { id = "user0", name = "user0" });
+            hudController.OnOtherPlayersStatusRemoved("user0", new Player { id = "user0", name = "user0" });
 
             hudView.Received().UntrackPlayer("user0");
             Assert.AreEqual(3, hudController.trackingPlayers.Count);
@@ -132,7 +133,7 @@ namespace Tests.AvatarNamesHUD
             hudController.reservePlayers.AddLast("user3");
             hudController.reservePlayers.AddLast("user4");
 
-            hudController.OnOtherPlayersStatusRemoved("user3", new PlayerStatus { id = "user3", name = "user3" });
+            hudController.OnOtherPlayersStatusRemoved("user3", new Player { id = "user3", name = "user3" });
 
             hudView.DidNotReceive().UntrackPlayer("user3");
             Assert.AreEqual(3, hudController.trackingPlayers.Count);
