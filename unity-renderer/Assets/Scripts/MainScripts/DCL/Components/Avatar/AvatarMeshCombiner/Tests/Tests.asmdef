@@ -10,7 +10,9 @@
     "ContentProvider",
     "TestAssetsUtils",
     "WebRequest",
-    "WebRequestControllerInterfaces"
+    "WebRequestControllerInterfaces",
+    "PoolManager",
+    "Utils"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

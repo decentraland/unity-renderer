@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
 
 namespace DCL
@@ -14,7 +15,7 @@ namespace DCL
     /// </summary>
     public class AvatarMeshCombinerHelper : IDisposable
     {
-        private static bool VERBOSE = true;
+        private static bool VERBOSE = false;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
 
         public GameObject container { get; private set; }
@@ -38,7 +39,9 @@ namespace DCL
         /// <returns>true if succeeded, false if not</returns>
         public bool Combine(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderersToCombine, Material materialAsset)
         {
-            float time = Time.realtimeSinceStartup;
+            Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
+            Assert.IsTrue(renderersToCombine != null, "renderersToCombine should never be null!");
+            Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
 
             SkinnedMeshRenderer[] renderers = renderersToCombine;
 
@@ -53,9 +56,6 @@ namespace DCL
                 renderers,
                 materialAsset);
 
-            float totalTime = Time.realtimeSinceStartup - time;
-            logger.Log("AvatarMeshCombiner.Combine time = " + totalTime);
-
             // Disable original renderers
             for ( int i = 0; i < renderers.Length; i++ )
             {
@@ -67,6 +67,13 @@ namespace DCL
 
         private bool CombineInternal(SkinnedMeshRenderer bonesContainer, SkinnedMeshRenderer[] renderers, Material materialAsset)
         {
+            Assert.IsTrue(bonesContainer != null, "bonesContainer should never be null!");
+            Assert.IsTrue(bonesContainer.sharedMesh != null, "bonesContainer should never be null!");
+            Assert.IsTrue(bonesContainer.sharedMesh.bindposes != null, "bonesContainer bindPoses should never be null!");
+            Assert.IsTrue(bonesContainer.bones != null, "bonesContainer bones should never be null!");
+            Assert.IsTrue(renderers != null, "renderers should never be null!");
+            Assert.IsTrue(materialAsset != null, "materialAsset should never be null!");
+
             AvatarMeshCombiner.Output output = AvatarMeshCombiner.CombineSkinnedMeshes(
                 bonesContainer.sharedMesh.bindposes,
                 bonesContainer.bones,

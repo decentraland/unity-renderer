@@ -1,7 +1,9 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Material = DCL.Helpers.Material;
@@ -38,15 +40,20 @@ public class AvatarMeshCombinerHelperShould
         keeper.Forget(promise);
         webRequestController.Dispose();
         Object.Destroy(materialAsset);
+        PoolManager.i.Cleanup();
         yield break;
     }
 
     [Test]
     public void SetOriginalRenderersDisabledAfterCombining()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
+
+        // Act
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
+        // Assert
         foreach ( var r in renderersToCombine )
         {
             Assert.That(r.enabled, Is.False);
@@ -58,6 +65,7 @@ public class AvatarMeshCombinerHelperShould
     [UnityTest]
     public IEnumerator DisposeProperly()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
 
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
@@ -70,10 +78,11 @@ public class AvatarMeshCombinerHelperShould
         Assert.That(helper.renderer.sharedMaterials != null, Is.True);
         Assert.That(helper.renderer.sharedMaterials.Length, Is.GreaterThan(0));
 
+        // Act
         helper.Dispose();
-
         yield return null;
 
+        // Assert
         Assert.That(helper.container == null, Is.True);
         Assert.That(mesh == null, Is.True);
 
@@ -86,7 +95,16 @@ public class AvatarMeshCombinerHelperShould
     [Test]
     public void FailWithNoValidRenderers()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
+
+        Mesh origMesh1 = renderersToCombine[0].sharedMesh;
+        Mesh origMesh2 = renderersToCombine[1].sharedMesh;
+        Mesh origMesh3 = renderersToCombine[2].sharedMesh;
+
+        SkinnedMeshRenderer origSkr1 = renderersToCombine[5];
+        SkinnedMeshRenderer origSkr2 = renderersToCombine[6];
+
         renderersToCombine[0].sharedMesh = null;
         renderersToCombine[1].sharedMesh = null;
         renderersToCombine[2].sharedMesh = null;
@@ -95,36 +113,58 @@ public class AvatarMeshCombinerHelperShould
         renderersToCombine[5] = null;
         renderersToCombine[6] = null;
 
+        // Act
         bool success = helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
+        // Assert
         Assert.That(success, Is.False);
+
         helper.Dispose();
+        renderersToCombine[5] = origSkr1;
+        renderersToCombine[6] = origSkr2;
+        renderersToCombine[0].sharedMesh = origMesh1;
+        renderersToCombine[1].sharedMesh = origMesh2;
+        renderersToCombine[2].sharedMesh = origMesh3;
     }
 
     [Test]
     public void SanitizeInvalidRenderers()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
+
+        Mesh origMesh1 = renderersToCombine[1].sharedMesh;
+        SkinnedMeshRenderer origSkr1 = renderersToCombine[3];
+
         renderersToCombine[1].sharedMesh = null;
         renderersToCombine[2].enabled = false;
         renderersToCombine[3] = null;
 
+        // Act
         bool success = helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
+        // Assert
         Assert.That(success, Is.True);
         Assert.That(helper.renderer.sharedMesh != null, Is.True);
         Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1542));
 
         helper.Dispose();
+
+        renderersToCombine[1].sharedMesh = origMesh1;
+        renderersToCombine[3] = origSkr1;
     }
 
 
     [Test]
     public void ConfigureFinalRendererSuccessfully()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
+
+        // Act
         bool success = helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
+        // Assert
         Assert.That(success, Is.True);
         Assert.That(helper.renderer.sharedMesh != null, Is.True);
         Assert.That(helper.renderer.sharedMesh.vertexCount, Is.EqualTo(1739));
@@ -139,6 +179,7 @@ public class AvatarMeshCombinerHelperShould
     [Test]
     public void ReuseSameRendererWhenCombineIsCalledMultipleTimes()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
@@ -150,8 +191,10 @@ public class AvatarMeshCombinerHelperShould
 
         SkinnedMeshRenderer originalRenderer = helper.renderer;
 
+        // Act
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
+        // Assert
         Assert.That(originalRenderer == helper.renderer, Is.True, "Renderer should be reused!");
 
         helper.Dispose();
@@ -160,6 +203,7 @@ public class AvatarMeshCombinerHelperShould
     [UnityTest]
     public IEnumerator UnloadOldAssetsWhenCombineIsCalledMultipleTimes()
     {
+        // Arrange
         var helper = new AvatarMeshCombinerHelper();
         helper.Combine(bonesContainer, renderersToCombine, materialAsset);
 
@@ -175,15 +219,12 @@ public class AvatarMeshCombinerHelperShould
             renderer.enabled = true;
         }
 
+        // Act
         bool success = helper.Combine(bonesContainer, renderersToCombine, materialAsset);
+        yield return null;
 
+        // Assert
         Assert.That(success, Is.True);
-
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-
         Assert.That(oldMesh == null, Is.True);
         Assert.That(oldMaterial == null, Is.True);
 
