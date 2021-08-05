@@ -46,7 +46,7 @@ namespace DCL
         public int waitingPromisesCount => waitingPromises.Count;
 
         //NOTE(Brian): List of promises waiting for assets not in library.
-        Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
+        protected Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
         //NOTE(Brian): List of promises waiting for assets that are currently being loaded by another promise.
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
@@ -229,8 +229,6 @@ namespace DCL
 
                 if (enumerator != null)
                     yield return enumerator;
-
-                CleanPromise(loadedPromise);
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
                     yield return ForceFailPromiseList(promisesToLoadForId);

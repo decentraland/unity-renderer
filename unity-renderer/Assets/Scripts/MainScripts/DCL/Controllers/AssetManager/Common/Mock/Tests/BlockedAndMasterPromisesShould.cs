@@ -1,9 +1,10 @@
-using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
+using WaitUntil = DCL.WaitUntil;
 
 namespace AssetPromiseKeeper_Mock_Tests
 {
@@ -47,8 +48,8 @@ namespace AssetPromiseKeeper_Mock_Tests
                 {
                     keeper.Keep(mischievousPromise);
                     keeper.Keep(mischievousPromise2);
-                    yield return new DCL.WaitUntil(() => mischievousPromise.keepWaiting == false, 2.0f);
-                    yield return new DCL.WaitUntil(() => mischievousPromise2.keepWaiting == false, 2.0f);
+                    yield return new WaitUntil(() => mischievousPromise.keepWaiting == false, 2.0f);
+                    yield return new WaitUntil(() => mischievousPromise2.keepWaiting == false, 2.0f);
                     Assert.IsFalse(mischievousPromise.keepWaiting, "While blocked promises are being resolved, new promises enqueued with the same id should solve correctly!");
                     Assert.IsFalse(mischievousPromise2.keepWaiting, "While blocked promises are being resolved, new promises enqueued with the same id should solve correctly!");
                 }
@@ -124,6 +125,36 @@ namespace AssetPromiseKeeper_Mock_Tests
             Assert.IsTrue(asset4 != null);
             Assert.IsTrue(library.Contains(asset4));
             Assert.AreEqual(1, library.masterAssets.Count);
+        }
+
+        [UnityTest]
+        public IEnumerator NotCleanMasterPromiseWhileWaitingPromisesStillExist()
+        {
+            var library = new AssetLibrary_Mock();
+            var keeper = new AssetPromiseKeeper_Mock(library);
+
+            string id = "1";
+
+            AssetPromise_Mock masterPromise = new AssetPromise_Mock();
+            masterPromise.idGenerator = id;
+            keeper.Keep(masterPromise);
+
+            AssetPromise_Mock prom1 = new AssetPromise_Mock();
+            prom1.idGenerator = id;
+            keeper.Keep(prom1);
+
+            yield return prom1;
+
+            AssetPromise_Mock prom2 = new AssetPromise_Mock();
+            prom2.idGenerator = id;
+            keeper.Keep(prom2);
+
+            Assert.AreNotEqual(0, keeper.masterPromises.Count);
+
+            yield return prom2;
+
+            yield return new WaitUntil(() => keeper.masterPromises.Count == 0, 2.0f);
+            Assert.AreEqual(0, keeper.masterPromises.Count);
         }
 
     }
