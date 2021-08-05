@@ -157,5 +157,31 @@ namespace AssetPromiseKeeper_Mock_Tests
             Assert.AreEqual(0, keeper.masterPromises.Count);
         }
 
+        [UnityTest]
+        public IEnumerator NotForgetMasterPromiseWhileWaitingPromisesStillExist()
+        {
+            var library = new AssetLibrary_Mock();
+            var keeper = new AssetPromiseKeeper_Mock(library);
+
+            string id = "1";
+
+            AssetPromise_Mock masterPromise = new AssetPromise_Mock();
+            masterPromise.idGenerator = id;
+            keeper.Keep(masterPromise);
+
+            AssetPromise_Mock firstPromise = new AssetPromise_Mock();
+            firstPromise.idGenerator = id;
+            keeper.Keep(firstPromise);
+
+            AssetPromise_Mock lastPromise = new AssetPromise_Mock();
+            lastPromise.idGenerator = id;
+            keeper.Keep(lastPromise);
+
+            yield return firstPromise;
+            keeper.Forget(masterPromise);
+
+            Assert.AreNotEqual(0, keeper.masterPromises.Count);
+        }
+
     }
 }
