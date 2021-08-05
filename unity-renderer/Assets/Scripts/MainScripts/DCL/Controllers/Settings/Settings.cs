@@ -75,7 +75,7 @@ namespace DCL
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.Message);
+                    Debug.LogError(e.Message);
                 }
             }
 
@@ -99,12 +99,13 @@ namespace DCL
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.Message);
+                    Debug.LogError(e.Message);
                 }
             }
         }
 
-        private void LoadAudioSettings() {
+        private void LoadAudioSettings()
+        {
             currentAudioSettings = GetDefaultAudioSettings();
 
             if (PlayerPrefsUtils.HasKey(AUDIO_SETTINGS_KEY))
@@ -117,7 +118,7 @@ namespace DCL
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.Message);
+                    Debug.LogError(e.Message);
                 }
             }
         }
