@@ -1,8 +1,4 @@
-﻿// Beware, this file is generated!
-//
-// Check "How to generate this shader.md" for details.
-//
-Shader "DCL/Toon Shader"
+﻿Shader "DCL/Toon Shader"
 {
     Properties
     {
@@ -552,6 +548,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -575,21 +578,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -610,7 +619,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -632,7 +641,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -945,7 +954,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -953,7 +962,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -971,19 +979,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -1730,6 +1739,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -1753,21 +1769,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -1788,7 +1810,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -1810,7 +1832,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -2123,7 +2145,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -2131,7 +2153,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -2149,19 +2170,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -2828,6 +2850,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -2851,21 +2880,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -2886,7 +2921,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -2908,7 +2943,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -3221,7 +3256,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -3229,7 +3264,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -3247,19 +3281,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -3909,6 +3944,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -3932,21 +3974,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -3967,7 +4015,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -3989,7 +4037,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -4302,7 +4350,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -4310,7 +4358,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -4328,19 +4375,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -5011,6 +5059,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -5034,21 +5089,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -5069,7 +5130,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -5091,7 +5152,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -5404,7 +5465,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -5412,7 +5473,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -5430,19 +5490,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -6100,6 +6161,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -6123,21 +6191,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -6158,7 +6232,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -6180,7 +6254,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -6493,7 +6567,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -6501,7 +6575,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -6519,19 +6592,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -7182,6 +7256,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -7205,21 +7286,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -7240,7 +7327,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -7262,7 +7349,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -7575,7 +7662,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -7583,7 +7670,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -7601,19 +7687,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -8355,6 +8442,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -8378,21 +8472,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -8413,7 +8513,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -8435,7 +8535,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -8748,7 +8848,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -8756,7 +8856,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -8774,19 +8873,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -9451,6 +9551,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -9474,21 +9581,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -9509,7 +9622,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -9531,7 +9644,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -9844,7 +9957,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -9852,7 +9965,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -9870,19 +9982,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -10531,6 +10644,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -10554,21 +10674,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -10589,7 +10715,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -10611,7 +10737,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -10924,7 +11050,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -10932,7 +11058,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -10950,19 +11075,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -11632,6 +11758,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -11655,21 +11788,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -11690,7 +11829,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -11712,7 +11851,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -12025,7 +12164,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -12033,7 +12172,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -12051,19 +12189,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -12721,6 +12860,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -12744,21 +12890,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -12779,7 +12931,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -12801,7 +12953,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -13114,7 +13266,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -13122,7 +13274,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -13140,19 +13291,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);
@@ -13804,6 +13956,13 @@ Shader "DCL/Toon Shader"
             // a1a3e9b98a2a76cb13dae6c56d1d1a39
             #include "Assets/Rendering/Shaders/Toon/ShaderGraph/Includes/SampleTexture.hlsl"
 
+            void Unity_ColorspaceConversion_RGB_Linear_float(float3 In, out float3 Out)
+            {
+                float3 linearRGBLo = In / 12.92;
+                float3 linearRGBHi = pow(max(abs((In + 0.055) / 1.055), 1.192092896e-07), float3(2.4, 2.4, 2.4));
+                Out = float3(In <= 0.04045) ? linearRGBLo : linearRGBHi;
+            }
+
             struct Bindings_GetUvEncodedAttributes_ad4dc5fd32008b74fae3d178c4dffab3
             {
                 float4 VertexColor;
@@ -13827,21 +13986,27 @@ Shader "DCL/Toon Shader"
                 SampleTexture_float(float4(1, 1, 1, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_R_1,
                                     (_UV_ce4f5b551a9b4fe18f2483f3c2657be2_Out_0.xy),
                                     _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3);
+                float3 _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((IN.VertexColor.xyz),
+                                                            _ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1);
                 float4 _UV_75855df1bfcc44a88fd9810223945fd8_Out_0 = IN.uv0;
                 float4 _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
                 SampleTexture_float(float4(0, 0, 0, 0), _Split_d9c8ce32db224f65a0e1315d8c452793_G_2,
                                     (_UV_75855df1bfcc44a88fd9810223945fd8_Out_0.xy),
                                     _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3);
                 float4 _UV_16a6d71972f74129be13a142f8b70f0d_Out_0 = IN.uv3;
+                float3 _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1;
+                Unity_ColorspaceConversion_RGB_Linear_float((_UV_16a6d71972f74129be13a142f8b70f0d_Out_0.xyz),
+                                                            _ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1);
                 float4 _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0 = IN.uv2;
                 float _Split_da9901bea4f649b39841abc28c00eaf9_R_1 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[0];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_G_2 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[1];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_B_3 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[2];
                 float _Split_da9901bea4f649b39841abc28c00eaf9_A_4 = _UV_babb05662a2142a2b7f7be7af1bad0b3_Out_0[3];
                 AlbedoMap_1 = _SampleTextureCustomFunction_a04c9044d33e44f39550f6bcc48b43d7_Color_3;
-                AlbedoColor_5 = IN.VertexColor;
+                AlbedoColor_5 = (float4(_ColorspaceConversion_4357be5976464fc9a063df395d794b58_Out_1, 1.0));
                 EmissionMap_2 = _SampleTextureCustomFunction_1c2d1e450498419ead38115cf31036b4_Color_3;
-                EmissionColor_3 = _UV_16a6d71972f74129be13a142f8b70f0d_Out_0;
+                EmissionColor_3 = (float4(_ColorspaceConversion_a33b189aeb4e4e10957e8d1a1e2f6fe7_Out_1, 1.0));
                 AlphaTestThreshold_4 = _Split_da9901bea4f649b39841abc28c00eaf9_B_3;
             }
 
@@ -13862,7 +14027,7 @@ Shader "DCL/Toon Shader"
             void SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(float4 Vector4_DA7BBBB2,
                                                                    float4 Color_20d6639c9fdd413a829b748f8d32667c,
                                                                    Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59
-                                                                   IN, out float Alpha_2, out float4 Color_1)
+                                                                   IN, out float Alpha_2, out float3 Color_1)
             {
                 float4 _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0 = Vector4_DA7BBBB2;
                 float _Split_9699a4e47bebed82bf87ba60d2fddc89_R_1 = _Property_d23ee4b8d36c9b81b69a5a171a6a1372_Out_0[0];
@@ -13884,7 +14049,7 @@ Shader "DCL/Toon Shader"
                                      _Property_a3c975eda5cc718eaa8e9ce0242afc9e_Out_0,
                                      _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2);
                 Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
-                Color_1 = _Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2;
+                Color_1 = (_Multiply_e33e5a91c03c7e8b88ad2c72cbb0711f_Out_2.xyz);
             }
 
             void Unity_Normalize_float3(float3 In, out float3 Out)
@@ -14197,7 +14362,7 @@ Shader "DCL/Toon Shader"
                 float4 _Property_9417598daf7e4d0b9419381ccbd67483_Out_0 = Color_3bcefb890a354d60ad77b96ee0bbbf93;
                 Bindings_TextureSample_556dc6c40f462774daf8a2ff53e16c59 _TextureSample_774c883c08fd4c74839f4ba033821c5b;
                 float _TextureSample_774c883c08fd4c74839f4ba033821c5b_Alpha_2;
-                float4 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
+                float3 _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1;
                 SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3ac6c3f50b624c65947d5566413ce1b6_Out_0,
                                                                   _Property_9417598daf7e4d0b9419381ccbd67483_Out_0,
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b,
@@ -14205,7 +14370,6 @@ Shader "DCL/Toon Shader"
                                                                   _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1);
                 float4 _Property_83a6850f020c456a81044015b6870b10_Out_0 = Color_237820822f3d4995a3e086472c4fcbad;
                 float4 _Property_1ea10267292149418ffd1ad954fde16e_Out_0 = Color_fa80e099c59e4666882a46ed6201e823;
-                float4 _Property_96aee92e096c41969c2e409bf42a64ed_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
                 UnityTexture2D _Property_c03df5509ad4463698ccc7c74f24b346_Out_0 =
                     Texture2D_baf478d613fa46aba3b1e798cd2df509;
                 float4 _Property_36db04b9908a4ca5967f495a952e37af_Out_0 = Color_c4a4285bc4774f3c95fcfa8250b8134b;
@@ -14223,19 +14387,20 @@ Shader "DCL/Toon Shader"
                                                               _Property_4e42da5790104c0d90a4c78641bf0b27_Out_0, 1.77,
                                                               -0.5, 5, _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844,
                                                               _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1);
-                float4 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2;
-                Unity_Multiply_float(_Property_96aee92e096c41969c2e409bf42a64ed_Out_0,
-                                     _ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
-                                     _Multiply_bee5134ade404bee96624c806db8f13a_Out_2);
+                float4 _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0 = Color_76a917fc3a0a4f89b4a0d4a179f46c23;
+                float4 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2;
+                Unity_Blend_Multiply_float4(_ToonBlend_6cbc2bf4ddfc4ecb9fcbee723a857844_BlendColor_1,
+                                            _Property_ddec12b5acd24638ab0a4257c29e5f63_Out_0,
+                                            _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2, 1);
                 float4 _Add_e56984ecc49940958fd5b7f10db37833_Out_2;
                 Unity_Add_float4(_Property_1ea10267292149418ffd1ad954fde16e_Out_0,
-                                 _Multiply_bee5134ade404bee96624c806db8f13a_Out_2,
+                                 _Blend_bff3f47d4009441b95613e054eb0d81b_Out_2,
                                  _Add_e56984ecc49940958fd5b7f10db37833_Out_2);
                 Bindings_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb _FinalCombine_9712c1bb1f05486a96112ffac3e6266c;
                 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c.ViewSpacePosition = IN.ViewSpacePosition;
                 float4 _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1;
                 SG_FinalCombine_71273f7177aa0cc4f9ddbeefd14a5fbb(
-                    _TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1,
+                    (float4(_TextureSample_774c883c08fd4c74839f4ba033821c5b_Color_1, 1.0)),
                     _Property_83a6850f020c456a81044015b6870b10_Out_0, _Add_e56984ecc49940958fd5b7f10db37833_Out_2,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c,
                     _FinalCombine_9712c1bb1f05486a96112ffac3e6266c_FinalColor_1);

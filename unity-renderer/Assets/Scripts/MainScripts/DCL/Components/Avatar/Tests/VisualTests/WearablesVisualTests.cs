@@ -116,9 +116,6 @@ public class WearablesVisualTests : VisualTestsBase
         combiner.container.transform.localPosition = rends[0].transform.localPosition;
 
         testGameObject.transform.position = wearablePosition;
-
-        Debug.Break();
-        yield return null;
     }
 
     protected override IEnumerator TearDown()
