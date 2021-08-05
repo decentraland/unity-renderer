@@ -445,7 +445,7 @@ namespace DCL
             if (lodController == null)
                 return;
 
-            lodController.Initialize(transform, lodRenderer, lodMeshFilter.mesh, wearableRenderers);
+            lodController.Initialize(transform, lodRenderer, lodMeshFilter.mesh, wearableRenderers, animator.animation);
 
             UserProfile userProfile = null;
             if (!string.IsNullOrEmpty(model?.id))
