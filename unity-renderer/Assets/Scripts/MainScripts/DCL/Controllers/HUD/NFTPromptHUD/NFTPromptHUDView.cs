@@ -39,6 +39,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     public event Action OnOwnersPopupClosed;
 
     [SerializeField] internal GameObject content;
+    [SerializeField] internal GameObject nftContent;
 
     [SerializeField] RawImage imageNft;
     [SerializeField] Image imageNftBackground;
@@ -158,6 +159,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         buttonCancel.gameObject.SetActive(false);
         buttonOpenMarket.gameObject.SetActive(false);
 
+        nftContent.SetActive(false);
         spinnerGeneral.SetActive(true);
         spinnerNftImage.SetActive(false);
     }
@@ -167,6 +169,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         Show();
 
         spinnerGeneral.SetActive(false);
+        nftContent.SetActive(true);
 
         imageNftBackground.color = Color.white;
         backgroundColorSet = info.backgroundColor != null;
