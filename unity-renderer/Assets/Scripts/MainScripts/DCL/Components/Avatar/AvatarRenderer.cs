@@ -125,7 +125,8 @@ namespace DCL
         {
             StopLoadingCoroutines();
             SetVisibility(true);
-            SetImpostorVisibility(false);
+            if (lodRenderer != null)
+                SetImpostorVisibility(false);
 
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
