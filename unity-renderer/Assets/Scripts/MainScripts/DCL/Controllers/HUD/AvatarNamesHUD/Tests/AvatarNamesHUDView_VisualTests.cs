@@ -39,12 +39,12 @@ namespace Tests.AvatarNamesHUD
             VisualTestHelpers.RepositionVisualTestsCamera(VisualTestController.i.camera, new Vector3(6, 1.2f, -1.5f), new Vector3(6, 1.2f, -1.5f) + Vector3.forward);
 
             BoxShape box0 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(4, 0, 4), true);
-            PlayerStatus user0 = new PlayerStatus { id = "user0", name = "The User0 in Box", worldPosition = box0.attachedEntities.First().gameObject.transform.position, isTalking = false };
+            Player user0 = new Player { id = "user0", name = "The User0 in Box", worldPosition = box0.attachedEntities.First().gameObject.transform.position, isTalking = false };
             yield return box0.routine;
             hudView.TrackPlayer(user0);
 
             SphereShape sphere = TestHelpers.CreateEntityWithSphereShape(scene, new Vector3(8, 0, 8), true);
-            PlayerStatus user1 = new PlayerStatus { id = "user1", name = "The User1 in Sphere", worldPosition = sphere.attachedEntities.First().gameObject.transform.position, isTalking = true };
+            Player user1 = new Player { id = "user1", name = "The User1 in Sphere", worldPosition = sphere.attachedEntities.First().gameObject.transform.position, isTalking = true };
             yield return sphere.routine;
             hudView.TrackPlayer(user1);
 

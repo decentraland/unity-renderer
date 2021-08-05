@@ -17,7 +17,7 @@ namespace AvatarNamesHUD
         internal readonly CanvasGroup voiceChatCanvasGroup;
         internal readonly Animator voiceChatAnimator;
 
-        internal PlayerStatus playerStatus;
+        internal Player player;
         internal bool visibility = false;
 
         private static Camera mainCamera = null;
@@ -37,16 +37,16 @@ namespace AvatarNamesHUD
             visibility = visible;
             background.gameObject.SetActive(visibility);
             name.gameObject.SetActive(visibility);
-            voiceChatCanvasGroup.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+            voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
         }
 
-        public void SetPlayerStatus(PlayerStatus newPlayerStatus)
+        public void SetPlayer(Player newPlayer)
         {
-            playerStatus = newPlayerStatus;
-            if (playerStatus == null)
+            player = newPlayer;
+            if (player == null)
                 return;
 
-            name.text = newPlayerStatus.name;
+            name.text = newPlayer.name;
             name.ForceMeshUpdate(); //To get the new bounds
             UpdatePosition();
         }
@@ -56,10 +56,10 @@ namespace AvatarNamesHUD
             if (mainCamera == null)
                 mainCamera = Camera.main;
 
-            if (playerStatus == null || mainCamera == null)
+            if (player == null || mainCamera == null)
                 return;
 
-            Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(playerStatus.worldPosition + OFFSET);
+            Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(player.worldPosition + OFFSET);
             float alpha = screenPoint.z < 0 ? 0 : 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
 
             if (screenPoint.z > 0)
@@ -74,12 +74,12 @@ namespace AvatarNamesHUD
                 voiceChatCanvasGroup.alpha = alpha;
                 name.color = new Color(name.color.r, name.color.g, name.color.b, alpha);
                 backgroundCanvasGroup.alpha = alpha;
-                voiceChatCanvasGroup?.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
-                voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, playerStatus.isTalking);
+                voiceChatCanvasGroup?.gameObject.SetActive(visibility && (player?.isTalking ?? false));
+                voiceChatAnimator.SetBool(VOICE_CHAT_ANIMATOR_TALKING, player.isTalking);
 
                 background.gameObject.SetActive(visibility);
                 name.gameObject.SetActive(visibility);
-                voiceChatCanvasGroup.gameObject.SetActive(visibility && (playerStatus?.isTalking ?? false));
+                voiceChatCanvasGroup.gameObject.SetActive(visibility && (player?.isTalking ?? false));
             }
             else
             {

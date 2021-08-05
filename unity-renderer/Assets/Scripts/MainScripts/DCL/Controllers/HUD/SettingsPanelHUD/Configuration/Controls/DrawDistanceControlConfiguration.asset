@@ -21,6 +21,6 @@ MonoBehaviour:
   flagsThatDeactivateMe: []
   isBeta: 0
   sliderMinValue: 40
-  sliderMaxValue: 100
+  sliderMaxValue: 500
   storeValueAsNormalized: 0
   wholeNumbers: 1
