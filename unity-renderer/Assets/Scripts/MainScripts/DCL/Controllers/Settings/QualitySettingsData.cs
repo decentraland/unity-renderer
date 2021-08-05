@@ -60,7 +60,7 @@ namespace DCL.SettingsData
         [Tooltip("Resolution of the main light shadowmap texture")]
         public UnityEngine.Rendering.Universal.ShadowResolution shadowResolution;
 
-        [Tooltip("Camera Far")] [Range(40, 100)]
+        [Tooltip("Camera Far")] [Range(40, 500)]
         public float cameraDrawDistance;
 
         [Tooltip("Enable bloom post process")]
