@@ -8,6 +8,13 @@ using NFTShape_Internal;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
+    internal const string COULD_NOT_FETCH_DAR_URL = "Couldn't fetch DAR url '{url}' for NFTShape.";
+    internal const string ACCEPTED_URL_FORMAT = "The accepted format is 'ethereum://ContractAddress/TokenID'.";
+    internal const string SUPPORTED_PROTOCOL = "The only protocol currently supported is 'ethereum'.";
+    internal const string DOES_NOT_SUPPORT_POLYGON = "Warning: OpenSea API does not support fetching Polygon assets.";
+    internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}'.";
+    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}': {imageUrl}.";
+
     public enum NoiseType
     {
         ClassicPerlin,
@@ -102,7 +109,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         var regexMatches = Regex.Matches(url, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
         if (regexMatches.Count == 0)
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The accepted format is 'ethereum://ContractAddress/TokenID'");
+            Debug.LogError($"{COULD_NOT_FETCH_DAR_URL.Replace("{url}", url)} {ACCEPTED_URL_FORMAT}");
             ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
@@ -112,7 +119,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         Match match = regexMatches[0];
         if (match.Groups["protocol"] == null || match.Groups["registry"] == null || match.Groups["asset"] == null)
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape.");
+            Debug.LogError($"{COULD_NOT_FETCH_DAR_URL.Replace("{url}", url)} {ACCEPTED_URL_FORMAT}");
             ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
@@ -122,7 +129,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         darURLProtocol = match.Groups["protocol"].ToString();
         if (darURLProtocol != "ethereum")
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The only protocol currently supported is 'ethereum'");
+            Debug.LogError($"{COULD_NOT_FETCH_DAR_URL.Replace("{url}", url)} {SUPPORTED_PROTOCOL} {ACCEPTED_URL_FORMAT}");
             ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
@@ -160,7 +167,7 @@ public class NFTShapeLoaderController : MonoBehaviour
             },
             (error) =>
             {
-                Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
+                Debug.LogError($"{COULD_NOT_FETCH_NFT_FROM_API.Replace("{darURLRegistry}", darURLRegistry).Replace("{darURLAsset}", darURLAsset)} {error}. {DOES_NOT_SUPPORT_POLYGON}");
                 OnLoadingAssetFail?.Invoke();
                 isError = true;
             });
@@ -210,7 +217,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (isError)
         {
-            Debug.LogError($"Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
+            Debug.LogError(COULD_NOT_FETCH_NFT_IMAGE.Replace("{darURLRegistry}", darURLRegistry).Replace("{darURLAsset}", darURLAsset).Replace("{imageUrl}", nftInfo.originalImageUrl));
             ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
             yield break;
