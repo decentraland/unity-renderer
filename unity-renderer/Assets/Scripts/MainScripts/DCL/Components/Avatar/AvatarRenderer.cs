@@ -451,18 +451,6 @@ namespace DCL
             if (!string.IsNullOrEmpty(model?.id))
                 userProfile = UserProfileController.GetProfileByUserId(model.id);
 
-            if (userProfile != null)
-            {
-                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
-                bodySnapshotTexturePromise.OnSuccessEvent += asset => lodController.SetImpostorTexture(asset.texture);
-                bodySnapshotTexturePromise.OnFailEvent += asset => lodController.RandomizeAndApplyGenericImpostor();
-                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
-            }
-            else
-            {
-                lodController.RandomizeAndApplyGenericImpostor();
-            }
-
             Environment.i.platform.avatarsLODController.RegisterAvatar(lodController);
         }
 
