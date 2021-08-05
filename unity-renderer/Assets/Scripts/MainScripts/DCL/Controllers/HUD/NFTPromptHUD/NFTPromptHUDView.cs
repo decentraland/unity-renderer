@@ -40,6 +40,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     [SerializeField] internal GameObject content;
     [SerializeField] internal GameObject nftContent;
+    [SerializeField] internal GameObject errorFeedbackContent;
 
     [SerializeField] RawImage imageNft;
     [SerializeField] Image imageNftBackground;
@@ -160,15 +161,16 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         buttonOpenMarket.gameObject.SetActive(false);
 
         nftContent.SetActive(false);
-        spinnerGeneral.SetActive(true);
         spinnerNftImage.SetActive(false);
+        ShowMainLoading(true);
+        ShowErrorFeedback(false);
     }
 
     void INFTPromptHUDView.SetNFTInfo(NFTInfoSingleAsset info, string comment)
     {
         Show();
 
-        spinnerGeneral.SetActive(false);
+        ShowMainLoading(false);
         nftContent.SetActive(true);
 
         imageNftBackground.color = Color.white;
@@ -374,8 +376,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     void INFTPromptHUDView.OnError(string error)
     {
         Debug.LogError(error);
-        Hide();
-        Utils.LockCursor();
+        ShowErrorFeedback(true);
     }
 
     private void OnDestroy()
@@ -425,4 +426,23 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     private void OwnerLabelPointerEnter() { OnOwnerLabelPointerEnter?.Invoke(); }
 
     private void OwnerLabelPointerExit() { OnOwnerLabelPointerExit?.Invoke(); }
+
+    private void ShowMainLoading(bool isVisible)
+    {
+        if (spinnerGeneral == null)
+            return;
+
+        spinnerGeneral.SetActive(isVisible);
+    }
+
+    private void ShowErrorFeedback(bool isVisible)
+    {
+        if (errorFeedbackContent == null)
+            return;
+
+        if (isVisible)
+            ShowMainLoading(false);
+
+        errorFeedbackContent.SetActive(isVisible);
+    }
 }
