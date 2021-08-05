@@ -125,7 +125,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         darURLProtocol = match.Groups["protocol"].ToString();
-        if (darURLProtocol != "ethereum" && darURLProtocol != "local")
+        if (darURLProtocol != "ethereum")
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The only protocol currently supported is 'ethereum'");
 
