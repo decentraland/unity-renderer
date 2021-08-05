@@ -125,19 +125,16 @@ namespace DCL
 
             object id = promise.GetId();
 
-            if (promise.state == AssetPromiseState.LOADING)
-            {
-                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
-                bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
+            bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
+            bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
 
-                if (isMasterPromise && hasBlockedPromises)
-                {
-                    //NOTE(Brian): Pending promises are waiting for this one.
-                    //             We clear the events because we shouldn't call them, as this promise is forgotten.
-                    OnSilentForget(promise);
-                    promise.OnForget();
-                    return promise;
-                }
+            if (isMasterPromise && hasBlockedPromises)
+            {
+                //NOTE(Brian): Pending promises are waiting for this one.
+                //             We clear the events because we shouldn't call them, as this promise is forgotten.
+                OnSilentForget(promise);
+                promise.OnForget();
+                return promise;
             }
 
             promise.Unload();
