@@ -11,7 +11,7 @@ namespace DCL
             Loaded
         }
 
-        bool isLoading { get; }
+        bool isReady { get; }
         event Action<VisualCue> OnVisualCue;
         void CleanupAvatar();
         void UpdateExpressions(string id, long timestamp);

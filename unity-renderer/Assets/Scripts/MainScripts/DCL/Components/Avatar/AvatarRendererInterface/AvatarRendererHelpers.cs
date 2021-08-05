@@ -44,19 +44,5 @@ namespace DCL
 
             impostorMaterial.SetTexture(IMPOSTOR_TEXTURE_PROPERTY, impostorTexture);
         }
-
-        public static void SetSimpleAvatar(IAvatarRenderer avatarRenderer)
-        {
-            avatarRenderer.SetSSAOEnabled(false);
-            avatarRenderer.SetFacialFeaturesVisible(false);
-            avatarRenderer.SetVisibility(true);
-            avatarRenderer.SetImpostorVisibility(false);
-        }
-
-        public static void SetImpostorState(IAvatarRenderer avatarRenderer)
-        {
-            avatarRenderer.SetVisibility(false);
-            avatarRenderer.SetImpostorVisibility(true);
-        }
     }
 }

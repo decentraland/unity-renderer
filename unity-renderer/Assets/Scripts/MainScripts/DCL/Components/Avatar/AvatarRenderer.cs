@@ -36,7 +36,8 @@ namespace DCL
 
         private long lastStickerTimestamp = -1;
 
-        public bool isLoading { get; private set; } = false;
+        public bool isLoading;
+        public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();

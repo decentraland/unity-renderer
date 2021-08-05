@@ -20,6 +20,10 @@ namespace DCL
                             if (!enabled)
                                 return;
 
+                            foreach (var keyValuePair in otherPlayers.Get())
+                            {
+                                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
+                            }
                             otherPlayers.OnAdded += RegisterAvatar;
                             otherPlayers.OnRemoved += UnregisterAvatar;
                         });
@@ -69,7 +73,6 @@ namespace DCL
             SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
             foreach (var avatarKVP in lodControllers)
             {
-                var renderer = avatarKVP.Key;
                 var featureController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
@@ -94,7 +97,6 @@ namespace DCL
             {
                 AvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
-
                 if (isLOD)
                     currentAvatar.SetImpostorState();
                 else

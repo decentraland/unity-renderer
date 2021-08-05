@@ -72,7 +72,7 @@ namespace DCL
 
         private IEnumerator Transition(float targetAvatarFade, float targetImpostorFade)
         {
-            while (player.renderer.isLoading)
+            while (!player.renderer.isReady)
             {
                 yield return null;
             }
