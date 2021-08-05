@@ -21,7 +21,7 @@ MonoBehaviour:
     shadows: 0
     softShadows: 0
     shadowResolution: 256
-    cameraDrawDistance: 40
+    cameraDrawDistance: 100
     bloom: 0
     fpsCap: 1
     colorGrading: 1
@@ -36,7 +36,7 @@ MonoBehaviour:
     shadows: 1
     softShadows: 1
     shadowResolution: 512
-    cameraDrawDistance: 75
+    cameraDrawDistance: 150
     bloom: 1
     fpsCap: 1
     colorGrading: 1
@@ -51,7 +51,7 @@ MonoBehaviour:
     shadows: 1
     softShadows: 1
     shadowResolution: 1024
-    cameraDrawDistance: 85
+    cameraDrawDistance: 250
     bloom: 1
     fpsCap: 1
     colorGrading: 1
@@ -65,8 +65,8 @@ MonoBehaviour:
     renderScale: 1
     shadows: 1
     softShadows: 1
-    shadowResolution: 1024
-    cameraDrawDistance: 100
+    shadowResolution: 4096
+    cameraDrawDistance: 500
     bloom: 1
     fpsCap: 0
     colorGrading: 1
