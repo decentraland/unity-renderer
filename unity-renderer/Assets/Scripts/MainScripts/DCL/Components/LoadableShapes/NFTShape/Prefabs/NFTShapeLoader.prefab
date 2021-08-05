@@ -173,9 +173,8 @@ GameObject:
   - component: {fileID: 4928165005819847581}
   - component: {fileID: 2303797593572977782}
   - component: {fileID: 7569545474623459574}
-  - component: {fileID: 6694581719973190636}
   m_Layer: 0
-  m_Name: Spinner
+  m_Name: Loading
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,7 +189,7 @@ Transform:
   m_GameObject: {fileID: 6031248581314555280}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.032}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183462718381658158}
   m_RootOrder: 0
@@ -222,7 +221,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9aa2353e8e45a4116822a4eb20fb546e, type: 2}
+  - {fileID: 2100000, guid: a02ab1f43c53521428293327faeedff9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -244,22 +243,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!111 &6694581719973190636
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6031248581314555280}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 1cb86db703d3b407daea407d64b1e795, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 1cb86db703d3b407daea407d64b1e795, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 1
 --- !u!1 &6745490361802555816
 GameObject:
   m_ObjectHideFlags: 0
