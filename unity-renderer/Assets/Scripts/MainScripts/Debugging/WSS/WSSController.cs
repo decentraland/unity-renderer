@@ -495,6 +495,9 @@ namespace DCL
                             case "BuilderInWorldCatalogHeaders":
                                 GetBuilderInWorldBridge()?.BuilderInWorldCatalogHeaders(msg.payload);
                                 break;
+                            case "AddAssets":
+                                GetBuilderInWorldBridge()?.AddAssets(msg.payload);
+                                break;
                             case "RunPerformanceMeterTool":
                                 if (float.TryParse(msg.payload, out float durationInSeconds))
                                 {

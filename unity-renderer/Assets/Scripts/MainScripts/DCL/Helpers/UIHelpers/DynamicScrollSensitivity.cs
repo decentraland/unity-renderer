@@ -43,8 +43,11 @@ public class DynamicScrollSensitivity : MonoBehaviour
         // We need to wait for a frame for having available the correct height of the contentContainer after the OnEnable event
         yield return null;
 
-        float newSensitivity = (mainScrollRect.content.rect.height * minSensitivity / mainScrollRect.viewport.rect.height) * sensitivityMultiplier;
-        mainScrollRect.scrollSensitivity = Mathf.Clamp(newSensitivity, minSensitivity, maxSensitivity);
+        if (mainScrollRect.content != null)
+        {
+            float newSensitivity = (mainScrollRect.content.rect.height * minSensitivity / mainScrollRect.viewport.rect.height) * sensitivityMultiplier;
+            mainScrollRect.scrollSensitivity = Mathf.Clamp(newSensitivity, minSensitivity, maxSensitivity);
+        }
     }
 
     private void KillCurrentCoroutine()

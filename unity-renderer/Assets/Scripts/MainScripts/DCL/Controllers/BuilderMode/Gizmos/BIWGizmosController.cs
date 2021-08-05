@@ -7,24 +7,24 @@ using UnityEngine;
 
 public interface IBIWGizmosController
 {
-    public delegate void GizmoTransformDelegate(string gizmoType);
+    delegate void GizmoTransformDelegate(string gizmoType);
 
-    public event GizmoTransformDelegate OnGizmoTransformObjectStart;
-    public event GizmoTransformDelegate OnGizmoTransformObject;
-    public event GizmoTransformDelegate OnGizmoTransformObjectEnd;
-    public event Action<Vector3> OnChangeTransformValue;
+    event GizmoTransformDelegate OnGizmoTransformObjectStart;
+    event GizmoTransformDelegate OnGizmoTransformObject;
+    event GizmoTransformDelegate OnGizmoTransformObjectEnd;
+    event Action<Vector3> OnChangeTransformValue;
 
-    public IBIWGizmos activeGizmo { get;  set; }
+    IBIWGizmos activeGizmo { get;  set; }
 
-    public string GetSelectedGizmo();
-    public void SetSnapFactor(float position, float rotation, float scale);
-    public void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
-    public void ShowGizmo();
-    public void HideGizmo(bool setInactiveGizmos = false);
-    public bool IsGizmoActive();
-    public void ForceRelativeScaleRatio();
-    public bool HasAxisHover();
-    public void SetGizmoType(string gizmoType);
+    string GetSelectedGizmo();
+    void SetSnapFactor(float position, float rotation, float scale);
+    void SetSelectedEntities(Transform selectionParent, List<BIWEntity> entities);
+    void ShowGizmo();
+    void HideGizmo(bool setInactiveGizmos = false);
+    bool IsGizmoActive();
+    void ForceRelativeScaleRatio();
+    bool HasAxisHover();
+    void SetGizmoType(string gizmoType);
 }
 
 public class BIWGizmosController : BIWController, IBIWGizmosController
@@ -83,9 +83,8 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     public string GetSelectedGizmo()
     {
         if (IsGizmoActive())
-        {
             return activeGizmo.GetGizmoType();
-        }
+
         return DCL.Components.DCLGizmos.Gizmo.NONE;
     }
 
@@ -96,9 +95,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         snapInfo.scale = scale;
 
         if (activeGizmo != null)
-        {
             activeGizmo.SetSnapFactor(snapInfo);
-        }
     }
 
     private void OnBeginDrag(BIWGizmosAxis hittedAxis)
@@ -130,13 +127,10 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private void SetAxisHover(BIWGizmosAxis axis)
     {
         if (hoveredAxis != null && hoveredAxis != axis)
-        {
             hoveredAxis.SetColorDefault();
-        }
         else if (axis != null)
-        {
             axis.SetColorHighlight();
-        }
+
         hoveredAxis = axis;
     }
 
@@ -161,13 +155,11 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     public void HideGizmo(bool setInactiveGizmos = false)
     {
         if (activeGizmo != null)
-        {
             activeGizmo.currentGameObject.SetActive(false);
-        }
+
         if (setInactiveGizmos)
-        {
             SetGizmoType(DCL.Components.DCLGizmos.Gizmo.NONE);
-        }
+
         gizmosGO.gameObject.SetActive(false);
     }
 
@@ -176,9 +168,8 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
         if (activeGizmo != null)
-        {
             return activeGizmo.RaycastHit(ray, out hitPoint);
-        }
+
         hitPoint = Vector3.zero;
         return false;
     }
@@ -187,9 +178,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     {
         base.Update();
         if (!isTransformingObject)
-        {
             CheckGizmoHover(Input.mousePosition);
-        }
     }
 
     public void SetGizmoType(string gizmoType)
@@ -211,14 +200,11 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             }
 
             bool areEntitiesSelected = selectedEntities != null && selectedEntities.Count > 0;
+
             if (wasGizmoActive && areEntitiesSelected)
-            {
                 ShowGizmo();
-            }
             else
-            {
                 GizmoStatusUpdate();
-            }
         }
         else
         {
@@ -231,9 +217,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         for (int i = 0; i < gizmos.Length; i++)
         {
             if (!gizmos[i].initialized)
-            {
                 gizmos[i].Initialize(camera, cameraTransform);
-            }
         }
     }
 
@@ -248,30 +232,24 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
     private void OnMouseUp(int buttonId, Vector3 mousePosition)
     {
         if (!isTransformingObject)
-        {
             return;
-        }
 
         if (buttonId == 0)
-        {
             OnEndDrag();
-        }
     }
 
     private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
-        if (buttonId == 0)
-        {
-            bool hasMouseMoved = (axisX != 0 || axisY != 0);
-            if (isTransformingObject && hasMouseMoved)
-            {
-                Vector3 hit;
-                if (RaycastHit(raycastController.GetMouseRay(mousePosition), out hit))
-                {
-                    OnDrag(hit, mousePosition);
-                }
-            }
-        }
+        if (buttonId != 0)
+            return;
+
+        bool hasMouseMoved = (axisX != 0 || axisY != 0);
+        if (!isTransformingObject || !hasMouseMoved)
+            return;
+
+        Vector3 hit;
+        if (RaycastHit(raycastController.GetMouseRay(mousePosition), out hit))
+            OnDrag(hit, mousePosition);
     }
 
     private void CheckGizmoHover(Vector3 mousePosition)
@@ -290,17 +268,13 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
 
     private void GizmoStatusUpdate()
     {
-        if (IsGizmoActive())
-        {
-            if (selectedEntities == null || selectedEntities.Count == 0)
-            {
-                HideGizmo();
-            }
-            else
-            {
-                ShowGizmo();
-            }
-        }
+        if (!IsGizmoActive())
+            return;
+
+        if (selectedEntities == null || selectedEntities.Count == 0)
+            HideGizmo();
+        else
+            ShowGizmo();
     }
 
     public class SnapInfo

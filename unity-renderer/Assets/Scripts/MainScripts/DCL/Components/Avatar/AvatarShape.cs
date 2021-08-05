@@ -2,9 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -13,6 +10,8 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE_DELAY = 0.5f;
+        private const float DISABLE_FACIAL_FEATURES_DISTANCE = 15f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -33,11 +32,24 @@ namespace DCL
         bool initializedPosition = false;
 
         private PlayerStatus playerStatus = null;
+        private Coroutine checkDistanceRoutine = null;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            if (checkDistanceRoutine != null)
+            {
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
+            }
+            checkDistanceRoutine = StartCoroutine(CheckDistanceToPlayerRoutine());
         }
 
         private void PlayerClicked()
@@ -68,13 +80,7 @@ namespace DCL
 
             yield return null; //NOTE(Brian): just in case we have a Object.Destroy waiting to be resolved.
 
-            avatarRenderer.ApplyModel(model, () =>
-            {
-                if (avatarRenderer.lodRenderer != null)
-                    Environment.i.platform.avatarsLODController.RegisterAvatar(avatarRenderer);
-
-                avatarDone = true;
-            }, () => avatarFailed = true);
+            avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
@@ -115,6 +121,8 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            avatarRenderer.InitializeLODController();
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
@@ -184,14 +192,18 @@ namespace DCL
         {
             base.Cleanup();
 
+            if (checkDistanceRoutine != null)
+            {
+                StopCoroutine(checkDistanceRoutine);
+                checkDistanceRoutine = null;
+            }
+
             if (playerStatus != null)
             {
                 DataStore.i.player.otherPlayersStatus.Remove(playerStatus.id);
                 playerStatus = null;
             }
-
-            Environment.i.platform.avatarsLODController.RemoveAvatar(avatarRenderer);
-
+            
             avatarRenderer.CleanupAvatar();
 
             if (poolableObject != null)
@@ -205,6 +217,19 @@ namespace DCL
             {
                 entity.OnTransformChange = null;
                 entity = null;
+            }
+        }
+
+        private IEnumerator CheckDistanceToPlayerRoutine()
+        {
+            while (true)
+            {
+                yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
+                Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
+                bool isNear = distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE;
+                avatarRenderer.SetFacialFeaturesVisible(isNear);
+                avatarRenderer.SetSSAOEnabled(isNear);
             }
         }
 

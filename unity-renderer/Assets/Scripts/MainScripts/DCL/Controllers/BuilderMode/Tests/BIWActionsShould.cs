@@ -143,8 +143,8 @@ public class BIWActionsShould : IntegrationTestSuite_Legacy
 
         BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
-        CatalogItem oldFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
-        CatalogItem newFloor = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[1];
+        CatalogItem oldFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem newFloor = DataStore.i.builderInWorld.catalogItemDict.GetValues()[1];
         BIWCompleteAction buildModeAction = new BIWCompleteAction();
 
         biwCreatorController.EnterEditMode(scene);
