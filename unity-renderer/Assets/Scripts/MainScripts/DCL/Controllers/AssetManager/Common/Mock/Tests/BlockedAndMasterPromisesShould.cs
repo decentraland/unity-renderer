@@ -96,6 +96,8 @@ namespace AssetPromiseKeeper_Mock_Tests
             yield return prom2;
             yield return prom3;
 
+            // NOTE: since waiting promises are processed in a coroutine we must wait a while before everything is properly cleaned
+            yield return new WaitUntil(() => keeper.waitingPromisesCount == 0, 2.0f);
             Assert.AreEqual(0, keeper.waitingPromisesCount);
 
             Assert.AreNotEqual(AssetPromiseState.FINISHED, prom.state);
