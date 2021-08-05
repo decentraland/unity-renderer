@@ -249,8 +249,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -583.0,
-            "y": -330.0,
+            "x": -584.0000610351563,
+            "y": -364.0,
             "width": 133.0,
             "height": 34.0
         }
@@ -603,7 +603,7 @@
     "m_StageCapability": 3,
     "m_Value": {
         "x": 0.0,
-        "y": 2.0
+        "y": 2.5
     },
     "m_DefaultValue": {
         "x": 0.0,
@@ -722,7 +722,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.0,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
