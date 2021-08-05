@@ -1,6 +1,6 @@
 public static class TheGraphQueries
 {
-    public static string getLandQuery { get ; } = @"
+    public static readonly string getLandQuery = @"
   query Land($address: Bytes) {
     ownerParcels: parcels(first: $amount, where: { estate: null, owner: $address }) {
       ...parcelFields
