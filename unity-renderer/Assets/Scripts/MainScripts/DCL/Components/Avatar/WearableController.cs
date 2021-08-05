@@ -9,7 +9,6 @@ using Object = UnityEngine.Object;
 
 public class WearableController
 {
-    private static readonly int DITHER_FADE_PROPERTY = Shader.PropertyToID("_DitherFade");
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
 
@@ -231,7 +230,7 @@ public class WearableController
         {
             for (int j = 0; j < assetRenderers[i].materials.Length; j++)
             {
-                assetRenderers[i].materials[j].SetFloat(DITHER_FADE_PROPERTY, ditherFade);
+                assetRenderers[i].materials[j].SetFloat(ShaderUtils.DitherFade, ditherFade);
             }
         }
     }

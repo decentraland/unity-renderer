@@ -96,6 +96,7 @@ public static class AvatarUtils
                 Texture _MatCap = null;
                 Texture _GMatCap = null;
                 Texture _FMatCap = null;
+                float? _DitherFade = null;
 
                 if (replaceThemWith.HasProperty(ShaderUtils.MatCap))
                     _MatCap = replaceThemWith.GetTexture(ShaderUtils.MatCap);
@@ -105,6 +106,9 @@ public static class AvatarUtils
 
                 if (replaceThemWith.HasProperty(ShaderUtils.FresnelMatCap))
                     _FMatCap = replaceThemWith.GetTexture(ShaderUtils.FresnelMatCap);
+
+                if (replaceThemWith.HasProperty(ShaderUtils.DitherFade))
+                    _DitherFade = replaceThemWith.GetFloat(ShaderUtils.DitherFade);
 
                 //NOTE(Brian): This method has a bug, if the material being copied lacks a property of the source material,
                 //             the source material property will get erased. It can't be added back and even the material inspector crashes.
@@ -119,6 +123,9 @@ public static class AvatarUtils
 
                 if (_MatCap != null)
                     copy.SetTexture(ShaderUtils.MatCap, _MatCap);
+
+                if (_DitherFade != null)
+                    copy.SetFloat(ShaderUtils.DitherFade, _DitherFade.Value);
 
                 SRPBatchingHelper.OptimizeMaterial(copy);
 
