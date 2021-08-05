@@ -154,15 +154,15 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _AddColor: {r: 0.5188678, g: 0.5188678, b: 0.5188678, a: 1}
+    - _AddColor: {r: 0.85, g: 0.85, b: 0.85, a: 1}
     - _BaseColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FresnelIntensity: {r: 0.7830189, g: 0.64562124, b: 0.64562124, a: 1}
+    - _FresnelIntensity: {r: 0.81, g: 0.81, b: 0.81, a: 1}
     - _GlossIntensity: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightDir: {r: -0.1, g: 0.8, b: -0.4, a: 0}
-    - _MultiplyColor: {r: 0.8962264, g: 0.62640375, b: 0.62059444, a: 1}
+    - _MultiplyColor: {r: 1, g: 1, b: 1, a: 1}
     - _SSSIntensity: {r: 0, g: 0, b: 0, a: 1}
     - _SSSParams: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
