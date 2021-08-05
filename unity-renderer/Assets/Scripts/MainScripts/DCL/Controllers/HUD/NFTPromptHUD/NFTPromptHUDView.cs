@@ -40,7 +40,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     [SerializeField] internal GameObject content;
     [SerializeField] internal GameObject nftContent;
-    [SerializeField] internal GameObject errorFeedbackContent;
+    [SerializeField] internal GameObject mainErrorFeedbackContent;
+    [SerializeField] internal GameObject imageErrorFeedbackContent;
 
     [SerializeField] RawImage imageNft;
     [SerializeField] Image imageNftBackground;
@@ -161,9 +162,9 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         buttonOpenMarket.gameObject.SetActive(false);
 
         nftContent.SetActive(false);
-        spinnerNftImage.SetActive(false);
+        ShowImageLoading(false);
         ShowMainLoading(true);
-        ShowErrorFeedback(false);
+        ShowMainErrorFeedback(false);
     }
 
     void INFTPromptHUDView.SetNFTInfo(NFTInfoSingleAsset info, string comment)
@@ -269,7 +270,8 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
 
     private IEnumerator FetchNFTImage(NFTInfoSingleAsset nftInfo)
     {
-        spinnerNftImage.SetActive(true);
+        ShowImageErrorFeedback(false);
+        ShowImageLoading(true);
 
         bool imageFound = false;
 
@@ -307,7 +309,11 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
             SetNFTImageSize(texture);
 
             imageNft.gameObject.SetActive(true);
-            spinnerNftImage.SetActive(false);
+            ShowImageLoading(false);
+        }
+        else
+        {
+            ShowImageErrorFeedback(true);
         }
     }
 
@@ -376,7 +382,7 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
     void INFTPromptHUDView.OnError(string error)
     {
         Debug.LogError(error);
-        ShowErrorFeedback(true);
+        ShowMainErrorFeedback(true);
     }
 
     private void OnDestroy()
@@ -435,14 +441,33 @@ internal class NFTPromptHUDView : MonoBehaviour, INFTPromptHUDView
         spinnerGeneral.SetActive(isVisible);
     }
 
-    private void ShowErrorFeedback(bool isVisible)
+    private void ShowMainErrorFeedback(bool isVisible)
     {
-        if (errorFeedbackContent == null)
+        if (mainErrorFeedbackContent == null)
             return;
 
         if (isVisible)
             ShowMainLoading(false);
 
-        errorFeedbackContent.SetActive(isVisible);
+        mainErrorFeedbackContent.SetActive(isVisible);
+    }
+
+    private void ShowImageLoading(bool isVisible)
+    {
+        if (spinnerNftImage == null)
+            return;
+
+        spinnerNftImage.SetActive(isVisible);
+    }
+
+    private void ShowImageErrorFeedback(bool isVisible)
+    {
+        if (imageErrorFeedbackContent == null)
+            return;
+
+        if (isVisible)
+            ShowImageLoading(false);
+
+        imageErrorFeedbackContent.SetActive(isVisible);
     }
 }
