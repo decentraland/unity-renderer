@@ -20,7 +20,7 @@ public class UsersAroundListHUDController : IHUD
     private bool isMuteAll = false;
     private Coroutine updateMuteStatusRoutine = null;
 
-    private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
+    private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
     public event System.Action OnOpen;
 
@@ -46,8 +46,8 @@ public class UsersAroundListHUDController : IHUD
             CoroutineStarter.Stop(updateMuteStatusRoutine);
         }
 
-        otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
-        otherPlayersStatus.OnRemoved -= OnOtherPlayerStatusRemoved;
+        otherPlayers.OnAdded -= OnOtherPlayersStatusAdded;
+        otherPlayers.OnRemoved -= OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
         profile.OnUpdate -= OnUserProfileUpdate;
@@ -117,16 +117,16 @@ public class UsersAroundListHUDController : IHUD
         usersListView.OnGoToCrowdPressed += OnGoToCrowd;
         usersListView.OnOpen += OnListOpen;
 
-        otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
-        otherPlayersStatus.OnRemoved += OnOtherPlayerStatusRemoved;
+        otherPlayers.OnAdded += OnOtherPlayersStatusAdded;
+        otherPlayers.OnRemoved += OnOtherPlayerStatusRemoved;
 
         CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
         profile.OnUpdate += OnUserProfileUpdate;
     }
 
-    void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
+    void OnOtherPlayersStatusAdded(string userId, Player player)
     {
-        usersListView.AddOrUpdateUser(playerStatus);
+        usersListView.AddOrUpdatePlayer(player);
 
         if (!trackedUsersHashSet.Contains(userId))
         {
@@ -147,7 +147,7 @@ public class UsersAroundListHUDController : IHUD
         usersButtonView?.SetUsersCount(trackedUsersHashSet.Count);
     }
 
-    void OnOtherPlayerStatusRemoved(string userId, PlayerStatus playerStatus)
+    void OnOtherPlayerStatusRemoved(string userId, Player player)
     {
         if (trackedUsersHashSet.Contains(userId))
         {

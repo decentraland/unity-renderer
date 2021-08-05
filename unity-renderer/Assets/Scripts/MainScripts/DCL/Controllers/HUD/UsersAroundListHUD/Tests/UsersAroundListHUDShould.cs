@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
 {
     private UsersAroundListHUDController controller;
+    private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
     protected override IEnumerator SetUp()
     {
@@ -67,23 +68,23 @@ public class UsersAroundListHUDShould : IntegrationTestSuite_Legacy
             userId = users[2]
         });
 
-        DataStore.i.player.otherPlayersStatus.Add(users[0], new PlayerStatus { id = users[0], name = users[0], worldPosition = Vector3.zero });
-        DataStore.i.player.otherPlayersStatus.Add(users[1], new PlayerStatus { id = users[1], name = users[1], worldPosition = Vector3.zero });
+        otherPlayers.Add(users[0], new Player { id = users[0], name = users[0], worldPosition = Vector3.zero });
+        otherPlayers.Add(users[1], new Player { id = users[1], name = users[1], worldPosition = Vector3.zero });
 
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 2, "listView.content.childCount != 2");
         Assert.IsTrue(listView.availableElements.Count == 0, "listView.availableElements.Count != 0");
 
 
-        DataStore.i.player.otherPlayersStatus.Remove(users[1]);
+        otherPlayers.Remove(users[1]);
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
         Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
 
-        DataStore.i.player.otherPlayersStatus.Remove(users[0]);
+        otherPlayers.Remove(users[0]);
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 0, "listView.content.childCount != 0");
         Assert.IsTrue(listView.availableElements.Count == 2, "listView.availableElements.Count != 2");
 
 
-        DataStore.i.player.otherPlayersStatus.Add(users[2], new PlayerStatus { id = users[2], name = users[2], worldPosition = Vector3.zero });
+        otherPlayers.Add(users[2], new Player { id = users[2], name = users[2], worldPosition = Vector3.zero });
         Assert.IsTrue(GetVisibleChildren(listView.contentPlayers) == 1, "listView.content.childCount != 1");
         Assert.IsTrue(listView.availableElements.Count == 1, "listView.availableElements.Count != 1");
 
