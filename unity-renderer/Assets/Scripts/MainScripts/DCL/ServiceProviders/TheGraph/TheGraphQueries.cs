@@ -1,28 +1,28 @@
 public static class TheGraphQueries
 {
     private const int MAX_LAND_QUERY_AMOUNT = 1000;
-    public static string getLandQuery => landQuery.Replace("[AMOUNT]", MAX_LAND_QUERY_AMOUNT.ToString());
+    public static string getLandQuery => landQuery.Replace("$amount", MAX_LAND_QUERY_AMOUNT.ToString());
 
     private static readonly string landQuery = @"
   query Land($address: Bytes) {
-    ownerParcels: parcels(first: [AMOUNT], where: { estate: null, owner: $address }) {
+    ownerParcels: parcels(first: $amount, where: { estate: null, owner: $address }) {
       ...parcelFields
     }
-    ownerEstates: estates(first: [AMOUNT], where: { owner: $address }) {
+    ownerEstates: estates(first: $amount, where: { owner: $address }) {
       ...estateFields
     }
-    updateOperatorParcels: parcels(first: [AMOUNT], where: { updateOperator: $address }) {
+    updateOperatorParcels: parcels(first: $amount, where: { updateOperator: $address }) {
       ...parcelFields
     }
-    updateOperatorEstates: estates(first: [AMOUNT], where: { updateOperator: $address }) {
+    updateOperatorEstates: estates(first: $amount, where: { updateOperator: $address }) {
       ...estateFields
     }
-    ownerAuthorizations: authorizations(first: [AMOUNT], where: { owner: $address, type: \""UpdateManager\"" }) {
+    ownerAuthorizations: authorizations(first: $amount, where: { owner: $address, type: \""UpdateManager\"" }) {
       operator
       isApproved
       tokenAddress
     }
-    operatorAuthorizations: authorizations(first: [AMOUNT], where: { operator: $address, type: \""UpdateManager\"" }) {
+    operatorAuthorizations: authorizations(first: $amount, where: { operator: $address, type: \""UpdateManager\"" }) {
       owner {
         address
         parcels(where: { estate: null }) {
@@ -56,7 +56,7 @@ public static class TheGraphQueries
     }
     updateOperator
     size
-    parcels(first: [AMOUNT]) {
+    parcels(first: $amount) {
       x
       y
       tokenId
