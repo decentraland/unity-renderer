@@ -28,6 +28,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     public GameObject spinner;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
+    [HideInInspector] public INFTInfoFetcher nftInfoFetcher;
 
     public event System.Action OnLoadingAssetSuccess;
     public event System.Action OnLoadingAssetFail;
@@ -44,9 +45,10 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     System.Action<LoadWrapper> OnSuccess;
     System.Action<LoadWrapper> OnFail;
-    string darURLProtocol;
-    string darURLRegistry;
-    string darURLAsset;
+    private string darURLProtocol;
+    private string darURLRegistry;
+    private string darURLAsset;
+    private IPromiseLike_TextureAsset assetPromise = null;
 
     public Material frameMaterial { private set; get; } = null;
     public Material imageMaterial { private set; get; } = null;
@@ -55,11 +57,12 @@ public class NFTShapeLoaderController : MonoBehaviour
     int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
 
-    IPromiseLike_TextureAsset assetPromise = null;
     GifPlayer gifPlayer = null;
     NFTShapeHQImageHandler hqTextureHandler = null;
 
     bool isDestroyed = false;
+
+    private Coroutine fetchNftImage;
 
     void Awake()
     {
@@ -88,6 +91,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
 
         InitializePerlinNoise();
+        nftInfoFetcher = new NFTInfoFetcher();
     }
 
     void Update() { hqTextureHandler?.Update(); }
@@ -135,7 +139,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         alreadyLoadedAsset = false;
 
-        StartCoroutine(FetchNFTImage());
+        FetchNFTImage();
     }
 
     public void UpdateBackgroundColor(Color newColor)
@@ -146,87 +150,35 @@ public class NFTShapeLoaderController : MonoBehaviour
         backgroundMaterial.SetColor(COLOR_SHADER_PROPERTY, newColor);
     }
 
-    IEnumerator FetchNFTImage()
+    private void FetchNFTImage()
     {
         if (spinner != null)
             spinner.SetActive(true);
+        nftInfoFetcher.FetchNFTImage(darURLProtocol, darURLRegistry, NFTInfoFeteched, NFTInfoFetchedFail);
+    }
 
-        NFTInfo nftInfo = new NFTInfo();
+    private void NFTInfoFeteched(NFTInfo nftInfo) { fetchNftImage = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
 
-        bool isError = false;
+    private void NFTInfoFetchedFail() { FinishLoading(false); }
 
-        if (darURLProtocol == "local")
+    private void FetchNFTInfoSuccess(ITexture asset, NFTInfo info, bool isPreview)
+    {
+        SetFrameImage(asset, resizeFrameMesh: true);
+        SetupGifPlayer(asset);
+
+        if (isPreview)
         {
-            FileLoader fileLoader = new FileLoader("");
-            yield return fileLoader.LoadStream(darURLAsset);
-
-            StreamReader streamReader = new StreamReader(fileLoader.LoadedStream);
-            nftInfo = JsonConvert.DeserializeObject<NFTInfo>(streamReader.ReadToEnd());
-            nftInfo.previewImageUrl =  darURLAsset.Replace("/NFT/nftInfo.json", nftInfo.previewImageUrl);
-        }
-        else
-        {
-            yield return NFTHelper.FetchNFTInfo(darURLRegistry, darURLAsset,
-                (info) =>
-                {
-                    nftInfo = info;
-                },
-                (error) =>
-                {
-                    Debug.LogError($"Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}' {error}");
-                    OnLoadingAssetFail?.Invoke();
-                    isError = true;
-                });
-        }
-
-        if (isError)
-            yield break;
-
-        yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
-
-        // We download the "preview" 256px image
-        bool foundDCLImage = false;
-        if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
-        {
-            yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (promise) =>
+            var hqImageHandlerConfig = new NFTShapeHQImageConfig()
             {
-                foundDCLImage = true;
-                this.assetPromise = promise;
-                SetFrameImage(promise.asset, resizeFrameMesh: true);
-                SetupGifPlayer(promise.asset);
-
-                var hqImageHandlerConfig = new NFTShapeHQImageConfig()
-                {
-                    controller = this,
-                    nftConfig = config,
-                    nftInfo = nftInfo,
-                    asset = NFTAssetFactory.CreateAsset(promise.asset, config, UpdateTexture, gifPlayer)
-                };
-                hqTextureHandler = NFTShapeHQImageHandler.Create(hqImageHandlerConfig);
-            });
+                controller = this,
+                nftConfig = config,
+                nftInfo = info,
+                asset = NFTAssetFactory.CreateAsset(asset, config, UpdateTexture, gifPlayer)
+            };
+            hqTextureHandler = NFTShapeHQImageHandler.Create(hqImageHandlerConfig);
         }
 
-        //We fall back to the nft original image which can have a really big size
-        if (!foundDCLImage && !string.IsNullOrEmpty(nftInfo.originalImageUrl))
-        {
-            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
-                (promise) =>
-                {
-                    foundDCLImage = true;
-                    this.assetPromise = promise;
-                    SetFrameImage(promise.asset, resizeFrameMesh: true);
-                    SetupGifPlayer(promise.asset);
-                }, () => isError = true);
-        }
-
-        if (isError)
-        {
-            Debug.LogError($"Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
-            OnLoadingAssetFail?.Invoke();
-            yield break;
-        }
-
-        FinishLoading(foundDCLImage);
+        FinishLoading(true);
     }
 
     void FinishLoading(bool loadedSuccessfully)
@@ -241,6 +193,43 @@ public class NFTShapeLoaderController : MonoBehaviour
         else
         {
             OnLoadingAssetFail?.Invoke();
+        }
+    }
+
+    IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
+    {
+        bool isError = false;
+
+        yield return new DCL.WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < (config.loadingMinDistance * config.loadingMinDistance));
+
+        // We download the "preview" 256px image
+        bool foundDCLImage = false;
+        if (!string.IsNullOrEmpty(nftInfo.previewImageUrl))
+        {
+            yield return WrappedTextureUtils.Fetch(nftInfo.previewImageUrl, (promise) =>
+            {
+                foundDCLImage = true;
+                this.assetPromise = promise;
+                FetchNFTInfoSuccess(promise.asset, nftInfo, true);
+            });
+        }
+
+        //We fall back to the nft original image which can have a really big size
+        if (!foundDCLImage && !string.IsNullOrEmpty(nftInfo.originalImageUrl))
+        {
+            yield return WrappedTextureUtils.Fetch(nftInfo.originalImageUrl,
+                (promise) =>
+                {
+                    foundDCLImage = true;
+                    this.assetPromise = promise;
+                    FetchNFTInfoSuccess(promise.asset, nftInfo, false);
+                }, () => isError = true);
+        }
+
+        if (isError)
+        {
+            Debug.LogError($"Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
+            FinishLoading(false);
         }
     }
 
@@ -314,6 +303,16 @@ public class NFTShapeLoaderController : MonoBehaviour
     {
         isDestroyed = true;
 
+        nftInfoFetcher.Dispose();
+
+        if (fetchNftImage != null)
+            StopCoroutine(fetchNftImage);
+        if (assetPromise != null)
+        {
+            assetPromise.Forget();
+            assetPromise = null;
+        }
+
         if (hqTextureHandler != null)
         {
             hqTextureHandler.Dispose();
@@ -324,12 +323,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         {
             gifPlayer.OnFrameTextureChanged -= UpdateTexture;
             gifPlayer.Dispose();
-        }
-
-        if (assetPromise != null)
-        {
-            assetPromise.Forget();
-            assetPromise = null;
         }
 
         if (backgroundMaterial != null)

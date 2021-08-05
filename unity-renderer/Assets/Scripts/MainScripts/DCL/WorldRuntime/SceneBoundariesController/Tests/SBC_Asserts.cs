@@ -1,4 +1,4 @@
-using DCL;
+using System;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -6,8 +6,13 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.IO;
 using System.Linq;
+using DCL.Helpers.NFT;
+using NSubstitute;
 using UnityEngine;
+using UnityGLTF.Loader;
+using Environment = DCL.Environment;
 
 namespace SceneBoundariesCheckerTests
 {
@@ -77,7 +82,7 @@ namespace SceneBoundariesCheckerTests
 
             TestHelpers.SharedComponentAttach(component, entity);
 
-            yield return null;
+            yield return LoadLocalNFT(componentModel, entity);
 
             LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
@@ -131,6 +136,33 @@ namespace SceneBoundariesCheckerTests
             AssertMeshIsInvalid(entity.meshesInfo);
         }
 
+        private static IEnumerator LoadLocalNFT(NFTShape.Model model, IDCLEntity entity)
+        {
+            var wrapperNFT = LoadableShape.GetOrAddLoaderForEntity<LoadWrapper_NFT>(entity);
+            var nftFetcher  = Substitute.For<INFTInfoFetcher>();
+
+            wrapperNFT.loaderController.nftInfoFetcher = nftFetcher;
+
+            string localAsset = TestAssetsUtils.GetAbsolutePath() + "/NFT/nftInfo.json";
+
+            if (!File.Exists(localAsset))
+            {
+                Debug.LogError($"Buffer file not found ({localAsset})");
+
+                yield break;
+            }
+
+            StreamReader streamReader = new StreamReader( File.OpenRead(localAsset));
+
+            var nftInfo = JsonConvert.DeserializeObject<NFTInfo>(streamReader.ReadToEnd());
+            nftInfo.previewImageUrl = localAsset;
+
+            nftFetcher.When((x) => x.FetchNFTImage(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Action<NFTInfo>>(), Arg.Any<Action>()))
+                      .Do(info => info.Arg<Action<NFTInfo>>().Invoke(nftInfo));
+
+            wrapperNFT.loaderController.LoadAsset(model.src, true);
+        }
+
         public static IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds(ParcelScene scene)
         {
             var entity = TestHelpers.CreateSceneEntity(scene);
@@ -139,14 +171,15 @@ namespace SceneBoundariesCheckerTests
 
             var componentModel = new NFTShape.Model()
             {
-                src = "local://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/" + TestAssetsUtils.GetAbsolutePath() + "/NFT/nftInfo.json"
+                src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
             };
+
             NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
             yield return component.routine;
 
             TestHelpers.SharedComponentAttach(component, entity);
 
-            yield return null;
+            yield return LoadLocalNFT(componentModel, entity);
 
             LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
@@ -295,7 +328,7 @@ namespace SceneBoundariesCheckerTests
 
             TestHelpers.SharedComponentAttach(component, entity);
 
-            yield return null;
+            yield return LoadLocalNFT(componentModel, entity);
 
             LoadWrapper shapeLoader = NFTShape.GetLoaderForEntity(entity);
             yield return new UnityEngine.WaitUntil(() => shapeLoader.alreadyLoaded);
