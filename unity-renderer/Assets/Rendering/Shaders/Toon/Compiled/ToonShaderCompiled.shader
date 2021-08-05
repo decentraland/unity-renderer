@@ -10,7 +10,7 @@
         [NoScaleOffset]_GlossMatCap("Gloss MatCap", 2D) = "white" {}
         [NoScaleOffset]_FresnelMatCap("Fresnel MatCap", 2D) = "white" {}
         _Cutoff("AlphaClipThreshold", Float) = 0
-        _DitherFade("_DitherFade", Float) = 1
+        _DitherFade("_DitherFade", Range(0, 1)) = 1
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -718,13 +718,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -1666,13 +1668,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -2277,6 +2281,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -2299,13 +2308,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -2778,6 +2789,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -2800,13 +2816,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -3312,6 +3330,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -3334,13 +3357,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -4085,13 +4110,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -4937,13 +4964,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -5866,13 +5895,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -6475,6 +6506,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -6497,13 +6533,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -6975,6 +7013,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -6997,13 +7040,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -7508,6 +7553,11 @@
             Alpha_2 = _Multiply_4d89c1791203a38d83dc31d5d7fc5ef0_Out_2;
         }
 
+        void Unity_Remap_float(float In, float2 InMinMax, float2 OutMinMax, out float Out)
+        {
+            Out = OutMinMax.x + (In - InMinMax.x) * (OutMinMax.y - OutMinMax.x) / (InMinMax.y - InMinMax.x);
+        }
+
         void Unity_Dither_float(float In, float4 ScreenPosition, out float Out)
         {
             float2 uv = ScreenPosition.xy * _ScreenParams.xy;
@@ -7530,13 +7580,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -8281,13 +8333,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
@@ -9134,13 +9188,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
+            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
-            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_d20c9aed180545b39ff42da984bfe2d8_Out_0, _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2);
-            Out_Alpha_1 = _Multiply_715eb15b83064f6eaf4fbbbc097c6ac4_Out_2;
+            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Multiply_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
+            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
         }
 
             // Graph Vertex
