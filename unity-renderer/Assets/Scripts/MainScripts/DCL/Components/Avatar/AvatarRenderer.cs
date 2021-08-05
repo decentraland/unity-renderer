@@ -124,6 +124,8 @@ namespace DCL
         public void CleanupAvatar()
         {
             StopLoadingCoroutines();
+            SetVisibility(true);
+            SetImpostorVisibility(false);
 
             eyebrowsController?.CleanUp();
             eyebrowsController = null;

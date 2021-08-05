@@ -116,8 +116,8 @@ namespace DCL
                 avatarFeaturesController.Dispose();
             }
 
-            otherPlayers.OnAdded += RegisterAvatar;
-            otherPlayers.OnRemoved += UnregisterAvatar;
+            otherPlayers.OnAdded -= RegisterAvatar;
+            otherPlayers.OnRemoved -= UnregisterAvatar;
         }
     }
 }
