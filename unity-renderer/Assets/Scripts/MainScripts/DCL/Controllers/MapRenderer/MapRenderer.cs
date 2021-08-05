@@ -81,7 +81,7 @@ namespace DCL
         public static System.Action<int, int> OnParcelHold;
         public static System.Action OnParcelHoldCancel;
 
-        private BaseDictionary<string, PlayerStatus> otherPlayersStatus => DataStore.i.player.otherPlayersStatus;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private bool isInitialized = false;
 
@@ -106,8 +106,8 @@ namespace DCL
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
-            otherPlayersStatus.OnAdded += OnOtherPlayersStatusAdded;
-            otherPlayersStatus.OnRemoved += OnOtherPlayerStatusRemoved;
+            otherPlayers.OnAdded += OnOtherPlayersAdded;
+            otherPlayers.OnRemoved += OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -162,8 +162,8 @@ namespace DCL
             playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
-            otherPlayersStatus.OnAdded -= OnOtherPlayersStatusAdded;
-            otherPlayersStatus.OnRemoved -= OnOtherPlayerStatusRemoved;
+            otherPlayers.OnAdded -= OnOtherPlayersAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
@@ -309,17 +309,17 @@ namespace DCL
             scenesOfInterestMarkers.Add(sceneInfo, go);
         }
 
-        private void OnOtherPlayersStatusAdded(string userId, PlayerStatus playerStatus)
+        private void OnOtherPlayersAdded(string userId, Player player)
         {
             var poolable = usersInfoPool.Get();
             var marker = poolable.gameObject.GetComponent<MapUserIcon>();
-            marker.gameObject.name = $"UserIcon-{playerStatus.name}";
+            marker.gameObject.name = $"UserIcon-{player.name}";
             marker.gameObject.transform.SetParent(overlayContainer.transform, true);
-            marker.Populate(playerStatus);
+            marker.Populate(player);
             usersInfoMarkers.Add(userId, poolable);
         }
 
-        private void OnOtherPlayerStatusRemoved(string userId, PlayerStatus playerStatus)
+        private void OnOtherPlayerRemoved(string userId, Player player)
         {
             if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
             {
