@@ -9,8 +9,8 @@ namespace DCL.Helpers
 {
     public static class WearablesFetchingHelper
     {
-        public const string WEARABLES_FETCH_URL = "https://peer.decentraland.org/lambdas/collections/wearables?";
-        private const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
+        public const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
+        private const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections";
         private const string BASE_WEARABLES_COLLECTION_ID = "urn:decentraland:off-chain:base-avatars";
 
         private static Collection[] collections;
