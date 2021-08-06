@@ -7,5 +7,4 @@ public class QueryVariablesBase { }
 public class AddressVariable : QueryVariablesBase
 {
     public string address;
-    public int amount;
 }

@@ -10,7 +10,6 @@ using UnityEngine.Networking;
 
 public class TheGraph : ITheGraph
 {
-    private const int MAX_LAND_QUERY_AMOUNT = 1000;
     private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const string LAND_SUBGRAPH_URL_ORG = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager";
     private const string LAND_SUBGRAPH_URL_ZONE = "https://api.thegraph.com/subgraphs/name/decentraland/land-manager-ropsten";
@@ -85,7 +84,7 @@ public class TheGraph : ITheGraph
 
         string url = tld == "org" ? LAND_SUBGRAPH_URL_ORG : LAND_SUBGRAPH_URL_ZONE;
 
-        Query(url, TheGraphQueries.getLandQuery, new AddressVariable() { address = lowerCaseAddress, amount = MAX_LAND_QUERY_AMOUNT })
+        Query(url, TheGraphQueries.getLandQuery, new AddressVariable() { address = lowerCaseAddress })
             .Then(resultJson =>
             {
                 ProcessReceivedLandsData(promise, resultJson, lowerCaseAddress, true);
