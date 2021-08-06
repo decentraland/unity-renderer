@@ -9,7 +9,7 @@ namespace DCL
         private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
 
         private static Camera snapshotCamera;
-        private static readonly RenderTexture snapshotRenderTexture = new RenderTexture(512, 1024, 32);
+        private static readonly RenderTexture snapshotRenderTexture = new RenderTexture(128, 256, 8);
 
         private Transform avatarTransform;
         private MeshRenderer impostorMeshRenderer;
