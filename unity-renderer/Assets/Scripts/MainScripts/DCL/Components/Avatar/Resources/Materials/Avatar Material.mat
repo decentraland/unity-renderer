@@ -86,7 +86,10 @@ Material:
     m_Floats: []
     m_Colors:
     - _AddColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
-    - _FresnelIntensity: {r: 0.81, g: 0.81, b: 0.81, a: 1}
+    - _FresnelIntensity: {r: 1.7207954, g: 1.7207954, b: 1.7207954, a: 1}
     - _GlossIntensity: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
-    - _MultiplyColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightDir: {r: -0.1, g: 0.8, b: -0.4, a: 0}
+    - _MultiplyColor: {r: 0.65, g: 0.65, b: 0.65, a: 1}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
