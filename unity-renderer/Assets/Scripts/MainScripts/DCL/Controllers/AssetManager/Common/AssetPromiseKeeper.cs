@@ -24,21 +24,6 @@ namespace DCL
         where AssetLibraryType : AssetLibrary<AssetType>, new()
         where AssetPromiseType : AssetPromise<AssetType>
     {
-        private static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> instance;
-
-        public static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> i
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>(new AssetLibraryType());
-                }
-
-                return instance;
-            }
-        }
-
         public AssetLibraryType library;
 
         //NOTE(Brian): All waiting promises. Only used for cleanup and to keep count.
