@@ -1,15 +1,17 @@
 {
-    "name": "AvatarsLODControllerInterface",
+    "name": "FirstPersonCameraEntity",
     "rootNamespace": "",
     "references": [
-        "GUID:46cbc133d57a24117993396eb0fbbc5a"
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

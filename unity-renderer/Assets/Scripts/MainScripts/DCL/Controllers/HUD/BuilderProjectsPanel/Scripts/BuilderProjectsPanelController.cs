@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 
 public class BuilderProjectsPanelController : IHUD
 {
-    private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
+    private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
 
@@ -56,7 +56,7 @@ public class BuilderProjectsPanelController : IHUD
         StopFetchInterval();
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
-        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
 
         unpublishPopupController?.Dispose();
@@ -119,7 +119,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.OnEditorPressed += OnGoToEditScene;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
-        DataStore.i.dataStoreBuilderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -218,6 +218,7 @@ public class BuilderProjectsPanelController : IHUD
         fetchLandPromise
             .Then(lands =>
             {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
                 sectionsController.SetFetchingDataEnd();
                 isFetching = false;
 

@@ -10,14 +10,14 @@ using UnityEngine.Serialization;
 
 public interface IBIWCreatorController
 {
-    public event Action OnCatalogItemPlaced;
-    public event Action OnInputDone;
-    public void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
-    public BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null);
-    public void CreateErrorOnEntity(BIWEntity entity);
-    public void RemoveLoadingObjectInmediate(string entityId);
-    public bool IsAnyErrorOnEntities();
-    public void CreateLoadingObject(BIWEntity entity);
+    event Action OnCatalogItemPlaced;
+    event Action OnInputDone;
+    void CreateCatalogItem(CatalogItem catalogItem, bool autoSelect = true, bool isFloor = false);
+    BIWEntity CreateCatalogItem(CatalogItem catalogItem, Vector3 startPosition, bool autoSelect = true, bool isFloor = false, Action<IDCLEntity> onFloorLoadedAction = null);
+    void CreateErrorOnEntity(BIWEntity entity);
+    void RemoveLoadingObjectInmediate(string entityId);
+    bool IsAnyErrorOnEntities();
+    void CreateLoadingObject(BIWEntity entity);
 }
 
 public class BIWCreatorController : BIWController, IBIWCreatorController
@@ -165,7 +165,7 @@ public class BIWCreatorController : BIWController, IBIWCreatorController
             return;
 
         GameObject instantiatedError = GameObject.Instantiate(errorPrefab, Vector3.zero, errorPrefab.transform.rotation);
-        instantiatedError.transform.SetParent(entity.rootEntity.transform, true);
+        instantiatedError.transform.SetParent(entity.rootEntity.gameObject.transform, true);
         instantiatedError.transform.localPosition = Vector3.zero;
 
         errorGameObjects.Add(entity, instantiatedError);

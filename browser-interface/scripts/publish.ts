@@ -2,13 +2,24 @@ import { exec } from "child_process"
 import { readFileSync } from "fs"
 import { resolve } from "path"
 import { ensureFileExists } from "./utils"
+import fetch from "node-fetch";
+import FormData from "form-data"
 
 const DIST_ROOT = resolve(__dirname, "../dist")
 
 async function main() {
   await checkFiles()
+  
+  if (!process.env.GITLAB_PIPELINE_URL) {
+    throw new Error('GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger')
+  }
+  
   if (process.env.CIRCLE_BRANCH == "master") {
     await publish(["latest"], "public", DIST_ROOT)
+    // inform cdn-pipeline about new version
+    const version = await getVersion(DIST_ROOT)
+    const pkgName = (await execute(`npm info . name`, DIST_ROOT)).trim();
+    triggerPipeline(pkgName, `latest`, version)
   }
 }
 
@@ -20,6 +31,56 @@ async function checkFiles() {
   ensureFileExists(DIST_ROOT, packageJson.main)
   ensureFileExists(DIST_ROOT, packageJson.typings)
   ensureFileExists(DIST_ROOT, "unity.loader.js")
+}
+
+async function getVersion(workingDirectory: string) {
+  const json = JSON.parse(readFileSync(workingDirectory + "/package.json", "utf8"));
+
+  return json.version;
+}
+
+async function triggerPipeline(
+  packageName: string,
+  packageTag: string,
+  packageVersion: string
+) {
+  const GITLAB_STATIC_PIPELINE_TOKEN = process.env.GITLAB_TOKEN
+  const GITLAB_STATIC_PIPELINE_URL = process.env.GITLAB_PIPELINE_URL
+
+  if (!GITLAB_STATIC_PIPELINE_URL) {
+    throw new Error('GITLAB_PIPELINE_URL not present. Skipping CDN pipeline trigger')
+  }
+
+  if (!process.env.CIRCLE_SHA1) {
+    throw new Error('CIRCLE_SHA1 not present. Skipping CDN pipeline trigger')
+  }
+    
+  const body = new FormData();
+  if (GITLAB_STATIC_PIPELINE_TOKEN) {
+    body.append("token", GITLAB_STATIC_PIPELINE_TOKEN);
+  }
+  body.append("ref", "master");
+  body.append("variables[PACKAGE_NAME]", packageName);
+  body.append("variables[PACKAGE_DIST_TAG]", packageTag);
+  body.append("variables[PACKAGE_VERSION]", packageVersion);
+  body.append("variables[REPO]", "unity-renderer");
+  body.append("variables[REPO_OWNER]", "decentraland");
+  body.append("variables[COMMIT]", process.env.CIRCLE_SHA1 as string);
+
+  try {
+    const r = await fetch(GITLAB_STATIC_PIPELINE_URL, {
+      body,
+      method: "POST",
+    });
+
+    if (r.ok) {
+      console.info(`Status: ${r.status}`);
+    } else {
+      throw new Error(`Error triggering pipeline. status: ${r.status}`);
+    }
+  } catch (e) {
+    throw new Error(`Error triggering pipeline. Unhandled error.`);
+  }
 }
 
 export async function publish(npmTags: string[], access: string, workingDirectory: string): Promise<string> {

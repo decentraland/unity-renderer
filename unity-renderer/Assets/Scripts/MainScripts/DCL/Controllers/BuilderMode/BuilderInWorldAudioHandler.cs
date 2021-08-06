@@ -47,10 +47,11 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private int entityCount;
     bool playPlacementSoundOnDeselect;
     private BIWModeController.EditModeState state = BIWModeController.EditModeState.Inactive;
+    private Coroutine fadeInCoroutine, fadeOutCoroutine;
 
     private void Start() { playPlacementSoundOnDeselect = false; }
 
-    public void SetReferences(BIWContext context)
+    public void Init(BIWContext context)
     {
         creatorController = context.creatorController;
 
@@ -69,9 +70,11 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         entityHandler.OnDeleteSelectedEntities += OnAssetDelete;
         modeController.OnChangedEditModeState += OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged += OnEntityBoundsCheckerStatusChanged;
-
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled += OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled += OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected += OnAssetDeselect;
         entityHandler.OnEntitySelected += OnAssetSelect;
@@ -84,11 +87,23 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
         modeController.OnChangedEditModeState -= OnChangedEditModeState;
         DCL.Environment.i.world.sceneBoundsChecker.OnEntityBoundsCheckerStatusChanged -= OnEntityBoundsCheckerStatusChanged;
 
-        DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
-        DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        if (DCL.Tutorial.TutorialController.i != null)
+        {
+            DCL.Tutorial.TutorialController.i.OnTutorialEnabled -= OnTutorialEnabled;
+            DCL.Tutorial.TutorialController.i.OnTutorialDisabled -= OnTutorialDisabled;
+        }
 
         entityHandler.OnEntityDeselected -= OnAssetDeselect;
         entityHandler.OnEntitySelected -= OnAssetSelect;
+    }
+
+    public void Dispose()
+    {
+        if (fadeInCoroutine != null)
+            CoroutineStarter.Stop(fadeInCoroutine);
+
+        if (fadeOutCoroutine != null)
+            CoroutineStarter.Stop(fadeOutCoroutine);
     }
 
     public void EnterEditMode(ParcelScene scene)
@@ -104,7 +119,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     public void ExitEditMode()
     {
         eventBuilderExit.Play();
-        CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
+        fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_EXIT));
         if (HUDController.i.builderInWorldMainHud != null)
             HUDController.i.builderInWorldMainHud.OnCatalogItemSelected -= OnCatalogItemSelected;
 
@@ -151,7 +166,7 @@ public class BuilderInWorldAudioHandler : MonoBehaviour
     private void OnTutorialEnabled()
     {
         if (gameObject.activeInHierarchy)
-            CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
+            fadeOutCoroutine = CoroutineStarter.Start(eventBuilderMusic.FadeOut(MUSIC_FADE_OUT_TIME_ON_TUTORIAL));
     }
 
     private void OnTutorialDisabled()

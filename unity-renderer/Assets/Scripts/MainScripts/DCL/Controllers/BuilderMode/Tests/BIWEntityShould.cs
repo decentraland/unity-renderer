@@ -34,7 +34,7 @@ public class BIWEntityShould : IntegrationTestSuite_Legacy
         entity.SetIsLockedValue(isLocked);
 
         //Assert
-        Assert.AreEqual(entity.IsLocked , isLocked);
+        Assert.AreEqual(entity.isLocked , isLocked);
     }
 
     [Test]

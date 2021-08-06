@@ -5,14 +5,14 @@ using DCL;
 using UnityEngine;
 
 /// <summary>
-/// This class is used to handle a feature that needs the monobehaviour callbacks.
+/// This class is used to handle a feature that needs the MonoBehaviour callbacks.
 ///
 /// You need to add it as a feature toggle in gitlab so kernel will understand when to activate it and deactivate it.
-/// After that, yours feature manager should inherit from 'Feature' so it can start receiving monobehaviour callbacks where it is activated
+/// After that, your feature manager should inherit from 'Feature' so it can start receiving MonoBehaviour callbacks where it is activated
 /// </summary>
-public class FeatureController
+public class PluginSystem
 {
-    private List<Feature> activeFeatures = new List<Feature>();
+    private List<PluginFeature> activeFeatures = new List<PluginFeature>();
 
     private KernelConfigModel currentConfig;
 
@@ -26,7 +26,7 @@ public class FeatureController
 
     public void OnGUI()
     {
-        foreach (Feature feature in activeFeatures)
+        foreach (PluginFeature feature in activeFeatures)
         {
             feature.OnGUI();
         }
@@ -34,7 +34,7 @@ public class FeatureController
 
     public void Update()
     {
-        foreach (Feature feature in activeFeatures)
+        foreach (PluginFeature feature in activeFeatures)
         {
             feature.Update();
         }
@@ -42,7 +42,7 @@ public class FeatureController
 
     public void LateUpdate()
     {
-        foreach (Feature feature in activeFeatures)
+        foreach (PluginFeature feature in activeFeatures)
         {
             feature.LateUpdate();
         }
@@ -50,7 +50,7 @@ public class FeatureController
 
     public void OnDestroy()
     {
-        foreach (Feature feature in activeFeatures)
+        foreach (PluginFeature feature in activeFeatures)
         {
             feature.Dispose();
         }
@@ -64,7 +64,7 @@ public class FeatureController
         currentConfig = config;
     }
 
-    private void HandleFeature<T>(bool isActive) where T : Feature, new ()
+    private void HandleFeature<T>(bool isActive) where T : PluginFeature, new ()
     {
         if (isActive)
             InitializeFeature<T>();
@@ -72,7 +72,7 @@ public class FeatureController
             RemoveFeature<T>();
     }
 
-    private void InitializeFeature<T>() where T : Feature, new ()
+    private void InitializeFeature<T>() where T : PluginFeature, new ()
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {
@@ -82,12 +82,12 @@ public class FeatureController
 
         //NOTE: We should revise this code on the future, because we'd want to use custom constructors to DI.
         //      So here we most likely need to use an abstract factory, or just pass the new Feature object by argument.
-        Feature feature = new T();
-        feature.Initialize();
-        activeFeatures.Add(feature);
+        PluginFeature pluginFeature = new T();
+        pluginFeature.Initialize();
+        activeFeatures.Add(pluginFeature);
     }
 
-    private void RemoveFeature<T>() where T : Feature
+    private void RemoveFeature<T>() where T : PluginFeature
     {
         for (int i = 0; i < activeFeatures.Count; i++)
         {

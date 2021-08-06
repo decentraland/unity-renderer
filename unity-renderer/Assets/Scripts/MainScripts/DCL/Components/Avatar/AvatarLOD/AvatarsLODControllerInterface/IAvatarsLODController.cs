@@ -5,7 +5,7 @@ namespace DCL
     public interface IAvatarsLODController : IDisposable
     {
         void Update();
-        void RegisterAvatar(IAvatarRenderer newAvatar);
-        void RemoveAvatar(IAvatarRenderer targetAvatar);
+        void RegisterAvatar(AvatarLODController newAvatar);
+        void RemoveAvatar(AvatarLODController targetAvatar);
     }
 }

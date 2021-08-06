@@ -255,7 +255,6 @@ namespace DCL.Controllers
 
             newEntity.meshesInfo.innerGameObject = po.gameObject;
             newEntity.gameObject = po.gameObject;
-            newEntity.transform = po.gameObject.transform;
 
 #if UNITY_EDITOR
             newEntity.gameObject.name = "ENTITY_" + id;

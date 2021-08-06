@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerStatus
+public class Player
 {
     public string id;
     public string name;

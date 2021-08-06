@@ -48,10 +48,7 @@ namespace DCL
             PoolManager.i.OnGet += Environment.i.platform.cullingController.objectsTracker.MarkDirty;
         }
 
-        private void OnDebugModeSet()
-        {
-            Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker());
-        }
+        private void OnDebugModeSet() { Environment.i.world.sceneBoundsChecker.SetFeedbackStyle(new SceneBoundsFeedbackStyle_RedFlicker()); }
 
         public void Start()
         {
@@ -463,7 +460,6 @@ namespace DCL
 
             Environment.i.world.state.loadedScenes.Add(data.id, newScene);
             OnNewSceneAdded?.Invoke(newScene);
-
             return newScene;
         }
 

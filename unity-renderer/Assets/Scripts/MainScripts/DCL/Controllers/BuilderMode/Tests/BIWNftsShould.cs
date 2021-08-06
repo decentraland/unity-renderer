@@ -39,7 +39,7 @@ public class BIWNftsShould : IntegrationTestSuite
     }
 
     [Test]
-    public void NftsUsage()
+    public void NftsOneTimeUsage()
     {
         string idToTest = BIWNFTController.i.GetNfts()[0].assetContract.address;
 
@@ -55,7 +55,7 @@ public class BIWNftsShould : IntegrationTestSuite
     [Test]
     public void NftComponent()
     {
-        CatalogItem catalogItem = DataStore.i.dataStoreBuilderInWorld.catalogItemDict.GetValues()[0];
+        CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
 
         BIWEntity biwEntity = new BIWEntity();

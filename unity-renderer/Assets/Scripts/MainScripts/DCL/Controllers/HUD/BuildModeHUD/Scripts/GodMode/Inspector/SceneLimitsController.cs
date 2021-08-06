@@ -9,7 +9,7 @@ public interface ISceneLimitsController
 {
     void Initialize(ISceneLimitsView sceneLimitsView);
     void Dispose();
-    void SetParcelScene(ParcelScene parcelScene);
+    void SetParcelScene(IParcelScene parcelScene);
     void ToggleSceneLimitsInfo();
     void Enable();
     void Disable();
@@ -19,7 +19,7 @@ public interface ISceneLimitsController
 public class SceneLimitsController : ISceneLimitsController
 {
     internal ISceneLimitsView sceneLimitsView;
-    internal ParcelScene currentParcelScene;
+    internal IParcelScene currentParcelScene;
 
     public void Initialize(ISceneLimitsView sceneLimitsView)
     {
@@ -32,7 +32,7 @@ public class SceneLimitsController : ISceneLimitsController
 
     public void Dispose() { sceneLimitsView.OnToggleSceneLimitsInfo -= ToggleSceneLimitsInfo; }
 
-    public void SetParcelScene(ParcelScene parcelScene)
+    public void SetParcelScene(IParcelScene parcelScene)
     {
         currentParcelScene = parcelScene;
         UpdateInfo();
@@ -149,7 +149,7 @@ public class SceneLimitsController : ISceneLimitsController
         return result;
     }
 
-    internal bool IsParcelSceneSquare(ParcelScene scene)
+    internal bool IsParcelSceneSquare(IParcelScene scene)
     {
         Vector2Int[] parcelsPoints = scene.sceneData.parcels;
         int minX = int.MaxValue;
