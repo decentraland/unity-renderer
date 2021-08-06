@@ -59,7 +59,7 @@ namespace DCL
             audioMixer = Resources.Load<AudioMixer>("AudioMixer");
         }
 
-        ~Settings() {
+        public void Dispose() {
             UnsubscribeFromVirtualAudioMixerEvents();
         }
 
