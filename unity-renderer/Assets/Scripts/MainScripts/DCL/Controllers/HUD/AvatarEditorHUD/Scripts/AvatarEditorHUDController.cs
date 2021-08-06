@@ -86,7 +86,6 @@ public class AvatarEditorHUDController : IHUD
 
     private void LoadUserProfile(UserProfile userProfile)
     {
-        LoadOwnedWereables(userProfile);
         LoadUserProfile(userProfile, false);
         QueryNftCollections(userProfile.userId);
     }
@@ -556,6 +555,7 @@ public class AvatarEditorHUDController : IHUD
         }
         else if (visible && !view.isOpen)
         {
+            LoadOwnedWereables(userProfile);
             DCL.Environment.i.messaging.manager.paused = DataStore.i.isSignUpFlow.Get();
             currentRenderProfile.avatarProfile.currentProfile = currentRenderProfile.avatarProfile.avatarEditor;
             currentRenderProfile.avatarProfile.Apply();
