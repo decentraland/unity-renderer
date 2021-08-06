@@ -7,11 +7,14 @@ namespace DCL
 {
     public class WebRequestController : IWebRequestController
     {
+        private const float MAX_CACHE_SECONDS = 300;
+
         private IWebRequest genericWebRequest;
         private IWebRequestAssetBundle assetBundleWebRequest;
         private IWebRequest textureWebRequest;
         private IWebRequestAudio audioClipWebRequest;
         private List<WebRequestAsyncOperation> ongoingWebRequests = new List<WebRequestAsyncOperation>();
+        private DataCache<WebRequestAsyncOperation> webRequestCache = new DataCache<WebRequestAsyncOperation>();
 
         public static WebRequestController Create()
         {
@@ -111,6 +114,13 @@ namespace DCL
             Dictionary<string, string> headers = null
         ) where T : IWebRequest
         {
+
+            if (url.Contains("/content/contents/") && webRequestCache.TryGet(url, out WebRequestAsyncOperation webRequestAsyncOperation))
+            {
+                OnSuccess?.Invoke(webRequestAsyncOperation.webRequest);
+                return webRequestAsyncOperation;
+            }
+
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
 
             UnityWebRequest request = requestType.CreateWebRequest(url);
@@ -139,6 +149,8 @@ namespace DCL
                     {
                         OnSuccess?.Invoke(resultOp.webRequest);
                         resultOp.SetAsCompleted(true);
+                        if (!resultOp.disposeOnCompleted)
+                            webRequestCache.Add(url, resultOp, MAX_CACHE_SECONDS);
                     }
                     else if (!resultOp.webRequest.WebRequestAborted() && resultOp.webRequest.WebRequestServerError())
                     {

@@ -79,13 +79,13 @@ namespace DCL
         /// </summary>
         public void Dispose()
         {
-            Abort();
-
-            if (webRequest == null)
-                return;
-
-            webRequest.Dispose();
-            webRequest = null;
+            // Abort();
+            //
+            // if (webRequest == null)
+            //     return;
+            //
+            // webRequest.Dispose();
+            // webRequest = null;
         }
     }
 }

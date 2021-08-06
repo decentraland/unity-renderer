@@ -32,6 +32,8 @@ public class DataCache<T> : IDataCache<T>
         storedCache.expireCacheRoutine = CoroutineStarter.Start(RemoveCache(key, storedCache.maxAge));
     }
 
+    public bool TryGet(string key, out T value) { return TryGet(key, out value, out float lastUpdateTest); }
+
     public bool TryGet(string key, out T value, out float lastUpdate)
     {
         value = default(T);
