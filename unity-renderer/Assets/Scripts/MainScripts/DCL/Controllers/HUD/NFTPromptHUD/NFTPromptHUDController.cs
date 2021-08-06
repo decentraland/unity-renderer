@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 public class NFTPromptHUDController : IHUD
 {
     internal const string VIEW_PREFAB_PATH = "NFTPromptHUD";
-    internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{darURLRegistry}/{darURLAsset}'.";
+    internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{0}/{1}'.";
     internal const string DOES_NOT_SUPPORT_POLYGON = "Warning: OpenSea API does not support fetching Polygon assets.";
 
     internal INFTPromptHUDView view { get; private set; }
@@ -56,7 +56,7 @@ public class NFTPromptHUDController : IHUD
 
             fetchNFTRoutine = CoroutineStarter.Start(NFTHelper.FetchNFTInfoSingleAsset(model.contactAddress, model.tokenId,
                 (nftInfo) => SetNFT(nftInfo, model.comment, true),
-                (error) => view.OnError($"{COULD_NOT_FETCH_NFT_FROM_API.Replace("{darURLRegistry}", model.contactAddress).Replace("{darURLAsset}", model.tokenId)} {error}. {DOES_NOT_SUPPORT_POLYGON}")
+                (error) => view.OnError(string.Format(COULD_NOT_FETCH_NFT_FROM_API + " " + error + ". " + DOES_NOT_SUPPORT_POLYGON, model.contactAddress, model.tokenId))
             ));
         }
     }
