@@ -14,6 +14,7 @@ public class BIWMainController : PluginFeature
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
+    private const float MAX_DISTANCE_STOP_TRYING_TO_ENTER = 16;
 
     private GameObject cursorGO;
     private InputController inputController;
@@ -68,6 +69,9 @@ public class BIWMainController : PluginFeature
     private UserProfile userProfile;
     private Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
+
+    private bool isWaitingForPermission = false;
+    private Vector3 askPermissionLastPosition;
 
     public override void Initialize()
     {
@@ -407,8 +411,20 @@ public class BIWMainController : PluginFeature
         }
 
         if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0)
+        {
             ActivateLandAccessBackgroundChecker();
+            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE);
+            isWaitingForPermission = true;
+            askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
+        }
+        else
+        {
+            CheckSceneToEditByShorcut();
+        }
+    }
 
+    private void CheckSceneToEditByShorcut()
+    {
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -822,6 +838,11 @@ public class BIWMainController : PluginFeature
                              .Then(lands =>
                              {
                                  DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                                 {
+                                     CheckSceneToEditByShorcut();
+                                 }
+                                 isWaitingForPermission = false;
                              });
     }
 
