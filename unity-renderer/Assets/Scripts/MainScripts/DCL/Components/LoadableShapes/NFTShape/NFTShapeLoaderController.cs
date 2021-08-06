@@ -95,6 +95,8 @@ public class NFTShapeLoaderController : MonoBehaviour
         InitializePerlinNoise();
     }
 
+    private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
+
     void Update() { hqTextureHandler?.Update(); }
 
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
