@@ -264,22 +264,6 @@ namespace Tests
         }
 
         [Test]
-        public void ChangeMuteSoundCorrectly()
-        {
-            // Arrange
-            settingController = ScriptableObject.CreateInstance<MuteSoundControlController>();
-            settingController.Initialize();
-
-            // Act
-            bool newValue = true;
-            settingController.UpdateSetting(newValue);
-
-            // Assert
-            Assert.AreEqual(newValue, settingController.GetStoredValue(), "muteSound stored value mismatch");
-            Assert.AreEqual(newValue ? 1f : 0f, AudioListener.volume, "sfxVolume value mismatch");
-        }
-
-        [Test]
         public void ChangeRenderingScaleCorrectly()
         {
             // Arrange
@@ -377,6 +361,90 @@ namespace Tests
 
             // Assert
             Assert.AreEqual(newValue, settingController.GetStoredValue(), "voiceChatVolume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeAvatarSFXVolumeCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<AvatarSFXVolumeControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Avatar SFX Volume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeChatSFXToggleCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<ChatSFXToggleControlController>();
+            settingController.Initialize();
+
+            // Act
+            bool newValue = true;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Chat SFX Toggle stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeMasterVolumeCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<MasterVolumeControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Master Volume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeMusicVolumeCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<MusicVolumeControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Music Volume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeSceneSFXVolumeCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<SceneSFXVolumeControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "Scene SFX Volume stored value mismatch");
+        }
+
+        [Test]
+        public void ChangeUISFXVolumeCorrectly() {
+            // Arrange
+            settingController = ScriptableObject.CreateInstance<UISFXVolumeControlController>();
+            settingController.Initialize();
+
+            // Act
+            float newValue = 90f;
+            settingController.UpdateSetting(newValue);
+
+            // Assert
+            Assert.AreEqual(newValue, settingController.GetStoredValue(), "UI SFX Volume stored value mismatch");
         }
     }
 }

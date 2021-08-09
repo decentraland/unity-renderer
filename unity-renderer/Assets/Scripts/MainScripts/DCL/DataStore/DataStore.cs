@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Variables.RealmsInfo;
 
 namespace DCL
@@ -28,6 +28,7 @@ namespace DCL
         public readonly DataStore_Player player = new DataStore_Player();
         public readonly BaseVariable<NFTPromptModel> onOpenNFTPrompt = new BaseVariable<NFTPromptModel>();
         public readonly DataStore_AvatarsLOD avatarsLOD = new DataStore_AvatarsLOD();
+        public readonly DataStore_VirtualAudioMixer virtualAudioMixer = new DataStore_VirtualAudioMixer();
 
         public class DataStore_BuilderInWorld
         {
@@ -73,6 +74,18 @@ namespace DCL
         {
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
             public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
+        }
+
+        /// <summary>
+        /// An "audio mixer" that handles muting/fading when entering special states like Avatar Editor, Tutorial, Builder In-World, etc.
+        /// </summary>
+        public class DataStore_VirtualAudioMixer
+        {
+            public readonly BaseVariable<float> musicVolume = new BaseVariable<float>(1f);
+            public readonly BaseVariable<float> sceneSFXVolume = new BaseVariable<float>(1f);
+            public readonly BaseVariable<float> voiceChatVolume = new BaseVariable<float>(1f);
+            public readonly BaseVariable<float> uiSFXVolume = new BaseVariable<float>(1f);
+            public readonly BaseVariable<float> avatarSFXVolume = new BaseVariable<float>(1f);
         }
     }
 }
