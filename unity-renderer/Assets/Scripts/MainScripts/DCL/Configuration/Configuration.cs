@@ -78,11 +78,13 @@ namespace DCL.Configuration
         //Others
         public const float RAYCAST_MAX_DISTANCE = 10000f;
         public const string LAND_EDITION_NOT_ALLOWED_BY_PERMISSIONS_MESSAGE = "This land does not belong to you, nor have you been granted operating permits by its owner.";
+        public const string LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE = "Checking if you have permission to edit this land";
         public const string LAND_EDITION_NOT_ALLOWED_BY_SDK_LIMITATION_MESSAGE = "This place was created with the SDK and can not be edited in-world.";
         public const float CACHE_TIME_LAND = 5 * 60;
         public const float CACHE_TIME_SCENES = 1 * 60;
         public const float REFRESH_LANDS_WITH_ACCESS_INTERVAL = 2 * 60;
         public const float LAND_NOTIFICATIONS_TIMER = 10f;
+        public const float LAND_CHECK_MESSAGE_TIMER = 5f;
     }
 
     public static class ApplicationSettings

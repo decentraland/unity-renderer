@@ -130,6 +130,36 @@ namespace AssetPromiseKeeper_Mock_Tests
         }
 
         [UnityTest]
+        public IEnumerator UnloadForgottenMasterPromiseAfterWaitingPromisesAreResolved()
+        {
+            var library = new AssetLibrary_Mock();
+            var keeper = new AssetPromiseKeeper_Mock(library);
+
+            string id = "1";
+            bool masterPromiseUnloaded = false;
+
+            AssetPromise_Mock masterPromise = new AssetPromise_Mock();
+            masterPromise.idGenerator = id;
+            masterPromise.OnUnloaded += () => masterPromiseUnloaded = true;
+            keeper.Keep(masterPromise);
+
+            AssetPromise_Mock firstPromise = new AssetPromise_Mock();
+            firstPromise.idGenerator = id;
+            keeper.Keep(firstPromise);
+
+            AssetPromise_Mock lastPromise = new AssetPromise_Mock();
+            lastPromise.idGenerator = id;
+            keeper.Keep(lastPromise);
+
+            keeper.Forget(masterPromise);
+
+            yield return firstPromise;
+
+            yield return new WaitUntil(() => masterPromiseUnloaded, 2.0f);
+            Assert.IsTrue(masterPromiseUnloaded);
+        }
+
+        [UnityTest]
         public IEnumerator NotCleanMasterPromiseWhileWaitingPromisesStillExist()
         {
             var library = new AssetLibrary_Mock();
@@ -184,6 +214,5 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             Assert.AreNotEqual(0, keeper.masterPromises.Count);
         }
-
     }
 }

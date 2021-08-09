@@ -146,7 +146,7 @@ namespace DCL
 
         protected virtual bool AddToLibrary() { return library.Add(asset); }
 
-        internal void Unload()
+        internal virtual void Unload()
         {
             if (state == AssetPromiseState.IDLE_AND_EMPTY)
                 return;
