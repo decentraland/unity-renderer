@@ -138,7 +138,7 @@ namespace DCL
 
         private SnapshotDirections GetCharacterRelativeDirection(Vector3 mainCharacterPosition)
         {
-            Vector3 from = Vector3.forward;
+            Vector3 from = impostorMeshRenderer.transform.parent.forward;
             Vector3 to = (mainCharacterPosition - impostorMeshRenderer.transform.position).normalized;
             to.y = 0;
 
