@@ -12,6 +12,7 @@ namespace DCL.Helpers
         public static readonly int GlossMatCap = Shader.PropertyToID("_GlossMatCap");
         public static readonly int FresnelMatCap = Shader.PropertyToID("_FresnelMatCap");
         public static readonly int MatCap = Shader.PropertyToID("_MatCap");
+        public static readonly int DitherFade = Shader.PropertyToID("_DitherFade");
 
         //Lit properties
         public static readonly int SpecGlossMap = Shader.PropertyToID("_SpecGlossMap");
