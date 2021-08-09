@@ -6,18 +6,27 @@ namespace DCL
 {
     public class AvatarLODController
     {
-        private readonly int LOD_TEXTURE_SHADER_VAR = Shader.PropertyToID("_BaseMap");
+        private enum SnapshotDirections
+        {
+            North,
+            East,
+            South,
+            West,
+            COUNT
+        }
 
+        private readonly int LOD_TEXTURE_SHADER_VAR = Shader.PropertyToID("_BaseMap");
         private static Camera snapshotCamera;
-        private static readonly RenderTexture snapshotRenderTexture = new RenderTexture(128, 256, 8);
+
+        private readonly RenderTexture[] snapshotRenderTextures = new RenderTexture[(int)SnapshotDirections.COUNT];
 
         private Transform avatarTransform;
         private MeshRenderer impostorMeshRenderer;
         private Mesh impostorMesh; // TODO: If we don't animate mesh uvs we can remove this serialized reference
         private List<Renderer> avatarRenderers;
         private Animation avatarAnimation;
+        private SnapshotDirections currentCharacterRelativeDirection = SnapshotDirections.North;
 
-        public float lastSnapshotsUpdateTime;
         public delegate void LODToggleEventDelegate(bool newValue);
         public event LODToggleEventDelegate OnLODToggle;
 
@@ -32,6 +41,11 @@ namespace DCL
                 snapshotCamera.backgroundColor = new Color(0, 0, 0, 0);
                 snapshotCamera.cullingMask = 1 << PhysicsLayers.characterPreviewLayer;
             }
+
+            for (var i = 0; i < snapshotRenderTextures.Length; i++)
+            {
+                snapshotRenderTextures[i] = new RenderTexture(128, 256, 8);
+            }
         }
 
         public void Initialize(Transform avatarTransform, MeshRenderer impostorMeshRenderer, Mesh impostorMesh, List<Renderer> avatarRenderers, Animation avatarAnimation)
@@ -42,7 +56,45 @@ namespace DCL
             this.avatarRenderers = avatarRenderers;
             this.avatarAnimation = avatarAnimation;
 
-            this.impostorMeshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, snapshotRenderTexture);
+            InitializeSnapshots();
+        }
+
+        // TODO: We should trigger this initialization again if a wearable is changed on the avatar
+        private void InitializeSnapshots()
+        {
+            UpdateAvatarMeshes(PhysicsLayers.characterPreviewLayer, true);
+            snapshotCamera.gameObject.SetActive(true);
+
+            // Take N snapshot
+            snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.North];
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.forward * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.Render();
+            RenderTexture.active = snapshotCamera.targetTexture;
+
+            // Take E snapshot
+            snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.East];
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.right * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.Render();
+            RenderTexture.active = snapshotCamera.targetTexture;
+
+            // Take S snapshot
+            snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.South];
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.back * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.Render();
+            RenderTexture.active = snapshotCamera.targetTexture;
+
+            // Take W snapshot
+            snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.West];
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.left * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.Render();
+            RenderTexture.active = snapshotCamera.targetTexture;
+
+            snapshotCamera.gameObject.SetActive(false);
+            UpdateAvatarMeshes(PhysicsLayers.defaultLayer, true);
         }
 
         public MeshRenderer GetImpostorMeshRenderer() { return impostorMeshRenderer; }
@@ -71,32 +123,37 @@ namespace DCL
             UpdateAvatarMeshes(PhysicsLayers.defaultLayer, !enabled);
         }
 
-        public void UpdateImpostorSnapshot()
+        public void UpdateImpostorSnapshot(Vector3 mainCharacterPosition)
         {
-            UpdateAvatarMeshes(PhysicsLayers.characterPreviewLayer, true);
+            var characterRelativeDirection = GetCharacterRelativeDirection(mainCharacterPosition);
 
-            UpdateSnapshot();
+            if (currentCharacterRelativeDirection == characterRelativeDirection)
+                return;
 
-            UpdateAvatarMeshes(PhysicsLayers.characterPreviewLayer, false);
+            // Debug.Log("PRAVS - Setting snapshot: " + characterRelativeDirection);
 
-            lastSnapshotsUpdateTime = Time.timeSinceLevelLoad;
+            currentCharacterRelativeDirection = characterRelativeDirection;
+            impostorMeshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, snapshotRenderTextures[(int)currentCharacterRelativeDirection]);
         }
 
-        private void UpdateSnapshot()
+        private SnapshotDirections GetCharacterRelativeDirection(Vector3 mainCharacterPosition)
         {
-            // Position snapshot camera next to the target avatar
-            snapshotCamera.gameObject.SetActive(true);
-            snapshotCamera.transform.SetParent(Camera.main.transform); // TODO: Camera.main throws nullref when we are in the Avatar Editor and we need the reference here
-            snapshotCamera.transform.localPosition = Vector3.zero;
-            snapshotCamera.transform.forward = (impostorMeshRenderer.transform.position - snapshotCamera.transform.position).normalized;
-            snapshotCamera.transform.position = impostorMeshRenderer.transform.position - snapshotCamera.transform.forward * 2f;
+            Vector3 from = Vector3.forward;
+            Vector3 to = (mainCharacterPosition - impostorMeshRenderer.transform.position).normalized;
+            to.y = 0;
 
-            snapshotCamera.targetTexture = snapshotRenderTexture; // TODO: If all impostors share the renderTex, we can configure it just once
+            var angle = Vector3.SignedAngle(from, to, Vector3.up);
 
-            snapshotCamera.Render();
-            RenderTexture.active = snapshotRenderTexture;
+            if (angle >= -45 && angle < 45)
+                return SnapshotDirections.North;
 
-            snapshotCamera.gameObject.SetActive(false);
+            if (angle >= 45 && angle < 135)
+                return SnapshotDirections.East;
+
+            if (angle >= -135 && angle < 45)
+                return SnapshotDirections.West;
+
+            return SnapshotDirections.South;
         }
     }
 }

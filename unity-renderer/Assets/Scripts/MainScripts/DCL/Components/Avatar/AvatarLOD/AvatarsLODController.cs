@@ -5,8 +5,6 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float SNAPSHOTS_FREQUENCY_IN_SECONDS = 2f;
-
         private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
 
         public AvatarsLODController()
@@ -90,10 +88,7 @@ namespace DCL
 
                 if (isInLODDistance)
                 {
-                    // If distance is farther than 2 LODDistance, we decrease its snapshots frequency
-                    int distanceFrequencyMultiplier = distanceToPlayer < LODDistance * 2 ? 1 : 3;
-
-                    ToggleAvatarLOD(avatar, true, SNAPSHOTS_FREQUENCY_IN_SECONDS * distanceFrequencyMultiplier);
+                    ToggleAvatarLOD(avatar, true);
                 }
                 else
                 {
@@ -116,12 +111,10 @@ namespace DCL
             }
         }
 
-        private void ToggleAvatarLOD(AvatarLODController avatar, bool LODEnabled, float snapshotFrequency = SNAPSHOTS_FREQUENCY_IN_SECONDS)
+        private void ToggleAvatarLOD(AvatarLODController avatar, bool LODEnabled)
         {
-            bool shouldUpdateSnapshot = (Time.timeSinceLevelLoad - avatar.lastSnapshotsUpdateTime) >= SNAPSHOTS_FREQUENCY_IN_SECONDS;
-
-            if (LODEnabled && shouldUpdateSnapshot)
-                avatar.UpdateImpostorSnapshot();
+            if (LODEnabled)
+                avatar.UpdateImpostorSnapshot(DCLCharacterController.i.characterPosition.unityPosition);
 
             avatar.ToggleLOD(LODEnabled);
 
