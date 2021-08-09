@@ -1,9 +1,7 @@
 using System;
 
 [Serializable]
-public class QueryVariablesBase
-{
-}
+public class QueryVariablesBase { }
 
 [Serializable]
 public class AddressVariable : QueryVariablesBase

@@ -134,8 +134,8 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (HUDAudioHandler.i != null)
         {
-            // Check whether or not this message is new
-            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp)
+            // Check whether or not this message is new, and chat sounds are enabled in settings
+            if (chatEntryModel.timestamp > HUDAudioHandler.i.chatLastCheckedTimestamp && DCL.Settings.i.currentAudioSettings.chatSFXEnabled)
             {
                 switch (chatEntryModel.messageType)
                 {
