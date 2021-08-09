@@ -22,14 +22,19 @@ public class NFTInfoFetcher : INFTInfoFetcher
     public void Dispose()
     {
         if (fetchCoroutine != null)
-            ;
-        CoroutineStarter.Stop(fetchCoroutine);
+            CoroutineStarter.Stop(fetchCoroutine);
         fetchCoroutine = null;
     }
 
-    public void FetchNFTImage(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail) { fetchCoroutine = CoroutineStarter.Start(FetchNFTImageCoroutin(address, id, OnSuccess, OnFail)); }
+    public void FetchNFTImage(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
+    {
+        if (fetchCoroutine != null)
+            CoroutineStarter.Stop(fetchCoroutine);
 
-    private IEnumerator FetchNFTImageCoroutin(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
+        fetchCoroutine = CoroutineStarter.Start(FetchNFTImageCoroutine(address, id, OnSuccess, OnFail));
+    }
+
+    private IEnumerator FetchNFTImageCoroutine(string address, string id, Action<NFTInfo> OnSuccess, Action OnFail)
     {
         yield return NFTHelper.FetchNFTInfo(address, id,
             (info) =>

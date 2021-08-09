@@ -7,13 +7,14 @@ using UnityEngine;
 
 public class NFTInfoFectcherShould
 {
+    private NFTInfoFetcher fetcher;
+
+    [SetUp]
+    protected void SetUp() {  fetcher = new NFTInfoFetcher(); }
 
     [Test]
     public void NFTInfoFetcherFail()
     {
-        //Arrange
-        NFTInfoFetcher fetcher = new NFTInfoFetcher();
-
         //Act - Assert
         fetcher.FetchNFTImage("testAddress", "testId", info =>  Assert.Fail(), Assert.Pass );
     }
@@ -22,7 +23,6 @@ public class NFTInfoFectcherShould
     public void NFTInfoFetcherDipose()
     {
         //Arrange
-        NFTInfoFetcher fetcher = new NFTInfoFetcher();
         fetcher.FetchNFTImage("testAddress", "testId", null, null );
 
         //Act
@@ -31,4 +31,7 @@ public class NFTInfoFectcherShould
         //Assert
         Assert.IsNull(fetcher.fetchCoroutine);
     }
+
+    [TearDown]
+    protected void TearDown() { fetcher.Dispose(); }
 }
