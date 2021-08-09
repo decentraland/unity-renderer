@@ -42,6 +42,7 @@ namespace DCL
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
         private AssetPromise_Texture bodySnapshotTexturePromise;
+        private bool isDestroyed = false;
 
         private void Awake()
         {
@@ -124,9 +125,11 @@ namespace DCL
         public void CleanupAvatar()
         {
             StopLoadingCoroutines();
-            SetVisibility(true);
-            if (lodRenderer != null)
+            if (!isDestroyed)
+            {
+                SetVisibility(true);
                 SetImpostorVisibility(false);
+            }
 
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
@@ -571,6 +574,10 @@ namespace DCL
             }
         }
 
-        protected virtual void OnDestroy() { CleanupAvatar(); }
+        protected virtual void OnDestroy()
+        {
+            isDestroyed = true;
+            CleanupAvatar();
+        }
     }
 }
