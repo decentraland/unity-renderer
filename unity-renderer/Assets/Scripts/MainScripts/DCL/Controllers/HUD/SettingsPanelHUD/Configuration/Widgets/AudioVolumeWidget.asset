@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ccae9e4d9011e4da0803905f169221, type: 3}
+  m_Name: AudioVolumeWidget
+  m_EditorClassIdentifier: 
+  title: Volume
+  widgetPrefab: {fileID: 5794240731996032819, guid: cc8cedcaa38f2424b9f20b88b673f8a9,
+    type: 3}
+  widgetController: {fileID: 11400000, guid: 58b3a5282c16beb42a91390cf2ddfc85, type: 2}
+  controlColumns:
+    array:
+    - controls:
+        array:
+        - {fileID: 11400000, guid: 35c3b496ace24c74d83187c74ef9ae91, type: 2}
+        - {fileID: 11400000, guid: c7510b1b051b80b46a1fc98ea3a4dab7, type: 2}
+        - {fileID: 11400000, guid: a9f573106b03156409e03bfb9978d32b, type: 2}
+        - {fileID: 11400000, guid: c335fa0595a4dea4e89053f4124571a5, type: 2}
+    - controls:
+        array:
+        - {fileID: 11400000, guid: b64f1694c0ce6ab4eb53151c63914544, type: 2}
+        - {fileID: 11400000, guid: 355f543b43c2b204598eedfe7ec28578, type: 2}
+        - {fileID: 11400000, guid: 26320d2a902797b40b238eb5402ea325, type: 2}

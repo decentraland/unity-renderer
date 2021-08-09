@@ -45,7 +45,12 @@ namespace DCL.Components
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
 
-        public DCLVideoTexture() { model = new Model(); }
+        public DCLVideoTexture()
+        {
+            model = new Model();
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
+        }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
         {
@@ -228,6 +233,10 @@ namespace DCL.Components
             UpdateVolume();
         }
 
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
+            UpdateVolume();
+        }
+
         private void UpdateVolume()
         {
             if (texturePlayer == null)
@@ -235,8 +244,13 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
-                targetVolume = baseVolume * distanceVolumeModifier * Settings.i.generalSettings.sfxVolume;
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get()))) {
+                targetVolume = baseVolume * distanceVolumeModifier;
+                float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
+                float sceneSFXSetting = Settings.i.currentAudioSettings.sceneSFXVolume;
+                float masterSetting = Settings.i.currentAudioSettings.masterVolume;
+                targetVolume *= Utils.ToVolumeCurve(virtualMixerVolume * sceneSFXSetting * masterSetting);
+            }
 
             texturePlayer.SetVolume(targetVolume);
         }
@@ -339,6 +353,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
             Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             CommonScriptableObjects.sceneID.OnChange -= OnSceneIDChanged;
