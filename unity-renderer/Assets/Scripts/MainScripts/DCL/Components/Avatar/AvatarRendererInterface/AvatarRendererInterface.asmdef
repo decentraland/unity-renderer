@@ -1,9 +1,7 @@
 {
     "name": "AvatarRendererInterface",
     "rootNamespace": "",
-    "references": [
-        "GUID:09421665db03949048c48febfea4311f"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
