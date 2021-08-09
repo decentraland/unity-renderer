@@ -6,7 +6,7 @@ namespace DCL
 {
     public class AvatarLODController
     {
-        private const string LOD_TEXTURE_SHADER_VAR = "_BaseMap";
+        private readonly int LOD_TEXTURE_SHADER_VAR = Shader.PropertyToID("_BaseMap");
 
         private static Camera snapshotCamera;
         private static readonly RenderTexture snapshotRenderTexture = new RenderTexture(128, 256, 8);
@@ -90,6 +90,7 @@ namespace DCL
             snapshotCamera.transform.localPosition = Vector3.zero;
             snapshotCamera.transform.forward = (impostorMeshRenderer.transform.position - snapshotCamera.transform.position).normalized;
             snapshotCamera.transform.position = impostorMeshRenderer.transform.position - snapshotCamera.transform.forward * 2f;
+
             snapshotCamera.targetTexture = snapshotRenderTexture; // TODO: If all impostors share the renderTex, we can configure it just once
 
             snapshotCamera.Render();
