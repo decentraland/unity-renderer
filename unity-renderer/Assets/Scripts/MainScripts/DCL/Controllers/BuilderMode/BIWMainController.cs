@@ -71,6 +71,7 @@ public class BIWMainController : PluginFeature
     private Dictionary<string, string> catalogCallHeaders;
 
     private bool isWaitingForPermission = false;
+    private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
     public override void Initialize()
@@ -308,9 +309,15 @@ public class BIWMainController : PluginFeature
     {
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
+        {
+            if (updateLandsWithAcessCoroutine != null)
+                CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
             updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+        }
         else
+        {
             userProfile.OnUpdate += OnUserProfileUpdate;
+        }
     }
 
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
@@ -410,10 +417,10 @@ public class BIWMainController : PluginFeature
             return;
         }
 
-        if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0)
+        if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0 && !alreadyAskedForLandPermissions)
         {
             ActivateLandAccessBackgroundChecker();
-            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE);
+            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, NotificationFactory.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
             isWaitingForPermission = true;
             askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
         }
@@ -843,15 +850,16 @@ public class BIWMainController : PluginFeature
                                      CheckSceneToEditByShorcut();
                                  }
                                  isWaitingForPermission = false;
+                                 alreadyAskedForLandPermissions = true;
                              });
     }
 
-    private static void ShowGenericNotification(string message)
+    private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
         Notification.Model notificationModel = new Notification.Model();
         notificationModel.message = message;
-        notificationModel.type = NotificationFactory.Type.GENERIC;
-        notificationModel.timer = BIWSettings.LAND_NOTIFICATIONS_TIMER;
+        notificationModel.type = type;
+        notificationModel.timer = timer;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }
