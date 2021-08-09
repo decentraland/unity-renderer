@@ -154,7 +154,8 @@ public class Catalyst : ICatalyst
                     for (int j = 1; j < splittedPromises.Length; j++)
                     {
                         string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
-                        json += $",{jsonContent}";
+                        if (!string.IsNullOrEmpty(jsonContent))
+                            json += $",{jsonContent}";
                     }
 
                     promise.Resolve($"[{json}]");
