@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(AvatarRenderer))]
 public class ParticlesOnAvatarVisualCue : MonoBehaviour
 {
-    [SerializeField] private AvatarRenderer.VisualCue avatarVisualCue;
+    [SerializeField] private IAvatarRenderer.VisualCue avatarVisualCue;
     [SerializeField] private GameObject particlePrefab;
     [SerializeField] private bool followAvatar;
 
@@ -16,7 +16,7 @@ public class ParticlesOnAvatarVisualCue : MonoBehaviour
         avatarRenderer.OnVisualCue += OnVisualCue;
     }
 
-    private void OnVisualCue(AvatarRenderer.VisualCue cue)
+    private void OnVisualCue(IAvatarRenderer.VisualCue cue)
     {
         if (cue != avatarVisualCue || particlePrefab == null)
             return;
