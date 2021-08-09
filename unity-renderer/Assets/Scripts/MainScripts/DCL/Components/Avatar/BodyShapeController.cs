@@ -16,7 +16,7 @@ public class BodyShapeController : WearableController, IBodyShapeController
 {
     public string bodyShapeId => wearable.id;
     private Transform animationTarget;
-    private bool facialFeaturesVisible;
+    private bool facialFeaturesVisible = true;
     private HashSet<string> currentHiddenList = new HashSet<string>();
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem) { }
