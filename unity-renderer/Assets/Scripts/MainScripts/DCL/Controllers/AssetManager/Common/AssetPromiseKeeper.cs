@@ -178,6 +178,11 @@ namespace DCL
                 yield return ProcessBlockedPromisesDeferred(promise);
                 CleanPromise(promise);
 
+                if (promise.isForgotten)
+                {
+                    promise.Unload();
+                }
+
                 var enumerator = SkipFrameIfOverBudget();
 
                 if (enumerator != null)
