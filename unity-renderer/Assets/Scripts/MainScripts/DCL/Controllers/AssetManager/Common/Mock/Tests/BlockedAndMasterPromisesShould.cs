@@ -96,6 +96,8 @@ namespace AssetPromiseKeeper_Mock_Tests
             yield return prom2;
             yield return prom3;
 
+            // NOTE: since waiting promises are processed in a coroutine we must wait a while before everything is properly cleaned
+            yield return new WaitUntil(() => keeper.waitingPromisesCount == 0, 2.0f);
             Assert.AreEqual(0, keeper.waitingPromisesCount);
 
             Assert.AreNotEqual(AssetPromiseState.FINISHED, prom.state);
@@ -148,13 +150,69 @@ namespace AssetPromiseKeeper_Mock_Tests
             AssetPromise_Mock lastPromise = new AssetPromise_Mock();
             lastPromise.idGenerator = id;
             keeper.Keep(lastPromise);
-            
+
             keeper.Forget(masterPromise);
 
             yield return firstPromise;
 
             yield return new WaitUntil(() => masterPromiseUnloaded, 2.0f);
             Assert.IsTrue(masterPromiseUnloaded);
+        }
+
+        [UnityTest]
+        public IEnumerator NotCleanMasterPromiseWhileWaitingPromisesStillExist()
+        {
+            var library = new AssetLibrary_Mock();
+            var keeper = new AssetPromiseKeeper_Mock(library);
+
+            string id = "1";
+
+            AssetPromise_Mock masterPromise = new AssetPromise_Mock();
+            masterPromise.idGenerator = id;
+            keeper.Keep(masterPromise);
+
+            AssetPromise_Mock prom1 = new AssetPromise_Mock();
+            prom1.idGenerator = id;
+            keeper.Keep(prom1);
+
+            yield return prom1;
+
+            AssetPromise_Mock prom2 = new AssetPromise_Mock();
+            prom2.idGenerator = id;
+            keeper.Keep(prom2);
+
+            Assert.AreNotEqual(0, keeper.masterPromises.Count);
+
+            yield return prom2;
+
+            yield return new WaitUntil(() => keeper.masterPromises.Count == 0, 2.0f);
+            Assert.AreEqual(0, keeper.masterPromises.Count);
+        }
+
+        [UnityTest]
+        public IEnumerator NotForgetMasterPromiseWhileWaitingPromisesStillExist()
+        {
+            var library = new AssetLibrary_Mock();
+            var keeper = new AssetPromiseKeeper_Mock(library);
+
+            string id = "1";
+
+            AssetPromise_Mock masterPromise = new AssetPromise_Mock();
+            masterPromise.idGenerator = id;
+            keeper.Keep(masterPromise);
+
+            AssetPromise_Mock firstPromise = new AssetPromise_Mock();
+            firstPromise.idGenerator = id;
+            keeper.Keep(firstPromise);
+
+            AssetPromise_Mock lastPromise = new AssetPromise_Mock();
+            lastPromise.idGenerator = id;
+            keeper.Keep(lastPromise);
+
+            yield return firstPromise;
+            keeper.Forget(masterPromise);
+
+            Assert.AreNotEqual(0, keeper.masterPromises.Count);
         }
     }
 }
