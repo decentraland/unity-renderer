@@ -427,7 +427,7 @@ namespace UnityGLTF
 
             if (loadingRoutine != null)
             {
-                Debug.LogError($"ERROR: GLTF destroyed while loading {name}");
+                Debug.LogWarning($"ERROR: GLTF destroyed while loading -> {name}");
             }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
