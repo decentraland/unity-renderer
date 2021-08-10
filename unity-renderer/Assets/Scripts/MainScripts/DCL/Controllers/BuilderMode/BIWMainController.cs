@@ -547,6 +547,7 @@ public class BIWMainController : PluginFeature
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
@@ -732,6 +733,7 @@ public class BIWMainController : PluginFeature
 
         biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.appMode.Set(AppMode.DEFAULT);
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
