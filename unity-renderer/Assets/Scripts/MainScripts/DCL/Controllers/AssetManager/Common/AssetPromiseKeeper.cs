@@ -31,7 +31,7 @@ namespace DCL
         public int waitingPromisesCount => waitingPromises.Count;
 
         //NOTE(Brian): List of promises waiting for assets not in library.
-        Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
+        protected Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
         //NOTE(Brian): List of promises waiting for assets that are currently being loaded by another promise.
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
@@ -125,19 +125,16 @@ namespace DCL
 
             object id = promise.GetId();
 
-            if (promise.state == AssetPromiseState.LOADING)
-            {
-                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
-                bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
+            bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
+            bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
 
-                if (isMasterPromise && hasBlockedPromises)
-                {
-                    //NOTE(Brian): Pending promises are waiting for this one.
-                    //             We clear the events because we shouldn't call them, as this promise is forgotten.
-                    OnSilentForget(promise);
-                    promise.OnForget();
-                    return promise;
-                }
+            if (isMasterPromise && hasBlockedPromises)
+            {
+                //NOTE(Brian): Pending promises are waiting for this one.
+                //             We clear the events because we shouldn't call them, as this promise is forgotten.
+                OnSilentForget(promise);
+                promise.OnForget();
+                return promise;
             }
 
             promise.Unload();
@@ -178,6 +175,11 @@ namespace DCL
                 yield return ProcessBlockedPromisesDeferred(promise);
                 CleanPromise(promise);
 
+                if (promise.isForgotten)
+                {
+                    promise.Unload();
+                }
+
                 var enumerator = SkipFrameIfOverBudget();
 
                 if (enumerator != null)
@@ -214,8 +216,6 @@ namespace DCL
 
                 if (enumerator != null)
                     yield return enumerator;
-
-                CleanPromise(loadedPromise);
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
                     yield return ForceFailPromiseList(promisesToLoadForId);
