@@ -13,6 +13,8 @@ namespace DCL
         private object id;
         Coroutine assetMockCoroutine;
 
+        public event Action OnUnloaded;
+
         public override object GetId()
         {
             Assert.IsTrue(idGenerator != null, "idGenerator should not be null");
@@ -51,6 +53,12 @@ namespace DCL
         public Asset_Mock GetAsset_Test() { return asset; }
 
         public void Unload_Test() { Unload(); }
+
+        internal override void Unload()
+        {
+            base.Unload();
+            OnUnloaded?.Invoke();
+        }
 
         public void SetLibrary_Test(AssetLibrary<Asset_Mock> library) { this.library = library; }
 
