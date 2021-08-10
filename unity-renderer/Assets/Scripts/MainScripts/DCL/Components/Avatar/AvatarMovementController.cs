@@ -144,12 +144,34 @@ namespace DCL
             currentPosition += delta;
         }
 
+        private const float LERP_UPDATE_SECONDS = 1.5f;
+        private float lastLerpTime = -1;
         void Update()
         {
             if (avatarTransformValue == null)
                 return;
 
-            UpdateLerp(Time.deltaTime);
+            float lerpDelta = Time.deltaTime;
+
+            float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatarTransform.position);
+            float LODDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+            bool isInLODDistance = distanceToPlayer >= LODDistance;
+            if (isInLODDistance)
+            {
+                float timeDelta = Time.timeSinceLevelLoad - lastLerpTime;
+                if (timeDelta >= LERP_UPDATE_SECONDS )
+                {
+                    lastLerpTime = Time.timeSinceLevelLoad;
+                    lerpDelta = timeDelta;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            // UpdateLerp(Time.deltaTime);
+            UpdateLerp(lerpDelta);
         }
     }
 }

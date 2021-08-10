@@ -102,11 +102,13 @@ namespace DCL
 
         private void UpdateAvatarMeshes(int layer, bool enabledState)
         {
+            // TODO: We are ignoring the hidden-wearables list here
             int count = avatarRenderers.Count;
             for (var i = 0; i < count; i++)
             {
                 avatarRenderers[i].gameObject.layer = layer;
                 avatarRenderers[i].enabled = enabledState;
+                // avatarRenderers[i].forceRenderingOff = !enabledState; // shouldn't collide with CullintController as its in an ignored layer
             }
 
             avatarAnimation.enabled = enabledState;
