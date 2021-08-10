@@ -60,7 +60,7 @@ Note that using this approach, the Unity builds will run against kernel `master`
 
 If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
 
-    https://play.decentraland.zone/branch/<kernel-branch-name>/?renderer-branch=<branch-name>
+    https://play.decentraland.zone/?renderer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
 
 If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
 
