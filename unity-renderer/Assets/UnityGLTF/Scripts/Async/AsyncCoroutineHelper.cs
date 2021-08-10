@@ -65,8 +65,7 @@ namespace UnityGLTF
                 if (coroutineInfo != null)
                 {
                     runningActions.Add(coroutineInfo);
-                    DEBUG_runningActions = runningActions.Count;
-                    this.StartThrowingCoroutine(CallMethodOnMainThread(coroutineInfo), (ex) => Debug.LogError($"PATO: {name} {ex}"));
+                    this.StartThrowingCoroutine(CallMethodOnMainThread(coroutineInfo), (exception => Debug.LogError(exception)));
                 }
             }
         }

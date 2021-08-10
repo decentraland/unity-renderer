@@ -26,7 +26,7 @@ namespace Tests.AvatarNamesHUD
         [Test]
         public void TrackPlayer()
         {
-            PlayerStatus user0 = new PlayerStatus { id = "user0", name = "user0", isTalking = false };
+            Player user0 = new Player { id = "user0", name = "user0", isTalking = false };
             hudView.TrackPlayer(user0);
 
             Assert.AreEqual(MAX_AVATAR_NAMES - 1, hudView.reserveTrackers.Count);
@@ -34,7 +34,7 @@ namespace Tests.AvatarNamesHUD
             Assert.IsTrue(hudView.trackers.ContainsKey("user0"));
 
             AvatarNamesTracker tracker = hudView.trackers["user0"];
-            Assert.AreEqual(user0, tracker.playerStatus);
+            Assert.AreEqual(user0, tracker.player);
             Assert.NotNull(tracker);
 
             Assert.True(tracker.background.gameObject.activeSelf);
@@ -53,7 +53,7 @@ namespace Tests.AvatarNamesHUD
         [Test]
         public void UntrackPlayer()
         {
-            PlayerStatus user0 = new PlayerStatus { id = "user0", name = "user0" };
+            Player user0 = new Player { id = "user0", name = "user0" };
             hudView.TrackPlayer(user0);
             AvatarNamesTracker tracker = hudView.trackers["user0"];
 

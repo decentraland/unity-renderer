@@ -32,10 +32,12 @@ half4 DCL_SimpleFragmentPBR(InputData inputData, SurfaceData surfaceData)
 #endif
 
     #if defined(_SCREEN_SPACE_OCCLUSION)
+    #if !defined(_SSAO_OFF)
         const float DCL_CUSTOM_AO_TOON_FACTOR = 1.1;
         AmbientOcclusionFactor aoFactor = GetScreenSpaceAmbientOcclusion(inputData.normalizedScreenSpaceUV);
         surfaceData.occlusion = min(surfaceData.occlusion, aoFactor.indirectAmbientOcclusion * DCL_CUSTOM_AO_TOON_FACTOR);
         surfaceData.occlusion = max(surfaceData.occlusion, aoFactor.directAmbientOcclusion);
+    #endif
     #endif
     
     half3 color = surfaceData.albedo * surfaceData.occlusion;

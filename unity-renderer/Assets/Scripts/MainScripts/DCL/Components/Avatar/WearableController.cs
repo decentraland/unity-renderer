@@ -156,8 +156,9 @@ public class WearableController
         boneRetargetingDirty = false;
     }
 
-    public void CleanUp()
+    public virtual void CleanUp()
     {
+        SetSSAOEnabled(true);
         UnloadMaterials();
         RestoreOriginalMaterials();
         assetRenderers = null;
@@ -201,5 +202,36 @@ public class WearableController
             return false;
 
         return wearable.data.representations.FirstOrDefault(x => x.bodyShapes.Contains(bodyShapeId))?.mainFile == lastMainFileLoaded;
+    }
+
+    public void SetSSAOEnabled(bool ssaoEnabled)
+    {
+        if (assetRenderers == null)
+            return;
+
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            for (int j = 0; j < assetRenderers[i].materials.Length; j++)
+            {
+                if (ssaoEnabled)
+                    assetRenderers[i].materials[j].DisableKeyword("_SSAO_OFF");
+                else
+                    assetRenderers[i].materials[j].EnableKeyword("_SSAO_OFF");
+            }
+        }
+    }
+
+    public void SetFadeDither(float ditherFade)
+    {
+        if (assetRenderers == null)
+            return;
+
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            for (int j = 0; j < assetRenderers[i].materials.Length; j++)
+            {
+                assetRenderers[i].materials[j].SetFloat(ShaderUtils.DitherFade, ditherFade);
+            }
+        }
     }
 }

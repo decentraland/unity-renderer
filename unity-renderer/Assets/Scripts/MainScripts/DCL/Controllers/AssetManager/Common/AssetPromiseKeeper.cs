@@ -24,21 +24,6 @@ namespace DCL
         where AssetLibraryType : AssetLibrary<AssetType>, new()
         where AssetPromiseType : AssetPromise<AssetType>
     {
-        private static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> instance;
-
-        public static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> i
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>(new AssetLibraryType());
-                }
-
-                return instance;
-            }
-        }
-
         public AssetLibraryType library;
 
         //NOTE(Brian): All waiting promises. Only used for cleanup and to keep count.
@@ -46,7 +31,7 @@ namespace DCL
         public int waitingPromisesCount => waitingPromises.Count;
 
         //NOTE(Brian): List of promises waiting for assets not in library.
-        Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
+        protected Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
         //NOTE(Brian): List of promises waiting for assets that are currently being loaded by another promise.
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
@@ -190,6 +175,11 @@ namespace DCL
                 yield return ProcessBlockedPromisesDeferred(promise);
                 CleanPromise(promise);
 
+                if (promise.isForgotten)
+                {
+                    promise.Unload();
+                }
+
                 var enumerator = SkipFrameIfOverBudget();
 
                 if (enumerator != null)
@@ -226,8 +216,6 @@ namespace DCL
 
                 if (enumerator != null)
                     yield return enumerator;
-
-                CleanPromise(loadedPromise);
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
                     yield return ForceFailPromiseList(promisesToLoadForId);

@@ -14,6 +14,7 @@ public class BIWMainController : PluginFeature
 {
     internal static bool BYPASS_LAND_OWNERSHIP_CHECK = false;
     private const float DISTANCE_TO_DISABLE_BUILDER_IN_WORLD = 45f;
+    private const float MAX_DISTANCE_STOP_TRYING_TO_ENTER = 16;
 
     private GameObject cursorGO;
     private InputController inputController;
@@ -66,9 +67,12 @@ public class BIWMainController : PluginFeature
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private UserProfile userProfile;
-    private List<LandWithAccess> landsWithAccess = new List<LandWithAccess>();
     private Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
+
+    private bool isWaitingForPermission = false;
+    private bool alreadyAskedForLandPermissions = false;
+    private Vector3 askPermissionLastPosition;
 
     public override void Initialize()
     {
@@ -79,6 +83,9 @@ public class BIWMainController : PluginFeature
 
         activeFeature = true;
         isInit = true;
+
+        //We init the lands so we don't have a null reference
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
 
         BIWCatalogManager.Init();
 
@@ -302,9 +309,15 @@ public class BIWMainController : PluginFeature
     {
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
+        {
+            if (updateLandsWithAcessCoroutine != null)
+                CoroutineStarter.Stop(updateLandsWithAcessCoroutine);
             updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());
+        }
         else
+        {
             userProfile.OnUpdate += OnUserProfileUpdate;
+        }
     }
 
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
@@ -404,9 +417,21 @@ public class BIWMainController : PluginFeature
             return;
         }
 
-        if (landsWithAccess.Count == 0)
+        if (DataStore.i.builderInWorld.landsWithAccess.Get().Length == 0 && !alreadyAskedForLandPermissions)
+        {
             ActivateLandAccessBackgroundChecker();
+            ShowGenericNotification(BIWSettings.LAND_EDITION_WAITING_FOR_PERMISSIONS_MESSAGE, NotificationFactory.Type.GENERIC_WITHOUT_BUTTON, BIWSettings.LAND_CHECK_MESSAGE_TIMER);
+            isWaitingForPermission = true;
+            askPermissionLastPosition = DCLCharacterController.i.characterPosition.unityPosition;
+        }
+        else
+        {
+            CheckSceneToEditByShorcut();
+        }
+    }
 
+    private void CheckSceneToEditByShorcut()
+    {
         FindSceneToEdit();
 
         if (!UserHasPermissionOnParcelScene(sceneToEdit))
@@ -452,7 +477,7 @@ public class BIWMainController : PluginFeature
         if (BYPASS_LAND_OWNERSHIP_CHECK)
             return true;
 
-        List<Vector2Int> allParcelsWithAccess = landsWithAccess.SelectMany(land => land.parcels).ToList();
+        List<Vector2Int> allParcelsWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.parcels).ToList();
         foreach (Vector2Int parcel in allParcelsWithAccess)
         {
             if (sceneToCheck.sceneData.parcels.Any(currentParcel => currentParcel.x == parcel.x && currentParcel.y == parcel.y))
@@ -464,7 +489,7 @@ public class BIWMainController : PluginFeature
 
     private bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
-        List<DeployedScene> allDeployedScenesWithAccess = landsWithAccess.SelectMany(land => land.scenes).ToList();
+        List<DeployedScene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
         foreach (DeployedScene scene in allDeployedScenesWithAccess)
         {
             if (scene.source != DeployedScene.Source.SDK)
@@ -488,6 +513,7 @@ public class BIWMainController : PluginFeature
     }
 
     public void TryStartEnterEditMode() { TryStartEnterEditMode(true, null); }
+
     public void TryStartEnterEditMode(IParcelScene targetScene) { TryStartEnterEditMode(true, targetScene); }
 
     public void TryStartEnterEditMode(bool activateCamera, IParcelScene targetScene = null , string source = "BuilderPanel")
@@ -521,6 +547,7 @@ public class BIWMainController : PluginFeature
         initialLoadingController.Show();
         initialLoadingController.SetPercentage(0f);
         DataStore.i.appMode.Set(AppMode.BUILDER_IN_WORLD_EDITION);
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
         BIWAnalytics.StartEditorFlow(source);
         beginStartFlowTimeStamp = Time.realtimeSinceStartup;
 
@@ -614,7 +641,7 @@ public class BIWMainController : PluginFeature
         }
         startEditorTimeStamp = Time.realtimeSinceStartup;
 
-        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(landsWithAccess, sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
+        BIWAnalytics.AddSceneInfo(sceneToEdit.sceneData.basePosition, BIWUtils.GetLandOwnershipType(DataStore.i.builderInWorld.landsWithAccess.Get().ToList(), sceneToEdit).ToString(), BIWUtils.GetSceneSize(sceneToEdit));
         BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
     }
 
@@ -706,6 +733,7 @@ public class BIWMainController : PluginFeature
 
         biwAudioHandler.gameObject.SetActive(false);
         DataStore.i.appMode.Set(AppMode.DEFAULT);
+        DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
         BIWAnalytics.ExitEditor(Time.realtimeSinceStartup - startEditorTimeStamp);
     }
 
@@ -816,15 +844,24 @@ public class BIWMainController : PluginFeature
                                  KernelConfig.i.Get().tld,
                                  BIWSettings.CACHE_TIME_LAND,
                                  BIWSettings.CACHE_TIME_SCENES)
-                             .Then(lands => landsWithAccess = lands.ToList());
+                             .Then(lands =>
+                             {
+                                 DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+                                 if (isWaitingForPermission && Vector3.Distance(askPermissionLastPosition, DCLCharacterController.i.characterPosition.unityPosition) <= MAX_DISTANCE_STOP_TRYING_TO_ENTER)
+                                 {
+                                     CheckSceneToEditByShorcut();
+                                 }
+                                 isWaitingForPermission = false;
+                                 alreadyAskedForLandPermissions = true;
+                             });
     }
 
-    private static void ShowGenericNotification(string message)
+    private static void ShowGenericNotification(string message, NotificationFactory.Type type = NotificationFactory.Type.GENERIC, float timer = BIWSettings.LAND_NOTIFICATIONS_TIMER )
     {
         Notification.Model notificationModel = new Notification.Model();
         notificationModel.message = message;
-        notificationModel.type = NotificationFactory.Type.GENERIC;
-        notificationModel.timer = BIWSettings.LAND_NOTIFICATIONS_TIMER;
+        notificationModel.type = type;
+        notificationModel.timer = timer;
         HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }
