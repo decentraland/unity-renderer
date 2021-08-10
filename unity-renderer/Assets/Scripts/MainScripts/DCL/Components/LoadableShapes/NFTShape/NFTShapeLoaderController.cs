@@ -70,7 +70,7 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     bool isDestroyed = false;
 
-    private Coroutine fetchNftImage;
+    private Coroutine fetchNftImageCoroutine;
 
     void Awake()
     {
@@ -164,10 +164,10 @@ public class NFTShapeLoaderController : MonoBehaviour
     private void FetchNFTImage()
     {
         ShowLoading(true);
-        nftInfoFetcher.FetchNFTImage(darURLProtocol, darURLRegistry, NFTInfoFeteched, NFTInfoFetchedFail);
+        nftInfoFetcher.FetchNFTImage(darURLProtocol, darURLRegistry, NFTInfoFetched, NFTInfoFetchedFail);
     }
 
-    private void NFTInfoFeteched(NFTInfo nftInfo) { fetchNftImage = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
+    private void NFTInfoFetched(NFTInfo nftInfo) { fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
 
     private void NFTInfoFetchedFail()
     {
@@ -193,21 +193,6 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         FinishLoading(true);
-    }
-
-    void FinishLoading(bool loadedSuccessfully)
-    {
-        if (loadedSuccessfully)
-        {
-            if (spinner != null)
-                spinner.SetActive(false);
-
-            OnLoadingAssetSuccess?.Invoke();
-        }
-        else
-        {
-            OnLoadingAssetFail?.Invoke();
-        }
     }
 
     IEnumerator FetchNFTImageCoroutine(NFTInfo nftInfo)
@@ -336,8 +321,8 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         nftInfoFetcher.Dispose();
 
-        if (fetchNftImage != null)
-            StopCoroutine(fetchNftImage);
+        if (fetchNftImageCoroutine != null)
+            StopCoroutine(fetchNftImageCoroutine);
         if (assetPromise != null)
         {
             assetPromise.Forget();
