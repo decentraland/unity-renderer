@@ -68,4 +68,13 @@ namespace VariableTests
         [NUnit.Framework.Test]
         public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(new Vector3(0, 0, 0), new Vector3(1, 1, 1)); }
     }
+
+    public class QuaternionVariableShould : BaseVariableTest<Quaternion, QuaternionVariable>
+    {
+        [NUnit.Framework.Test]
+        public void NotCallOnChangedWhenSameValueIsSet() { base.ShouldNotCallOnChangedWhenSameValueIsSet(new Quaternion(0, 0, 0, 0), new Quaternion(1, 1, 1, 1)); }
+
+        [NUnit.Framework.Test]
+        public void VariableValueIsChangedProperly() { base.VariableValueIsChangedProperly(new Quaternion(0, 0, 0, 0), new Quaternion(1, 1, 1, 1)); }
+    }
 }

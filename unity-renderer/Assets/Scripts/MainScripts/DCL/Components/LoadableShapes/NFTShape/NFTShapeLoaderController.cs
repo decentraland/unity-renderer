@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers.NFT;
 using System.Collections;
 using System.IO;
@@ -11,6 +11,13 @@ using UnityGLTF.Loader;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
+    internal const string COULD_NOT_FETCH_DAR_URL = "Couldn't fetch DAR url '{0}' for NFTShape.";
+    internal const string ACCEPTED_URL_FORMAT = "The accepted format is 'ethereum://ContractAddress/TokenID'.";
+    internal const string SUPPORTED_PROTOCOL = "The only protocol currently supported is 'ethereum'.";
+    internal const string DOES_NOT_SUPPORT_POLYGON = "Warning: OpenSea API does not support fetching Polygon assets.";
+    internal const string COULD_NOT_FETCH_NFT_FROM_API = "Couldn't fetch NFT: '{0}/{1}'.";
+    internal const string COULD_NOT_FETCH_NFT_IMAGE = "Couldn't fetch NFT image for: '{0}/{1}': {2}.";
+
     public enum NoiseType
     {
         ClassicPerlin,
@@ -26,6 +33,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     public new BoxCollider collider;
     public Color backgroundColor;
     public GameObject spinner;
+    public GameObject errorFeedback;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
     [HideInInspector] public INFTInfoFetcher nftInfoFetcher;
@@ -94,6 +102,8 @@ public class NFTShapeLoaderController : MonoBehaviour
         nftInfoFetcher = new NFTInfoFetcher();
     }
 
+    private void Start() { spinner.layer = LayerMask.NameToLayer("ViewportCullingIgnored"); }
+
     void Update() { hqTextureHandler?.Update(); }
 
     public void LoadAsset(string url, bool loadEvenIfAlreadyLoaded = false)
@@ -101,14 +111,15 @@ public class NFTShapeLoaderController : MonoBehaviour
         if (string.IsNullOrEmpty(url) || (!loadEvenIfAlreadyLoaded && alreadyLoadedAsset))
             return;
 
+        ShowErrorFeedback(false);
         UpdateBackgroundColor(backgroundColor);
 
         // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
         var regexMatches = Regex.Matches(url, "(?<protocol>[^:]+)://(?<registry>0x([A-Fa-f0-9])+)(?:/(?<asset>.+))?");
         if (regexMatches.Count == 0)
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The accepted format is 'ethereum://ContractAddress/TokenID'");
-
+            Debug.LogError(string.Format(COULD_NOT_FETCH_DAR_URL + " " + ACCEPTED_URL_FORMAT, url));
+            ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
             return;
@@ -117,8 +128,8 @@ public class NFTShapeLoaderController : MonoBehaviour
         Match match = regexMatches[0];
         if (match.Groups["protocol"] == null || match.Groups["registry"] == null || match.Groups["asset"] == null)
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape.");
-
+            Debug.LogError(string.Format(COULD_NOT_FETCH_DAR_URL + " " + ACCEPTED_URL_FORMAT, url));
+            ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
             return;
@@ -127,8 +138,8 @@ public class NFTShapeLoaderController : MonoBehaviour
         darURLProtocol = match.Groups["protocol"].ToString();
         if (darURLProtocol != "ethereum")
         {
-            Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The only protocol currently supported is 'ethereum'");
-
+            Debug.LogError(string.Format(COULD_NOT_FETCH_DAR_URL + " " + SUPPORTED_PROTOCOL + " " + ACCEPTED_URL_FORMAT, url));
+            ShowErrorFeedback(true);
             OnLoadingAssetFail?.Invoke();
 
             return;
@@ -152,14 +163,17 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     private void FetchNFTImage()
     {
-        if (spinner != null)
-            spinner.SetActive(true);
+        ShowLoading(true);
         nftInfoFetcher.FetchNFTImage(darURLProtocol, darURLRegistry, NFTInfoFeteched, NFTInfoFetchedFail);
     }
 
     private void NFTInfoFeteched(NFTInfo nftInfo) { fetchNftImage = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
 
-    private void NFTInfoFetchedFail() { FinishLoading(false); }
+    private void NFTInfoFetchedFail()
+    {
+        ShowErrorFeedback(true);
+        FinishLoading(false);
+    }
 
     private void FetchNFTInfoSuccess(ITexture asset, NFTInfo info, bool isPreview)
     {
@@ -228,8 +242,25 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (isError)
         {
-            Debug.LogError($"Couldn't fetch NFT image for: '{darURLRegistry}/{darURLAsset}' {nftInfo.originalImageUrl}");
-            FinishLoading(false);
+            Debug.LogError(string.Format(COULD_NOT_FETCH_NFT_IMAGE, darURLRegistry, darURLAsset, nftInfo.originalImageUrl));
+            ShowErrorFeedback(true);
+            OnLoadingAssetFail?.Invoke();
+            yield break;
+        }
+
+        FinishLoading(foundDCLImage);
+    }
+
+    void FinishLoading(bool loadedSuccessfully)
+    {
+        if (loadedSuccessfully)
+        {
+            ShowLoading(false);
+            OnLoadingAssetSuccess?.Invoke();
+        }
+        else
+        {
+            OnLoadingAssetFail?.Invoke();
         }
     }
 
@@ -345,5 +376,24 @@ public class NFTShapeLoaderController : MonoBehaviour
         gifPlayer = new GifPlayer(gifAsset);
         gifPlayer.Play();
         gifPlayer.OnFrameTextureChanged += UpdateTexture;
+    }
+
+    private void ShowLoading(bool isVisible)
+    {
+        if (spinner == null)
+            return;
+
+        spinner.SetActive(isVisible);
+    }
+
+    private void ShowErrorFeedback(bool isVisible)
+    {
+        if (errorFeedback == null)
+            return;
+
+        if (isVisible)
+            ShowLoading(false);
+
+        errorFeedback.SetActive(isVisible);
     }
 }

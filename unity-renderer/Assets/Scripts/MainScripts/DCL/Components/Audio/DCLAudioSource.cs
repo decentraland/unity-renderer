@@ -34,6 +34,8 @@ namespace DCL.Components
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = new Model();
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
@@ -112,11 +114,17 @@ namespace DCL.Components
             }
         }
 
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
+            UpdateAudioSourceVolume();
+        }
+
         private void UpdateAudioSourceVolume()
         {
+            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+
             if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
             {
-                audioSource.volume = ((Model)model).volume;
+                audioSource.volume = newVolume;
                 return;
             }
 
@@ -126,7 +134,7 @@ namespace DCL.Components
                 return;
             }
 
-            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? ((Model)model).volume : 0f;
+            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? newVolume : 0f;
         }
 
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
@@ -151,6 +159,8 @@ namespace DCL.Components
 
             //NOTE(Brian): Unsuscribe events.
             InitDCLAudioClip(null);
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 
         public void UpdateOutOfBoundariesState(bool isEnabled)
