@@ -15,9 +15,9 @@ namespace DCL
             COUNT
         }
 
-        private readonly int LOD_TEXTURE_SHADER_VAR = Shader.PropertyToID("_BaseMap");
         private static Camera snapshotCamera;
 
+        private readonly int LOD_TEXTURE_SHADER_VAR = Shader.PropertyToID("_BaseMap");
         private readonly RenderTexture[] snapshotRenderTextures = new RenderTexture[(int)SnapshotDirections.COUNT];
 
         private Transform avatarTransform;
@@ -26,9 +26,6 @@ namespace DCL
         private List<Renderer> avatarRenderers;
         private Animation avatarAnimation;
         private SnapshotDirections currentCharacterRelativeDirection = SnapshotDirections.North;
-
-        public delegate void LODToggleEventDelegate(bool newValue);
-        public event LODToggleEventDelegate OnLODToggle;
 
         public AvatarLODController()
         {
@@ -57,6 +54,8 @@ namespace DCL
             this.avatarAnimation = avatarAnimation;
 
             InitializeSnapshots();
+
+            impostorMeshRenderer.material.SetTexture(LOD_TEXTURE_SHADER_VAR, snapshotRenderTextures[(int)currentCharacterRelativeDirection]);
         }
 
         // TODO: We should trigger this initialization again if a wearable is changed on the avatar
