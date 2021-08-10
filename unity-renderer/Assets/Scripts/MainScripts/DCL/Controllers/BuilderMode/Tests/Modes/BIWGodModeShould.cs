@@ -1,16 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Camera;
+using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class BIWGodModeShould : IntegrationTestSuite_Legacy
 {
@@ -47,6 +51,8 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         godMode =  (BIWGodMode) modeController.GetCurrentMode();
         godMode.SetEditorReferences(mockedGameObject, mockedGameObject, mockedGameObject, mockedGameObject, selectedEntities);
+        godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
+        godMode.freeCameraController.Configure().gameObject.Returns(mockedGameObject);
     }
 
     [Test]
@@ -351,6 +357,120 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(godMode.isMouseDragging);
+    }
+
+    [Test]
+    public void DeselectedEntities()
+    {
+        //Arrange
+        var biwEntity = new BIWEntity();
+        var newEntity = Substitute.For<IDCLEntity>();
+        newEntity.Configure().gameObject.Returns(entityGameObject);
+        biwEntity.Init(newEntity, null);
+        selectedEntities.Add(biwEntity);
+        godMode.isPlacingNewObject = true;
+
+        //Act
+        godMode.EntityDeselected(biwEntity);
+
+        //Assert
+        Assert.IsFalse(godMode.isPlacingNewObject);
+    }
+
+    [Test]
+    public void LookAtEntity()
+    {
+        //Arrange
+        var newEntity = Substitute.For<IDCLEntity>();
+        newEntity.Configure().gameObject.Returns(entityGameObject);
+        var position = Vector3.zero;
+
+        //Act
+        godMode.LookAtEntity(newEntity);
+
+        //Assert
+        godMode.freeCameraController.Received().SmoothLookAt(position);
+    }
+
+    [UnityTest]
+    public IEnumerator CalculateEntityMidPoint()
+    {
+        //Arrange
+        var entity = TestHelpers.CreateSceneEntity(scene);
+
+        TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(18, 1, 18) });
+
+        TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            new
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/PalmTree_01.glb"
+            }));
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
+        yield return new UnityEngine.WaitUntil(() => gltfShape.alreadyLoaded);
+        yield return null;
+
+        //Act
+        var postion = godMode.CalculateEntityMidPoint(entity);
+
+        //Assert
+        Assert.AreEqual(postion, entity.renderers[0].bounds.center);
+    }
+
+    [Test]
+    public void FocusGameObject()
+    {
+        //Arrange
+        var biwEntity = new BIWEntity();
+        var newEntity = Substitute.For<IDCLEntity>();
+        newEntity.Configure().gameObject.Returns(entityGameObject);
+        biwEntity.Init(newEntity, null);
+        selectedEntities.Add(biwEntity);
+
+        //Act
+        godMode.FocusEntities(selectedEntities);
+
+        //Assert
+        godMode.freeCameraController.Received().FocusOnEntities(selectedEntities);
+    }
+
+    [Test]
+    public void ResetCamera()
+    {
+        //Act
+        godMode.ResetCamera();
+
+        //Assert
+        godMode.freeCameraController.Received().ResetCameraPosition();
+    }
+
+    [Test]
+    public void TakeScreenshotForPublish()
+    {
+        //Act
+        godMode.TakeSceneScreenshotForPublish();
+
+        //Assert
+        godMode.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+    }
+
+    [Test]
+    public void TakeScreenshotForExit()
+    {
+        //Act
+        godMode.TakeSceneScreenshotForExit();
+
+        //Assert
+        godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
+    }
+
+    [Test]
+    public void OpenNewProjectDetails()
+    {
+        //Act
+        godMode.OpenNewProjectDetails();
+
+        //Assert
+        godMode.freeCameraController.Received().TakeSceneScreenshot(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     protected override IEnumerator TearDown()

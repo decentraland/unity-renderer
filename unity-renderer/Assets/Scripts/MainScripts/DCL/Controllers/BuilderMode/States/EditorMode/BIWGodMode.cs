@@ -16,7 +16,7 @@ public class BIWGodMode : BIWMode
     private float initialEagleCameraLookAtHeight = 0f;
 
     private float snapDragFactor = 5f;
-    private FreeCameraMovement freeCameraController;
+    internal IFreeCameraMovement freeCameraController;
 
     private CameraController cameraController;
     private Transform lookAtTransform;
@@ -405,7 +405,7 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement; }
+    private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement(); }
 
     internal void StarDraggingSelectedEntities()
     {
@@ -584,13 +584,7 @@ public class BIWGodMode : BIWMode
     {
         base.SelectedEntity(selectedEntity);
 
-        List<BIWEntity> editableEntities = new List<BIWEntity>();
-        foreach (BIWEntity entity in selectedEntities)
-        {
-            editableEntities.Add(entity);
-        }
-
-        gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
+        gizmoManager.SetSelectedEntities(editionGO.transform, selectedEntities);
 
         if (!isMultiSelectionActive && !selectedEntity.isNew)
             TryLookAtEntity(selectedEntity.rootEntity);
@@ -657,7 +651,7 @@ public class BIWGodMode : BIWMode
     {
         if (isModeActive)
         {
-            FocusGameObject(selectedEntities);
+            FocusEntities(selectedEntities);
             InputDone();
         }
     }
@@ -675,21 +669,24 @@ public class BIWGodMode : BIWMode
     public void LookAtEntity(IDCLEntity entity)
     {
         Vector3 pointToLook = entity.gameObject.transform.position;
-        if (entity.meshesInfo.renderers.Length > 0)
-        {
-            Vector3 midPointFromEntityMesh = Vector3.zero;
-            foreach (Renderer render in entity.renderers)
-            {
-                if (render == null)
-                    continue;
-                midPointFromEntityMesh += render.bounds.center;
-            }
-
-            midPointFromEntityMesh /= entity.renderers.Length;
-            pointToLook = midPointFromEntityMesh;
-        }
+        if (entity.meshesInfo != null && entity.meshesInfo.renderers.Length > 0)
+            pointToLook = CalculateEntityMidPoint(entity);
 
         freeCameraController.SmoothLookAt(pointToLook);
+    }
+
+    internal Vector3 CalculateEntityMidPoint(IDCLEntity entity)
+    {
+        Vector3 midPointFromEntityMesh = Vector3.zero;
+        foreach (Renderer render in entity.renderers)
+        {
+            if (render == null)
+                continue;
+            midPointFromEntityMesh += render.bounds.center;
+        }
+
+        midPointFromEntityMesh /= entity.renderers.Length;
+        return midPointFromEntityMesh;
     }
 
     #region Gizmos
@@ -755,9 +752,9 @@ public class BIWGodMode : BIWMode
 
     #endregion
 
-    public void FocusGameObject(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
+    public void FocusEntities(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
-    Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
+    internal Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         Vector3 direction = (parcelScene.GetSceneTransform().position - middlePoint).normalized;
@@ -767,13 +764,13 @@ public class BIWGodMode : BIWMode
                + Vector3.up * initialEagleCameraHeight;
     }
 
-    void SetLookAtObject(IParcelScene parcelScene)
+    internal void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         lookAtTransform.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
-    void SetEditObjectAtMouse()
+    internal void SetEditObjectAtMouse()
     {
         if (raycastController.RayCastFloor(out Vector3 destination))
         {
@@ -790,9 +787,9 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
+    internal void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 
-    private void TakeSceneScreenshotForPublish()
+    internal void TakeSceneScreenshotForPublish()
     {
         entityHandler.DeselectEntities();
 
