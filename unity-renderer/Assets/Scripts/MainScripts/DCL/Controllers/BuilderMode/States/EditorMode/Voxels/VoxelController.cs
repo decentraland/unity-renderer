@@ -4,9 +4,11 @@ using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using DCL.Camera;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 public class VoxelController
 {
     [Header("References")]
