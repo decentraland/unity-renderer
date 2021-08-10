@@ -164,7 +164,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     private void FetchNFTImage()
     {
         ShowLoading(true);
-        nftInfoFetcher.FetchNFTImage(darURLProtocol, darURLRegistry, NFTInfoFetched, NFTInfoFetchedFail);
+        nftInfoFetcher.FetchNFTImage(darURLRegistry, darURLAsset, NFTInfoFetched, NFTInfoFetchedFail);
     }
 
     private void NFTInfoFetched(NFTInfo nftInfo) { fetchNftImageCoroutine = StartCoroutine(FetchNFTImageCoroutine(nftInfo)); }
