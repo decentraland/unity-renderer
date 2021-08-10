@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 using UnityGLTF;
+using WaitUntil = DCL.WaitUntil;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
@@ -189,7 +190,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             keeper.Cleanup();
         }
-        
+
         [UnityTest]
         public IEnumerator WaitForGLTFtoBeLoadedBeforeDestroyingIt()
         {
@@ -197,25 +198,30 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var keeper = new AssetPromiseKeeper_GLTF();
 
             string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
+            bool finishedLoading = false;
 
             AssetPromise_GLTF promise = new AssetPromise_GLTF(scene.contentProvider, url);
             promise.settings.parent = parentGO.transform;
             keeper.Keep(promise);
 
-            GLTFComponent gltfComponent = parentGO.GetComponentInChildren<GLTFComponent>();
-            GameObject gltfGameObject = gltfComponent.gameObject;
+            GLTFComponent gltfComponent = promise.asset.container.GetComponentInChildren<GLTFComponent>();
+            gltfComponent.OnSuccess += () => finishedLoading = true;
+            GameObject gltfContainer = promise.asset.container;
+
             Assert.IsNotNull(gltfComponent);
+            Assert.AreEqual(parentGO.transform, gltfContainer.transform.parent);
 
             keeper.Forget(promise);
             Assert.IsNotNull(gltfComponent);
-            
+            Assert.AreNotEqual(parentGO.transform, gltfContainer.transform.parent);
+
             yield return promise;
 
-            yield return new DCL.WaitUntil(() => gltfComponent == null, 2);
-            Assert.IsNull(gltfGameObject);
+            yield return new WaitUntil(() => finishedLoading, 2);
+            Assert.IsTrue(finishedLoading);
 
-            keeper.Cleanup();
             Object.DestroyImmediate(parentGO);
-        }        
+            keeper.Cleanup();
+        }
     }
 }
