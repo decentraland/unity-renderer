@@ -241,6 +241,7 @@ namespace Tests
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
+            var initialDirection = CommonScriptableObjects.characterForward.Get().Value;
             // Lerp the platform's rotation
             float lerpTime = 0f;
             float lerpSpeed = 1f;
@@ -271,6 +272,12 @@ namespace Tests
 
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 1f);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 1f);
+
+            //test for rotation
+            var currentDirection = CommonScriptableObjects.characterForward.Get().Value;
+            var expectedDirection = Quaternion.AngleAxis(180, Vector3.up) * initialDirection;
+            var rotationIsExpected = Vector3.Distance(currentDirection, expectedDirection) <= 0.05f;
+            UnityEngine.Assertions.Assert.IsTrue(rotationIsExpected, "character is rotated");
 
             // remove platform and check character parent
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);

@@ -5,93 +5,82 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float LODS_LOCAL_Y_POS = 1.8f;
-        private const float LODS_VERTICAL_MOVEMENT = 0.1f;
-        private const float LODS_VERTICAL_MOVEMENT_DELAY = 1f;
+        private const float SIMPLE_AVATAR_DISTANCE = 10f;
 
-        private List<AvatarLODController> avatarsList = new List<AvatarLODController>();
+        private readonly Dictionary<string, AvatarLODController> lodControllers = new Dictionary<string, AvatarLODController>();
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private bool enabled;
 
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
                         .Then(config =>
                         {
-                            DataStore.i.avatarsLOD.LODEnabled.Set(config.features.enableAvatarLODs);
+                            enabled = config.features.enableAvatarLODs;
+                            if (!enabled)
+                                return;
+
+                            foreach (var keyValuePair in otherPlayers.Get())
+                            {
+                                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
+                            }
+                            otherPlayers.OnAdded += RegisterAvatar;
+                            otherPlayers.OnRemoved += UnregisterAvatar;
                         });
+        }
+
+        public void RegisterAvatar(string id, Player player)
+        {
+            if (!enabled || lodControllers.ContainsKey(id))
+                return;
+
+            lodControllers.Add(id, new AvatarLODController(player));
+        }
+
+        public void UnregisterAvatar(string id, Player player)
+        {
+            if (!lodControllers.ContainsKey(id))
+                return;
+
+            lodControllers[id].Dispose();
+            lodControllers.Remove(id);
         }
 
         public void Update()
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get())
+            if (!enabled)
                 return;
 
             UpdateAllLODs();
-
             UpdateLODsBillboard();
-        }
-
-        public void RegisterAvatar(AvatarLODController newAvatar)
-        {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || avatarsList.Contains(newAvatar) || newAvatar == null)
-                return;
-
-            avatarsList.Add(newAvatar);
-        }
-
-        public void RemoveAvatar(AvatarLODController targetAvatar)
-        {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get() || !avatarsList.Contains(targetAvatar) || targetAvatar == null)
-                return;
-
-            int listCount = avatarsList.Count;
-            for (int i = 0; i < listCount; i++)
-            {
-                if (avatarsList[i] == targetAvatar)
-                {
-                    avatarsList.RemoveAt(i);
-
-                    targetAvatar.ToggleLOD(false);
-
-                    return;
-                }
-            }
         }
 
         private void UpdateLODsBillboard()
         {
-            int listCount = avatarsList.Count;
-            GameObject lodGO;
-            for (int i = 0; i < listCount; i++)
+            foreach (var kvp in lodControllers)
             {
-                lodGO = avatarsList[i].meshRenderer.gameObject;
-                if (!lodGO.activeSelf)
-                    continue;
-
-                Vector3 previousForward = lodGO.transform.forward;
-                Vector3 lookAtDir = (lodGO.transform.position - CommonScriptableObjects.cameraPosition).normalized;
+                otherPlayers.TryGetValue(kvp.Key, out Player player);
+                Vector3 previousForward = player.forwardDirection;
+                Vector3 lookAtDir = (player.worldPosition - CommonScriptableObjects.cameraPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
-
-                lodGO.transform.forward = lookAtDir;
+                player.renderer.SetImpostorForward(lookAtDir);
             }
         }
 
-        public void Dispose() { }
-
         private void UpdateAllLODs()
         {
-            if (!DataStore.i.avatarsLOD.LODEnabled.Get())
-                return;
-
             SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
-            foreach (AvatarLODController avatar in avatarsList)
+            foreach (var avatarKVP in lodControllers)
             {
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), avatar.transform.position);
+                var featureController = avatarKVP.Value;
+                var position = otherPlayers[avatarKVP.Key].worldPosition;
+                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
                 {
-                    avatar.ToggleLOD(true);
+                    featureController.SetImpostorState();
                 }
                 else
                 {
@@ -99,19 +88,36 @@ namespace DCL
                     {
                         distanceToPlayer += 0.0001f;
                     }
-                    closeDistanceAvatars.Add(distanceToPlayer, avatar);
+                    closeDistanceAvatars.Add(distanceToPlayer, featureController);
                 }
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            AvatarLODController currentAvatar;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
-                currentAvatar = closeDistanceAvatars.Values[i];
+                AvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
-
-                currentAvatar.ToggleLOD(isLOD);
+                if (isLOD)
+                    currentAvatar.SetImpostorState();
+                else
+                {
+                    if (closeDistanceAvatars.Keys[i] < SIMPLE_AVATAR_DISTANCE)
+                        currentAvatar.SetAvatarState();
+                    else
+                        currentAvatar.SetSimpleAvatar();
+                }
             }
+        }
+
+        public void Dispose()
+        {
+            foreach (AvatarLODController avatarFeaturesController in lodControllers.Values)
+            {
+                avatarFeaturesController.Dispose();
+            }
+
+            otherPlayers.OnAdded -= RegisterAvatar;
+            otherPlayers.OnRemoved -= UnregisterAvatar;
         }
     }
 }

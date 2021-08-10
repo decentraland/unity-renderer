@@ -210,4 +210,18 @@ public class WearableController
 
         originalMaterials.Clear();
     }
+
+    public void SetFadeDither(float ditherFade)
+    {
+        if (assetRenderers == null)
+            return;
+
+        for (int i = 0; i < assetRenderers.Length; i++)
+        {
+            for (int j = 0; j < assetRenderers[i].materials.Length; j++)
+            {
+                assetRenderers[i].materials[j].SetFloat(ShaderUtils.DitherFade, ditherFade);
+            }
+        }
+    }
 }
