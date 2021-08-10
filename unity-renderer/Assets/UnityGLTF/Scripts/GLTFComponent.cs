@@ -1,9 +1,11 @@
-using DCL.Components;
 using System;
 using System.Collections;
 using System.IO;
+using DCL;
+using DCL.Components;
 using UnityEngine;
 using UnityGLTF.Loader;
+using WaitUntil = UnityEngine.WaitUntil;
 
 namespace UnityGLTF
 {
@@ -60,8 +62,8 @@ namespace UnityGLTF
         }
 
         public GameObject loadingPlaceholder;
-        public System.Action OnFinishedLoadingAsset;
-        public System.Action OnFailedLoadingAsset;
+        public Action OnFinishedLoadingAsset;
+        public Action OnFailedLoadingAsset;
 
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
@@ -72,6 +74,7 @@ namespace UnityGLTF
         [SerializeField] private float RetryTimeout = 2.0f;
         [SerializeField] public Shader shaderOverride = null;
         private bool initialVisibility = true;
+        private bool ignoreDistanceTest = false;
 
         private enum State
         {
@@ -89,7 +92,7 @@ namespace UnityGLTF
         private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
         private Camera mainCamera;
-        private DCL.IWebRequestController webRequestController;
+        private IWebRequestController webRequestController;
 
         public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
 
@@ -97,7 +100,7 @@ namespace UnityGLTF
 
         public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize(DCL.IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
+        public void Initialize(IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
 
         public void LoadAsset(string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
         {
@@ -127,7 +130,7 @@ namespace UnityGLTF
                 ApplySettings(settings);
             }
 
-            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
+            loadingRoutine = CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
         }
 
         void ApplySettings(Settings settings)
@@ -163,6 +166,9 @@ namespace UnityGLTF
             }
 
             state = State.FAILED;
+
+            CoroutineStarter.Stop(loadingRoutine);
+            loadingRoutine = null;
 
             DecrementDownloadCount();
 
@@ -383,14 +389,10 @@ namespace UnityGLTF
 
         public void Load(string url) { throw new NotImplementedException(); }
 
-        private bool ignoreDistanceTest = false;
-
         public void CancelIfQueued()
         {
             if (state == State.QUEUED || state == State.NONE)
             {
-                CoroutineStarter.Stop(loadingRoutine);
-                loadingRoutine = null;
                 OnFail_Internal(null);
             }
         }
@@ -430,7 +432,6 @@ namespace UnityGLTF
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
-                CoroutineStarter.Stop(loadingRoutine);
                 OnFail_Internal(null);
                 return;
             }

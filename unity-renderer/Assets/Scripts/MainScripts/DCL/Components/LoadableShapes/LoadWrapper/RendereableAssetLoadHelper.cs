@@ -104,7 +104,6 @@ namespace DCL.Components
 
         public void Unload()
         {
-            Debug.Log($"PATO: forget {gltfPromise.GetId()} {gltfPromise.GetHashCode()}");
             AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
             AssetPromiseKeeper_AB_GameObject.i.Forget(abPromise);
         }

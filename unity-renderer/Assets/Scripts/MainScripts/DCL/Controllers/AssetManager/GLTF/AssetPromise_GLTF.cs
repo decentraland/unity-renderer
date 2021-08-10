@@ -86,9 +86,6 @@ namespace DCL
             if (!library.Add(asset))
                 return false;
 
-            if (!asset.visible)
-                return true;
-
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
             //
@@ -119,7 +116,7 @@ namespace DCL
         {
             if (settings.forceNewInstance)
             {
-                return ((AssetLibrary_GLTF) library).GetCopyFromOriginal(id);
+                return ((AssetLibrary_GLTF)library).GetCopyFromOriginal(id);
             }
             else
             {
@@ -139,11 +136,13 @@ namespace DCL
             {
                 waitingAssetLoad = true;
 
+                asset.Hide();
+
                 gltfComponent.OnSuccess -= OnSuccess;
                 gltfComponent.OnFail -= OnFail;
 
-                gltfComponent.OnSuccess += ()=> base.Unload();
-                gltfComponent.OnFail += ()=> base.Unload();
+                gltfComponent.OnSuccess += () => base.Unload();
+                gltfComponent.OnFail += () => base.Unload();
 
                 gltfComponent.CancelIfQueued();
 
