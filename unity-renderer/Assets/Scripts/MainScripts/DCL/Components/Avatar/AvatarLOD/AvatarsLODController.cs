@@ -60,6 +60,10 @@ namespace DCL
             foreach (var kvp in lodControllers)
             {
                 otherPlayers.TryGetValue(kvp.Key, out Player player);
+
+                if (!IsBeingRendered(player.worldPosition))
+                    continue;
+
                 Vector3 previousForward = player.forwardDirection;
                 Vector3 lookAtDir = (player.worldPosition - CommonScriptableObjects.cameraPosition).normalized;
 
@@ -78,12 +82,7 @@ namespace DCL
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
                 // bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
-                float dotProduct = Vector3.Dot(CommonScriptableObjects.cameraForward, (position - CommonScriptableObjects.cameraPosition).normalized);
-
-                // Debug.Log("PRAVS - dot product: " + dotProduct);
-
-                bool isInRenderingRange = dotProduct >= 0.25f;
-                if (isInRenderingRange)
+                if (IsBeingRendered(position))
                 {
                     while (renderedAvatars.ContainsKey(distanceToPlayer))
                     {
@@ -118,6 +117,8 @@ namespace DCL
 
             renderedAvatars.Clear();
         }
+
+        private bool IsBeingRendered(Vector3 position) { return Vector3.Dot(CommonScriptableObjects.cameraForward, (position - CommonScriptableObjects.cameraPosition).normalized) >= 0.2f; }
 
         public void Dispose()
         {
