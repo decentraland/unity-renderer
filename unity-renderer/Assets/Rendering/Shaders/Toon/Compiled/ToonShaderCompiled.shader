@@ -1,4 +1,4 @@
-﻿Shader "Master_ToonShader"
+﻿Shader "DCL/Toon Shader"
 {
     Properties
     {
@@ -19,7 +19,7 @@
         [NoScaleOffset]_AvatarMap10("AvatarMap10", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap11("AvatarMap11", 2D) = "white" {}
         [NoScaleOffset]_AvatarMap12("AvatarMap12", 2D) = "white" {}
-        _DitherFade("_DitherFade", Float) = 0
+        _DitherFade("_DitherFade", Float) = 1
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
