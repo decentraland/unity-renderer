@@ -1,13 +1,11 @@
-using System;
-using DCL;
-using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using DCL;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
-using Object = UnityEngine.Object;
+using UnityGLTF;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
@@ -191,5 +189,33 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             keeper.Cleanup();
         }
+        
+        [UnityTest]
+        public IEnumerator WaitForGLTFtoBeLoadedBeforeDestroyingIt()
+        {
+            var parentGO = new GameObject("GLTFParent");
+            var keeper = new AssetPromiseKeeper_GLTF();
+
+            string url = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb";
+
+            AssetPromise_GLTF promise = new AssetPromise_GLTF(scene.contentProvider, url);
+            promise.settings.parent = parentGO.transform;
+            keeper.Keep(promise);
+
+            GLTFComponent gltfComponent = parentGO.GetComponentInChildren<GLTFComponent>();
+            GameObject gltfGameObject = gltfComponent.gameObject;
+            Assert.IsNotNull(gltfComponent);
+
+            keeper.Forget(promise);
+            Assert.IsNotNull(gltfComponent);
+            
+            yield return promise;
+
+            yield return new DCL.WaitUntil(() => gltfComponent == null, 2);
+            Assert.IsNull(gltfGameObject);
+
+            keeper.Cleanup();
+            Object.DestroyImmediate(parentGO);
+        }        
     }
 }
