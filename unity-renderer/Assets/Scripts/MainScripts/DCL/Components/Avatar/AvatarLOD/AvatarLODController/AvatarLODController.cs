@@ -66,29 +66,29 @@ namespace DCL
 
             // Take N snapshot
             snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.North];
-            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.forward * 2;
-            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + impostorMeshRenderer.transform.parent.forward * 2;
+            snapshotCamera.transform.forward = -impostorMeshRenderer.transform.parent.forward;
             snapshotCamera.Render();
             RenderTexture.active = snapshotCamera.targetTexture;
 
             // Take E snapshot
             snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.East];
-            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.right * 2;
-            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + impostorMeshRenderer.transform.parent.right * 2;
+            snapshotCamera.transform.forward = -impostorMeshRenderer.transform.parent.right;
             snapshotCamera.Render();
             RenderTexture.active = snapshotCamera.targetTexture;
 
             // Take S snapshot
             snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.South];
-            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.back * 2;
-            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position - impostorMeshRenderer.transform.parent.forward * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.parent.forward;
             snapshotCamera.Render();
             RenderTexture.active = snapshotCamera.targetTexture;
 
             // Take W snapshot
             snapshotCamera.targetTexture = snapshotRenderTextures[(int)SnapshotDirections.West];
-            snapshotCamera.transform.position = impostorMeshRenderer.transform.position + Vector3.left * 2;
-            snapshotCamera.transform.forward = impostorMeshRenderer.transform.position - snapshotCamera.transform.position;
+            snapshotCamera.transform.position = impostorMeshRenderer.transform.position - impostorMeshRenderer.transform.parent.right * 2;
+            snapshotCamera.transform.forward = impostorMeshRenderer.transform.parent.right;
             snapshotCamera.Render();
             RenderTexture.active = snapshotCamera.targetTexture;
 
