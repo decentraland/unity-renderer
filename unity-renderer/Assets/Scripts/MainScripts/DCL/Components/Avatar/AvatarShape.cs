@@ -10,8 +10,6 @@ namespace DCL
     public class AvatarShape : BaseComponent
     {
         private const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
-        private const float DISABLE_FACIAL_FEATURES_DISTANCE_DELAY = 0.5f;
-        private const float DISABLE_FACIAL_FEATURES_DISTANCE = 15f;
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
@@ -32,24 +30,12 @@ namespace DCL
         bool initializedPosition = false;
 
         private Player player = null;
-        private Coroutine checkDistanceRoutine = null;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private void Awake()
         {
             model = new AvatarModel();
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-
-            if (checkDistanceRoutine != null)
-            {
-                StopCoroutine(checkDistanceRoutine);
-                checkDistanceRoutine = null;
-            }
-            checkDistanceRoutine = StartCoroutine(CheckDistanceToPlayerRoutine());
         }
 
         private void PlayerClicked()
@@ -122,14 +108,14 @@ namespace DCL
 
             EnablePassport();
 
-            avatarRenderer.InitializeLODController();
+            avatarRenderer.InitializeImpostor();
         }
 
         private void UpdatePlayerStatus(AvatarModel model)
         {
             // Remove the player status if the userId changes
             if (player != null && (player.id != model.id || player.name != model.name))
-                DataStore.i.player.otherPlayers.Remove(player.id);
+                otherPlayers.Remove(player.id);
 
             if (string.IsNullOrEmpty(model?.id))
                 return;
@@ -144,14 +130,18 @@ namespace DCL
             player.name = model.name;
             player.isTalking = model.talking;
             player.worldPosition = entity.gameObject.transform.position;
+            player.renderer = avatarRenderer;
             if (isNew)
-                DataStore.i.player.otherPlayers.Add(player.id, player);
+                otherPlayers.Add(player.id, player);
         }
 
         private void Update()
         {
             if (player != null)
+            {
                 player.worldPosition = entity.gameObject.transform.position;
+                player.forwardDirection = entity.gameObject.transform.forward;
+            }
         }
 
         public void DisablePassport()
@@ -192,15 +182,10 @@ namespace DCL
         {
             base.Cleanup();
 
-            if (checkDistanceRoutine != null)
-            {
-                StopCoroutine(checkDistanceRoutine);
-                checkDistanceRoutine = null;
-            }
 
             if (player != null)
             {
-                DataStore.i.player.otherPlayers.Remove(player.id);
+                otherPlayers.Remove(player.id);
                 player = null;
             }
 
@@ -217,19 +202,6 @@ namespace DCL
             {
                 entity.OnTransformChange = null;
                 entity = null;
-            }
-        }
-
-        private IEnumerator CheckDistanceToPlayerRoutine()
-        {
-            while (true)
-            {
-                yield return WaitForSecondsCache.Get(DISABLE_FACIAL_FEATURES_DISTANCE_DELAY);
-                Vector3 position = lastAvatarPosition ?? (entity.gameObject.transform.position + CommonScriptableObjects.worldOffset);
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerWorldPosition, position);
-                bool isNear = distanceToPlayer <= DISABLE_FACIAL_FEATURES_DISTANCE;
-                avatarRenderer.SetFacialFeaturesVisible(isNear);
-                avatarRenderer.SetSSAOEnabled(isNear);
             }
         }
 

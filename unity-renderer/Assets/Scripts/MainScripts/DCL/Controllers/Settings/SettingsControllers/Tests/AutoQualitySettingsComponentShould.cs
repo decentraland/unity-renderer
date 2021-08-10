@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -27,6 +27,11 @@ namespace Tests
                 Settings.i.qualitySettings,
                 Settings.i.qualitySettings,
             });
+        }
+
+        protected override IEnumerator TearDown() {
+            Settings.i.Dispose();
+            return base.TearDown();
         }
 
         [Test]
