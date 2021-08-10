@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DCL
 {
     public class Asset_Mock : Asset
@@ -10,5 +12,7 @@ namespace DCL
         public AssetPromiseKeeper_Mock(AssetLibrary_Mock library) : base(library) { }
 
         protected override void OnSilentForget(AssetPromise_Mock promise) { base.OnSilentForget(promise); }
+
+        public Dictionary<object, AssetPromise_Mock> masterPromises => masterPromiseById;
     }
 }

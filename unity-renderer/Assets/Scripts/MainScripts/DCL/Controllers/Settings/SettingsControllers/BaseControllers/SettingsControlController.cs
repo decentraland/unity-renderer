@@ -9,14 +9,17 @@ namespace DCL.SettingsControls
     {
         protected SettingsData.GeneralSettings currentGeneralSettings;
         protected SettingsData.QualitySettings currentQualitySetting;
+        protected SettingsData.AudioSettings currentAudioSettings;
 
         public virtual void Initialize()
         {
             currentGeneralSettings = Settings.i.generalSettings;
             currentQualitySetting = Settings.i.qualitySettings;
+            currentAudioSettings = Settings.i.audioSettings;
 
             Settings.i.OnGeneralSettingsChanged += OnGeneralSettingsChanged;
             Settings.i.OnQualitySettingsChanged += OnQualitySettingsChanged;
+            Settings.i.OnAudioSettingsChanged += OnAudioSettingsChanged;
             Settings.i.OnResetAllSettings += OnResetSettingsControl;
         }
 
@@ -24,6 +27,7 @@ namespace DCL.SettingsControls
         {
             Settings.i.OnGeneralSettingsChanged -= OnGeneralSettingsChanged;
             Settings.i.OnQualitySettingsChanged -= OnQualitySettingsChanged;
+            Settings.i.OnAudioSettingsChanged -= OnAudioSettingsChanged;
             Settings.i.OnResetAllSettings -= OnResetSettingsControl;
         }
 
@@ -46,16 +50,20 @@ namespace DCL.SettingsControls
         {
             Settings.i.ApplyGeneralSettings(currentGeneralSettings);
             Settings.i.ApplyQualitySettings(currentQualitySetting);
+            Settings.i.ApplyAudioSettings(currentAudioSettings);
         }
 
         private void OnGeneralSettingsChanged(SettingsData.GeneralSettings newGeneralSettings) { currentGeneralSettings = newGeneralSettings; }
 
         private void OnQualitySettingsChanged(SettingsData.QualitySettings newQualitySettings) { currentQualitySetting = newQualitySettings; }
 
+        private void OnAudioSettingsChanged(SettingsData.AudioSettings newAudioSettings) { currentAudioSettings = newAudioSettings; }
+
         private void OnResetSettingsControl()
         {
             currentGeneralSettings = Settings.i.generalSettings;
             currentQualitySetting = Settings.i.qualitySettings;
+            currentAudioSettings = Settings.i.audioSettings;
         }
     }
 }

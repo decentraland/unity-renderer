@@ -1,8 +1,10 @@
 using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 public class VoxelPrefab : MonoBehaviour
 {
     public Material editMaterial, errorMaterial;
