@@ -3,8 +3,10 @@ using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 public class BIWFirstPersonMode : BIWMode
 {
     private float scaleSpeed = 0.25f;

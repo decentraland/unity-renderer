@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
+[ExcludeFromCodeCoverage]
 public class ActionListview : ListView<BIWCompleteAction>
 {
     public ActionAdapter adapter;
