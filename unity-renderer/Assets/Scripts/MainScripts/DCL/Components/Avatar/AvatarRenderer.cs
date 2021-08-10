@@ -571,6 +571,7 @@ namespace DCL
             if (gameObject.activeSelf != newVisibility)
                 gameObject.SetActive(newVisibility);
         }
+
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
 
@@ -585,6 +586,7 @@ namespace DCL
                 wearableController.SetFadeDither(avatarFade);
             }
         }
+
         public void SetImpostorFade(float impostorFade)
         {
             //TODO implement dither in Unlit shader
@@ -617,12 +619,17 @@ namespace DCL
 
         public void SetSSAOEnabled(bool ssaoEnabled)
         {
-            if (bodyShapeController == null || !bodyShapeController.isReady)
+            if ( isLoading )
                 return;
-            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
-            foreach (WearableController wearableController in wearableControllers.Values)
+
+            Material[] mats = avatarMeshCombiner.renderer.sharedMaterials;
+
+            for (int j = 0; j < mats.Length; j++)
             {
-                wearableController.SetSSAOEnabled(ssaoEnabled);
+                if (ssaoEnabled)
+                    mats[j].DisableKeyword("_SSAO_OFF");
+                else
+                    mats[j].EnableKeyword("_SSAO_OFF");
             }
         }
 
