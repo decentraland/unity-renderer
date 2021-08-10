@@ -220,6 +220,7 @@ namespace DCL.Tutorial
             }
 
             isRunning = true;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -262,6 +263,7 @@ namespace DCL.Tutorial
 
             tutorialReset = false;
             isRunning = false;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
