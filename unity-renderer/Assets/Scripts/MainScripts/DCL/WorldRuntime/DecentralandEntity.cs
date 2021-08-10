@@ -144,18 +144,7 @@ namespace DCL.Models
                 // Destroy any other children
                 for (int i = 0; i < childCount; i++)
                 {
-                    var child = gameObject.transform.GetChild(i);
-                    if (child.name.Contains("GLTF"))
-                    {
-                        for (int j = 0; j < child.childCount; j++)
-                        {
-                            if (child.GetChild(j).name.Contains("GLTF"))
-                            {
-                                Debug.LogWarning($"PATO: Destroying {child.GetChild(j).name}");
-                            }
-                        }
-                    }
-                    Utils.SafeDestroy(child.gameObject);
+                    Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
                 }
 
                 //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.

@@ -86,7 +86,7 @@ namespace UnityGLTF
 
         private bool alreadyDecrementedRefCount;
         private AsyncCoroutineHelper asyncCoroutineHelper;
-        public Coroutine loadingRoutine = null;
+        private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
         private Camera mainCamera;
         private DCL.IWebRequestController webRequestController;
@@ -114,8 +114,7 @@ namespace UnityGLTF
 
             if (loadingRoutine != null)
             {
-                //StopCoroutine(loadingRoutine);
-                Debug.LogError($"PATO: load when already loading {idPrefix}");
+                Debug.LogError($"ERROR: trying to load GLTF when is already loading {idPrefix}");
                 return;
             }
 
@@ -290,14 +289,11 @@ namespace UnityGLTF
 
                     IncrementDownloadCount();
 
-                    Debug.Log($"PATO: start loading {idPrefix} process...");
                     state = State.DOWNLOADING;
 
                     if (transform != null)
                     {
-                        Debug.Log($"PATO: start loading {idPrefix} do start...");
                         yield return sceneImporter.LoadScene(-1);
-                        Debug.Log($"PATO: ended loading {idPrefix}");
 
                         // Override the shaders on all materials if a shader is provided
                         if (shaderOverride != null)
@@ -311,13 +307,11 @@ namespace UnityGLTF
                     }
 
                     state = State.COMPLETED;
-                    Debug.Log($"PATO: finish loading {idPrefix}");
 
                     DecrementDownloadCount();
                 }
                 finally
                 {
-                    Debug.Log($"PATO: finally loading {idPrefix}");
                     if (loader != null)
                     {
                         if (sceneImporter == null)
@@ -345,7 +339,6 @@ namespace UnityGLTF
 
                     CoroutineStarter.Stop(loadingRoutine);
                     loadingRoutine = null;
-                    Debug.Log($"PATO: loading routine finished {idPrefix}");
 
                     OnFinishedLoadingAsset?.Invoke();
 
@@ -390,19 +383,15 @@ namespace UnityGLTF
 
         public void Load(string url) { throw new NotImplementedException(); }
 
-        private bool DEBUG_cancelled = false;
         private bool ignoreDistanceTest = false;
 
         public void CancelIfQueued()
         {
-            Debug.Log($"PATO: try-cancel {idPrefix} state = {state}");
-            DEBUG_cancelled = true;
             if (state == State.QUEUED || state == State.NONE)
             {
                 CoroutineStarter.Stop(loadingRoutine);
                 loadingRoutine = null;
                 OnFail_Internal(null);
-                Debug.Log($"PATO: cancelled {idPrefix}");
             }
         }
 
@@ -436,7 +425,7 @@ namespace UnityGLTF
 
             if (loadingRoutine != null)
             {
-                Debug.LogError($"PATO: destroyed while loading {name}");
+                Debug.LogError($"ERROR: GLTF destroyed while loading {name}");
             }
 
             if (!alreadyLoadedAsset && loadingRoutine != null)

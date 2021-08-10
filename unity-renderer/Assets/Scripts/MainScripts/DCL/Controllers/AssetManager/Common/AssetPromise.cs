@@ -181,8 +181,6 @@ namespace DCL
             ClearEvents();
         }
 
-        internal virtual void OnSilentForget() { }
-
         protected abstract void OnCancelLoading();
         protected abstract void OnLoad(Action OnSuccess, Action OnFail);
         protected abstract void OnBeforeLoadOrReuse();

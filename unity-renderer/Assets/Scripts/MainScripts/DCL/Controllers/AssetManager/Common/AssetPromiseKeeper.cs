@@ -137,9 +137,9 @@ namespace DCL
                 return promise;
             }
 
-            promise.OnForget();
             promise.Unload();
             CleanPromise(promise);
+            promise.OnForget();
 
             return promise;
         }
@@ -357,6 +357,6 @@ namespace DCL
             library.Cleanup();
         }
 
-        protected virtual void OnSilentForget(AssetPromiseType promise) { promise.OnSilentForget(); }
+        protected virtual void OnSilentForget(AssetPromiseType promise) { }
     }
 }

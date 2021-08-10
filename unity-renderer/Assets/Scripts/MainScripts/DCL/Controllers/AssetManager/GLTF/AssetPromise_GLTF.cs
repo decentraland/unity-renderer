@@ -1,6 +1,5 @@
-using DCL.Configuration;
+using System;
 using DCL.Helpers;
-using UnityEngine;
 using UnityGLTF;
 
 namespace DCL
@@ -16,8 +15,8 @@ namespace DCL
         GLTFComponent gltfComponent = null;
         object id = null;
 
-        private System.Action OnSuccess;
-        private System.Action OnFail;
+        private Action OnSuccess;
+        private Action OnFail;
         private bool waitingAssetLoad = false;
 
         public AssetPromise_GLTF(ContentProvider provider, string url, string hash = null)
@@ -48,10 +47,10 @@ namespace DCL
 
         public override object GetId() { return id; }
 
-        protected override void OnLoad(System.Action OnSuccess, System.Action OnFail)
+        protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
-            gltfComponent.Initialize(DCL.Environment.i.platform.webRequest);
+            gltfComponent.Initialize(Environment.i.platform.webRequest);
 
             GLTFComponent.Settings tmpSettings = new GLTFComponent.Settings()
             {
@@ -76,7 +75,7 @@ namespace DCL
 
         void ParseGLTFWebRequestedFile(ref string requestedFileName) { provider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out requestedFileName); }
 
-        protected override void OnReuse(System.Action OnSuccess)
+        protected override void OnReuse(Action OnSuccess)
         {
             //NOTE(Brian):  Show the asset using the simple gradient feedback.
             asset.Show(settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION, OnSuccess);
@@ -130,8 +129,6 @@ namespace DCL
 
         internal override void Unload()
         {
-            Debug.Log($"PATO: unload {id} waitingAssetLoad = {waitingAssetLoad} state = {state} {GetHashCode()}");
-
             if (waitingAssetLoad)
                 return;
 
@@ -145,8 +142,8 @@ namespace DCL
                 gltfComponent.OnSuccess -= OnSuccess;
                 gltfComponent.OnFail -= OnFail;
 
-                gltfComponent.OnSuccess += DoUnload;
-                gltfComponent.OnFail += DoUnload;
+                gltfComponent.OnSuccess += ()=> base.Unload();
+                gltfComponent.OnFail += ()=> base.Unload();
 
                 gltfComponent.CancelIfQueued();
 
@@ -156,37 +153,15 @@ namespace DCL
             base.Unload();
         }
 
-        internal override void OnForget()
-        {
-            if (state == AssetPromiseState.LOADING)
-            {
-                settings.parent = null;
-                if (asset != null)
-                {
-                    asset.CancelShow();
-                    asset.Hide();
-                    Debug.Log($"PATO: unchild {id} {GetHashCode()}");
-                }
-            }
-            base.OnForget();
-        }
-
         // NOTE: master promise are silently forgotten. We should make sure that they are loaded anyway since
         // other promises are waiting for them
-        internal override void OnSilentForget()
+        internal void OnSilentForget()
         {
-            Debug.Log($"PATO: OnSilentForget {id} {GetHashCode()} gltfComponent = {gltfComponent != null}");
             asset.Hide();
             if (gltfComponent != null)
             {
                 gltfComponent.SetIgnoreDistanceTest();
             }
-        }
-
-        void DoUnload()
-        {
-            Debug.Log($"PATO: DoUnload {id} {GetHashCode()}");
-            base.Unload();
         }
     }
 }

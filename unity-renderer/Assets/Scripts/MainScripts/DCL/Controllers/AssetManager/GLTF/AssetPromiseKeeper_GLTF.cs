@@ -6,5 +6,7 @@ namespace DCL
         public static AssetPromiseKeeper_GLTF i { get { return instance ??= new AssetPromiseKeeper_GLTF(); } }
         
         public AssetPromiseKeeper_GLTF() : base(new AssetLibrary_GLTF()) { }
+
+        protected override void OnSilentForget(AssetPromise_GLTF promise) { promise.OnSilentForget(); }
     }
 }

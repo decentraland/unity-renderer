@@ -65,7 +65,6 @@ namespace DCL
                 return;
             }
 
-            //container.SetActive(false);
             showCoroutine = CoroutineStarter.Start(ShowCoroutine(OnFinish));
         }
 
