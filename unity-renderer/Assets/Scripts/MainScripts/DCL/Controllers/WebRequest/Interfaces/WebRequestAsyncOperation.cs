@@ -49,8 +49,6 @@ namespace DCL
             disposeOnCompleted = true;
         }
 
-        public void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }
-
         /// <summary>
         /// Mark the request as completed and throw the corresponding event.
         /// </summary>
@@ -89,5 +87,7 @@ namespace DCL
             webRequest.Dispose();
             webRequest = null;
         }
+
+        internal void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }
     }
 }
