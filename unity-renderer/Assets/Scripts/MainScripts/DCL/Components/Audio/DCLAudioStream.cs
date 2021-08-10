@@ -51,6 +51,7 @@ namespace DCL.Components
             CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
             Settings.i.OnAudioSettingsChanged += OnSettingsChanged;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += SceneSFXVolume_OnChange;
         }
 
         private void OnDestroy()
@@ -59,6 +60,7 @@ namespace DCL.Components
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             Settings.i.OnAudioSettingsChanged -= OnSettingsChanged;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= SceneSFXVolume_OnChange;
             StopStreaming();
         }
 
@@ -125,9 +127,9 @@ namespace DCL.Components
             }
         }
 
-        private float GetCalculatedSettingsVolume(SettingsData.AudioSettings audioSettings) {
-            return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume);
-        }
+        private float GetCalculatedSettingsVolume(SettingsData.AudioSettings audioSettings) { return Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * audioSettings.sceneSFXVolume * audioSettings.masterVolume); }
+
+        private void SceneSFXVolume_OnChange(float current, float previous) { OnSettingsChanged(Settings.i.currentAudioSettings); }
 
         private void StopStreaming()
         {
