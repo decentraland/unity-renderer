@@ -17,7 +17,7 @@ on:
         default: 'play.decentraland.zone'
 
 jobs:
-  print-debug-info:
+  set-manual-rollout:
     runs-on: ubuntu-18.04
     steps:
       - uses: hmarr/debug-action@v2
