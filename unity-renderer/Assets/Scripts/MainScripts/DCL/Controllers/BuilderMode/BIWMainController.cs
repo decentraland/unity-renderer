@@ -39,16 +39,16 @@ public class BIWMainController : PluginFeature
 
     private readonly List<IBIWController> controllers = new List<IBIWController>();
 
-    private ParcelScene sceneToEdit;
+    internal ParcelScene sceneToEdit;
 
     private Material skyBoxMaterial;
 
-    public bool isBuilderInWorldActivated { get; private set; } = false;
+    public bool isBuilderInWorldActivated { get; internal set; } = false;
 
     private InputAction_Trigger editModeChangeInputAction;
 
-    private int checkerInsideSceneOptimizationCounter = 0;
-    private string sceneToEditId;
+    internal int checkerInsideSceneOptimizationCounter = 0;
+    internal string sceneToEditId;
     private bool catalogAdded = false;
     private bool sceneReady = false;
     private bool isInit = false;
@@ -60,17 +60,17 @@ public class BIWMainController : PluginFeature
     private bool areCatalogHeadersReady = false;
     private float beginStartFlowTimeStamp = 0;
     private float startEditorTimeStamp = 0;
-    private bool isCatalogRequested = false;
+    internal bool isCatalogRequested = false;
     private bool isEnteringEditMode = false;
     private bool activeFeature = false;
 
     internal IBuilderInWorldLoadingController initialLoadingController;
 
     private UserProfile userProfile;
-    private Coroutine updateLandsWithAcessCoroutine;
+    internal Coroutine updateLandsWithAcessCoroutine;
     private Dictionary<string, string> catalogCallHeaders;
 
-    private bool isWaitingForPermission = false;
+    internal bool isWaitingForPermission = false;
     private bool alreadyAskedForLandPermissions = false;
     private Vector3 askPermissionLastPosition;
 
@@ -305,7 +305,7 @@ public class BIWMainController : PluginFeature
         HUDController.i.builderInWorldMainHud.RefreshCatalogContent();
     }
 
-    private void ActivateLandAccessBackgroundChecker()
+    internal void ActivateLandAccessBackgroundChecker()
     {
         userProfile = UserProfile.GetOwnUserProfile();
         if (!string.IsNullOrEmpty(userProfile.userId))
@@ -322,7 +322,7 @@ public class BIWMainController : PluginFeature
 
     private void BuilderProjectPanelInfo(string title, string description) { HUDController.i.builderInWorldMainHud.SetBuilderProjectInfo(title, description); }
 
-    private void CatalogReceived(string catalogJson)
+    internal void CatalogReceived(string catalogJson)
     {
         isCatalogLoading = false;
         AssetCatalogBridge.i.AddFullSceneObjectCatalog(catalogJson);
@@ -345,7 +345,7 @@ public class BIWMainController : PluginFeature
             GetCatalog();
     }
 
-    private void GetCatalog()
+    internal void GetCatalog()
     {
         if (catalogAdded)
             return;
@@ -449,7 +449,7 @@ public class BIWMainController : PluginFeature
         TryStartEnterEditMode(true, null, "Shortcut");
     }
 
-    private void NewSceneAdded(IParcelScene newScene)
+    internal void NewSceneAdded(IParcelScene newScene)
     {
         if (newScene.sceneData.id != sceneToEditId)
             return;
@@ -472,7 +472,7 @@ public class BIWMainController : PluginFeature
         CheckEnterEditMode();
     }
 
-    private bool UserHasPermissionOnParcelScene(ParcelScene sceneToCheck)
+    internal bool UserHasPermissionOnParcelScene(ParcelScene sceneToCheck)
     {
         if (BYPASS_LAND_OWNERSHIP_CHECK)
             return true;
@@ -487,7 +487,7 @@ public class BIWMainController : PluginFeature
         return false;
     }
 
-    private bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
+    internal bool IsParcelSceneDeployedFromSDK(ParcelScene sceneToCheck)
     {
         List<DeployedScene> allDeployedScenesWithAccess = DataStore.i.builderInWorld.landsWithAccess.Get().SelectMany(land => land.scenes).ToList();
         foreach (DeployedScene scene in allDeployedScenesWithAccess)
@@ -862,6 +862,7 @@ public class BIWMainController : PluginFeature
         notificationModel.message = message;
         notificationModel.type = type;
         notificationModel.timer = timer;
-        HUDController.i.notificationHud.ShowNotification(notificationModel);
+        if (HUDController.i.notificationHud != null)
+            HUDController.i.notificationHud.ShowNotification(notificationModel);
     }
 }

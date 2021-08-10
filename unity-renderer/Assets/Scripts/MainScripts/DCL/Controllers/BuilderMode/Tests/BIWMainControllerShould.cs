@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL;
 using DCL.Controllers;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Tests;
@@ -226,8 +227,130 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         controller.Received(1).Dispose();
     }
 
+    [Test]
+    public void BIWExitWhenCharacterIsFarAway()
+    {
+        //Arrange
+        mainController.sceneToEdit = scene;
+        mainController.isBuilderInWorldActivated = true;
+        mainController.checkerInsideSceneOptimizationCounter = 60;
+        DCLCharacterController.i.characterPosition.unityPosition = Vector3.one * 9999;
+
+        //Act
+        mainController.Update();
+
+        //Assert
+        Assert.IsFalse(mainController.isBuilderInWorldActivated);
+    }
+
+    [Test]
+    public void ActivateLandAccessBackground()
+    {
+        //Arrange
+        var profile = UserProfile.GetOwnUserProfile();
+        profile.UpdateData(new UserProfileModel() { userId = "testId", ethAddress = "0x00" });
+
+        //Act
+        mainController.ActivateLandAccessBackgroundChecker();
+
+        //Assert
+        Assert.IsNotNull(mainController.updateLandsWithAcessCoroutine);
+    }
+
+    [Test]
+    public void RequestCatalog()
+    {
+        //Arrange
+        mainController.isCatalogRequested = false;
+
+        //Act
+        mainController.GetCatalog();
+
+        //Assert
+        Assert.IsTrue(mainController.isCatalogRequested);
+    }
+
+    [Test]
+    public void ChangeEditModeByShortcut()
+    {
+        //Act
+        mainController.ChangeEditModeStatusByShortcut(DCLAction_Trigger.BuildEditModeChange);
+
+        //Assert
+        Assert.IsTrue(mainController.isWaitingForPermission);
+    }
+
+    [Test]
+    public void NewSceneAdded()
+    {
+        //Arrange
+        var mockedScene = Substitute.For<IParcelScene>();
+        mockedScene.Configure().sceneData.Returns(scene.sceneData);
+        mainController.sceneToEditId = scene.sceneData.id;
+
+        //Act
+        mainController.NewSceneAdded(mockedScene);
+
+        //Assert
+        Assert.AreSame(mainController.sceneToEdit, base.scene);
+    }
+
+    [Test]
+    public void UserHasPermission()
+    {
+        //Arrange
+        var parcel = new Parcel();
+        parcel.x = scene.sceneData.basePosition.x;
+        parcel.y = scene.sceneData.basePosition.y;
+        var land = new Land();
+        land.parcels = new List<Parcel>() { parcel };
+        var lands = new LandWithAccess[]
+        {
+            new LandWithAccess(land)
+        };
+        DataStore.i.builderInWorld.landsWithAccess.Set(lands);
+
+        //Act
+        var result = mainController.UserHasPermissionOnParcelScene(scene);
+
+        //Assert
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public void IsParcelFromSDK()
+    {
+        //Arrange
+        Parcel parcel = new Parcel();
+        parcel.x = scene.sceneData.basePosition.x;
+        parcel.y = scene.sceneData.basePosition.y;
+
+        Vector2Int parcelCoords = new Vector2Int(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+        Land land = new Land();
+        land.parcels = new List<Parcel>() { parcel };
+
+        LandWithAccess landWithAcces = new LandWithAccess(land);
+        DeployedScene deployedScene = new DeployedScene();
+        deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
+        deployedScene.deploymentSource = DeployedScene.Source.SDK;
+
+        landWithAcces.scenes = new List<DeployedScene>() { deployedScene };
+        var lands = new LandWithAccess[]
+        {
+            landWithAcces
+        };
+        DataStore.i.builderInWorld.landsWithAccess.Set(lands);
+
+        //Act
+        var result = mainController.IsParcelSceneDeployedFromSDK(scene);
+
+        //Assert
+        Assert.IsTrue(result);
+    }
+
     protected override IEnumerator TearDown()
     {
+        DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController.Dispose();
         BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = false;
         yield return base.TearDown();
