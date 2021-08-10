@@ -1,8 +1,6 @@
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -153,7 +151,13 @@ namespace DCL.Components
 
         public UIShape parentUIComponent { get; protected set; }
 
-        public UIShape() { model = new Model(); }
+        public UIShape()
+        {
+            ScreenBridge.i.OnScreenResize += OnScreenResize;
+            model = new Model(); 
+        }
+        
+        private void OnScreenResize() => RefreshAll();
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
@@ -283,6 +287,9 @@ namespace DCL.Components
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
 
+            if (rootParent.referencesContainer == null)
+                return;
+            
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
@@ -299,7 +306,10 @@ namespace DCL.Components
             UIShape rootParent = GetRootParent();
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
-
+            
+            if (rootParent.referencesContainer == null)
+                return;
+            
             Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
@@ -431,6 +441,8 @@ namespace DCL.Components
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
+            ScreenBridge.i.OnScreenResize -= OnScreenResize;
+            
             base.Dispose();
         }
 

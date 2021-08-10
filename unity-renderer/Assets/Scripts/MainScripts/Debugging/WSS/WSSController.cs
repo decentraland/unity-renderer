@@ -2,7 +2,6 @@ using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
 using DCL.Camera;
-using UnityEditor;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -525,6 +524,9 @@ namespace DCL
                                 break;
                             case "ClearBots":
                                 DCL.Environment.i.platform.debugController.ClearBots();
+                                break;
+                            case "ForceScreenResize":
+                                ScreenBridge.i.ForceScreenResizeEvent();
                                 break;
                             default:
                                 Debug.Log(
