@@ -70,43 +70,53 @@ namespace DCL
 
         private void UpdateAllLODs()
         {
-            SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
+            SortedList<float, AvatarLODController> renderedAvatars = new SortedList<float, AvatarLODController>();
             foreach (var avatarKVP in lodControllers)
             {
                 var featureController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
-                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
+                // bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
-                if (isInLODDistance)
+                float dotProduct = Vector3.Dot(CommonScriptableObjects.cameraForward, (position - CommonScriptableObjects.cameraPosition).normalized);
+
+                // Debug.Log("PRAVS - dot product: " + dotProduct);
+
+                bool isInRenderingRange = dotProduct >= 0.25f;
+                if (isInRenderingRange)
                 {
-                    featureController.SetImpostorState();
-                }
-                else
-                {
-                    while (closeDistanceAvatars.ContainsKey(distanceToPlayer))
+                    while (renderedAvatars.ContainsKey(distanceToPlayer))
                     {
                         distanceToPlayer += 0.0001f;
                     }
-                    closeDistanceAvatars.Add(distanceToPlayer, featureController);
+                    renderedAvatars.Add(distanceToPlayer, featureController);
+                }
+                else
+                {
+                    featureController.SetImpostorState();
                 }
             }
 
-            int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
-            for (var i = 0; i < closeDistanceAvatarsCount; i++)
+            int count = renderedAvatars.Count;
+            int maxNonLODAvatars = DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
+            for (var i = 0; i < count; i++)
             {
-                AvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
-                bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
+                AvatarLODController currentAvatar = renderedAvatars.Values[i];
+                bool isLOD = i >= maxNonLODAvatars;
                 if (isLOD)
+                {
                     currentAvatar.SetImpostorState();
+                }
                 else
                 {
-                    if (closeDistanceAvatars.Keys[i] < SIMPLE_AVATAR_DISTANCE)
+                    if (renderedAvatars.Keys[i] < SIMPLE_AVATAR_DISTANCE)
                         currentAvatar.SetAvatarState();
                     else
                         currentAvatar.SetSimpleAvatar();
                 }
             }
+
+            renderedAvatars.Clear();
         }
 
         public void Dispose()
