@@ -108,7 +108,8 @@ namespace DCL
             int requestAttemps,
             int timeout,
             bool disposeOnCompleted,
-            Dictionary<string, string> headers = null
+            Dictionary<string, string> headers = null,
+            WebRequestAsyncOperation asyncOp = null
         ) where T : IWebRequest
         {
             int remainingAttemps = Mathf.Clamp(requestAttemps, 1, requestAttemps);
@@ -126,7 +127,13 @@ namespace DCL
             if (downloadHandler != null)
                 request.downloadHandler = downloadHandler;
 
-            WebRequestAsyncOperation resultOp = new WebRequestAsyncOperation(request);
+            WebRequestAsyncOperation resultOp = asyncOp;
+
+            if (resultOp == null)
+                resultOp = new WebRequestAsyncOperation(request);
+            else
+                resultOp.SetNewWebRequest(request);
+
             resultOp.disposeOnCompleted = disposeOnCompleted;
             ongoingWebRequests.Add(resultOp);
 
@@ -147,7 +154,7 @@ namespace DCL
                         {
                             Debug.LogWarning($"Retrying web request: {url} ({remainingAttemps} attemps remaining)");
                             resultOp.Dispose();
-                            resultOp = SendWebRequest(requestType, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted);
+                            resultOp = SendWebRequest(requestType, url, downloadHandler, OnSuccess, OnFail, remainingAttemps, timeout, disposeOnCompleted, headers, resultOp);
                         }
                         else
                         {
