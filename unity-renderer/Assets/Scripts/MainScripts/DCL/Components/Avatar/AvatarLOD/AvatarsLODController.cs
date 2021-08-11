@@ -125,7 +125,7 @@ namespace DCL
             renderedAvatars.Clear();
         }
 
-        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.2f; }
+        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0f; }
 
         public void Dispose()
         {
