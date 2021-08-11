@@ -49,7 +49,8 @@ public class WearablesAPIData
         public string next = null;
     }
 
-    private const string WEARABLES_CONTENT_BASE_URL = "https://peer.decentraland.org/content/contents/";
+    // TODO: dinamically use ICatalyst.contentUrl, content server is not a const
+    private const string WEARABLES_CONTENT_BASE_URL = "https://peer-lb.decentraland.org/content/contents/";
 
     public List<Wearable> wearables;
     public PaginationData pagination;
