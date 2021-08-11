@@ -11,7 +11,7 @@ namespace DCL.Camera
         void FocusOnEntities(List<BIWEntity> entitiesToFocus);
         void SmoothLookAt(Vector3 position);
         void StartDectectingMovement();
-        public void StopDetectingMovement();
+        void StopDetectingMovement();
         bool HasBeenMovement();
         void SetCameraCanMove(bool canMove);
         void SetPosition(Vector3 position);
