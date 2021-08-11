@@ -47,6 +47,14 @@ namespace DCL
 
         public override object GetId() { return id; }
 
+        internal override void Load()
+        {
+            if (waitingAssetLoad)
+                return;
+
+            base.Load();
+        }
+
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             gltfComponent = asset.container.AddComponent<GLTFComponent>();
@@ -85,6 +93,9 @@ namespace DCL
         {
             if (!library.Add(asset))
                 return false;
+
+            if (!asset.visible)
+                return true;
 
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
@@ -136,13 +147,17 @@ namespace DCL
             {
                 waitingAssetLoad = true;
 
+                state = AssetPromiseState.IDLE_AND_EMPTY;
+
+                var pendingAsset = asset;
                 asset.Hide();
+                asset = null;
 
                 gltfComponent.OnSuccess -= OnSuccess;
                 gltfComponent.OnFail -= OnFail;
 
-                gltfComponent.OnSuccess += () => base.Unload();
-                gltfComponent.OnFail += () => base.Unload();
+                gltfComponent.OnSuccess += () => OnLoadedAfterForget(pendingAsset);
+                gltfComponent.OnFail += () => OnLoadedAfterForget(null);
 
                 gltfComponent.CancelIfQueued();
 
@@ -157,10 +172,25 @@ namespace DCL
         internal void OnSilentForget()
         {
             asset.Hide();
+
             if (gltfComponent != null)
             {
                 gltfComponent.SetIgnoreDistanceTest();
             }
+        }
+
+        private void OnLoadedAfterForget(Asset_GLTF loadedAsset)
+        {
+            asset = loadedAsset;
+
+            if (asset != null)
+            {
+                AddToLibrary();
+            }
+
+            asset = null;
+            ClearEvents();
+            Cleanup();
         }
     }
 }
