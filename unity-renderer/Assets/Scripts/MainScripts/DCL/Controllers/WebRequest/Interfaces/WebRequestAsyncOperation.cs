@@ -87,5 +87,7 @@ namespace DCL
             webRequest.Dispose();
             webRequest = null;
         }
+
+        internal void SetNewWebRequest(UnityWebRequest newRequest) { webRequest = newRequest; }
     }
 }
