@@ -42,7 +42,7 @@ namespace DCL
 
         public void SetAvatarState()
         {
-            if (player?.renderer == null || currentState == LODState.LOD0)
+            if (currentState == LODState.LOD0 || player?.renderer == null)
                 return;
 
             currentState = LODState.LOD0;
@@ -53,7 +53,7 @@ namespace DCL
 
         public void SetSimpleAvatar()
         {
-            if (player?.renderer == null || currentState == LODState.LOD1)
+            if (currentState == LODState.LOD1 || player?.renderer == null)
                 return;
 
             currentState = LODState.LOD1;
@@ -64,7 +64,7 @@ namespace DCL
 
         public void SetImpostorState()
         {
-            if (player?.renderer == null || currentState == LODState.LOD2)
+            if (currentState == LODState.LOD2 || player?.renderer == null)
                 return;
 
             currentState = LODState.LOD2;
