@@ -9,6 +9,9 @@ namespace DCL
 
         private readonly Dictionary<string, AvatarLODController> lodControllers = new Dictionary<string, AvatarLODController>();
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private Vector3 cameraForward;
+        private Vector3 cameraPosition;
+        private Vector3 mainPlayerPosition;
         private bool enabled;
 
         public AvatarsLODController()
@@ -51,6 +54,10 @@ namespace DCL
             if (!enabled)
                 return;
 
+            mainPlayerPosition = CommonScriptableObjects.playerUnityPosition.Get();
+            cameraForward = CommonScriptableObjects.cameraForward.Get();
+            cameraPosition = CommonScriptableObjects.cameraPosition.Get();
+
             UpdateAllLODs();
             UpdateLODsBillboard();
         }
@@ -61,11 +68,11 @@ namespace DCL
             {
                 otherPlayers.TryGetValue(kvp.Key, out Player player);
 
-                if (!IsBeingRendered(player.worldPosition))
+                if (!IsBeingRendered(player.worldPosition, cameraForward, cameraPosition))
                     continue;
 
                 Vector3 previousForward = player.forwardDirection;
-                Vector3 lookAtDir = (player.worldPosition - CommonScriptableObjects.cameraPosition).normalized;
+                Vector3 lookAtDir = (player.worldPosition - cameraPosition).normalized;
 
                 lookAtDir.y = previousForward.y;
                 player.renderer.SetImpostorForward(lookAtDir);
@@ -79,10 +86,10 @@ namespace DCL
             {
                 var featureController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
-                float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
+                float distanceToPlayer = Vector3.Distance(mainPlayerPosition, position);
                 // bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
-                if (IsBeingRendered(position))
+                if (IsBeingRendered(position, cameraForward, cameraPosition))
                 {
                     while (renderedAvatars.ContainsKey(distanceToPlayer))
                     {
@@ -118,7 +125,7 @@ namespace DCL
             renderedAvatars.Clear();
         }
 
-        private bool IsBeingRendered(Vector3 position) { return Vector3.Dot(CommonScriptableObjects.cameraForward, (position - CommonScriptableObjects.cameraPosition).normalized) >= 0.2f; }
+        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.2f; }
 
         public void Dispose()
         {
