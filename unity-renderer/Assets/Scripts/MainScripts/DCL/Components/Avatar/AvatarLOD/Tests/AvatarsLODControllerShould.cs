@@ -144,9 +144,10 @@ namespace Tests.AvatarsLODController
             player0.worldPosition = new Vector3(1, 0, 0);
             player1.worldPosition = new Vector3(0, 0, 1);
 
+            // Player position is (0,0,0) so the forward vector matches the world position
+            CommonScriptableObjects.cameraPosition.Set(Vector3.zero);
             controller.UpdateLODsBillboard();
 
-            // Player position is (0,0,0) so the forward vector matches the world position
             player0Renderer.Received().SetImpostorForward(new Vector3(1, 0, 0));
             player1Renderer.Received().SetImpostorForward(new Vector3(0, 0, 1));
         }
