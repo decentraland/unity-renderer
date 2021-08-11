@@ -32,11 +32,13 @@ namespace DCL.Tutorial
 
             okButton.onClick.AddListener(OnOkButtonClick);
 
-            if (tutorialController)
+            if (tutorialController != null)
             {
                 tutorialController.SetEagleEyeCameraActive(true);
 
-                defaultTeacherCanvasSortOrder = tutorialController.teacherCanvas.sortingOrder;
+                if (tutorialController.configuration.teacherCanvas != null)
+                    defaultTeacherCanvasSortOrder = tutorialController.configuration.teacherCanvas.sortingOrder;
+
                 tutorialController.SetTeacherCanvasSortingOrder(TEACHER_CANVAS_SORT_ORDER_START);
 
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);

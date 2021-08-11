@@ -4,8 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Cinemachine;
 using DCL.Helpers;
 
 namespace DCL.Tutorial
@@ -13,9 +11,9 @@ namespace DCL.Tutorial
     /// <summary>
     /// Controller that handles all the flow related to the onboarding tutorial.
     /// </summary>
-    public class TutorialController : MonoBehaviour
+    public class TutorialController
     {
-        [System.Serializable]
+        [Serializable]
         public class TutorialInitializationMessage
         {
             public string fromDeepLink;
@@ -56,80 +54,8 @@ namespace DCL.Tutorial
 
         private const string PLAYER_PREFS_VOICE_CHAT_FEATURE_SHOWED = "VoiceChatFeatureShowed";
 
-        [Header("General Configuration")]
-        [SerializeField]
-        internal int tutorialVersion = 1;
-
-        [SerializeField]
-        internal float timeBetweenSteps = 0.5f;
-
-        [SerializeField]
-        internal bool sendStats = true;
-
-        [Header("Tutorial Steps on Genesis Plaza")]
-        [SerializeField]
-        internal List<TutorialStep> stepsOnGenesisPlaza = new List<TutorialStep>();
-
-        [Header("Tutorial Steps from Deep Link")]
-        [SerializeField]
-        internal List<TutorialStep> stepsFromDeepLink = new List<TutorialStep>();
-
-        [Header("Tutorial Steps from Reset Tutorial")]
-        [SerializeField]
-        internal List<TutorialStep> stepsFromReset = new List<TutorialStep>();
-
-        [Header("Tutorial Steps from Builder In World")]
-        [SerializeField]
-        internal List<TutorialStep> stepsFromBuilderInWorld = new List<TutorialStep>();
-
-        [Header("Tutorial Steps from User That Already Did The Tutorial")]
-        [SerializeField]
-        internal List<TutorialStep> stepsFromUserThatAlreadyDidTheTutorial = new List<TutorialStep>();
-
-        [Header("3D Model Teacher")]
-        [SerializeField]
-        internal Camera teacherCamera;
-
-        [SerializeField]
-        internal RawImage teacherRawImage;
-
-        [SerializeField]
-        internal TutorialTeacher teacher;
-
-        [SerializeField]
-        internal float teacherMovementSpeed = 4f;
-
-        [SerializeField]
-        internal AnimationCurve teacherMovementCurve;
-
-        [SerializeField]
-        internal Canvas teacherCanvas;
-
-        [Header("Eagle Eye Camera")]
-        [SerializeField]
-        internal CinemachineVirtualCamera eagleEyeCamera;
-
-        [SerializeField]
-        internal Vector3 eagleCamInitPosition = new Vector3(30, 30, -50);
-
-        [SerializeField]
-        internal Vector3 eagleCamInitLookAtPoint = new Vector3(0, 0, 0);
-
-        [SerializeField]
-        internal bool eagleCamRotationActived = true;
-
-        [SerializeField]
-        internal float eagleCamRotationSpeed = 1f;
-
-        [Header("Debugging")]
-        [SerializeField]
-        internal bool debugRunTutorial = false;
-
-        [SerializeField]
-        internal int debugStartingStepIndex;
-
-        [SerializeField]
-        internal bool debugOpenedFromDeepLink = false;
+        internal TutorialConfiguration configuration;
+        internal GameObject tutorialContainerGO;
 
         internal bool isRunning = false;
         internal bool openedFromDeepLink = false;
@@ -147,30 +73,30 @@ namespace DCL.Tutorial
 
         internal bool userAlreadyDidTheTutorial { get; set; }
 
-        private void Awake()
+        public void Initialize(TutorialConfiguration configuration, GameObject tutorialContainerGO)
         {
+            this.configuration = configuration;
+            this.tutorialContainerGO = tutorialContainerGO;
+
             i = this;
             ShowTeacher3DModel(false);
-        }
 
-        private void Start()
-        {
             if (CommonScriptableObjects.isTaskbarHUDInitialized.Get())
                 IsTaskbarHUDInitialized_OnChange(true, false);
             else
                 CommonScriptableObjects.isTaskbarHUDInitialized.OnChange += IsTaskbarHUDInitialized_OnChange;
 
-            if (debugRunTutorial)
+            if (configuration.debugRunTutorial)
             {
                 SetTutorialEnabled(JsonUtility.ToJson(new TutorialInitializationMessage
                 {
-                    fromDeepLink = debugOpenedFromDeepLink.ToString(),
+                    fromDeepLink = configuration.debugOpenedFromDeepLink.ToString(),
                     enableNewTutorialCamera = false.ToString()
                 }));
             }
         }
 
-        private void OnDestroy()
+        public void Dispose()
         {
             SetTutorialDisabled();
 
@@ -214,9 +140,9 @@ namespace DCL.Tutorial
 
             if (Convert.ToBoolean(enableNewTutorialCamera))
             {
-                eagleCamInitPosition = new Vector3(15, 115, -30);
-                eagleCamInitLookAtPoint = new Vector3(16, 105, 6);
-                eagleCamRotationActived = false;
+                configuration.eagleCamInitPosition = new Vector3(15, 115, -30);
+                configuration.eagleCamInitLookAtPoint = new Vector3(16, 105, 6);
+                configuration.eagleCamRotationActived = false;
             }
 
             isRunning = true;
@@ -251,13 +177,13 @@ namespace DCL.Tutorial
 
             if (executeStepsCoroutine != null)
             {
-                StopCoroutine(executeStepsCoroutine);
+                CoroutineStarter.Stop(executeStepsCoroutine);
                 executeStepsCoroutine = null;
             }
 
             if (runningStep != null)
             {
-                Destroy(runningStep.gameObject);
+                GameObject.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
@@ -267,7 +193,7 @@ namespace DCL.Tutorial
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
-            if (Environment.i != null)
+            if (Environment.i != null && Environment.i.world != null)
             {
                 WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "end");
             }
@@ -295,7 +221,7 @@ namespace DCL.Tutorial
             if (runningStep != null)
             {
                 runningStep.OnStepFinished();
-                Destroy(runningStep.gameObject);
+                GameObject.Destroy(runningStep.gameObject);
                 runningStep = null;
             }
 
@@ -340,8 +266,11 @@ namespace DCL.Tutorial
         /// <param name="active">True for show the teacher.</param>
         public void ShowTeacher3DModel(bool active)
         {
-            teacherCamera.enabled = active;
-            teacherRawImage.gameObject.SetActive(active);
+            if (configuration.teacherCamera != null)
+                configuration.teacherCamera.enabled = active;
+
+            if (configuration.teacherRawImage != null)
+                configuration.teacherRawImage.gameObject.SetActive(active);
         }
 
         /// <summary>
@@ -352,45 +281,60 @@ namespace DCL.Tutorial
         public void SetTeacherPosition(Vector2 position, bool animated = true)
         {
             if (teacherMovementCoroutine != null)
-                StopCoroutine(teacherMovementCoroutine);
+                CoroutineStarter.Stop(teacherMovementCoroutine);
 
-            if (animated)
-                teacherMovementCoroutine = StartCoroutine(MoveTeacher(teacherRawImage.rectTransform.position, position));
-            else
-                teacherRawImage.rectTransform.position = position;
+            if (configuration.teacherRawImage != null)
+            {
+                if (animated)
+                    teacherMovementCoroutine = CoroutineStarter.Start(MoveTeacher(configuration.teacherRawImage.rectTransform.position, position));
+                else
+                    configuration.teacherRawImage.rectTransform.position = position;
+            }
         }
 
         /// <summary>
         /// Plays a specific animation on the tutorial teacher.
         /// </summary>
         /// <param name="animation">Animation to apply.</param>
-        public void PlayTeacherAnimation(TutorialTeacher.TeacherAnimation animation) { teacher.PlayAnimation(animation); }
+        public void PlayTeacherAnimation(TutorialTeacher.TeacherAnimation animation)
+        {
+            if (configuration.teacher == null)
+                return;
+
+            configuration.teacher.PlayAnimation(animation);
+        }
 
         /// <summary>
         /// Set sort order for canvas containing teacher RawImage
         /// </summary>
         /// <param name="sortOrder"></param>
-        public void SetTeacherCanvasSortingOrder(int sortOrder) { teacherCanvas.sortingOrder = sortOrder; }
+        public void SetTeacherCanvasSortingOrder(int sortOrder)
+        {
+            if (configuration.teacherCanvas == null)
+                return;
+
+            configuration.teacherCanvas.sortingOrder = sortOrder;
+        }
 
         /// <summary>
         /// Finishes the current running step, skips all the next ones and completes the tutorial.
         /// </summary>
         public void SkipTutorial()
         {
-            if (!debugRunTutorial && sendStats)
+            if (!configuration.debugRunTutorial && configuration.sendStats)
             {
                 SendSkipTutorialSegmentStats(
-                    tutorialVersion,
+                    configuration.tutorialVersion,
                     runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
             }
 
-            int skipIndex = stepsOnGenesisPlaza.Count +
-                            stepsFromDeepLink.Count +
-                            stepsFromReset.Count +
-                            stepsFromBuilderInWorld.Count +
-                            stepsFromUserThatAlreadyDidTheTutorial.Count;
+            int skipIndex = configuration.stepsOnGenesisPlaza.Count +
+                            configuration.stepsFromDeepLink.Count +
+                            configuration.stepsFromReset.Count +
+                            configuration.stepsFromBuilderInWorld.Count +
+                            configuration.stepsFromUserThatAlreadyDidTheTutorial.Count;
 
-            StartCoroutine(StartTutorialFromStep(skipIndex));
+            CoroutineStarter.Start(StartTutorialFromStep(skipIndex));
 
             hudController?.taskbarHud?.SetVisibility(true);
             hudController?.profileHud?.SetBackpackButtonVisibility(true);
@@ -402,20 +346,20 @@ namespace DCL.Tutorial
         /// <param name="isActive">True for activate the eagle eye camera.</param>
         public void SetEagleEyeCameraActive(bool isActive)
         {
-            eagleEyeCamera.gameObject.SetActive(isActive);
-            StartCoroutine(BlockPlayerCameraUntilBlendingIsFinished(isActive));
+            configuration.eagleEyeCamera.gameObject.SetActive(isActive);
+            CoroutineStarter.Start(BlockPlayerCameraUntilBlendingIsFinished(isActive));
 
             if (isActive)
             {
-                eagleEyeCamera.transform.position = eagleCamInitPosition;
-                eagleEyeCamera.transform.LookAt(eagleCamInitLookAtPoint);
+                configuration.eagleEyeCamera.transform.position = configuration.eagleCamInitPosition;
+                configuration.eagleEyeCamera.transform.LookAt(configuration.eagleCamInitLookAtPoint);
 
-                if (eagleCamRotationActived)
-                    eagleEyeRotationCoroutine = StartCoroutine(EagleEyeCameraRotation(eagleCamRotationSpeed));
+                if (configuration.eagleCamRotationActived)
+                    eagleEyeRotationCoroutine = CoroutineStarter.Start(EagleEyeCameraRotation(configuration.eagleCamRotationSpeed));
             }
             else if (eagleEyeRotationCoroutine != null)
             {
-                StopCoroutine(eagleEyeRotationCoroutine);
+                CoroutineStarter.Stop(eagleEyeRotationCoroutine);
             }
         }
 
@@ -428,13 +372,13 @@ namespace DCL.Tutorial
 
             playerIsInGenesisPlaza = IsPlayerInsideGenesisPlaza();
 
-            if (debugRunTutorial)
-                currentStepIndex = debugStartingStepIndex >= 0 ? debugStartingStepIndex : 0;
+            if (configuration.debugRunTutorial)
+                currentStepIndex = configuration.debugStartingStepIndex >= 0 ? configuration.debugStartingStepIndex : 0;
             else
                 currentStepIndex = 0;
 
             PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.Reset);
-            executeStepsCoroutine = StartCoroutine(StartTutorialFromStep(currentStepIndex));
+            executeStepsCoroutine = CoroutineStarter.Start(StartTutorialFromStep(currentStepIndex));
         }
 
         private IEnumerator ExecuteSteps(TutorialPath tutorialPath, int startingStepIndex)
@@ -444,19 +388,19 @@ namespace DCL.Tutorial
             switch (tutorialPath)
             {
                 case TutorialPath.FromGenesisPlaza:
-                    steps = stepsOnGenesisPlaza;
+                    steps = configuration.stepsOnGenesisPlaza;
                     break;
                 case TutorialPath.FromDeepLink:
-                    steps = stepsFromDeepLink;
+                    steps = configuration.stepsFromDeepLink;
                     break;
                 case TutorialPath.FromResetTutorial:
-                    steps = stepsFromReset;
+                    steps = configuration.stepsFromReset;
                     break;
                 case TutorialPath.FromBuilderInWorld:
-                    steps = stepsFromBuilderInWorld;
+                    steps = configuration.stepsFromBuilderInWorld;
                     break;
                 case TutorialPath.FromUserThatAlreadyDidTheTutorial:
-                    steps = stepsFromUserThatAlreadyDidTheTutorial;
+                    steps = configuration.stepsFromUserThatAlreadyDidTheTutorial;
                     break;
             }
 
@@ -473,7 +417,7 @@ namespace DCL.Tutorial
                     continue;
 
                 if (stepPrefab.letInstantiation)
-                    runningStep = Instantiate(stepPrefab, this.transform).GetComponent<TutorialStep>();
+                    runningStep = GameObject.Instantiate(stepPrefab, tutorialContainerGO.transform).GetComponent<TutorialStep>();
                 else
                     runningStep = steps[i];
 
@@ -482,10 +426,10 @@ namespace DCL.Tutorial
                 elapsedTimeInCurrentStep = Time.realtimeSinceStartup;
                 currentStepNumber = i + 1;
 
-                if (!debugRunTutorial && sendStats)
+                if (!configuration.debugRunTutorial && configuration.sendStats)
                 {
                     SendStepStartedSegmentStats(
-                        tutorialVersion,
+                        configuration.tutorialVersion,
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""));
@@ -508,25 +452,25 @@ namespace DCL.Tutorial
                 runningStep.OnStepFinished();
                 elapsedTimeInCurrentStep = Time.realtimeSinceStartup - elapsedTimeInCurrentStep;
 
-                if (!debugRunTutorial &&
-                    sendStats &&
+                if (!configuration.debugRunTutorial &&
+                    configuration.sendStats &&
                     tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
                 {
                     SendStepCompletedSegmentStats(
-                        tutorialVersion,
+                        configuration.tutorialVersion,
                         tutorialPath,
                         i + 1,
                         runningStep.name.Replace("(Clone)", "").Replace("TutorialStep_", ""),
                         elapsedTimeInCurrentStep);
                 }
 
-                Destroy(runningStep.gameObject);
+                GameObject.Destroy(runningStep.gameObject);
 
-                if (i < steps.Count - 1 && timeBetweenSteps > 0)
-                    yield return new WaitForSeconds(timeBetweenSteps);
+                if (i < steps.Count - 1 && configuration.timeBetweenSteps > 0)
+                    yield return new WaitForSeconds(configuration.timeBetweenSteps);
             }
 
-            if (!debugRunTutorial &&
+            if (!configuration.debugRunTutorial &&
                 tutorialPath != TutorialPath.FromBuilderInWorld &&
                 tutorialPath != TutorialPath.FromUserThatAlreadyDidTheTutorial)
             {
@@ -542,15 +486,18 @@ namespace DCL.Tutorial
 
         private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
         {
+            if (configuration.teacherRawImage == null)
+                yield break;
+
             float t = 0f;
 
-            while (Vector2.Distance(teacherRawImage.rectTransform.position, toPosition) > 0)
+            while (Vector2.Distance(configuration.teacherRawImage.rectTransform.position, toPosition) > 0)
             {
-                t += teacherMovementSpeed * Time.deltaTime;
+                t += configuration.teacherMovementSpeed * Time.deltaTime;
                 if (t <= 1.0f)
-                    teacherRawImage.rectTransform.position = Vector2.Lerp(fromPosition, toPosition, teacherMovementCurve.Evaluate(t));
+                    configuration.teacherRawImage.rectTransform.position = Vector2.Lerp(fromPosition, toPosition, configuration.teacherMovementCurve.Evaluate(t));
                 else
-                    teacherRawImage.rectTransform.position = toPosition;
+                    configuration.teacherRawImage.rectTransform.position = toPosition;
 
                 yield return null;
             }
@@ -637,7 +584,7 @@ namespace DCL.Tutorial
         {
             while (true)
             {
-                eagleEyeCamera.transform.Rotate(Vector3.up * Time.deltaTime * rotationSpeed, Space.World);
+                configuration.eagleEyeCamera.transform.Rotate(Vector3.up * Time.deltaTime * rotationSpeed, Space.World);
                 yield return null;
             }
         }

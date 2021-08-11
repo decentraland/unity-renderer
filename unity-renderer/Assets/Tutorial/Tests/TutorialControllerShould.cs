@@ -9,6 +9,7 @@ namespace DCL.Tutorial_Tests
 {
     public class TutorialControllerShould
     {
+        private TutorialConfigurator tutorialConfigurator;
         private TutorialController tutorialController;
         private int currentStepIndex = 0;
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
@@ -121,34 +122,37 @@ namespace DCL.Tutorial_Tests
         public void ShowHideTutorialTeacherCorrectly()
         {
             tutorialController.ShowTeacher3DModel(true);
-            Assert.IsTrue(tutorialController.teacherRawImage.gameObject.activeSelf);
+            Assert.IsTrue(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
 
             tutorialController.ShowTeacher3DModel(false);
-            Assert.IsFalse(tutorialController.teacherRawImage.gameObject.activeSelf);
+            Assert.IsFalse(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
         }
 
         [Test]
         public void SetTutorialTeacherPositionCorrectly()
         {
-            Vector3 oldPosition = tutorialController.teacherRawImage.rectTransform.position;
+            Vector3 oldPosition = tutorialController.configuration.teacherRawImage.rectTransform.position;
             tutorialController.SetTeacherPosition(new Vector2(10, 30), false);
-            Assert.IsTrue(tutorialController.teacherRawImage.rectTransform.position != oldPosition);
+            Assert.IsTrue(tutorialController.configuration.teacherRawImage.rectTransform.position != oldPosition);
 
-            oldPosition = tutorialController.teacherRawImage.rectTransform.position;
+            oldPosition = tutorialController.configuration.teacherRawImage.rectTransform.position;
             tutorialController.SetTeacherPosition(new Vector2(50, 20), false);
-            Assert.IsTrue(tutorialController.teacherRawImage.rectTransform.position != oldPosition);
+            Assert.IsTrue(tutorialController.configuration.teacherRawImage.rectTransform.position != oldPosition);
         }
 
         private void CreateAndConfigureTutorial()
         {
-            tutorialController = GameObject.Instantiate(Resources.Load<GameObject>("TutorialController")).GetComponent<TutorialController>();
-            tutorialController.stepsOnGenesisPlaza.Clear();
-            tutorialController.stepsFromDeepLink.Clear();
-            tutorialController.stepsFromReset.Clear();
-            tutorialController.stepsFromUserThatAlreadyDidTheTutorial.Clear();
-            tutorialController.timeBetweenSteps = 0f;
-            tutorialController.sendStats = false;
-            tutorialController.debugRunTutorial = false;
+            tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
+            tutorialConfigurator.configuration = Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests");
+            tutorialConfigurator.ConfigureTutorial();
+            tutorialController = tutorialConfigurator.tutorialController;
+            tutorialController.configuration.stepsOnGenesisPlaza.Clear();
+            tutorialController.configuration.stepsFromDeepLink.Clear();
+            tutorialController.configuration.stepsFromReset.Clear();
+            tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial.Clear();
+            tutorialController.configuration.timeBetweenSteps = 0f;
+            tutorialController.configuration.sendStats = false;
+            tutorialController.configuration.debugRunTutorial = false;
             tutorialController.tutorialReset = false;
             tutorialController.userAlreadyDidTheTutorial = false;
         }
@@ -160,7 +164,7 @@ namespace DCL.Tutorial_Tests
                 GameObject.Destroy(step);
             }
 
-            GameObject.Destroy(tutorialController.gameObject);
+            GameObject.Destroy(tutorialController.tutorialContainerGO);
             currentSteps.Clear();
             currentStepIndex = 0;
         }
@@ -169,11 +173,11 @@ namespace DCL.Tutorial_Tests
         {
             for (int i = 0; i < 5; i++)
             {
-                tutorialController.stepsOnGenesisPlaza.Add(CreateNewFakeStep());
+                tutorialController.configuration.stepsOnGenesisPlaza.Add(CreateNewFakeStep());
             }
 
             currentStepIndex = 0;
-            currentSteps = tutorialController.stepsOnGenesisPlaza;
+            currentSteps = tutorialController.configuration.stepsOnGenesisPlaza;
 
             tutorialController.playerIsInGenesisPlaza = true;
             tutorialController.isRunning = true;
@@ -184,11 +188,11 @@ namespace DCL.Tutorial_Tests
         {
             for (int i = 0; i < 5; i++)
             {
-                tutorialController.stepsFromDeepLink.Add(CreateNewFakeStep());
+                tutorialController.configuration.stepsFromDeepLink.Add(CreateNewFakeStep());
             }
 
             currentStepIndex = 0;
-            currentSteps = tutorialController.stepsFromDeepLink;
+            currentSteps = tutorialController.configuration.stepsFromDeepLink;
 
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.openedFromDeepLink = true;
@@ -200,11 +204,11 @@ namespace DCL.Tutorial_Tests
         {
             for (int i = 0; i < 5; i++)
             {
-                tutorialController.stepsFromReset.Add(CreateNewFakeStep());
+                tutorialController.configuration.stepsFromReset.Add(CreateNewFakeStep());
             }
 
             currentStepIndex = 0;
-            currentSteps = tutorialController.stepsFromReset;
+            currentSteps = tutorialController.configuration.stepsFromReset;
 
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
@@ -216,11 +220,11 @@ namespace DCL.Tutorial_Tests
         {
             for (int i = 0; i < 5; i++)
             {
-                tutorialController.stepsFromUserThatAlreadyDidTheTutorial.Add(CreateNewFakeStep());
+                tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial.Add(CreateNewFakeStep());
             }
 
             currentStepIndex = 0;
-            currentSteps = tutorialController.stepsFromUserThatAlreadyDidTheTutorial;
+            currentSteps = tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial;
 
             tutorialController.userAlreadyDidTheTutorial = true;
             tutorialController.isRunning = true;

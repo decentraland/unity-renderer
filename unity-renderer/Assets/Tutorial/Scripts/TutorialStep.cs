@@ -47,20 +47,21 @@ namespace DCL.Tutorial
             {
                 tutorialController.ShowTeacher3DModel(show3DTeacherAtStart);
 
-                if (tutorialController.teacher != null)
+                if (tutorialController.configuration.teacher != null)
                 {
                     if (tutorialController.currentStepIndex > 0)
-                        tutorialController.teacher.PlaySpeakSound();
+                        tutorialController.configuration.teacher.PlaySpeakSound();
                     else
-                        tutorialController.teacher.PlayHappySound(1f);
+                        tutorialController.configuration.teacher.PlayHappySound(1f);
                 }
 
                 if (show3DTeacherAtStart && teacherPositionRef != null)
                 {
                     tutorialController.SetTeacherPosition(teacherPositionRef.position);
 
-                    if (tutorialController.teacher.isHiddenByAnAnimation)
-                        tutorialController.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
+                    if (tutorialController.configuration.teacher != null &&
+                        tutorialController.configuration.teacher.isHiddenByAnAnimation)
+                        tutorialController.configuration.teacher.PlayAnimation(TutorialTeacher.TeacherAnimation.Reset);
                 }
             }
 

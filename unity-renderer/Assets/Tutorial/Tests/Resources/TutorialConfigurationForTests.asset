@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7947aeef263cd9a49b78db4d8d573055, type: 3}
+  m_Name: TutorialConfigurationForTests
+  m_EditorClassIdentifier: 
+  tutorialVersion: 3
+  timeBetweenSteps: 0
+  sendStats: 0
+  stepsOnGenesisPlaza: []
+  stepsFromDeepLink: []
+  stepsFromReset: []
+  stepsFromBuilderInWorld: []
+  stepsFromUserThatAlreadyDidTheTutorial: []
+  teacherMovementSpeed: 0.8
+  teacherMovementCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.9831092
+      outSlope: 3.9831092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.043580897
+    - serializedVersion: 3
+      time: 0.60207725
+      value: 0.95131886
+      inSlope: 0.19620486
+      outSlope: 0.12233817
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.13080323
+      outWeight: 0.12323118
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.12233817
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  eagleCamInitPosition: {x: 30, y: 20, z: -60}
+  eagleCamInitLookAtPoint: {x: 0, y: 0, z: 0}
+  eagleCamRotationActived: 1
+  eagleCamRotationSpeed: 1
+  debugRunTutorial: 0
+  debugStartingStepIndex: 0
+  debugOpenedFromDeepLink: 0
