@@ -1,0 +1,62 @@
+# This pipeline is triggered after the CDN has succeed uploading a built package
+
+name: Set delivery rollout
+
+on: [deployment_status]
+
+jobs:
+  set-rollouts-automatic:
+    if: ${{ github.event.deployment.task == 'upload-to-cdn' && github.event.deployment_status.state == 'success' }}
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: hmarr/debug-action@v2
+      - name: set-rollout-zone
+        uses: decentraland/set-rollout-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentDomain: "play.decentraland.zone"
+          deploymentName: "@dcl/unity-renderer"
+          percentage: 100
+
+      - name: set-rollout-today
+        uses: decentraland/set-rollout-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentDomain: "play.decentraland.today"
+          deploymentName: "@dcl/unity-renderer"
+          percentage: 100
+
+      - name: set-rollout-org
+        uses: decentraland/set-rollout-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Repo deployment info
+          ref: ${{ github.event.deployment.ref }}
+          sha: ${{ github.event.deployment.sha }}
+
+          # CDN information
+          packageName: ${{ github.event.deployment.payload.packageName }}
+          packageVersion: ${{ github.event.deployment.payload.packageVersion }}
+
+          # Rollout information
+          deploymentDomain: "play.decentraland.org"
+          deploymentName: "@dcl/unity-renderer"
+          percentage: 10
