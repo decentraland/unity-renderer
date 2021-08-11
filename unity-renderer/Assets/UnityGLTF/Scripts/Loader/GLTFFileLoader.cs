@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace UnityGLTF.Loader
 {
-    public class FileLoader : ILoader
+    public class GLTFFileLoader : ILoader
     {
         private string _rootDirectoryPath;
         public Stream LoadedStream { get; private set; }
 
         public bool HasSyncLoadMethod { get; private set; }
 
-        public FileLoader(string rootDirectoryPath)
+        public GLTFFileLoader(string rootDirectoryPath)
         {
             _rootDirectoryPath = rootDirectoryPath;
             HasSyncLoadMethod = true;
