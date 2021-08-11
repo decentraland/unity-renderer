@@ -20,18 +20,18 @@ public class BIWMainController : PluginFeature
     private InputController inputController;
     private GameObject[] groundVisualsGO;
 
-    private BIWOutlinerController outlinerController;
-    private BIWInputHandler inputHandler;
-    private BIWPublishController publishController;
-    private BIWCreatorController creatorController;
-    private BIWModeController modeController;
-    private BIWFloorHandler floorHandler;
-    private BIWEntityHandler entityHandler;
-    private BIWActionController actionController;
-    private BIWSaveController saveController;
-    private BIWInputWrapper inputWrapper;
-    private BIWRaycastController raycastController;
-    private BIWGizmosController gizmosController;
+    internal BIWOutlinerController outlinerController;
+    internal BIWInputHandler inputHandler;
+    internal BIWPublishController publishController;
+    internal BIWCreatorController creatorController;
+    internal BIWModeController modeController;
+    internal BIWFloorHandler floorHandler;
+    internal BIWEntityHandler entityHandler;
+    internal BIWActionController actionController;
+    internal BIWSaveController saveController;
+    internal BIWInputWrapper inputWrapper;
+    internal BIWRaycastController raycastController;
+    internal BIWGizmosController gizmosController;
 
     private BuilderInWorldBridge builderInWorldBridge;
     private BuilderInWorldAudioHandler biwAudioHandler;
@@ -49,7 +49,7 @@ public class BIWMainController : PluginFeature
 
     internal int checkerInsideSceneOptimizationCounter = 0;
     internal string sceneToEditId;
-    private bool catalogAdded = false;
+    internal bool catalogAdded = false;
     private bool sceneReady = false;
     private bool isInit = false;
     private Material previousSkyBoxMaterial;
@@ -57,11 +57,11 @@ public class BIWMainController : PluginFeature
     private bool previousAllUIHidden;
     private WebRequestAsyncOperation catalogAsyncOp;
     private bool isCatalogLoading = false;
-    private bool areCatalogHeadersReady = false;
+    internal bool areCatalogHeadersReady = false;
     private float beginStartFlowTimeStamp = 0;
     private float startEditorTimeStamp = 0;
     internal bool isCatalogRequested = false;
-    private bool isEnteringEditMode = false;
+    internal bool isEnteringEditMode = false;
     private bool activeFeature = false;
 
     internal IBuilderInWorldLoadingController initialLoadingController;
@@ -337,7 +337,7 @@ public class BIWMainController : PluginFeature
         StartEditMode();
     }
 
-    private void CatalogHeadersReceived(string rawHeaders)
+    internal void CatalogHeadersReceived(string rawHeaders)
     {
         catalogCallHeaders = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawHeaders);
         areCatalogHeadersReady = true;
@@ -430,7 +430,7 @@ public class BIWMainController : PluginFeature
         }
     }
 
-    private void CheckSceneToEditByShorcut()
+    internal void CheckSceneToEditByShorcut()
     {
         FindSceneToEdit();
 
@@ -645,7 +645,7 @@ public class BIWMainController : PluginFeature
         BIWAnalytics.EnterEditor( Time.realtimeSinceStartup - beginStartFlowTimeStamp);
     }
 
-    private void OnAllParcelsFloorLoaded()
+    internal void OnAllParcelsFloorLoaded()
     {
         if (!initialLoadingController.isActive)
             return;
@@ -668,15 +668,16 @@ public class BIWMainController : PluginFeature
 
     public void StartExitMode()
     {
-        if (saveController.numberOfSaves > 0)
+        if (saveController.GetSaveTimes() > 0)
         {
             modeController.TakeSceneScreenshotForExit();
 
-            HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
-                BIWSettings.EXIT_MODAL_TITLE,
-                BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
-                BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
-                BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
+            if ( HUDController.i.builderInWorldMainHud != null)
+                HUDController.i.builderInWorldMainHud.ConfigureConfirmationModal(
+                    BIWSettings.EXIT_MODAL_TITLE,
+                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_SUBTITLE,
+                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CANCEL_BUTTON,
+                    BIWSettings.EXIT_WITHOUT_PUBLISH_MODAL_CONFIRM_BUTTON);
         }
         else
         {
@@ -767,7 +768,7 @@ public class BIWMainController : PluginFeature
 
     public void SetupNewScene() { floorHandler.CreateDefaultFloor(); }
 
-    void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
+    internal void ExitAfterCharacterTeleport(DCLCharacterPosition position) { ExitEditMode(); }
 
     public void FindSceneToEdit(IParcelScene targetScene)
     {
@@ -817,7 +818,7 @@ public class BIWMainController : PluginFeature
 
     private void UpdateSceneLoadingProgress(float sceneLoadingProgress) { initialLoadingController.SetPercentage(50f + (sceneLoadingProgress / 2)); }
 
-    private void OnUserProfileUpdate(UserProfile user)
+    internal void OnUserProfileUpdate(UserProfile user)
     {
         userProfile.OnUpdate -= OnUserProfileUpdate;
         updateLandsWithAcessCoroutine = CoroutineStarter.Start(CheckLandsAccess());

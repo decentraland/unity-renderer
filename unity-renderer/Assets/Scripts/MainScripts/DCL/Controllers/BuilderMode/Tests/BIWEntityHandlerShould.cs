@@ -9,6 +9,7 @@ using DCL.Components;
 using DCL.Models;
 using Newtonsoft.Json;
 using NSubstitute;
+using NSubstitute.Extensions;
 using UnityEngine.TestTools;
 
 /// <summary>
@@ -275,6 +276,112 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsFalse(result);
+    }
+
+    [Test]
+    public void InputMouseDown()
+    {
+        //Arrange
+        entityHandler.isSecondayClickPressed = false;
+
+        //Act
+        entityHandler.OnInputMouseDown(1, Vector3.zero);
+
+        //Assert
+        Assert.IsTrue(entityHandler.isSecondayClickPressed);
+    }
+
+    [Test]
+    public void InputMouseUp()
+    {
+        //Arrange
+        entityHandler.isSecondayClickPressed = true;
+
+        //Act
+        entityHandler.OnInputMouseUp(1, Vector3.zero);
+
+        //Assert
+        Assert.IsFalse(entityHandler.isSecondayClickPressed);
+    }
+
+    [Test]
+    public void SetMultiSelectionActive()
+    {
+        //Arrange
+        entityHandler.isMultiSelectionActive = false;
+
+        //Act
+        entityHandler.SetMultiSelectionActive(true);
+
+        //Assert
+        Assert.IsTrue(entityHandler.isMultiSelectionActive);
+    }
+
+    [Test]
+    public void ReportTransformUpdateTime()
+    {
+        //Act
+        entityHandler.ReportTransform();
+
+        //Assert
+        Assert.IsTrue(Mathf.Abs(entityHandler.GetLastTimeReport() - DCLTime.realtimeSinceStartup) <= 0.01f);
+    }
+
+    [Test]
+    public void IsPointerInSelectedEntity()
+    {
+        //Arrange
+        entityHandler.SelectEntity(entity);
+        context.raycastController.Configure().GetEntityOnPointer().Returns(entity);
+
+        //Act
+        var result = entityHandler.IsPointerInSelectedEntity();
+
+        //Assert
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public void DeleteSelectedEntitiesInput()
+    {
+        //Arrange
+        BIWEntity newEntity = new BIWEntity();
+        entityHandler.SelectEntity(newEntity);
+
+        //Act
+        entityHandler.DeleteSelectedEntities();
+
+        //Assert
+        Assert.IsTrue(newEntity.isDeleted);
+    }
+
+    [Test]
+    public void DuplicateSelectedEntitiesInput()
+    {
+        //Arrange
+        BIWEntity newEntity = new BIWEntity();
+        entityHandler.SelectEntity(newEntity);
+        int selectedCount = entityHandler.GetSelectedEntityList().Count;
+
+        //Act
+        entityHandler.DuplicateSelectedEntities();
+
+        //Assert
+        Assert.IsTrue(selectedCount == entityHandler.GetSelectedEntityList().Count - 1);
+    }
+
+    [Test]
+    public void SelectEntityFromList()
+    {
+        //Arrange
+        BIWEntity newEntity = new BIWEntity();
+        int selectedCount = entityHandler.GetSelectedEntityList().Count;
+
+        //Act
+        entityHandler.ChangeEntitySelectionFromList(newEntity);
+
+        //Assert
+        Assert.IsTrue(selectedCount == entityHandler.GetSelectedEntityList().Count - 1);
     }
 
     protected override IEnumerator TearDown()

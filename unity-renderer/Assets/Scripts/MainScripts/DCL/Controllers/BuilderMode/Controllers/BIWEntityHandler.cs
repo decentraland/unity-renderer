@@ -72,8 +72,8 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
     private readonly List<BIWEntity> selectedEntities = new List<BIWEntity>();
 
     private BIWMode currentActiveMode;
-    private bool isMultiSelectionActive = false;
-    private bool isSecondayClickPressed = false;
+    internal bool isMultiSelectionActive = false;
+    internal bool isSecondayClickPressed = false;
 
     private float lastTransformReportTime;
 
@@ -138,13 +138,13 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         actionController.OnUndo += ReSelectEntities;
     }
 
-    private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
+    internal void OnInputMouseDown(int buttonId, Vector3 mousePosition)
     {
         if (buttonId == 1)
             isSecondayClickPressed = true;
     }
 
-    private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
+    internal void OnInputMouseUp(int buttonId, Vector3 mousePosition)
     {
         if (buttonId == 1)
             isSecondayClickPressed = false;
@@ -284,7 +284,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         convertedEntities.Clear();
     }
 
-    private void ChangeEntitySelectionFromList(BIWEntity entityToEdit)
+    internal void ChangeEntitySelectionFromList(BIWEntity entityToEdit)
     {
         if (!selectedEntities.Contains(entityToEdit))
             SelectFromList(entityToEdit);

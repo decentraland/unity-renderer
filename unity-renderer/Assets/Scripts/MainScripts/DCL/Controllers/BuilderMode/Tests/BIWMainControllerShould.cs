@@ -1,13 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using DCL;
 using DCL.Controllers;
+using DCL.Helpers;
 using NSubstitute;
 using NSubstitute.Extensions;
 using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using Tests;
 using UnityEngine;
+using Environment = DCL.Environment;
 
 public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 {
@@ -299,16 +303,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void UserHasPermission()
     {
         //Arrange
-        var parcel = new Parcel();
-        parcel.x = scene.sceneData.basePosition.x;
-        parcel.y = scene.sceneData.basePosition.y;
-        var land = new Land();
-        land.parcels = new List<Parcel>() { parcel };
-        var lands = new LandWithAccess[]
-        {
-            new LandWithAccess(land)
-        };
-        DataStore.i.builderInWorld.landsWithAccess.Set(lands);
+        AddSceneToPermissions();
 
         //Act
         var result = mainController.UserHasPermissionOnParcelScene(scene);
@@ -348,8 +343,138 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
         Assert.IsTrue(result);
     }
 
+    [Test]
+    public void CatalogReceived()
+    {
+        //Arrange
+
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
+        string jsonValue = File.ReadAllText(jsonPath);
+
+        //Act
+        mainController.CatalogReceived(jsonValue);
+
+        //Assert
+        Assert.IsTrue(mainController.catalogAdded);
+    }
+
+    [Test]
+    public void CatalogHeaderReceived()
+    {
+        //Act
+        mainController.CatalogHeadersReceived("");
+
+        //Assert
+        Assert.IsTrue(mainController.areCatalogHeadersReady);
+    }
+
+    [Test]
+    public void CheckSceneToEditByShorcut()
+    {
+        //Arrange
+        mainController.sceneToEdit = scene;
+        AddSceneToPermissions();
+
+        //Act
+        mainController.CheckSceneToEditByShorcut();
+
+        //Assert
+        Assert.IsTrue(mainController.isEnteringEditMode);
+    }
+
+    [Test]
+    public void InitialLoadingControllerHideOnFloorLoaded()
+    {
+        //Arrange
+        mainController.initialLoadingController.Dispose();
+        mainController.initialLoadingController = Substitute.For<IBuilderInWorldLoadingController>();
+        mainController.initialLoadingController.Configure().isActive.Returns(true);
+
+        //Act
+        mainController.OnAllParcelsFloorLoaded();
+
+        //Assert
+        mainController.initialLoadingController.Received().Hide(Arg.Any<bool>(), Arg.Any<Action>());
+    }
+
+    [Test]
+    public void StartExitModeScreenShot()
+    {
+        //Arrange
+        mainController.saveController.numberOfSaves = 1;
+
+        //Act
+        mainController.StartExitMode();
+
+        //Assert
+        context.modeController.Received().TakeSceneScreenshotForExit();
+    }
+
+    [Test]
+    public void SetupNewScene()
+    {
+        //Arrange
+        BIWCatalogManager.Init();
+        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        mainController.creatorController.sceneToEdit = scene;
+        mainController.floorHandler.sceneToEdit = scene;
+
+        //Act
+        mainController.SetupNewScene();
+
+        //Assert
+        Assert.Greater(mainController.floorHandler.floorPlaceHolderDict.Count, 0);
+    }
+
+    [Test]
+    public void ExitAfterTeleport()
+    {
+        //Arrange
+        mainController.sceneToEdit = scene;
+        mainController.isBuilderInWorldActivated = true;
+
+        //Act
+        mainController.ExitAfterCharacterTeleport(new DCLCharacterPosition());
+
+        //Assert
+        Assert.IsFalse(mainController.isBuilderInWorldActivated);
+    }
+
+    [Test]
+    public void ActiveLandCheckerCoroutineAfterUserPofileIsLoaded()
+    {
+        //Arrange
+        var profile = UserProfile.GetOwnUserProfile();
+        mainController.ActivateLandAccessBackgroundChecker();
+        profile.UpdateData(new UserProfileModel() { userId = "testId", ethAddress = "0x00" });
+
+        //ACt
+        mainController.OnUserProfileUpdate(profile);
+
+        //Assert
+        Assert.IsNotNull(mainController.updateLandsWithAcessCoroutine);
+    }
+
+    private void AddSceneToPermissions()
+    {
+        var parcel = new Parcel();
+        parcel.x = scene.sceneData.basePosition.x;
+        parcel.y = scene.sceneData.basePosition.y;
+        var land = new Land();
+        land.parcels = new List<Parcel>() { parcel };
+
+        var landWithAcces = new LandWithAccess(land);
+        landWithAcces.scenes = new List<DeployedScene>();
+        var lands = new LandWithAccess[]
+        {
+            landWithAcces
+        };
+        DataStore.i.builderInWorld.landsWithAccess.Set(lands);
+    }
+
     protected override IEnumerator TearDown()
     {
+        AssetCatalogBridge.i.ClearCatalog();
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController.Dispose();
         BIWMainController.BYPASS_LAND_OWNERSHIP_CHECK = false;

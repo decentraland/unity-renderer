@@ -30,6 +30,7 @@ public interface IBIWModeController
 
     bool ShouldCancelUndoAction();
     void MouseClickDetected();
+    void TakeSceneScreenshotForExit();
 }
 
 public class BIWModeController : BIWController, IBIWModeController
