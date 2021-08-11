@@ -58,13 +58,45 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(onTutorialEnabledInvoked);
         }
 
+        [Test]
+        public void SetTutorialDisabledCorrectly()
+        {
+            // Arrange
+            CommonScriptableObjects.featureKeyTriggersBlocked.Set(true);
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
+            tutorialController.tutorialReset = true;
+            tutorialController.isRunning = true;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
+            NotificationsController.disableWelcomeNotification = true;
+            CommonScriptableObjects.tutorialActive.Set(true);
+
+            bool onTutorialDisabledInvoked = false;
+            tutorialController.OnTutorialDisabled += () => onTutorialDisabledInvoked = true;
+
+            // Act
+            tutorialController.SetTutorialDisabled();
+
+            // Assert
+            Assert.IsFalse(CommonScriptableObjects.featureKeyTriggersBlocked.Get());
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(tutorialController.tutorialReset);
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.AreEqual(1f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+            Assert.IsFalse(NotificationsController.disableWelcomeNotification);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.IsTrue(onTutorialDisabledInvoked);
+        }
+
         [UnityTest]
         public IEnumerator ExecuteTutorialStepsFromGenesisPlazaCorrectly()
         {
+            // Arrange
             ConfigureTutorialForGenesisPlaza();
 
+            // Act
             yield return tutorialController.StartTutorialFromStep(0);
 
+            // Assert
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
@@ -156,14 +188,44 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
         }
 
-        [Test]
-        public void ShowHideTutorialTeacherCorrectly()
+        [UnityTest]
+        public IEnumerator ExecuteTutorialStepsFromBuilderInWorldCorrectly()
         {
-            tutorialController.ShowTeacher3DModel(true);
-            Assert.IsTrue(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
+            // Arrange
+            ConfigureTutorialForBuilderInWorld();
 
-            tutorialController.ShowTeacher3DModel(false);
-            Assert.IsFalse(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
+            // Act
+            yield return tutorialController.StartTutorialFromStep(0);
+
+            // Assert
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        public void SkipTutorialStepsFromBuilderInWorldCorrectly()
+        {
+            ConfigureTutorialForBuilderInWorld();
+
+            tutorialController.SkipTutorial();
+
+            Assert.IsFalse(tutorialController.isRunning);
+            Assert.IsNull(tutorialController.runningStep);
+            Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShowHideTutorialTeacherCorrectly(bool showTeacher)
+        {
+            tutorialController.ShowTeacher3DModel(showTeacher);
+
+            if (showTeacher)
+                Assert.IsTrue(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
+            else
+                Assert.IsFalse(tutorialController.configuration.teacherRawImage.gameObject.activeSelf);
         }
 
         [Test]
@@ -178,10 +240,43 @@ namespace DCL.Tutorial_Tests
             Assert.IsTrue(tutorialController.configuration.teacherRawImage.rectTransform.position != oldPosition);
         }
 
+        [Test]
+        public void SetTeacherCanvasSortingOrderCorrectly()
+        {
+            // Arrange
+            int testSortOrder = 1;
+            tutorialController.configuration.teacherCanvas.sortingOrder = 0;
+
+            // Act
+            tutorialController.SetTeacherCanvasSortingOrder(testSortOrder);
+
+            // Assert
+            Assert.AreEqual(testSortOrder, tutorialController.configuration.teacherCanvas.sortingOrder);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetEagleEyeCameraActiveCorrectly(bool isActive)
+        {
+            // Arrange
+            tutorialController.configuration.eagleEyeCamera.gameObject.SetActive(!isActive);
+            tutorialController.configuration.eagleEyeCamera.transform.position = Vector3.zero;
+            tutorialController.configuration.eagleCamRotationActived = false;
+
+            // Act
+            tutorialController.SetEagleEyeCameraActive(isActive);
+
+            // Assert
+            Assert.AreEqual(isActive, tutorialController.configuration.eagleEyeCamera.gameObject.activeSelf);
+            if (isActive)
+                Assert.AreEqual(tutorialController.configuration.eagleCamInitPosition, tutorialController.configuration.eagleEyeCamera.transform.position);
+        }
+
         private void CreateAndConfigureTutorial()
         {
             tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
-            tutorialConfigurator.configuration = Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests");
+            tutorialConfigurator.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests"));
             tutorialConfigurator.ConfigureTutorial();
             tutorialController = tutorialConfigurator.tutorialController;
             tutorialController.configuration.stepsOnGenesisPlaza.Clear();
@@ -202,6 +297,7 @@ namespace DCL.Tutorial_Tests
                 GameObject.Destroy(step);
             }
 
+            GameObject.Destroy(tutorialConfigurator.gameObject);
             GameObject.Destroy(tutorialController.tutorialContainerGO);
             tutorialController.Dispose();
             currentSteps.Clear();
@@ -218,8 +314,12 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsOnGenesisPlaza;
 
+            tutorialController.tutorialType = TutorialType.Initial;
+            tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = true;
+            tutorialController.tutorialReset = false;
             tutorialController.isRunning = true;
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -233,9 +333,13 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromDeepLink;
 
+            tutorialController.tutorialType = TutorialType.Initial;
+            tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.playerIsInGenesisPlaza = false;
+            tutorialController.tutorialReset = false;
             tutorialController.openedFromDeepLink = true;
             tutorialController.isRunning = true;
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -249,9 +353,12 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromReset;
 
+            tutorialController.tutorialType = TutorialType.Initial;
+            tutorialController.userAlreadyDidTheTutorial = false;
             tutorialController.tutorialReset = true;
             tutorialController.playerIsInGenesisPlaza = false;
             tutorialController.isRunning = true;
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
@@ -265,8 +372,26 @@ namespace DCL.Tutorial_Tests
             currentStepIndex = 0;
             currentSteps = tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial;
 
+            tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = true;
             tutorialController.isRunning = true;
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
+            CommonScriptableObjects.tutorialActive.Set(true);
+        }
+
+        private void ConfigureTutorialForBuilderInWorld()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                tutorialController.configuration.stepsFromBuilderInWorld.Add(CreateNewFakeStep());
+            }
+
+            currentStepIndex = 0;
+            currentSteps = tutorialController.configuration.stepsFromBuilderInWorld;
+
+            tutorialController.tutorialType = TutorialType.BuilderInWorld;
+            tutorialController.isRunning = true;
+            tutorialController.runningStep = new GameObject().AddComponent<TutorialStep>();
             CommonScriptableObjects.tutorialActive.Set(true);
         }
 
