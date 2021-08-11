@@ -1,18 +1,24 @@
 ﻿using System;
 using DCL.Interface;
+using UnityEngine;
 
 internal class SceneContextMenuHandler : IDisposable
 {
     private readonly SceneCardViewContextMenu contextMenu;
     private readonly ISectionsController sectionsController;
     private readonly IScenesViewController scenesViewController;
+    private readonly UnpublishPopupController unpublishPopupController;
+
+    private Vector2Int sceneCoords;
+    private DeployedScene.Source sceneSource;
 
     public SceneContextMenuHandler(SceneCardViewContextMenu contextMenu, ISectionsController sectionsController,
-        IScenesViewController scenesViewController)
+        IScenesViewController scenesViewController, UnpublishPopupController unpublishPopupController)
     {
         this.contextMenu = contextMenu;
         this.sectionsController = sectionsController;
         this.scenesViewController = scenesViewController;
+        this.unpublishPopupController = unpublishPopupController;
 
         sectionsController.OnRequestContextMenuHide += OnRequestContextMenuHide;
 
@@ -47,6 +53,8 @@ internal class SceneContextMenuHandler : IDisposable
         contextMenu.transform.position = sceneCard.contextMenuButtonPosition;
         contextMenu.Show(sceneData.id, sceneData.isDeployed,
             sceneData.isOwner || sceneData.isOperator, sceneData.isContributor);
+        sceneCoords = sceneData.coords;
+        sceneSource = sceneData.source;
     }
 
     void OnRequestContextMenuHide() { contextMenu.Hide(); }
@@ -59,7 +67,7 @@ internal class SceneContextMenuHandler : IDisposable
 
     void OnContextMenuSharePressed(string id) { }
 
-    void OnContextMenuUnpublishPressed(string id) { }
+    void OnContextMenuUnpublishPressed(string id) { unpublishPopupController.Show(sceneCoords, sceneSource); }
 
     void OnContextMenuDeletePressed(string id) { }
 

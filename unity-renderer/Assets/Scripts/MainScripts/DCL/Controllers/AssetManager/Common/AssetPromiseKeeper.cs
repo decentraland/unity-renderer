@@ -24,21 +24,6 @@ namespace DCL
         where AssetLibraryType : AssetLibrary<AssetType>, new()
         where AssetPromiseType : AssetPromise<AssetType>
     {
-        private static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> instance;
-
-        public static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> i
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType>(new AssetLibraryType());
-                }
-
-                return instance;
-            }
-        }
-
         public AssetLibraryType library;
 
         //NOTE(Brian): All waiting promises. Only used for cleanup and to keep count.
@@ -46,7 +31,7 @@ namespace DCL
         public int waitingPromisesCount => waitingPromises.Count;
 
         //NOTE(Brian): List of promises waiting for assets not in library.
-        Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
+        protected Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
         //NOTE(Brian): List of promises waiting for assets that are currently being loaded by another promise.
         HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
@@ -134,28 +119,27 @@ namespace DCL
             if (promise.state == AssetPromiseState.IDLE_AND_EMPTY || promise.state == AssetPromiseState.WAITING)
             {
                 CleanPromise(promise);
+                promise.OnForget();
                 return promise;
             }
 
             object id = promise.GetId();
 
-            if (promise.state == AssetPromiseState.LOADING)
-            {
-                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
-                bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
+            bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
+            bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
 
-                if (isMasterPromise && hasBlockedPromises)
-                {
-                    //NOTE(Brian): Pending promises are waiting for this one.
-                    //             We clear the events because we shouldn't call them, as this promise is forgotten.
-                    promise.ClearEvents();
-                    OnSilentForget(promise);
-                    return promise;
-                }
+            if (isMasterPromise && hasBlockedPromises)
+            {
+                //NOTE(Brian): Pending promises are waiting for this one.
+                //             We clear the events because we shouldn't call them, as this promise is forgotten.
+                OnSilentForget(promise);
+                promise.OnForget();
+                return promise;
             }
 
             promise.Unload();
             CleanPromise(promise);
+            promise.OnForget();
 
             return promise;
         }
@@ -190,6 +174,11 @@ namespace DCL
                 AssetPromiseType promise = toResolveBlockedPromisesQueue.Dequeue();
                 yield return ProcessBlockedPromisesDeferred(promise);
                 CleanPromise(promise);
+
+                if (promise.isForgotten)
+                {
+                    promise.Unload();
+                }
 
                 var enumerator = SkipFrameIfOverBudget();
 
@@ -228,8 +217,6 @@ namespace DCL
                 if (enumerator != null)
                     yield return enumerator;
 
-                CleanPromise(loadedPromise);
-
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
                     yield return ForceFailPromiseList(promisesToLoadForId);
                 else
@@ -264,8 +251,12 @@ namespace DCL
                 {
                     var blockedPromise = iterator.Current;
 
-                    blockedPromisesToLoadAux.Add(blockedPromise);
                     blockedPromises.Remove(blockedPromise);
+
+                    if (blockedPromise != null && !blockedPromise.isForgotten)
+                    {
+                        blockedPromisesToLoadAux.Add(blockedPromise);
+                    }
                 }
             }
 
@@ -279,6 +270,9 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 var promise = promises[i];
+                if (promise.isForgotten)
+                    continue;
+
                 promise.ForceFail();
                 Forget(promise);
                 CleanPromise(promise);
@@ -297,6 +291,9 @@ namespace DCL
             for (int i = 0; i < promisesCount; i++)
             {
                 AssetPromiseType promise = promises[i];
+                if (promise.isForgotten)
+                    continue;
+
                 promise.library = library;
                 CleanPromise(promise);
                 promise.Load();

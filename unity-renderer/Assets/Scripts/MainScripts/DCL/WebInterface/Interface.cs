@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -99,6 +100,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class DeactivateRenderingACK : ControlEvent<object>
+        {
+            public DeactivateRenderingACK() : base("DeactivateRenderingACK", null) { }
+        }
+
+        [System.Serializable]
         public class SceneEvent<T>
         {
             public string sceneId;
@@ -137,13 +144,13 @@ namespace DCL.Interface
         {
             public CameraMode.ModeId cameraMode;
         };
-        
+
         [System.Serializable]
         public class IdleStateChangedPayload
         {
             public bool isIdle;
         };
-        
+
         [System.Serializable]
         public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload> { };
 
@@ -265,6 +272,19 @@ namespace DCL.Interface
             public int textures;
             public int triangles;
             public int entities;
+
+            public static MetricsModel operator + (MetricsModel lhs, MetricsModel rhs)
+            {
+                return new MetricsModel()
+                {
+                    meshes = lhs.meshes + rhs.meshes,
+                    bodies = lhs.bodies + rhs.bodies,
+                    materials = lhs.materials + rhs.materials,
+                    textures = lhs.textures + rhs.textures,
+                    triangles = lhs.triangles + rhs.triangles,
+                    entities = lhs.entities + rhs.entities
+                };
+            }
         }
 
         [System.Serializable]
@@ -410,7 +430,14 @@ namespace DCL.Interface
             public int processorCount = SystemInfo.processorCount;
             public int systemMemorySize = SystemInfo.systemMemorySize;
         }
-        
+
+        [System.Serializable]
+        public class GenericAnalyticPayload
+        {
+            public string eventName;
+            public Dictionary<object, object> data;
+        }
+
         [System.Serializable]
         public class PerformanceHiccupPayload
         {
@@ -460,6 +487,12 @@ namespace DCL.Interface
             public string url;
             public bool play;
             public float volume;
+        }
+
+        [System.Serializable]
+        public class SetScenesLoadRadiusPayload
+        {
+            public float newRadius;
         }
 
         [System.Serializable]
@@ -569,6 +602,12 @@ namespace DCL.Interface
             public int maxResults;
         }
 
+        [System.Serializable]
+        public class UnpublishScenePayload
+        {
+            public string coordinates;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -633,7 +672,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
         private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
-
+        private static SetScenesLoadRadiusPayload setScenesLoadRadiusPayload = new SetScenesLoadRadiusPayload();
         private static ApplySettingsPayload applySettingsPayload = new ApplySettingsPayload();
         private static GIFSetupPayload gifSetupPayload = new GIFSetupPayload();
         private static JumpInPayload jumpInPayload = new JumpInPayload();
@@ -684,7 +723,7 @@ namespace DCL.Interface
             cameraModePayload.cameraMode = cameraMode;
             SendAllScenesEvent("cameraModeChanged", cameraModePayload);
         }
-        
+
         public static void ReportIdleStateChanged(bool isIdle)
         {
             idleStateChangedPayload.isIdle = isIdle;
@@ -904,6 +943,12 @@ namespace DCL.Interface
             SendMessage("SetDelightedSurveyEnabled", delightedSurveyEnabled);
         }
 
+        public static void SetScenesLoadRadius(float newRadius)
+        {
+            setScenesLoadRadiusPayload.newRadius = newRadius;
+            SendMessage("SetScenesLoadRadius", setScenesLoadRadiusPayload);
+        }
+
         [System.Serializable]
         public class SaveAvatarPayload
         {
@@ -913,6 +958,25 @@ namespace DCL.Interface
             public string body;
             public bool isSignUpFlow;
             public AvatarModel avatar;
+        }
+
+        public static class RendererAuthenticationType
+        {
+            public static string Guest => "guest";
+            public static string WalletConnect => "wallet_connect";
+        }
+
+        [System.Serializable]
+        public class SendAuthenticationPayload
+        {
+            public string rendererAuthenticationType;
+        }
+
+        [System.Serializable]
+        public class SendPassportPayload
+        {
+            public string name;
+            public string email;
         }
 
         [System.Serializable]
@@ -936,6 +1000,10 @@ namespace DCL.Interface
             };
             SendMessage("SaveUserAvatar", payload);
         }
+
+        public static void SendAuthentication(string rendererAuthenticationType) { SendMessage("SendAuthentication", new SendAuthenticationPayload { rendererAuthenticationType = rendererAuthenticationType }); }
+
+        public static void SendPassport(string name, string email) { SendMessage("SendPassport", new SendPassportPayload { name = name, email = email }); }
 
         public static void SendSaveUserUnverifiedName(string newName)
         {
@@ -963,10 +1031,7 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendSystemInfoReport()
-        {
-            SendMessage("SystemInfoReport", new SystemInfoReportPayload());
-        }
+        public static void SendSystemInfoReport() { SendMessage("SystemInfoReport", new SystemInfoReportPayload()); }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
         {
@@ -1177,5 +1242,17 @@ namespace DCL.Interface
         }
 
         public static void ReportAvatarFatalError() { SendMessage("ReportAvatarFatalError"); }
+
+        public static void UnpublishScene(Vector2Int sceneCoordinates)
+        {
+            var payload = new UnpublishScenePayload() { coordinates = $"{sceneCoordinates.x},{sceneCoordinates.y}" };
+            SendMessage("UnpublishScene", payload);
+        }
+
+        public static void NotifyStatusThroughChat(string message)
+        {
+            stringPayload.value = message;
+            SendMessage("NotifyStatusThroughChat", stringPayload);
+        }
     }
 }

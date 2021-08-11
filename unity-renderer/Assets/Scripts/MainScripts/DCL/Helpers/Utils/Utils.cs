@@ -240,7 +240,7 @@ namespace DCL.Helpers
                     }
                 };
 
-            return WebRequestController.i.GetAudioClip(
+            return DCL.Environment.i.platform.webRequest.GetAudioClip(
                 url: url,
                 audioType: audioType,
                 OnSuccess: OnSuccessInternal,
@@ -256,7 +256,7 @@ namespace DCL.Helpers
                 OnSuccess?.Invoke(texture);
             }
 
-            return WebRequestController.i.GetTexture(
+            return DCL.Environment.i.platform.webRequest.GetTexture(
                 url: textureURL,
                 OnSuccess: SuccessInternal,
                 OnFail: OnFail);
@@ -380,22 +380,6 @@ namespace DCL.Helpers
             );
         }
 
-        public static string GetTestAssetsPathRaw() { return Application.dataPath + "/../TestResources"; }
-
-        public static string GetTestsAssetsPath(bool useWebServerPath = false)
-        {
-            if (useWebServerPath)
-            {
-                return "http://127.0.0.1:9991";
-            }
-            else
-            {
-                var uri = new System.Uri(GetTestAssetsPathRaw());
-                var converted = uri.AbsoluteUri;
-                return converted;
-            }
-        }
-
         public static bool AproxComparison(this Color color1, Color color2, float tolerance = 0.01f) // tolerance of roughly 1f / 255f
         {
             if (Mathf.Abs(color1.r - color2.r) < tolerance
@@ -419,26 +403,8 @@ namespace DCL.Helpers
             public static T GetFromJsonArray(string jsonArray)
             {
                 string newJson = $"{{ \"value\": {jsonArray}}}";
-                return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
+                return JsonUtility.FromJson<Utils.DummyJsonUtilityFromArray<T>>(newJson).value;
             }
-        }
-
-        public static Bounds BuildMergedBounds(Renderer[] renderers)
-        {
-            Bounds bounds = new Bounds();
-
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                if (renderers[i] == null)
-                    continue;
-
-                if (i == 0)
-                    bounds = renderers[i].GetSafeBounds();
-                else
-                    bounds.Encapsulate(renderers[i].GetSafeBounds());
-            }
-
-            return bounds;
         }
 
         private static int lockedInFrame = -1;
@@ -595,23 +561,36 @@ namespace DCL.Helpers
             key = tuple.Key;
             value = tuple.Value;
         }
+        
+        /// <summary>
+        /// Set a layer to the given transform and its child
+        /// </summary>
+        /// <param name="transform"></param>
+        public static void SetLayerRecursively(Transform transform, int layer)
+        {
+            transform.gameObject.layer = layer;
+            foreach (Transform child in transform)
+            {
+                SetLayerRecursively(child, layer);
+            }
+        }
 
         /// <summary>
-        /// This get the renderer bounds with a check to ensure the renderer is at a safe position.
-        /// If the renderer is too far away from 0,0,0, wasm target ensures a crash.
+        /// Converts a linear float (between 0 and 1) into an exponential curve fitting for audio volume.
         /// </summary>
-        /// <param name="renderer"></param>
-        /// <returns>The bounds value if the value is correct, or a mocked bounds object with clamped values if its too far away.</returns>
-        public static Bounds GetSafeBounds( this Renderer renderer )
-        {
-            // World extents are of 4800 world mts, so this limit far exceeds the world size.
-            const float POSITION_OVERFLOW_LIMIT = 10000;
-            const float POSITION_OVERFLOW_LIMIT_SQR = POSITION_OVERFLOW_LIMIT * POSITION_OVERFLOW_LIMIT;
+        /// <param name="volume">Linear volume float</param>
+        /// <returns>Exponential volume curve float</returns>
+        public static float ToVolumeCurve(float volume) {
+            return volume * (2f - volume);
+        }
 
-            if ( renderer.transform.position.sqrMagnitude > POSITION_OVERFLOW_LIMIT_SQR )
-                return new Bounds( Vector3.one * POSITION_OVERFLOW_LIMIT, Vector3.one * 0.1f );
-
-            return renderer.bounds;
+        /// <summary>
+        /// Takes a linear volume value between 0 and 1, converts to exponential curve and maps to a value fitting for audio mixer group volume.
+        /// </summary>
+        /// <param name="volume">Linear volume (0 to 1)</param>
+        /// <returns>Value for audio mixer group volume</returns>
+        public static float ToAudioMixerGroupVolume(float volume) {
+            return (ToVolumeCurve(volume) * 80f) - 80f;
         }
     }
 }

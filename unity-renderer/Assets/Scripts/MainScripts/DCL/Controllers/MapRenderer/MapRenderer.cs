@@ -49,7 +49,7 @@ namespace DCL
         public RectTransform centeredReferenceParcel;
 
         public MapSceneIcon scenesOfInterestIconPrefab;
-        public MapSceneIcon userIconPrefab;
+        public GameObject userIconPrefab;
         public UserMarkerObject globalUserMarkerPrefab;
 
         public MapGlobalUsersPositionMarkerController usersPositionMarkerController { private set; get; }
@@ -81,6 +81,8 @@ namespace DCL
         public static System.Action<int, int> OnParcelHold;
         public static System.Action OnParcelHoldCancel;
 
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         private bool isInitialized = false;
 
         [HideInInspector]
@@ -104,8 +106,8 @@ namespace DCL
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
-            MinimapMetadata.GetMetadata().OnUserInfoUpdated += MapRenderer_OnUserInfoUpdated;
-            MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
+            otherPlayers.OnAdded += OnOtherPlayersAdded;
+            otherPlayers.OnRemoved += OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.AddListener(ClickMousePositionParcel);
 
@@ -160,8 +162,8 @@ namespace DCL
             playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
-            MinimapMetadata.GetMetadata().OnUserInfoUpdated -= MapRenderer_OnUserInfoUpdated;
-            MinimapMetadata.GetMetadata().OnUserInfoRemoved -= MapRenderer_OnUserInfoRemoved;
+            otherPlayers.OnAdded -= OnOtherPlayersAdded;
+            otherPlayers.OnRemoved -= OnOtherPlayerRemoved;
 
             ParcelHighlightButton.onClick.RemoveListener(ClickMousePositionParcel);
 
@@ -307,21 +309,17 @@ namespace DCL
             scenesOfInterestMarkers.Add(sceneInfo, go);
         }
 
-        private void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
+        private void OnOtherPlayersAdded(string userId, Player player)
         {
-            if (!usersInfoMarkers.TryGetValue(userInfo.userId, out PoolableObject marker))
-            {
-                marker = usersInfoPool.Get();
-                marker.gameObject.name = $"UserIcon-{userInfo.userName}";
-                marker.gameObject.transform.SetParent(overlayContainer.transform, true);
-                marker.gameObject.transform.localScale = Vector3.one;
-                usersInfoMarkers.Add(userInfo.userId, marker);
-            }
-
-            ConfigureUserIcon(marker.gameObject, userInfo.worldPosition);
+            var poolable = usersInfoPool.Get();
+            var marker = poolable.gameObject.GetComponent<MapUserIcon>();
+            marker.gameObject.name = $"UserIcon-{player.name}";
+            marker.gameObject.transform.SetParent(overlayContainer.transform, true);
+            marker.Populate(player);
+            usersInfoMarkers.Add(userId, poolable);
         }
 
-        private void MapRenderer_OnUserInfoRemoved(string userId)
+        private void OnOtherPlayerRemoved(string userId, Player player)
         {
             if (!usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
             {

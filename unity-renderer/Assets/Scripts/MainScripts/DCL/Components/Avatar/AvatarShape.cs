@@ -2,9 +2,6 @@ using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -16,7 +13,6 @@ namespace DCL
 
         public static event Action<IDCLEntity, AvatarShape> OnAvatarShapeUpdated;
 
-        public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
         public Collider avatarCollider;
         public AvatarMovementController avatarMovementController;
@@ -31,8 +27,10 @@ namespace DCL
         public bool everythingIsLoaded;
 
         private Vector3? lastAvatarPosition = null;
-        private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
         bool initializedPosition = false;
+
+        private Player player = null;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
 
         private void Awake()
         {
@@ -52,7 +50,7 @@ namespace DCL
             Cleanup();
 
             if (poolableObject != null && poolableObject.isInsidePool)
-                poolableObject.pool.RemoveFromPool(poolableObject);
+                poolableObject.RemoveFromPool();
         }
 
         public override IEnumerator ApplyChanges(BaseModel newModel)
@@ -82,9 +80,6 @@ namespace DCL
                 entity
             );
 
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
-            CommonScriptableObjects.worldOffset.OnChange += OnWorldReposition;
-
             entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
             entity.OnTransformChange += avatarMovementController.OnTransformChanged;
 
@@ -104,13 +99,7 @@ namespace DCL
                     entity.gameObject.transform.localRotation, true);
             }
 
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.localPosition;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
-
-            avatarName.SetName(model.name);
-            avatarName.SetTalking(model.talking);
+            UpdatePlayerStatus(model);
 
             avatarCollider.gameObject.SetActive(true);
 
@@ -118,6 +107,41 @@ namespace DCL
             OnAvatarShapeUpdated?.Invoke(entity, this);
 
             EnablePassport();
+
+            avatarRenderer.InitializeImpostor();
+        }
+
+        private void UpdatePlayerStatus(AvatarModel model)
+        {
+            // Remove the player status if the userId changes
+            if (player != null && (player.id != model.id || player.name != model.name))
+                otherPlayers.Remove(player.id);
+
+            if (string.IsNullOrEmpty(model?.id))
+                return;
+
+            bool isNew = false;
+            if (player == null)
+            {
+                player = new Player();
+                isNew = true;
+            }
+            player.id = model.id;
+            player.name = model.name;
+            player.isTalking = model.talking;
+            player.worldPosition = entity.gameObject.transform.position;
+            player.renderer = avatarRenderer;
+            if (isNew)
+                otherPlayers.Add(player.id, player);
+        }
+
+        private void Update()
+        {
+            if (player != null)
+            {
+                player.worldPosition = entity.gameObject.transform.position;
+                player.forwardDirection = entity.gameObject.transform.forward;
+            }
         }
 
         public void DisablePassport()
@@ -136,21 +160,10 @@ namespace DCL
             onPointerDown.collider.enabled = true;
         }
 
-        private void OnWorldReposition(Vector3 current, Vector3 previous)
+        private void OnEntityTransformChanged(object newModel)
         {
-            avatarUserInfo.worldPosition = entity.gameObject.transform.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
-        }
-
-        private void OnEntityTransformChanged(DCLTransform.Model updatedModel)
-        {
-            lastAvatarPosition = updatedModel.position;
-
-            var model = (AvatarModel) this.model;
-            avatarUserInfo.userId = model.id;
-            avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = updatedModel.position;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+            DCLTransform.Model newTransformModel = (DCLTransform.Model)newModel;
+            lastAvatarPosition = newTransformModel.position;
         }
 
         public override void OnPoolGet()
@@ -162,12 +175,19 @@ namespace DCL
             oldModel = new AvatarModel();
             model = new AvatarModel();
             lastAvatarPosition = null;
-            avatarName.SetName(String.Empty);
+            player = null;
         }
 
         public override void Cleanup()
         {
             base.Cleanup();
+
+
+            if (player != null)
+            {
+                otherPlayers.Remove(player.id);
+                player = null;
+            }
 
             avatarRenderer.CleanupAvatar();
 
@@ -177,18 +197,12 @@ namespace DCL
             }
 
             onPointerDown.OnPointerDownReport -= PlayerClicked;
-            CommonScriptableObjects.worldOffset.OnChange -= OnWorldReposition;
 
             if (entity != null)
             {
                 entity.OnTransformChange = null;
                 entity = null;
             }
-
-            var model = (AvatarModel) this.model;
-            if (model != null)
-                avatarUserInfo.userId = model.id;
-            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }
 
         public override int GetClassId() { return (int) CLASS_ID_COMPONENT.AVATAR_SHAPE; }

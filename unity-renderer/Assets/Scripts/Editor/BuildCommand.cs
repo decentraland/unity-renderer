@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 
 static class BuildCommand
 {
@@ -145,7 +146,17 @@ static class BuildCommand
         var buildName = GetBuildName();
         var fixedBuildPath = GetFixedBuildPath(buildTarget, buildPath, buildName);
 
-        BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
+        if (buildTarget.ToString().ToLower().Contains("webgl"))
+        {
+            PlayerSettings.WebGL.emscriptenArgs = " --profiling-funcs ";
+        }
+
+        var buildSummary = BuildPipeline.BuildPlayer(GetEnabledScenes(), fixedBuildPath, buildTarget, GetBuildOptions());
         Console.WriteLine(":: Done with build process");
+
+        if (buildSummary.summary.result != BuildResult.Succeeded)
+        {
+            throw new Exception("The build was not successful");
+        }
     }
 }

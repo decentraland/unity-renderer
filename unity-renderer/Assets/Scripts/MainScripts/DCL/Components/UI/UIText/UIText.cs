@@ -20,6 +20,10 @@ namespace DCL.Components
             public override BaseModel GetDataFromJSON(string json)
             {
                 Model model = Utils.SafeFromJson<Model>(json);
+
+                // SDK is sending the textModel as fields in the upper (UIInputText) model
+                // so our current model hierarchy in Unity does not represent what SDK send
+                // therefore having to parse this twice
                 textModel = (TextShape.Model) textModel.GetDataFromJSON(json);
                 model.textModel = textModel;
                 return model;

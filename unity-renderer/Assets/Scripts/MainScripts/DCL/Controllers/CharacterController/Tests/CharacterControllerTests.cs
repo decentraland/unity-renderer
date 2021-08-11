@@ -241,6 +241,7 @@ namespace Tests
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
+            var initialDirection = CommonScriptableObjects.characterForward.Get().Value;
             // Lerp the platform's rotation
             float lerpTime = 0f;
             float lerpSpeed = 1f;
@@ -271,6 +272,12 @@ namespace Tests
 
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 1f);
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 1f);
+
+            //test for rotation
+            var currentDirection = CommonScriptableObjects.characterForward.Get().Value;
+            var expectedDirection = Quaternion.AngleAxis(180, Vector3.up) * initialDirection;
+            var rotationIsExpected = Vector3.Distance(currentDirection, expectedDirection) <= 0.05f;
+            UnityEngine.Assertions.Assert.IsTrue(rotationIsExpected, "character is rotated");
 
             // remove platform and check character parent
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);
@@ -333,73 +340,6 @@ namespace Tests
             yield return null;
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false when the shape colliders are disabled");
-        }
-
-        [UnityTest]
-        [NUnit.Framework.Explicit("This test is failing. May be related to the new camera setup, please check MainTest scene")]
-        [Category("Explicit")]
-        public IEnumerator CharacterIsReleasedOnFastPlatform()
-        {
-            Vector3 initialCharacterPosition = new Vector3(5, 3, 5);
-            yield return InitCharacterPosition(initialCharacterPosition);
-
-            string platformEntityId = "rotatingPlatform";
-            TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
-
-            Transform platformTransform = scene.entities[platformEntityId].gameObject.transform;
-            platformTransform.localScale = new Vector3(8f, 0.5f, 8f);
-
-            yield return null;
-            Assert.IsTrue(Vector3.Distance(platformTransform.position, new Vector3(8f, 1f, 8f)) < 0.1f);
-
-            // enable character gravity
-            DCLCharacterController.i.ResumeGravity();
-
-            yield return WaitUntilGrounded();
-
-            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
-
-            // Lerp the platform's rotation
-            float lerpTime = 0f;
-            float lerpSpeed = 1f;
-            Quaternion initialRotation = Quaternion.identity;
-            Quaternion targetRotation = Quaternion.Euler(0, 180f, 0f);
-
-            bool checkedIsOnMovingTransform = false;
-            while (lerpTime < 1f)
-            {
-                yield return null;
-                lerpTime += Time.deltaTime * lerpSpeed;
-
-                if (lerpTime > 1f)
-                    lerpTime = 1f;
-
-                platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
-
-                if (!checkedIsOnMovingTransform && lerpTime >= 0.5f)
-                {
-                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform);
-                    checkedIsOnMovingTransform = true;
-                }
-            }
-
-            // Accelerate platform
-            lerpTime = 0f;
-            lerpSpeed = 15f;
-            initialRotation = platformTransform.rotation;
-            targetRotation = Quaternion.Euler(0, 360f, 0f);
-            while (lerpTime < 1f)
-            {
-                yield return null;
-                lerpTime += Time.deltaTime * lerpSpeed;
-
-                if (lerpTime > 1f)
-                    lerpTime = 1f;
-
-                platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
-            }
-
-            Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform);
         }
     }
 }

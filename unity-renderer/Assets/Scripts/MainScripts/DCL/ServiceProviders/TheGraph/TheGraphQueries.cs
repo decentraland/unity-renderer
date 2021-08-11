@@ -64,4 +64,25 @@ public static class TheGraphQueries
     }
   }
 ";
+
+    public static readonly string getPolygonManaQuery = @"
+    query MANA($address: ID){
+        accounts(where: {id:$address}){
+            id,
+            mana
+        }
+    }
+";
+
+    public static readonly string getNftCollectionsQuery = @"
+    query WearablesCollections($address: ID){
+        nfts(where: { owner: $address }) {
+            urn,
+            collection {
+                id
+            }
+            tokenId
+        }
+    }
+";
 }

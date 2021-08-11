@@ -12,6 +12,7 @@ public interface ICatalogBtnView
     void OnPointerClick(DCLAction_Trigger action);
     void OnPointerEnter(PointerEventData eventData);
     void OnPointerExit();
+    void SetActive(bool isActive);
 }
 
 public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
@@ -41,16 +42,16 @@ public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
     {
         mainButton.onClick.AddListener(() => OnPointerClick(dummyActionTrigger));
         toggleCatalogInputAction.OnTriggered += OnPointerClick;
-        BuilderInWorldUtils.ConfigureEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
-        BuilderInWorldUtils.ConfigureEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
+        BIWUtils.ConfigureEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerEnter, (eventData) => OnPointerEnter((PointerEventData)eventData));
+        BIWUtils.ConfigureEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerExit, (eventData) => OnPointerExit());
     }
 
     private void OnDestroy()
     {
         mainButton.onClick.RemoveAllListeners();
         toggleCatalogInputAction.OnTriggered -= OnPointerClick;
-        BuilderInWorldUtils.RemoveEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerEnter);
-        BuilderInWorldUtils.RemoveEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerExit);
+        BIWUtils.RemoveEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerEnter);
+        BIWUtils.RemoveEventTrigger(catalogButtonEventTrigger, EventTriggerType.PointerExit);
     }
 
     public void OnPointerClick(DCLAction_Trigger action) { OnCatalogButtonClick?.Invoke(); }
@@ -58,4 +59,6 @@ public class CatalogBtnView : MonoBehaviour, ICatalogBtnView
     public void OnPointerEnter(PointerEventData eventData) { OnShowTooltip?.Invoke(eventData, tooltipText); }
 
     public void OnPointerExit() { OnHideTooltip?.Invoke(); }
+
+    public void SetActive(bool isActive) { gameObject.SetActive(isActive); }
 }

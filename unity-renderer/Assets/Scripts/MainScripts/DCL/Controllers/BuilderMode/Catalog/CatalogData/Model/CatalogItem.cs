@@ -19,6 +19,7 @@ public class CatalogItem
 
     public string name;
     public string model;
+    public string assetPackName;
 
     public List<string> tags;
     public string category;

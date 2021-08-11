@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using WaitUntil = DCL.WaitUntil;
 using DCL;
+using Environment = System.Environment;
 
 public static class DependencyMapLoadHelper
 {
@@ -63,7 +64,7 @@ public static class DependencyMapLoadHelper
         }
 
         downloadingDepmap.Add(hash);
-        yield return WebRequestController.i.Get(
+        yield return DCL.Environment.i.platform.webRequest.Get(
             url: url,
             OnSuccess: (depmapRequest) =>
             {

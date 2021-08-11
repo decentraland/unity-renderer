@@ -1,0 +1,39 @@
+name: Set delivery rollout - Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      packageVersion:
+        description: 'NPM Version of the release (@dcl/unity-renderer)'
+        required: true
+        default: ''
+      percentage:
+        description: 'Percentage of users getting this version'
+        required: true
+        default: '0'
+      deploymentDomain:
+        description: 'Deployment domain'
+        required: true
+        default: 'play.decentraland.zone'
+
+jobs:
+  set-manual-rollout:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: hmarr/debug-action@v2
+      - name: set-rollout
+        uses: decentraland/set-rollout-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Repo deployment info
+          ref: ${{ github.event.ref }}
+          sha: ${{ env.GITHUB_SHA }}
+
+          # CDN information
+          packageName: "@dcl/unity-renderer"
+          packageVersion: ${{ github.event.inputs.version }}
+
+          # Rollout information
+          deploymentDomain: ${{ github.event.inputs.deploymentDomain }}
+          deploymentName: "@dcl/unity-renderer"
+          percentage: ${{ github.event.inputs.percentage }}

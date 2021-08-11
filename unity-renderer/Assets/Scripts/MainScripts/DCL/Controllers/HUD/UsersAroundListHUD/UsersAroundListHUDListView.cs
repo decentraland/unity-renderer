@@ -55,14 +55,14 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
         Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
     }
 
-    void IUsersAroundListHUDListView.AddOrUpdateUser(MinimapMetadata.MinimapUserInfo userInfo)
+    void IUsersAroundListHUDListView.AddOrUpdatePlayer(Player player)
     {
-        if (userElementDictionary.ContainsKey(userInfo.userId))
+        if (userElementDictionary.ContainsKey(player.id))
         {
             return;
         }
 
-        var profile = UserProfileController.userProfilesCatalog.Get(userInfo.userId);
+        var profile = UserProfileController.userProfilesCatalog.Get(player.id);
 
         if (profile == null)
             return;
@@ -81,7 +81,7 @@ internal class UsersAroundListHUDListView : MonoBehaviour, IUsersAroundListHUDLi
 
         view.OnPoolGet();
         view.SetUserProfile(profile);
-        userElementDictionary.Add(userInfo.userId, view);
+        userElementDictionary.Add(player.id, view);
         OnModifyListCount();
         CheckListEmptyState();
     }

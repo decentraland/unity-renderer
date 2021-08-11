@@ -7,8 +7,9 @@ using static WearableLiterals;
 
 namespace DCL
 {
-    public class AvatarRenderer : MonoBehaviour
+    public class AvatarRenderer : MonoBehaviour, IAvatarRenderer
     {
+        private static readonly int BASE_COLOR_PROPERTY = Shader.PropertyToID("_BaseColor");
         private const int MAX_RETRIES = 5;
 
         public Material defaultMaterial;
@@ -16,11 +17,12 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public bool useFx = false;
-        public GameObject fxSpawnPrefab;
+        public MeshRenderer lodRenderer;
+        public MeshFilter lodMeshFilter;
 
         private AvatarModel model;
 
+        public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
         public event Action<bool> OnFailEvent;
 
@@ -34,15 +36,20 @@ namespace DCL
 
         private long lastStickerTimestamp = -1;
 
-        internal bool isLoading = false;
+        public bool isLoading;
+        public bool isReady => bodyShapeController != null && bodyShapeController.isReady && wearableControllers != null && wearableControllers.Values.All(x => x.isReady);
 
         private Coroutine loadCoroutine;
         private List<string> wearablesInUse = new List<string>();
+        private AssetPromise_Texture bodySnapshotTexturePromise;
+        private bool isDestroyed = false;
 
         private void Awake()
         {
             animator = GetComponent<AvatarAnimatorLegacy>();
             stickersController = GetComponent<StickersController>();
+            if (lodRenderer != null)
+                SetImpostorVisibility(false);
         }
 
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
@@ -55,6 +62,8 @@ namespace DCL
 
             this.model = new AvatarModel();
             this.model.CopyFrom(model);
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
 
             void onSuccessWrapper()
             {
@@ -86,6 +95,25 @@ namespace DCL
             loadCoroutine = CoroutineStarter.Start(LoadAvatar());
         }
 
+        public void InitializeImpostor()
+        {
+            UserProfile userProfile = null;
+            if (!string.IsNullOrEmpty(model?.id))
+                userProfile = UserProfileController.GetProfileByUserId(model.id);
+
+            if (userProfile != null)
+            {
+                bodySnapshotTexturePromise = new AssetPromise_Texture(userProfile.bodySnapshotURL);
+                bodySnapshotTexturePromise.OnSuccessEvent += asset => AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
+                bodySnapshotTexturePromise.OnFailEvent += asset => AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+                AssetPromiseKeeper_Texture.i.Keep(bodySnapshotTexturePromise);
+            }
+            else
+            {
+                AvatarRendererHelpers.RandomizeAndApplyGenericImpostor(lodMeshFilter.mesh);
+            }
+        }
+
         void StopLoadingCoroutines()
         {
             if (loadCoroutine != null)
@@ -97,12 +125,20 @@ namespace DCL
         public void CleanupAvatar()
         {
             StopLoadingCoroutines();
+            if (!isDestroyed)
+            {
+                SetVisibility(true);
+                SetImpostorVisibility(false);
+            }
 
             eyebrowsController?.CleanUp();
             eyebrowsController = null;
 
             eyesController?.CleanUp();
             eyesController = null;
+
+            mouthController?.CleanUp();
+            mouthController = null;
 
             bodyShapeController?.CleanUp();
             bodyShapeController = null;
@@ -121,8 +157,12 @@ namespace DCL
             OnFailEvent = null;
             OnSuccessEvent = null;
 
+            if (bodySnapshotTexturePromise != null)
+                AssetPromiseKeeper_Texture.i.Forget(bodySnapshotTexturePromise);
+
             CatalogController.RemoveWearablesInUse(wearablesInUse);
             wearablesInUse.Clear();
+            OnVisualCue?.Invoke(IAvatarRenderer.VisualCue.CleanedUp);
         }
 
         void CleanUpUnusedItems()
@@ -137,26 +177,11 @@ namespace DCL
                 var currentId = ids[i];
                 var wearable = wearableControllers[currentId];
 
-                if (!model.wearables.Contains(wearable.id))
+                if (!model.wearables.Contains(wearable.id) || !wearable.IsLoadedForBodyShape(model.bodyShape))
                 {
                     wearable.CleanUp();
                     wearableControllers.Remove(currentId);
                 }
-            }
-
-            if (eyebrowsController != null && !model.wearables.Contains(eyebrowsController.wearableId))
-            {
-                eyebrowsController.CleanUp();
-            }
-
-            if (eyesController != null && !model.wearables.Contains(eyesController.wearableId))
-            {
-                eyesController.CleanUp();
-            }
-
-            if (mouthController != null && !model.wearables.Contains(mouthController.wearableId))
-            {
-                mouthController.CleanUp();
             }
         }
 
@@ -213,6 +238,7 @@ namespace DCL
                 yield break;
             }
 
+            List<Helpers.Promise<WearableItem>> replacementPromises = new List<Helpers.Promise<WearableItem>>();
             foreach (var avatarWearablePromise in avatarWearablePromises)
             {
                 yield return avatarWearablePromise;
@@ -224,8 +250,37 @@ namespace DCL
                 }
                 else
                 {
-                    resolvedWearables.Add(avatarWearablePromise.value);
-                    wearablesInUse.Add(avatarWearablePromise.value.id);
+                    WearableItem wearableItem = avatarWearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    if (wearableItem.GetRepresentation(model.bodyShape) != null)
+                        resolvedWearables.Add(wearableItem);
+                    else
+                    {
+                        model.wearables.Remove(wearableItem.id);
+                        string defaultReplacement = DefaultWearables.GetDefaultWearable(model.bodyShape, wearableItem.data.category);
+                        if (!string.IsNullOrEmpty(defaultReplacement))
+                        {
+                            model.wearables.Add(defaultReplacement);
+                            replacementPromises.Add(CatalogController.RequestWearable(defaultReplacement));
+                        }
+                    }
+                }
+            }
+
+            foreach (var wearablePromise in replacementPromises)
+            {
+                yield return wearablePromise;
+
+                if (!string.IsNullOrEmpty(wearablePromise.error))
+                {
+                    Debug.LogError(wearablePromise.error);
+                    loadSoftFailed = true;
+                }
+                else
+                {
+                    WearableItem wearableItem = wearablePromise.value;
+                    wearablesInUse.Add(wearableItem.id);
+                    resolvedWearables.Add(wearableItem);
                 }
             }
 
@@ -261,7 +316,7 @@ namespace DCL
                 if (wearable == null)
                     continue;
 
-                unusedCategories.Remove(wearable.category);
+                unusedCategories.Remove(wearable.data.category);
                 if (wearableControllers.ContainsKey(wearable))
                 {
                     if (wearableControllers[wearable].IsLoadedForBodyShape(bodyShapeController.bodyShapeId))
@@ -272,7 +327,7 @@ namespace DCL
                 else
                 {
                     AddWearableController(wearable);
-                    if (wearable.category != Categories.EYES && wearable.category != Categories.MOUTH && wearable.category != Categories.EYEBROWS)
+                    if (wearable.data.category != Categories.EYES && wearable.data.category != Categories.MOUTH && wearable.data.category != Categories.EYEBROWS)
                         wearablesIsDirty = true;
                 }
             }
@@ -293,7 +348,6 @@ namespace DCL
                 }
             }
 
-            CleanUpUnusedItems();
 
             HashSet<string> hiddenList = WearableItem.CompoundHidesList(bodyShapeController.bodyShapeId, resolvedWearables);
             if (!bodyShapeController.isReady)
@@ -312,7 +366,6 @@ namespace DCL
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
 
-
             eyesController?.Load(bodyShapeController, model.eyeColor);
             eyebrowsController?.Load(bodyShapeController, model.hairColor);
             mouthController?.Load(bodyShapeController, model.skinColor);
@@ -322,13 +375,9 @@ namespace DCL
                 (eyesController == null || (eyesController != null && eyesController.isReady)) &&
                 (mouthController == null || (mouthController != null && mouthController.isReady)));
 
-            if (useFx && (bodyIsDirty || wearablesIsDirty))
+            if (bodyIsDirty || wearablesIsDirty)
             {
-                var particles = Instantiate(fxSpawnPrefab);
-                var particlesFollow = particles.AddComponent<FollowObject>();
-                particles.transform.position += transform.position;
-                particlesFollow.target = transform;
-                particlesFollow.offset = fxSpawnPrefab.transform.position;
+                OnVisualCue?.Invoke(IAvatarRenderer.VisualCue.Loaded);
             }
 
             bodyShapeController.SetActiveParts(unusedCategories.Contains(Categories.LOWER_BODY), unusedCategories.Contains(Categories.UPPER_BODY), unusedCategories.Contains(Categories.FEET));
@@ -337,6 +386,8 @@ namespace DCL
             {
                 wearableController.UpdateVisibility(hiddenList);
             }
+
+            CleanUpUnusedItems();
 
             isLoading = false;
 
@@ -416,7 +467,7 @@ namespace DCL
         {
             if (wearable == null)
                 return;
-            switch (wearable.category)
+            switch (wearable.data.category)
             {
                 case Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, eyeMaterial);
@@ -472,9 +523,31 @@ namespace DCL
             if (gameObject.activeSelf != newVisibility)
                 gameObject.SetActive(newVisibility);
         }
+        public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+        public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+
+        public void SetAvatarFade(float avatarFade)
+        {
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+
+            bodyShapeController.SetFadeDither(avatarFade);
+            foreach (WearableController wearableController in wearableControllers.Values)
+            {
+                wearableController.SetFadeDither(avatarFade);
+            }
+        }
+        public void SetImpostorFade(float impostorFade)
+        {
+            //TODO implement dither in Unlit shader
+            Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
+            current.a = impostorFade;
+            lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+        }
 
         private void HideAll()
         {
+            // TODO: Cache this somewhere (maybe when the LoadAvatar finishes) instead of fetching this on every call
             Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
 
             for (int i = 0; i < renderers.Length; i++)
@@ -483,6 +556,28 @@ namespace DCL
             }
         }
 
-        protected virtual void OnDestroy() { CleanupAvatar(); }
+        public void SetFacialFeaturesVisible(bool visible)
+        {
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetFacialFeaturesVisible(visible, true);
+        }
+
+        public void SetSSAOEnabled(bool ssaoEnabled)
+        {
+            if (bodyShapeController == null || !bodyShapeController.isReady)
+                return;
+            bodyShapeController.SetSSAOEnabled(ssaoEnabled);
+            foreach (WearableController wearableController in wearableControllers.Values)
+            {
+                wearableController.SetSSAOEnabled(ssaoEnabled);
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            isDestroyed = true;
+            CleanupAvatar();
+        }
     }
 }

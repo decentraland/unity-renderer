@@ -28,11 +28,14 @@ namespace DCL.Components
 
         private bool isDestroyed = false;
         public long playedAtTimestamp = 0;
+        private bool isOutOfBoundaries = false;
 
         private void Awake()
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = new Model();
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange += OnVirtualAudioMixerChangedValue;
         }
 
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
@@ -73,7 +76,7 @@ namespace DCL.Components
             }
 
             Model model = (Model) this.model;
-            audioSource.volume = ((scene.sceneData.id == CommonScriptableObjects.sceneID.Get()) || (scene is GlobalScene globalScene && globalScene.isPortableExperience)) ? model.volume : 0f;
+            UpdateAudioSourceVolume();
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
             audioSource.spatialBlend = 1;
@@ -111,6 +114,29 @@ namespace DCL.Components
             }
         }
 
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
+            UpdateAudioSourceVolume();
+        }
+
+        private void UpdateAudioSourceVolume()
+        {
+            float newVolume = ((Model)model).volume * Utils.ToVolumeCurve(DataStore.i.virtualAudioMixer.sceneSFXVolume.Get() * Settings.i.currentAudioSettings.sceneSFXVolume * Settings.i.currentAudioSettings.masterVolume);
+
+            if (scene is GlobalScene globalScene && globalScene.isPortableExperience)
+            {
+                audioSource.volume = newVolume;
+                return;
+            }
+
+            if (isOutOfBoundaries)
+            {
+                audioSource.volume = 0;
+                return;
+            }
+
+            audioSource.volume = scene.sceneData.id == CommonScriptableObjects.sceneID.Get() ? newVolume : 0f;
+        }
+
         private void OnCurrentSceneChanged(string currentSceneId, string previousSceneId)
         {
             if (audioSource != null)
@@ -133,16 +159,14 @@ namespace DCL.Components
 
             //NOTE(Brian): Unsuscribe events.
             InitDCLAudioClip(null);
+
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.OnChange -= OnVirtualAudioMixerChangedValue;
         }
 
         public void UpdateOutOfBoundariesState(bool isEnabled)
         {
-            bool isDirty = audioSource.enabled != isEnabled;
-            audioSource.enabled = isEnabled;
-            if (isDirty && isEnabled)
-            {
-                ApplyCurrentModel();
-            }
+            isOutOfBoundaries = !isEnabled;
+            UpdateAudioSourceVolume();
         }
 
         private void DclAudioClip_OnLoadingFinished(DCLAudioClip obj)
@@ -171,6 +195,7 @@ namespace DCL.Components
                 //To remove a pesky and quite unlikely warning when the audiosource is out of scenebounds
                 audioSource.Play();
             }
+
             playedAtTimestamp = model.playedAtTimestamp;
         }
 

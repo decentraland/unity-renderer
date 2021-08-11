@@ -40,6 +40,8 @@ public interface ISceneCatalogController
     void RefreshAssetPack();
     void RefreshCatalog();
     CatalogItemAdapter GetLastCatalogItemDragged();
+    void SetActive(bool isActive);
+    BuildModeCatalogSection GetCurrentSection();
 }
 
 public class SceneCatalogController : ISceneCatalogController
@@ -136,6 +138,8 @@ public class SceneCatalogController : ISceneCatalogController
         favoritesController.Dispose();
         biwSearchBarController.Dispose();
     }
+
+    public BuildModeCatalogSection GetCurrentSection() { return currentSection; }
 
     public void AssetsFiltered(List<Dictionary<string, List<CatalogItem>>> filterObjects)
     {
@@ -283,7 +287,7 @@ public class SceneCatalogController : ISceneCatalogController
         }
 
         isShowingAssetPacks = true;
-        sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
+        sceneCatalogView.SetCatalogTitle(BIWSettings.CATALOG_ASSET_PACK_TITLE);
 
         if (sceneCatalogView.catalogGroupList != null)
             sceneCatalogView.catalogGroupList.gameObject.SetActive(false);
@@ -301,8 +305,9 @@ public class SceneCatalogController : ISceneCatalogController
             sceneCatalogView.catalogAssetPackList.SetAssetPackStyle();
             sceneCatalogView.catalogAssetPackList.gameObject.SetActive(true);
         }
+
         isShowingAssetPacks = true;
-        sceneCatalogView.SetCatalogTitle(BuilderInWorldSettings.CATALOG_ASSET_PACK_TITLE);
+        sceneCatalogView.SetCatalogTitle(BIWSettings.CATALOG_ASSET_PACK_TITLE);
         RefreshCatalog();
 
         if (sceneCatalogView.catalogGroupList != null)
@@ -365,4 +370,6 @@ public class SceneCatalogController : ISceneCatalogController
                 break;
         }
     }
+
+    public void SetActive(bool isActive) { sceneCatalogView.SetActive(isActive); }
 }

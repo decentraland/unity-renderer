@@ -25,6 +25,8 @@ namespace Builder.Gizmos
 
         public override float TransformEntity(Transform entityTransform, DCLBuilderGizmoAxis axis, float axisValue)
         {
+            Vector3 scaleDirection = GetScaleDirection(entityTransform, axis);
+
             // In order to avoid to make the scale of each selected entity dependent of the 'entityTransform' parent,
             // we temporally move all entities to the same position as 'entityTransform' before calculate the new scale.
             foreach (Transform entity in entityTransform)
@@ -33,17 +35,32 @@ namespace Builder.Gizmos
                 entity.transform.position = entityTransform.position;
             }
 
-            Vector3 scaleDirection = GetScaleDirection(entityTransform, axis);
-            entityTransform.localScale = GetNewScale(entityTransform, axisValue, scaleDirection);
-
-            // Once the new scale has been calculated, we restore the original positions of all the selected entities.
-            using (var enumerator = entitiesOriginalPositions.GetEnumerator())
+            if (axis == axisProportionalScale)
             {
-                while (enumerator.MoveNext())
+                // New scale calculation (for proportional scale gizmo)
+                entityTransform.localScale = GetNewScale(entityTransform, axisValue, scaleDirection, false);
+            }
+            else
+            {
+                // New scale calculation (for XYZ-axis scale gizmo)
+                foreach (var originalEntity in entitiesOriginalPositions)
                 {
-                    enumerator.Current.Key.position = enumerator.Current.Value;
+                    Transform entity = originalEntity.Key;
+                    entity.transform.SetParent(null);
+                    entity.localScale = GetNewScale(entity.transform, axisValue, scaleDirection, true);
+                    entity.SetParent(entityTransform);
                 }
             }
+
+            // Once the new scale has been calculated, we restore the original positions of all the selected entities.
+            foreach (var originalEntity in entitiesOriginalPositions)
+            {
+                Transform entity = originalEntity.Key;
+                Vector3 originalPosition = originalEntity.Value;
+
+                entity.position = originalPosition;
+            }
+
             entitiesOriginalPositions.Clear();
 
             return axisValue;
@@ -60,6 +77,7 @@ namespace Builder.Gizmos
                 {
                     scaleDirection = -Vector3.one;
                 }
+
                 initialMousePosition = lastMousePosition;
                 initialHitPoint = lastHitPoint;
             }
@@ -74,9 +92,13 @@ namespace Builder.Gizmos
             return scaleDirection;
         }
 
-        private static Vector3 GetNewScale(Transform entityTransform, float axisValue, Vector3 scaleDirection)
+        private Vector3 GetNewScale(Transform entityTransform, float axisValue, Vector3 scaleDirection, bool applyRounding)
         {
-            Vector3 newScale = entityTransform.localScale + scaleDirection * axisValue;
+            Vector3 initialEntityScale = entityTransform.localScale;
+            if (applyRounding && snapFactor > 0)
+                initialEntityScale = GetScaleRoundedToSnapFactor(entityTransform.localScale, axisValue);
+
+            Vector3 newScale = initialEntityScale + scaleDirection * axisValue;
 
             if (Mathf.Abs(newScale.x) < MINIMUN_SCALE_ALLOWED || Mathf.Abs(newScale.y) < MINIMUN_SCALE_ALLOWED)
             {
@@ -84,6 +106,18 @@ namespace Builder.Gizmos
             }
 
             return newScale;
+        }
+
+        private Vector3 GetScaleRoundedToSnapFactor(Vector3 scale, float axisValue)
+        {
+            Vector3 activeAxisVector = GetActiveAxisVector();
+
+            scale = new Vector3(
+                activeAxisVector == Vector3.right ? (axisValue >= 0 ? Mathf.Floor(scale.x / snapFactor) : Mathf.Ceil(scale.x / snapFactor)) * snapFactor : scale.x,
+                activeAxisVector == Vector3.up ? (axisValue >= 0 ? Mathf.Floor(scale.y / snapFactor) : Mathf.Ceil(scale.y / snapFactor)) * snapFactor : scale.y,
+                activeAxisVector == Vector3.back ? (axisValue >= 0 ? Mathf.Floor(scale.z / snapFactor) : Mathf.Ceil(scale.z / snapFactor)) * snapFactor : scale.z);
+
+            return scale;
         }
 
         protected override void SetPreviousAxisValue(float axisValue, float transformValue)
@@ -107,10 +141,12 @@ namespace Builder.Gizmos
                     initialMousePosition = mousePosition;
                     initialHitPoint = hitPoint;
                 }
+
                 lastMousePosition = mousePosition;
                 lastHitPoint = hitPoint;
                 return Vector3.Distance(initialHitPoint, hitPoint);
             }
+
             return axis.transform.InverseTransformPoint(hitPoint).z;
         }
     }

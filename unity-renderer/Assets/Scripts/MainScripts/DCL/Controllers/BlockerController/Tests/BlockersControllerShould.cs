@@ -32,7 +32,7 @@ public class BlockersControllerShould
         animationHandler.FadeOut(Arg.Any<GameObject>(), Arg.Invoke());
 
         var newBlockerInstanceHandler = new BlockerInstanceHandler();
-        newBlockerInstanceHandler.Initialize(animationHandler);
+        newBlockerInstanceHandler.Initialize(animationHandler, null);
 
         blockerInstanceHandler = newBlockerInstanceHandler;
         blockersParent = new GameObject();
@@ -54,7 +54,7 @@ public class BlockersControllerShould
     {
         // Arrange
         blockerInstanceHandler = Substitute.For<IBlockerInstanceHandler>();
-        blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, PoolableObject>());
+        blockerInstanceHandler.GetBlockers().Returns(new Dictionary<Vector2Int, IPoolableObject>());
 
         if (blockerController != null)
             blockerController.Dispose();

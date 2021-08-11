@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class FavoritesController
 {
-    List<CatalogItem> favoritesCatalogItems = new List<CatalogItem>();
+    private List<CatalogItem> favoritesCatalogItems = new List<CatalogItem>();
 
     public CatalogGroupListView catalogGroupListView;
 
@@ -28,6 +28,7 @@ public class FavoritesController
         {
             favoritesCatalogItems.Add(catalogItem);
             catalogItem.SetFavorite(true);
+            BIWAnalytics.FavoriteAdded(catalogItem);
         }
         else
         {

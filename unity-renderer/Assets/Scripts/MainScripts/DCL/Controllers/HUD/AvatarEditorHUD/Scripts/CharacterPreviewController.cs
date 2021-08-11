@@ -20,8 +20,6 @@ public class CharacterPreviewController : MonoBehaviour
 
     private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
-    private static int CHARACTER_PREVIEW_LAYER => LayerMask.NameToLayer("CharacterPreview");
-    private static int CHARACTER_DEFAULT_LAYER => LayerMask.NameToLayer("Default");
 
     public delegate void OnSnapshotsReady(Texture2D face, Texture2D face128, Texture2D face256, Texture2D body);
 
@@ -57,9 +55,6 @@ public class CharacterPreviewController : MonoBehaviour
             { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
             { CameraFocus.BodySnapshot, bodySnapshotTemplate },
         };
-        var cullingSettings = DCL.Environment.i.platform.cullingController.GetSettingsCopy();
-        cullingSettings.ignoredLayersMask |= 1 << CHARACTER_PREVIEW_LAYER;
-        DCL.Environment.i.platform.cullingController.SetSettings(cullingSettings);
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone) { updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone)); }
@@ -71,30 +66,11 @@ public class CharacterPreviewController : MonoBehaviour
         bool avatarDone = false;
         avatarLoadFailed = false;
 
-        ResetRenderersLayer();
-
         avatarRenderer.ApplyModel(newModel, () => avatarDone = true, () => avatarLoadFailed = true);
 
         yield return new DCL.WaitUntil(() => avatarDone || avatarLoadFailed);
-
-        if (avatarRenderer != null)
-        {
-            SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_PREVIEW_LAYER);
-        }
-
         onDone?.Invoke();
     }
-
-    private void SetLayerRecursively(GameObject gameObject, int layer)
-    {
-        gameObject.layer = layer;
-        foreach (Transform child in gameObject.transform)
-        {
-            SetLayerRecursively(child.gameObject, layer);
-        }
-    }
-
-    public void ResetRenderersLayer() { SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_DEFAULT_LAYER); }
 
     public void TakeSnapshots(OnSnapshotsReady onSuccess, Action onFailed)
     {
@@ -103,6 +79,7 @@ public class CharacterPreviewController : MonoBehaviour
             onFailed?.Invoke();
             return;
         }
+
         StartCoroutine(TakeSnapshots_Routine(onSuccess));
     }
 

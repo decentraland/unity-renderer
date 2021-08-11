@@ -38,20 +38,6 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        public void CancelLoadingCorrectly()
-        {
-            // Arrange
-            bool loadingCanceled = false;
-            builderInWorldLoadingController.OnCancelLoading += () => { loadingCanceled = true; };
-
-            // Act
-            builderInWorldLoadingController.CancelLoading();
-
-            // Assert
-            Assert.IsTrue(loadingCanceled, "loadingCanceled is false!");
-        }
-
-        [Test]
         public void SetPercentageCorrectly()
         {
             // Arrange

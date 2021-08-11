@@ -1,30 +1,34 @@
 using Cinemachine;
+using DCL.Camera;
 using UnityEngine;
 
-public class CameraStateBase : MonoBehaviour
+namespace DCL.Camera
 {
-    public CinemachineVirtualCameraBase defaultVirtualCamera;
-
-    protected new Camera camera;
-    protected Transform cameraTransform;
-    public CameraMode.ModeId cameraModeId;
-
-    public virtual void Init(Camera camera)
+    public class CameraStateBase : MonoBehaviour
     {
-        this.camera = camera;
-        this.cameraTransform = this.camera.transform;
-        gameObject.SetActive(false);
+        public CinemachineVirtualCameraBase defaultVirtualCamera;
+
+        protected new UnityEngine.Camera camera;
+        protected Transform cameraTransform;
+        public CameraMode.ModeId cameraModeId;
+
+        public virtual void Init(UnityEngine.Camera camera)
+        {
+            this.camera = camera;
+            this.cameraTransform = this.camera.transform;
+            gameObject.SetActive(false);
+        }
+
+        public virtual void OnSelect() { gameObject.SetActive(true); }
+
+        public virtual void OnUnselect() { gameObject.SetActive(false); }
+
+        public virtual void OnUpdate() { }
+
+        public virtual void OnSetRotation(CameraController.SetRotationPayload payload) { }
+
+        public virtual Vector3 OnGetRotation() { return Vector3.zero; }
+
+        public virtual void OnBlock(bool blocked) { }
     }
-
-    public virtual void OnSelect() { gameObject.SetActive(true); }
-
-    public virtual void OnUnselect() { gameObject.SetActive(false); }
-
-    public virtual void OnUpdate() { }
-
-    public virtual void OnSetRotation(CameraController.SetRotationPayload payload) { }
-
-    public virtual Vector3 OnGetRotation() { return Vector3.zero; }
-
-    public virtual void OnBlock(bool blocked) { }
 }

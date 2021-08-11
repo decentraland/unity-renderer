@@ -1,3 +1,4 @@
+using DCL;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,6 +7,7 @@ public interface IQuickBarController
 {
     event Action<int> OnQuickBarShortcutSelected;
     event Action<CatalogItem> OnCatalogItemSelected;
+    event Action<CatalogItem> OnCatalogItemAssigned;
 
     void Initialize(IQuickBarView view, ISceneCatalogController sceneCatalogController);
     void Dispose();
@@ -14,6 +16,7 @@ public interface IQuickBarController
     void SetIndexToDrop(int index);
     void SceneObjectDroppedFromQuickBar(int fromQuickBarIndex, int toQuickBarIndex, Texture texture);
     void SceneObjectDroppedFromCatalog(BaseEventData data);
+    void SetQuickBarShortcut(CatalogItem catalogItem, int index, Texture texture);
     void QuickBarInput(int quickBarSlot);
     void CancelDragging();
 }
@@ -24,11 +27,13 @@ public class QuickBarController : IQuickBarController
 
     public event Action<int> OnQuickBarShortcutSelected;
     public event Action<CatalogItem> OnCatalogItemSelected;
+    public event Action<CatalogItem> OnCatalogItemAssigned;
 
     internal IQuickBarView quickBarView;
     internal ISceneCatalogController sceneCatalogController;
 
     internal CatalogItem[] quickBarShortcutsCatalogItems = new CatalogItem[AMOUNT_OF_QUICK_SLOTS];
+    internal AssetPromise_Texture[] quickBarShortcutsThumbnailPromises = new AssetPromise_Texture[AMOUNT_OF_QUICK_SLOTS];
     internal int lastIndexDroped = -1;
 
     public void Initialize(IQuickBarView quickBarView, ISceneCatalogController sceneCatalogController)
@@ -52,6 +57,14 @@ public class QuickBarController : IQuickBarController
         quickBarView.OnSceneObjectDroppedFromCatalog -= SceneObjectDroppedFromCatalog;
         quickBarView.OnQuickBarInputTriggered -= QuickBarInput;
         sceneCatalogController.OnStopInput -= CancelDragging;
+
+        foreach (AssetPromise_Texture loadedThumbnailPromise in quickBarShortcutsThumbnailPromises)
+        {
+            if (loadedThumbnailPromise == null)
+                continue;
+
+            ClearThumbnailPromise(loadedThumbnailPromise);
+        }
     }
 
     public int GetSlotsCount() { return AMOUNT_OF_QUICK_SLOTS; }
@@ -74,20 +87,57 @@ public class QuickBarController : IQuickBarController
     public void SceneObjectDroppedFromQuickBar(int fromQuickBarIndex, int toQuickBarIndex, Texture texture)
     {
         SetQuickBarShortcut(quickBarShortcutsCatalogItems[fromQuickBarIndex], toQuickBarIndex, texture);
+        MoveQuickbarThumbnailPromise(fromQuickBarIndex, toQuickBarIndex);
         RemoveQuickBarShortcut(fromQuickBarIndex);
+    }
+
+    private void MoveQuickbarThumbnailPromise(int fromQuickBarIndex, int toQuickBarIndex)
+    {
+        quickBarShortcutsThumbnailPromises[toQuickBarIndex] = quickBarShortcutsThumbnailPromises[fromQuickBarIndex];
+        quickBarShortcutsThumbnailPromises[fromQuickBarIndex] = null;
     }
 
     public void SceneObjectDroppedFromCatalog(BaseEventData data)
     {
         CatalogItemAdapter adapter = sceneCatalogController.GetLastCatalogItemDragged();
 
-        if (adapter != null &&
-            adapter.thumbnailImg != null &&
-            adapter.thumbnailImg.enabled)
+        if (adapter != null)
+            SetCatalogItemToShortcut(adapter.GetContent());
+    }
+
+    private void SetCatalogItemToShortcut(CatalogItem catalogItem)
+    {
+        if (catalogItem == null)
+            return;
+
+        var url = catalogItem.GetThumbnailUrl();
+
+        if (string.IsNullOrEmpty(url))
+            return;
+
+        ClearThumbnailPromise(quickBarShortcutsThumbnailPromises[lastIndexDroped]);
+        quickBarShortcutsThumbnailPromises[lastIndexDroped] = new AssetPromise_Texture(url);
+
+        quickBarShortcutsThumbnailPromises[lastIndexDroped].OnSuccessEvent += x =>
         {
-            Texture texture = adapter.thumbnailImg.texture;
-            CatalogItem catalogItem = adapter.GetContent();
-            SetQuickBarShortcut(catalogItem, lastIndexDroped, texture);
+            SetQuickBarShortcut(catalogItem, lastIndexDroped, x.texture);
+        };
+
+        quickBarShortcutsThumbnailPromises[lastIndexDroped].OnFailEvent += x =>
+        {
+            Debug.Log($"Error downloading: {url}");
+        };
+
+        AssetPromiseKeeper_Texture.i.Keep(quickBarShortcutsThumbnailPromises[lastIndexDroped]);
+    }
+
+    private void ClearThumbnailPromise(AssetPromise_Texture thumbnailToClear)
+    {
+        if (thumbnailToClear != null)
+        {
+            thumbnailToClear.ClearEvents();
+            AssetPromiseKeeper_Texture.i.Forget(thumbnailToClear);
+            thumbnailToClear = null;
         }
     }
 
@@ -95,12 +145,14 @@ public class QuickBarController : IQuickBarController
     {
         quickBarShortcutsCatalogItems[index] = null;
         quickBarView.SetShortcutAsEmpty(index);
+        ClearThumbnailPromise(quickBarShortcutsThumbnailPromises[index]);
     }
 
-    private void SetQuickBarShortcut(CatalogItem catalogItem, int index, Texture texture)
+    public void SetQuickBarShortcut(CatalogItem catalogItem, int index, Texture texture)
     {
         quickBarShortcutsCatalogItems[index] = catalogItem;
         quickBarView.SetTextureToShortcut(index, texture);
+        OnCatalogItemAssigned?.Invoke(catalogItem);
     }
 
     public void QuickBarInput(int quickBarSlot) { OnQuickBarShortcutSelected?.Invoke(quickBarSlot); }

@@ -1,14 +1,18 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class AttributeXYZ : MonoBehaviour
 {
     public TMP_InputField xField;
+    public Image xTextBoxImage;
     public TMP_InputField yField;
+    public Image yTextBoxImage;
     public TMP_InputField zField;
+    public Image zTextBoxImage;
 
     public event Action<Vector3> OnChanged;
 
@@ -18,18 +22,54 @@ public class AttributeXYZ : MonoBehaviour
 
     private void Awake()
     {
-        xField.onValueChanged.AddListener(ChangeXValue);
-        xField.onSelect.AddListener(InputSelected);
-        xField.onDeselect.AddListener(InputDeselected);
+        ConfigureField(xField, xTextBoxImage, ChangeXValue);
+        ConfigureField(yField, yTextBoxImage, ChangeYValue);
+        ConfigureField(zField, zTextBoxImage, ChangeZValue);
+    }
 
+    private void OnDestroy()
+    {
+        UnsubscribeField(xField);
+        UnsubscribeField(yField);
+        UnsubscribeField(zField);
+    }
 
-        yField.onValueChanged.AddListener(ChangeYValue);
-        yField.onSelect.AddListener(InputSelected);
-        yField.onDeselect.AddListener(InputDeselected);
+    private void ConfigureField(TMP_InputField field, Image textBoxImage, UnityAction<string> onChangeAction)
+    {
+        if (field != null)
+        {
+            field.onValueChanged.AddListener(onChangeAction);
 
-        zField.onValueChanged.AddListener(ChangeZValue);
-        zField.onSelect.AddListener(InputSelected);
-        zField.onDeselect.AddListener(InputDeselected);
+            field.onSelect.AddListener((currentText) =>
+            {
+                InputSelected(currentText);
+                SetTextboxActive(textBoxImage, true);
+            });
+
+            field.onEndEdit.AddListener((newText) =>
+            {
+                SetTextboxActive(textBoxImage, false);
+                InputDeselected(newText);
+
+                if (EventSystem.current != null && !EventSystem.current.alreadySelecting)
+                    EventSystem.current.SetSelectedGameObject(null);
+            });
+
+            field.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
+        }
+
+        SetTextboxActive(textBoxImage, false);
+    }
+
+    private void UnsubscribeField(TMP_InputField field)
+    {
+        if (field != null)
+        {
+            field.onValueChanged.RemoveAllListeners();
+            field.onSelect.RemoveAllListeners();
+            field.onEndEdit.RemoveAllListeners();
+            field.onSubmit.RemoveAllListeners();
+        }
     }
 
     public void SetValues(Vector3 value)
@@ -49,6 +89,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.x))
             OnChanged?.Invoke(currentValue);
     }
@@ -58,6 +99,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.y))
             OnChanged?.Invoke(currentValue);
     }
@@ -67,6 +109,7 @@ public class AttributeXYZ : MonoBehaviour
         if (!isSelected || string.IsNullOrEmpty(value))
             return;
 
+        value = value.Replace(".", ",");
         if (float.TryParse(value, out currentValue.z))
             OnChanged?.Invoke(currentValue);
     }
@@ -74,4 +117,12 @@ public class AttributeXYZ : MonoBehaviour
     public void InputSelected(string text) { isSelected = true; }
 
     public void InputDeselected(string text) { isSelected = false; }
+
+    private void SetTextboxActive(Image textBoxImage, bool isActive)
+    {
+        if (textBoxImage == null)
+            return;
+
+        textBoxImage.enabled = isActive;
+    }
 }

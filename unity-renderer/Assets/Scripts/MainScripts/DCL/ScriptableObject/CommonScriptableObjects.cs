@@ -120,6 +120,9 @@ public static class CommonScriptableObjects
     private static BooleanVariable playerIsOnMovingPlatformValue;
     public static BooleanVariable playerIsOnMovingPlatform => GetOrLoad(ref playerIsOnMovingPlatformValue, "ScriptableObjects/playerIsOnMovingPlatform");
 
+    private static QuaternionVariable movingPlatformRotationDeltaValue;
+    public static QuaternionVariable movingPlatformRotationDelta => GetOrLoad(ref movingPlatformRotationDeltaValue, "ScriptableObjects/MovingPlatformRotationDelta");
+
     private static StringVariable sceneIDValue;
     public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
 

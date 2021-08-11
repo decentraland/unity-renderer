@@ -9,7 +9,7 @@ public interface ISceneLimitsController
 {
     void Initialize(ISceneLimitsView sceneLimitsView);
     void Dispose();
-    void SetParcelScene(ParcelScene parcelScene);
+    void SetParcelScene(IParcelScene parcelScene);
     void ToggleSceneLimitsInfo();
     void Enable();
     void Disable();
@@ -19,7 +19,7 @@ public interface ISceneLimitsController
 public class SceneLimitsController : ISceneLimitsController
 {
     internal ISceneLimitsView sceneLimitsView;
-    internal ParcelScene currentParcelScene;
+    internal IParcelScene currentParcelScene;
 
     public void Initialize(ISceneLimitsView sceneLimitsView)
     {
@@ -32,7 +32,7 @@ public class SceneLimitsController : ISceneLimitsController
 
     public void Dispose() { sceneLimitsView.OnToggleSceneLimitsInfo -= ToggleSceneLimitsInfo; }
 
-    public void SetParcelScene(ParcelScene parcelScene)
+    public void SetParcelScene(IParcelScene parcelScene)
     {
         currentParcelScene = parcelScene;
         UpdateInfo();
@@ -72,11 +72,11 @@ public class SceneLimitsController : ISceneLimitsController
         }
         else
         {
-            sceneLimitsView.SetTitleText(BuilderInWorldSettings.CUSTOM_LAND);
+            sceneLimitsView.SetTitleText(BIWSettings.CUSTOM_LAND);
         }
 
-        SceneMetricsController.Model limits = currentParcelScene.metricsController.GetLimits();
-        SceneMetricsController.Model usage = currentParcelScene.metricsController.GetModel();
+        SceneMetricsModel limits = currentParcelScene.metricsController.GetLimits();
+        SceneMetricsModel usage = currentParcelScene.metricsController.GetModel();
 
         string leftDesc = AppendUsageAndLimit("ENTITIES", usage.entities, limits.entities);
         leftDesc += "\n" + AppendUsageAndLimit("BODIES", usage.bodies, limits.bodies);
@@ -116,7 +116,7 @@ public class SceneLimitsController : ISceneLimitsController
     {
         string currentString = $"{name}:   {usage} / <color=#959696>{limit}</color>";
 
-        if (usage >= limit)
+        if (usage > limit)
             currentString = "<color=red>" + currentString + "</color>";
 
         return currentString;
@@ -124,8 +124,8 @@ public class SceneLimitsController : ISceneLimitsController
 
     internal float GetHigherLimitPercentInfo()
     {
-        SceneMetricsController.Model limits = currentParcelScene.metricsController.GetLimits();
-        SceneMetricsController.Model usage = currentParcelScene.metricsController.GetModel();
+        SceneMetricsModel limits = currentParcelScene.metricsController.GetLimits();
+        SceneMetricsModel usage = currentParcelScene.metricsController.GetModel();
 
         float percentEntities = usage.entities * 100 / limits.entities;
         float percentBodies = usage.bodies * 100 / limits.bodies;
@@ -149,7 +149,7 @@ public class SceneLimitsController : ISceneLimitsController
         return result;
     }
 
-    internal bool IsParcelSceneSquare(ParcelScene scene)
+    internal bool IsParcelSceneSquare(IParcelScene scene)
     {
         Vector2Int[] parcelsPoints = scene.sceneData.parcels;
         int minX = int.MaxValue;

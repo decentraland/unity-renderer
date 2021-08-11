@@ -2,13 +2,20 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Tests.BuildModeHUDControllers
 {
-    public class EntityInformationControllerShould
+    /// <summary>
+    /// TODO: This is using IntegrationTestSuite_Legacy instead of the normal because there is a bug in the NSustitute library
+    /// where the IDCLEntity are not mocked correctly, when you try to use Substitute.For<IDCLEntity>() there is a null reference in the variable pointer to an exception in the castle library
+    /// After it is fixed, we should go to IntegrationTestSuite 
+    /// </summary>
+    public class EntityInformationControllerShould : IntegrationTestSuite_Legacy
     {
         private EntityInformationController entityInformationController;
 
@@ -80,9 +87,9 @@ namespace Tests.BuildModeHUDControllers
         public void NameChangedCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             string testText = "Test text";
-            DCLBuilderInWorldEntity returnedEntity = null;
+            BIWEntity returnedEntity = null;
             string returnedText = "";
             entityInformationController.OnNameChange += (entity, name) =>
             {
@@ -148,15 +155,15 @@ namespace Tests.BuildModeHUDControllers
         public void SetEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
-            ParcelScene testScene = new GameObject("_ParcelScene").AddComponent<ParcelScene>();
+            BIWEntity testEntity = new BIWEntity();
+            IParcelScene testScene2 = Substitute.For<IParcelScene>();
 
             // Act
-            entityInformationController.SetEntity(testEntity, testScene);
+            entityInformationController.SetEntity(testEntity, testScene2);
 
             // Assert
             entityInformationController.entityInformationView.Received(1).SetCurrentEntity(testEntity);
-            Assert.AreEqual(testScene, entityInformationController.parcelScene, "The parcel scene does not match!");
+            Assert.AreEqual(testScene2, entityInformationController.parcelScene, "The parcel scene does not match!");
             entityInformationController.entityInformationView.Received(1).SetEntityThumbnailEnable(false);
         }
 
@@ -194,7 +201,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateEntityNameCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             entityInformationController.isChangingName = false;
 
             // Act
@@ -249,20 +256,31 @@ namespace Tests.BuildModeHUDControllers
         public void SetDisableCorrectly()
         {
             // Arrange
+            bool hidden = false;
             entityInformationController.entityInformationView.SetActive(true);
+
+            entityInformationController.OnDisable += () =>
+            {
+                hidden = true;
+            };
 
             // Act
             entityInformationController.Disable();
 
             // Assert
+            entityInformationController.entityInformationView.Received(1).SetActive(false);
             entityInformationController.entityInformationView.Received(1).SetCurrentEntity(null);
+            Assert.IsTrue(hidden);
         }
 
         [Test]
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
+
+            var entity = TestHelpers.CreateSceneEntity(scene, "entityId");
+            testEntity.Init(entity, null);
 
             // Act
             entityInformationController.UpdateInfo(testEntity);
@@ -283,6 +301,18 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             entityInformationController.entityInformationView.Received(1).UpdateEntitiesSelection(numberOfSelectedEntities);
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SetTransparencyModeCorrectly(bool isOn)
+        {
+            // Act
+            entityInformationController.SetTransparencyMode(isOn);
+
+            // Assert
+            entityInformationController.entityInformationView.Received(1).SetTransparencyMode(Arg.Any<float>(), !isOn);
         }
     }
 }

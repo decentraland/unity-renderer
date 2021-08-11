@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Interface;
@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
 {
     private BuilderInWorldBridge biwBridge;
-    private BuilderInWorldEntityHandler entityHandler;
+    private BIWEntityHandler entityHandler;
     private GameObject dummyGameObject;
 
     private bool messageReceived = false;
@@ -19,9 +19,8 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
-        BuilderInWorldController controller = Resources.FindObjectsOfTypeAll<BuilderInWorldController>()[0];
-        entityHandler = controller.builderInWorldEntityHandler;
-        entityHandler.Init();
+        entityHandler = new BIWEntityHandler();
+        entityHandler.Init(BIWTestHelper.CreateMockUpReferenceController());
         entityHandler.EnterEditMode(scene);
 
         dummyGameObject = new GameObject();
@@ -41,7 +40,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestKernelPublishScene()
     {
         //Act
-        biwBridge.PublishScene(scene);
+        biwBridge.PublishScene(scene, "Test title", "Test description", "test_screenshot");
 
         //Assert
         CheckMessageReceived();
@@ -51,7 +50,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestCreateEntityKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.AddEntityOnKernel(entity.rootEntity, scene);
@@ -64,7 +63,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestRemoveEntityKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.RemoveEntityOnKernel(entity.rootEntity.entityId, scene);
@@ -77,7 +76,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestTransformKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
 
         //Act
         biwBridge.EntityTransformReport(entity.rootEntity, scene);
@@ -90,7 +89,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestLockComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         entity.ToggleLockStatus();
 
         //Act
@@ -104,7 +103,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestNameComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
+        BIWEntity entity =  entityHandler.CreateEmptyEntity(scene, Vector3.zero, Vector3.zero);
         entity.SetDescriptiveName("Test");
 
         //Act
@@ -118,7 +117,7 @@ public class BIWKernelBridgeShould : IntegrationTestSuite_Legacy
     public void TestSmartItemComponentKernelUpdate()
     {
         //Arrange
-        DCLBuilderInWorldEntity entity =  BuilderInWorldTestHelper.CreateSmartItemEntity(entityHandler, scene, null);
+        BIWEntity entity =  BIWTestHelper.CreateSmartItemEntity(entityHandler, scene, null);
 
         //Act
         biwBridge.UpdateSmartItemComponent(entity, scene);

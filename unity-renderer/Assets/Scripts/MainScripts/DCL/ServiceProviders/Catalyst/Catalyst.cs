@@ -1,55 +1,22 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
+using UnityEngine;
 using Variables.RealmsInfo;
-
-/// <summary>
-/// GET Entities from connected Catalyst
-/// </summary>
-public interface ICatalyst : IDisposable
-{
-    /// <summary>
-    /// url for content server
-    /// </summary>
-    public string contentUrl { get; }
-
-    /// <summary>
-    /// get scenes deployed in parcels
-    /// </summary>
-    /// <param name="parcels">parcels to get scenes from</param>
-    /// <returns>promise of an array of scenes entities</returns>
-    Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels);
-
-    /// <summary>
-    /// get entities of entityType
-    /// </summary>
-    /// <param name="entityType">type of the entity to fetch. see CatalystEntitiesType class</param>
-    /// <param name="pointers">pointers to fetch</param>
-    /// <returns>promise of a string containing catalyst response json</returns>
-    Promise<string> GetEntities(string entityType, string[] pointers);
-
-    /// <summary>
-    /// wraps a WebRequest inside a promise and cache it result
-    /// </summary>
-    /// <param name="url">url to make the request to</param>
-    /// <returns>promise of the server response</returns>
-    Promise<string> Get(string url);
-}
 
 public class Catalyst : ICatalyst
 {
-    private const float CACHE_TIME = 5 * 60;
+    private const float DEFAULT_CACHE_TIME = 5 * 60;
     private const int MAX_POINTERS_PER_REQUEST = 90;
 
     public string contentUrl => realmContentServerUrl;
 
-    private string realmDomain = "https://peer.decentraland.org";
-    private string realmContentServerUrl = "https://peer.decentraland.org/content";
+    private string realmDomain = "https://peer-lb.decentraland.org";
+    private string realmContentServerUrl = "https://peer-lb.decentraland.org/content";
 
-    private readonly Dictionary<string, string> cache = new Dictionary<string, string>();
+    private readonly IDataCache<CatalystSceneEntityPayload[]> deployedScenesCache = new DataCache<CatalystSceneEntityPayload[]>();
 
     public Catalyst()
     {
@@ -58,14 +25,35 @@ public class Catalyst : ICatalyst
             realmDomain = DataStore.i.playerRealm.Get().domain;
             realmContentServerUrl = DataStore.i.playerRealm.Get().contentServerUrl;
         }
+
         DataStore.i.playerRealm.OnChange += PlayerRealmOnOnChange;
     }
 
-    public void Dispose() { DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange; }
+    public void Dispose()
+    {
+        DataStore.i.playerRealm.OnChange -= PlayerRealmOnOnChange;
+        deployedScenesCache.Dispose();
+    }
 
-    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels)
+    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels) { return GetDeployedScenes(parcels, DEFAULT_CACHE_TIME); }
+
+    public Promise<CatalystSceneEntityPayload[]> GetDeployedScenes(string[] parcels, float cacheMaxAgeSeconds)
     {
         var promise = new Promise<CatalystSceneEntityPayload[]>();
+
+        string cacheKey = string.Join(";", parcels);
+
+        if (cacheMaxAgeSeconds >= 0)
+        {
+            if (deployedScenesCache.TryGet(cacheKey, out CatalystSceneEntityPayload[] cacheValue, out float lastUpdate))
+            {
+                if (Time.unscaledTime - lastUpdate <= cacheMaxAgeSeconds)
+                {
+                    promise.Resolve(cacheValue);
+                    return promise;
+                }
+            }
+        }
 
         GetEntities(CatalystEntitiesType.SCENE, parcels)
             .Then(json =>
@@ -86,6 +74,7 @@ public class Catalyst : ICatalyst
 
                         noDuplicates.Add(sceneToCheck);
                     }
+
                     scenes = noDuplicates.ToArray();
                 }
                 catch (Exception e)
@@ -96,7 +85,10 @@ public class Catalyst : ICatalyst
                 finally
                 {
                     if (!hasException)
+                    {
+                        deployedScenesCache.Add(cacheKey, scenes, DEFAULT_CACHE_TIME);
                         promise.Resolve(scenes);
+                    }
                 }
             })
             .Catch(error => promise.Reject(error));
@@ -162,8 +154,10 @@ public class Catalyst : ICatalyst
                     for (int j = 1; j < splittedPromises.Length; j++)
                     {
                         string jsonContent = splittedPromises[j].value.Substring(1, splittedPromises[j].value.Length - 2);
-                        json += $",{jsonContent}";
+                        if (!string.IsNullOrEmpty(jsonContent))
+                            json += $",{jsonContent}";
                     }
+
                     promise.Resolve($"[{json}]");
                 });
             splittedPromises[i].Catch(error => promise.Reject(error));
@@ -176,15 +170,8 @@ public class Catalyst : ICatalyst
     {
         Promise<string> promise = new Promise<string>();
 
-        if (cache.TryGetValue(url, out string cachedResult))
+        DCL.Environment.i.platform.webRequest.Get(url, null, request =>
         {
-            promise.Resolve(cachedResult);
-            return promise;
-        }
-
-        WebRequestController.i.Get(url, null , request =>
-        {
-            AddToCache(url, request.downloadHandler.text);
             promise.Resolve(request.downloadHandler.text);
         }, request =>
         {
@@ -198,19 +185,5 @@ public class Catalyst : ICatalyst
     {
         realmDomain = current.domain;
         realmContentServerUrl = current.contentServerUrl;
-    }
-
-    private void AddToCache(string url, string result)
-    {
-        cache[url] = result;
-
-        // NOTE: remove from cache after CACHE_TIME time passed
-        CoroutineStarter.Start(RemoveCache(url, CACHE_TIME));
-    }
-
-    private IEnumerator RemoveCache(string url, float delay)
-    {
-        yield return WaitForSecondsCache.Get(delay);
-        cache?.Remove(url);
     }
 }

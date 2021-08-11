@@ -1,11 +1,12 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public interface IEntityInformationView
 {
-    DCLBuilderInWorldEntity currentEntity { get; set; }
+    BIWEntity currentEntity { get; set; }
     AttributeXYZ position { get; }
     AttributeXYZ rotation { get; }
     AttributeXYZ scale { get; }
@@ -13,16 +14,16 @@ public interface IEntityInformationView
 
     event Action OnDisable;
     event Action OnEndChangingName;
-    event Action<DCLBuilderInWorldEntity, string> OnNameChange;
+    event Action<BIWEntity, string> OnNameChange;
     event Action OnStartChangingName;
-    event Action<DCLBuilderInWorldEntity> OnUpdateInfo;
+    event Action<BIWEntity> OnUpdateInfo;
 
     void ChangeEntityName(string newName);
     void Disable();
     void EndChangingName();
     void SeEntityLimitsText(string tris, string mats, string textures);
     void SetActive(bool isActive);
-    void SetCurrentEntity(DCLBuilderInWorldEntity entity);
+    void SetCurrentEntity(BIWEntity entity);
     void SetEntityThumbnailEnable(bool isEnable);
     void SetEntityThumbnailTexture(Texture2D texture);
     void SetNameIFText(string text);
@@ -34,15 +35,19 @@ public interface IEntityInformationView
     void ToggleBasicInfo();
     void ToggleDetailsInfo();
     void UpdateEntitiesSelection(int numberOfSelectedEntities);
+    void SetTransparencyMode(float alphaValue, bool interactable = true);
 }
 
 public class EntityInformationView : MonoBehaviour, IEntityInformationView
 {
     [Header("Sprites")]
     [SerializeField] internal Sprite openMenuSprite;
+
     [SerializeField] internal Sprite closeMenuSprite;
 
     [Header("Prefab references")]
+    [SerializeField] internal CanvasGroup canvasGroup;
+
     [SerializeField] internal GameObject individualEntityPanel;
     [SerializeField] internal GameObject multipleEntitiesPanel;
     [SerializeField] internal TextMeshProUGUI multipleEntitiesText;
@@ -50,6 +55,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
     [SerializeField] internal TextMeshProUGUI entityLimitsMaterialsTxt;
     [SerializeField] internal TextMeshProUGUI entityLimitsTextureTxt;
     [SerializeField] internal TMP_InputField nameIF;
+    [SerializeField] internal Image nameIFTextBoxImage;
     [SerializeField] internal RawImage entitytTumbailImg;
     [SerializeField] internal AttributeXYZ positionAttribute;
     [SerializeField] internal AttributeXYZ rotationAttribute;
@@ -63,14 +69,14 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
     [SerializeField] internal Button detailsToggleButton;
     [SerializeField] internal Button basicInfoTogglekButton;
 
-    public DCLBuilderInWorldEntity currentEntity { get; set; }
+    public BIWEntity currentEntity { get; set; }
     public AttributeXYZ position => positionAttribute;
     public AttributeXYZ rotation => rotationAttribute;
     public AttributeXYZ scale => scaleAttribute;
     public SmartItemListView smartItemList => smartItemListView;
 
-    public event Action<DCLBuilderInWorldEntity, string> OnNameChange;
-    public event Action<DCLBuilderInWorldEntity> OnUpdateInfo;
+    public event Action<BIWEntity, string> OnNameChange;
+    public event Action<BIWEntity> OnUpdateInfo;
     public event Action OnStartChangingName;
     public event Action OnEndChangingName;
     public event Action OnDisable;
@@ -91,9 +97,20 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         backButton.onClick.AddListener(Disable);
         detailsToggleButton.onClick.AddListener(ToggleDetailsInfo);
         basicInfoTogglekButton.onClick.AddListener(ToggleBasicInfo);
-        nameIF.onEndEdit.AddListener((newName) => ChangeEntityName(newName));
-        nameIF.onSelect.AddListener((newName) => StartChangingName());
+        nameIF.onEndEdit.AddListener((newName) =>
+        {
+            ChangeEntityName(newName);
+            SetNameIFTextboxActive(false);
+        });
+        nameIF.onSelect.AddListener((newName) =>
+        {
+            SetNameIFTextboxActive(true);
+            StartChangingName();
+        });
+        nameIF.onSubmit.AddListener((newText) => EventSystem.current?.SetSelectedGameObject(null));
         nameIF.onDeselect.AddListener((newName) => EndChangingName());
+
+        SetNameIFTextboxActive(false);
     }
 
     private void OnDestroy()
@@ -101,9 +118,10 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
         backButton.onClick.RemoveListener(Disable);
         detailsToggleButton.onClick.RemoveListener(ToggleDetailsInfo);
         basicInfoTogglekButton.onClick.RemoveListener(ToggleBasicInfo);
-        nameIF.onEndEdit.RemoveListener((newName) => ChangeEntityName(newName));
-        nameIF.onSelect.RemoveListener((newName) => StartChangingName());
-        nameIF.onDeselect.RemoveListener((newName) => EndChangingName());
+        nameIF.onEndEdit.RemoveAllListeners();
+        nameIF.onSelect.RemoveAllListeners();
+        nameIF.onSubmit.RemoveAllListeners();
+        nameIF.onDeselect.RemoveAllListeners();
     }
 
     private void LateUpdate()
@@ -115,7 +133,7 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             OnUpdateInfo?.Invoke(currentEntity);
     }
 
-    public void SetCurrentEntity(DCLBuilderInWorldEntity entity) { currentEntity = entity; }
+    public void SetCurrentEntity(BIWEntity entity) { currentEntity = entity; }
 
     public void ToggleDetailsInfo()
     {
@@ -191,5 +209,20 @@ public class EntityInformationView : MonoBehaviour, IEntityInformationView
             individualEntityPanel.SetActive(true);
             multipleEntitiesPanel.SetActive(false);
         }
+    }
+
+    public void SetTransparencyMode(float alphaValue, bool interactable = true)
+    {
+        canvasGroup.alpha = alphaValue;
+        canvasGroup.blocksRaycasts = interactable;
+        canvasGroup.interactable = interactable;
+    }
+
+    private void SetNameIFTextboxActive(bool isActive)
+    {
+        if (nameIFTextBoxImage == null)
+            return;
+
+        nameIFTextBoxImage.enabled = isActive;
     }
 }

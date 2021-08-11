@@ -151,7 +151,7 @@ public class ProtocolV2
     public class StoreSceneStateEvent
     {
         public string type = "PublishSceneState";
-        public string payload = "";
+        public BuilderProjectPayload payload = new BuilderProjectPayload();
     }
 
     [System.Serializable]
@@ -159,6 +159,22 @@ public class ProtocolV2
     {
         public string type = "SaveSceneState";
         public string payload = "";
+    }
+
+    [System.Serializable]
+    public class SaveProjectInfoEvent
+    {
+        public string type = "SaveProjectInfo";
+        public BuilderProjectPayload payload = new BuilderProjectPayload();
+    }
+
+    [System.Serializable]
+    public class BuilderProjectPayload
+    {
+        public string title = "";
+        public string description = "";
+        public string screenshot = "";
+        public bool isNewEmptyProject = false;
     }
 
     #endregion

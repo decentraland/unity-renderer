@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using DCL.Camera;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -24,7 +25,7 @@ public class IntegrationTestSuite_Legacy
     protected bool sceneInitialized = false;
     protected ISceneController sceneController;
     protected ParcelScene scene;
-    protected CameraController cameraController;
+    protected DCL.Camera.CameraController cameraController;
 
     /// <summary>
     /// Use this as a parent for your dynamically created gameobjects in tests
@@ -48,8 +49,6 @@ public class IntegrationTestSuite_Legacy
             sceneInitialized = true;
         }
 
-        runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
-
         testSceneIntegrityChecker = new TestSceneIntegrityChecker();
 
         //NOTE(Brian): integrity checker is disabled in batch mode to make it run faster in CI
@@ -61,7 +60,15 @@ public class IntegrationTestSuite_Legacy
         if (justSceneSetUp)
         {
             RenderProfileManifest.i.Initialize();
-            Environment.SetupWithBuilders();
+
+            Environment.SetupWithBuilders
+            (
+                MessagingContextFactory.CreateDefault,
+                PlatformContextFactory.CreateDefault,
+                WorldRuntimeContextFactory.CreateDefault,
+                HUDContextFactory.CreateDefault
+            );
+
             SetUp_SceneController();
 
             SetUp_TestScene();
@@ -74,12 +81,19 @@ public class IntegrationTestSuite_Legacy
         }
 
         RenderProfileManifest.i.Initialize();
-        Environment.SetupWithBuilders();
+
+        Environment.SetupWithBuilders
+        (
+            MessagingContextFactory.CreateDefault,
+            PlatformContextFactory.CreateDefault,
+            WorldRuntimeContextFactory.CreateDefault,
+            HUDContextFactory.CreateDefault
+        );
 
         SetUp_SceneController();
         SetUp_TestScene();
 
-        SetUp_Camera();
+        yield return SetUp_Camera();
         yield return SetUp_CharacterController();
         SetUp_Renderer();
         yield return testSceneIntegrityChecker.SaveSceneSnapshot();
@@ -172,12 +186,23 @@ public class IntegrationTestSuite_Legacy
         DCLCharacterController.i.characterController.enabled = true;
     }
 
-    public virtual void SetUp_Camera()
+    public virtual IEnumerator SetUp_Camera()
     {
-        cameraController = GameObject.FindObjectOfType<CameraController>();
+        cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
 
         if (cameraController == null)
             cameraController = GameObject.Instantiate(Resources.Load<GameObject>("CameraController")).GetComponent<CameraController>();
+
+        yield return null;
+
+        var tpsMode = cameraController.GetCameraMode(CameraMode.ModeId.ThirdPerson) as CameraStateTPS;
+
+        if ( tpsMode != null )
+        {
+            tpsMode.cameraDampOnGroundType.settings.enabled = false;
+            tpsMode.cameraFreefall.settings.enabled = false;
+            tpsMode.cameraDampOnSprint.settings.enabled = false;
+        }
     }
 
     public void SetUp_SceneController()
@@ -239,15 +264,24 @@ public class IntegrationTestSuite_Legacy
 
     public static void Reflection_SetField<T>(object instance, string fieldName, T newValue) { instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue); }
 
-    protected GameObject CreateTestGameObject(string name)
+    protected GameObject CreateTestGameObject(string name) { return CreateTestGameObject(name, Vector3.zero); }
+
+    protected GameObject CreateTestGameObject(string name, Vector3 localPosition)
     {
+        if (runtimeGameObjectsRoot == null)
+            runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
+
         GameObject gameObject = new GameObject(name);
         gameObject.transform.SetParent(runtimeGameObjectsRoot.transform);
+        gameObject.transform.localPosition = localPosition;
         return gameObject;
     }
 
     protected GameObject InstantiateTestGameObject(GameObject reference)
     {
+        if (runtimeGameObjectsRoot == null)
+            runtimeGameObjectsRoot = new GameObject("_RuntimeGameObjectsRoot");
+
         GameObject gameObject = Object.Instantiate(reference, runtimeGameObjectsRoot.transform, true);
         return gameObject;
     }

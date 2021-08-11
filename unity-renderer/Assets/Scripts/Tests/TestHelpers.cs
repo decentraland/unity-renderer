@@ -351,8 +351,20 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, position,
                 out entity);
-            BasicMaterial material =
-                SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
+
+            return AttachBasicMaterialToEntity(scene, entity, model);
+        }
+
+        public static BasicMaterial AttachBasicMaterialToEntity(ParcelScene scene, IDCLEntity entity, BasicMaterial.Model model)
+        {
+            BasicMaterial material = SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
+            SharedComponentAttach(material, entity);
+            return material;
+        }
+
+        public static PBRMaterial AttachPBRMaterialToEntity(ParcelScene scene, IDCLEntity entity, PBRMaterial.Model model)
+        {
+            PBRMaterial material = SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
             SharedComponentAttach(material, entity);
             return material;
         }
@@ -521,7 +533,7 @@ namespace DCL.Helpers
         {
             yield return LoadAudioClip(entity.scene as ParcelScene,
                 audioClipId: "audioClipTest",
-                url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
+                url: TestAssetsUtils.GetPath() + "/Audio/Train.wav",
                 loop: true,
                 loading: true,
                 volume: 1f,

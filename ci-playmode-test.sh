@@ -13,13 +13,10 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' $UNITY_PATH/Edito
   -testResults "$PROJECT_PATH/playmode-results.xml" \
   -enableCodeCoverage \
   -coverageResultsPath "$PROJECT_PATH/CodeCoverage" \
-  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport"
+  -coverageOptions "generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:-Protocol,-WebSocketSharp,-UnityGLTFAssembly,-ABConverter,-WSSController,-ReorderableEditor,-UnityGLTFEditorAssembly,-MainEditor,-TutorialBuilderInWorld,-DebugController,-BotsControllerInterface,-Logger,-SmartItemCommon,-EditorUtils,-Builder;pathFilters:-**/Assets/ABConverter/**,-**Test**,-**Should**,-**SmartItem**"
 
 # Catch exit code
 UNITY_EXIT_CODE=$?
-
-mkdir -p "$PROJECT_PATH/test-results/playmode"
-cp "$PROJECT_PATH/playmode-results.xml" "$PROJECT_PATH/test-results/playmode/results.xml" || true
 
 cat "$PROJECT_PATH/playmode-results.xml"
 

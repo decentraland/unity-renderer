@@ -66,6 +66,7 @@ public class GifProcessor
                     fetchFailed = true;
                     return;
                 }
+
                 OnSuccess?.Invoke(newTextures);
             }, () => fetchFailed = true);
 
@@ -77,7 +78,7 @@ public class GifProcessor
 
     private IEnumerator UniGifProcessorLoad(string url, Action<GifFrameData[]> OnSuccess, Action OnFail)
     {
-        webRequestOp = WebRequestController.i.Get(url: url, disposeOnCompleted: false);
+        webRequestOp = DCL.Environment.i.platform.webRequest.Get(url: url, disposeOnCompleted: false);
 
         yield return webRequestOp;
 

@@ -13,11 +13,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
 
     [Header("Smart Items")]
     public GameObject smartItemGO;
+
     public Color smartItemColor;
     public Color normalColor;
 
     [Header("Favorites")]
     public Color offFavoriteColor;
+
     public Color onFavoriteColor;
     public Image favImg;
 
@@ -51,7 +53,7 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
 
         lockedGO.gameObject.SetActive(false);
 
-        if (catalogItem.IsNFT() && BuilderInWorldNFTController.i.IsNFTInUse(catalogItem.id))
+        if (catalogItem.IsNFT() && BIWNFTController.i.IsNFTInUse(catalogItem.id))
             lockedGO.gameObject.SetActive(true);
     }
 
@@ -108,6 +110,13 @@ public class CatalogItemAdapter : MonoBehaviour, IBeginDragHandler, IEndDragHand
         RectTransform newAdapterRT = GetComponent<RectTransform>();
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
+
+        if (favImg != null)
+            favImg.enabled = false;
+
+        if (backgroundImg != null)
+            backgroundImg.enabled = false;
+
         newAdapterRT.sizeDelta = sizeDelta * ADAPTER_DRAGGING_SIZE_SCALE;
     }
 

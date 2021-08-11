@@ -17,6 +17,7 @@ internal interface IBuilderProjectsPanelView : IDisposable
     SearchBarView GetSearchBar();
     LeftMenuSettingsViewReferences GetSettingsViewReferences();
     SceneCardViewContextMenu GetSceneCardViewContextMenu();
+    IUnpublishPopupView GetUnpublishPopup();
 }
 
 internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelView, IDeployedSceneListener, IProjectSceneListener
@@ -44,6 +45,9 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
 
     [Header("Assets")]
     [SerializeField] internal SceneCardView sceneCardViewPrefab;
+
+    [Header("Popups")]
+    [SerializeField] internal UnpublishPopupView unpublishPopupView;
 
     public event Action OnClosePressed;
     public event Action OnCreateScenePressed;
@@ -101,6 +105,8 @@ internal class BuilderProjectsPanelView : MonoBehaviour, IBuilderProjectsPanelVi
     LeftMenuSettingsViewReferences IBuilderProjectsPanelView.GetSettingsViewReferences() { return settingsViewReferences; }
 
     SceneCardViewContextMenu IBuilderProjectsPanelView.GetSceneCardViewContextMenu() { return contextMenu; }
+
+    IUnpublishPopupView IBuilderProjectsPanelView.GetUnpublishPopup() { return unpublishPopupView; }
 
     public void Dispose()
     {

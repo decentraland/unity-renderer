@@ -76,19 +76,19 @@ namespace AssetPromiseKeeper_Texture_Tests
         public IEnumerator WaitForPromisesOfSameTextureWithDifferentSettings()
         {
             // default texture (no settings)
-            var prom = CreatePromise(Utils.GetTestsAssetsPath() + "/Images/atlas.png");
+            var prom = CreatePromise(TestAssetsUtils.GetPath() + "/Images/atlas.png");
             Asset_Texture asset = null;
             prom.OnSuccessEvent += (x) => { asset = x; };
             keeper.Keep(prom);
 
             // same texture but with settings
-            var prom2 = CreatePromise(Utils.GetTestsAssetsPath() + "/Images/atlas.png", (int)TextureWrapMode.Repeat, (int)FilterMode.Trilinear);
+            var prom2 = CreatePromise(TestAssetsUtils.GetPath() + "/Images/atlas.png", (int)TextureWrapMode.Repeat, (int)FilterMode.Trilinear);
             Asset_Texture asset2 = null;
             prom.OnSuccessEvent += (x) => { asset2 = x; };
             keeper.Keep(prom2);
 
             // different texture
-            var prom3 = CreatePromise(Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            var prom3 = CreatePromise(TestAssetsUtils.GetPath() + "/Images/avatar.png");
             Asset_Texture asset3 = null;
             prom.OnSuccessEvent += (x) => { asset3 = x; };
             keeper.Keep(prom3);

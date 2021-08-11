@@ -38,13 +38,15 @@ public class SceneObject
     public string script;
     public bool isFavorite = false;
 
-    private string baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+    public string GetComposedThumbnailUrl()
+    {
+        //NOTE: This is a workaround since the builder sometimes send the thumbnail composed and sometimes it doesn't
+        //This way we ensure that the base url is only 1 time
+        string urlBase = BIWUrlUtils.GetUrlSceneObjectContent();
+        return urlBase + thumbnail.Replace(urlBase, "");
+    }
 
-    public string GetComposedThumbnailUrl() { return baseUrl + thumbnail; }
-
-    public void SetBaseURL(string newUrl) { baseUrl = newUrl; }
-
-    public string GetBaseURL() { return baseUrl; }
+    public string GetBaseURL() { return BIWUrlUtils.GetUrlSceneObjectContent(); }
 
     public bool IsSmartItem() { return !string.IsNullOrEmpty(script); }
 }

@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Tests.BuildModeHUDControllers
 {
-    public class SceneLimitsControllerShould
+    public class SceneLimitsControllerShould : IntegrationTestSuite_Legacy
     {
         private SceneLimitsController sceneLimitsController;
 
@@ -57,7 +57,7 @@ namespace Tests.BuildModeHUDControllers
         public void UpdateInfoCorrectly()
         {
             // Arrange
-            sceneLimitsController.SetParcelScene((ParcelScene) DCL.Environment.i.world.sceneController.CreateTestScene());
+            sceneLimitsController.SetParcelScene(scene);
 
             // Act
             sceneLimitsController.UpdateInfo();

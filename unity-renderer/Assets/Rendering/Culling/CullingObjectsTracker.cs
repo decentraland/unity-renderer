@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -6,16 +5,6 @@ using Object = UnityEngine.Object;
 
 namespace DCL.Rendering
 {
-    public interface ICullingObjectsTracker : IDisposable
-    {
-        void MarkDirty();
-        bool IsDirty();
-        Renderer[] GetRenderers();
-        SkinnedMeshRenderer[] GetSkinnedRenderers();
-        Animation[] GetAnimations();
-        IEnumerator PopulateRenderersList();
-    }
-
     /// <summary>
     /// This class is used for tracking all the renderers, skinnedMeshRenderers and Animations of the world.
     ///
@@ -29,6 +18,7 @@ namespace DCL.Rendering
         Animation[] animations;
 
         bool dirty = true;
+        private int ignoredLayersMask;
 
         /// <summary>
         /// If the dirty flag is true, this coroutine will re-populate all the tracked objects.
@@ -39,16 +29,42 @@ namespace DCL.Rendering
                 yield break;
 
             renderers = Object.FindObjectsOfType<Renderer>()
-                              .Where(x => !(x is SkinnedMeshRenderer) && !(x is ParticleSystemRenderer))
+                              .Where(x => !(x is SkinnedMeshRenderer)
+                                          && !(x is ParticleSystemRenderer)
+                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
                               .ToArray();
 
             yield return null;
-            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>();
+
+            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>()
+                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                                     .ToArray();
+
             yield return null;
+
             animations = Object.FindObjectsOfType<Animation>();
 
             dirty = false;
         }
+
+        /// <summary>
+        ///  This will re-populate all the tracked objects in a sync way.
+        /// </summary>
+        /// <param name="includeInactives">True for add inactive objects to the tracked list.</param>
+        public void ForcePopulateRenderersList(bool includeInactives)
+        {
+            renderers = Object.FindObjectsOfType<Renderer>(includeInactives)
+                              .Where(x => !(x is SkinnedMeshRenderer)
+                                          && !(x is ParticleSystemRenderer)
+                                          && ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                              .ToArray();
+
+            skinnedRenderers = Object.FindObjectsOfType<SkinnedMeshRenderer>(includeInactives)
+                                     .Where(x => ((1 << x.gameObject.layer) & ignoredLayersMask) == 0)
+                                     .ToArray();
+        }
+
+        public void SetIgnoredLayersMask(int ignoredLayersMask) { this.ignoredLayersMask = ignoredLayersMask; }
 
         /// <summary>
         /// Sets the dirty flag to true to make PopulateRenderersList retrieve all the scene objects on its next call.

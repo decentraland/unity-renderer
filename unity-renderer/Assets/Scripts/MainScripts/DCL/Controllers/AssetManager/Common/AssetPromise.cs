@@ -30,6 +30,7 @@ namespace DCL
         public AssetType asset { get; protected set; }
 
         public AssetPromiseState state { get; protected set; }
+        public bool isForgotten { get; protected set; }
 
         internal event Action<AssetPromise<AssetType>> OnPreFinishEvent;
         public event Action<AssetType> OnSuccessEvent;
@@ -145,7 +146,7 @@ namespace DCL
 
         protected virtual bool AddToLibrary() { return library.Add(asset); }
 
-        internal void Unload()
+        internal virtual void Unload()
         {
             if (state == AssetPromiseState.IDLE_AND_EMPTY)
                 return;
@@ -172,6 +173,12 @@ namespace DCL
 
                 asset = null;
             }
+        }
+
+        internal virtual void OnForget()
+        {
+            isForgotten = true;
+            ClearEvents();
         }
 
         protected abstract void OnCancelLoading();

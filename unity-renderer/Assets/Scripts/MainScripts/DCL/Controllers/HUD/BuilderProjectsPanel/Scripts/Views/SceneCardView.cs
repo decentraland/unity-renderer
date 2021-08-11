@@ -36,32 +36,46 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     const int THMBL_MARKETPLACE_HEIGHT = 143;
     const int THMBL_MARKETPLACE_SIZEFACTOR = 50;
 
+    static readonly Vector3 CONTEXT_MENU_OFFSET = new Vector3(6.24f, 12f, 0);
+
     public event Action<Vector2Int> OnJumpInPressed;
     public event Action<Vector2Int> OnEditorPressed;
     public event Action<ISceneData> OnSettingsPressed;
     public event Action<ISceneData, ISceneCardView> OnContextMenuPressed;
 
     [SerializeField] private Texture2D defaultThumbnail;
+
     [Space]
     [SerializeField] private RawImageFillParent thumbnail;
+
     [SerializeField] private TextMeshProUGUI sceneName;
+
     [Space]
     [SerializeField] internal GameObject coordsContainer;
+
     [SerializeField] private TextMeshProUGUI coordsText;
+
     [Space]
     [SerializeField] internal GameObject sizeContainer;
+
     [SerializeField] private TextMeshProUGUI sizeText;
+
     [Space]
     [SerializeField] internal Button jumpInButton;
+
     [SerializeField] internal Button editorButton;
     [SerializeField] internal Button contextMenuButton;
     [SerializeField] internal Button settingsButton;
+
     [Space]
     [SerializeField] internal GameObject roleOwnerGO;
+
     [SerializeField] internal GameObject roleOperatorGO;
     [SerializeField] internal GameObject roleContributorGO;
+
     [Space]
     [SerializeField] internal GameObject editorLockedGO;
+
     [SerializeField] internal GameObject editorLockedTooltipGO;
 
     [SerializeField] internal Animator loadingAnimator;
@@ -70,9 +84,10 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     ISearchInfo ISceneCardView.searchInfo { get; } = new SearchInfo();
     ISceneData ISceneCardView.sceneData => sceneData;
-    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position;
+    Vector3 ISceneCardView.contextMenuButtonPosition => contextMenuButton.transform.position + CONTEXT_MENU_OFFSET;
 
     private ISceneData sceneData;
+    private string thumbnailUrl = null;
     private AssetPromise_Texture thumbnailPromise;
     private bool isDestroyed = false;
     private Transform defaultParent;
@@ -80,13 +95,25 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     private void Awake()
     {
-        jumpInButton.onClick.AddListener(() => OnJumpInPressed?.Invoke(sceneData.coords));
-        editorButton.onClick.AddListener(() => OnEditorPressed?.Invoke(sceneData.coords));
+        jumpInButton.onClick.AddListener( JumpInButtonPressed );
+        editorButton.onClick.AddListener( EditorButtonPressed );
         contextMenuButton.onClick.AddListener(() => OnContextMenuPressed?.Invoke(sceneData, this));
         settingsButton.onClick.AddListener(() => OnSettingsPressed?.Invoke(sceneData));
 
         editorLockedGO.SetActive(false);
         editorLockedTooltipGO.SetActive(false);
+    }
+
+    private void JumpInButtonPressed()
+    {
+        OnJumpInPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "JumpIn", sceneData.coords, "Scene Owner");
+    }
+
+    private void EditorButtonPressed()
+    {
+        OnEditorPressed?.Invoke(sceneData.coords);
+        BIWAnalytics.PlayerJumpOrEdit("Scene", "Editor", sceneData.coords, "Scene Owner");
     }
 
     private void OnEnable() { loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail); }
@@ -144,6 +171,11 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
 
     void ISceneCardView.SetThumbnail(string thumbnailUrl)
     {
+        if (this.thumbnailUrl == thumbnailUrl)
+            return;
+
+        this.thumbnailUrl = thumbnailUrl;
+
         isLoadingThumbnail = true;
         loadingAnimator.SetBool(isLoadingAnimation, isLoadingThumbnail);
 
@@ -152,6 +184,7 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
             AssetPromiseKeeper_Texture.i.Forget(thumbnailPromise);
             thumbnailPromise = null;
         }
+
 
         if (string.IsNullOrEmpty(thumbnailUrl))
         {
@@ -212,7 +245,6 @@ internal class SceneCardView : MonoBehaviour, ISceneCardView
     {
         editorButton.gameObject.SetActive(isEditable);
         editorLockedGO.SetActive(!isEditable);
-        settingsButton.gameObject.SetActive(isEditable);
     }
 
     public void Dispose()

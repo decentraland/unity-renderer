@@ -10,7 +10,8 @@ public class AssetCatalogBridge : MonoBehaviour
 {
     public static bool VERBOSE = false;
 
-    public static System.Action<SceneObject> OnSceneObjectAdded;
+    public static System.Action<SceneObject> OnItemAdded;
+    public static System.Action<SceneObject> OnSceneCatalogItemAdded;
     public static System.Action<SceneAssetPack> OnSceneAssetPackAdded;
 
     public static AssetCatalogBridge i { get; private set; }
@@ -56,7 +57,7 @@ public class AssetCatalogBridge : MonoBehaviour
     ContentProvider CreateContentProviderForSceneObject(SceneObject sceneObject)
     {
         ContentProvider contentProvider = new ContentProvider();
-        contentProvider.baseUrl = BuilderInWorldSettings.BASE_URL_CATALOG;
+        contentProvider.baseUrl = BIWUrlUtils.GetUrlSceneObjectContent();
         foreach (KeyValuePair<string, string> content in sceneObject.contents)
         {
             ContentServerUtils.MappingPair mappingPair = new ContentServerUtils.MappingPair();
@@ -102,12 +103,33 @@ public class AssetCatalogBridge : MonoBehaviour
         if (sceneObjectCatalog.ContainsKey(sceneObject.id))
             return;
 
-        //TODO: SmartItems This quit all the smart items from the catalog
-        if (sceneObject.IsSmartItem())
+        sceneObjectCatalog.Add(sceneObject.id, sceneObject);
+        OnItemAdded?.Invoke(sceneObject);
+    }
+
+    public void RemoveSceneObjectToSceneCatalog(string sceneObjectId)
+    {
+        if (!sceneObjectCatalog.ContainsKey(sceneObjectId))
+            return;
+
+        sceneObjectCatalog.Remove(sceneObjectId);
+    }
+
+    public void AddSceneObjectToSceneCatalog(SceneObject[] sceneObjects)
+    {
+        foreach (var sceneObject in sceneObjects)
+        {
+            AddSceneObjectToSceneCatalog(sceneObject);
+        }
+    }
+
+    public void AddSceneObjectToSceneCatalog(SceneObject sceneObject)
+    {
+        if (sceneObjectCatalog.ContainsKey(sceneObject.id))
             return;
 
         sceneObjectCatalog.Add(sceneObject.id, sceneObject);
-        OnSceneObjectAdded?.Invoke(sceneObject);
+        OnSceneCatalogItemAdded?.Invoke(sceneObject);
     }
 
     public void AddSceneAssetPackToCatalog(SceneAssetPack sceneAssetPack)

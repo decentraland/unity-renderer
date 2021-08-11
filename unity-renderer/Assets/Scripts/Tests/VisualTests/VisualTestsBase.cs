@@ -8,7 +8,12 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
     protected override string TEST_SCENE_NAME => "MainVisualTest";
     protected override bool enableSceneIntegrityChecker => false;
 
-    protected override IEnumerator SetUp() { yield break; }
+    protected override IEnumerator SetUp()
+    {
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+        VisualTestHelpers.SetSSAOActive(false);
+        yield break;
+    }
 
     public IEnumerator InitVisualTestsScene(string testName)
     {
@@ -20,10 +25,11 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         RenderProfileManifest.i.Initialize(RenderProfileManifest.i.testProfile);
 
         Environment.i.world.sceneBoundsChecker.Stop();
+        Environment.i.world.blockersController.SetEnabled(false);
 
         base.SetUp_Renderer();
 
-        VisualTestHelpers.currentTestName = testName;
+        VisualTestHelpers.currentTestName = testName.Replace(".", "_");
         VisualTestHelpers.snapshotIndex = 0;
 
         DCLCharacterController.i.PauseGravity();
@@ -33,5 +39,11 @@ public class VisualTestsBase : IntegrationTestSuite_Legacy
         TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
 
         yield return null;
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+        return base.TearDown();
     }
 }

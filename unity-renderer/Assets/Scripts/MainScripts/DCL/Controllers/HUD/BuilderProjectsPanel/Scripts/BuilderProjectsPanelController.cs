@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using DCL;
 using DCL.Helpers;
@@ -11,15 +11,20 @@ using Object = UnityEngine.Object;
 
 public class BuilderProjectsPanelController : IHUD
 {
-    private const string TESTING_ETH_ADDRESS = "0x2fa1859029A483DEFbB664bB6026D682f55e2fcD";
+    private const string TESTING_ETH_ADDRESS = "0xDc13378daFca7Fe2306368A16BCFac38c80BfCAD";
     private const string TESTING_TLD = "org";
     private const string VIEW_PREFAB_PATH = "BuilderProjectsPanel";
+
+    private const float CACHE_TIME_LAND = 5 * 60;
+    private const float CACHE_TIME_SCENES = 1 * 60;
+    private const float REFRESH_INTERVAL = 2 * 60;
 
     internal readonly IBuilderProjectsPanelView view;
 
     private ISectionsController sectionsController;
     private IScenesViewController scenesViewController;
     private ILandController landsController;
+    private UnpublishPopupController unpublishPopupController;
 
     private SectionsHandler sectionsHandler;
     private SceneContextMenuHandler sceneContextMenuHandler;
@@ -30,7 +35,12 @@ public class BuilderProjectsPanelController : IHUD
     private ICatalyst catalyst;
 
     private bool isInitialized = false;
+    private bool isFetching = false;
+    private bool sendPlayerOpenPanelEvent = false;
+    private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
+
+    public event Action OnJumpInOrEdit;
 
     public BuilderProjectsPanelController() : this(
         Object.Instantiate(Resources.Load<BuilderProjectsPanelView>(VIEW_PREFAB_PATH))) { }
@@ -43,8 +53,13 @@ public class BuilderProjectsPanelController : IHUD
 
     public void Dispose()
     {
+        StopFetchInterval();
+
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange -= OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange -= OnSceneUnpublished;
         view.OnClosePressed -= OnClose;
+
+        unpublishPopupController?.Dispose();
 
         fetchLandPromise?.Dispose();
 
@@ -83,6 +98,8 @@ public class BuilderProjectsPanelController : IHUD
         this.theGraph = theGraph;
         this.catalyst = catalyst;
 
+        this.unpublishPopupController = new UnpublishPopupController(view.GetUnpublishPopup());
+
         // set listeners for sections, setup searchbar for section, handle request for opening a new section
         sectionsHandler = new SectionsHandler(sectionsController, scenesViewController, landsController, view.GetSearchBar());
         // handle if main panel or settings panel should be shown in current section
@@ -90,7 +107,7 @@ public class BuilderProjectsPanelController : IHUD
         // handle project scene info on the left menu panel
         leftMenuSettingsViewHandler = new LeftMenuSettingsViewHandler(view.GetSettingsViewReferences(), scenesViewController);
         // handle scene's context menu options
-        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController);
+        sceneContextMenuHandler = new SceneContextMenuHandler(view.GetSceneCardViewContextMenu(), sectionsController, scenesViewController, unpublishPopupController);
 
         SetView();
 
@@ -102,6 +119,7 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.OnEditorPressed += OnGoToEditScene;
 
         DataStore.i.HUDs.builderProjectsPanelVisible.OnChange += OnVisibilityChanged;
+        DataStore.i.builderInWorld.unpublishSceneResult.OnChange += OnSceneUnpublished;
     }
 
     public void SetVisibility(bool visible) { DataStore.i.HUDs.builderProjectsPanelVisible.Set(visible); }
@@ -115,12 +133,54 @@ public class BuilderProjectsPanelController : IHUD
 
         if (isVisible)
         {
+            sendPlayerOpenPanelEvent = true;
+
             FetchLandsAndScenes();
+            StartFetchInterval();
             sectionsController.OpenSection(SectionId.SCENES_DEPLOYED);
+        }
+        else
+        {
+            StopFetchInterval();
         }
     }
 
-    private void OnClose() { SetVisibility(false); }
+    private void OnClose()
+    {
+        SetVisibility(false);
+
+        LandWithAccess[] lands = landsController.GetLands();
+        if (lands != null)
+        {
+            Vector2Int totalLands = GetAmountOfLandsOwnedAndOperator(lands);
+            BIWAnalytics.PlayerClosesPanel(totalLands.x, totalLands.y);
+        }
+    }
+
+    private void PanelOpenEvent(LandWithAccess[] lands)
+    {
+        Vector2Int totalLands = GetAmountOfLandsOwnedAndOperator(lands);
+        BIWAnalytics.PlayerOpenPanel(totalLands.x, totalLands.y);
+    }
+
+    /// <summary>
+    /// This counts the amount of lands that the user own and the amount of lands that the user operate
+    /// </summary>
+    /// <param name="lands"></param>
+    /// <returns>Vector2: X = amount of owned lands, Y = amount of operator lands</returns>
+    private Vector2Int GetAmountOfLandsOwnedAndOperator(LandWithAccess[] lands)
+    {
+        int ownedLandsCount = 0;
+        int operatorLandsCount = 0;
+        foreach (var land in lands)
+        {
+            if (land.role == LandRole.OWNER)
+                ownedLandsCount++;
+            else
+                operatorLandsCount++;
+        }
+        return new Vector2Int(ownedLandsCount, operatorLandsCount);
+    }
 
     private void SetView()
     {
@@ -128,8 +188,13 @@ public class BuilderProjectsPanelController : IHUD
         scenesViewController.AddListener((IProjectSceneListener) view);
     }
 
-    private void FetchLandsAndScenes()
+    private void FetchLandsAndScenes(float landCacheTime = CACHE_TIME_LAND, float scenesCacheTime = CACHE_TIME_SCENES)
     {
+        if (isFetching)
+            return;
+
+        isFetching = true;
+
         var address = UserProfile.GetOwnUserProfile().ethAddress;
         var tld = KernelConfig.i.Get().tld;
 
@@ -149,19 +214,22 @@ public class BuilderProjectsPanelController : IHUD
 
         sectionsController.SetFetchingDataStart();
 
-        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld);
+        fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, landCacheTime, scenesCacheTime);
         fetchLandPromise
             .Then(lands =>
             {
+                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
                 sectionsController.SetFetchingDataEnd();
+                isFetching = false;
 
                 try
                 {
                     var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                      .Select(land => land.scenes.Select(scene => (ISceneData)new SceneData(scene)))
+                                      .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
                                       .Aggregate((i, j) => i.Concat(j))
                                       .ToArray();
 
+                    PanelOpenEvent(lands);
                     landsController.SetLands(lands);
                     scenesViewController.SetScenes(scenes);
                 }
@@ -173,6 +241,7 @@ public class BuilderProjectsPanelController : IHUD
             })
             .Catch(error =>
             {
+                isFetching = false;
                 sectionsController.SetFetchingDataEnd();
                 landsController.SetLands(new LandWithAccess[] { });
                 scenesViewController.SetScenes(new ISceneData[] { });
@@ -184,16 +253,51 @@ public class BuilderProjectsPanelController : IHUD
     {
         WebInterface.GoTo(coords.x, coords.y);
         SetVisibility(false);
+        OnJumpInOrEdit?.Invoke();
     }
 
     private void OpenUrl(string url) { WebInterface.OpenURL(url); }
 
     private void OnGoToEditScene(Vector2Int coords)
     {
-        bool isGoingToTeleport = BuilderInWorldTeleportAndEdit.TeleportAndEdit(coords);
+        bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
         if (isGoingToTeleport)
         {
             SetVisibility(false);
+        }
+        OnJumpInOrEdit?.Invoke();
+    }
+
+    private void StartFetchInterval()
+    {
+        if (fetchDataInterval != null)
+        {
+            StopFetchInterval();
+        }
+
+        fetchDataInterval = CoroutineStarter.Start(RefreshDataInterval());
+    }
+
+    private void StopFetchInterval()
+    {
+        CoroutineStarter.Stop(fetchDataInterval);
+        fetchDataInterval = null;
+    }
+
+    IEnumerator RefreshDataInterval()
+    {
+        while (true)
+        {
+            yield return WaitForSecondsCache.Get(REFRESH_INTERVAL);
+            FetchLandsAndScenes();
+        }
+    }
+
+    private void OnSceneUnpublished(PublishSceneResultPayload current, PublishSceneResultPayload previous)
+    {
+        if (current.ok)
+        {
+            FetchLandsAndScenes(CACHE_TIME_LAND, 0);
         }
     }
 }

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2548c6ebc3c846446810452bb5cc2606, type: 3}
+  m_Name: AudioSection
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: b23d5fabe4435364292b363710d399aa, type: 3}
+  text: Audio
+  menuButtonPrefab: {fileID: 2470334045984490575, guid: 829d414daa3047541a35abc7d88a1fe5,
+    type: 3}
+  sectionPrefab: {fileID: 5813236629143711783, guid: eb979bec9ddc8d04291cbfd7ff64b626,
+    type: 3}
+  sectionController: {fileID: 11400000, guid: cac7ad54d7c04464a868e7768f9cb004, type: 2}
+  widgets:
+    array:
+    - {fileID: 11400000, guid: a54da4917143ed148a381888cd82ec2e, type: 2}
+    - {fileID: 11400000, guid: bf33cef7d4d77e046ba0e469b86f8e47, type: 2}

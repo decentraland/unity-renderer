@@ -138,7 +138,7 @@ namespace Tests
             string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -185,7 +185,7 @@ namespace Tests
             string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -230,7 +230,7 @@ namespace Tests
             string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
@@ -274,7 +274,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             string clickUuid = "pointerevent-1";
@@ -318,7 +318,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             string clickUuid = "pointerevent-1";
@@ -361,7 +361,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
-                    src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                    src = TestAssetsUtils.GetPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
             string clickUuid = "pointerevent-1";
@@ -1098,7 +1098,7 @@ namespace Tests
 
             DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
 
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
+            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
 
             // Rotate camera towards the interactive object
             cameraController.SetRotation(45, 0, 0);
@@ -1151,7 +1151,7 @@ namespace Tests
 
             DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7));
 
-            var cameraController = GameObject.FindObjectOfType<CameraController>();
+            var cameraController = GameObject.FindObjectOfType<DCL.Camera.CameraController>();
 
             // Rotate camera towards the interactive object
             cameraController.SetRotation(45, 0, 0);

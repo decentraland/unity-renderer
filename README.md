@@ -54,13 +54,13 @@ Then, on the Unity editor, click on `Assets > Reimport All`
 
 To test against a build made on this repository, you can use a link with this format:
 
-    https://play.decentraland.zone/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:<branch-name>
+    https://play.decentraland.zone/?renderer-branch=<branch-name>
 
 Note that using this approach, the Unity builds will run against kernel `master` HEAD.
 
 If you want to test your Unity branch against a specific kernel branch, you'll have to use the `renderer` url param like this:
 
-    https://play.decentraland.zone/branch/<kernel-branch-name>/index.html?renderer=urn:decentraland:off-chain:renderer-artifacts:<unity-branch-name>
+    https://play.decentraland.zone/?renderer-branch=<branch-name>&kernel-branch=<kernel-branch-name>
 
 If the CI for both branches succeeds, you can browse to the generated link and test your changes. Bear in mind that any push will kick the CI. There's no need to create a pull request.
 
@@ -98,10 +98,10 @@ When the steps are followed, you will be able to run the local Unity build by go
 1. Make sure you have the proper Unity version up and running
 2. Make sure you have Kernel repository cloned and set up.
 3. Make sure you are running kernel through `make watch` command.
-4. Produce a Unity wasm targeted build using the Build menu. Then run `npm run build` in the `./browser-interface` directory.
-5. When the build finishes, only copy all the files in the folder `./browser-interface/dist` to `static/unity-renderer` folder within the `kernel` project.
+4. Produce a Unity wasm targeted build using the Build menu.
+5. When the build finishes, copy all the files inside the resulting `/build` folder and paste them inside `kernel/node_modules/@dcl/unity-renderer`.
 6. Run the browser explorer through `localhost:3000`. Now, it should use your local Unity build.
-7. If you need a Unity re-build, you can just replace the files and reload the browser the without restarting the `make watch` process.
+7. If you need a Unity re-build, you can just replace the files and reload the browser without restarting the `make watch` process.
 
 ## Technical how-to guides and explainers
 
@@ -112,4 +112,5 @@ For more advanced topics, don't forget to check out our [Architecture Decisions 
 
 ## Copyright info
 
-This repository is protected with a standard Apache 2 license. See the terms and conditions in the [LICENSE](https://github.com/decentraland/unity-client/blob/master/LICENSE) file.
+This repository is protected with a standard Apache 2 license. See the terms and conditions in
+the [LICENSE](https://github.com/decentraland/unity-renderer/blob/master/LICENSE) file.

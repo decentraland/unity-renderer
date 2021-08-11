@@ -17,7 +17,7 @@ namespace Tests.BuildModeHUDViews
         public void SetCurrentEntityCorrectly()
         {
             // Arrange
-            DCLBuilderInWorldEntity newEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity newEntity = new BIWEntity();
             newEntity.entityUniqueId = "testId";
             entityInformationView.currentEntity = null;
 
@@ -95,11 +95,11 @@ namespace Tests.BuildModeHUDViews
         {
             // Arrange
             string newEntityName = "Test name";
-            DCLBuilderInWorldEntity testEntity = new GameObject("_DCLBuilderInWorldEntity").AddComponent<DCLBuilderInWorldEntity>();
+            BIWEntity testEntity = new BIWEntity();
             testEntity.entityUniqueId = "testId";
             entityInformationView.currentEntity = testEntity;
 
-            DCLBuilderInWorldEntity entity = null;
+            BIWEntity entity = null;
             string entityName = "";
             entityInformationView.OnNameChange += (changedEntity, name) =>
             {
@@ -261,6 +261,25 @@ namespace Tests.BuildModeHUDViews
                 Assert.IsTrue(entityInformationView.individualEntityPanel.activeInHierarchy, "The active property does not match!");
                 Assert.IsFalse(entityInformationView.multipleEntitiesPanel.activeInHierarchy, "The active property does not match!");
             }
+        }
+
+        [Test]
+        [TestCase(0.5f, true)]
+        [TestCase(0.5f, false)]
+        public void SetTransparencyModeCorrectly(float alphaValue, bool interactable = true)
+        {
+            // Arrange
+            entityInformationView.canvasGroup.alpha = 1f;
+            entityInformationView.canvasGroup.blocksRaycasts = !interactable;
+            entityInformationView.canvasGroup.interactable = !interactable;
+
+            // Act
+            entityInformationView.SetTransparencyMode(alphaValue, interactable);
+
+            // Assert
+            Assert.AreEqual(alphaValue, entityInformationView.canvasGroup.alpha);
+            Assert.AreEqual(interactable, entityInformationView.canvasGroup.blocksRaycasts);
+            Assert.AreEqual(interactable, entityInformationView.canvasGroup.interactable);
         }
     }
 }

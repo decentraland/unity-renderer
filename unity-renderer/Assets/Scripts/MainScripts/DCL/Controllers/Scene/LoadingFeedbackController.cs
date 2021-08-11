@@ -47,7 +47,15 @@ public class LoadingFeedbackController : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
-    private void SceneController_OnNewSceneAdded(ParcelScene scene) { scene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed; }
+    private void SceneController_OnNewSceneAdded(IParcelScene scene)
+    {
+        var parcelScene = scene as ParcelScene;
+
+        if ( parcelScene == null )
+            return;
+
+        parcelScene.sceneLifecycleHandler.OnStateRefreshed += Scene_OnStateRefreshed;
+    }
 
     private void Scene_OnStateRefreshed(ParcelScene scene)
     {
@@ -87,9 +95,6 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private void RefreshFeedbackMessage()
     {
-        if (CommonScriptableObjects.rendererState.Get())
-            return;
-
         string loadingText = string.Empty;
         string secondLoadingText = string.Empty;
         DCL.Interface.WebInterface.LoadingFeedbackMessage messageToSend = new WebInterface.LoadingFeedbackMessage();
@@ -100,6 +105,7 @@ public class LoadingFeedbackController : MonoBehaviour
         {
             loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
             messageToSend.loadPercentage = loadingComponentsPercentage;
+            DataStore.i.HUDs.loadingHUD.percentage.Set(loadingComponentsPercentage);
             loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
         }
 
@@ -119,6 +125,7 @@ public class LoadingFeedbackController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(loadingText))
         {
+            DataStore.i.HUDs.loadingHUD.message.Set(loadingText);
             messageToSend.message = loadingText;
             WebInterface.ScenesLoadingFeedback(messageToSend);
         }

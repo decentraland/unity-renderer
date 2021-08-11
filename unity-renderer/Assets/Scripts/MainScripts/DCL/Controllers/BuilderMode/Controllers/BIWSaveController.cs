@@ -1,33 +1,75 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 
-public class BIWSaveController : BIWController
+public interface IBIWSaveController
 {
-    [SerializeField]
-    private float msBetweenSaves = 5000f;
+    void SetSaveActivation(bool isActive, bool tryToSave = false);
+    void TryToSave();
+    void ForceSave();
+}
 
-    [Header("Prefab reference")]
-    public BuilderInWorldBridge builderInWorldBridge;
+public class BIWSaveController : BIWController, IBIWSaveController
+{
+    private const float MS_BETWEEN_SAVES = 5000f;
+
+    public int numberOfSaves { get; private set; } = 0;
+
+    private BuilderInWorldBridge bridge;
 
     private float nextTimeToSave;
     private bool canActivateSave = true;
 
-    public override void Init()
+    public override void Init(BIWContext context)
     {
-        base.Init();
-        if (builderInWorldBridge != null)
-            builderInWorldBridge.OnKernelUpdated += TryToSave;
+        base.Init(context);
+
+        bridge = context.sceneReferences.builderInWorldBridge;
+        if (bridge != null)
+            bridge.OnKernelUpdated += TryToSave;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction += SaveSceneInfo;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction += ConfirmPublishScene;
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        if (bridge != null)
+            bridge.OnKernelUpdated -= TryToSave;
+
+        if (HUDController.i.builderInWorldMainHud != null)
+        {
+            HUDController.i.builderInWorldMainHud.OnSaveSceneInfoAction -= SaveSceneInfo;
+            HUDController.i.builderInWorldMainHud.OnConfirmPublishAction -= ConfirmPublishScene;
+        }
     }
 
     public void ResetSaveTime() { nextTimeToSave = 0; }
 
+    public void ResetNumberOfSaves() { numberOfSaves = 0; }
+
     public override void EnterEditMode(ParcelScene scene)
     {
         base.EnterEditMode(scene);
-        nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
+        nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
+        ResetNumberOfSaves();
+    }
+
+    public override void ExitEditMode()
+    {
+        if (numberOfSaves > 0)
+        {
+            ForceSave();
+
+            HUDController.i.builderInWorldMainHud?.SaveSceneInfo();
+            ResetNumberOfSaves();
+        }
+        base.ExitEditMode();
     }
 
     public void SetSaveActivation(bool isActive, bool tryToSave = false)
@@ -50,8 +92,13 @@ public class BIWSaveController : BIWController
         if (!isEditModeActive || !canActivateSave)
             return;
 
-        builderInWorldBridge.SaveSceneState(sceneToEdit);
-        nextTimeToSave = DCLTime.realtimeSinceStartup + msBetweenSaves / 1000f;
+        bridge.SaveSceneState(sceneToEdit);
+        nextTimeToSave = DCLTime.realtimeSinceStartup + MS_BETWEEN_SAVES / 1000f;
         HUDController.i.builderInWorldMainHud?.SceneSaved();
+        numberOfSaves++;
     }
+
+    public void SaveSceneInfo(string sceneName, string sceneDescription, string sceneScreenshot) { bridge.SaveSceneInfo(sceneToEdit, sceneName, sceneDescription, sceneScreenshot); }
+
+    void ConfirmPublishScene(string sceneName, string sceneDescription, string sceneScreenshot) { ResetNumberOfSaves(); }
 }

@@ -24,7 +24,7 @@ public class BIWCatalogShould
     public void BuilderInWorldSearch()
     {
         string nameToFilter = "Sandy";
-        BuilderInWorldTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+        BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
 
         CatalogItem catalogItemToFilter = null;
         foreach (CatalogItem catalogItem in DataStore.i.builderInWorld.catalogItemDict.GetValues())
@@ -47,10 +47,10 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldQuickBar()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
-        CatalogItemAdapter adapter = BuilderInWorldTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
+        CatalogItemAdapter adapter = BIWTestHelper.CreateCatalogItemAdapter(gameObjectToUse);
         adapter.SetContent(item);
 
         CatalogAssetGroupAdapter groupAdapter = new GameObject("_CatalogAssetGroupAdapter").AddComponent<CatalogAssetGroupAdapter>();
@@ -75,7 +75,7 @@ public class BIWCatalogShould
         {
             quickBarController.SetIndexToDrop(i);
             adapter.AdapterStartDragging(null);
-            quickBarController.SceneObjectDroppedFromCatalog(null);
+            quickBarController.SetQuickBarShortcut(item, i, new Texture2D(10, 10));
             Assert.AreEqual(item, quickBarController.QuickBarObjectSelected(i));
         }
     }
@@ -83,7 +83,7 @@ public class BIWCatalogShould
     [Test]
     public void BuilderInWorldToggleFavorite()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
         CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
 
@@ -98,7 +98,7 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsSceneObject()
     {
-        BuilderInWorldTestHelper.CreateTestCatalogLocalSingleObject();
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
 
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);
@@ -108,7 +108,7 @@ public class BIWCatalogShould
     [Test]
     public void CatalogItemsNfts()
     {
-        BuilderInWorldTestHelper.CreateNFT();
+        BIWTestHelper.CreateNFT();
 
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemDict.Count(), 1);
         Assert.AreEqual(DataStore.i.builderInWorld.catalogItemPackDict.Count(), 1);

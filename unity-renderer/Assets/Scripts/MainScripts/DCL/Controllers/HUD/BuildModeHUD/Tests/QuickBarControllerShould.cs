@@ -82,37 +82,37 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [Test]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        public void SceneObjectDroppedFromCatalogCorrectly(int objectIndex)
+        public void SceneObjectDroppedFromCatalogCorrectly()
         {
-            // Arrange
-            quickBarController.lastIndexDroped = objectIndex;
-            quickBarController.quickBarShortcutsCatalogItems = new CatalogItem[3];
-            quickBarController.quickBarShortcutsCatalogItems[0] = new CatalogItem { };
-            quickBarController.quickBarShortcutsCatalogItems[1] = new CatalogItem { };
-            quickBarController.quickBarShortcutsCatalogItems[2] = new CatalogItem { };
-
-            string testCatalogItemId = "testId";
-            CatalogItemAdapter testCatalogAdapter = new GameObject("_CatalogItemAdapter").AddComponent<CatalogItemAdapter>();
-            testCatalogAdapter.smartItemGO = new GameObject("_SmartItemGO");
-            testCatalogAdapter.lockedGO = new GameObject("_LockedGO");
-            testCatalogAdapter.SetContent(new CatalogItem { id = testCatalogItemId });
-
-            Asset_Texture testTexture = new Asset_Texture();
-            testCatalogAdapter.thumbnailImg = new GameObject("_RawImage").AddComponent<RawImage>();
-            testCatalogAdapter.thumbnailImg.texture = testTexture.texture;
-            testCatalogAdapter.thumbnailImg.enabled = true;
-            quickBarController.sceneCatalogController.GetLastCatalogItemDragged().ReturnsForAnyArgs(testCatalogAdapter);
-
             // Act
             quickBarController.SceneObjectDroppedFromCatalog(null);
 
             // Assert
             quickBarController.sceneCatalogController.Received(1).GetLastCatalogItemDragged();
+        }
+
+        [Test]
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void SetQuickBarShortcutCorrectly(int objectIndex)
+        {
+            // Arrange
+            string testCatalogItemId = "testId";
+            quickBarController.lastIndexDroped = objectIndex;
+            quickBarController.quickBarShortcutsCatalogItems = new CatalogItem[3];
+            quickBarController.quickBarShortcutsCatalogItems[0] = new CatalogItem { };
+            quickBarController.quickBarShortcutsCatalogItems[1] = new CatalogItem { };
+            quickBarController.quickBarShortcutsCatalogItems[2] = new CatalogItem { };
+            CatalogItem testItem = new CatalogItem { id = testCatalogItemId };
+            Texture testTexture = new Texture2D(10, 10);
+
+            // Act
+            quickBarController.SetQuickBarShortcut(testItem, objectIndex, testTexture);
+
+            // Assert
             Assert.AreEqual(testCatalogItemId, quickBarController.quickBarShortcutsCatalogItems[objectIndex].id);
-            quickBarController.quickBarView.Received(1).SetTextureToShortcut(objectIndex, testTexture.texture);
+            quickBarController.quickBarView.Received(1).SetTextureToShortcut(objectIndex, testTexture);
         }
 
         [Test]

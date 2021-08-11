@@ -145,14 +145,11 @@ namespace DCL.Tutorial
         private Coroutine teacherMovementCoroutine;
         private Coroutine eagleEyeRotationCoroutine;
 
-        private int tutorialLayerMask;
-
         internal bool userAlreadyDidTheTutorial { get; set; }
 
         private void Awake()
         {
             i = this;
-            tutorialLayerMask = LayerMask.GetMask("Tutorial");
             ShowTeacher3DModel(false);
         }
 
@@ -223,6 +220,7 @@ namespace DCL.Tutorial
             }
 
             isRunning = true;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(0f);
             this.userAlreadyDidTheTutorial = userAlreadyDidTheTutorial;
             CommonScriptableObjects.allUIHidden.Set(false);
             CommonScriptableObjects.tutorialActive.Set(true);
@@ -235,8 +233,6 @@ namespace DCL.Tutorial
             NotificationsController.disableWelcomeNotification = true;
 
             WebInterface.SetDelightedSurveyEnabled(false);
-
-            ModifyCullingSettings();
 
             if (!CommonScriptableObjects.rendererState.Get())
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
@@ -267,6 +263,7 @@ namespace DCL.Tutorial
 
             tutorialReset = false;
             isRunning = false;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             ShowTeacher3DModel(false);
             WebInterface.SetDelightedSurveyEnabled(true);
 
@@ -280,8 +277,6 @@ namespace DCL.Tutorial
             hudController?.taskbarHud?.ShowTutorialOption(true);
 
             CommonScriptableObjects.tutorialActive.Set(false);
-
-            RestoreCullingSettings();
 
             CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
@@ -667,20 +662,6 @@ namespace DCL.Tutorial
                 hudController?.minimapHud?.SetVisibility(true);
                 hudController?.profileHud?.SetVisibility(true);
             }
-        }
-
-        private void ModifyCullingSettings()
-        {
-            var cullingSettings = Environment.i.platform.cullingController.GetSettingsCopy();
-            cullingSettings.ignoredLayersMask |= tutorialLayerMask;
-            Environment.i.platform.cullingController.SetSettings(cullingSettings);
-        }
-
-        private void RestoreCullingSettings()
-        {
-            var cullingSettings = Environment.i.platform.cullingController.GetSettingsCopy();
-            cullingSettings.ignoredLayersMask &= ~tutorialLayerMask;
-            Environment.i.platform.cullingController.SetSettings(cullingSettings);
         }
     }
 }
