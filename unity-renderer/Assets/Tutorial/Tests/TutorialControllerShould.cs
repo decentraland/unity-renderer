@@ -1,9 +1,11 @@
 using DCL.Tutorial;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
+using static DCL.Tutorial.TutorialController;
 
 namespace DCL.Tutorial_Tests
 {
@@ -19,6 +21,42 @@ namespace DCL.Tutorial_Tests
 
         [TearDown]
         public void TearDown() { DestroyTutorial(); }
+
+        [Test]
+        public void SetTutorialEnabledCorrectly()
+        {
+            // Arrange
+            bool fromDeepLink = false;
+            bool enableNewTutorialCamera = false;
+            TutorialType tutorialType = TutorialType.Initial;
+            bool userAlreadyDidTheTutorial = false;
+
+            tutorialController.isRunning = false;
+            DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
+            tutorialController.userAlreadyDidTheTutorial = true;
+            CommonScriptableObjects.allUIHidden.Set(true);
+            CommonScriptableObjects.tutorialActive.Set(false);
+            tutorialController.openedFromDeepLink = true;
+            tutorialController.tutorialType = TutorialType.BuilderInWorld;
+            NotificationsController.disableWelcomeNotification = false;
+
+            bool onTutorialEnabledInvoked = false;
+            tutorialController.OnTutorialEnabled += () => onTutorialEnabledInvoked = true;
+
+            // Act
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+
+            // Assert
+            Assert.IsTrue(tutorialController.isRunning);
+            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+            Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
+            Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
+            Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(Convert.ToBoolean(fromDeepLink), tutorialController.openedFromDeepLink);
+            Assert.AreEqual(tutorialType, tutorialController.tutorialType);
+            Assert.IsTrue(NotificationsController.disableWelcomeNotification);
+            Assert.IsTrue(onTutorialEnabledInvoked);
+        }
 
         [UnityTest]
         public IEnumerator ExecuteTutorialStepsFromGenesisPlazaCorrectly()
@@ -165,6 +203,7 @@ namespace DCL.Tutorial_Tests
             }
 
             GameObject.Destroy(tutorialController.tutorialContainerGO);
+            tutorialController.Dispose();
             currentSteps.Clear();
             currentStepIndex = 0;
         }
