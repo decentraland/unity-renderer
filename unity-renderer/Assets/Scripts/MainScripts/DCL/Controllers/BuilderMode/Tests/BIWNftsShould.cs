@@ -55,8 +55,8 @@ public class BIWNftsShould : IntegrationTestSuite
     [Test]
     public void NftComponent()
     {
+        BIWTestHelper.CreateNFT();
         CatalogItem catalogItem = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
-
 
         BIWEntity biwEntity = new BIWEntity();
         biwEntity.Init(scene.entities[ENTITY_ID], null);

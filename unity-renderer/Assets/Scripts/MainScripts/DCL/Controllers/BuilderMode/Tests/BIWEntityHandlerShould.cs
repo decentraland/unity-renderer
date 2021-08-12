@@ -475,6 +475,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
         entity.isLocked = false;
         entity.isVoxel = false;
 
+        BIWCatalogManager.ClearCatalog();
         entityHandler.Dispose();
 
         yield return base.TearDown();
