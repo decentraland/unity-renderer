@@ -10,6 +10,11 @@ namespace DCL
 {
     public static class CombineLayerUtils
     {
+        // This heuristic forces double-sided opaque objects to have backface culling.
+        // As many wearables are incorrectly modeled as double-sided, this greatly increases
+        // the cases of avatars rendered with one draw call. Temporarily disabled until some wearables are fixed.
+        private static bool ENABLE_CULL_OPAQUE_HEURISTIC = false;
+
         private static bool VERBOSE = false;
         private const int MAX_TEXTURE_ID_COUNT = 12;
         private static ILogger logger = new Logger(Debug.unityLogger.logHandler) { filterLogType = VERBOSE ? LogType.Log : LogType.Warning };
@@ -197,7 +202,16 @@ namespace DCL
             {
                 // For opaque renderers, we replace the CullOff value by CullBack to reduce group count,
                 // This workarounds many opaque wearables that use Culling Off by mistake. 
-                var getCullModeFunc = byOpaqueMode.Key ? new Func<SkinnedMeshRenderer, CullMode>(GetCullModeWithoutCullOff) : new Func<SkinnedMeshRenderer, CullMode>(GetCullMode);
+                Func<SkinnedMeshRenderer, CullMode> getCullModeFunc = null;
+
+                if ( ENABLE_CULL_OPAQUE_HEURISTIC )
+                {
+                    getCullModeFunc = byOpaqueMode.Key ? new Func<SkinnedMeshRenderer, CullMode>(GetCullModeWithoutCullOff) : GetCullMode;
+                }
+                else
+                {
+                    getCullModeFunc = GetCullMode;
+                }
 
                 var rendererByCullingMode = byOpaqueMode.GroupBy( getCullModeFunc );
 
