@@ -101,7 +101,7 @@ namespace DCL
             renderer.bones = bonesContainer.bones;
             renderer.rootBone = rootBone;
             renderer.sharedMaterials = output.materials;
-            renderer.quality = SkinQuality.Bone1;
+            renderer.quality = SkinQuality.Bone4;
             renderer.updateWhenOffscreen = false;
             renderer.skinnedMotionVectors = false;
             renderer.enabled = true;
