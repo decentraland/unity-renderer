@@ -4,27 +4,36 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class AvatarLODController : IDisposable
+    public interface IAvatarLODController : IDisposable
+    {
+        void SetAvatarState();
+        void SetSimpleAvatar();
+        void SetImpostorState();
+    }
+
+    public class AvatarLODController : IAvatarLODController
     {
         private const float TRANSITION_DURATION = 0.25f;
-        private Player player;
+        internal Player player;
 
-        private float avatarFade;
-        private float impostorFade;
-        private float targetAvatarFade;
-        private float targetImpostorFade;
+        internal float avatarFade;
+        internal float impostorFade;
+        internal float targetAvatarFade;
+        internal float targetImpostorFade;
 
-        private bool SSAOEnabled;
-        private bool facialFeaturesEnabled;
+        internal bool SSAOEnabled;
+        internal bool facialFeaturesEnabled;
 
-        private Coroutine currentTransition = null;
+        internal Coroutine currentTransition = null;
 
         public AvatarLODController(Player player)
         {
             this.player = player;
             avatarFade = 1;
+            targetAvatarFade = 1;
             impostorFade = 0;
-            SSAOEnabled = false;
+            targetImpostorFade = 0;
+            SSAOEnabled = true;
             facialFeaturesEnabled = true;
             if (player?.renderer == null)
                 return;
@@ -61,7 +70,7 @@ namespace DCL
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
-            if (currentTransition != null && Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
+            if (Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
                 return;
 
             targetAvatarFade = newTargetAvatarFade;
@@ -70,7 +79,7 @@ namespace DCL
             currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
         }
 
-        private IEnumerator Transition(float targetAvatarFade, float targetImpostorFade)
+        internal IEnumerator Transition(float targetAvatarFade, float targetImpostorFade, float transitionDuration = TRANSITION_DURATION)
         {
             while (!player.renderer.isReady)
             {
@@ -84,8 +93,8 @@ namespace DCL
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
             {
-                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / TRANSITION_DURATION * Time.deltaTime);
-                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / TRANSITION_DURATION * Time.deltaTime);
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / transitionDuration * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / transitionDuration * Time.deltaTime);
                 player.renderer.SetAvatarFade(avatarFade);
                 player.renderer.SetImpostorFade(impostorFade);
                 yield return null;
