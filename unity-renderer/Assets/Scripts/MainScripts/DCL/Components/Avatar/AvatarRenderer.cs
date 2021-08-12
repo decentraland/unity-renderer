@@ -442,9 +442,7 @@ namespace DCL
             bool mergeSuccess = MergeAvatar();
 
             if ( !mergeSuccess )
-            {
                 loadSoftFailed = true;
-            }
 
             // TODO(Brian): The loadSoftFailed flow is too convoluted--you never know which objects are nulled or empty
             //              before reaching this branching statement. The failure should be caught with a throw or other

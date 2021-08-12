@@ -116,9 +116,7 @@ namespace DCL
                 return;
 
             if (renderer.sharedMesh != null)
-            {
                 Object.Destroy(renderer.sharedMesh);
-            }
 
             if ( renderer.sharedMaterials != null)
             {

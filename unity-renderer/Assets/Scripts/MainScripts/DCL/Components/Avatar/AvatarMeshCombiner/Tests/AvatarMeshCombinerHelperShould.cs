@@ -154,7 +154,6 @@ public class AvatarMeshCombinerHelperShould
         renderersToCombine[3] = origSkr1;
     }
 
-
     [Test]
     public void ConfigureFinalRendererSuccessfully()
     {

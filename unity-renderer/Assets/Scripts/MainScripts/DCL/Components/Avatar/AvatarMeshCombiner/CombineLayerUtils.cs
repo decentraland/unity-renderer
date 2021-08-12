@@ -65,7 +65,6 @@ namespace DCL
                 return null;
             }
 
-
             result = result.Where( x => x.renderers != null && x.renderers.Count > 0 ).ToList();
 
             if ( VERBOSE )
@@ -284,13 +283,10 @@ namespace DCL
             if (material == null)
                 return true;
 
-            if (material.HasProperty(ShaderUtils.ZWrite) &&
-                (int) material.GetFloat(ShaderUtils.ZWrite) == 0)
-            {
-                return false;
-            }
+            bool isTransparent = material.HasProperty(ShaderUtils.ZWrite) &&
+                                 (int) material.GetFloat(ShaderUtils.ZWrite) == 0;
 
-            return true;
+            return !isTransparent;
         }
 
         /// <summary>
@@ -303,7 +299,6 @@ namespace DCL
             return IsOpaque(renderer.sharedMaterials[0]);
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -315,7 +310,6 @@ namespace DCL
             return result;
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -325,7 +319,6 @@ namespace DCL
         {
             return GetCullMode(renderer.sharedMaterials[0]);
         }
-
 
         /// <summary>
         /// 
