@@ -78,6 +78,7 @@ public class BIWNftsShould : IntegrationTestSuite
 
     protected override IEnumerator TearDown()
     {
+        DataStore.i.builderInWorld.catalogItemDict.Clear();
         BIWCatalogManager.ClearCatalog();
         BIWNFTController.i.ClearNFTs();
         yield return base.TearDown();

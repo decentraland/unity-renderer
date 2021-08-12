@@ -476,6 +476,7 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
 
     protected override IEnumerator TearDown()
     {
+        DataStore.i.builderInWorld.catalogItemDict.Clear();
         AssetCatalogBridge.i.ClearCatalog();
         DataStore.i.builderInWorld.landsWithAccess.Set(new LandWithAccess[0]);
         mainController.Dispose();
