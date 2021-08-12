@@ -39,7 +39,7 @@ namespace DCL
 
         protected override void OnAfterLoadOrReuse()
         {
-            if (asset.container != null)
+            if (asset?.container != null)
             {
                 settings.ApplyAfterLoad(asset.container.transform);
             }
@@ -93,9 +93,6 @@ namespace DCL
         {
             if (!library.Add(asset))
                 return false;
-
-            // if (!asset.visible)
-            //     return true;
 
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
