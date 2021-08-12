@@ -9,6 +9,7 @@ namespace DCL
         void SetAvatarState();
         void SetSimpleAvatar();
         void SetImpostorState();
+        void SetInvisible();
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -66,6 +67,15 @@ namespace DCL
 
             SetAvatarFeatures(false, false);
             StartTransition(0, 1);
+        }
+
+        public void SetInvisible()
+        {
+            if (player?.renderer == null)
+                return;
+
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 0);
         }
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
