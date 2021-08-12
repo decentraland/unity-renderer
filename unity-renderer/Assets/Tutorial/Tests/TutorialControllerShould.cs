@@ -351,6 +351,26 @@ namespace DCL.Tutorial_Tests
             });
         }
 
+        [UnityTest]
+        public IEnumerator ExecuteAvatarMovementStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(1, () =>
+            {
+                TutorialStep_AvatarMovement step = (TutorialStep_AvatarMovement)tutorialController.runningStep;
+                step.timeRunning = step.minRunningTime;
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteBasicControlsStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(2, () =>
+            {
+                TutorialStep_BasicControls step = (TutorialStep_BasicControls)tutorialController.runningStep;
+                step.stepIsFinished = true;
+            });
+        }
+
         private void CreateAndConfigureTutorial()
         {
             tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
@@ -533,6 +553,7 @@ namespace DCL.Tutorial_Tests
             // Arrange
             TutorialStep stepToTest = tutorialController.configuration.stepsOnGenesisPlaza[stepIndex];
             ClearCurrentSteps();
+            tutorialController.configuration.teacherRawImage = null;
             tutorialController.configuration.stepsOnGenesisPlaza.Add(stepToTest);
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
@@ -545,12 +566,14 @@ namespace DCL.Tutorial_Tests
             Coroutine stepCoroutine = CoroutineStarter.Start(tutorialController.StartTutorialFromStep(0));
 
             // Assert
-            yield return new WaitUntil(() => tutorialController.runningStep != null);
+            yield return new WaitUntil(() => tutorialController.runningStep != null, 10f);
             Assert.IsNotNull(tutorialController.runningStep);
 
             actionToFinishStep.Invoke();
-            yield return new WaitUntil(() => tutorialController.runningStep == null);
+            yield return new WaitUntil(() => tutorialController.runningStep == null, 10f);
             Assert.IsNull(tutorialController.runningStep);
+
+            CoroutineStarter.Stop(stepCoroutine);
         }
     }
 }

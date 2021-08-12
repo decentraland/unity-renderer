@@ -14,7 +14,7 @@ namespace DCL.Tutorial
         [SerializeField] AudioEvent audioEventSuccess;
         [SerializeField] Button okButton;
 
-        private bool stepIsFinished = false;
+        internal bool stepIsFinished = false;
         private int defaultTeacherCanvasSortOrder;
 
         public override void OnStepStart()
