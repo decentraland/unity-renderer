@@ -16,7 +16,7 @@ public class BIWGodMode : BIWMode
     private float initialEagleCameraLookAtHeight = 0f;
 
     private float snapDragFactor = 5f;
-    private FreeCameraMovement freeCameraController;
+    internal IFreeCameraMovement freeCameraController;
 
     private CameraController cameraController;
     private Transform lookAtTransform;
@@ -30,22 +30,22 @@ public class BIWGodMode : BIWMode
 
     private IParcelScene sceneToEdit;
 
-    private bool isPlacingNewObject = false;
-    private bool mouseMainBtnPressed = false;
-    private bool mouseSecondaryBtnPressed = false;
-    private bool isSquareMultiSelectionInputActive = false;
-    private bool isMouseDragging = false;
-    private bool changeSnapTemporaryButtonPressed = false;
+    internal bool isPlacingNewObject = false;
+    internal bool mouseMainBtnPressed = false;
+    internal bool mouseSecondaryBtnPressed = false;
+    internal bool isSquareMultiSelectionInputActive = false;
+    internal bool isMouseDragging = false;
+    internal bool changeSnapTemporaryButtonPressed = false;
 
-    private bool wasGizmosActive = false;
-    private bool isDraggingStarted = false;
-    private bool canDragSelectedEntities = false;
+    internal bool wasGizmosActive = false;
+    internal bool isDraggingStarted = false;
+    internal bool canDragSelectedEntities = false;
 
     private bool activateCamera = true;
     private CameraMode.ModeId avatarCameraModeBeforeEditing;
 
-    private Vector3 lastMousePosition;
-    private Vector3 dragStartedPoint;
+    internal Vector3 lastMousePosition;
+    internal Vector3 dragStartedPoint;
 
     public const float RAYCAST_MAX_DISTANCE = 10000f;
 
@@ -109,6 +109,9 @@ public class BIWGodMode : BIWMode
     public override void Dispose()
     {
         base.Dispose();
+
+        isPlacingNewObject = false;
+
         gizmoManager.OnGizmoTransformObjectEnd -= OnGizmosTransformEnd;
         gizmoManager.OnGizmoTransformObjectStart -= OnGizmosTransformStart;
 
@@ -194,7 +197,7 @@ public class BIWGodMode : BIWMode
         SetSnapActive(!isSnapActiveValue);
     }
 
-    private void EntitiesTransfromByGizmos(Vector3 transformValue)
+    internal void EntitiesTransfromByGizmos(Vector3 transformValue)
     {
         if (gizmoManager.GetSelectedGizmo() != BIWSettings.ROTATE_GIZMO_NAME)
             return;
@@ -212,7 +215,7 @@ public class BIWGodMode : BIWMode
 
         TransformActionStarted(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
         editionGO.transform.position = WorldStateUtils.ConvertSceneToUnityPosition(newPosition, sceneToEdit);
-        UpdateGizmosToSelectedEntities();
+        gizmoManager.SetSelectedEntities(editionGO.transform, selectedEntities);
         TransformActionEnd(selectedEntities[0].rootEntity, BIWSettings.TRANSLATE_GIZMO_NAME);
         ActionFinish(BIWCompleteAction.ActionType.MOVE);
         entityHandler.ReportTransform(true);
@@ -252,16 +255,25 @@ public class BIWGodMode : BIWMode
         saveController.TryToSave();
     }
 
-    public void UpdateGizmosToSelectedEntities()
+    internal void DragEditionGameObject(Vector3 mousePosition)
     {
-        List<BIWEntity> editableEntities = new List<BIWEntity>();
-        foreach (BIWEntity entity in selectedEntities)
+        Vector3 currentPoint = raycastController.GetFloorPointAtMouse(mousePosition);
+        Vector3 initialEntityPosition = editionGO.transform.position;
+
+        if (isSnapActiveValue)
         {
-            editableEntities.Add(entity);
+            currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
+            initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
         }
 
-        gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
+        Vector3 move = currentPoint - dragStartedPoint;
+        Vector3 destination = initialEntityPosition + move;
+
+        editionGO.transform.position = destination;
+        dragStartedPoint = currentPoint;
     }
+
+    #region Mouse
 
     public override void MouseClickDetected()
     {
@@ -275,9 +287,7 @@ public class BIWGodMode : BIWMode
         base.MouseClickDetected();
     }
 
-    #region Mouse
-
-    private void OnInputMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
+    internal void OnInputMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
     {
         if (Vector3.Distance(lastMousePosition, mousePosition) <= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG && !isMouseDragging)
             return;
@@ -293,24 +303,10 @@ public class BIWGodMode : BIWMode
             StarDraggingSelectedEntities();
 
         if (canDragSelectedEntities)
-        {
-            Vector3 currentPoint = raycastController.GetFloorPointAtMouse(mousePosition);
-            Vector3 initialEntityPosition = editionGO.transform.position;
-
-            if (isSnapActiveValue)
-            {
-                currentPoint = GetPositionRoundedToSnapFactor(currentPoint);
-                initialEntityPosition = GetPositionRoundedToSnapFactor(initialEntityPosition);
-            }
-
-            Vector3 move = currentPoint - dragStartedPoint;
-            Vector3 destination = initialEntityPosition + move;
-            editionGO.transform.position = destination;
-            dragStartedPoint = currentPoint;
-        }
+            DragEditionGameObject(mousePosition);
     }
 
-    private Vector3 GetPositionRoundedToSnapFactor(Vector3 position)
+    internal Vector3 GetPositionRoundedToSnapFactor(Vector3 position)
     {
         position = new Vector3(
             Mathf.Round(position.x / snapDragFactor) * snapDragFactor,
@@ -320,7 +316,7 @@ public class BIWGodMode : BIWMode
         return position;
     }
 
-    private void OnInputMouseUpOnUi(int buttonID, Vector3 position)
+    internal void OnInputMouseUpOnUi(int buttonID, Vector3 position)
     {
         if (buttonID == 1)
         {
@@ -335,7 +331,7 @@ public class BIWGodMode : BIWMode
         isMouseDragging = false;
     }
 
-    private void OnInputMouseUp(int buttonID, Vector3 position)
+    internal void OnInputMouseUp(int buttonID, Vector3 position)
     {
         if (buttonID == 1)
         {
@@ -358,7 +354,7 @@ public class BIWGodMode : BIWMode
         isMouseDragging = false;
     }
 
-    void OnInputMouseDown(int buttonID, Vector3 position)
+    internal void OnInputMouseDown(int buttonID, Vector3 position)
     {
         lastMousePosition = position;
 
@@ -409,9 +405,9 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement; }
+    private bool CanCancelAction(Vector3 currentMousePosition) { return Vector3.Distance(lastMousePosition, currentMousePosition) <= BIWSettings.MOUSE_THRESHOLD_FOR_DRAG && !freeCameraController.HasBeenMovement(); }
 
-    private void StarDraggingSelectedEntities()
+    internal void StarDraggingSelectedEntities()
     {
         if (!entityHandler.IsPointerInSelectedEntity() ||
             gizmoManager.HasAxisHover())
@@ -429,7 +425,7 @@ public class BIWGodMode : BIWMode
         canDragSelectedEntities = true;
     }
 
-    void EndDraggingSelectedEntities()
+    internal void EndDraggingSelectedEntities()
     {
         if (wasGizmosActive && !isPlacingNewObject)
         {
@@ -588,13 +584,7 @@ public class BIWGodMode : BIWMode
     {
         base.SelectedEntity(selectedEntity);
 
-        List<BIWEntity> editableEntities = new List<BIWEntity>();
-        foreach (BIWEntity entity in selectedEntities)
-        {
-            editableEntities.Add(entity);
-        }
-
-        gizmoManager.SetSelectedEntities(editionGO.transform, editableEntities);
+        gizmoManager.SetSelectedEntities(editionGO.transform, selectedEntities);
 
         if (!isMultiSelectionActive && !selectedEntity.isNew)
             TryLookAtEntity(selectedEntity.rootEntity);
@@ -661,7 +651,7 @@ public class BIWGodMode : BIWMode
     {
         if (isModeActive)
         {
-            FocusGameObject(selectedEntities);
+            FocusEntities(selectedEntities);
             InputDone();
         }
     }
@@ -679,21 +669,24 @@ public class BIWGodMode : BIWMode
     public void LookAtEntity(IDCLEntity entity)
     {
         Vector3 pointToLook = entity.gameObject.transform.position;
-        if (entity.meshesInfo.renderers.Length > 0)
-        {
-            Vector3 midPointFromEntityMesh = Vector3.zero;
-            foreach (Renderer render in entity.renderers)
-            {
-                if (render == null)
-                    continue;
-                midPointFromEntityMesh += render.bounds.center;
-            }
-
-            midPointFromEntityMesh /= entity.renderers.Length;
-            pointToLook = midPointFromEntityMesh;
-        }
+        if (entity.meshesInfo != null && entity.meshesInfo.renderers.Length > 0)
+            pointToLook = CalculateEntityMidPoint(entity);
 
         freeCameraController.SmoothLookAt(pointToLook);
+    }
+
+    internal Vector3 CalculateEntityMidPoint(IDCLEntity entity)
+    {
+        Vector3 midPointFromEntityMesh = Vector3.zero;
+        foreach (Renderer render in entity.renderers)
+        {
+            if (render == null)
+                continue;
+            midPointFromEntityMesh += render.bounds.center;
+        }
+
+        midPointFromEntityMesh /= entity.renderers.Length;
+        return midPointFromEntityMesh;
     }
 
     #region Gizmos
@@ -759,9 +752,9 @@ public class BIWGodMode : BIWMode
 
     #endregion
 
-    public void FocusGameObject(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
+    public void FocusEntities(List<BIWEntity> entitiesToFocus) { freeCameraController.FocusOnEntities(entitiesToFocus); }
 
-    Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
+    internal Vector3 GetInitialCameraPosition(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         Vector3 direction = (parcelScene.GetSceneTransform().position - middlePoint).normalized;
@@ -771,13 +764,13 @@ public class BIWGodMode : BIWMode
                + Vector3.up * initialEagleCameraHeight;
     }
 
-    void SetLookAtObject(IParcelScene parcelScene)
+    internal void SetLookAtObject(IParcelScene parcelScene)
     {
         Vector3 middlePoint = BIWUtils.CalculateUnityMiddlePoint(parcelScene);
         lookAtTransform.position = middlePoint + Vector3.up * initialEagleCameraLookAtHeight;
     }
 
-    void SetEditObjectAtMouse()
+    internal void SetEditObjectAtMouse()
     {
         if (raycastController.RayCastFloor(out Vector3 destination))
         {
@@ -794,9 +787,9 @@ public class BIWGodMode : BIWMode
         }
     }
 
-    private void ResetCamera() { freeCameraController.ResetCameraPosition(); }
+    internal void ResetCamera() { freeCameraController.ResetCameraPosition(); }
 
-    private void TakeSceneScreenshotForPublish()
+    internal void TakeSceneScreenshotForPublish()
     {
         entityHandler.DeselectEntities();
 

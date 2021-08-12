@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,31 +6,33 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float SIMPLE_AVATAR_DISTANCE = 10f;
+        internal const float SIMPLE_AVATAR_DISTANCE = 10f;
 
-        private readonly Dictionary<string, AvatarLODController> lodControllers = new Dictionary<string, AvatarLODController>();
+        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
         private Vector3 cameraForward;
         private Vector3 cameraPosition;
         private Vector3 mainPlayerPosition;
-        private bool enabled;
+        internal bool enabled;
 
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            enabled = config.features.enableAvatarLODs;
-                            if (!enabled)
-                                return;
+                        .Then(Initialize);
+        }
 
-                            foreach (var keyValuePair in otherPlayers.Get())
-                            {
-                                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
-                            }
-                            otherPlayers.OnAdded += RegisterAvatar;
-                            otherPlayers.OnRemoved += UnregisterAvatar;
-                        });
+        internal void Initialize(KernelConfigModel config)
+        {
+            enabled = config.features.enableAvatarLODs;
+            if (!enabled)
+                return;
+
+            foreach (var keyValuePair in otherPlayers.Get())
+            {
+                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
+            }
+            otherPlayers.OnAdded += RegisterAvatar;
+            otherPlayers.OnRemoved += UnregisterAvatar;
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -37,8 +40,10 @@ namespace DCL
             if (!enabled || lodControllers.ContainsKey(id))
                 return;
 
-            lodControllers.Add(id, new AvatarLODController(player));
+            lodControllers.Add(id, CreateLodController(player));
         }
+
+        protected internal virtual IAvatarLODController CreateLodController(Player player) => new AvatarLODController(player);
 
         public void UnregisterAvatar(string id, Player player)
         {
@@ -62,7 +67,7 @@ namespace DCL
             UpdateLODsBillboard();
         }
 
-        private void UpdateLODsBillboard()
+        internal void UpdateLODsBillboard()
         {
             foreach (var kvp in lodControllers)
             {
@@ -79,13 +84,13 @@ namespace DCL
             }
         }
 
-        private void UpdateAllLODs()
+        internal void UpdateAllLODs()
         {
-            SortedList<float, AvatarLODController> renderedAvatars = new SortedList<float, AvatarLODController>();
+            SortedList<float, IAvatarLODController> renderedAvatars = new SortedList<float, IAvatarLODController>();
             foreach (var avatarKVP in lodControllers)
             {
-                var featureController = avatarKVP.Value;
-                var position = otherPlayers[avatarKVP.Key].worldPosition;
+                IAvatarLODController featureController = avatarKVP.Value;
+                Vector3 position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(mainPlayerPosition, position);
 
                 if (IsBeingRendered(position, cameraForward, cameraPosition))
@@ -106,7 +111,7 @@ namespace DCL
             int maxNonLODAvatars = DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
             for (var i = 0; i < count; i++)
             {
-                AvatarLODController currentAvatar = renderedAvatars.Values[i];
+                IAvatarLODController currentAvatar = renderedAvatars.Values[i];
                 bool isLOD = i >= maxNonLODAvatars;
                 if (isLOD)
                 {
@@ -128,9 +133,9 @@ namespace DCL
 
         public void Dispose()
         {
-            foreach (AvatarLODController avatarFeaturesController in lodControllers.Values)
+            foreach (IAvatarLODController lodController in lodControllers.Values)
             {
-                avatarFeaturesController.Dispose();
+                lodController.Dispose();
             }
 
             otherPlayers.OnAdded -= RegisterAvatar;

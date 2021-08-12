@@ -4,7 +4,25 @@ using UnityEngine;
 
 namespace DCL.Camera
 {
-    public class FreeCameraMovement : CameraStateBase
+    public interface IFreeCameraMovement
+    {
+        GameObject gameObject { get; }
+        delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
+        void FocusOnEntities(List<BIWEntity> entitiesToFocus);
+        void SmoothLookAt(Vector3 position);
+        void StartDectectingMovement();
+        void StopDetectingMovement();
+        bool HasBeenMovement();
+        void SetCameraCanMove(bool canMove);
+        void SetPosition(Vector3 position);
+        void LookAt(Transform transformToLookAt);
+        void SetResetConfiguration(Vector3 position, Transform lookAt);
+        void ResetCameraPosition();
+        void TakeSceneScreenshot(OnSnapshotsReady onSuccess);
+        void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess);
+    }
+
+    public class FreeCameraMovement : CameraStateBase, IFreeCameraMovement
     {
         private const float CAMERA_ANGLE_THRESHOLD = 0.01f;
         private const float CAMERA_PAN_THRESHOLD = 0.001f;
@@ -114,8 +132,6 @@ namespace DCL.Camera
         private float cameraPanAdvance;
         private float cameraLookAdvance;
 
-        public delegate void OnSnapshotsReady(Texture2D sceneSnapshot);
-
         private void Awake()
         {
             BIWInputWrapper.OnMouseDrag += MouseDrag;
@@ -180,7 +196,7 @@ namespace DCL.Camera
             hasBeenMovement = false;
         }
 
-        public bool HasBeenMovement => hasBeenMovement;
+        public bool HasBeenMovement() { return hasBeenMovement; }
 
         public void StopDetectingMovement() { isDetectingMovement = false; }
 
@@ -509,9 +525,9 @@ namespace DCL.Camera
             direction = Vector3.zero;
         }
 
-        public void TakeSceneScreenshot(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
+        public void TakeSceneScreenshot(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotCoroutine(onSuccess)); }
 
-        private IEnumerator TakeSceneScreenshotCoroutine(OnSnapshotsReady callback)
+        private IEnumerator TakeSceneScreenshotCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {
             var current = camera.targetTexture;
             camera.targetTexture = null;
@@ -523,9 +539,9 @@ namespace DCL.Camera
             callback?.Invoke(sceneScreenshot);
         }
 
-        public void TakeSceneScreenshotFromResetPosition(OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
+        public void TakeSceneScreenshotFromResetPosition(IFreeCameraMovement.OnSnapshotsReady onSuccess) { StartCoroutine(TakeSceneScreenshotFromResetPositionCoroutine(onSuccess)); }
 
-        private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(OnSnapshotsReady callback)
+        private IEnumerator TakeSceneScreenshotFromResetPositionCoroutine(IFreeCameraMovement.OnSnapshotsReady callback)
         {
             // Store current camera position/direction
             Vector3 currentPos = transform.position;
