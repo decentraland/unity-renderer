@@ -4,3 +4,5 @@
 [assembly: InternalsVisibleTo("AvatarShapeVisualTests")]
 [assembly: InternalsVisibleTo("AvatarShapeTests")]
 [assembly: InternalsVisibleTo("AvatarModifiersTest")]
+[assembly: InternalsVisibleTo("AvatarsLODControllerTests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] //Needed for nsubstitute
