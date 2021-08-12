@@ -89,11 +89,11 @@ namespace DCL.Camera
         private bool isAdvancingUp = false;
         private bool isAdvancingDown = false;
 
-        private bool isDetectingMovement = false;
-        private bool hasBeenMovement = false;
+        internal bool isDetectingMovement = false;
+        internal bool hasBeenMovement = false;
 
-        private bool isPanCameraActive = false;
-        private bool isMouseRightClickDown = false;
+        internal bool isPanCameraActive = false;
+        internal bool isMouseRightClickDown = false;
 
         private Coroutine smoothLookAtCor;
         private Coroutine smoothFocusOnTargetCor;
@@ -200,7 +200,7 @@ namespace DCL.Camera
 
         public void StopDetectingMovement() { isDetectingMovement = false; }
 
-        private void OnInputMouseUp(int buttonId, Vector3 mousePosition)
+        internal void OnInputMouseUp(int buttonId, Vector3 mousePosition)
         {
             if (buttonId != 1)
                 return;
@@ -208,7 +208,7 @@ namespace DCL.Camera
             isMouseRightClickDown = false;
         }
 
-        private void OnInputMouseDown(int buttonId, Vector3 mousePosition)
+        internal void OnInputMouseDown(int buttonId, Vector3 mousePosition)
         {
             if (buttonId != 1)
                 return;
