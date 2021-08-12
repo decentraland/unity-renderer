@@ -73,7 +73,7 @@ namespace DCL
             {
                 otherPlayers.TryGetValue(kvp.Key, out Player player);
 
-                if (!IsBeingRendered(player.worldPosition, cameraForward, cameraPosition))
+                if (!IsBeingRendered(player.worldPosition))
                     continue;
 
                 Vector3 previousForward = player.forwardDirection;
@@ -93,7 +93,7 @@ namespace DCL
                 Vector3 position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(mainPlayerPosition, position);
 
-                if (IsBeingRendered(position, cameraForward, cameraPosition))
+                if (IsBeingRendered(position))
                 {
                     while (renderedAvatars.ContainsKey(distanceToPlayer))
                     {
@@ -129,7 +129,7 @@ namespace DCL
             renderedAvatars.Clear();
         }
 
-        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.25f; }
+        private bool IsBeingRendered(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.25f; }
 
         public void Dispose()
         {
