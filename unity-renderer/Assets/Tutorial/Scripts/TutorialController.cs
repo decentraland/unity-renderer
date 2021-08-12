@@ -48,7 +48,7 @@ namespace DCL.Tutorial
 
         public HUDController hudController { get => HUDController.i; }
 
-        public int currentStepIndex { get; private set; }
+        public int currentStepIndex { get; internal set; }
         public event Action OnTutorialEnabled;
         public event Action OnTutorialDisabled;
 
@@ -363,7 +363,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
+        internal void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
         {
             if (!renderingEnabled)
                 return;
@@ -527,6 +527,9 @@ namespace DCL.Tutorial
 
         private bool IsPlayerInsideGenesisPlaza()
         {
+            if (Environment.i.world == null)
+                return false;
+
             IWorldState worldState = Environment.i.world.state;
 
             if (worldState == null || worldState.currentSceneId == null)

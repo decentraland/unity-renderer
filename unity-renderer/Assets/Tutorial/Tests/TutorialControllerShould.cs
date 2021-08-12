@@ -22,8 +22,8 @@ namespace DCL.Tutorial_Tests
         [TearDown]
         public void TearDown() { DestroyTutorial(); }
 
-        [Test]
-        public void SetTutorialEnabledCorrectly()
+        [UnityTest]
+        public IEnumerator SetTutorialEnabledCorrectly()
         {
             // Arrange
             bool fromDeepLink = false;
@@ -46,6 +46,7 @@ namespace DCL.Tutorial_Tests
 
             // Act
             tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
+            yield return null;
 
             // Assert
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
@@ -274,6 +275,26 @@ namespace DCL.Tutorial_Tests
                 Assert.AreEqual(tutorialController.configuration.eagleCamInitPosition, tutorialController.configuration.eagleEyeCamera.transform.position);
         }
 
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void RenderingStateChangedCorrectly(bool debugRunTutorial)
+        {
+            // Arrange
+            tutorialController.configuration.debugRunTutorial = debugRunTutorial;
+            tutorialController.currentStepIndex = -1;
+            tutorialController.configuration.debugStartingStepIndex = 2;
+
+            // Act
+            tutorialController.OnRenderingStateChanged(true, false);
+
+            // Assert
+            if (debugRunTutorial)
+                Assert.AreEqual(tutorialController.configuration.debugStartingStepIndex, tutorialController.currentStepIndex);
+            else
+                Assert.AreEqual(0, tutorialController.currentStepIndex);
+        }
+
         private void CreateAndConfigureTutorial()
         {
             tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
@@ -303,6 +324,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.Dispose();
             currentSteps.Clear();
             currentStepIndex = 0;
+            tutorialController.configuration.debugRunTutorial = false;
         }
 
         private void ConfigureTutorialForGenesisPlaza()
