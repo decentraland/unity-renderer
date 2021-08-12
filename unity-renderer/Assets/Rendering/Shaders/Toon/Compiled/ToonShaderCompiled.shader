@@ -710,9 +710,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -723,17 +723,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -877,13 +875,13 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -891,8 +889,8 @@
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -1667,9 +1665,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -1680,17 +1678,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -1834,13 +1830,13 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -1848,8 +1844,8 @@
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -2314,9 +2310,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -2327,17 +2323,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -2368,9 +2362,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -2384,16 +2375,19 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -2829,9 +2823,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -2842,17 +2836,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -2883,9 +2875,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -2899,16 +2888,19 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -3377,9 +3369,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -3390,17 +3382,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -3432,9 +3422,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -3448,17 +3435,20 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -4137,9 +4127,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -4150,17 +4140,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -4300,18 +4288,18 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -4998,9 +4986,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -5011,17 +4999,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -5143,17 +5129,17 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -5936,9 +5922,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -5949,17 +5935,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -6103,13 +6087,13 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.NormalTS = IN.TangentSpaceNormal;
@@ -6117,8 +6101,8 @@
             surface.Metallic = 0;
             surface.Smoothness = 0.5;
             surface.Occlusion = 1;
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -6581,9 +6565,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -6594,17 +6578,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -6635,9 +6617,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -6651,16 +6630,19 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -7095,9 +7077,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -7108,17 +7090,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -7149,9 +7129,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -7165,16 +7142,19 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -7642,9 +7622,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -7655,17 +7635,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -7697,9 +7675,6 @@
         {
             SurfaceDescription surface = (SurfaceDescription)0;
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float4 _Property_3c68a252dd1b428097833fff51e05e23_Out_0 = _BaseColor;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
@@ -7713,17 +7688,20 @@
             SG_TextureSample_556dc6c40f462774daf8a2ff53e16c59(_Property_3c68a252dd1b428097833fff51e05e23_Out_0, _Property_b3cc6c9e7d30fa8b8f52f342b75722d6_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Color_1, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2);
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
             surface.NormalTS = IN.TangentSpaceNormal;
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -8402,9 +8380,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -8415,17 +8393,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -8565,18 +8541,18 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
+            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
             #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
             surface.Emission = (_Multiply_e524b054cb554b839508e0ecae2bcdc0_Out_2.xyz);
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 
@@ -9264,9 +9240,9 @@
             Out = In - DITHER_THRESHOLDS[index];
         }
 
-        void Unity_Saturate_float(float In, out float Out)
+        void Unity_Maximum_float(float A, float B, out float Out)
         {
-            Out = saturate(In);
+            Out = max(A, B);
         }
 
         struct Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15
@@ -9277,17 +9253,15 @@
         void SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(float Vector1_728be312cd144b50b9103a3b87da4af8, float Vector1_5b481b78f39f486db90c8087ed357ebc, Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 IN, out float Out_Alpha_1)
         {
             float _Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0 = Vector1_728be312cd144b50b9103a3b87da4af8;
-            float _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3;
-            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (0, 1), float2 (0, 2.5), _Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3);
+            float _Remap_ae7c0998fde54936a1530c2db7032989_Out_3;
+            Unity_Remap_float(_Property_15a5da1b6d094c86a5f73a47cc276eae_Out_0, float2 (1, 0), float2 (1, 2), _Remap_ae7c0998fde54936a1530c2db7032989_Out_3);
             float4 _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0 = float4(IN.ScreenPosition.xy / IN.ScreenPosition.w, 0, 0);
             float _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2;
-            Unity_Dither_float(_Remap_41d4ee6836b94db888662c5aef1c2e60_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
-            float _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1;
-            Unity_Saturate_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Saturate_674a4e2d82164d999608ef9e20878d49_Out_1);
-            float _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
-            float _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
-            Unity_Multiply_float(_Saturate_674a4e2d82164d999608ef9e20878d49_Out_1, _Property_2e3cae97aa994b23883ef4fbd868c401_Out_0, _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2);
-            Out_Alpha_1 = _Multiply_94d09c102f694e769fcf1ea08a2d3d15_Out_2;
+            Unity_Dither_float(_Remap_ae7c0998fde54936a1530c2db7032989_Out_3, _ScreenPosition_47285da6ef7e4b469803526d034e6408_Out_0, _Dither_94a23c22e9a147238d485f725a89e5ba_Out_2);
+            float _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0 = Vector1_5b481b78f39f486db90c8087ed357ebc;
+            float _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
+            Unity_Maximum_float(_Dither_94a23c22e9a147238d485f725a89e5ba_Out_2, _Property_098228832a2d43fdbacbbe9a888cb4e9_Out_0, _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2);
+            Out_Alpha_1 = _Maximum_f420bd3b32e54c1eaf4840515c8f77d5_Out_2;
         }
 
             // Graph Vertex
@@ -9409,17 +9383,17 @@
             float _Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0 = _DitherFade;
             #endif
             #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
-            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8;
-            _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8.ScreenPosition = IN.ScreenPosition;
-            float _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8, _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1);
-            #endif
-            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
             float _Property_273cd96e4bc15181af254590e2b70512_Out_0 = _Cutoff;
             #endif
+            #if defined(KEYWORD_PERMUTATION_0) || defined(KEYWORD_PERMUTATION_1) || defined(KEYWORD_PERMUTATION_2) || defined(KEYWORD_PERMUTATION_3) || defined(KEYWORD_PERMUTATION_4) || defined(KEYWORD_PERMUTATION_5) || defined(KEYWORD_PERMUTATION_6) || defined(KEYWORD_PERMUTATION_7) || defined(KEYWORD_PERMUTATION_8) || defined(KEYWORD_PERMUTATION_9) || defined(KEYWORD_PERMUTATION_10) || defined(KEYWORD_PERMUTATION_11) || defined(KEYWORD_PERMUTATION_12) || defined(KEYWORD_PERMUTATION_13) || defined(KEYWORD_PERMUTATION_14) || defined(KEYWORD_PERMUTATION_15)
+            Bindings_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15 _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c;
+            _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c.ScreenPosition = IN.ScreenPosition;
+            float _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
+            SG_ToonShaderDither_62690f6f58e2de540bbf8155f1e8cc15(_Property_6b35ac670faf4e3886f2b8ca78e83469_Out_0, _Property_273cd96e4bc15181af254590e2b70512_Out_0, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c, _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1);
+            #endif
             surface.BaseColor = (_FinalCombine_18a3c84d4498a188a6a77b7159cd568c_FinalColor_1.xyz);
-            surface.Alpha = _ToonShaderDither_1887b8337d844a9da0ff4296b796adb8_OutAlpha_1;
-            surface.AlphaClipThreshold = _Property_273cd96e4bc15181af254590e2b70512_Out_0;
+            surface.Alpha = _TextureSample_5719c665e8d35a839cfc3c6704e23233_Alpha_2;
+            surface.AlphaClipThreshold = _ToonShaderDither_2f4888bd7f624e2b9ddc99460d6a3c5c_OutAlpha_1;
             return surface;
         }
 

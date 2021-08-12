@@ -14,8 +14,9 @@ namespace DCL
 
     public class AvatarLODController : IAvatarLODController
     {
-        private const float TRANSITION_DURATION = 0.25f;
-        internal Player player;
+        private const float TRANSITION_DURATION = 0.5f;
+
+        internal readonly Player player;
 
         internal float avatarFade;
         internal float impostorFade;
@@ -103,8 +104,8 @@ namespace DCL
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
             {
-                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / transitionDuration * Time.deltaTime);
-                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / transitionDuration * Time.deltaTime);
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
                 player.renderer.SetAvatarFade(avatarFade);
                 player.renderer.SetImpostorFade(impostorFade);
                 yield return null;
