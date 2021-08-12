@@ -45,10 +45,11 @@ namespace DCL.Tutorial_Tests
             tutorialController.OnTutorialEnabled += () => onTutorialEnabledInvoked = true;
 
             // Act
-            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
             yield return null;
+            tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
 
             // Assert
+            Assert.IsTrue(tutorialController.isRunning);
             Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
             Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
@@ -102,6 +103,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(TutorialPath.FromGenesisPlaza, tutorialController.currentPath);
         }
 
         [Test]
@@ -126,6 +128,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(TutorialPath.FromDeepLink, tutorialController.currentPath);
         }
 
         [Test]
@@ -151,6 +154,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(tutorialController.tutorialReset);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(TutorialPath.FromResetTutorial, tutorialController.currentPath);
         }
 
         [Test]
@@ -176,6 +180,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(TutorialPath.FromUserThatAlreadyDidTheTutorial, tutorialController.currentPath);
         }
 
         [Test]
@@ -203,6 +208,7 @@ namespace DCL.Tutorial_Tests
             Assert.IsFalse(tutorialController.isRunning);
             Assert.IsNull(tutorialController.runningStep);
             Assert.IsFalse(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(TutorialPath.FromBuilderInWorld, tutorialController.currentPath);
         }
 
         [Test]
@@ -293,6 +299,48 @@ namespace DCL.Tutorial_Tests
                 Assert.AreEqual(tutorialController.configuration.debugStartingStepIndex, tutorialController.currentStepIndex);
             else
                 Assert.AreEqual(0, tutorialController.currentStepIndex);
+        }
+
+        [Test]
+        public void MoveTeacherCorrectly()
+        {
+            // Arrange
+            Vector3 toPosition = new Vector3(1, 1, 0);
+            Vector3 initialPosition = new Vector3(2, 2, 0);
+            tutorialController.configuration.teacherRawImage.rectTransform.position = initialPosition;
+
+            // Act
+            tutorialController.MoveTeacher(initialPosition, toPosition);
+
+            // Assert
+            Assert.AreNotEqual(initialPosition, tutorialController.configuration.teacherRawImage.rectTransform.position);
+        }
+
+        [Test]
+        public void MoreMenuRestartTutorialCorrectly()
+        {
+            // Arrange
+            tutorialController.tutorialReset = false;
+
+            // Act
+            tutorialController.MoreMenu_OnRestartTutorial();
+
+            // Assert
+            Assert.IsTrue(tutorialController.tutorialReset);
+        }
+
+        [Test]
+        public void RotateEagleEyeCameraCorrectly()
+        {
+            // Arrange
+            Quaternion initialRotation = new Quaternion(0, 0, 0, 0);
+            tutorialController.configuration.eagleEyeCamera.transform.rotation = initialRotation;
+
+            // Act
+            tutorialController.EagleEyeCameraRotation(3f);
+
+            // Assert
+            Assert.AreNotEqual(initialRotation, tutorialController.configuration.eagleEyeCamera.transform.rotation);
         }
 
         private void CreateAndConfigureTutorial()

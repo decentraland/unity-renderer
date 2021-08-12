@@ -484,7 +484,7 @@ namespace DCL.Tutorial
 
         private void SetUserTutorialStepAsCompleted(TutorialFinishStep finishStepType) { WebInterface.SaveUserTutorialStep(UserProfile.GetOwnUserProfile().tutorialStep | (int) finishStepType); }
 
-        private IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
+        internal IEnumerator MoveTeacher(Vector2 fromPosition, Vector2 toPosition)
         {
             if (configuration.teacherRawImage == null)
                 yield break;
@@ -514,7 +514,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void MoreMenu_OnRestartTutorial()
+        internal void MoreMenu_OnRestartTutorial()
         {
             SetTutorialDisabled();
             tutorialReset = true;
@@ -583,7 +583,7 @@ namespace DCL.Tutorial
             WebInterface.ReportAnalyticsEvent("tutorial skipped", properties);
         }
 
-        private IEnumerator EagleEyeCameraRotation(float rotationSpeed)
+        internal IEnumerator EagleEyeCameraRotation(float rotationSpeed)
         {
             while (true)
             {
