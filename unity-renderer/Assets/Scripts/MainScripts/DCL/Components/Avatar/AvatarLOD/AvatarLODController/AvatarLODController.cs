@@ -6,13 +6,6 @@ namespace DCL
 {
     public class AvatarLODController : IDisposable
     {
-        private enum LODState
-        {
-            LOD0,
-            LOD1,
-            LOD2
-        }
-
         private const float TRANSITION_DURATION = 0.25f;
         private Player player;
 
@@ -23,7 +16,7 @@ namespace DCL
 
         private bool SSAOEnabled;
         private bool facialFeaturesEnabled;
-        private LODState currentState = LODState.LOD0;
+
         private Coroutine currentTransition = null;
 
         public AvatarLODController(Player player)
@@ -41,10 +34,8 @@ namespace DCL
 
         public void SetAvatarState()
         {
-            if (currentState == LODState.LOD0 || player?.renderer == null)
+            if (player?.renderer == null)
                 return;
-
-            currentState = LODState.LOD0;
 
             SetAvatarFeatures(true, true);
             StartTransition(1, 0);
@@ -52,10 +43,8 @@ namespace DCL
 
         public void SetSimpleAvatar()
         {
-            if (currentState == LODState.LOD1 || player?.renderer == null)
+            if (player?.renderer == null)
                 return;
-
-            currentState = LODState.LOD1;
 
             SetAvatarFeatures(false, false);
             StartTransition(1, 0);
@@ -63,10 +52,8 @@ namespace DCL
 
         public void SetImpostorState()
         {
-            if (currentState == LODState.LOD2 || player?.renderer == null)
+            if (player?.renderer == null)
                 return;
-
-            currentState = LODState.LOD2;
 
             SetAvatarFeatures(false, false);
             StartTransition(0, 1);
@@ -74,7 +61,7 @@ namespace DCL
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
-            if (Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
+            if (currentTransition != null && Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
                 return;
 
             targetAvatarFade = newTargetAvatarFade;
