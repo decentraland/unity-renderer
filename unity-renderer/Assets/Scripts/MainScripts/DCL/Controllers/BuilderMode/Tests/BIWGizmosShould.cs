@@ -104,7 +104,6 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         gizmosController.SetGizmoType(BIWSettings.TRANSLATE_GIZMO_NAME);
-        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
         Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
@@ -113,9 +112,8 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestRotateGizmosType()
     {
-        //Arrange
+        //Act
         gizmosController.SetGizmoType(BIWSettings.ROTATE_GIZMO_NAME);
-        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
         Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
@@ -124,16 +122,41 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     [Test]
     public void TestScaleGizmosType()
     {
-        //Arrange
+        //Act
         gizmosController.SetGizmoType(BIWSettings.SCALE_GIZMO_NAME);
-        IBIWGizmos gizmo = gizmosController.activeGizmo;
 
         //Assert
         Assert.IsInstanceOf(typeof(IBIWGizmos), gizmo);
     }
 
+    [Test]
+    public void TestMouseDrag()
+    {
+        //Arrange
+        gizmosController.OnChangeTransformValue += OnChangeTransformValue;
+        gizmosController.isTransformingObject = true;
+
+        //Act
+        gizmosController.OnMouseDrag(1, Vector3.zero, 5f, 5f);
+    }
+
+    private void OnChangeTransformValue(Vector3 value) { Assert.AreEqual(value, Vector3.one * 5f); }
+
+    [Test]
+    public void TestMouseUp()
+    {
+        //Arrange
+        gizmosController.isTransformingObject = true;
+
+        //Act
+        gizmosController.OnMouseUp(0, Vector3.zero);
+
+        //Assert
+        Assert.IsFalse(gizmosController.isTransformingObject);
+    }
     protected override IEnumerator TearDown()
     {
+        gizmosController.OnChangeTransformValue -= OnChangeTransformValue;
         gizmosController.OnGizmoTransformObjectStart -= AssertGizmosType;
         gizmosController.OnGizmoTransformObjectEnd -= AssertGizmosType;
         GameObject.Destroy(mockedGameObject);
