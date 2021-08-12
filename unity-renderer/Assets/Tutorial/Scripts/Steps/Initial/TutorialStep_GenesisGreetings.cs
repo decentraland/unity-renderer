@@ -44,7 +44,7 @@ namespace DCL.Tutorial
                 tutorialController.hudController?.taskbarHud?.SetVisibility(false);
                 tutorialController.hudController?.profileHud?.SetBackpackButtonVisibility(false);
 
-                if (Environment.i != null)
+                if (Environment.i != null && Environment.i.world != null)
                 {
                     WebInterface.SendSceneExternalActionEvent(Environment.i.world.state.currentSceneId, "tutorial", "begin");
                 }
@@ -65,6 +65,6 @@ namespace DCL.Tutorial
             tutorialController.SetTeacherCanvasSortingOrder(defaultTeacherCanvasSortOrder);
         }
 
-        private void OnOkButtonClick() { stepIsFinished = true; }
+        internal void OnOkButtonClick() { stepIsFinished = true; }
     }
 }

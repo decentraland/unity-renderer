@@ -23,7 +23,7 @@ namespace DCL.Tutorial
         [SerializeField] internal InputAction_Hold noSkipInputAction;
 
         protected TutorialController tutorialController;
-        protected Animator stepAnimator;
+        internal Animator stepAnimator;
         protected MouseCatcher mouseCatcher;
         protected bool hideAnimationFinished = false;
         protected bool blockSkipActions = false;

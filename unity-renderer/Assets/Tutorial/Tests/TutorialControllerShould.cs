@@ -347,7 +347,8 @@ namespace DCL.Tutorial_Tests
         {
             yield return ExecuteAvatarSpecificTutorialStep(0, () =>
             {
-                ((TutorialStep_AvatarJumping)tutorialController.runningStep).jumpingInputAction.RaiseOnStarted();
+                TutorialStep_AvatarJumping step = (TutorialStep_AvatarJumping)tutorialController.runningStep;
+                step.jumpingInputAction.RaiseOnStarted();
             });
         }
 
@@ -367,7 +368,37 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(2, () =>
             {
                 TutorialStep_BasicControls step = (TutorialStep_BasicControls)tutorialController.runningStep;
-                step.stepIsFinished = true;
+                step.OnOkButtonClick();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteCameraStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(3, () =>
+            {
+                TutorialStep_Camera step = (TutorialStep_Camera)tutorialController.runningStep;
+                step.CameraMode_OnChange(CameraMode.ModeId.FirstPerson, CameraMode.ModeId.ThirdPerson);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteGenesisGreetingsStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(4, () =>
+            {
+                TutorialStep_GenesisGreetings step = (TutorialStep_GenesisGreetings)tutorialController.runningStep;
+                step.OnOkButtonClick();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteGenesisGreetingsAfterDeepLinkStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(5, () =>
+            {
+                TutorialStep_GenesisGreetingsAfterDeepLink step = (TutorialStep_GenesisGreetingsAfterDeepLink)tutorialController.runningStep;
+                step.OnOkButtonClick();
             });
         }
 
@@ -554,6 +585,7 @@ namespace DCL.Tutorial_Tests
             TutorialStep stepToTest = tutorialController.configuration.stepsOnGenesisPlaza[stepIndex];
             ClearCurrentSteps();
             tutorialController.configuration.teacherRawImage = null;
+            tutorialController.configuration.teacher = null;
             tutorialController.configuration.stepsOnGenesisPlaza.Add(stepToTest);
             tutorialController.tutorialType = TutorialType.Initial;
             tutorialController.userAlreadyDidTheTutorial = false;
@@ -568,8 +600,9 @@ namespace DCL.Tutorial_Tests
             // Assert
             yield return new WaitUntil(() => tutorialController.runningStep != null, 10f);
             Assert.IsNotNull(tutorialController.runningStep);
+            Component.Destroy(tutorialController.runningStep.stepAnimator);
 
-            actionToFinishStep.Invoke();
+            actionToFinishStep?.Invoke();
             yield return new WaitUntil(() => tutorialController.runningStep == null, 10f);
             Assert.IsNull(tutorialController.runningStep);
 
