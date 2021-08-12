@@ -27,11 +27,12 @@ namespace DCL.Tutorial_Tests
         {
             // Arrange
             bool fromDeepLink = false;
-            bool enableNewTutorialCamera = false;
+            bool enableNewTutorialCamera = true;
             TutorialType tutorialType = TutorialType.Initial;
             bool userAlreadyDidTheTutorial = false;
 
             tutorialController.isRunning = false;
+            tutorialController.configuration.eagleCamRotationActived = true;
             DataStore.i.virtualAudioMixer.sceneSFXVolume.Set(1f);
             tutorialController.userAlreadyDidTheTutorial = true;
             CommonScriptableObjects.allUIHidden.Set(true);
@@ -47,7 +48,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
 
             // Assert
-            Assert.IsTrue(tutorialController.isRunning);
+            Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
             Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
             Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
             Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
