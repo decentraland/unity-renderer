@@ -98,7 +98,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
             activeGizmo.SetSnapFactor(snapInfo);
     }
 
-    private void OnBeginDrag(BIWGizmosAxis hittedAxis)
+    internal void OnBeginDrag(BIWGizmosAxis hittedAxis)
     {
         isTransformingObject = true;
         activeGizmo = hittedAxis.GetGizmo();
@@ -107,14 +107,14 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
         OnGizmoTransformObjectStart?.Invoke(activeGizmo.GetGizmoType());
     }
 
-    private void OnDrag(Vector3 hitPoint, Vector2 mousePosition)
+    internal void OnDrag(Vector3 hitPoint, Vector2 mousePosition)
     {
         float value = activeGizmo.OnDrag(hitPoint, mousePosition);
         OnGizmoTransformObject?.Invoke(activeGizmo.GetGizmoType());
         OnChangeTransformValue?.Invoke(value * activeGizmo.GetActiveAxisVector());
     }
 
-    private void OnEndDrag()
+    internal void OnEndDrag()
     {
         activeGizmo.OnEndDrag();
         freeCameraMovement.SetCameraCanMove(true);
@@ -165,7 +165,7 @@ public class BIWGizmosController : BIWController, IBIWGizmosController
 
     public bool IsGizmoActive() { return activeGizmo != null; }
 
-    private bool RaycastHit(Ray ray, out Vector3 hitPoint)
+    internal bool RaycastHit(Ray ray, out Vector3 hitPoint)
     {
         if (activeGizmo != null)
             return activeGizmo.RaycastHit(ray, out hitPoint);
