@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,28 +6,30 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        private const float SIMPLE_AVATAR_DISTANCE = 10f;
+        internal const float SIMPLE_AVATAR_DISTANCE = 10f;
 
-        private readonly Dictionary<string, AvatarLODController> lodControllers = new Dictionary<string, AvatarLODController>();
+        internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
-        private bool enabled;
+        internal bool enabled;
 
         public AvatarsLODController()
         {
             KernelConfig.i.EnsureConfigInitialized()
-                        .Then(config =>
-                        {
-                            enabled = config.features.enableAvatarLODs;
-                            if (!enabled)
-                                return;
+                        .Then(Initialize);
+        }
 
-                            foreach (var keyValuePair in otherPlayers.Get())
-                            {
-                                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
-                            }
-                            otherPlayers.OnAdded += RegisterAvatar;
-                            otherPlayers.OnRemoved += UnregisterAvatar;
-                        });
+        internal void Initialize(KernelConfigModel config)
+        {
+            enabled = config.features.enableAvatarLODs;
+            if (!enabled)
+                return;
+
+            foreach (var keyValuePair in otherPlayers.Get())
+            {
+                RegisterAvatar(keyValuePair.Key, keyValuePair.Value);
+            }
+            otherPlayers.OnAdded += RegisterAvatar;
+            otherPlayers.OnRemoved += UnregisterAvatar;
         }
 
         public void RegisterAvatar(string id, Player player)
@@ -34,8 +37,10 @@ namespace DCL
             if (!enabled || lodControllers.ContainsKey(id))
                 return;
 
-            lodControllers.Add(id, new AvatarLODController(player));
+            lodControllers.Add(id, CreateLodController(player));
         }
+
+        protected internal virtual IAvatarLODController CreateLodController(Player player) => new AvatarLODController(player);
 
         public void UnregisterAvatar(string id, Player player)
         {
@@ -55,7 +60,7 @@ namespace DCL
             UpdateLODsBillboard();
         }
 
-        private void UpdateLODsBillboard()
+        internal void UpdateLODsBillboard()
         {
             foreach (var kvp in lodControllers)
             {
@@ -68,19 +73,19 @@ namespace DCL
             }
         }
 
-        private void UpdateAllLODs()
+        internal void UpdateAllLODs()
         {
-            SortedList<float, AvatarLODController> closeDistanceAvatars = new SortedList<float, AvatarLODController>();
+            SortedList<float, IAvatarLODController> closeDistanceAvatars = new SortedList<float, IAvatarLODController>();
             foreach (var avatarKVP in lodControllers)
             {
-                var featureController = avatarKVP.Value;
+                var lodController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
                 bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (isInLODDistance)
                 {
-                    featureController.SetImpostorState();
+                    lodController.SetImpostorState();
                 }
                 else
                 {
@@ -88,14 +93,14 @@ namespace DCL
                     {
                         distanceToPlayer += 0.0001f;
                     }
-                    closeDistanceAvatars.Add(distanceToPlayer, featureController);
+                    closeDistanceAvatars.Add(distanceToPlayer, lodController);
                 }
             }
 
             int closeDistanceAvatarsCount = closeDistanceAvatars.Count;
             for (var i = 0; i < closeDistanceAvatarsCount; i++)
             {
-                AvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
+                IAvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
                 if (isLOD)
                     currentAvatar.SetImpostorState();
@@ -111,9 +116,9 @@ namespace DCL
 
         public void Dispose()
         {
-            foreach (AvatarLODController avatarFeaturesController in lodControllers.Values)
+            foreach (IAvatarLODController lodController in lodControllers.Values)
             {
-                avatarFeaturesController.Dispose();
+                lodController.Dispose();
             }
 
             otherPlayers.OnAdded -= RegisterAvatar;
