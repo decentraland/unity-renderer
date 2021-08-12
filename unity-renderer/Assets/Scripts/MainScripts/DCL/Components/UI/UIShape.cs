@@ -153,11 +153,11 @@ namespace DCL.Components
 
         public UIShape()
         {
-            ScreenBridge.i.OnScreenResize += OnScreenResize;
+            DataStore.i.screen.size.OnChange += OnScreenResize;
             model = new Model(); 
         }
         
-        private void OnScreenResize() => RefreshAll();
+        private void OnScreenResize(Vector2Int current, Vector2Int previous) => RefreshAll();
 
         public override int GetClassId() { return (int) CLASS_ID.UI_IMAGE_SHAPE; }
 
@@ -441,8 +441,8 @@ namespace DCL.Components
             if (childHookRectTransform)
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
 
-            ScreenBridge.i.OnScreenResize -= OnScreenResize;
-            
+            DataStore.i.screen.size.OnChange -= OnScreenResize;
+
             base.Dispose();
         }
 

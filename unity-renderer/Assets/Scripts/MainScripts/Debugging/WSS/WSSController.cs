@@ -525,9 +525,6 @@ namespace DCL
                             case "ClearBots":
                                 DCL.Environment.i.platform.debugController.ClearBots();
                                 break;
-                            case "ForceScreenResize":
-                                ScreenBridge.i.ForceScreenResizeEvent();
-                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +
