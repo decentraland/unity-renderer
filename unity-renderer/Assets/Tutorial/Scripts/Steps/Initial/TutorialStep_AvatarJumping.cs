@@ -8,8 +8,14 @@ namespace DCL.Tutorial
     /// </summary>
     public class TutorialStep_AvatarJumping : TutorialStep
     {
-        [SerializeField] AudioEvent audioEventSuccess;
-        [SerializeField] InputAction_Hold jumpingInputAction;
+        [SerializeField] internal AudioEvent audioEventSuccess;
+        [SerializeField] internal InputAction_Hold jumpingInputAction;
+
+        public override void OnStepStart()
+        {
+            base.OnStepStart();
+            jumpingInputAction.RaiseOnFinished();
+        }
 
         public override IEnumerator OnStepExecute()
         {

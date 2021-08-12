@@ -15,7 +15,8 @@ MonoBehaviour:
   tutorialVersion: 3
   timeBetweenSteps: 0
   sendStats: 0
-  stepsOnGenesisPlaza: []
+  stepsOnGenesisPlaza:
+  - {fileID: 4410924681366832147, guid: 0e9002742ce819f4583733f5a29364ad, type: 3}
   stepsFromDeepLink: []
   stepsFromReset: []
   stepsFromBuilderInWorld: []

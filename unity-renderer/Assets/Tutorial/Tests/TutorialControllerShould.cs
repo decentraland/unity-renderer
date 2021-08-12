@@ -342,21 +342,34 @@ namespace DCL.Tutorial_Tests
             Assert.AreNotEqual(initialRotation, tutorialController.configuration.eagleEyeCamera.transform.rotation);
         }
 
+        [UnityTest]
+        public IEnumerator ExecuteAvatarJumpingStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(0, () =>
+            {
+                ((TutorialStep_AvatarJumping)tutorialController.runningStep).jumpingInputAction.RaiseOnStarted();
+            });
+        }
+
         private void CreateAndConfigureTutorial()
         {
             tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();
             tutorialConfigurator.configuration = ScriptableObject.Instantiate(Resources.Load<TutorialConfiguration>("TutorialConfigurationForTests"));
             tutorialConfigurator.ConfigureTutorial();
             tutorialController = tutorialConfigurator.tutorialController;
-            tutorialController.configuration.stepsOnGenesisPlaza.Clear();
-            tutorialController.configuration.stepsFromDeepLink.Clear();
-            tutorialController.configuration.stepsFromReset.Clear();
-            tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial.Clear();
             tutorialController.configuration.timeBetweenSteps = 0f;
             tutorialController.configuration.sendStats = false;
             tutorialController.configuration.debugRunTutorial = false;
             tutorialController.tutorialReset = false;
             tutorialController.userAlreadyDidTheTutorial = false;
+        }
+
+        private void ClearCurrentSteps()
+        {
+            tutorialController.configuration.stepsOnGenesisPlaza.Clear();
+            tutorialController.configuration.stepsFromDeepLink.Clear();
+            tutorialController.configuration.stepsFromReset.Clear();
+            tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial.Clear();
         }
 
         private void DestroyTutorial()
@@ -376,6 +389,8 @@ namespace DCL.Tutorial_Tests
 
         private void ConfigureTutorialForGenesisPlaza()
         {
+            ClearCurrentSteps();
+
             for (int i = 0; i < 5; i++)
             {
                 tutorialController.configuration.stepsOnGenesisPlaza.Add(CreateNewFakeStep());
@@ -395,6 +410,8 @@ namespace DCL.Tutorial_Tests
 
         private void ConfigureTutorialForDeepLink()
         {
+            ClearCurrentSteps();
+
             for (int i = 0; i < 5; i++)
             {
                 tutorialController.configuration.stepsFromDeepLink.Add(CreateNewFakeStep());
@@ -415,6 +432,8 @@ namespace DCL.Tutorial_Tests
 
         private void ConfigureTutorialForResetTutorial()
         {
+            ClearCurrentSteps();
+
             for (int i = 0; i < 5; i++)
             {
                 tutorialController.configuration.stepsFromReset.Add(CreateNewFakeStep());
@@ -434,6 +453,8 @@ namespace DCL.Tutorial_Tests
 
         private void ConfigureTutorialForUserThatAlreadyDidTheTutorial()
         {
+            ClearCurrentSteps();
+
             for (int i = 0; i < 5; i++)
             {
                 tutorialController.configuration.stepsFromUserThatAlreadyDidTheTutorial.Add(CreateNewFakeStep());
@@ -451,6 +472,8 @@ namespace DCL.Tutorial_Tests
 
         private void ConfigureTutorialForBuilderInWorld()
         {
+            ClearCurrentSteps();
+
             for (int i = 0; i < 5; i++)
             {
                 tutorialController.configuration.stepsFromBuilderInWorld.Add(CreateNewFakeStep());
@@ -503,6 +526,31 @@ namespace DCL.Tutorial_Tests
             Assert.IsNotNull(tutorialController.runningStep);
             Assert.IsTrue(currentSteps[currentStepIndex] == tutorialController.runningStep);
             Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
+        }
+
+        private IEnumerator ExecuteAvatarSpecificTutorialStep(int stepIndex, Action actionToFinishStep)
+        {
+            // Arrange
+            TutorialStep stepToTest = tutorialController.configuration.stepsOnGenesisPlaza[stepIndex];
+            ClearCurrentSteps();
+            tutorialController.configuration.stepsOnGenesisPlaza.Add(stepToTest);
+            tutorialController.tutorialType = TutorialType.Initial;
+            tutorialController.userAlreadyDidTheTutorial = false;
+            tutorialController.playerIsInGenesisPlaza = true;
+            tutorialController.tutorialReset = false;
+            tutorialController.isRunning = true;
+            tutorialController.runningStep = null;
+
+            // Act
+            Coroutine stepCoroutine = CoroutineStarter.Start(tutorialController.StartTutorialFromStep(0));
+
+            // Assert
+            yield return new WaitUntil(() => tutorialController.runningStep != null);
+            Assert.IsNotNull(tutorialController.runningStep);
+
+            actionToFinishStep.Invoke();
+            yield return new WaitUntil(() => tutorialController.runningStep == null);
+            Assert.IsNull(tutorialController.runningStep);
         }
     }
 }
