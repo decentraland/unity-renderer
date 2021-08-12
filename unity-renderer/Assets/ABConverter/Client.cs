@@ -10,8 +10,8 @@ namespace DCL.ABConverter
 {
     public static class Client
     {
-        private const string COLLECTIONS_FETCH_URL = "https://peer.decentraland.org/lambdas/collections";
-        private const string WEARABLES_FETCH_URL = "https://peer.decentraland.org/lambdas/collections/wearables?";
+        private const string COLLECTIONS_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections";
+        private const string WEARABLES_FETCH_URL = "https://peer-lb.decentraland.org/lambdas/collections/wearables?";
 
         public class Settings
         {
