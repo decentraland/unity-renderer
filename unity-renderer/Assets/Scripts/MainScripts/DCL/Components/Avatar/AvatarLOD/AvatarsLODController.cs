@@ -87,7 +87,6 @@ namespace DCL
                 var featureController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(mainPlayerPosition, position);
-                // bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
 
                 if (IsBeingRendered(position, cameraForward, cameraPosition))
                 {
@@ -125,7 +124,7 @@ namespace DCL
             renderedAvatars.Clear();
         }
 
-        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0f; }
+        private bool IsBeingRendered(Vector3 position, Vector3 cameraForward, Vector3 cameraPosition) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.25f; }
 
         public void Dispose()
         {
