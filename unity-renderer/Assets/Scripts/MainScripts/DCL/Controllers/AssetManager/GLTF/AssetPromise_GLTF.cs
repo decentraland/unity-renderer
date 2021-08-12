@@ -94,8 +94,8 @@ namespace DCL
             if (!library.Add(asset))
                 return false;
 
-            if (!asset.visible)
-                return true;
+            // if (!asset.visible)
+            //     return true;
 
             //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
             //             So it keeps being there. As master gltfs can't be in the world.
@@ -156,8 +156,8 @@ namespace DCL
                 gltfComponent.OnSuccess -= OnSuccess;
                 gltfComponent.OnFail -= OnFail;
 
-                gltfComponent.OnSuccess += () => OnLoadedAfterForget(pendingAsset);
-                gltfComponent.OnFail += () => OnLoadedAfterForget(null);
+                gltfComponent.OnSuccess += () => OnLoadedAfterForget(true, pendingAsset);
+                gltfComponent.OnFail += () => OnLoadedAfterForget(false, pendingAsset);
 
                 gltfComponent.CancelIfQueued();
 
@@ -179,17 +179,16 @@ namespace DCL
             }
         }
 
-        private void OnLoadedAfterForget(Asset_GLTF loadedAsset)
+        private void OnLoadedAfterForget(bool success, Asset_GLTF loadedAsset)
         {
             asset = loadedAsset;
 
-            if (asset != null)
+            if (success && asset != null)
             {
                 AddToLibrary();
             }
 
-            asset = null;
-            ClearEvents();
+            CallAndClearEvents(success, false);
             Cleanup();
         }
     }

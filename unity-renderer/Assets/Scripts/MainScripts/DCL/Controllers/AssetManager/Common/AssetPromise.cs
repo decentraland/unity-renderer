@@ -60,7 +60,7 @@ namespace DCL
             state = AssetPromiseState.WAITING;
         }
 
-        protected void CallAndClearEvents(bool isSuccess = true)
+        protected void CallAndClearEvents(bool isSuccess = true, bool raiseEvents = true)
         {
             if (asset == null)
             {
@@ -70,9 +70,11 @@ namespace DCL
             OnPreFinishEvent?.Invoke(this);
             OnPreFinishEvent = null;
 
-            Action<AssetType> finalEvent = isSuccess ? OnSuccessEvent : OnFailEvent;
-
-            finalEvent?.Invoke(asset);
+            if (raiseEvents)
+            {
+                Action<AssetType> finalEvent = isSuccess ? OnSuccessEvent : OnFailEvent;
+                finalEvent?.Invoke(asset);
+            }
 
             ClearEvents();
         }
