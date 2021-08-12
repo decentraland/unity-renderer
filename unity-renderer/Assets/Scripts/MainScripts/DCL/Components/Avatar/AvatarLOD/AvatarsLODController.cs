@@ -7,6 +7,7 @@ namespace DCL
     public class AvatarsLODController : IAvatarsLODController
     {
         internal const float SIMPLE_AVATAR_DISTANCE = 10f;
+        internal const float RENDERED_DOT_PRODUCT_ANGLE = 0.25f;
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
         private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
@@ -129,7 +130,7 @@ namespace DCL
             renderedAvatars.Clear();
         }
 
-        private bool IsBeingRendered(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= 0.25f; }
+        private bool IsBeingRendered(Vector3 position) { return Vector3.Dot(cameraForward, (position - cameraPosition).normalized) >= RENDERED_DOT_PRODUCT_ANGLE; }
 
         public void Dispose()
         {
