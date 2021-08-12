@@ -60,7 +60,7 @@ export type DecentralandRendererInstance = {
 }
 
 export async function initializeWebRenderer(options: RendererOptions): Promise<DecentralandRendererInstance> {
-  if (!isMobile()) {
+  if (isMobile()) {
     throw new Error("Mobile is not supported")
   }
 
