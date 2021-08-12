@@ -192,7 +192,7 @@ DCL_CachedXHR.cache = {
     },
     init: function () {
         var self = this;
-        DCL_CachedXHR.log("Initializing plugin... waiting for config...");
+        DCL_CachedXHR.log("Initializing plugin...");
 
         self.enabled = false;
 
