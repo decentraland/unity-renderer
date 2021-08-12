@@ -10,6 +10,7 @@ public class BIWFreeCameraShould : IntegrationTestSuite
 {
     private FreeCameraMovement freeCameraMovement;
     private GameObject mockedGameObject;
+
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
