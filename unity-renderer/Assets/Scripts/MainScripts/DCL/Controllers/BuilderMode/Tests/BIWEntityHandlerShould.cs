@@ -2,8 +2,10 @@ using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using System.Linq;
+using DCL;
 using DCL.Camera;
 using DCL.Components;
 using DCL.Models;
@@ -346,6 +348,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
+        newEntity.Init(entity.rootEntity, null);
         entityHandler.SelectEntity(newEntity);
 
         //Act
@@ -360,14 +363,15 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
+        newEntity.Init(entity.rootEntity, null);
         entityHandler.SelectEntity(newEntity);
-        int selectedCount = entityHandler.GetSelectedEntityList().Count;
+        int selectedCount = entityHandler.GetCurrentSceneEntityCount();
 
         //Act
         entityHandler.DuplicateSelectedEntities();
 
         //Assert
-        Assert.IsTrue(selectedCount == entityHandler.GetSelectedEntityList().Count - 1);
+        Assert.IsTrue(selectedCount == entityHandler.GetCurrentSceneEntityCount() - 1);
     }
 
     [Test]
@@ -375,6 +379,7 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         BIWEntity newEntity = new BIWEntity();
+        newEntity.Init(entity.rootEntity, null);
         int selectedCount = entityHandler.GetSelectedEntityList().Count;
 
         //Act
@@ -382,6 +387,86 @@ public class BIWEntityHandlerShould : IntegrationTestSuite_Legacy
 
         //Assert
         Assert.IsTrue(selectedCount == entityHandler.GetSelectedEntityList().Count - 1);
+    }
+
+    [Test]
+    public void ReselectEntities()
+    {
+        //Arrange
+        entityHandler.DeselectEntities();
+        entityHandler.SelectEntity(entity);
+
+        //Act
+        entityHandler.ReSelectEntities();
+
+        //Assert
+        Assert.AreEqual(entityHandler.GetSelectedEntityList().Count, 1);
+    }
+
+    [Test]
+    public void CreateNFTEntityFromJSON()
+    {
+        //Arrange
+        string jsonPath = TestAssetsUtils.GetPathRaw() + "/JsonEntity/NFTEntity.json";
+        string jsonValue = File.ReadAllText(jsonPath);
+
+        //Act
+        var createdEntity = entityHandler.CreateEntityFromJSON(jsonValue);
+
+        //Assert
+        Assert.IsTrue(createdEntity.TryGetSharedComponent(CLASS_ID.NFT_SHAPE, out ISharedComponent component));
+    }
+
+    [Test]
+    public void ChangeEntityBoundsCheckerStatus()
+    {
+        //Act
+        entityHandler.ChangeEntityBoundsCheckerStatus(entity.rootEntity, false);
+
+        //Assert
+        Assert.IsTrue(entity.isInsideBoundariesError);
+    }
+
+    [Test]
+    public void GetNameFromCatalog()
+    {
+        //Arrange
+        BIWTestHelper.CreateTestCatalogLocalSingleObject();
+        CatalogItem item = DataStore.i.builderInWorld.catalogItemDict.GetValues()[0];
+
+        //Act
+        var name = entityHandler.GetNewNameForEntity(item);
+
+        //Assert
+        Assert.AreSame(name, item.name);
+    }
+
+    [Test]
+    public void ChangeEntityVisibilityStatus()
+    {
+        //Arrange
+        entity.isVisible = true;
+        entityHandler.SelectEntity(entity);
+
+        //Act
+        entityHandler.ChangeEntityVisibilityStatus(entity);
+
+        //Assert
+        Assert.IsFalse(entity.isVisible);
+    }
+
+    [Test]
+    public void ChangeEntityLockStatus()
+    {
+        //Arrange
+        entity.isLocked = true;
+        entityHandler.SelectEntity(entity);
+
+        //Act
+        entityHandler.ChangeEntityLockStatus(entity);
+
+        //Assert
+        Assert.IsFalse(entity.isLocked);
     }
 
     protected override IEnumerator TearDown()

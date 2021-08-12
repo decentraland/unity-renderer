@@ -49,7 +49,7 @@ public class BIWModeController : BIWController, IBIWModeController
     private IBIWEntityHandler entityHandler;
 
     private BIWFirstPersonMode firstPersonMode;
-    private BIWGodMode godMode;
+    internal BIWGodMode godMode;
 
     private InputAction_Trigger toggleSnapModeInputAction;
 

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using Environment = DCL.Environment;
 
@@ -34,7 +35,6 @@ public interface IBIWEntityHandler
     void SetMultiSelectionActive(bool isActive);
     void ChangeLockStateSelectedEntities();
     void DeleteEntitiesOutsideSceneBoundaries();
-    bool AreAllSelectedEntitiesInsideBoundaries();
     bool AreAllEntitiesInsideBoundaries();
     void EntityListChanged();
     void NotifyEntityIsCreated(IDCLEntity entity);
@@ -361,7 +361,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
     }
 
-    void ReSelectEntities()
+    internal void ReSelectEntities()
     {
         List<BIWEntity> entitiesToReselect = new List<BIWEntity>();
         foreach (BIWEntity entity in selectedEntities)
@@ -377,7 +377,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
     }
 
-    void ChangeEntitySelectStatus(BIWEntity entityCliked)
+    internal void ChangeEntitySelectStatus(BIWEntity entityCliked)
     {
         if (entityCliked.isSelected)
             DeselectEntity(entityCliked);
@@ -699,7 +699,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
         }
     }
 
-    private void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
+    internal void ChangeEntityBoundsCheckerStatus(IDCLEntity entity, bool isInsideBoundaries)
     {
         var convertedEntity = GetConvertedEntity(entity);
         if (convertedEntity == null)
@@ -839,6 +839,7 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
 
     public void NotifyEntityIsCreated(IDCLEntity entity) { bridge?.AddEntityOnKernel(entity, sceneToEdit); }
 
+    [ExcludeFromCodeCoverage]
     public void UpdateSmartItemComponentInKernel(BIWEntity entityToUpdate) { bridge?.UpdateSmartItemComponent(entityToUpdate, sceneToEdit); }
 
     public void SetEntityName(BIWEntity entityToApply, string newName) { SetEntityName(entityToApply, newName, true); }
@@ -863,38 +864,25 @@ public class BIWEntityHandler : BIWController, IBIWEntityHandler
             bridge?.ChangedEntityName(entityToApply, sceneToEdit);
     }
 
-    private void ChangeEntityVisibilityStatus(BIWEntity entityToApply)
+    internal void ChangeEntityVisibilityStatus(BIWEntity entityToApply)
     {
         entityToApply.ToggleShowStatus();
         if (!entityToApply.isVisible && selectedEntities.Contains(entityToApply))
             DeselectEntity(entityToApply);
     }
 
-    private void ChangeEntityLockStatus(BIWEntity entityToApply)
+    internal void ChangeEntityLockStatus(BIWEntity entityToApply)
     {
         entityToApply.ToggleLockStatus();
         if (entityToApply.isLocked && selectedEntities.Contains(entityToApply))
             DeselectEntity(entityToApply);
 
-        bridge.ChangeEntityLockStatus(entityToApply, sceneToEdit);
+        bridge?.ChangeEntityLockStatus(entityToApply, sceneToEdit);
     }
 
     private string GetConvertedUniqueKeyForEntity(string entityID) { return sceneToEdit.sceneData.id + entityID; }
 
     private string GetConvertedUniqueKeyForEntity(IDCLEntity entity) { return entity.scene.sceneData.id + entity.entityId; }
-
-    public bool AreAllSelectedEntitiesInsideBoundaries()
-    {
-        foreach (BIWEntity entity in selectedEntities)
-        {
-            if (!DCL.Environment.i.world.sceneBoundsChecker.IsEntityInsideSceneBoundaries(entity.rootEntity))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     public bool AreAllEntitiesInsideBoundaries()
     {

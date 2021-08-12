@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using DCL;
+using DCL.Camera;
 using DCL.Controllers;
 using DCL.Helpers;
 using NSubstitute;
@@ -401,13 +402,14 @@ public class BIWMainControllerShould : IntegrationTestSuite_Legacy
     public void StartExitModeScreenShot()
     {
         //Arrange
+        mainController.modeController.godMode.freeCameraController = Substitute.For<IFreeCameraMovement>();
         mainController.saveController.numberOfSaves = 1;
 
         //Act
         mainController.StartExitMode();
 
         //Assert
-        context.modeController.Received().TakeSceneScreenshotForExit();
+        mainController.modeController.godMode.freeCameraController.Received().TakeSceneScreenshotFromResetPosition(Arg.Any<IFreeCameraMovement.OnSnapshotsReady>());
     }
 
     [Test]
