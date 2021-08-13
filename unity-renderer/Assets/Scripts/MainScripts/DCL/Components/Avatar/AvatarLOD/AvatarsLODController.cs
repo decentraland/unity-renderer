@@ -86,6 +86,7 @@ namespace DCL
                 if (isInLODDistance)
                 {
                     lodController.SetImpostorState();
+                    lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.LODDistance.Get());
                 }
                 else
                 {
@@ -103,7 +104,10 @@ namespace DCL
                 IAvatarLODController currentAvatar = closeDistanceAvatars.Values[i];
                 bool isLOD = i >= DataStore.i.avatarsLOD.maxNonLODAvatars.Get();
                 if (isLOD)
+                {
                     currentAvatar.SetImpostorState();
+                    currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.LODDistance.Get());
+                }
                 else
                 {
                     if (closeDistanceAvatars.Keys[i] < SIMPLE_AVATAR_DISTANCE)

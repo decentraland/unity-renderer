@@ -22,6 +22,7 @@ namespace DCL
         void SetImpostorFade(float impostorFade);
         void SetFacialFeaturesVisible(bool visible);
         void SetSSAOEnabled(bool enabled);
+        void SetImpostorTextureTint(Color newColor);
     }
 
 }

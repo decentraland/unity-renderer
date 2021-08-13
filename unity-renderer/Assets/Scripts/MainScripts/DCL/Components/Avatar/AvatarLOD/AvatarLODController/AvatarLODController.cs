@@ -9,6 +9,7 @@ namespace DCL
         void SetAvatarState();
         void SetSimpleAvatar();
         void SetImpostorState();
+        void UpdateImpostorTint(float distanceToClosestPosition);
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -123,6 +124,16 @@ namespace DCL
                 player.renderer.SetFacialFeaturesVisible(newFacialFeaturesEnabled);
                 facialFeaturesEnabled = newFacialFeaturesEnabled;
             }
+        }
+
+        public void UpdateImpostorTint(float distanceToClosestPosition)
+        {
+            float tintStep = Mathf.InverseLerp(0, 32, distanceToClosestPosition);
+            float tintValue = Mathf.Lerp(0.2f, 0.9f, tintStep);
+            Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
+            newColor.a = Mathf.Lerp(1f, 0.75f, tintStep);
+
+            player.renderer.SetImpostorTextureTint(newColor);
         }
 
         public void Dispose() { CoroutineStarter.Stop(currentTransition); }

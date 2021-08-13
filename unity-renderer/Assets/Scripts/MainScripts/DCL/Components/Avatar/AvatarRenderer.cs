@@ -523,8 +523,16 @@ namespace DCL
             if (gameObject.activeSelf != newVisibility)
                 gameObject.SetActive(newVisibility);
         }
+
         public void SetImpostorVisibility(bool impostorVisibility) { lodRenderer.gameObject.SetActive(impostorVisibility); }
+
         public void SetImpostorForward(Vector3 newForward) { lodRenderer.transform.forward = newForward; }
+
+        public void SetImpostorTextureTint(Color newColor)
+        {
+            // AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
+            lodRenderer.material.SetColor("_BaseColor", newColor);
+        }
 
         public void SetAvatarFade(float avatarFade)
         {
