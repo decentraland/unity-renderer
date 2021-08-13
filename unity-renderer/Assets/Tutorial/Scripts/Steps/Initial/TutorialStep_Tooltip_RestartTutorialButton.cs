@@ -41,7 +41,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void MoreMenu_OnMoreMenuOpened(bool isVisible)
+        internal void MoreMenu_OnMoreMenuOpened(bool isVisible)
         {
             stepIsFinished = true;
             isRelatedFeatureActived = false;

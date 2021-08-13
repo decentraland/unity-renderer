@@ -45,14 +45,14 @@ namespace DCL.Tutorial
             }
         }
 
-        private void ExploreHud_OnOpen()
+        internal void ExploreHud_OnOpen()
         {
             isRelatedFeatureActived = true;
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        private void ExploreHud_OnClose()
+        internal void ExploreHud_OnClose()
         {
             if (isRelatedFeatureActived)
                 isRelatedFeatureActived = false;

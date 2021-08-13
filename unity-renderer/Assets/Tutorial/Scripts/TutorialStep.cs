@@ -102,12 +102,12 @@ namespace DCL.Tutorial
             }
         }
 
-        private void OnShowAnimationFinish() { OnShowAnimationFinished?.Invoke(); }
+        internal void OnShowAnimationFinish() { OnShowAnimationFinished?.Invoke(); }
 
         /// <summary>
         /// Warn about the finalization of the hide animation of the step
         /// </summary>
-        private void OnHideAnimationFinish() { hideAnimationFinished = true; }
+        internal void OnHideAnimationFinish() { hideAnimationFinished = true; }
 
         private IEnumerator PlayAndWaitForHideAnimation()
         {

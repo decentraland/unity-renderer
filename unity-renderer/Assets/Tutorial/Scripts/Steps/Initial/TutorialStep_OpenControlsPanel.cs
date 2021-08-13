@@ -50,7 +50,7 @@ namespace DCL.Tutorial
                 toggleControlsHud.isTriggerBlocked = originalControlsTriggerIsBlocked;
         }
 
-        private void ControlsHud_OnControlsOpened()
+        internal void ControlsHud_OnControlsOpened()
         {
             if (!controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenOpened = true;
@@ -60,7 +60,7 @@ namespace DCL.Tutorial
             CommonScriptableObjects.featureKeyTriggersBlocked.Set(false);
         }
 
-        private void ControlsHud_OnControlsClosed()
+        internal void ControlsHud_OnControlsClosed()
         {
             if (controlsHasBeenOpened && mainSection.activeSelf)
                 controlsHasBeenClosed = true;

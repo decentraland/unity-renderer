@@ -49,7 +49,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void UsersAroundListHud_OnOpen()
+        internal void UsersAroundListHud_OnOpen()
         {
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);

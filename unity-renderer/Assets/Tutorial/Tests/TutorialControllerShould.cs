@@ -402,6 +402,135 @@ namespace DCL.Tutorial_Tests
             });
         }
 
+        [UnityTest]
+        public IEnumerator ExecuteMinimapTooltipStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(6, () =>
+            {
+                TutorialStep_MinimapTooltip step = (TutorialStep_MinimapTooltip)tutorialController.runningStep;
+                step.stepIsFinished = true;
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteOpenControlsPanelStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(7, () =>
+            {
+                TutorialStep_OpenControlsPanel step = (TutorialStep_OpenControlsPanel)tutorialController.runningStep;
+                step.ControlsHud_OnControlsOpened();
+                step.ControlsHud_OnControlsClosed();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipBackpackButtonStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(8, () =>
+            {
+                TutorialStep_Tooltip_BackpackButton step = (TutorialStep_Tooltip_BackpackButton)tutorialController.runningStep;
+                step.ProfileHud_OnOpen();
+                step.ProfileHud_OnClose();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipExploreButtonStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(9, () =>
+            {
+                TutorialStep_Tooltip_ExploreButton step = (TutorialStep_Tooltip_ExploreButton)tutorialController.runningStep;
+                step.ExploreHud_OnOpen();
+                step.ExploreHud_OnClose();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipTaskbarMoreButtonStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(10, () =>
+            {
+                TutorialStep_Tooltip_TaskbarMoreButton step = (TutorialStep_Tooltip_TaskbarMoreButton)tutorialController.runningStep;
+                step.MoreMenu_OnMoreMenuOpened(true);
+                step.MoreMenu_OnMoreMenuOpened(false);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipRestartTutorialButtonStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(11, () =>
+            {
+                TutorialStep_Tooltip_RestartTutorialButton step = (TutorialStep_Tooltip_RestartTutorialButton)tutorialController.runningStep;
+                step.MoreMenu_OnMoreMenuOpened(true);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipSocialFeaturesByOpeningWorldChatStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            {
+                TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
+                step.WorldChatWindowHud_OnOpen();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipSocialFeaturesByOpeningFriendsStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            {
+                TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
+                step.FriendsHud_OnFriendsOpened();
+                step.FriendsHud_OnFriendsClosed();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipSocialFeaturesByStartingVoiceChatStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(12, () =>
+            {
+                TutorialStep_Tooltip_SocialFeatures step = (TutorialStep_Tooltip_SocialFeatures)tutorialController.runningStep;
+                step.VoiceChatAction_OnStarted(DCLAction_Hold.VoiceChatRecording);
+                step.VoiceChatAction_OnFinished(DCLAction_Hold.VoiceChatRecording);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTooltipUsersAroundStepCorrectly()
+        {
+            CommonScriptableObjects.voiceChatDisabled.Set(false);
+
+            yield return ExecuteAvatarSpecificTutorialStep(13, () =>
+            {
+                TutorialStep_Tooltip_UsersAround step = (TutorialStep_Tooltip_UsersAround)tutorialController.runningStep;
+                step.UsersAroundListHud_OnOpen();
+                CommonScriptableObjects.voiceChatDisabled.Set(true);
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteTutorialCompletedStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(14, () =>
+            {
+                TutorialStep_TutorialCompleted step = (TutorialStep_TutorialCompleted)tutorialController.runningStep;
+                step.OnHideAnimationFinish();
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator ExecuteWelcomeStepCorrectly()
+        {
+            yield return ExecuteAvatarSpecificTutorialStep(15, () =>
+            {
+                TutorialStep_Welcome step = (TutorialStep_Welcome)tutorialController.runningStep;
+                step.confirmInputAction.RaiseOnStarted();
+            });
+        }
+
         private void CreateAndConfigureTutorial()
         {
             tutorialConfigurator = GameObject.Instantiate(Resources.Load<GameObject>("TutorialConfigurator")).GetComponent<TutorialConfigurator>();

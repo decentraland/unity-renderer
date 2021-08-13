@@ -43,14 +43,14 @@ namespace DCL.Tutorial
             }
         }
 
-        private void ProfileHud_OnOpen()
+        internal void ProfileHud_OnOpen()
         {
             isRelatedFeatureActived = true;
             stepIsFinished = true;
             tutorialController.PlayTeacherAnimation(TutorialTeacher.TeacherAnimation.QuickGoodbye);
         }
 
-        private void ProfileHud_OnClose()
+        internal void ProfileHud_OnClose()
         {
             if (isRelatedFeatureActived)
                 isRelatedFeatureActived = false;
