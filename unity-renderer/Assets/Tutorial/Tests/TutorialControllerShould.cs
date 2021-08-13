@@ -3,13 +3,14 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 using static DCL.Tutorial.TutorialController;
 
 namespace DCL.Tutorial_Tests
 {
-    public class TutorialControllerShould
+    public class TutorialControllerShould : IntegrationTestSuite
     {
         private TutorialConfigurator tutorialConfigurator;
         private TutorialController tutorialController;
@@ -17,11 +18,17 @@ namespace DCL.Tutorial_Tests
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
         private Coroutine stepCoroutine;
 
-        [SetUp]
-        public void SetUp() { CreateAndConfigureTutorial(); }
+        protected override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+            CreateAndConfigureTutorial();
+        }
 
-        [TearDown]
-        public void TearDown() { DestroyTutorial(); }
+        protected override IEnumerator TearDown()
+        {
+            DestroyTutorial();
+            yield return base.TearDown();
+        }
 
         [Test]
         public void SetTutorialEnabledCorrectly()
@@ -296,6 +303,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.OnRenderingStateChanged(true, false);
 
             // Assert
+            Assert.IsFalse(tutorialController.playerIsInGenesisPlaza);
             if (debugRunTutorial)
                 Assert.AreEqual(tutorialController.configuration.debugStartingStepIndex, tutorialController.currentStepIndex);
             else

@@ -537,7 +537,9 @@ namespace DCL.Tutorial
 
             Vector2Int genesisPlazaBaseCoords = new Vector2Int(-9, -9);
 
-            IParcelScene currentScene = worldState.loadedScenes[worldState.currentSceneId];
+            IParcelScene currentScene = null;
+            if (worldState.loadedScenes != null)
+                currentScene = worldState.loadedScenes[worldState.currentSceneId];
 
             if (currentScene != null && currentScene.IsInsideSceneBoundaries(genesisPlazaBaseCoords))
                 return true;
