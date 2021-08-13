@@ -541,6 +541,7 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(16, () =>
             {
                 TutorialStep_LockTheCursor step = (TutorialStep_LockTheCursor)tutorialController.runningStep;
+                step.mouseCatcher = null;
                 step.OnShowAnimationFinish();
                 step.OnHideAnimationFinish();
             });

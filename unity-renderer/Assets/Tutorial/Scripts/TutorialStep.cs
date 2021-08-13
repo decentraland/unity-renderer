@@ -24,7 +24,7 @@ namespace DCL.Tutorial
 
         protected TutorialController tutorialController;
         internal Animator stepAnimator;
-        protected MouseCatcher mouseCatcher;
+        internal MouseCatcher mouseCatcher;
         protected bool hideAnimationFinished = false;
         protected bool blockSkipActions = false;
 
