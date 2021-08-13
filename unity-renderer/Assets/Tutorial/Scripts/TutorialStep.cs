@@ -26,7 +26,7 @@ namespace DCL.Tutorial
         internal Animator stepAnimator;
         internal MouseCatcher mouseCatcher;
         protected bool hideAnimationFinished = false;
-        protected bool blockSkipActions = false;
+        internal bool blockSkipActions = false;
 
         internal bool letInstantiation = true;
 
@@ -138,7 +138,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void NoSkipInputAction_OnFinished(DCLAction_Hold action)
+        internal void NoSkipInputAction_OnFinished(DCLAction_Hold action)
         {
             if (blockSkipActions)
                 return;

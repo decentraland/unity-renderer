@@ -418,7 +418,8 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(6, () =>
             {
                 TutorialStep_MinimapTooltip step = (TutorialStep_MinimapTooltip)tutorialController.runningStep;
-                step.stepIsFinished = true;
+                //step.stepIsFinished = true;
+                step.NavmapView_OnToggle(true);
             });
         }
 
@@ -554,6 +555,35 @@ namespace DCL.Tutorial_Tests
                 step.OnShowAnimationFinish();
                 step.OnHideAnimationFinish();
             });
+        }
+
+        [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TutorialStepNoSkipInputActionOnFinishedCorrectly(bool mainSectionActivated)
+        {
+            // Arrange
+            TutorialStep testStep = new GameObject().AddComponent<TutorialStep>();
+            testStep.mainSection = new GameObject();
+            testStep.skipTutorialSection = new GameObject();
+            testStep.blockSkipActions = false;
+            testStep.mainSection.SetActive(mainSectionActivated);
+            testStep.skipTutorialSection.SetActive(!mainSectionActivated);
+
+            // Act
+            testStep.NoSkipInputAction_OnFinished(DCLAction_Hold.DefaultConfirmAction);
+
+            // Assert
+            if (mainSectionActivated)
+            {
+                Assert.IsFalse(testStep.mainSection.activeSelf);
+                Assert.IsTrue(testStep.skipTutorialSection.activeSelf);
+            }
+            else
+            {
+                Assert.IsTrue(testStep.mainSection.activeSelf);
+                Assert.IsFalse(testStep.skipTutorialSection.activeSelf);
+            }
         }
 
         private void CreateAndConfigureTutorial()
