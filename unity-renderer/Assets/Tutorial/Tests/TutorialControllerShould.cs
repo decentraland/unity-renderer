@@ -49,16 +49,16 @@ namespace DCL.Tutorial_Tests
             tutorialController.SetupTutorial(fromDeepLink.ToString(), enableNewTutorialCamera.ToString(), tutorialType, userAlreadyDidTheTutorial);
 
             // Assert
-            //Assert.IsTrue(tutorialController.isRunning);
-            //Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
-            //Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
-            //Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
-            //Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
-            //Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
-            //Assert.AreEqual(Convert.ToBoolean(fromDeepLink), tutorialController.openedFromDeepLink);
-            //Assert.AreEqual(tutorialType, tutorialController.tutorialType);
-            //Assert.IsTrue(NotificationsController.disableWelcomeNotification);
-            //Assert.IsTrue(onTutorialEnabledInvoked);
+            Assert.IsTrue(tutorialController.isRunning);
+            Assert.IsFalse(tutorialController.configuration.eagleCamRotationActived);
+            Assert.AreEqual(0f, DataStore.i.virtualAudioMixer.sceneSFXVolume.Get());
+            Assert.AreEqual(userAlreadyDidTheTutorial, tutorialController.userAlreadyDidTheTutorial);
+            Assert.IsFalse(CommonScriptableObjects.allUIHidden.Get());
+            Assert.IsTrue(CommonScriptableObjects.tutorialActive.Get());
+            Assert.AreEqual(Convert.ToBoolean(fromDeepLink), tutorialController.openedFromDeepLink);
+            Assert.AreEqual(tutorialType, tutorialController.tutorialType);
+            Assert.IsTrue(NotificationsController.disableWelcomeNotification);
+            Assert.IsTrue(onTutorialEnabledInvoked);
         }
 
         [Test]
