@@ -15,6 +15,7 @@ namespace DCL.Tutorial_Tests
         private TutorialController tutorialController;
         private int currentStepIndex = 0;
         private List<TutorialStep> currentSteps = new List<TutorialStep>();
+        private Coroutine stepCoroutine;
 
         [SetUp]
         public void SetUp() { CreateAndConfigureTutorial(); }
@@ -565,6 +566,8 @@ namespace DCL.Tutorial_Tests
             currentSteps.Clear();
             currentStepIndex = 0;
             tutorialController.configuration.debugRunTutorial = false;
+            CoroutineStarter.Stop(stepCoroutine);
+            stepCoroutine = null;
         }
 
         private void ConfigureTutorialForGenesisPlaza()
@@ -671,6 +674,7 @@ namespace DCL.Tutorial_Tests
         private TutorialStep_Mock CreateNewFakeStep()
         {
             GameObject newStepObject = new GameObject("FakeStep");
+            newStepObject.transform.parent = tutorialController.tutorialContainerGO.transform;
             TutorialStep_Mock newStep = newStepObject.AddComponent<TutorialStep_Mock>();
             newStep.letInstantiation = false;
             newStep.customOnStepStart = WaitForOnStepStart;
@@ -724,7 +728,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.runningStep = null;
 
             // Act
-            Coroutine stepCoroutine = CoroutineStarter.Start(tutorialController.StartTutorialFromStep(0));
+            stepCoroutine = CoroutineStarter.Start(tutorialController.StartTutorialFromStep(0));
 
             // Assert
             yield return new WaitUntil(() => tutorialController.runningStep != null, 10f);
@@ -734,8 +738,6 @@ namespace DCL.Tutorial_Tests
             actionToFinishStep?.Invoke();
             yield return new WaitUntil(() => tutorialController.runningStep == null, 10f);
             Assert.IsNull(tutorialController.runningStep);
-
-            CoroutineStarter.Stop(stepCoroutine);
         }
     }
 }
