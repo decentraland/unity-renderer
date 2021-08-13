@@ -28,6 +28,7 @@ public class BIWScaleGizmosShould
     protected IEnumerator TearDown()
     {
         GameObject.Destroy(mockedScaleGizmosGameObject);
+        GameObject.Destroy(mockedEntityGameObject);
         yield break;
     }
 
