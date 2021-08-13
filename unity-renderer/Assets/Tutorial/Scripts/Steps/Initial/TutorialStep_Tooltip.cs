@@ -16,7 +16,7 @@ namespace DCL.Tutorial
         private bool tooltipStarted = false;
         private float timeSinceWasOpened = 0f;
         internal bool stepIsFinished = false;
-        protected bool isRelatedFeatureActived = false;
+        internal bool isRelatedFeatureActived = false;
 
         protected virtual void Update()
         {

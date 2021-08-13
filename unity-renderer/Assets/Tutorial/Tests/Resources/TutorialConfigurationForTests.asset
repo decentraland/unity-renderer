@@ -32,6 +32,7 @@ MonoBehaviour:
   - {fileID: 221633895647857023, guid: e741c05aab096a34a8c0fddab5b336d7, type: 3}
   - {fileID: 2280140470612095775, guid: a3203d85006a19f4b890b244b8a6071e, type: 3}
   - {fileID: 7706447210135135071, guid: 1e4462a1d0dc0b242bab8052d1486ff8, type: 3}
+  - {fileID: 4146741736848859845, guid: e38c1e2e466c58a4aa90e19bbda22466, type: 3}
   stepsFromDeepLink: []
   stepsFromReset: []
   stepsFromBuilderInWorld: []
