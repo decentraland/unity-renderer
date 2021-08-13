@@ -104,7 +104,7 @@ namespace DCL
                 }
                 else
                 {
-                    featureController.SetImpostorState();
+                    featureController.SetInvisible();
                 }
             }
 

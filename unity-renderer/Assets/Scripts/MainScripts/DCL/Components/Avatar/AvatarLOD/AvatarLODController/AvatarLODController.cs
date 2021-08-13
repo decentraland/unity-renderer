@@ -9,6 +9,7 @@ namespace DCL
         void SetAvatarState();
         void SetSimpleAvatar();
         void SetImpostorState();
+        void SetInvisible();
     }
 
     public class AvatarLODController : IAvatarLODController
@@ -68,6 +69,15 @@ namespace DCL
             StartTransition(0, 1);
         }
 
+        public void SetInvisible()
+        {
+            if (player?.renderer == null)
+                return;
+
+            SetAvatarFeatures(false, false);
+            StartTransition(0, 0);
+        }
+
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
             if (Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
@@ -93,8 +103,8 @@ namespace DCL
 
             while (!Mathf.Approximately(avatarFade, targetAvatarFade) || !Mathf.Approximately(impostorFade, targetImpostorFade))
             {
-                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, 1f / transitionDuration * Time.deltaTime);
-                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, 1f / transitionDuration * Time.deltaTime);
+                avatarFade = Mathf.MoveTowards(avatarFade, targetAvatarFade, (1f / transitionDuration) * Time.deltaTime);
+                impostorFade = Mathf.MoveTowards(impostorFade, targetImpostorFade, (1f / transitionDuration) * Time.deltaTime);
                 player.renderer.SetAvatarFade(avatarFade);
                 player.renderer.SetImpostorFade(impostorFade);
                 yield return null;
