@@ -302,8 +302,8 @@ namespace DCL.Tutorial_Tests
                 Assert.AreEqual(0, tutorialController.currentStepIndex);
         }
 
-        [Test]
-        public void MoveTeacherCorrectly()
+        [UnityTest]
+        public IEnumerator MoveTeacherCorrectly()
         {
             // Arrange
             Vector3 toPosition = new Vector3(1, 1, 0);
@@ -311,7 +311,7 @@ namespace DCL.Tutorial_Tests
             tutorialController.configuration.teacherRawImage.rectTransform.position = initialPosition;
 
             // Act
-            tutorialController.MoveTeacher(initialPosition, toPosition);
+            yield return tutorialController.MoveTeacher(initialPosition, toPosition);
 
             // Assert
             Assert.AreNotEqual(initialPosition, tutorialController.configuration.teacherRawImage.rectTransform.position);
