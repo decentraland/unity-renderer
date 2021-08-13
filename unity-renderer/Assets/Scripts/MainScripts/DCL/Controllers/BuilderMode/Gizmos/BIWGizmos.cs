@@ -41,7 +41,7 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
     protected bool startDragging = false;
     protected float prevAxisValue;
 
-    public BIWGizmosAxis activeAxis { protected set; get; }
+    public BIWGizmosAxis activeAxis { internal set; get; }
 
     public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
     public abstract float TransformEntity(Transform targetTransform, BIWGizmosAxis axis, float axisValue);
