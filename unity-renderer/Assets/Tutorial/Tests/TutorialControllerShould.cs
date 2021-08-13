@@ -319,7 +319,8 @@ namespace DCL.Tutorial_Tests
             tutorialController.configuration.teacherRawImage.rectTransform.position = initialPosition;
 
             // Act
-            yield return tutorialController.MoveTeacher(initialPosition, toPosition);
+            stepCoroutine = CoroutineStarter.Start(tutorialController.MoveTeacher(initialPosition, toPosition));
+            yield return null;
 
             // Assert
             Assert.AreNotEqual(initialPosition, tutorialController.configuration.teacherRawImage.rectTransform.position);
