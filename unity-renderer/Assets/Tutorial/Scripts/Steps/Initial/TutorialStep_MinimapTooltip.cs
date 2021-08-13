@@ -32,7 +32,7 @@ namespace DCL.Tutorial
             }
         }
 
-        private void NavmapView_OnToggle(bool isVisible)
+        internal void NavmapView_OnToggle(bool isVisible)
         {
             if (isVisible)
             {

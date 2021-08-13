@@ -418,8 +418,8 @@ namespace DCL.Tutorial_Tests
             yield return ExecuteAvatarSpecificTutorialStep(6, () =>
             {
                 TutorialStep_MinimapTooltip step = (TutorialStep_MinimapTooltip)tutorialController.runningStep;
-                //step.stepIsFinished = true;
                 step.NavmapView_OnToggle(true);
+                step.NavmapView_OnToggle(false);
             });
         }
 
@@ -441,7 +441,6 @@ namespace DCL.Tutorial_Tests
             {
                 TutorialStep_Tooltip_BackpackButton step = (TutorialStep_Tooltip_BackpackButton)tutorialController.runningStep;
                 step.ProfileHud_OnOpen();
-                step.isRelatedFeatureActived = true;
                 step.ProfileHud_OnClose();
             });
         }
@@ -453,7 +452,6 @@ namespace DCL.Tutorial_Tests
             {
                 TutorialStep_Tooltip_ExploreButton step = (TutorialStep_Tooltip_ExploreButton)tutorialController.runningStep;
                 step.ExploreHud_OnOpen();
-                step.isRelatedFeatureActived = true;
                 step.ExploreHud_OnClose();
             });
         }
