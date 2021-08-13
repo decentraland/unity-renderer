@@ -188,13 +188,19 @@ public class SceneCatalogController : ISceneCatalogController
         sceneCatalogView.SetCatalogTitle(FAVORITE_NAME);
         ShowCatalogContent();
 
+        var favorites  = GenerateFavorites();
+
+        sceneCatalogView.catalogGroupList.SetContent(favorites);
+        sceneCatalogView.ShowBackButton(false);
+    }
+
+    internal List<Dictionary<string, List<CatalogItem>>>  GenerateFavorites()
+    {
         List<Dictionary<string, List<CatalogItem>>> favorites = new List<Dictionary<string, List<CatalogItem>>>();
         Dictionary<string, List<CatalogItem>> groupedCategoryItems = new Dictionary<string, List<CatalogItem>>();
         groupedCategoryItems.Add(FAVORITE_NAME, favoritesController.GetFavorites());
         favorites.Add(groupedCategoryItems);
-
-        sceneCatalogView.catalogGroupList.SetContent(favorites);
-        sceneCatalogView.ShowBackButton(false);
+        return favorites;
     }
 
     public void CatalogItemSelected(CatalogItem catalogItem) { OnCatalogItemSelected?.Invoke(catalogItem); }
@@ -219,6 +225,14 @@ public class SceneCatalogController : ISceneCatalogController
     internal void SetCatalogAssetPackInListView(CatalogItemPack catalogItemPack)
     {
         sceneCatalogView.SetCatalogTitle(catalogItemPack.title);
+
+        var contentList = GenerateContentListForCatalogItemPack(catalogItemPack);
+
+        sceneCatalogView.catalogGroupList.SetContent(contentList);
+    }
+
+    internal  List<Dictionary<string, List<CatalogItem>>> GenerateContentListForCatalogItemPack(CatalogItemPack catalogItemPack)
+    {
         Dictionary<string, List<CatalogItem>> groupedCatalogItem = new Dictionary<string, List<CatalogItem>>();
 
         foreach (CatalogItem sceneObject in catalogItemPack.assets)
@@ -236,7 +250,7 @@ public class SceneCatalogController : ISceneCatalogController
             groupedCatalogItem
         };
 
-        sceneCatalogView.catalogGroupList.SetContent(contentList);
+        return contentList;
     }
 
     internal List<CatalogItem> GetAssetsListByCategory(string category, CatalogItemPack sceneAssetPack)

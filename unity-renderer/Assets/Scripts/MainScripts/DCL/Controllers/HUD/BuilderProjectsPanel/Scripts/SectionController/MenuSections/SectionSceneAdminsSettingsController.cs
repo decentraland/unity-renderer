@@ -17,8 +17,8 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
     private readonly UsersSearchPromptController usersSearchPromptController;
     private readonly UserProfileFetcher profileFetcher = new UserProfileFetcher();
 
-    private readonly SceneAdminsUpdatePayload adminsUpdatePayload = new SceneAdminsUpdatePayload();
-    private readonly SceneBannedUsersUpdatePayload bannedUsersUpdatePayload = new SceneBannedUsersUpdatePayload();
+    internal readonly SceneAdminsUpdatePayload adminsUpdatePayload = new SceneAdminsUpdatePayload();
+    internal readonly SceneBannedUsersUpdatePayload bannedUsersUpdatePayload = new SceneBannedUsersUpdatePayload();
 
     private List<string> admins = new List<string>();
     private List<string> bannedUsers = new List<string>();
@@ -184,7 +184,7 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
         OnRequestUpdateSceneAdmins?.Invoke(sceneId, adminsUpdatePayload);
     }
 
-    void OnAddBannedUserPressed(string userId)
+    internal void OnAddBannedUserPressed(string userId)
     {
         if (bannedUsers.Contains(userId))
             return;

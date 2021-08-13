@@ -9,18 +9,48 @@ namespace Tests.BuildModeHUDControllers
     public class SceneCatalogControllerShould
     {
         private SceneCatalogController sceneCatalogController;
+        private ISceneCatalogView view;
 
         [SetUp]
         public void SetUp()
         {
             sceneCatalogController = new SceneCatalogController();
+            view = Substitute.For<ISceneCatalogView>();
             sceneCatalogController.Initialize(
-                Substitute.For<ISceneCatalogView>(),
+                view,
                 Substitute.For<IQuickBarController>());
         }
 
         [TearDown]
         public void TearDown() { sceneCatalogController.Dispose(); }
+
+        [Test]
+        public void ShowFavorites()
+        {
+            //Arrange
+            var favorites = sceneCatalogController.GenerateFavorites();
+
+            //Act
+            sceneCatalogController.ShowFavorites();
+
+            //Assert
+            view.Received().catalogGroupList.SetContent(favorites);
+        }
+
+        [Test]
+        public void AssetPackSelected()
+        {
+            //Arrange
+            BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
+            var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
+            var contentList = sceneCatalogController.GenerateContentListForCatalogItemPack(catalogItemPack);
+
+            //Act
+            sceneCatalogController.OnCatalogItemPackSelected(catalogItemPack);
+
+            //Assert
+            view.Received().catalogGroupList.SetContent(contentList);
+        }
 
         [Test]
         public void ToggleCatalogExpanseCorrectly()
