@@ -23,7 +23,9 @@ namespace DCL.Tutorial
             if (toggleControlsHud != null)
                 toggleControlsHud.isTriggerBlocked = null;
 
-            if (tutorialController != null && tutorialController.hudController != null)
+            if (tutorialController != null &&
+                tutorialController.hudController != null &&
+                tutorialController.hudController.controlsHud != null)
             {
                 tutorialController.hudController.controlsHud.OnControlsOpened += ControlsHud_OnControlsOpened;
                 tutorialController.hudController.controlsHud.OnControlsClosed += ControlsHud_OnControlsClosed;

@@ -39,6 +39,7 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
+                tutorialController.hudController.taskbarHud != null &&
                 tutorialController.hudController.taskbarHud.exploreTooltipReference)
             {
                 tooltipTransform.position = tutorialController.hudController.taskbarHud.exploreTooltipReference.position;

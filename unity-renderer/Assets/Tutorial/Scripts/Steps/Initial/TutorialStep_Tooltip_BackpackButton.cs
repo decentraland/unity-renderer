@@ -37,6 +37,7 @@ namespace DCL.Tutorial
 
             if (tutorialController != null &&
                 tutorialController.hudController != null &&
+                tutorialController.hudController.profileHud != null &&
                 tutorialController.hudController.profileHud.backpackTooltipReference)
             {
                 tooltipTransform.position = tutorialController.hudController.profileHud.backpackTooltipReference.position;
