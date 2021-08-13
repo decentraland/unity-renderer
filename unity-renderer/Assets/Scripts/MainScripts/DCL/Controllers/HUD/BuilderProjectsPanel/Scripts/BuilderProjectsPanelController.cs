@@ -35,7 +35,7 @@ public class BuilderProjectsPanelController : IHUD
     private ICatalyst catalyst;
 
     private bool isInitialized = false;
-    private bool isFetching = false;
+    internal bool isFetching = false;
     private bool sendPlayerOpenPanelEvent = false;
     private Coroutine fetchDataInterval;
     private Promise<LandWithAccess[]> fetchLandPromise = null;
@@ -216,40 +216,44 @@ public class BuilderProjectsPanelController : IHUD
 
         fetchLandPromise = DeployedScenesFetcher.FetchLandsFromOwner(catalyst, theGraph, address, tld, landCacheTime, scenesCacheTime);
         fetchLandPromise
-            .Then(lands =>
-            {
-                DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
-                sectionsController.SetFetchingDataEnd();
-                isFetching = false;
-
-                try
-                {
-                    var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
-                                      .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
-                                      .Aggregate((i, j) => i.Concat(j))
-                                      .ToArray();
-
-                    PanelOpenEvent(lands);
-                    landsController.SetLands(lands);
-                    scenesViewController.SetScenes(scenes);
-                }
-                catch (Exception e)
-                {
-                    landsController.SetLands(lands);
-                    scenesViewController.SetScenes(new ISceneData[] { });
-                }
-            })
-            .Catch(error =>
-            {
-                isFetching = false;
-                sectionsController.SetFetchingDataEnd();
-                landsController.SetLands(new LandWithAccess[] { });
-                scenesViewController.SetScenes(new ISceneData[] { });
-                Debug.LogError(error);
-            });
+            .Then(LandsFetched)
+            .Catch(LandsFetchedError);
     }
 
-    private void GoToCoords(Vector2Int coords)
+    internal void LandsFetchedError(string error)
+    {
+        isFetching = false;
+        sectionsController.SetFetchingDataEnd();
+        landsController.SetLands(new LandWithAccess[] { });
+        scenesViewController.SetScenes(new ISceneData[] { });
+        Debug.LogError(error);
+    }
+
+    internal void LandsFetched(LandWithAccess[] lands)
+    {
+        DataStore.i.builderInWorld.landsWithAccess.Set(lands.ToArray(), true);
+        sectionsController.SetFetchingDataEnd();
+        isFetching = false;
+
+        try
+        {
+            var scenes = lands.Where(land => land.scenes != null && land.scenes.Count > 0)
+                              .Select(land => land.scenes.Where(scene => !scene.isEmpty).Select(scene => (ISceneData)new SceneData(scene)))
+                              .Aggregate((i, j) => i.Concat(j))
+                              .ToArray();
+
+            PanelOpenEvent(lands);
+            landsController.SetLands(lands);
+            scenesViewController.SetScenes(scenes);
+        }
+        catch (Exception e)
+        {
+            landsController.SetLands(lands);
+            scenesViewController.SetScenes(new ISceneData[] { });
+        }
+    }
+
+    internal void GoToCoords(Vector2Int coords)
     {
         WebInterface.GoTo(coords.x, coords.y);
         SetVisibility(false);
@@ -258,7 +262,7 @@ public class BuilderProjectsPanelController : IHUD
 
     private void OpenUrl(string url) { WebInterface.OpenURL(url); }
 
-    private void OnGoToEditScene(Vector2Int coords)
+    internal void OnGoToEditScene(Vector2Int coords)
     {
         bool isGoingToTeleport = BIWTeleportAndEdit.TeleportAndEdit(coords);
         if (isGoingToTeleport)

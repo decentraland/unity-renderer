@@ -56,6 +56,102 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
+    public void EndMultiSelection()
+    {
+        //Arrange
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        entities.Add(entity);
+        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+
+        //Act
+        godMode.EndBoundMultiSelection();
+
+        //Assert
+        context.outlinerController.Received().CancelAllOutlines();
+        context.entityHandler.DidNotReceive().SelectEntity(entity);
+    }
+
+    [Test]
+    public void StartMultiselection()
+    {
+        //Act
+        godMode.StartMultiSelection();
+
+        //Assert
+        Assert.IsNull(mockedGameObject.transform.parent);
+    }
+
+    [Test]
+    public void SelectedEntity()
+    {
+        //Arrange
+        var entity = new BIWEntity();
+
+        //Act
+        godMode.SelectedEntity(entity);
+
+        //Assert
+        context.gizmosController.Received().SetSelectedEntities(Arg.Any<Transform>(), Arg.Any<List<BIWEntity>>());
+        Assert.IsNull(mockedGameObject.transform.parent);
+    }
+
+    [Test]
+    public void CancelAction()
+    {
+        //Arrange
+        godMode.isPlacingNewObject = true;
+
+        //Act
+        var result = godMode.ShouldCancelUndoAction();
+
+        //Assert
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public void ActionStartCreated()
+    {
+        //Arrange
+        var result = godMode.actionList.Count;
+
+        //Act
+        godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
+
+        //Assert
+        Assert.Greater(result, godMode.actionList.Count);
+    }
+
+    [Test]
+    public void ActionEndCreated()
+    {
+        //Arrange
+        var result = godMode.actionList.Count;
+
+        //Act
+        godMode.OnGizmosTransformEnd(BIWSettings.TRANSLATE_GIZMO_NAME);
+
+        //Assert
+        Assert.Greater(result, godMode.actionList.Count);
+    }
+
+    [Test]
+    public void CancelOutlineOfEntitiesOutsideSquareSelection()
+    {
+        //Arrange
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        entities.Add(entity);
+        context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+
+        //Act
+        godMode.CheckOutlineEntitiesInSquareSelection();
+
+        //Assert
+        context.outlinerController.Received().CancelEntityOutline(entity);
+    }
+
+    [Test]
     public void GodModeActivation()
     {
         //Act

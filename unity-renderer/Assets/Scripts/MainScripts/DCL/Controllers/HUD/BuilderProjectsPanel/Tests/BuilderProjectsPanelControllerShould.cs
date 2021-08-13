@@ -40,7 +40,76 @@ namespace Tests
         }
 
         [TearDown]
-        public void TearDown() { controller.Dispose(); }
+        public void TearDown()
+        {
+            controller.OnJumpInOrEdit -= AssertJump;
+
+            controller.Dispose();
+        }
+
+        [Test]
+        public void LandsFetchedError()
+        {
+            //Arrange
+            controller.isFetching = true;
+            //Act
+            controller.LandsFetchedError( "TestError");
+
+            //Assert
+            Assert.IsFalse(controller.isFetching);
+        }
+
+        [Test]
+        public void LandsFetched()
+        {
+            //Arrange
+            Parcel parcel = new Parcel();
+            parcel.x = 0;
+            parcel.y = 0;
+
+            Vector2Int parcelCoords = new Vector2Int(0, 0);
+            Land land = new Land();
+            land.parcels = new List<Parcel>() { parcel };
+
+            LandWithAccess landWithAcces = new LandWithAccess(land);
+            DeployedScene deployedScene = new DeployedScene();
+            deployedScene.parcelsCoord = new Vector2Int[] { parcelCoords };
+            deployedScene.deploymentSource = DeployedScene.Source.SDK;
+
+            landWithAcces.scenes = new List<DeployedScene>() { deployedScene };
+            var lands = new LandWithAccess[]
+            {
+                landWithAcces
+            };
+
+            //Act
+            controller.LandsFetched(lands);
+
+            //Assert
+            landsController.Received().SetLands(lands);
+        }
+
+        [Test]
+        public void GoToCoords()
+        {
+            //Arrange
+            controller.OnJumpInOrEdit += AssertJump;
+
+            //Act
+            controller.GoToCoords(new Vector2Int(0, 0));
+        }
+
+        [Test]
+        public void OnGoToEditScene()
+        {
+            //Arrange
+            controller.OnJumpInOrEdit += AssertJump;
+
+            //Act
+            controller.OnGoToEditScene(new Vector2Int(0, 0));
+        }
+
+        private void AssertJump() { Assert.Pass(); }
 
         [Test]
         public void ViewCreatedCorrectly() { Assert.IsNotNull(controller.view); }

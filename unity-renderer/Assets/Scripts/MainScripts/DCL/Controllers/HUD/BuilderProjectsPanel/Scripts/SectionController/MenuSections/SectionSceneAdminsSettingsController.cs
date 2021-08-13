@@ -127,7 +127,7 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
         view.SetBannedUsersCount(bannedUsers.Count);
     }
 
-    void AddAdmin(string userId)
+    internal void AddAdmin(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return;
@@ -142,7 +142,7 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
         userView.OnRemovePressed += OnRemoveAdminPressed;
     }
 
-    void AddBannedUser(string userId)
+    internal void AddBannedUser(string userId)
     {
         if (string.IsNullOrEmpty(userId))
             return;
@@ -157,7 +157,7 @@ internal class SectionSceneAdminsSettingsController : SectionBase, ISelectSceneL
         userView.OnRemovePressed += OnRemoveBannedUserPressed;
     }
 
-    void OnAddAdminPressed(string userId)
+    internal void OnAddAdminPressed(string userId)
     {
         if (admins.Contains(userId))
             return;

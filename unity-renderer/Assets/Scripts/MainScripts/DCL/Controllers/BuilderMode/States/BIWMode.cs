@@ -32,7 +32,7 @@ public class BIWMode
 
     protected bool isNewObjectPlaced = false;
 
-    protected List<BIWEntityAction> actionList = new List<BIWEntityAction>();
+    internal List<BIWEntityAction> actionList = new List<BIWEntityAction>();
 
     public virtual void Init(BIWContext context)
     {
