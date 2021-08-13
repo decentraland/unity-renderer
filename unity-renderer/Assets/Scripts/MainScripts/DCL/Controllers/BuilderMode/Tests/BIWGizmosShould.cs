@@ -48,13 +48,14 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     {
         //Arrange 
         gizmosController.OnChangeTransformValue += AssertValue;
+        gizmosController.activeGizmo = gizmo;
 
         //Act
         gizmosController.OnDrag(Vector3.one, Vector2.one);
 
     }
 
-    private void AssertValue(Vector3 value) { Assert.AreEqual(value, Vector3.one * 5f); }
+    private void AssertValue(Vector3 value) { Assert.AreEqual(value, Vector3.zero); }
 
     [Test]
     public void TestEndDrag()
