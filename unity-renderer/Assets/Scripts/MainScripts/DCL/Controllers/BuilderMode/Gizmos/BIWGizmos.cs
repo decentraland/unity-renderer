@@ -39,9 +39,9 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
 
     private Vector3 relativeScaleRatio;
     protected bool startDragging = false;
-    protected float prevAxisValue;
+    internal float previousAxisValue;
 
-    public BIWGizmosAxis activeAxis { protected set; get; }
+    public BIWGizmosAxis activeAxis { internal set; get; }
 
     public abstract void SetSnapFactor(BIWGizmosController.SnapInfo snapInfo);
     public abstract float TransformEntity(Transform targetTransform, BIWGizmosAxis axis, float axisValue);
@@ -95,10 +95,10 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
         if (startDragging)
         {
             startDragging = false;
-            prevAxisValue = axisValue;
+            previousAxisValue = axisValue;
         }
 
-        float transformValue = axisValue - prevAxisValue;
+        float transformValue = axisValue - previousAxisValue;
         if (Mathf.Abs(transformValue) >= snapFactor)
         {
             if (snapFactor > 0)
@@ -123,14 +123,14 @@ public abstract class BIWGizmos : MonoBehaviour, IBIWGizmos
         return true;
     }
 
-    protected virtual float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
+    internal virtual float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
         Vector3 dir = (hitPoint - axis.transform.position).normalized;
         float sign = Vector3.Angle(dir, axis.transform.forward) == 180 ? -1 : 1;
         return Vector3.Distance(activeAxis.transform.position, hitPoint) * sign;
     }
 
-    protected virtual void SetPreviousAxisValue(float axisValue, float transformValue) { prevAxisValue = axisValue - transformValue; }
+    internal virtual void SetPreviousAxisValue(float axisValue, float transformValue) { previousAxisValue = axisValue - transformValue; }
 
     private void SetPositionToTarget()
     {

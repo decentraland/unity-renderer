@@ -154,6 +154,7 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         //Assert
         Assert.IsFalse(gizmosController.isTransformingObject);
     }
+
     protected override IEnumerator TearDown()
     {
         gizmosController.OnChangeTransformValue -= OnChangeTransformValue;

@@ -37,11 +37,11 @@ public class BIWGizmosRotate : BIWGizmos
         return false;
     }
 
-    protected override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
+    internal override float GetHitPointToAxisValue(BIWGizmosAxis axis, Vector3 hitPoint, Vector2 mousePosition)
     {
         Vector3 hitDir = (hitPoint - transform.position).normalized;
         return Vector3.SignedAngle(axis.transform.up, hitDir, axis.transform.forward) * Mathf.Deg2Rad;
     }
 
-    protected override void SetPreviousAxisValue(float axisValue, float transformValue) { prevAxisValue = axisValue; }
+    internal override void SetPreviousAxisValue(float axisValue, float transformValue) { previousAxisValue = axisValue; }
 }
