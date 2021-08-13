@@ -44,7 +44,17 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
     }
 
     [Test]
-    public void TestDrag() { }
+    public void TestDrag()
+    {
+        //Arrange 
+        gizmosController.OnChangeTransformValue += AssertValue;
+
+        //Act
+        gizmosController.OnDrag(Vector3.one, Vector2.one);
+
+    }
+
+    private void AssertValue(Vector3 value) { Assert.AreEqual(value, Vector3.one * 5f); }
 
     [Test]
     public void TestEndDrag()
@@ -160,6 +170,8 @@ public class BIWGizmosShould : IntegrationTestSuite_Legacy
         gizmosController.OnChangeTransformValue -= OnChangeTransformValue;
         gizmosController.OnGizmoTransformObjectStart -= AssertGizmosType;
         gizmosController.OnGizmoTransformObjectEnd -= AssertGizmosType;
+        gizmosController.OnChangeTransformValue -= AssertValue;
+
         GameObject.Destroy(mockedGameObject);
         gizmosController.Dispose();
         yield return base.TearDown();
