@@ -130,7 +130,7 @@ public class Catalyst : ICatalyst
         {
             string urlParams = "";
             urlParams = pointersGroupsToFetch[i].Aggregate(urlParams, (current, pointer) => current + $"&pointer={pointer}");
-            string url = $"{realmDomain}/content/entities/{entityType}?{urlParams}";
+            string url = $"{realmContentServerUrl}/entities/{entityType}?{urlParams}";
 
             splittedPromises[i] = Get(url);
             splittedPromises[i]
