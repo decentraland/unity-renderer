@@ -43,7 +43,6 @@ public interface ISceneCatalogController
     void RefreshCatalog();
     void SetActive(bool isActive);
     BuildModeCatalogSection GetCurrentSection();
-    Canvas GetGeneralCanvas();
 }
 
 public class SceneCatalogController : ISceneCatalogController
@@ -143,8 +142,6 @@ public class SceneCatalogController : ISceneCatalogController
     }
 
     public BuildModeCatalogSection GetCurrentSection() { return currentSection; }
-
-    public Canvas GetGeneralCanvas() { return sceneCatalogView.generalCanvas; }
 
     public void AssetsFiltered(List<Dictionary<string, List<CatalogItem>>> filterObjects)
     {
