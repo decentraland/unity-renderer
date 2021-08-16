@@ -28,7 +28,7 @@ public class BIWMode
     protected GameObject editionGO, undoGO, snapGO, freeMovementGO;
 
     protected bool isSnapActiveValue = false, isMultiSelectionActive = false, isModeActive = false;
-    protected List<BIWEntity> selectedEntities;
+    internal List<BIWEntity> selectedEntities;
 
     protected bool isNewObjectPlaced = false;
 

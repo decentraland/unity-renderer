@@ -5,6 +5,7 @@ using DCL.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
@@ -52,11 +53,14 @@ namespace Tests
         {
             //Arrange
             controller.isFetching = true;
+            var error =  "TestError";
+
             //Act
-            controller.LandsFetchedError( "TestError");
+            controller.LandsFetchedError(error);
 
             //Assert
             Assert.IsFalse(controller.isFetching);
+            LogAssert.Expect(LogType.Error, error);
         }
 
         [Test]

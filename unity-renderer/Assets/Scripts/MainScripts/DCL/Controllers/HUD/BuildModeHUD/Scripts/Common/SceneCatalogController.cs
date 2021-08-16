@@ -190,7 +190,7 @@ public class SceneCatalogController : ISceneCatalogController
 
         var favorites  = GenerateFavorites();
 
-        sceneCatalogView.catalogGroupList.SetContent(favorites);
+        sceneCatalogView.catalogGroupList?.SetContent(favorites);
         sceneCatalogView.ShowBackButton(false);
     }
 
@@ -228,7 +228,7 @@ public class SceneCatalogController : ISceneCatalogController
 
         var contentList = GenerateContentListForCatalogItemPack(catalogItemPack);
 
-        sceneCatalogView.catalogGroupList.SetContent(contentList);
+        sceneCatalogView.catalogGroupList?.SetContent(contentList);
     }
 
     internal  List<Dictionary<string, List<CatalogItem>>> GenerateContentListForCatalogItemPack(CatalogItemPack catalogItemPack)

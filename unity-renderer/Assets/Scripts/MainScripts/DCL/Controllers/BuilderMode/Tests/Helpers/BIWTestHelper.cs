@@ -8,6 +8,7 @@ using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using Newtonsoft.Json;
 using NSubstitute;
 using UnityEngine;
 using UnityEngine.UI;
@@ -145,6 +146,7 @@ public static class BIWTestHelper
 
     public static void CreateTestCatalogLocalMultipleFloorObjects()
     {
+        BIWCatalogManager.Init();
         AssetCatalogBridge.i.ClearCatalog();
         string jsonPath = TestAssetsUtils.GetPathRaw() + "/BuilderInWorldCatalog/multipleSceneObjectsCatalog.json";
 
@@ -191,5 +193,17 @@ public static class BIWTestHelper
             owner.assets.Add(JsonUtility.FromJson<NFTInfo>(jsonValue));
             BIWNFTController.i.NftsFeteched(owner);
         }
+    }
+
+    public static IEnumerator CreateShapeForEntity(ParcelScene scene, IDCLEntity entity)
+    {
+        TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            new
+            {
+                src = TestAssetsUtils.GetPath() + "/GLB/Trunk/Trunk.glb"
+            }));
+
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entity.entityId]);
+        yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded);
     }
 }

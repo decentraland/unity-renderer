@@ -174,13 +174,9 @@ public class BIWGodMode : BIWMode
                 continue;
 
             if (BIWUtils.IsWithinSelectionBounds(entity.rootEntity.meshesInfo.mergedBounds.center, lastMousePosition, Input.mousePosition))
-            {
                 outlinerController.OutlineEntity(entity);
-            }
             else
-            {
                 outlinerController.CancelEntityOutline(entity);
-            }
         }
     }
 

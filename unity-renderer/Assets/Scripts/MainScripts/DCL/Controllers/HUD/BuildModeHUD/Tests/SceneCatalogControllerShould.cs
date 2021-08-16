@@ -3,6 +3,8 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using NSubstitute.Extensions;
+using UnityEngine;
 
 namespace Tests.BuildModeHUDControllers
 {
@@ -10,6 +12,7 @@ namespace Tests.BuildModeHUDControllers
     {
         private SceneCatalogController sceneCatalogController;
         private ISceneCatalogView view;
+        private GameObject mockedGameObject;
 
         [SetUp]
         public void SetUp()
@@ -22,7 +25,12 @@ namespace Tests.BuildModeHUDControllers
         }
 
         [TearDown]
-        public void TearDown() { sceneCatalogController.Dispose(); }
+        public void TearDown()
+        {
+            sceneCatalogController.Dispose();
+            if (mockedGameObject != null)
+                GameObject.Destroy(mockedGameObject);
+        }
 
         [Test]
         public void ShowFavorites()
@@ -34,13 +42,15 @@ namespace Tests.BuildModeHUDControllers
             sceneCatalogController.ShowFavorites();
 
             //Assert
-            view.Received().catalogGroupList.SetContent(favorites);
+            sceneCatalogController.sceneCatalogView.Received(1).ShowBackButton(false);
         }
 
         [Test]
         public void AssetPackSelected()
         {
             //Arrange
+            mockedGameObject = new GameObject();
+            AssetCatalogBridge.i = mockedGameObject.AddComponent<AssetCatalogBridge>();
             BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
             var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
             var contentList = sceneCatalogController.GenerateContentListForCatalogItemPack(catalogItemPack);
@@ -49,7 +59,7 @@ namespace Tests.BuildModeHUDControllers
             sceneCatalogController.OnCatalogItemPackSelected(catalogItemPack);
 
             //Assert
-            view.Received().catalogGroupList.SetContent(contentList);
+            sceneCatalogController.sceneCatalogView.Received(1).ShowBackButton(true);
         }
 
         [Test]

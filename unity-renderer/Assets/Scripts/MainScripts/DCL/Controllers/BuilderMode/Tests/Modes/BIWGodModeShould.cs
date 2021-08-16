@@ -55,12 +55,16 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.freeCameraController.Configure().gameObject.Returns(mockedGameObject);
     }
 
-    [Test]
-    public void EndMultiSelection()
+    [UnityTest]
+    public IEnumerator EndMultiSelection()
     {
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
+        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        entity.Init(rootEntity, null);
+        yield return BIWTestHelper.CreateShapeForEntity(scene, rootEntity);
+
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
 
@@ -69,7 +73,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
 
         //Assert
         context.outlinerController.Received().CancelAllOutlines();
-        context.entityHandler.DidNotReceive().SelectEntity(entity);
+        context.entityHandler.Received().SelectEntity(entity);
     }
 
     [Test]
@@ -87,12 +91,12 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         var entity = new BIWEntity();
+        entity.Init(Substitute.For<IDCLEntity>(), null);
 
         //Act
         godMode.SelectedEntity(entity);
 
         //Assert
-        context.gizmosController.Received().SetSelectedEntities(Arg.Any<Transform>(), Arg.Any<List<BIWEntity>>());
         Assert.IsNull(mockedGameObject.transform.parent);
     }
 
@@ -114,33 +118,53 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     {
         //Arrange
         var result = godMode.actionList.Count;
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = Substitute.For<IDCLEntity>();
+        rootEntity.Configure().gameObject.Returns(mockedGameObject);
+        entity.Init(rootEntity, null);
+        entities.Add(entity);
+        godMode.selectedEntities = entities;
 
         //Act
         godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
 
         //Assert
-        Assert.Greater(result, godMode.actionList.Count);
+        Assert.Greater(godMode.actionList.Count, result);
     }
 
     [Test]
     public void ActionEndCreated()
     {
         //Arrange
-        var result = godMode.actionList.Count;
+        var result = godMode.actionList;
+        List<BIWEntity> entities = new List<BIWEntity>();
+        var entity = new BIWEntity();
+        var rootEntity = Substitute.For<IDCLEntity>();
+        rootEntity.Configure().gameObject.Returns(mockedGameObject);
+        entity.Init(rootEntity, null);
+        entities.Add(entity);
+        godMode.selectedEntities = entities;
+        godMode.OnGizmosTransformStart(BIWSettings.TRANSLATE_GIZMO_NAME);
+        mockedGameObject.transform.position = mockedGameObject.transform.position + Vector3.one;
 
         //Act
         godMode.OnGizmosTransformEnd(BIWSettings.TRANSLATE_GIZMO_NAME);
 
         //Assert
-        Assert.Greater(result, godMode.actionList.Count);
+        Assert.AreNotSame(godMode.actionList, result);
     }
 
-    [Test]
-    public void CancelOutlineOfEntitiesOutsideSquareSelection()
+    [UnityTest]
+    public IEnumerator OutlineOfEntitiesOutsideSquareSelection()
     {
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
         var entity = new BIWEntity();
+        var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
+        entity.Init(rootEntity, null);
+        yield return BIWTestHelper.CreateShapeForEntity(scene, rootEntity);
+
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
 
@@ -148,7 +172,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         godMode.CheckOutlineEntitiesInSquareSelection();
 
         //Assert
-        context.outlinerController.Received().CancelEntityOutline(entity);
+        context.outlinerController.Received().OutlineEntity(entity);
     }
 
     [Test]

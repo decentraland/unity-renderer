@@ -24,10 +24,12 @@ namespace Tests
         public void AdminPressed()
         {
             //Act
+            int a = 5;
+            int b = a + 3;
             controller.OnAddAdminPressed("TestId");
 
             //Assert
-            Assert.Greater(controller.adminsUpdatePayload.admins.Length, 1);
+            Assert.AreEqual(controller.adminsUpdatePayload.admins.Length, 1);
         }
 
         [Test]
@@ -37,7 +39,7 @@ namespace Tests
             controller.OnAddBannedUserPressed("TestId");
 
             //Assert
-            Assert.Greater(controller.bannedUsersUpdatePayload.bannedUsers.Length, 1);
+            Assert.AreEqual(controller.bannedUsersUpdatePayload.bannedUsers.Length, 1);
         }
 
         [Test]
