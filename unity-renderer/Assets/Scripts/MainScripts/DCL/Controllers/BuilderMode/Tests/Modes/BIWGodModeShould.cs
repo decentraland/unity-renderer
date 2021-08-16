@@ -64,7 +64,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
         entity.Init(rootEntity, null);
         yield return BIWTestHelper.CreateShapeForEntity(scene, rootEntity);
-
+        rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
 
@@ -156,7 +156,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
     }
 
     [UnityTest]
-    public IEnumerator OutlineOfEntitiesOutsideSquareSelection()
+    public IEnumerator OutlineOfEntitiesInsideSquareSelection()
     {
         //Arrange
         List<BIWEntity> entities = new List<BIWEntity>();
@@ -164,7 +164,7 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         var rootEntity = TestHelpers.CreateSceneEntity(scene, "testId");
         entity.Init(rootEntity, null);
         yield return BIWTestHelper.CreateShapeForEntity(scene, rootEntity);
-
+        rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
 

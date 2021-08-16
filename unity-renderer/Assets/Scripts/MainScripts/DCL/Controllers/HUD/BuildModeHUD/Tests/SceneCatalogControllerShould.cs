@@ -27,6 +27,8 @@ namespace Tests.BuildModeHUDControllers
         [TearDown]
         public void TearDown()
         {
+            AssetCatalogBridge.i.ClearCatalog();
+            BIWCatalogManager.ClearCatalog();
             sceneCatalogController.Dispose();
             if (mockedGameObject != null)
                 GameObject.Destroy(mockedGameObject);
@@ -53,7 +55,6 @@ namespace Tests.BuildModeHUDControllers
             AssetCatalogBridge.i = mockedGameObject.AddComponent<AssetCatalogBridge>();
             BIWTestHelper.CreateTestCatalogLocalMultipleFloorObjects();
             var catalogItemPack = BIWCatalogManager.GetCatalogItemPackList()[0];
-            var contentList = sceneCatalogController.GenerateContentListForCatalogItemPack(catalogItemPack);
 
             //Act
             sceneCatalogController.OnCatalogItemPackSelected(catalogItemPack);
