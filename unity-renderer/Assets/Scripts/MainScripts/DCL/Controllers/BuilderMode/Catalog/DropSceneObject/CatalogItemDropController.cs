@@ -15,7 +15,7 @@ public class CatalogItemDropController
         if (adapter == null)
             return;
         CatalogItem catalogItem = adapter.GetContent();
-
+        GameObject.Destroy(adapter.gameObject);
         OnCatalogItemDropped?.Invoke(catalogItem);
     }
 }

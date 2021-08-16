@@ -31,7 +31,7 @@ internal class UnpublishPopupController : IDisposable
         CoroutineStarter.Stop(fakeProgressRoutine);
         view.OnCancelPressed -= OnCancel;
         view.OnConfirmPressed -= OnConfirmUnpublish;
-        view.Dispose();
+        view?.Dispose();
     }
 
     public void Show(Vector2Int coordinates, DeployedScene.Source source = DeployedScene.Source.BUILDER_IN_WORLD)
