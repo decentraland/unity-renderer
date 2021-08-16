@@ -145,7 +145,7 @@ public class BuildModeHUDController : IHUD
     private void ConfigureDragAndDropSceneObjectController()
     {
         controllers.dragAndDropSceneObjectController.OnStopInput += StopInput;
-        controllers.dragAndDropSceneObjectController.OnResumeInput += OnResumeInput;
+        controllers.dragAndDropSceneObjectController.OnResumeInput += () => OnResumeInput?.Invoke();
         controllers.dragAndDropSceneObjectController.OnCatalogItemDropped += CatalogItemDropped;
     }
 
