@@ -67,9 +67,10 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        godMode.lastMousePosition = Vector3.zero;
 
         //Act
-        godMode.EndBoundMultiSelection();
+        godMode.EndBoundMultiSelection(Vector3.one * 9999);
 
         //Assert
         context.outlinerController.Received().CancelAllOutlines();
@@ -167,9 +168,10 @@ public class BIWGodModeShould : IntegrationTestSuite_Legacy
         rootEntity.gameObject.transform.position = Vector3.zero;
         entities.Add(entity);
         context.entityHandler.Configure().GetAllEntitiesFromCurrentScene().Returns(entities);
+        godMode.lastMousePosition = Vector3.zero;
 
         //Act
-        godMode.CheckOutlineEntitiesInSquareSelection();
+        godMode.CheckOutlineEntitiesInSquareSelection(Vector3.one * 9999);
 
         //Assert
         context.outlinerController.Received().OutlineEntity(entity);

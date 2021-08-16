@@ -206,7 +206,7 @@ public static partial class BIWUtils
 
     public static bool IsWithinSelectionBounds(Vector3 point, Vector3 lastClickMousePosition, Vector3 mousePosition)
     {
-        Camera camera = Camera.current;
+        Camera camera = Camera.main;
         var viewPortBounds = GetViewportBounds(camera, lastClickMousePosition, mousePosition);
         return viewPortBounds.Contains(camera.WorldToViewportPoint(point));
     }
