@@ -7,13 +7,14 @@ namespace DCL
 {
     public class AvatarsLODController : IAvatarsLODController
     {
-        internal const bool SORT_AVATARS = false;
-        internal const float SIMPLE_AVATAR_DISTANCE = 10f;
-        private const int DEFAULT_MAX_AVATAR = 70;
-        private const int DEFAULT_MAX_IMPOSTORS = 200;
+        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+        private BaseVariable<float> simpleAvatarDistance => DataStore.i.avatarsLOD.simpleAvatarDistance;
+        private BaseVariable<float> LODDistance => DataStore.i.avatarsLOD.LODDistance;
+        private BaseVariable<int> maxAvatars => DataStore.i.avatarsLOD.maxAvatars;
+        private BaseVariable<int> maxImpostors => DataStore.i.avatarsLOD.maxImpostors;
 
         internal readonly Dictionary<string, IAvatarLODController> lodControllers = new Dictionary<string, IAvatarLODController>();
-        private BaseDictionary<string, Player> otherPlayers => DataStore.i.player.otherPlayers;
+
         internal bool enabled;
 
         public AvatarsLODController()
@@ -60,7 +61,7 @@ namespace DCL
             if (!enabled)
                 return;
 
-            UpdateAllLODs();
+            UpdateAllLODs(maxAvatars.Get(), maxImpostors.Get());
             UpdateLODsBillboard();
         }
 
@@ -77,16 +78,7 @@ namespace DCL
             }
         }
 
-        internal void UpdateAllLODs(int maxAvatars = DEFAULT_MAX_AVATAR, int maxImpostors = DEFAULT_MAX_IMPOSTORS)
-        {
-            if (SORT_AVATARS)
-                UpdateAllLodsSorted(maxAvatars, maxImpostors);
-            else
-                UpdateAllLodsNotSorted(maxAvatars, maxImpostors);
-
-        }
-
-        void UpdateAllLodsNotSorted(int maxAvatars = DEFAULT_MAX_AVATAR, int maxImpostors = DEFAULT_MAX_IMPOSTORS)
+        internal void UpdateAllLODs(int maxAvatars = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_AVATAR, int maxImpostors = DataStore.DataStore_AvatarsLOD.DEFAULT_MAX_IMPOSTORS)
         {
             int avatarsCount = 0; //Full Avatar + Simple Avatar
             int impostorCount = 0; //Impostor
@@ -94,7 +86,8 @@ namespace DCL
             Queue<IAvatarLODController> nearPlayersWithoutSpot = new Queue<IAvatarLODController>(); // Near players without an avatar spot
             Queue<IAvatarLODController> farawayPlayerPromoted = new Queue<IAvatarLODController>(); // List of faraway players promoted to avatars
 
-            float lodDistance = DataStore.i.avatarsLOD.LODDistance.Get();
+            //Cache .Get to boost performance
+            float lodDistance = this.LODDistance.Get();
             foreach (IAvatarLODController lodController in lodControllers.Values)
             {
                 float distance = DistanceToOwnPlayer(lodController.player);
@@ -110,7 +103,7 @@ namespace DCL
                 {
                     if (avatarsCount < maxAvatars)
                     {
-                        if (distance < SIMPLE_AVATAR_DISTANCE)
+                        if (distance < simpleAvatarDistance.Get())
                             lodController.SetFullAvatar();
                         else
                             lodController.SetSimpleAvatar();
@@ -160,7 +153,7 @@ namespace DCL
 
                 //We claim back the avatar spot for the nearby player
                 IAvatarLODController nearPlayer = nearPlayersWithoutSpot.Dequeue();
-                if (DistanceToOwnPlayer(nearPlayer.player) < SIMPLE_AVATAR_DISTANCE)
+                if (DistanceToOwnPlayer(nearPlayer.player) < simpleAvatarDistance.Get())
                     nearPlayer.SetFullAvatar();
                 else
                     nearPlayer.SetSimpleAvatar();
@@ -179,43 +172,6 @@ namespace DCL
             while (nearPlayersWithoutSpot.Count > 0)
             {
                 nearPlayersWithoutSpot.Dequeue().SetInvisible();
-            }
-        }
-
-        void UpdateAllLodsSorted(int maxAvatars = DEFAULT_MAX_AVATAR, int maxImpostors = DEFAULT_MAX_IMPOSTORS)
-        {
-            int avatarsCount = 0; //Full Avatar
-            int impostorCount = 0; //Impostor
-
-            //Sort all the players by distance to maximize the amount of HQ avatars.
-            IEnumerable<(IAvatarLODController lodController, float distance)> sortedPlayers = lodControllers.Select(x => (lodController: x.Value, distance: DistanceToOwnPlayer(x.Value.player))).OrderBy(x => x.distance).ToList();
-            foreach ((IAvatarLODController lodController, float distance) in sortedPlayers)
-            {
-                if (distance < 0) //Behind camera
-                {
-                    lodController.SetInvisible();
-                    continue;
-                }
-
-                if (avatarsCount < maxAvatars)
-                {
-                    if (distance < SIMPLE_AVATAR_DISTANCE)
-                        lodController.SetFullAvatar();
-                    else
-                        lodController.SetSimpleAvatar();
-
-                    avatarsCount++;
-                    continue;
-                }
-
-                if (distance >= DataStore.i.avatarsLOD.LODDistance.Get() && (avatarsCount + impostorCount) < maxImpostors)
-                {
-                    lodController.SetImpostor();
-                    impostorCount++;
-                    continue;
-                }
-
-                lodController.SetInvisible();
             }
         }
 
