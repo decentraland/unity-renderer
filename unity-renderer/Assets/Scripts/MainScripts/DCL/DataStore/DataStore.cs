@@ -73,7 +73,7 @@ namespace DCL
         public class DataStore_AvatarsLOD
         {
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
-            public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
+            public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(70);
         }
 
         /// <summary>

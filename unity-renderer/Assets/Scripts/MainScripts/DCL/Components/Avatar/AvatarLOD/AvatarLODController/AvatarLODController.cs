@@ -6,35 +6,41 @@ namespace DCL
 {
     public interface IAvatarLODController : IDisposable
     {
-        void SetAvatarState();
+        Player player { get; }
+        void SetFullAvatar();
         void SetSimpleAvatar();
-        void SetImpostorState();
+        void SetImpostor();
         void SetInvisible();
     }
 
     public class AvatarLODController : IAvatarLODController
     {
+        internal enum State
+        {
+            Invisible,
+            FullAvatar,
+            SimpleAvatar,
+            Impostor,
+        }
+
         private const float TRANSITION_DURATION = 0.5f;
 
-        internal readonly Player player;
+        public Player player { get; }
 
         internal float avatarFade;
         internal float impostorFade;
-        internal float targetAvatarFade;
-        internal float targetImpostorFade;
 
         internal bool SSAOEnabled;
         internal bool facialFeaturesEnabled;
 
         internal Coroutine currentTransition = null;
+        internal State? lastRequestedState = null;
 
         public AvatarLODController(Player player)
         {
             this.player = player;
             avatarFade = 1;
-            targetAvatarFade = 1;
             impostorFade = 0;
-            targetImpostorFade = 0;
             SSAOEnabled = true;
             facialFeaturesEnabled = true;
             if (player?.renderer == null)
@@ -43,8 +49,12 @@ namespace DCL
             player.renderer.SetImpostorFade(impostorFade);
         }
 
-        public void SetAvatarState()
+        public void SetFullAvatar()
         {
+            if (lastRequestedState == State.FullAvatar)
+                return;
+
+            lastRequestedState = State.FullAvatar;
             if (player?.renderer == null)
                 return;
 
@@ -54,6 +64,10 @@ namespace DCL
 
         public void SetSimpleAvatar()
         {
+            if (lastRequestedState == State.SimpleAvatar)
+                return;
+
+            lastRequestedState = State.SimpleAvatar;
             if (player?.renderer == null)
                 return;
 
@@ -61,8 +75,12 @@ namespace DCL
             StartTransition(1, 0);
         }
 
-        public void SetImpostorState()
+        public void SetImpostor()
         {
+            if (lastRequestedState == State.Impostor)
+                return;
+
+            lastRequestedState = State.Impostor;
             if (player?.renderer == null)
                 return;
 
@@ -72,6 +90,10 @@ namespace DCL
 
         public void SetInvisible()
         {
+            if (lastRequestedState == State.Invisible)
+                return;
+
+            lastRequestedState = State.Invisible;
             if (player?.renderer == null)
                 return;
 
@@ -81,11 +103,6 @@ namespace DCL
 
         private void StartTransition(float newTargetAvatarFade, float newTargetImpostorFade)
         {
-            if (Mathf.Approximately(targetAvatarFade, newTargetAvatarFade) && Mathf.Approximately(targetImpostorFade, newTargetImpostorFade))
-                return;
-
-            targetAvatarFade = newTargetAvatarFade;
-            targetImpostorFade = newTargetImpostorFade;
             CoroutineStarter.Stop(currentTransition);
             currentTransition = CoroutineStarter.Start(Transition(newTargetAvatarFade, newTargetImpostorFade));
         }
@@ -136,6 +153,10 @@ namespace DCL
             }
         }
 
-        public void Dispose() { CoroutineStarter.Stop(currentTransition); }
+        public void Dispose()
+        {
+            lastRequestedState = null;
+            CoroutineStarter.Stop(currentTransition);
+        }
     }
 }
