@@ -12,6 +12,7 @@ public interface ISceneCatalogView
     Toggle favorites { get; }
     Toggle assetPack { get; }
     IBIWSearchBarView searchBarView { get; }
+    Canvas generalCanvas { get; }
 
     event Action OnHideCatalogClicked;
     event Action OnSceneCatalogBack;
@@ -35,6 +36,7 @@ public class SceneCatalogView : MonoBehaviour, ISceneCatalogView
     public Toggle favorites => favoritesToggle;
     public Toggle assetPack => assetPackToggle;
     public IBIWSearchBarView searchBarView  => biwSearchBarView;
+    public Canvas generalCanvas  => catalogGroupList.generalCanvas;
 
     public event Action OnHideCatalogClicked;
     public event Action OnSceneCatalogBack;

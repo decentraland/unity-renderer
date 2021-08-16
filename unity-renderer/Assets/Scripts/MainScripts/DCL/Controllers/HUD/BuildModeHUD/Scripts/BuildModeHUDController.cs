@@ -51,7 +51,6 @@ public class BuildModeHUDController : IHUD
     internal bool isCatalogOpen = false;
 
     internal BuildModeHUDInitializationModel controllers;
-    internal CatalogItemDropController catalogItemDropController;
 
     private Coroutine publishProgressCoroutine = null;
     private float timeFromLastClickOnExtraButtons = 0f;
@@ -70,7 +69,6 @@ public class BuildModeHUDController : IHUD
         ConfigureCatalogBtnController();
         ConfigureInspectorController();
         ConfigureTopActionsButtonsController();
-        ConfigureCatalogItemDropController();
         ConfigureSaveHUDController();
         ConfigureNewProjectDetailsController();
         ConfigurePublicationDetailsController();
@@ -80,7 +78,6 @@ public class BuildModeHUDController : IHUD
     public void Initialize(BuildModeHUDInitializationModel controllers)
     {
         this.controllers = controllers;
-        catalogItemDropController = new CatalogItemDropController();
 
         CreateMainView();
     }
@@ -108,8 +105,6 @@ public class BuildModeHUDController : IHUD
             newProjectDetailsController = new PublicationDetailsController(),
             publicationDetailsController = new PublicationDetailsController()
         };
-
-        catalogItemDropController = new CatalogItemDropController();
     }
 
     internal void CreateMainView()
@@ -147,7 +142,12 @@ public class BuildModeHUDController : IHUD
 
     private void ConfigureShortcutsController() { controllers.shortcutsController.OnCloseClick += ChangeVisibilityOfControls; }
 
-    private void ConfigureDragAndDropSceneObjectController() { controllers.dragAndDropSceneObjectController.OnDrop += () => SceneObjectDroppedInView(); }
+    private void ConfigureDragAndDropSceneObjectController()
+    {
+        controllers.dragAndDropSceneObjectController.OnStopInput += StopInput;
+        controllers.dragAndDropSceneObjectController.OnResumeInput += OnResumeInput;
+        controllers.dragAndDropSceneObjectController.OnCatalogItemDropped += CatalogItemDropped;
+    }
 
     private void ConfigurePublishBtnController() { controllers.publishBtnController.OnClick += () => OnPublishAction?.Invoke(); }
 
@@ -185,12 +185,6 @@ public class BuildModeHUDController : IHUD
         controllers.topActionsButtonsController.extraActionsController.OnResetCameraClick += () => OnResetCameraAction?.Invoke();
 
         controllers.topActionsButtonsController.extraActionsController.SetResetButtonInteractable(false);
-    }
-
-    private void ConfigureCatalogItemDropController()
-    {
-        catalogItemDropController.catalogGroupListView = view.sceneCatalog.catalogGroupListView;
-        catalogItemDropController.OnCatalogItemDropped += CatalogItemDropped;
     }
 
     private void ConfigureSaveHUDController() { OnLogoutAction += controllers.saveHUDController.StopAnimation; }
@@ -626,8 +620,6 @@ public class BuildModeHUDController : IHUD
 
         return view.isShowHideAnimatorVisible;
     }
-
-    public void SceneObjectDroppedInView() { catalogItemDropController.CatalogitemDropped(); }
 
     internal virtual IBuildModeHUDView CreateView() => BuildModeHUDView.Create();
 

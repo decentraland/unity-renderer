@@ -1,28 +1,103 @@
 using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public interface IDragAndDropSceneObjectController
 {
+    event Action<CatalogItem> OnCatalogItemDropped;
     event Action OnDrop;
+    event Action OnResumeInput;
+    event Action OnStopInput;
 
-    void Initialize(IDragAndDropSceneObjectView dragAndDropSceneObjectView);
+    void Initialize(ISceneCatalogController catalogController, IDragAndDropSceneObjectView dragAndDropSceneObjectView);
     void Dispose();
     void Drop();
+    CatalogItemAdapter GetLastAdapterDragged();
 }
 
 public class DragAndDropSceneObjectController : IDragAndDropSceneObjectController
 {
+    public event Action OnResumeInput;
+    public event Action OnStopInput;
+    public event Action<CatalogItem> OnCatalogItemDropped;
     public event Action OnDrop;
 
+    private ISceneCatalogController sceneCatalogController;
+
+    private CatalogItemAdapter catalogItemAdapterDragged;
+    private CatalogItemAdapter catalogItemcopy;
+    private CatalogItem itemDroped;
     private IDragAndDropSceneObjectView dragAndDropSceneObjectView;
 
-    public void Initialize(IDragAndDropSceneObjectView dragAndDropSceneObjectView)
+    public void Initialize(ISceneCatalogController sceneCatalogController, IDragAndDropSceneObjectView dragAndDropSceneObjectView)
     {
-        this.dragAndDropSceneObjectView = dragAndDropSceneObjectView;
+        this.sceneCatalogController = sceneCatalogController;
+        sceneCatalogController.OnCatalogItemStartDrag += AdapterStartDragging;
 
-        dragAndDropSceneObjectView.OnDrop += Drop;
+        this.dragAndDropSceneObjectView = dragAndDropSceneObjectView;
+        this.dragAndDropSceneObjectView.OnDrop += Drop;
     }
 
-    public void Dispose() { dragAndDropSceneObjectView.OnDrop -= Drop; }
+    public void Dispose()
+    {
+        sceneCatalogController.OnCatalogItemStartDrag -= AdapterStartDragging;
+        dragAndDropSceneObjectView.OnDrop -= Drop;
+    }
 
-    public void Drop() { OnDrop?.Invoke(); }
+    public void Drop()
+    {
+        CatalogItemDropped();
+        OnDrop?.Invoke();
+    }
+
+    public void CatalogItemDropped()
+    {
+        if (catalogItemcopy == null)
+            return;
+
+        // If an item has been dropped in the view , we assign it as itemDropped and wait for the OnEndDrag to process the item
+        CatalogItem catalogItem = catalogItemAdapterDragged.GetContent();
+        itemDroped = catalogItem;
+    }
+
+    public CatalogItemAdapter GetLastAdapterDragged() { return catalogItemAdapterDragged; }
+
+    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter)
+    {
+        // We create a copy of the adapter that has been dragging to move with the mouse as feedback
+        var catalogItemAdapterDraggedGameObject = GameObject.Instantiate(adapter.gameObject, dragAndDropSceneObjectView.GetGeneralCanvas().transform);
+        catalogItemcopy = catalogItemAdapterDraggedGameObject.GetComponent<CatalogItemAdapter>();
+
+        RectTransform adapterRT = adapter.GetComponent<RectTransform>();
+        catalogItemcopy.SetContent(adapter.GetContent());
+        catalogItemcopy.EnableDragMode(adapterRT.sizeDelta);
+
+        // However, since we have starting the drag event in the original adapter,
+        // We need to track the drag event in the original and apply the event to the copy 
+        adapter.OnAdapterDrag += OnDrag;
+        adapter.OnAdapterEndDrag += OnEndDrag;
+        catalogItemAdapterDragged = adapter;
+        OnStopInput?.Invoke();
+    }
+
+    private void OnDrag(PointerEventData data) { catalogItemcopy.gameObject.transform.position = data.position; }
+
+    private void OnEndDrag(PointerEventData data)
+    {
+        OnResumeInput?.Invoke();
+        if (catalogItemAdapterDragged != null)
+        {
+            catalogItemAdapterDragged.OnAdapterDrag -= OnDrag;
+            catalogItemAdapterDragged.OnAdapterEndDrag -= OnEndDrag;
+        }
+        GameObject.Destroy(catalogItemcopy.gameObject);
+
+        // Note(Adrian): If a item has been dropped in the "drop view" we process it here since this event complete the drag and drop flow
+        // If we don't wait for the full flow to finish, the OnCatalogItemDropped could refresh the catalog breaking the references
+        if (itemDroped != null)
+        {
+            OnCatalogItemDropped?.Invoke(itemDroped);
+            itemDroped = null;
+        }
+    }
 }

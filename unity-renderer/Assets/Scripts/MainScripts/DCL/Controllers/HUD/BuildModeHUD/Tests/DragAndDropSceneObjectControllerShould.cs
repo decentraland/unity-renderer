@@ -11,7 +11,7 @@ namespace Tests.BuildModeHUDControllers
         public void SetUp()
         {
             dragAndDropSceneObjectController = new DragAndDropSceneObjectController();
-            dragAndDropSceneObjectController.Initialize(Substitute.For<IDragAndDropSceneObjectView>());
+            dragAndDropSceneObjectController.Initialize(Substitute.For<ISceneCatalogController>(), Substitute.For<IDragAndDropSceneObjectView>());
         }
 
         [TearDown]
