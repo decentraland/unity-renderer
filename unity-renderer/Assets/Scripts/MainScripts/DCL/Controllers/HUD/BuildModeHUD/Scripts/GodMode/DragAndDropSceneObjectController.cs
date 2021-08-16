@@ -25,8 +25,8 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
     private ISceneCatalogController sceneCatalogController;
 
     private CatalogItemAdapter catalogItemAdapterDragged;
-    private CatalogItemAdapter catalogItemcopy;
-    private CatalogItem itemDroped;
+    internal CatalogItemAdapter catalogItemCopy;
+    internal CatalogItem itemDroped;
     private IDragAndDropSceneObjectView dragAndDropSceneObjectView;
 
     public void Initialize(ISceneCatalogController sceneCatalogController, IDragAndDropSceneObjectView dragAndDropSceneObjectView)
@@ -42,6 +42,8 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
     {
         sceneCatalogController.OnCatalogItemStartDrag -= AdapterStartDragging;
         dragAndDropSceneObjectView.OnDrop -= Drop;
+        if (catalogItemCopy != null && catalogItemCopy.gameObject != null )
+            GameObject.Destroy(catalogItemCopy.gameObject);
     }
 
     public void Drop()
@@ -52,7 +54,7 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
 
     public void CatalogItemDropped()
     {
-        if (catalogItemcopy == null)
+        if (catalogItemCopy == null)
             return;
 
         // If an item has been dropped in the view , we assign it as itemDropped and wait for the OnEndDrag to process the item
@@ -62,15 +64,15 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
 
     public CatalogItemAdapter GetLastAdapterDragged() { return catalogItemAdapterDragged; }
 
-    private void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter)
+    internal void AdapterStartDragging(CatalogItem catalogItemClicked, CatalogItemAdapter adapter)
     {
         // We create a copy of the adapter that has been dragging to move with the mouse as feedback
         var catalogItemAdapterDraggedGameObject = GameObject.Instantiate(adapter.gameObject, dragAndDropSceneObjectView.GetGeneralCanvas().transform);
-        catalogItemcopy = catalogItemAdapterDraggedGameObject.GetComponent<CatalogItemAdapter>();
+        catalogItemCopy = catalogItemAdapterDraggedGameObject.GetComponent<CatalogItemAdapter>();
 
         RectTransform adapterRT = adapter.GetComponent<RectTransform>();
-        catalogItemcopy.SetContent(adapter.GetContent());
-        catalogItemcopy.EnableDragMode(adapterRT.sizeDelta);
+        catalogItemCopy.SetContent(adapter.GetContent());
+        catalogItemCopy.EnableDragMode(adapterRT.sizeDelta);
 
         // However, since we have starting the drag event in the original adapter,
         // We need to track the drag event in the original and apply the event to the copy 
@@ -80,9 +82,11 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
         OnStopInput?.Invoke();
     }
 
-    private void OnDrag(PointerEventData data) { catalogItemcopy.gameObject.transform.position = data.position; }
+    internal void OnDrag(PointerEventData data) {  MoveCopyAdapterToPosition(data.position); }
 
-    private void OnEndDrag(PointerEventData data)
+    internal void MoveCopyAdapterToPosition(Vector3 position) { catalogItemCopy.gameObject.transform.position = position; }
+
+    internal void OnEndDrag(PointerEventData data)
     {
         OnResumeInput?.Invoke();
         if (catalogItemAdapterDragged != null)
@@ -90,7 +94,7 @@ public class DragAndDropSceneObjectController : IDragAndDropSceneObjectControlle
             catalogItemAdapterDragged.OnAdapterDrag -= OnDrag;
             catalogItemAdapterDragged.OnAdapterEndDrag -= OnEndDrag;
         }
-        GameObject.Destroy(catalogItemcopy.gameObject);
+        GameObject.Destroy(catalogItemCopy.gameObject);
 
         // Note(Adrian): If a item has been dropped in the "drop view" we process it here since this event complete the drag and drop flow
         // If we don't wait for the full flow to finish, the OnCatalogItemDropped could refresh the catalog breaking the references

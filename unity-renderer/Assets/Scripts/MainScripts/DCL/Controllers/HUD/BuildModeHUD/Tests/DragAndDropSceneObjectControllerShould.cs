@@ -1,21 +1,43 @@
+using System.Collections;
 using NSubstitute;
+using NSubstitute.Extensions;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.TestTools;
 
 namespace Tests.BuildModeHUDControllers
 {
     public class DragAndDropSceneObjectControllerShould
     {
         private DragAndDropSceneObjectController dragAndDropSceneObjectController;
+        private GameObject mockedGameObject;
+        private AssetCatalogBridge catalogBridge;
+        private CatalogItem item;
 
         [SetUp]
         public void SetUp()
         {
+            mockedGameObject = new GameObject("DragAndDropSceneObject");
+            var canvas = mockedGameObject.AddComponent<Canvas>();
             dragAndDropSceneObjectController = new DragAndDropSceneObjectController();
-            dragAndDropSceneObjectController.Initialize(Substitute.For<ISceneCatalogController>(), Substitute.For<IDragAndDropSceneObjectView>());
+            var view = Substitute.For<IDragAndDropSceneObjectView>();
+            view.Configure().GetGeneralCanvas().Returns(canvas);
+            dragAndDropSceneObjectController.Initialize(Substitute.For<ISceneCatalogController>(), view);
+            catalogBridge = mockedGameObject.AddComponent<AssetCatalogBridge>();
+
+            item = BIWTestHelper.CreateTestCatalogLocalSingleObject();
+            item.thumbnailURL = "";
         }
 
         [TearDown]
-        public void TearDown() { dragAndDropSceneObjectController.Dispose(); }
+        public void TearDown()
+        {
+            BIWCatalogManager.ClearCatalog();
+            AssetCatalogBridge.i.ClearCatalog();
+            GameObject.Destroy(catalogBridge);
+            GameObject.Destroy(mockedGameObject);
+        }
 
         [Test]
         public void ClickCorrectly()
@@ -29,6 +51,75 @@ namespace Tests.BuildModeHUDControllers
 
             // Assert
             Assert.IsTrue(dropped, "dropped is false!");
+        }
+
+        [Test]
+        public void AdapterStartDragging()
+        {
+            //Arrange
+            var adatper = CreateAdapter();
+
+            //Act
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+
+            //Assert
+            Assert.IsNotNull(dragAndDropSceneObjectController.catalogItemCopy);
+        }
+
+        [Test]
+        public void MoveCopyAdapterToPosition()
+        {
+            //Arrange
+            var adatper = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            var newPosition = Vector3.one * 5f;
+
+            //Act
+            dragAndDropSceneObjectController.MoveCopyAdapterToPosition(newPosition);
+
+            //Assert
+            Assert.IsTrue(Vector3.Distance(dragAndDropSceneObjectController.catalogItemCopy.transform.position, newPosition) <= 0.1f);
+        }
+
+        [UnityTest]
+        public IEnumerator AdapterEndDrag()
+        {
+            //Arrange
+            var adatper = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+
+            //Act
+            dragAndDropSceneObjectController.OnEndDrag(null);
+
+            //Assert
+            //We wait 1 frame for the GameObject to be destroyed
+            yield return null;
+            Assert.IsTrue(dragAndDropSceneObjectController.catalogItemCopy == null);
+        }
+
+        [Test]
+        public void CatalogItemAdapterDropped()
+        {
+            //Arrange
+            var adatper = CreateAdapter();
+            dragAndDropSceneObjectController.AdapterStartDragging(item, adatper);
+            var newPosition = Vector3.one * 5f;
+
+            //Act
+            dragAndDropSceneObjectController.MoveCopyAdapterToPosition(newPosition);
+
+            //Act
+            dragAndDropSceneObjectController.CatalogItemDropped();
+
+            //Assert
+            Assert.IsNotNull(dragAndDropSceneObjectController.itemDroped);
+        }
+
+        private CatalogItemAdapter CreateAdapter()
+        {
+            var adatper = BIWTestHelper.CreateCatalogItemAdapter(mockedGameObject);
+            adatper.SetContent(item);
+            return adatper;
         }
     }
 }
