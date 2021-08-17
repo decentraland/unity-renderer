@@ -1,9 +1,11 @@
-using DCL.Components;
 using System;
 using System.Collections;
 using System.IO;
+using DCL;
+using DCL.Components;
 using UnityEngine;
 using UnityGLTF.Loader;
+using WaitUntil = UnityEngine.WaitUntil;
 
 namespace UnityGLTF
 {
@@ -15,8 +17,6 @@ namespace UnityGLTF
         public static bool VERBOSE = false;
 
         public static int maxSimultaneousDownloads = 10;
-        public static float nearestDistance = float.MaxValue;
-        public static GLTFComponent nearestGLTFComponent;
 
         public static int downloadingCount;
         public static event Action OnDownloadingProgressUpdate;
@@ -60,8 +60,10 @@ namespace UnityGLTF
         }
 
         public GameObject loadingPlaceholder;
-        public System.Action OnFinishedLoadingAsset;
-        public System.Action OnFailedLoadingAsset;
+        public Action OnFinishedLoadingAsset;
+        public Action OnFailedLoadingAsset;
+
+        public bool isInQueue => state == State.QUEUED;
 
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
@@ -88,8 +90,8 @@ namespace UnityGLTF
         private AsyncCoroutineHelper asyncCoroutineHelper;
         private Coroutine loadingRoutine = null;
         private GLTFSceneImporter sceneImporter;
-        private Camera mainCamera;
-        private DCL.IWebRequestController webRequestController;
+        private IWebRequestController webRequestController;
+        private DownloadQueueHandler downloadQueueHandler;
 
         public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
 
@@ -97,7 +99,10 @@ namespace UnityGLTF
 
         public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void Initialize(DCL.IWebRequestController webRequestController) { this.webRequestController = webRequestController; }
+        public void Initialize(IWebRequestController webRequestController)
+        {
+            this.webRequestController = webRequestController;
+        }
 
         public void LoadAsset(string incomingURI = "", string idPrefix = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
         {
@@ -119,14 +124,18 @@ namespace UnityGLTF
 
             alreadyDecrementedRefCount = false;
             state = State.NONE;
-            mainCamera = Camera.main;
 
             if (settings != null)
             {
                 ApplySettings(settings);
             }
 
-            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
+            if (downloadQueueHandler == null)
+            {
+                downloadQueueHandler = new DownloadQueueHandler(this);
+            }
+
+            loadingRoutine = CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
         }
 
         void ApplySettings(Settings settings)
@@ -277,7 +286,7 @@ namespace UnityGLTF
 
                     state = State.QUEUED;
 
-                    Func<bool> funcTestDistance = () => TestDistance();
+                    Func<bool> funcTestDistance = () => downloadQueueHandler.IsNextInQueue();
                     yield return new WaitUntil(funcTestDistance);
 
                     queueCount--;
@@ -349,33 +358,10 @@ namespace UnityGLTF
             }
         }
 
-        private bool TestDistance()
+        public void Load(string url)
         {
-            if (mainCamera == null || this == null)
-                return true;
-
-            float dist = Vector3.Distance(mainCamera.transform.position, transform.position);
-
-            if (dist < nearestDistance)
-            {
-                nearestDistance = dist;
-                nearestGLTFComponent = this;
-            }
-
-            bool result = nearestGLTFComponent == this && downloadingCount < maxSimultaneousDownloads;
-
-            if (result)
-            {
-                //NOTE(Brian): Reset values so the other GLTFComponents running this coroutine compete again
-                //             for distance.
-                nearestGLTFComponent = null;
-                nearestDistance = float.MaxValue;
-            }
-
-            return result;
+            throw new NotImplementedException();
         }
-
-        public void Load(string url) { throw new NotImplementedException(); }
 
 #if UNITY_EDITOR
         // In production it will always be false
@@ -384,7 +370,10 @@ namespace UnityGLTF
         // We need to check if application is quitting in editor
         // to prevent the pool from releasing objects that are
         // being destroyed 
-        void Awake() { Application.quitting += OnIsQuitting; }
+        void Awake()
+        {
+            Application.quitting += OnIsQuitting;
+        }
 
         void OnIsQuitting()
         {
@@ -402,6 +391,13 @@ namespace UnityGLTF
             {
                 sceneImporter.Dispose();
             }
+
+            if (state == State.QUEUED)
+            {
+                queueCount--;
+            }
+
+            downloadQueueHandler?.Dispose();
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
