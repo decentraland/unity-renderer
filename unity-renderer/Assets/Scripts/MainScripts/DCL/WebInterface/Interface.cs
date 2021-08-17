@@ -461,12 +461,6 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class SendUserEmailPayload
-        {
-            public string userEmail;
-        }
-
-        [System.Serializable]
         public class GIFSetupPayload
         {
             public string imageSource;
@@ -1074,14 +1068,6 @@ namespace DCL.Interface
             SendMessage("UnblockPlayer", new SendUnblockPlayerPayload()
             {
                 userId = userId
-            });
-        }
-
-        public static void SendUserEmail(string email)
-        {
-            SendMessage("ReportUserEmail", new SendUserEmailPayload()
-            {
-                userEmail = email
             });
         }
 
