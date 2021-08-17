@@ -24,6 +24,7 @@ namespace DCL
 
         public event Action<IAvatarRenderer.VisualCue> OnVisualCue;
         public event Action OnSuccessEvent;
+        public event Action<float> OnImpostorAlphaValueUpdate;
         public event Action<bool> OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
@@ -530,7 +531,7 @@ namespace DCL
 
         public void SetImpostorTextureTint(Color newColor)
         {
-            // AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
+            // TODO: Turn into something like: AvatarRendererHelpers.SetImpostorTexture(asset.texture, lodMeshFilter.mesh, lodRenderer.material);
             lodRenderer.material.SetColor("_BaseColor", newColor);
         }
 
@@ -551,6 +552,8 @@ namespace DCL
             Color current = lodRenderer.material.GetColor(BASE_COLOR_PROPERTY);
             current.a = impostorFade;
             lodRenderer.material.SetColor(BASE_COLOR_PROPERTY, current);
+
+            OnImpostorAlphaValueUpdate?.Invoke(impostorFade);
         }
 
         private void HideAll()
