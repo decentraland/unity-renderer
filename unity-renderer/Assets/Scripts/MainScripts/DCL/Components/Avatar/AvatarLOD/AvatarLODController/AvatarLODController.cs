@@ -133,7 +133,7 @@ namespace DCL
             Color newColor = Color.Lerp(Color.white, Color.black, tintValue);
             newColor.a = Mathf.Lerp(1f, 0.75f, tintStep);
 
-            player.renderer.SetImpostorTextureTint(newColor);
+            player.renderer.SetImpostorTintColor(newColor);
         }
 
         public void Dispose() { CoroutineStarter.Stop(currentTransition); }
