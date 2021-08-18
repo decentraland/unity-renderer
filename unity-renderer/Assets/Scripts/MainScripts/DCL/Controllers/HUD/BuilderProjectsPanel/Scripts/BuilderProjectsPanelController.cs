@@ -133,7 +133,10 @@ public class BuilderProjectsPanelController : IHUD
 
         if (isVisible)
         {
-            sendPlayerOpenPanelEvent = true;
+            if (DataStore.i.builderInWorld.landsWithAccess != null)
+                PanelOpenEvent(DataStore.i.builderInWorld.landsWithAccess.Get());
+            else
+                sendPlayerOpenPanelEvent = true;
 
             FetchLandsAndScenes();
             StartFetchInterval();
@@ -229,7 +232,8 @@ public class BuilderProjectsPanelController : IHUD
                                       .Aggregate((i, j) => i.Concat(j))
                                       .ToArray();
 
-                    PanelOpenEvent(lands);
+                    if (sendPlayerOpenPanelEvent)
+                        PanelOpenEvent(lands);
                     landsController.SetLands(lands);
                     scenesViewController.SetScenes(scenes);
                 }

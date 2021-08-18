@@ -104,7 +104,7 @@ public class BIWPublishController : BIWController, IBIWPublishController
             feedbackMessage = FEEDBACK_MESSAGE_TOO_MANY_ENTITIES;
             if (reportSceneLimitsOverpassedAnalytic)
             {
-                BIWAnalytics.SceneLimitsOverPassed(sceneToEdit.metricsController.GetModel());
+                BIWAnalytics.SceneLimitsOverPassed(sceneToEdit.metricsController.GetModel(), sceneToEdit.metricsController.GetLimits());
                 reportSceneLimitsOverpassedAnalytic = false;
             }
         }
