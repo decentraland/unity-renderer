@@ -74,6 +74,19 @@ namespace DCL
         {
             public readonly BaseVariable<float> LODDistance = new BaseVariable<float>(16f);
             public readonly BaseVariable<int> maxNonLODAvatars = new BaseVariable<int>(20);
+
+            public readonly TestPanel testPanel = new TestPanel();
+
+            public class TestPanel
+            {
+                public readonly BaseVariable<float> impostorsMovementInterpolationWait = new BaseVariable<float>(2f);
+                public readonly BaseVariable<float> lodDistance = new BaseVariable<float>(16f);
+                public readonly BaseVariable<float> impostorTintMaxDistance = new BaseVariable<float>(32f);
+                public readonly BaseVariable<float> impostorTintNearestBlackness = new BaseVariable<float>(0.2f);
+                public readonly BaseVariable<float> impostorTintFarestBlackness = new BaseVariable<float>(0.9f);
+                public readonly BaseVariable<float> impostorAlphaNearestValue = new BaseVariable<float>(1f);
+                public readonly BaseVariable<float> impostorAlphaFarestValue = new BaseVariable<float>(0.75f);
+            }
         }
 
         /// <summary>

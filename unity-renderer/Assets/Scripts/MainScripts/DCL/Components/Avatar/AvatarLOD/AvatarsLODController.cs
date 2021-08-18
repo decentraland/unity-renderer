@@ -81,12 +81,15 @@ namespace DCL
                 var lodController = avatarKVP.Value;
                 var position = otherPlayers[avatarKVP.Key].worldPosition;
                 float distanceToPlayer = Vector3.Distance(CommonScriptableObjects.playerUnityPosition.Get(), position);
-                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
+                // bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.LODDistance.Get();
+                bool isInLODDistance = distanceToPlayer >= DataStore.i.avatarsLOD.testPanel.lodDistance.Get();
 
                 if (isInLODDistance)
                 {
                     lodController.SetImpostorState();
-                    lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.LODDistance.Get());
+                    // lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.LODDistance.Get());
+                    lodController.UpdateImpostorTint(distanceToPlayer - DataStore.i.avatarsLOD.testPanel.lodDistance.Get(),
+                        DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Get());
                 }
                 else
                 {
@@ -106,7 +109,9 @@ namespace DCL
                 if (isLOD)
                 {
                     currentAvatar.SetImpostorState();
-                    currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.LODDistance.Get());
+                    // currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.LODDistance.Get());
+                    currentAvatar.UpdateImpostorTint(closeDistanceAvatars.Keys[i] - DataStore.i.avatarsLOD.testPanel.lodDistance.Get(),
+                        DataStore.i.avatarsLOD.testPanel.impostorTintMaxDistance.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintNearestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorTintFarestBlackness.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaNearestValue.Get(), DataStore.i.avatarsLOD.testPanel.impostorAlphaFarestValue.Get());
                 }
                 else
                 {
