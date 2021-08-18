@@ -5,6 +5,7 @@ using DCL.Models;
 using UnityEngine;
 using DCL.Components.Video.Plugin;
 using DCL.Helpers;
+using DCL.Interface;
 
 namespace DCL.Components
 {
@@ -140,7 +141,10 @@ namespace DCL.Components
                 }
 
                 if (model.playing)
+                {
                     texturePlayer.Play();
+                    WebInterface.ReportVideoStartedEvent();
+                }
                 else
                     texturePlayer.Pause();
 

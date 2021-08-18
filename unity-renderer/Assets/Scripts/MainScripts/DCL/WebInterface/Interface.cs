@@ -979,6 +979,12 @@ namespace DCL.Interface
             public string newUnverifiedName;
         }
 
+        [System.Serializable]
+        public class SendVideoStartedEvent
+        {
+            
+        }
+
         public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
 
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D face128Snapshot, Texture2D face256Snapshot, Texture2D bodySnapshot, bool isSignUpFlow = false)
@@ -1239,6 +1245,10 @@ namespace DCL.Interface
         {
             stringPayload.value = message;
             SendMessage("NotifyStatusThroughChat", stringPayload);
+        }
+        public static void ReportVideoStartedEvent()
+        {
+            SendMessage("VideoStartedEvent", new SendVideoStartedEvent());
         }
     }
 }
