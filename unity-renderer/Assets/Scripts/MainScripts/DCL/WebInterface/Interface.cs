@@ -1004,10 +1004,25 @@ namespace DCL.Interface
             public string newUnverifiedName;
         }
 
-        [System.Serializable]
+        [Serializable]
         public class SendVideoStartedEvent
         {
-            
+            public float currentPosition;
+        }
+        
+        [Serializable]
+        public class SendVideoPausedEvent
+        {
+            public float currentPosition;
+        }
+        
+        [Serializable]
+        public class SendVideoProgressEvent
+        {
+            public string videoTextureId;
+            public int status;
+            public float currentOffset;
+            public float videoLength;
         }
 
         public static void RequestOwnProfileUpdate() { SendMessage("RequestOwnProfileUpdate"); }
@@ -1274,9 +1289,37 @@ namespace DCL.Interface
             stringPayload.value = message;
             SendMessage("NotifyStatusThroughChat", stringPayload);
         }
-        public static void ReportVideoStartedEvent()
+        public static void ReportVideoStartedEvent(float videoPosition)
         {
-            SendMessage("VideoStartedEvent", new SendVideoStartedEvent());
+            SendVideoStartedEvent sendVideoStartedEvent = new SendVideoStartedEvent()
+            {
+                currentPosition = videoPosition
+            };
+            
+            SendMessage("VideoStartedEvent", sendVideoStartedEvent);
+        }
+        public static void ReportVideoPausedEvent(float videoPosition)
+        {
+            SendVideoPausedEvent sendVideoStartedEvent = new SendVideoPausedEvent()
+            {
+                currentPosition = videoPosition
+            };
+            
+            SendMessage("VideoPausedEvent", sendVideoStartedEvent);
+        }
+        public static void ReportVideoProgressEvent(string lastVideoClipID, int videoStatus, float currentOffset, float length)
+        {
+            SendVideoProgressEvent progressEvent = new SendVideoProgressEvent()
+            {
+                videoTextureId = lastVideoClipID,
+                status = videoStatus,
+                currentOffset =  currentOffset,
+                videoLength = length
+            };
+
+            SendMessage("VideoProgressEvent", progressEvent);
         }
     }
+
+    
 }
