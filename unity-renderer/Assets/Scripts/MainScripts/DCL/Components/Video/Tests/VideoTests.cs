@@ -8,6 +8,7 @@ using DCL.Components.Video.Plugin;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Controllers;
+using DCL.Interface;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -32,6 +33,41 @@ namespace Tests
             DCLVideoTexture videoTexture = CreateDCLVideoTexture(scene, "it-wont-load-during-test");
             yield return videoTexture.routine;
             Assert.IsTrue(videoTexture.attachedMaterials.Count == 0, "DCLVideoTexture started with attachedMaterials != 0");
+        }
+
+        [UnityTest]
+        public IEnumerator VideoTextureIsPlayedCorrectly()
+        {
+            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
+            {
+                playing = true
+            };
+            DCLVideoTexture videoTexture = CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
+            yield return videoTexture.routine;
+            Assert.IsTrue(videoTexture.texturePlayer.playing, "VideoTexture should be playing");
+        }
+
+        [UnityTest]
+        public IEnumerator MessageIsSentWhenVideoStartsPlaying()
+        {
+                        
+            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
+            {
+                playing = true
+            };
+            DCLVideoTexture videoTexture = CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
+            
+            var evt = new WebInterface.SendVideoStartedEvent()
+            {
+                
+            };
+            var json = JsonUtility.ToJson(evt);
+            var wasEventSend = false;
+            yield return TestHelpers.WaitForMessageFromEngine("VideoStartedEvent", json,
+                () => { },
+                () =>wasEventSend = true);
+
+            Assert.IsTrue(wasEventSend, $"Event of type {evt.GetType()} was not sent.");
         }
 
         [UnityTest]
@@ -330,6 +366,22 @@ namespace Tests
             );
         }
 
+        static DCLVideoTexture CreateDCLVideoTextureWithModel(ParcelScene scn, DCLVideoTexture.Model model)
+        {
+            return TestHelpers.SharedComponentCreate<DCLVideoTexture, DCLVideoTexture.Model>
+            (
+                scn,
+                CLASS_ID.VIDEO_TEXTURE,
+                model
+            );
+        }
+
         static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url) { return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url)); }
+        static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, string url, DCLVideoTexture.Model model)
+        {
+            model.videoClipId = CreateDCLVideoClip(scn, "http://" + url).id;
+            return CreateDCLVideoTextureWithModel(scn, model);
+        }
+
     }
 }
