@@ -18,6 +18,7 @@ namespace DCL.Components
 #endif
 
         private const float OUTOFSCENE_TEX_UPDATE_INTERVAL = 1.5f;
+        private const float VIDEO_PROGRESS_UPDATE_INTERVAL = 1f;
 
         [System.Serializable]
         new public class Model : BaseModel
@@ -43,8 +44,10 @@ namespace DCL.Components
 
         private bool isPlayerInScene = true;
         private float currUpdateIntervalTime = OUTOFSCENE_TEX_UPDATE_INTERVAL;
+        private float lastVideoProgressReportTime;
 
         internal Dictionary<string, MaterialInfo> attachedMaterials = new Dictionary<string, MaterialInfo>();
+        private string lastVideoClipID;
 
         public DCLVideoTexture()
         {
@@ -78,10 +81,11 @@ namespace DCL.Components
                     unityWrap = TextureWrapMode.Mirror;
                     break;
             }
+            lastVideoClipID = model.videoClipId;
 
             if (texturePlayer == null)
             {
-                DCLVideoClip dclVideoClip = scene.GetSharedComponent(model.videoClipId) as DCLVideoClip;
+                DCLVideoClip dclVideoClip = scene.GetSharedComponent(lastVideoClipID) as DCLVideoClip;
 
                 if (dclVideoClip == null)
                 {
@@ -131,6 +135,7 @@ namespace DCL.Components
 
             if (texturePlayer != null)
             {
+                var lstSeekTime = model.seek;
                 if (model.seek >= 0)
                 {
                     texturePlayer.SetTime(model.seek);
@@ -143,10 +148,13 @@ namespace DCL.Components
                 if (model.playing)
                 {
                     texturePlayer.Play();
-                    WebInterface.ReportVideoStartedEvent();
+                    WebInterface.ReportVideoStartedEvent(lstSeekTime);
                 }
                 else
+                {
                     texturePlayer.Pause();
+                    WebInterface.ReportVideoPausedEvent(texturePlayer.GetTime());
+                }
 
                 if (baseVolume != model.volume)
                 {
@@ -191,9 +199,32 @@ namespace DCL.Components
                     texturePlayer.UpdateWebVideoTexture();
                 }
 
+                ReportVideoProgress();
+
                 yield return null;
             }
         }
+        private void ReportVideoProgress()
+        {
+            if (texturePlayer.playing && IsTimeToReportVideoProgress())
+            {
+                lastVideoProgressReportTime = Time.unscaledTime;
+                var videoStatus = GetVideoStatus();
+                var currentOffset = texturePlayer.GetTime();
+                var length = texturePlayer.GetDuration();
+                WebInterface.ReportVideoProgressEvent(lastVideoClipID, videoStatus, currentOffset, length );
+            }
+        }
+        private int GetVideoStatus()
+        {
+            //TODO: Handle buffering state that returns 2
+            
+            if (texturePlayer.playing)
+                return 1;
+            
+            return 0;
+        }
+        private bool IsTimeToReportVideoProgress() { return Time.unscaledTime - lastVideoProgressReportTime > VIDEO_PROGRESS_UPDATE_INTERVAL; }
 
         private void CalculateVideoVolumeAndPlayStatus()
         {
@@ -237,9 +268,7 @@ namespace DCL.Components
             UpdateVolume();
         }
 
-        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) {
-            UpdateVolume();
-        }
+        private void OnVirtualAudioMixerChangedValue(float currentValue, float previousValue) { UpdateVolume(); }
 
         private void UpdateVolume()
         {
@@ -248,7 +277,8 @@ namespace DCL.Components
 
             float targetVolume = 0f;
 
-            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get()))) {
+            if (CommonScriptableObjects.rendererState.Get() && IsPlayerInSameSceneAsComponent((CommonScriptableObjects.sceneID.Get())))
+            {
                 targetVolume = baseVolume * distanceVolumeModifier;
                 float virtualMixerVolume = DataStore.i.virtualAudioMixer.sceneSFXVolume.Get();
                 float sceneSFXSetting = Settings.i.currentAudioSettings.sceneSFXVolume;

@@ -34,17 +34,20 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator MessageIsSentWhenVideoStartsPlaying()
+        public IEnumerator MessageIsSentWhenVideoPlays()
         {
+            var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
             DCLVideoTexture.Model model = new DCLVideoTexture.Model()
             {
-                playing = true
+                videoClipId = id,
+                playing = true,
+                seek = 10
             };
-            CreateDCLVideoTextureWithCustomTextureModel(scene, "it-wont-load-during-test", model);
+            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
             
             var expectedEvent = new WebInterface.SendVideoStartedEvent()
             {
-                
+                currentPosition = 10
             };
             var json = JsonUtility.ToJson(expectedEvent);
             var wasEventSent = false;
@@ -52,7 +55,58 @@ namespace Tests
                 () => { },
                 () =>wasEventSent = true);
 
-            Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent.");
+            Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
+        }
+
+        [UnityTest]
+        public IEnumerator MessageIsSentWhenVideoStops()
+        {
+            var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
+            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
+            {
+                videoClipId = id,
+                playing = false
+            };
+            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            
+            var expectedEvent = new WebInterface.SendVideoPausedEvent()
+            {
+                currentPosition = 0 //this value cant really be tested here so its always 0
+            };
+            
+            var json = JsonUtility.ToJson(expectedEvent);
+            var wasEventSent = false;
+            yield return TestHelpers.WaitForMessageFromEngine("VideoPausedEvent", json,
+                () => { },
+                () =>wasEventSent = true);
+
+            Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
+        }
+        [UnityTest]
+        public IEnumerator MessageIsSentWhenVideoIsUpdatedAfterTime()
+        {
+            var id = CreateDCLVideoClip(scene, "http://it-wont-load-during-test").id;
+            DCLVideoTexture.Model model = new DCLVideoTexture.Model()
+            {
+                videoClipId = id,
+                playing = true
+            };
+            CreateDCLVideoTextureWithCustomTextureModel(scene, model);
+            
+            var expectedEvent = new WebInterface.SendVideoProgressEvent()
+            {
+                videoLength = 0,
+                videoTextureId = id,
+                currentOffset = 0,
+                status = 1
+            };
+            var json = JsonUtility.ToJson(expectedEvent);
+            var wasEventSent = false;
+            yield return TestHelpers.WaitForMessageFromEngine("VideoProgressEvent", json,
+                () => { },
+                () =>wasEventSent = true);
+
+            Assert.IsTrue(wasEventSent, $"Event of type {expectedEvent.GetType()} was not sent or its incorrect.");
         }
 
         [UnityTest]
@@ -362,9 +416,8 @@ namespace Tests
         }
 
         static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url) { return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url)); }
-        static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, string url, DCLVideoTexture.Model model)
+        static DCLVideoTexture CreateDCLVideoTextureWithCustomTextureModel(ParcelScene scn, DCLVideoTexture.Model model)
         {
-            model.videoClipId = CreateDCLVideoClip(scn, "http://" + url).id;
             return CreateDCLVideoTextureWithModel(scn, model);
         }
 
