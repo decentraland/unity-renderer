@@ -1,8 +1,9 @@
 using DCL;
 using System.Collections;
+using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
+using Assert = UnityEngine.Assertions.Assert;
 
 namespace AssetPromiseKeeper_Tests
 {
@@ -109,6 +110,8 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit]
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var prom = CreatePromise();
